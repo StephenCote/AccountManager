@@ -1,13 +1,3 @@
-DROP VIEW IF EXISTS sprintReport;
-DROP VIEW IF EXISTS sprintView;
-DROP VIEW IF EXISTS lifecycleWorkTaskResources;
-DROP VIEW IF EXISTS taskResourceGroup;
-DROP VIEW IF EXISTS taskResources;
-DROP VIEW IF EXISTS lifecycleWorkTasks;
-DROP VIEW IF EXISTS lifecycleProjectStage;
-DROP VIEW IF EXISTS lifecycleProject;
-DROP VIEW IF EXISTS lifecycleSchedule;
-
 DROP VIEW IF EXISTS personContact;
 DROP VIEW IF EXISTS userContact;
 DROP VIEW IF EXISTS personUsers;
