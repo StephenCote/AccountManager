@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+               xsi:schemaLocation="http://java.sun.com/xml/ns/javaeehttp://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+               version="3.0">
+  <display-name>AccountManager</display-name>
+
+<session-config>
+ <session-timeout>30</session-timeout>
+  <cookie-config>
+    <path>/</path>
+   </cookie-config>
+</session-config>
+  <listener>
+    <listener-class>
+     org.cote.rest.listeners.AccountManagerFactoryInit
+    </listener-class>
+  </listener>
+  <context-param>
+    <description>Database Connection Type</description>
+    <param-name>database.conntype</param-name>
+    <param-value>jndi</param-value>
+  </context-param>
+  <context-param>
+    <description>Database Connection Type</description>
+    <param-name>database.dsname</param-name>
+    <param-value>jboss/datasources/postgresDS</param-value>
+  </context-param>
+  <context-param>
+    <description>Database Driver</description>
+    <param-name>database.driver</param-name>
+    <param-value>org.postgresql.Driver</param-value>
+  </context-param>
+  <context-param>
+    <description>Database Driver</description>
+    <param-name>database.drivercheck</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>/faces/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.xhtml</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>JerseyService</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages;org.codehaus.jackson.jaxrs</param-name>
+      <param-value>org.cote.rest.services</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>JerseyService</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <description></description>
+    <display-name>AccountManagerServletInit</display-name>
+    <servlet-name>AccountManagerServletInit</servlet-name>
+    <servlet-class>org.cote.rest.servlets.AccountManagerServletInit</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>AccountManagerServletInit</servlet-name>
+    <url-pattern>/AccountManagerServletInit</url-pattern>
+  </servlet-mapping>
+
+    <servlet>
+  	<description>
+  	</description>
+  	<display-name>MediaFormServlet</display-name>
+  	<servlet-name>MediaFormServlet</servlet-name>
+  	<servlet-class>org.cote.rest.servlets.MediaFormServlet</servlet-class>
+  	<enabled>true</enabled>
+  	<async-supported>false</async-supported>
+  </servlet>
+    <servlet>
+    	<description>
+    	</description>
+    	<display-name>MediaServlet</display-name>
+    	<servlet-name>MediaServlet</servlet-name>
+    	<servlet-class>org.cote.rest.servlets.MediaServlet</servlet-class>
+    	<enabled>true</enabled>
+    	<async-supported>false</async-supported>
+    </servlet>
+    <servlet>
+    	<description>
+    	</description>
+    	<display-name>ThumbnailServlet</display-name>
+    	<servlet-name>ThumbnailServlet</servlet-name>
+    	<servlet-class>org.cote.rest.servlets.ThumbnailServlet</servlet-class>
+    	<enabled>true</enabled>
+    	<async-supported>false</async-supported>
+    </servlet>
+    <servlet-mapping>
+  	<servlet-name>MediaFormServlet</servlet-name>
+  	<url-pattern>
+  	/mediaForm</url-pattern>
+  </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>MediaServlet</servlet-name>
+    	<url-pattern>
+    	/Media/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>ThumbnailServlet</servlet-name>
+    	<url-pattern>
+    	/Thumbnail/*</url-pattern>
+    </servlet-mapping>
+</web-app>
