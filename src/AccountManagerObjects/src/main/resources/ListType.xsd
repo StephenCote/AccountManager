@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:Q1="http://www.cote.org/accountmanager/objects/types">
+    <import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
+    <complexType name="ListType">
+    	<sequence>
+    		<element name="data" type="tns:ListDataType" minOccurs="0" maxOccurs="unbounded"></element>
+    	</sequence>
+    	<attribute name="organizationName" type="string"></attribute>
+    	<attribute name="organizationId" type="string"></attribute>
+    	<attribute name="nameType" type="Q1:NameEnumType"></attribute>
+    	<attribute name="groupType" type="Q1:GroupEnumType"></attribute>
+    	<attribute name="permissionType" type="Q1:PermissionEnumType"></attribute>
+    	<attribute name="participantType"
+    		type="Q1:ParticipantEnumType">
+    	</attribute>
+    	<attribute name="participationType"
+    		type="Q1:ParticipationEnumType">
+    	</attribute>
+    </complexType>
+
+    <complexType name="ListDataType">
+    	<attribute name="name" type="string"></attribute>
+    	<attribute name="value" type="string"></attribute>
+    </complexType>
+
+    <complexType name="ListItemType">
+    	<sequence>
+    		<element name="data" type="tns:ListDataType" minOccurs="0" maxOccurs="unbounded"></element>
+    	</sequence>
+    	<attribute name="id" type="long"></attribute>
+    	<attribute name="name" type="string"></attribute>
+    	<attribute name="description" type="string"></attribute>
+    	<attribute name="value" type="string"></attribute>
+    	<attribute name="date" type="dateTime"></attribute>
+    	<attribute name="ownerName" type="string"></attribute>
+    	<attribute name="ownerId" type="long"></attribute>
+    	<attribute name="groupName" type="string"></attribute>
+    	<attribute name="groupId" type="long"></attribute>
+    	<attribute name="organizationId" type="long"></attribute>
+    </complexType>
+</schema>

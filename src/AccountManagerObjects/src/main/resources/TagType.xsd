@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects"
+	xmlns:Q1="http://www.cote.org/accountmanager/objects"
+	xmlns:Q2="http://www.cote.org/accountmanager/objects/types">
+	<import schemaLocation="Types.xsd"
+		namespace="http://www.cote.org/accountmanager/objects/types">
+	</import>
+	<include schemaLocation="NameId.xsd"></include>
+	<complexType name="BaseTagType">
+		<complexContent>
+			<extension base="tns:NameIdType">
+				<attribute name="tagType" type="Q2:TagEnumType">
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="AccountTagType">
+		<complexContent>
+			<extension base="tns:BaseTagType"></extension>
+		</complexContent>
+	</complexType>
+	<complexType name="DataTagType">
+		<complexContent>
+			<extension base="tns:BaseTagType"></extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="UserTagType">
+		<complexContent>
+			<extension base="tns:BaseTagType"></extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="PersonTagType">
+		<complexContent>
+			<extension base="tns:BaseTagType"></extension>
+		</complexContent>
+	</complexType>
+</schema>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects"
+	xmlns:Q1="http://www.cote.org/accountmanager/objects/types">
+    <include schemaLocation="GroupType.xsd"></include>
+    <import schemaLocation="Types.xsd"
+		namespace="http://www.cote.org/accountmanager/objects/types">
+	</import>
+	<include schemaLocation="SessionType.xsd"></include>
+	<complexType name="NameIdType">
+		<sequence>
+			<element name="organization" type="tns:OrganizationType"></element>
+		</sequence>
+
+		<attribute name="nameType" type="Q1:NameEnumType"
+			default="UNKNOWN">
+		</attribute>
+		<attribute name="parentId" type="long" default="0"></attribute>
+		<attribute name="name" type="string"></attribute>
+		<attribute name="id" type="long" default="0"></attribute>
+		<attribute name="ownerId" type="long" default="0"></attribute>
+		<attribute name="populated" type="boolean" default="false"></attribute>
+		<attribute name="objectId" type="string"></attribute>
+	</complexType>
+
+	<complexType name="OrganizationType">
+		<complexContent>
+			<extension base="tns:NameIdType">
+				<sequence>
+					<element name="organizationParent"
+						type="tns:OrganizationType">
+					</element>
+				</sequence>
+				<attribute name="logicalId" type="long" default="0"></attribute>
+				<attribute name="referenceId" type="long" default="0"></attribute>
+				<attribute name="organizationType"
+					type="Q1:OrganizationEnumType" default="UNKNOWN">
+				</attribute>
+			</extension>
+		</complexContent>
+
+
+	</complexType>
+
+	<complexType name="ContactInformationType">
+		<complexContent>
+			<extension base="tns:NameIdType">
+				<sequence>
+					<element name="contacts" type="tns:ContactType" minOccurs="0" maxOccurs="unbounded"></element>
+					<element name="addresses" type="tns:AddressType" minOccurs="0" maxOccurs="unbounded"></element>
+				</sequence>
+				<attribute name="contactInformationType"
+					type="Q1:ContactInformationEnumType">
+				</attribute>
+				<attribute name="description" type="string"></attribute>
+				<attribute name="referenceId" type="long" default="0"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+
+	<complexType name="NameIdDirectoryGroupType">
+		<complexContent>
+			<extension base="tns:NameIdType">
+				<sequence>
+					<element name="group" type="tns:DirectoryGroupType"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ContactType">
+		<complexContent>
+			<extension base="tns:NameIdDirectoryGroupType">
+				<sequence>
+					<element name="contactValue" type="string"></element>
+					<element name="description" type="string"></element>
+				</sequence>
+				<attribute name="contactType"
+					type="Q1:ContactEnumType">
+				</attribute>
+				<attribute name="locationType"
+					type="Q1:LocationEnumType">
+				</attribute>
+				<attribute name="preferred" type="boolean" default="false"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="AddressType">
+		<complexContent>
+			<extension base="tns:NameIdDirectoryGroupType">
+				<sequence>
+					<element name="addressLine1" type="string"></element>
+					<element name="addressLine2" type="string"></element>
+					<element name="city" type="string"></element>
+					<element name="region" type="string"></element>
+					<element name="state" type="string"></element>
+					<element name="postalCode" type="string"></element>
+					<element name="country" type="string"></element>
+					<element name="description" type="string"></element>
+				</sequence>
+				<attribute name="locationType"
+					type="Q1:LocationEnumType">
+				</attribute>
+				<attribute name="preferred" type="boolean" default="false"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects"
+	xmlns:pref="http://www.cote.org/accountmanager/objects/types">
+	<import schemaLocation="Types.xsd"
+		namespace="http://www.cote.org/accountmanager/objects/types">
+	</import>
+	<include schemaLocation="NameId.xsd"></include>
+
+	<include schemaLocation="AccountType.xsd"></include>
+	<include schemaLocation="DataType.xsd"></include>
+	<complexType name="PersonType">
+		<complexContent>
+			<extension base="tns:NameIdDirectoryGroupType">
+				<sequence>
+					<element name="description" type="string"></element>
+					<element name="firstName" type="string"></element>
+					<element name="middleName" type="string"></element>
+					<element name="lastName" type="string"></element>
+					<element name="title" type="string"></element>
+					<element name="suffix" type="string"></element>
+					<element name="birthDate" type="dateTime"></element>
+					<element name="gender" type="string"></element>
+					<element name="alias" type="string"></element>
+					<element name="prefix" type="string"></element>
+					<element name="users" type="tns:UserType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+					<element name="accounts" type="tns:AccountType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+					<element name="contact"
+						type="tns:ContactInformationType">
+					</element>
+					<element name="partners" type="tns:PersonType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+					<element name="dependents" type="tns:PersonType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+					<element name="notes" type="tns:DataType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+</schema>

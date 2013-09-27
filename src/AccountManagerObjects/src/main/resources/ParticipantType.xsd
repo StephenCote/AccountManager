@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:Q1="http://www.cote.org/accountmanager/objects" xmlns:Q2="http://www.cote.org/accountmanager/objects/types">
+    <import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
+ 	<include schemaLocation="NameId.xsd"></include>
+ 	<complexType name="BaseParticipantType">
+ 		<complexContent>
+ 			<extension base="tns:NameIdType">
+ 				<attribute name="participationType"
+ 					type="Q2:ParticipationEnumType">
+ 				</attribute>
+ 				<attribute name="participantType"
+ 					type="Q2:ParticipantEnumType">
+ 				</attribute>
+ 				<attribute name="affectType"
+ 					type="Q2:AffectEnumType">
+ 				</attribute>
+ 				<attribute name="participationId" type="long" default="0"></attribute>
+ 				<attribute name="participantId" type="long" default="0"></attribute>
+ 				<attribute name="affectId" type="long" default="0"></attribute>
+ 			</extension>
+ 		</complexContent>
+ 	</complexType>
+
+ 	<complexType name="AccountParticipantType">
+    	<complexContent>
+    		<extension base="tns:BaseParticipantType"></extension>
+    	</complexContent>
+    </complexType>
+    <complexType name="DataParticipantType">
+    	<complexContent>
+    		<extension base="tns:BaseParticipantType"></extension>
+    	</complexContent>
+    </complexType>
+     <complexType name="PermissionParticipantType">
+    	<complexContent>
+    		<extension base="tns:BaseParticipantType"></extension>
+    	</complexContent>
+    </complexType>
+     <complexType name="RoleParticipantType">
+    	<complexContent>
+    		<extension base="tns:BaseParticipantType"></extension>
+    	</complexContent>
+    </complexType>
+
+     <complexType name="UserParticipantType">
+     	<complexContent>
+     		<extension base="tns:BaseParticipantType"></extension>
+     	</complexContent>
+     </complexType>
+
+     <complexType name="GroupParticipantType">
+     	<complexContent>
+     		<extension base="tns:BaseParticipantType"></extension>
+     	</complexContent>
+     </complexType>
+
+     <complexType name="PersonParticipantType">
+     	<complexContent>
+     		<extension base="tns:BaseParticipantType"></extension>
+     	</complexContent>
+     </complexType>
+
+     <complexType name="AddressParticipantType">
+     	<complexContent>
+     		<extension base="tns:BaseParticipantType"></extension>
+     	</complexContent>
+     </complexType>
+
+     <complexType name="ContactParticipantType">
+     	<complexContent>
+     		<extension base="tns:BaseParticipantType"></extension>
+     	</complexContent>
+     </complexType>
+</schema>

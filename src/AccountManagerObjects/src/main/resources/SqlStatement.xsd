@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:pref="http://www.cote.org/accountmanager/objects/types">
+
+	<import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
+	<complexType name="StatementParameterType">
+		<attribute name="parameterName" type="string"></attribute>
+		<attribute name="parameterIndex" type="int"></attribute>
+		<attribute name="parameterType"
+			type="pref:SqlDataEnumType">
+		</attribute>
+	</complexType>
+
+
+	<complexType name="ProcessingInstructionType">
+		<sequence>
+			<element name="havingClause" type="string"></element>
+			<element name="groupClause" type="string"></element>
+			<element name="orderClause" type="string"></element>
+		</sequence>
+		<attribute name="alternateQuery" type="boolean" default="false"></attribute>
+		<attribute name="topCount" type="int" default="0"></attribute>
+		<attribute name="startIndex" type="int" default="0"></attribute>
+		<attribute name="recordCount" type="int" default="0"></attribute>
+		<attribute name="paginate" type="boolean" default="false"></attribute>
+	</complexType>
+
+	<complexType name="DataRowType">
+		<sequence>
+			<element name="cells" type="tns:DataCellType" maxOccurs="unbounded"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="DataCellType">
+		<attribute name="columnName" type="string"></attribute>
+		<attribute name="columnIndex" type="int"></attribute>
+		<attribute name="dataType" type="pref:SqlDataEnumType" default="NULL"></attribute>
+	</complexType>
+
+	<complexType name="DataColumnType">
+		<attribute name="columnName" type="string"></attribute>
+		<attribute name="columnIndex" type="int"></attribute>
+		<attribute name="dataType" type="pref:SqlDataEnumType"></attribute>
+		<attribute name="columnSize" type="int"></attribute>
+	</complexType>
+
+	<complexType name="DataTableType">
+		<sequence>
+			<element name="columns" type="tns:DataColumnType"
+				maxOccurs="unbounded">
+			</element>
+			<element name="rows" type="tns:DataRowType"
+				maxOccurs="unbounded">
+			</element>
+			<element name="selectFullTemplate" type="string"></element>
+			<element name="updateFullTemplate" type="string"></element>
+			<element name="selectIdTemplate" type="string"></element>
+			<element name="selectNameTemplate" type="string"></element>
+			<element name="selectAggregateTemplate" type="string"></element>
+			<element name="selectDetailsTemplate" type="string"></element>
+			<element name="updateDetailsTemplate" type="string"></element>
+		</sequence>
+		<attribute name="name" type="string"></attribute>
+		<attribute name="columnSize" type="int"></attribute>
+		<attribute name="bulkInsert" type="boolean" default="false"></attribute>
+	</complexType>
+
+	<complexType name="FieldMatch">
+		<sequence>
+			<element name="fields" type="tns:FieldMatch" minOccurs="0" maxOccurs="unbounded"></element>
+		</sequence>
+		<attribute name="comparator" type="pref:ComparatorEnumType"
+			default="UNKNOWN">
+		</attribute>
+		<attribute name="name" type="string"></attribute>
+		<attribute name="dataType" type="pref:SqlDataEnumType"
+			default="NULL">
+		</attribute>
+		<attribute name="tableName" type="string"></attribute>
+	</complexType>
+</schema>

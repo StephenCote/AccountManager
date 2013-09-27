@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:pref="http://www.cote.org/accountmanager/objects/types">
+
+	<import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
+	<complexType name="AuditType">
+		<attribute name="id" type="long"></attribute>
+		<attribute name="auditDate" type="dateTime"></attribute>
+		<attribute name="auditSourceType" type="pref:AuditEnumType"
+			default="UNKNOWN">
+		</attribute>
+		<attribute name="auditTargetType" type="pref:AuditEnumType"
+			default="UNKNOWN">
+		</attribute>
+		<attribute name="auditActionType" type="pref:ActionEnumType"
+			default="UNKNOWN">
+		</attribute>
+		<attribute name="auditResultType" type="pref:ResponseEnumType"
+			default="UNKNOWN">
+		</attribute>
+		<attribute name="auditSourceData" type="string"></attribute>
+		<attribute name="auditTargetData" type="string"></attribute>
+		<attribute name="auditResultData" type="string"></attribute>
+		<attribute name="auditRetentionType"
+			type="pref:RetentionEnumType" default="UNKNOWN">
+		</attribute>
+		<attribute name="auditActionSource" type="string"></attribute>
+		<attribute name="auditExpiresDate" type="dateTime"></attribute>
+		<attribute name="auditLevelType" type="pref:LevelEnumType"
+			default="UNKNOWN">
+		</attribute>
+		<attribute name="auditResultDate" type="dateTime"></attribute>
+	</complexType>
+</schema>

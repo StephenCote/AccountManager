@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects">
+	<include schemaLocation="BaseType.xsd"></include>
+	<complexType name="WTPAType">
+		<complexContent>
+			<extension base="tns:BaseType">
+				<attribute name="keyName" type="string"
+					default="wtpa1">
+				</attribute>
+
+				<attribute name="keyId" type="string"></attribute>
+
+				<attribute name="source" type="string"></attribute>
+
+				<attribute name="version" type="string" default="1.0"></attribute>
+
+				<attribute name="organizationId" type="string"></attribute>
+
+				<attribute name="recordId" type="string"></attribute>
+
+				<attribute name="uid" type="string"></attribute>
+
+				<attribute name="aclMask" type="string"></attribute>
+
+				<attribute name="valid" type="boolean"
+					default="false">
+				</attribute>
+
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

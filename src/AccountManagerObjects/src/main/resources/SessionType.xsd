@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:Q1="http://www.cote.org/accountmanager/objects/types">
+
+
+    <import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
+    <complexType name="UserSessionType">
+    	<sequence>
+    		<element name="sessionData" type="tns:UserSessionDataType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    		<element name="changeSessionData"
+    			type="tns:UserSessionDataType" minOccurs="0"
+    			maxOccurs="unbounded">
+    		</element>
+    	</sequence>
+    	<attribute name="dataSize" type="int" default="0"></attribute>
+    	<attribute name="sessionId" type="string"></attribute>
+    	<attribute name="securityId" type="string"></attribute>
+    	<attribute name="userId" type="long" default="0"></attribute>
+
+    	<attribute name="sessionCreated" type="dateTime"></attribute>
+    	<attribute name="sessionAccessed" type="dateTime"></attribute>
+    	<attribute name="sessionExpires" type="dateTime"></attribute>
+    	<attribute name="sessionStatus"
+    		type="Q1:SessionStatusEnumType">
+    	</attribute>
+
+    	<attribute name="expired" type="boolean" default="false"></attribute>
+    	<attribute name="organizationId" type="long" default="0"></attribute>
+    </complexType>
+
+
+
+
+
+
+
+
+    <complexType name="UserSessionDataType">
+    	<attribute name="name" type="string"></attribute>
+    	<attribute name="value" type="string"></attribute>
+    </complexType>
+
+</schema>

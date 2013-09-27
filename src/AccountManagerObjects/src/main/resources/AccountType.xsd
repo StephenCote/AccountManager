@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects"
+	xmlns:Q1="http://www.cote.org/accountmanager/objects/types">
+	<include schemaLocation="GroupType.xsd"></include>
+	<include schemaLocation="NameId.xsd"></include>
+	<import schemaLocation="Types.xsd"
+		namespace="http://www.cote.org/accountmanager/objects/types">
+	</import>
+	<include schemaLocation="StatisticsType.xsd"></include>
+	<complexType name="AccountType">
+		<complexContent>
+			<extension base="tns:NameIdType">
+				<sequence>
+					<element name="contactInformation"
+						type="tns:ContactInformationType">
+					</element>
+					<element name="cipherKey" type="byte" minOccurs="0"
+						maxOccurs="4096">
+					</element>
+					<element name="statistics" type="tns:StatisticsType"></element>
+				</sequence>
+				<attribute name="accountType"
+					type="Q1:AccountEnumType">
+				</attribute>
+				<attribute name="accountStatus"
+					type="Q1:AccountStatusEnumType">
+				</attribute>
+				<attribute name="referenceId" type="long" default="0"></attribute>
+				<attribute name="accountId" type="string"></attribute>
+
+				<attribute name="databaseRecord" type="boolean"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="UserType">
+		<complexContent>
+			<extension base="tns:NameIdType">
+				<sequence>
+					<element name="contactInformation"
+						type="tns:ContactInformationType">
+					</element>
+					<element name="session"
+						type="tns:UserSessionType">
+					</element>
+					<element name="homeDirectory"
+						type="tns:DirectoryGroupType">
+					</element>
+					<element name="statistics" type="tns:StatisticsType"></element>
+				</sequence>
+				<attribute name="password" type="string"></attribute>
+				<attribute name="sessionStatus"
+					type="Q1:SessionStatusEnumType" default="UNKNOWN">
+				</attribute>
+				<attribute name="userStatus"
+					type="Q1:UserStatusEnumType" default="UNKNOWN">
+				</attribute>
+				<attribute name="userType" type="Q1:UserEnumType"
+					default="UNKNOWN">
+				</attribute>
+				<attribute name="databaseRecord" type="boolean"
+					default="false">
+				</attribute>
+				<attribute name="userId" type="string"></attribute>
+				<attribute name="accountId" type="long" default="0"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+</schema>

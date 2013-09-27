@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:Q1="http://www.cote.org/accountmanager/objects" xmlns:Q2="http://www.cote.org/accountmanager/objects/types">
+    <import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
+	<include schemaLocation="NameId.xsd"></include>
+	<complexType name="BaseRoleType">
+		<complexContent>
+			<extension base="tns:NameIdType">
+				<attribute name="roleType" type="Q2:RoleEnumType">
+				</attribute>
+				<attribute name="referenceId" type="long" default="0"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="AccountRoleType">
+    	<complexContent>
+    		<extension base="tns:BaseRoleType"></extension>
+    	</complexContent>
+    </complexType>
+
+	<complexType name="UserRoleType">
+		<complexContent>
+			<extension base="tns:BaseRoleType"></extension>
+		</complexContent>
+	</complexType>
+</schema>

@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects/types" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.cote.org/accountmanager/objects/types">
+
+    <simpleType name="SessionStatusEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="EXPIRED"></enumeration>
+    		<enumeration value="AUTHENTICATED"></enumeration>
+    		<enumeration value="NOT_AUTHENTICATED"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="AccountEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="GUEST"></enumeration>
+    		<enumeration value="SYSTEM"></enumeration>
+    		<enumeration value="NORMAL"></enumeration>
+    		<enumeration value="DEVELOPMENT"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="AccountStatusEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="UNREGISTERED"></enumeration>
+    		<enumeration value="NORMAL"></enumeration>
+    		<enumeration value="RESTRICTED"></enumeration>
+    		<enumeration value="REGISTERED"></enumeration>
+    		<enumeration value="DISABLED"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="OrganizationEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ROOT"></enumeration>
+    		<enumeration value="SYSTEM"></enumeration>
+    		<enumeration value="PUBLIC"></enumeration>
+    		<enumeration value="DEVELOPMENT"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    
+    <simpleType name="SqlDataEnumType">
+    			<restriction base="string">
+    				<enumeration value="ARRAY"></enumeration>
+    				<enumeration value="BIGINT"></enumeration>
+    				<enumeration value="BINARY"></enumeration>
+    				<enumeration value="BIT"></enumeration>
+    				<enumeration value="BLOB"></enumeration>
+    				<enumeration value="BOOLEAN"></enumeration>
+    				<enumeration value="CHAR"></enumeration>
+    				<enumeration value="CLOB"></enumeration>
+    				<enumeration value="DATALINK"></enumeration>
+    				<enumeration value="DATE"></enumeration>
+    				<enumeration value="DECIMAL"></enumeration>
+    				<enumeration value="DISTINCT"></enumeration>
+    				<enumeration value="DOUBLE"></enumeration>
+    				<enumeration value="FLOAT"></enumeration>
+    				<enumeration value="INTEGER"></enumeration>
+    				<enumeration value="JAVA_OBJECT"></enumeration>
+    				<enumeration value="LONGVARBINARY"></enumeration>
+    				<enumeration value="LONGVARCHAR"></enumeration>
+    				<enumeration value="NULL"></enumeration>
+    				<enumeration value="NUMERIC"></enumeration>
+    				<enumeration value="OTHER"></enumeration>
+    				<enumeration value="REAL"></enumeration>
+    				<enumeration value="REF"></enumeration>
+    				<enumeration value="SMALLINT"></enumeration>
+    				<enumeration value="STRUCT"></enumeration>
+    				<enumeration value="TIME"></enumeration>
+    				<enumeration value="TIMESTAMP"></enumeration>
+    				<enumeration value="TINYINT"></enumeration>
+    				<enumeration value="VARBINARY"></enumeration>
+    				<enumeration value="VARCHAR"></enumeration>
+    			</restriction>
+    </simpleType>
+
+    <simpleType name="PermissionEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="DATA"></enumeration>
+    		<enumeration value="GROUP"></enumeration>
+    		<enumeration value="ROLE"></enumeration>
+    		<enumeration value="ACCOUNT"></enumeration>
+    		<enumeration value="USER"></enumeration>
+    		<enumeration value="OBJECT"></enumeration>
+    		<enumeration value="APPLICATION"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="ValueEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="STRING"></enumeration>
+    		<enumeration value="INT"></enumeration>
+    		<enumeration value="LONG"></enumeration>
+    		<enumeration value="BOOLEAN"></enumeration>
+    		<enumeration value="DATETIME"></enumeration>
+    		<enumeration value="BYTE_ARRAY"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="NameEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ACCOUNT"></enumeration>
+    		<enumeration value="ADDRESS"></enumeration>
+    		<enumeration value="CONTACT"></enumeration>
+    		<enumeration value="CONTACTINFORMATION"></enumeration>
+    		<enumeration value="ROLE"></enumeration>
+    		<enumeration value="GROUP"></enumeration>
+    		<enumeration value="PARTICIPANT"></enumeration>
+    		<enumeration value="DATA"></enumeration>
+    		<enumeration value="PERMISSION"></enumeration>
+    		<enumeration value="ORGANIZATION"></enumeration>
+    		<enumeration value="TAG"></enumeration>
+    		<enumeration value="USER"></enumeration>
+    		<enumeration value="STATISTIC"></enumeration>
+    		<enumeration value="APPLICATION"></enumeration>
+    		<enumeration value="ARTIFACT"></enumeration>
+    		<enumeration value="BUDGET"></enumeration>
+    		<enumeration value="CASE"></enumeration>
+    		<enumeration value="COST"></enumeration>
+    		<enumeration value="ESTIMATE"></enumeration>
+    		<enumeration value="FORMELEMENT"></enumeration>
+    		<enumeration value="FORMELEMENTVALUE"></enumeration>
+    		<enumeration value="FORM"></enumeration>
+    		<enumeration value="GOAL"></enumeration>
+    		<enumeration value="LIFECYCLE"></enumeration>
+    		<enumeration value="METHODOLOGY"></enumeration>
+    		<enumeration value="MODEL"></enumeration>
+    		<enumeration value="MODULE"></enumeration>
+    		<enumeration value="NOTE"></enumeration>
+    		<enumeration value="PERSON"></enumeration>
+    		<enumeration value="PROCESS"></enumeration>
+    		<enumeration value="PROCESSSTEP"></enumeration>
+    		<enumeration value="PROJECT"></enumeration>
+    		<enumeration value="REQUIREMENT"></enumeration>
+    		<enumeration value="RESOURCE"></enumeration>
+    		<enumeration value="SCHEDULE"></enumeration>
+    		<enumeration value="STAGE"></enumeration>
+    		<enumeration value="TASK"></enumeration>
+    		<enumeration value="TICKET"></enumeration>
+    		<enumeration value="TIME"></enumeration>
+    		<enumeration value="VALIDATIONRULE"></enumeration>
+    		<enumeration value="WORK"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="TagEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ACCOUNT"></enumeration>
+    		<enumeration value="DATA"></enumeration>
+    		<enumeration value="USER"></enumeration>
+    		<enumeration value="PERSON"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="GroupEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ACCOUNT"></enumeration>
+    		<enumeration value="DATA"></enumeration>
+    		<enumeration value="BUCKET"></enumeration>
+    		<enumeration value="USER"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="CompressionEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="NONE"></enumeration>
+    		<enumeration value="GZIP"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="ContactInformationEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="INDIVIDUAL"></enumeration>
+    		<enumeration value="GROUP"></enumeration>
+    		<enumeration value="ORGANIZATION"></enumeration>
+    		<enumeration value="COMPANY"></enumeration>
+    		<enumeration value="ACCOUNT"></enumeration>
+    		<enumeration value="USER"></enumeration>
+    		<enumeration value="PERSON"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="ParticipationEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="CONTACTINFORMATION"></enumeration>
+    		<enumeration value="GROUP"></enumeration>
+    		<enumeration value="ROLE"></enumeration>
+    		<enumeration value="TAG"></enumeration>
+    		<enumeration value="DATA"></enumeration>
+    		<enumeration value="PERSON"></enumeration>
+    		<enumeration value="LIFECYCLE"></enumeration>
+    		<enumeration value="PROJECT"></enumeration>
+    		<enumeration value="SCHEDULE"></enumeration>
+    		<enumeration value="MODEL"></enumeration>
+    		<enumeration value="CASE"></enumeration>
+    		<enumeration value="TASK"></enumeration>
+    		<enumeration value="WORK"></enumeration>
+    		<enumeration value="PROCESSSTEP"></enumeration>
+    		<enumeration value="PROCESS"></enumeration>
+    		<enumeration value="METHODOLOGY"></enumeration>
+    		<enumeration value="STAGE"></enumeration>
+    		<enumeration value="MODULE"></enumeration>
+    		<enumeration value="TICKET"></enumeration>
+    		<enumeration value="FORM"></enumeration>
+    		<enumeration value="FORMELEMENT"></enumeration>
+    		<enumeration value="VALIDATIONRULE"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="ParticipantEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ROLE"></enumeration>
+    		<enumeration value="GROUP"></enumeration>
+    		<enumeration value="ACCOUNT"></enumeration>
+    		<enumeration value="ADDRESS"></enumeration>
+    		<enumeration value="CONTACT"></enumeration>
+    		<enumeration value="DATA"></enumeration>
+    		<enumeration value="PERMISSION"></enumeration>
+    		<enumeration value="USER"></enumeration>
+    		<enumeration value="SCHEDULE"></enumeration>
+    		<enumeration value="BUDGET"></enumeration>
+    		<enumeration value="PROJECT"></enumeration>
+    		<enumeration value="GOAL"></enumeration>
+    		<enumeration value="REQUIREMENT"></enumeration>
+    		<enumeration value="PERSON"></enumeration>
+    		<enumeration value="DEPENDENTPERSON"></enumeration>
+    		<enumeration value="DEPENDENCY"></enumeration>
+    		<enumeration value="ARTIFACT"></enumeration>
+    		<enumeration value="STAGE"></enumeration>
+    		<enumeration value="MODEL"></enumeration>
+    		<enumeration value="CASE"></enumeration>
+    		<enumeration value="WORK"></enumeration>
+    		<enumeration value="NOTE"></enumeration>
+    		<enumeration value="TIME"></enumeration>
+    		<enumeration value="COST"></enumeration>
+    		<enumeration value="RESOURCE"></enumeration>
+    		<enumeration value="TASK"></enumeration>
+    		<enumeration value="PROCESS"></enumeration>
+    		<enumeration value="PROCESSSTEP"></enumeration>
+    		<enumeration value="MODULE"></enumeration>
+    		<enumeration value="TICKET"></enumeration>
+    		<enumeration value="FORM"></enumeration>
+    		<enumeration value="FORMELEMENT"></enumeration>
+    		<enumeration value="VALIDATIONRULE"></enumeration>
+    		<enumeration value="FORMELEMENTVALUE"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="AffectEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="GRANT_PERMISSION"></enumeration>
+    		<enumeration value="DENY_PERMISSION"></enumeration>
+    		<enumeration value="AGGREGATE"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="RoleEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ACCOUNT"></enumeration>
+    		<enumeration value="USER"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="SpoolBucketEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="RAW"></enumeration>
+    		<enumeration value="MESSAGE_QUEUE"></enumeration>
+    		<enumeration value="SECURITY_TOKEN"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="SpoolNameEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="GENERAL"></enumeration>
+    		<enumeration value="STATE"></enumeration>
+    		<enumeration value="MESSAGE"></enumeration>
+    		<enumeration value="DATA"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="SecurityTokenQueueEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="GENERAL"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="UserStatusEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="UNREGISTERED"></enumeration>
+    		<enumeration value="NORMAL"></enumeration>
+    		<enumeration value="RESTRICTED"></enumeration>
+    		<enumeration value="REGISTERED"></enumeration>
+    		<enumeration value="DISABLED"></enumeration>
+    	</restriction>
+    </simpleType>
+    
+    <simpleType name="UserEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="GUEST"></enumeration>
+    		<enumeration value="SYSTEM"></enumeration>
+    		<enumeration value="NORMAL"></enumeration>
+    		<enumeration value="DEVELOPMENT"></enumeration>
+    	</restriction>
+    </simpleType>
+    
+
+    <simpleType name="AuditEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="PERSON"></enumeration>
+    		<enumeration value="ADDRESS"></enumeration>
+    		<enumeration value="CONTACT"></enumeration>
+    		<enumeration value="USER"></enumeration>
+    		<enumeration value="ACCOUNT"></enumeration>
+    		<enumeration value="DATA"></enumeration>
+    		<enumeration value="PERMISSION"></enumeration>
+    		<enumeration value="PARTICIPATION"></enumeration>
+    		<enumeration value="SYMMETRICKEY"></enumeration>
+    		<enumeration value="ASYMMETRICKEY"></enumeration>
+    		<enumeration value="SESSION"></enumeration>
+    		<enumeration value="CONTACTINFORMATION"></enumeration>
+    		<enumeration value="GROUP"></enumeration>
+    		<enumeration value="ROLE"></enumeration>
+    		<enumeration value="TAG"></enumeration>
+    		<enumeration value="REGISTRATION"></enumeration>
+    		<enumeration value="INFO"></enumeration>
+    		<enumeration value="EMAIL"></enumeration>
+    		<enumeration value="TICKET"></enumeration>
+    		<enumeration value="FORM"></enumeration>
+    		<enumeration value="FORMELEMENT"></enumeration>
+    		<enumeration value="FORMELEMENTVALUE"></enumeration>
+    		<enumeration value="CASE"></enumeration>
+    		<enumeration value="REQUIREMENT"></enumeration>
+    		<enumeration value="RESOURCE"></enumeration>
+    		<enumeration value="NOTE"></enumeration>
+    		<enumeration value="TASK"></enumeration>
+    		<enumeration value="ESTIMATE"></enumeration>
+    		<enumeration value="WORK"></enumeration>
+    		<enumeration value="PROJECT"></enumeration>
+    		<enumeration value="LIFECYCLE"></enumeration>
+    		<enumeration value="SCHEDULE"></enumeration>
+    		<enumeration value="GOAL"></enumeration>
+    		<enumeration value="BUDGET"></enumeration>
+    		<enumeration value="TIME"></enumeration>
+    		<enumeration value="COST"></enumeration>
+    		<enumeration value="ARTIFACT"></enumeration>
+    		<enumeration value="MODEL"></enumeration>
+    		<enumeration value="MODULE"></enumeration>
+    		<enumeration value="STAGE"></enumeration>
+    		<enumeration value="METHODOLOGY"></enumeration>
+    		<enumeration value="PROCESS"></enumeration>
+    		<enumeration value="PROCESSSTEP"></enumeration>
+    		<enumeration value="VALIDATIONRULE"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="ActionEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ADD"></enumeration>
+    		<enumeration value="DELETE"></enumeration>
+    		<enumeration value="MODIFY"></enumeration>
+    		<enumeration value="READ"></enumeration>
+    		<enumeration value="REQUEST"></enumeration>
+    		<enumeration value="RESPONSE"></enumeration>
+    		<enumeration value="GRANT"></enumeration>
+    		<enumeration value="DENY"></enumeration>
+    		<enumeration value="REJECT"></enumeration>
+    		<enumeration value="APPROVE"></enumeration>
+    		<enumeration value="AUTHENTICATE"></enumeration>
+    		<enumeration value="AUTHORIZE"></enumeration>
+    		<enumeration value="CLOSE"></enumeration>
+    		<enumeration value="OPEN"></enumeration>
+    		<enumeration value="REOPEN"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="ResponseEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="PERMIT"></enumeration>
+    		<enumeration value="DENY"></enumeration>
+    		<enumeration value="INFO"></enumeration>
+    		<enumeration value="PENDING"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="ComparatorEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="EQUALS"></enumeration>
+    		<enumeration value="NOT_EQUALS"></enumeration>
+    		<enumeration value="BETWEEN"></enumeration>
+    		<enumeration value="LESS_THAN"></enumeration>
+    		<enumeration value="LESS_THAN_OR_EQUALS"></enumeration>
+    		<enumeration value="GREATER_THAN"></enumeration>
+    		<enumeration value="GREATER_THAN_OR_EQUALS"></enumeration>
+    		<enumeration value="NOT_IN"></enumeration>
+    		<enumeration value="IN"></enumeration>
+    		<enumeration value="NOT_NULL"></enumeration>
+    		<enumeration value="IS_NULL"></enumeration>
+    		<enumeration value="IS_NULL_EQUALS"></enumeration>
+    		<enumeration value="IS_NULL_NOT_EQUALS"></enumeration>
+    		<enumeration value="LIKE"></enumeration>
+    		<enumeration value="GROUP_AND"></enumeration>
+    		<enumeration value="GROUP_OR"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="StatisticsEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="USER"></enumeration>
+    		<enumeration value="DATA"></enumeration>
+    		<enumeration value="ACCOUNT"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="RetentionEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="OPERATIONAL"></enumeration>
+    		<enumeration value="VOLATILE"></enumeration>
+    		<enumeration value="FACTUAL"></enumeration>
+    		<enumeration value="ADMINISTRATIVE"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="LevelEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="DEBUG"></enumeration>
+    		<enumeration value="INFO"></enumeration>
+    		<enumeration value="NORMAL"></enumeration>
+    		<enumeration value="WARNING"></enumeration>
+    		<enumeration value="SEVERE"></enumeration>
+    		<enumeration value="FATAL"></enumeration>
+    	</restriction>
+    </simpleType>
+    <simpleType name="FactoryEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ACCOUNT"></enumeration>
+    		<enumeration value="ADDRESS"></enumeration>
+    		<enumeration value="CONTACT"></enumeration>
+    		<enumeration value="DATA"></enumeration>
+    		<enumeration value="CONTACTINFORMATION"></enumeration>
+    		<enumeration value="CONTACTINFORMATIONPARTICIPATION"></enumeration>
+    		<enumeration value="GROUP"></enumeration>
+    		<enumeration value="DATAPARTICIPATION"></enumeration>
+    		<enumeration value="GROUPPARTICIPATION"></enumeration>
+    		<enumeration value="PERMISSION"></enumeration>
+    		<enumeration value="ROLE"></enumeration>
+    		<enumeration value="ROLEPARTICIPATION"></enumeration>
+    		<enumeration value="TAG"></enumeration>
+    		<enumeration value="TAGPARTICIPATION"></enumeration>
+    		<enumeration value="USER"></enumeration>
+    		<enumeration value="STATISTICS"></enumeration>
+    		<enumeration value="CONTACTINFORMATION"></enumeration>
+    		<enumeration value="ARTIFACT"></enumeration>
+    		<enumeration value="BUDGET"></enumeration>
+    		<enumeration value="CASE"></enumeration>
+    		<enumeration value="CASEPARTICIPATION"></enumeration>
+    		<enumeration value="COST"></enumeration>
+    		<enumeration value="ESTIMATE"></enumeration>
+    		<enumeration value="FORMELEMENT"></enumeration>
+    		<enumeration value="FORM"></enumeration>
+    		<enumeration value="FORMELEMENTVALUE"></enumeration>
+    		<enumeration value="FORMELEMENTPARTICIPATION"></enumeration>
+    		<enumeration value="FORMPARTICIPATION"></enumeration>
+    		<enumeration value="GOAL"></enumeration>
+    		<enumeration value="LIFECYCLE"></enumeration>
+    		<enumeration value="LIFECYCLEPARTICIPATION"></enumeration>
+    		<enumeration value="METHODOLOGY"></enumeration>
+    		<enumeration value="METHODOLOGYPARTICIPATION"></enumeration>
+    		<enumeration value="MODEL"></enumeration>
+    		<enumeration value="MODELPARTICIPATION"></enumeration>
+    		<enumeration value="MODULE"></enumeration>
+    		<enumeration value="MODULEPARTICIPATION"></enumeration>
+    		<enumeration value="NOTE"></enumeration>
+    		<enumeration value="PERSON"></enumeration>
+    		<enumeration value="PERSONPARTICIPATION"></enumeration>
+    		<enumeration value="PROCESS"></enumeration>
+    		<enumeration value="PROCESSPARTICIPATION"></enumeration>
+    		<enumeration value="PROCESSSTEP"></enumeration>
+    		<enumeration value="PROCESSSTEPPARTICIPATION"></enumeration>
+    		<enumeration value="PROJECT"></enumeration>
+    		<enumeration value="PROJECTPARTICIPATION"></enumeration>
+    		<enumeration value="REQUIREMENT"></enumeration>
+    		<enumeration value="RESOURCE"></enumeration>
+    		<enumeration value="SCHEDULE"></enumeration>
+    		<enumeration value="SCHEDULEPARTICIPATION"></enumeration>
+    		<enumeration value="STAGE"></enumeration>
+    		<enumeration value="TASK"></enumeration>
+    		<enumeration value="TASKPARTICIPATION"></enumeration>
+    		<enumeration value="TICKET"></enumeration>
+    		<enumeration value="TICKETPARTICIPATION"></enumeration>
+    		<enumeration value="TIME"></enumeration>
+    		<enumeration value="VALIDATIONRULE"></enumeration>
+    		<enumeration value="VALIDATIONRULEPARTICIPATION"></enumeration>
+    		<enumeration value="WORK"></enumeration>
+    		<enumeration value="WORKPARTICIPATION"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="ContactEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="PHONE"></enumeration>
+    		<enumeration value="EMAIL"></enumeration>
+    		<enumeration value="WEB"></enumeration>
+    		<enumeration value="OTHER"></enumeration>
+    		<enumeration value="PROFILE"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="LocationEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="HOME"></enumeration>
+    		<enumeration value="WORK"></enumeration>
+    		<enumeration value="MOBILE"></enumeration>
+    		<enumeration value="OTHER"></enumeration>
+    		<enumeration value="NETWORK"></enumeration>
+    	</restriction>
+    </simpleType>
+</schema>

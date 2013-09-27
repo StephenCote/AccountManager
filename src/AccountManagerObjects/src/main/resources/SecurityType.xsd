@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:Q1="http://www.cote.org/accountmanager/objects/types">
+	<complexType name="SecurityType">
+		<sequence>
+			<element name="publicKeyBytes" type="base64Binary"
+				minOccurs="0" maxOccurs="1">
+			</element>
+			<element name="privateKeyBytes" type="base64Binary"
+				minOccurs="0" maxOccurs="1">
+			</element>
+			<element name="cipherIV" type="base64Binary" minOccurs="0"
+				maxOccurs="1">
+			</element>
+			<element name="cipherKey" type="base64Binary" minOccurs="0"
+				maxOccurs="1">
+			</element>
+			<element name="encryptedCipherIV" type="base64Binary" minOccurs="0" maxOccurs="1"></element>
+			<element name="encryptedCipherKey" type="base64Binary" maxOccurs="1"></element>
+		</sequence>
+		<attribute name="cipherProvider" type="string" default="BC"
+			use="optional">
+		</attribute>
+		<attribute name="symetricCipherKeySpec" type="string"
+			default="AES/CBC/PKCS7Padding" use="optional">
+		</attribute>
+		<attribute name="asymetricCipherKeySpec" type="string"
+			default="RSA" use="optional">
+		</attribute>
+		<attribute name="randomSeedLength" type="long" default="576"></attribute>
+		<attribute name="encryptCipherKey" type="boolean" default="false"></attribute>
+		<attribute name="reverseEncrypt" type="boolean" default="false"></attribute>
+		<attribute name="hashProvider" type="string" use="optional"
+			default="SHA-256">
+		</attribute>
+		<attribute name="cipherKeySpec" type="string" default="AES"></attribute>
+		<attribute name="keySize" type="int" default="1024"></attribute>
+	</complexType>
+
+</schema>

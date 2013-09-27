@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.cote.org/accountmanager/objects" xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:Q1="http://www.cote.org/accountmanager/objects/types">
+    <xsd:import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></xsd:import>
+    <xsd:include schemaLocation="NameId.xsd"></xsd:include>
+    <xsd:complexType name="BulkSessionType">
+    	<xsd:sequence>
+    		<xsd:element name="bulkEntries" type="tns:BulkEntryType"
+    			minOccurs="0" maxOccurs="unbounded">
+    		</xsd:element>
+    	</xsd:sequence>
+    	<xsd:attribute name="sessionId" type="xsd:string"></xsd:attribute>
+    	<xsd:attribute name="sessionCreated" type="xsd:dateTime"></xsd:attribute>
+    	<xsd:attribute name="sessionExpires" type="xsd:dateTime"></xsd:attribute>
+    	<xsd:attribute name="persisted" type="xsd:boolean" use="optional" default="false"></xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="BulkEntryType">
+    	<xsd:sequence>
+    		<xsd:element name="object" type="tns:NameIdType"></xsd:element>
+    	</xsd:sequence>
+    	<xsd:attribute name="temporaryId" type="xsd:long" default="0"></xsd:attribute>
+    	<xsd:attribute name="persistentId" type="xsd:long"
+    		default="0">
+    	</xsd:attribute>
+    	<xsd:attribute name="persisted" type="xsd:boolean"
+    		default="false">
+    	</xsd:attribute>
+    	<xsd:attribute name="factoryType" type="Q1:FactoryEnumType"></xsd:attribute>
+    </xsd:complexType>
+
+</xsd:schema>

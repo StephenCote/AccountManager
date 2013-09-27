@@ -1,0 +1,97 @@
+package org.cote.accountmanager.data;
+
+import java.util.Random;
+import java.util.UUID;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+
+import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.services.AuditDataMaintenance;
+import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
+import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.ResponseEnumType;
+import org.cote.accountmanager.objects.types.RetentionEnumType;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
+public class TestAuditFactory{
+	public static final Logger logger = Logger.getLogger(TestAuditFactory.class.getName());
+	public AuditDataMaintenance auditThread = null;
+	@Before
+	public void setUp() throws Exception {
+		String log4jPropertiesPath = System.getProperty("log4j.configuration");
+		if(log4jPropertiesPath != null){
+			System.out.println("Properties=" + log4jPropertiesPath);
+			PropertyConfigurator.configure(log4jPropertiesPath);
+		}
+		ConnectionFactory cf = ConnectionFactory.getInstance();
+		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
+		cf.setDriverClassName("org.postgresql.Driver");
+		cf.setUserName("devuser");
+		cf.setUserPassword("password");
+		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
+		logger.info("Setup");
+		auditThread = new AuditDataMaintenance();
+		auditThread.setThreadDelay(500);
+		//auditThread.run();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		auditThread.requestStop();
+	}
+	
+	@Test
+	public void testAddAuditNoData(){
+		AuditType audit = Factories.getAuditFactory().newAudit();
+		audit.setAuditActionType(ActionEnumType.ADD);
+		audit.setAuditResultType(ResponseEnumType.PENDING);
+		audit.setAuditRetentionType(RetentionEnumType.VOLATILE);
+		audit.setAuditSourceType(AuditEnumType.INFO);
+		audit.setAuditTargetType(AuditEnumType.INFO);
+		audit.setAuditSourceData("123");
+		int remainingRows = 0;
+		boolean success = false;
+		try {
+			success = Factories.getAuditFactory().addAudit(audit);
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//Factories.getAuditFactory().flushSpool();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		remainingRows = Factories.getAuditFactory().getDataTable("audit").getRows().size();
+		assertTrue("Audit was not added",success);
+		assertTrue("Audit data was not flushed.  Remaining rows are " + remainingRows, remainingRows == 0);
+	}
+	
+	@Test
+	public void testGetAuditBySource(){
+		AuditType[] audits = new AuditType[0];
+		try {
+			audits = Factories.getAuditFactory().getAuditBySource(AuditEnumType.INFO, "123");
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		logger.info("Retrieved " + audits.length + " audits");
+		assertTrue("Expected at least one audit type", audits.length > 0);
+	}
+	
+
+}
