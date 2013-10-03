@@ -1,18 +1,4 @@
-DROP VIEW IF EXISTS personContact;
-DROP VIEW IF EXISTS userContact;
-DROP VIEW IF EXISTS personUsers;
-
-DROP VIEW IF EXISTS groupRoleRights;
-DROP VIEW IF EXISTS dataRoleRights;
-DROP VIEW IF EXISTS orphanLifecycleParticipations;
-DROP VIEW IF EXISTS orphanRoleParticipations;
-DROP VIEW IF EXISTS orphanGroupParticipations;
-DROP VIEW IF EXISTS orphanGroups;
-DROP VIEW IF EXISTS orphanRoles;
-DROP VIEW IF EXISTS orphanData;
-
-
-				DROP TABLE IF EXISTS organizations;
+				DROP TABLE IF EXISTS organizations CASCADE;
 				DROP SEQUENCE IF EXISTS organizations_id_seq;
 				CREATE SEQUENCE organizations_id_seq;
 				CREATE TABLE organizations (
@@ -28,7 +14,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX organizations_Id ON organizations(Id);
 			  	CREATE UNIQUE INDEX IdxorganizationsName on organizations(Name,ParentId);
 
-				DROP TABLE IF EXISTS asymmetrickeys;
+				DROP TABLE IF EXISTS asymmetrickeys CASCADE;
 				DROP SEQUENCE IF EXISTS asymmetrickeys_id_seq;
 				CREATE SEQUENCE asymmetrickeys_id_seq;
 				CREATE TABLE asymmetrickeys (
@@ -43,7 +29,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX asymmetrickeys_Id on asymmetrickeys(Id);
 				CREATE INDEX asymmetrickeys_OrgId ON asymmetrickeys(OrganizationId);
 
-				DROP TABLE IF EXISTS symmetrickeys;
+				DROP TABLE IF EXISTS symmetrickeys CASCADE;
 				DROP SEQUENCE IF EXISTS symmetrickeys_id_seq;
 				CREATE SEQUENCE symmetrickeys_id_seq;
 				CREATE TABLE symmetrickeys (
@@ -57,7 +43,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX symmetrickeys_Id on symmetrickeys(Id);
 				CREATE INDEX symmetrickeys_OrgId ON symmetrickeys(OrganizationId);
 				
-				DROP TABLE IF EXISTS groups;
+				DROP TABLE IF EXISTS groups CASCADE;
 				DROP SEQUENCE IF EXISTS groups_id_seq;
 				CREATE SEQUENCE groups_id_seq;
 				CREATE TABLE groups (
@@ -77,7 +63,7 @@ DROP VIEW IF EXISTS orphanData;
 
 
 
-				DROP TABLE IF EXISTS groupparticipation;
+				DROP TABLE IF EXISTS groupparticipation CASCADE;
 				DROP SEQUENCE IF EXISTS groupparticipation_id_seq;
 				CREATE SEQUENCE groupparticipation_id_seq;
 				CREATE TABLE groupparticipation (
@@ -115,7 +101,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE INDEX grouprolecache_dorg ON grouprolecache(groupId,OrganizationId);
 
 
-				DROP TABLE IF EXISTS data;
+				DROP TABLE IF EXISTS data CASCADE;
 				DROP SEQUENCE IF EXISTS data_id_seq;
 				CREATE SEQUENCE data_id_seq;
 				create table data (
@@ -151,7 +137,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX IdxdataNameGroup on data(Name,GroupId,OrganizationId);
 				CREATE UNIQUE INDEX IdxdataIdGroup on data(Id,GroupId,OrganizationId);
 
-				DROP TABLE IF EXISTS dataparticipation;
+				DROP TABLE IF EXISTS dataparticipation CASCADE;
 				DROP SEQUENCE IF EXISTS dataparticipation_id_seq;
 				CREATE SEQUENCE dataparticipation_id_seq;
 				CREATE TABLE dataparticipation (
@@ -189,7 +175,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE INDEX datarolecache_aff_id ON datarolecache(AffectType,AffectId);
 				CREATE INDEX datarolecache_dorg ON datarolecache(DataId,OrganizationId);
 
-				DROP TABLE IF EXISTS accounts;
+				DROP TABLE IF EXISTS accounts CASCADE;
 				DROP SEQUENCE IF EXISTS accounts_id_seq;
 				CREATE SEQUENCE accounts_id_seq;
 				create table accounts (
@@ -209,7 +195,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX IdxaccountsName on accounts(Name,ParentId,OrganizationId);
 
 
-				DROP TABLE IF EXISTS users;
+				DROP TABLE IF EXISTS users CASCADE;
 				DROP SEQUENCE IF EXISTS users_id_seq;
 				CREATE SEQUENCE users_id_seq;
 				create table users (
@@ -238,7 +224,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE INDEX userrolecache_role_id ON userrolecache(EffectiveRoleId);
 				CREATE INDEX userrolecache_uorg_id ON userrolecache(UserId,OrganizationId);
 
-				DROP TABLE IF EXISTS statistics;
+				DROP TABLE IF EXISTS statistics CASCADE;
 				DROP SEQUENCE IF EXISTS statistics_id_seq;
 				CREATE SEQUENCE statistics_id_seq;
 				create table statistics (
@@ -257,7 +243,7 @@ DROP VIEW IF EXISTS orphanData;
 
 
 
-				DROP TABLE IF EXISTS addresses;
+				DROP TABLE IF EXISTS addresses CASCADE;
 				DROP SEQUENCE IF EXISTS addresses_id_seq;
 				CREATE SEQUENCE addresses_id_seq;
 				create table addresses (
@@ -281,7 +267,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX addresses_acct_id ON addresses(Id);
 				CREATE UNIQUE INDEX addresses_reftype ON addresses(Name,LocationType,GroupId,OrganizationId);
 
-				DROP TABLE IF EXISTS contacts;
+				DROP TABLE IF EXISTS contacts CASCADE;
 				DROP SEQUENCE IF EXISTS contacts_id_seq;
 				CREATE SEQUENCE contacts_id_seq;
 				create table contacts (
@@ -303,7 +289,7 @@ DROP VIEW IF EXISTS orphanData;
 
 
 
-				DROP TABLE IF EXISTS contactinformation;
+				DROP TABLE IF EXISTS contactinformation CASCADE;
 				DROP SEQUENCE IF EXISTS contactinformation_id_seq;
 				CREATE SEQUENCE contactinformation_id_seq;
 				create table contactinformation (
@@ -318,7 +304,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX contactinformation_acct_id ON contactinformation(Id);
 				CREATE UNIQUE INDEX contactinformation_reftype ON contactinformation(ReferenceId,ContactInformationType,OrganizationId);
 
-				DROP TABLE IF EXISTS contactinformationparticipation;
+				DROP TABLE IF EXISTS contactinformationparticipation CASCADE;
 				DROP SEQUENCE IF EXISTS contactinformationparticipation_id_seq;
 				CREATE SEQUENCE contactinformationparticipation_id_seq;
 				CREATE TABLE contactinformationparticipation (
@@ -340,7 +326,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX IdxcontactinformationparticipationCbo on contactinformationparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
 
 
-				DROP TABLE IF EXISTS persons;
+				DROP TABLE IF EXISTS persons CASCADE;
 				DROP SEQUENCE IF EXISTS persons_id_seq;
 				CREATE SEQUENCE persons_id_seq;
 				create table persons (
@@ -368,7 +354,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE INDEX persons_parent_id ON persons(ParentId);				
 				CREATE UNIQUE INDEX persons_name ON persons(Name,ParentId,GroupId,OrganizationId);
 
-				DROP TABLE IF EXISTS personparticipation;
+				DROP TABLE IF EXISTS personparticipation CASCADE;
 				DROP SEQUENCE IF EXISTS personparticipation_id_seq;
 				CREATE SEQUENCE personparticipation_id_seq;
 				CREATE TABLE personparticipation (
@@ -390,7 +376,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX IdxpersonparticipationCbo on personparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
 
 
-				DROP TABLE IF EXISTS roles;
+				DROP TABLE IF EXISTS roles CASCADE;
 				DROP SEQUENCE IF EXISTS roles_id_seq;
 				CREATE SEQUENCE roles_id_seq;
 				create table roles (
@@ -407,7 +393,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE INDEX roles_parent_id ON roles(ParentId);				
 				CREATE UNIQUE INDEX roles_name ON roles(Name,OwnerId,ParentId,RoleType,OrganizationId);
 				
-				DROP TABLE IF EXISTS roleparticipation;
+				DROP TABLE IF EXISTS roleparticipation CASCADE;
 				DROP SEQUENCE IF EXISTS roleparticipation_id_seq;
 				CREATE SEQUENCE roleparticipation_id_seq;
 				CREATE TABLE roleparticipation (
@@ -444,7 +430,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE INDEX rolerolecache_aff_id ON rolerolecache(AffectType,AffectId);
 				CREATE INDEX rolerolecache_dorg ON rolerolecache(roleId,OrganizationId);
 
-				DROP TABLE IF EXISTS permissions;
+				DROP TABLE IF EXISTS permissions CASCADE;
 				DROP SEQUENCE IF EXISTS permissions_id_seq;
 				CREATE SEQUENCE permissions_id_seq;
 				create table permissions (
@@ -460,7 +446,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX permissions_permission_id ON permissions(Id);
 				CREATE UNIQUE INDEX IdxpermissionsName on permissions(Name,OrganizationId);
 
-				DROP TABLE IF EXISTS tags;
+				DROP TABLE IF EXISTS tags CASCADE;
 				DROP SEQUENCE IF EXISTS tags_id_seq;
 				CREATE SEQUENCE tags_id_seq;
 				CREATE TABLE tags (
@@ -474,7 +460,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE UNIQUE INDEX tags_id ON tags(Id);
 				CREATE UNIQUE INDEX IdxtagsName on tags(Name,TagType,OrganizationId);
 
-				DROP TABLE IF EXISTS tagparticipation;
+				DROP TABLE IF EXISTS tagparticipation CASCADE;
 				DROP SEQUENCE IF EXISTS tagparticipation_id_seq;
 				CREATE SEQUENCE tagparticipation_id_seq;
 				CREATE TABLE tagparticipation (
@@ -491,7 +477,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE INDEX tagparticipation_pid ON tagparticipation(ParticipationId);
 				CREATE UNIQUE INDEX IdxtagparticipationCbo on tagparticipation(ParticipationId,ParticipantId,ParticipantType,OrganizationId);
 
-				DROP TABLE IF EXISTS spool;
+				DROP TABLE IF EXISTS spool CASCADE;
 				CREATE TABLE spool (
 					SpoolGuid varchar(42) not null,
 					SpoolBucketName varchar(64) not null,
@@ -512,7 +498,7 @@ DROP VIEW IF EXISTS orphanData;
  				CREATE INDEX spool_spool_bucknametype ON spool(SpoolBucketName,SpoolBucketType,OrganizationId);
 
 
-				DROP TABLE IF EXISTS session;
+				DROP TABLE IF EXISTS session CASCADE;
 				CREATE TABLE session (
 					UserId bigint not null default 0,
 					SessionId varchar(64) not null,
@@ -528,7 +514,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE INDEX session_sesid ON session(SessionId);
 			      CREATE UNIQUE INDEX session_sesorgid ON session(SessionId,OrganizationId);
 
-				DROP TABLE IF EXISTS sessiondata;
+				DROP TABLE IF EXISTS sessiondata CASCADE;
 				CREATE TABLE sessiondata (
 					UserId bigint not null default 0,
 					SessionId varchar(64) not null,
@@ -541,7 +527,7 @@ DROP VIEW IF EXISTS orphanData;
 				CREATE INDEX sessiondata_sess_id ON sessiondata(SessionId);
 				CREATE INDEX sessiondata_name ON sessiondata(SessionId,Name);
 
-				DROP TABLE IF EXISTS audit;
+				DROP TABLE IF EXISTS audit CASCADE;
 				DROP SEQUENCE IF EXISTS audit_id_seq;
 				CREATE SEQUENCE audit_id_seq;
 				CREATE TABLE audit (
