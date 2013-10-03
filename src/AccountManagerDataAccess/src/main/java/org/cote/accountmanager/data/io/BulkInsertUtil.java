@@ -113,7 +113,9 @@ public class BulkInsertUtil {
 			insStatement.close();
 		}
 		catch(SQLException sqe){
+			
 			logger.error(sqe.getMessage());
+			//logger.error(getInsertTemplate(connection, row).getInsertTemplate());
 			throw new FactoryException("Failed to insert: " + sqe.getMessage());
 		}
 		finally{

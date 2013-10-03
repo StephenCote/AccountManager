@@ -1,11 +1,11 @@
 package org.cote.accountmanager.data.factory;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.services.AuthorizationService;
-import org.cote.accountmanager.data.services.FactoryService;
+import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -20,6 +20,9 @@ import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.SecurityUtil;
 
 public class FactoryDefaults {
+	
+	public static final Logger logger = Logger.getLogger(FactoryDefaults.class.getName());
+	
 	protected static String[] default_application_permissions = new String[]{
 		"ApplicationView",
 		"ApplicationEdit",
@@ -60,10 +63,18 @@ public class FactoryDefaults {
 	
 	public static boolean setupAccountManager(String root_password) throws ArgumentException, DataAccessException, FactoryException
 	{
-
+		logger.info("Begin Setup Account Manager");
+		
+		Factories.clearCaches();
+		
 		String root_hash = SecurityUtil.getSaltedDigest(root_password);
+		
+		logger.info("Create default organizations");
+		
 		setupOrganizations();
 
+		logger.info("Create root account");
+		
 		AccountType root_account = Factories.getAccountFactory().getAccountByName("Root", Factories.getSystemOrganization());
 		if(root_account == null){
 			root_account = Factories.getAccountFactory().newAccount("Root", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, Factories.getSystemOrganization());
@@ -75,13 +86,17 @@ public class FactoryDefaults {
 		setupOrganization(Factories.getDevelopmentOrganization(), root_hash);
 		setupOrganization(Factories.getSystemOrganization(), root_hash);
 		setupOrganization(Factories.getPublicOrganization(), root_hash);
-
+		
+		logger.info("End Setup Account Manager");
+		
 		return true;
 	}
 
 	public static boolean setupOrganization(OrganizationType organization, String admin_password_hash) throws ArgumentException, DataAccessException, FactoryException
 	{
 
+		logger.info("Configure " + organization.getName() + " organization");
+		
 		// Create administration user
 		//
 		AccountType admin_account = Factories.getAccountFactory().newAccount("Admin", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, organization);
@@ -96,7 +111,12 @@ public class FactoryDefaults {
 		//
 		UserType dc_user = Factories.getUserFactory().newUserForAccount("Document Control", SecurityUtil.getSaltedDigest(DocumentControlPassword), admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (Factories.getUserFactory().addUser(dc_user) == false) return false;
+		dc_user = Factories.getUserFactory().getUserByName("Document Control", organization);
 		
+		if(dc_user.getId() <= 0 || admin_user.getId() <= 0){
+			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
+			return false;
+		}
 
 		// Create default permission sets
 		//
@@ -176,7 +196,7 @@ public class FactoryDefaults {
 		RoleService.getObjectReaderUserRole(admin_user);
 
 		RoleService.addUserToRole(dc_user, user_data_admin_role);
-		RoleService.addUserToRole(dc_user, user_data_admin_role);
+		RoleService.addUserToRole(dc_user, user_obj_admin_role);
 		RoleService.addUserToRole(root_user,user_admin_role);
 		RoleService.addUserToRole(root_user,user_data_admin_role);
 		RoleService.addUserToRole(root_user,user_obj_admin_role);
@@ -187,6 +207,9 @@ public class FactoryDefaults {
 		RoleService.addUserToRole(admin_user,user_sys_admin_role);
 		
 		Factories.getRoleFactory().addDefaultRoles(organization);
+		
+		EffectiveAuthorizationService.rebuildPendingRoleCache();
+		
 		return true;
 	}
 

@@ -76,6 +76,9 @@ public class StreamUtil {
 		return sb.toString();
 	}
 	public static byte[] fileHandleToBytes(File file){
+		if(file == null || file.exists() == false){
+			return new byte[0];
+		}
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try{
 			if(file.exists()){
@@ -91,6 +94,7 @@ public class StreamUtil {
 	}
 	public static byte[] fileToBytes(String fileName){
 		File f = new File(fileName);
+		
 		return fileHandleToBytes(f);
 		
 	}

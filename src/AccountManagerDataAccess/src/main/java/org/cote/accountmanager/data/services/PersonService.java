@@ -65,15 +65,16 @@ public class PersonService {
 			
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
 			newPerson.setContact(cit);
-			
-			ContactType ct = Factories.getContactFactory().newContact(newUser, pDir);
-			ct.setName(newPerson.getName() + " Registration Email");
-			ct.setPreferred(true);
-			ct.setContactType(ContactEnumType.EMAIL);
-			ct.setLocationType(LocationEnumType.HOME);
-			ct.setContactValue(email);
-			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT, ct);
-			cit.getContacts().add(ct);
+			if(email != null){
+				ContactType ct = Factories.getContactFactory().newContact(newUser, pDir);
+				ct.setName(newPerson.getName() + " Registration Email");
+				ct.setPreferred(true);
+				ct.setContactType(ContactEnumType.EMAIL);
+				ct.setLocationType(LocationEnumType.HOME);
+				ct.setContactValue(email);
+				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT, ct);
+				cit.getContacts().add(ct);
+			}
 			
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
