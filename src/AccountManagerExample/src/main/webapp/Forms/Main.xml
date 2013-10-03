@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<p>Main</p>
+	<p><input type = "button" onclick = "${this}.DoLogout()" value = "Logout" /></p>
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				
+			},
+			DoLogout : function(){
+				window.uwm.logout();
+				window.uwm.operation("ContinueWorkflow");
+			}
+		]]>
+	</embedded-script>
+</Template>

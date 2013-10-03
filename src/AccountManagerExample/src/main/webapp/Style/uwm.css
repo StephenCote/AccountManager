@@ -1,0 +1,135 @@
+html
+{
+		overflow:auto;
+		height:100%;
+		background-color: #efeff9;
+}
+body{
+
+	color: #000000;
+	margin:0px;
+	padding:0px;
+	min-height:100%;
+}
+.uwm-header
+{
+		background: #FFFFFF repeat scroll 0 0 transparent;
+		background: -moz-linear-gradient(center top , #0804a9, #bbe4fe) repeat scroll 0 0 transparent;
+		background: -webkit-gradient(linear,left top, left bottom, from(#0804a9), to(#bbe4fe)) repeat scroll 0 0 transparent;
+    overflow: hidden;
+
+	margin: 0;
+	min-height: 85px;
+	padding: 0;
+	max-width: 100%;
+	position:relative;
+}
+.uwm-header h1
+{
+    background-image: url(/AccountManagerExample/Media/Logos/Hemi_Logo.png);
+    font-size: 0px;
+    height:75px;
+    width:67px;
+    margin-top: 5px;
+    margin-bottom:5px;
+}
+.uwm-controls
+{
+    position:absolute;
+    width: 200px;
+    right: 10px;
+    top:50px;
+    text-align: right;
+}
+.uwm-controls a
+{
+    text-decoration: none;
+    color: #FFFFFF;
+    font: bold 10pt Arial;
+    text-shadow: 0px 1px 0px #505050;
+}
+.uwm-content
+{
+    width: 960px;
+    overflow:auto;
+}
+.uwm-content .uwm-content-section
+{
+    width: 350px;
+    height: 300px;
+    float:left;
+    margin: 0px 0px 5px 10px;
+    overflow: auto;
+    padding: 0px;
+		background: #FFFFFF repeat scroll 0 0 transparent;
+		background: -moz-linear-gradient(center top , #595C64, #1B1B1C) repeat scroll 0 0 transparent;
+		background: -webkit-gradient(linear,left top, left bottom, from(#595C64), to(#1B1B1C)) repeat scroll 0 0 transparent;
+
+}
+.uwm-content .uwm-content-section h2
+{
+    color: #FFFFFF;
+    font: normal 12pt Arial;
+    padding-left: 7px;
+    margin: 2px;
+}
+.uwm-content .uwm-content-section iframe
+{
+    border: 0px solid #000000;
+    width:100%;
+    height: 235px;
+}
+.uwm-footer
+{
+	margin: 0px;
+	min-height: 66px;
+	padding: 0px;
+	width: 960px;
+}
+.uwm-notes
+{
+   	margin: 0px;
+	overflow:auto;
+	height:235px;
+	width:100%;
+	background-color: #FFFFEF;
+}
+.uwm-info-font
+{
+    font: normal 8pt Times;
+}
+.uwm-box-border-curl
+{
+    -webkit-border-top-left-radius: 7px;
+    -webkit-border-top-right-radius: 0px;
+    -webkit-border-bottom-left-radius: 0px;
+    -webkit-border-bottom-right-radius: 7px;
+    -moz-border-radius-topleft: 7px;
+    -moz-border-radius-topright: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -moz-border-radius-bottomright: 7px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 7px;
+    border: 1px solid #000099;
+}
+.uwm-box-border
+{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border: 2px solid #777777;
+	border-bottom: 1px solid #999999;
+	border-top: 1px solid #666666;
+}
+.uwm-box-shadow
+{
+	-moz-box-shadow: 5px 5px 3px #CFCFCF;
+}
+.uwm-field-container
+{
+	
+}
+.uwm-field-container label{
+	width:125px;
+}

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+
+	<import-xml src ="/AccountManagerExample/Forms/OrganizationPicker.xml" id = "OrganizationPicker" />
+	<div class = "rocket-column-2">
+		<p>
+			User Name:
+		</p>
+		<p>
+			<input type = "text" class = "rocket-text" rid = "user_name" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Password:
+		</p>
+		<p>
+			<input type = "password" class = "rocket-text" rid = "password" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+			<p>
+				<input type = "button" onclick = "uwm.operation('OfferRegistration')" value = "Register" />
+			</p>
+			<p>
+				<input type = "button" value = "Login" class = "input_button" onclick = "${this}.DoLogin()" />
+			</p>
+	</div>
+
+<p><span rid = "status">[ ... ]</span></p>
+	<embedded-script>
+		<![CDATA[
+		// Requires TemplateTools to be included
+		//
+		template_init : function(){
+			this.GetElementByRID("user_name").focus();
+			this.setStatus(" ");
+		},
+
+		DoLogin : function(){
+			if(!this.Validate()) return;
+			var oOrg = accountManager.findOrganization(this.getOrgPath());
+			if(!oOrg){
+				this.setStatus("Invalid organization");
+				return;
+			}
+			var sName = this.GetFormValue("user_name");
+			var sPassword = this.GetFormValue("password");
+			this.SetFormValue("password","");
+			this.setStatus(" ");
+			window.uwm.operation("Authenticate", {user_name : sName, password : sPassword, organization: oOrg});		
+		},
+
+		Validate : function(){
+		
+			try{
+				this.Assert(this.ValidateForPattern("user_name","not-empty"),"Invalid user_name");
+				this.Assert(this.ValidateForPattern("password","not-empty"),"Invalid password");
+			}
+			catch(e){
+				this.setStatus((typeof e== "string" ? e : e.message ? e.message : e.description));
+				return 0;
+			}
+			return 1;
+		},
+		setStatus : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+		}
+		]]>
+	</embedded-script>
+</Template>
