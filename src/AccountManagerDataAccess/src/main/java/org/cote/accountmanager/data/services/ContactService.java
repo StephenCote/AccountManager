@@ -14,6 +14,7 @@ public static final Logger logger = Logger.getLogger(ContactService.class.getNam
 	public static ContactType getPreferredEmailContact(ContactInformationType cinfo){
 		ContactType email = null;
 		ContactType check = null;
+		if(cinfo == null) return email;
 		List<ContactType> contacts = cinfo.getContacts();
 		for(int i = 0; i < contacts.size();i++){
 			check = contacts.get(i);

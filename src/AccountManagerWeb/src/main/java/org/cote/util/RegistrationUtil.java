@@ -40,17 +40,27 @@ public class RegistrationUtil {
 		AuditType[]  audits = new AuditType[0];
 		try{
 			OrganizationType regOrg = null;
-			session = BeanUtil.getSessionBean(SessionSecurity.getUserSession(sessionId, Factories.getPublicOrganization()),sessionId);
+			//session = BeanUtil.getSessionBean(SessionSecurity.getUserSession(sessionId, Factories.getPublicOrganization()),sessionId);
+			session = BeanUtil.getSessionBean(SessionSecurity.getUserSession(regSessId, Factories.getPublicOrganization()),regSessId);
+			System.out.println("Registration Session Data for " + regSessId);
+			for(int i = 0; i < session.getSessionData().size();i++){
+				System.out.println(session.getSessionData().get(i).getName() + "=" + session.getSessionData().get(i).getValue());
+			}
 			long regOrgId = 0;
 			try{
-				String orgStr = session.getValue("registration-organization-id");
+				//String orgStr = session.getValue("registration-organization-id");
+				String orgStr = session.getValue("organization-id");
 				if(orgStr != null) regOrgId = Long.parseLong(orgStr);
 			}
 			catch(NumberFormatException nfe){
 				System.out.println(nfe.getMessage());
 			}
 			if(regOrgId > 0) regOrg = Factories.getOrganizationFactory().getOrganizationById( regOrgId);
-			if(regOrg == null) regOrg = Factories.getPublicOrganization();
+			if(regOrg == null){
+				AuditService.denyResult(audit,"Invalid registration organization: " + regOrgId);
+				return false;
+				//regOrg = Factories.getPublicOrganization();
+			}
 			
 			regSession = BeanUtil.getSessionBean(SessionSecurity.getUserSession(regSessId, regOrg),regSessId);
 			if(regSession == null){
@@ -71,7 +81,13 @@ public class RegistrationUtil {
 				return false;
 			}
 
+			/// password is encrypted with the target organization key
+			///
 			String decPassword = OrganizationSecurityUtil.decipherString(regSession.getValue("password"), regOrg);
+			if(decPassword == null || decPassword.length() == 0){
+				AuditService.denyResult(audit, "Invalid password decryption while requesting new user '" + userName + "'");
+				return false;
+			}
 			String email = regSession.getValue("email");
 			out_bool = PersonService.createRegisteredUserAsPerson(audit, userName, SecurityUtil.getSaltedDigest(decPassword),email,regOrg);
 			/*
@@ -126,6 +142,7 @@ public class RegistrationUtil {
 		SessionDataFactory df = Factories.getSessionDataFactory();
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.REQUEST, "createUserRegistration", AuditEnumType.INFO, remoteAddr);
+		System.out.println("Creating user registration for '" + user.getName() + "'");
 		AuditService.targetAudit(audit, AuditEnumType.USER, user.getName());
 		try{
 			AuditType[] nameAudits = Factories.getAuditFactory().getAuditByTarget(AuditEnumType.USER, user.getName());
@@ -145,8 +162,13 @@ public class RegistrationUtil {
 			sessionId = UUID.randomUUID().toString();
 			registrationId = UUID.randomUUID().toString();
 			regSession = Factories.getSessionFactory().newUserSession(sessionId);
-			regSession.setOrganizationId(user.getOrganization().getId());
-			//regSession.setOrganizationId(Factories.getPublicOrganization().getId());
+			//regSession.setOrganizationId(user.getOrganization().getId());
+			
+			
+			/// Reg Session has to be in the Public organization because the org is not being included in any registration communication
+			/// And session lookup is not being permitted across organizations
+			///
+			regSession.setOrganizationId(Factories.getPublicOrganization().getId());
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, registrationExpiry);
 			regSession.setSessionExpires(CalendarUtil.getXmlGregorianCalendar(cal.getTime()));
@@ -163,10 +185,12 @@ public class RegistrationUtil {
 			df.setValue(regSession, "password", enc_password);
 			df.setValue(regSession, "organization-id",Long.toString(user.getOrganization().getId()));
 			
+			/*
 			if(true){
 				System.out.println("REFACTOR REFACTOR EMAIL");
 				return null;
 			}
+			*/
 			ContactType emailContact = UserService.getPreferredEmailContact(user);
 			if(emailContact != null){
 				
@@ -176,6 +200,7 @@ public class RegistrationUtil {
 			else{
 				AuditService.denyResult(audit, "Email address not specified");
 				System.out.println("Did not receive contact information supplemental");
+				regSession = null;
 				throw new FactoryException("Required data was not provided: Contact Information object was null");
 			}
 			
@@ -192,6 +217,8 @@ public class RegistrationUtil {
 			user.setPassword(null);
 			audit.setAuditSourceType(AuditEnumType.REGISTRATION);
 			AuditService.pendResult(audit, "Registration pending user acceptance");
+			System.out.println("Test: Audit target data = " + audit.getAuditTargetData());
+			Factories.getAuditFactory().flushSpool();
 		}
 		catch(FactoryException fe){
 			System.out.println(fe.getMessage());

@@ -80,7 +80,8 @@ public class DBFactory {
 					break;
 				case VARCHAR:
 					//System.out.println("Str=" + (String)value);
-					statement.setString(index,  (String)value);
+					if(value == null) statement.setNull(index, Types.VARCHAR);
+					else statement.setString(index,  (String)value);
 					break;
 				case INTEGER:
 					statement.setInt(index,  ((Integer)value).intValue());

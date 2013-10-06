@@ -36,6 +36,7 @@ import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.ContactInformationType;
+import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -43,6 +44,8 @@ import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.ContactEnumType;
+import org.cote.accountmanager.objects.types.LocationEnumType;
 import org.cote.accountmanager.services.DataServiceImpl;
 import org.cote.accountmanager.services.UserServiceImpl;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -191,6 +194,97 @@ public class UserService{
 		return buff.toString();
 		//return bean;
 		
+	}
+	
+	
+	@GET @Path("/testConfirmRegistration/{id : [~%\\s0-9a-zA-Z\\/\\.\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean testConfirmRegistration(@PathParam("id") String id,@Context HttpServletRequest request){
+
+		//String sessionId = request.getSession(true).getId();
+		SessionBean registrationSession = null;
+		
+		try {
+			registrationSession = BeanUtil.getSessionBean(Factories.getSessionFactory().getSession(id, Factories.getPublicOrganization()),id);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		if(registrationSession == null){
+			logger.error("Failed to find registration session id");
+			return false;
+		}
+		
+		String registrationId = registrationSession.getValue("registration-id");
+		if(registrationId == null){
+			logger.error("Failed to find registration id on session " + id);
+			return false;
+		}
+		
+		return RegistrationUtil.confirmUserRegistration(id, registrationId, request.getRemoteAddr(), request.getSession(true).getId());
+		
+	}
+	
+	@GET @Path("/testRegistration/{path : [~%\\s0-9a-zA-Z\\/]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public String testRegistration(@PathParam("path") String path,@Context HttpServletRequest request){
+
+		String sessionId = request.getSession(true).getId();
+		SessionBean ctxSession = null;
+		
+		OrganizationType org = null;
+		try {
+			org = Factories.getOrganizationFactory().findOrganization(path);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		if(org == null){
+			logger.error("Null organization");
+			return null;
+		}
+		
+		UserType testUser = new UserType();
+		testUser.setOrganization(org);
+		testUser.setName("TestRegistrationUser-" + UUID.randomUUID().toString());
+		testUser.setPassword(UUID.randomUUID().toString());
+		
+		ContactInformationType cit = new ContactInformationType();
+		ContactType email = new ContactType();
+		email.setContactType(ContactEnumType.EMAIL);
+		email.setLocationType(LocationEnumType.HOME);
+		email.setContactValue(UUID.randomUUID().toString() + "@nowhere.com");
+		email.setPreferred(true);
+		cit.getContacts().add(email);
+		testUser.setContactInformation(cit);
+	
+		UserSessionType session1 = RegistrationUtil.createUserRegistration(testUser, request.getRemoteAddr());
+		
+		if(session1 != null){
+			try{
+				ctxSession = BeanUtil.getSessionBean(SessionSecurity.getUserSession(sessionId, testUser.getOrganization()),sessionId);
+				ctxSession.setValue("registration-session-id", session1.getSessionId());
+				ctxSession.setValue("registration-organization-id", Long.toString(testUser.getOrganization().getId()));
+				Factories.getSessionFactory().updateData(ctxSession);
+			}
+			catch(FactoryException fe){
+				logger.error(fe.getMessage());
+				fe.printStackTrace();
+			}
+		}
+		else{
+			logger.error("Failed to create registration session");
+			return null;
+
+		}
+		return (session1 != null ? session1.getSessionId() : null);
+				///BeanUtil.getSessionBean(session1, (session1 == null ? null : session1.getSessionId()));
 	}
 	
 	@POST @Path("/postRegistration") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)

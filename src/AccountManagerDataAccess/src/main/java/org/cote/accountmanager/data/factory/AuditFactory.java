@@ -74,7 +74,7 @@ public class AuditFactory extends FactoryBase {
 		audit.setAuditDate(cal);
 		audit.setAuditResultDate(audit.getAuditDate());
 		now.add(Calendar.MONTH,3);
-		audit.setAuditExpiresDate(cal);
+		audit.setAuditExpiresDate(CalendarUtil.getXmlGregorianCalendar(now.getTime()));
 		audit.setAuditActionType(ActionEnumType.UNKNOWN);
 		audit.setAuditResultType(ResponseEnumType.UNKNOWN);
 		audit.setAuditRetentionType(RetentionEnumType.UNKNOWN);
@@ -102,18 +102,18 @@ public class AuditFactory extends FactoryBase {
 		DataRow row = table.newRow();
 		try{
 			
-			if(obj.getAuditActionSource() != null) row.setCellValue("auditactionsource", obj.getAuditActionSource());
+			row.setCellValue("auditactionsource", obj.getAuditActionSource());
 			row.setCellValue("auditleveltype", obj.getAuditLevelType().toString());
 			row.setCellValue("auditactiontype", obj.getAuditActionType().toString());
 			row.setCellValue("auditdate", obj.getAuditDate());
 			row.setCellValue("auditresultdate", obj.getAuditResultDate());
 			row.setCellValue("auditexpiresdate", obj.getAuditExpiresDate());
-			if(obj.getAuditResultData() != null) row.setCellValue("auditresultdata", obj.getAuditResultData());
+			row.setCellValue("auditresultdata", obj.getAuditResultData());
 			row.setCellValue("auditresulttype", obj.getAuditResultType().toString());
 			row.setCellValue("auditretentiontype", obj.getAuditRetentionType().toString());
-			if(obj.getAuditSourceData() != null) row.setCellValue("auditsourcedata", obj.getAuditSourceData());
+			row.setCellValue("auditsourcedata", obj.getAuditSourceData());
 			row.setCellValue("auditsourcetype", obj.getAuditSourceType().toString());
-			if(obj.getAuditTargetData() != null) row.setCellValue("audittargetdata", obj.getAuditTargetData());
+			row.setCellValue("audittargetdata", obj.getAuditTargetData());
 			row.setCellValue("audittargettype", obj.getAuditTargetType().toString());
 		}
 		catch(DataAccessException dae){

@@ -60,7 +60,19 @@
 				o.name = sName;
 				o.password = sPassword;
 				o.contactInformation = new org.cote.beans.contactInformationType();
-				o.contactInformation.email = sEmail;
+				o.contactInformation.contacts = [];
+				
+				var ct = new org.cote.beans.contactType();
+				ct.group = accountManager.getGroup("/Contacts");
+				ct.name = sName + " Registration Email";
+				ct.preferred = true;
+				ct.contactType = "EMAIL";
+				ct.locationType = "HOME";
+				ct.contactValue = sEmail;
+				
+				o.contactInformation.contacts.push(ct);
+				
+				//o.contactInformation.email = sEmail;
 				o.organization = oOrg;
 
 				return uwmServices.getService("User").add(o);

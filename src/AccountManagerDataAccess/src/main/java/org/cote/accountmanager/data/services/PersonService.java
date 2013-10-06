@@ -34,12 +34,17 @@ public class PersonService {
 	}
 	public static boolean createUserAsPerson(AuditType audit, String userName, String password, String email,UserEnumType userType,UserStatusEnumType userStatus,OrganizationType org){
 		boolean out_bool = false;
-		
 		try{
+			if(Factories.getUserFactory().getUserNameExists(userName, org)){
+				logger.error("User name '" + userName + "' is already used in organization " + org.getName());
+				return false;
+			}
+
 			/// TODO - change this to just get the persons directory from the GroupFactory
 			///
 			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", org);
 			DirectoryGroupType pDir = Factories.getGroupFactory().getCreateDirectory(adminUser, "Persons", Factories.getGroupFactory().getRootDirectory(org), org);
+			DirectoryGroupType cDir = Factories.getGroupFactory().getCreateDirectory(adminUser, "Contacts", Factories.getGroupFactory().getRootDirectory(org), org);
 			
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			
@@ -66,7 +71,7 @@ public class PersonService {
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
 			newPerson.setContact(cit);
 			if(email != null){
-				ContactType ct = Factories.getContactFactory().newContact(newUser, pDir);
+				ContactType ct = Factories.getContactFactory().newContact(newUser, cDir);
 				ct.setName(newPerson.getName() + " Registration Email");
 				ct.setPreferred(true);
 				ct.setContactType(ContactEnumType.EMAIL);

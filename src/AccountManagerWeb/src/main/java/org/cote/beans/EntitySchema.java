@@ -4,9 +4,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactInformationType;
+import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.beans.*;
 
@@ -24,8 +26,12 @@ public class EntitySchema {
 	private UserType userType = null;
 	private DirectoryGroupType directoryGroupType = null;
 	private ContactInformationType contactInformationType = null;
+	private PersonType personType = null;
+	private ContactType contactType = null;
 	private OrganizationType organizationType = null;
 	public EntitySchema(){
+		contactType = new ContactType();
+		personType = new PersonType();
 		organizationType = new OrganizationType();
 		baseRoleType = new BaseRoleType();
 		directoryGroupType = new DirectoryGroupType();
@@ -37,6 +43,26 @@ public class EntitySchema {
 		sessionDataBean = new SessionDataBean();
 		userType = new UserType();
 		contactInformationType = new ContactInformationType();
+	}
+
+
+	public PersonType getPersonType() {
+		return personType;
+	}
+
+
+	public void setPersonType(PersonType personType) {
+		this.personType = personType;
+	}
+
+
+	public ContactType getContactType() {
+		return contactType;
+	}
+
+
+	public void setContactType(ContactType contactType) {
+		this.contactType = contactType;
 	}
 
 

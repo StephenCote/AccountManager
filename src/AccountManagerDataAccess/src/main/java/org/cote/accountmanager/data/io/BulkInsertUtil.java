@@ -107,6 +107,7 @@ public class BulkInsertUtil {
 	public static boolean insert(DataRow row) throws FactoryException{
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		PreparedStatement insStatement = getInsertStatement(connection, row);
+
 		int updated = 0;
 		try{
 			updated = insStatement.executeUpdate();
@@ -135,7 +136,10 @@ public class BulkInsertUtil {
 	
 	public static boolean insertBulk(DataTable table){
 		boolean out_bool = false;
-		if(table.getRows().size() == 0) return true;
+		if(table.getRows().size() == 0){
+			//logger.info("Pending rows to insert are empty");
+			return true;
+		}
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		DataRow firstRow = (DataRow)table.getRows().get(0);
 		//logger.info("Insert bulk rows: " + table.getRows().size());
@@ -148,9 +152,13 @@ public class BulkInsertUtil {
 		int rLen = 0;
 		BulkInsertMeta insStatement = null;
 		try {
+
+			boolean lastCommit = connection.getAutoCommit();
+			connection.setAutoCommit(false);
+
 			insStatement = getInsertTemplate(connection, firstRow);
 			rLen = table.getRows().size();
-			//logger.debug("BULK INSERT - " + rLen + " : " + insStatement.getParameterCount() + " : " + insStatement.getInsertTemplate());
+			//logger.info("BULK INSERT - " + rLen + " : " + insStatement.getParameterCount() + " : " + insStatement.getInsertTemplate());
 			long start = System.currentTimeMillis();
 			PreparedStatement statement = connection.prepareStatement(insStatement.getInsertTemplate());
 			for(int r = 0; r < rLen; r++){
@@ -165,6 +173,7 @@ public class BulkInsertUtil {
 				}
 				statement.addBatch();
 				if(batch++ >= maxBatchSize){
+					//logger.info("Execute batch: " + batch);
 					statement.executeBatch();
 					statement.clearBatch();
 					batch=0;
@@ -172,11 +181,15 @@ public class BulkInsertUtil {
 				
 			}
 			if(batch > 0){
+				logger.info("Execute last batch: " + batch);
 				statement.executeBatch();
 				statement.clearBatch();
 			}
+			statement.close();
+			connection.commit();
+			connection.setAutoCommit(lastCommit);
 			long stop = System.currentTimeMillis();
-			//logger.debug("Inserted " + table.getRows().size() + " rows in " + (stop - start) + "ms");
+			logger.info("Inserted " + table.getRows().size() + " rows in " + (stop - start) + "ms.");
 			out_bool = true;
 		}
 		catch(NullPointerException npe){

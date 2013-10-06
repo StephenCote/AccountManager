@@ -18,7 +18,7 @@
 					}
 					var sSessId = window.uwm.registration.sessionId;
 					var oA = document.createElement("a");
-					oA.href = "/AccountManagerWeb/rest/user/confirm/" + sSessId + "/" + sRegId;
+					oA.href = "/AccountManager/rest/user/confirm/" + sSessId + "/" + sRegId;
 					oA.appendChild(document.createTextNode("Complete Registration"));
 					oSuppl.appendChild(oA);
 					window.uwm.registration = null;

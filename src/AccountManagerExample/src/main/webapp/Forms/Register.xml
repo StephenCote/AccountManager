@@ -68,7 +68,10 @@
 		DoRegister : function(){
 
 			var bChecked = this.GetFormValue("email_login");
-			if(bChecked) this.SetFormValue("user_name",this.GetFormValue("email"));
+			if(bChecked){
+				this.synchronizeForm(1);
+				this.SetFormValue("user_name",this.GetFormValue("email"));
+			}
 			if(!this.Validate()) return;
 			
 			var oOrg = accountManager.findOrganization(this.getOrgPath());

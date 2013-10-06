@@ -1,6 +1,9 @@
 package org.cote.accountmanager.services;
 
+import org.apache.log4j.Logger;
+
 public abstract class ThreadService extends Thread {
+	public static final Logger logger = Logger.getLogger(ThreadService.class.getName());
 	private int threadDelay = 1000;
 	private boolean stopRequested=false;
 	private Thread svcThread = null;
@@ -39,6 +42,7 @@ public abstract class ThreadService extends Thread {
 				execute();
 			}
 			catch(Exception e){
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 		}

@@ -103,14 +103,20 @@ public class MediaFormServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 
+		/*
 		logger.error("Media info:");
 		logger.error(name);
 		logger.error(description);
 		logger.error(mimeType);
 		logger.error("Group id = " + groupId);
 		logger.error("Data size = " + data.length);
-
-
+		*/
+		System.out.println("Media info:");
+		System.out.println(name);
+		System.out.println(description);
+		System.out.println(mimeType);
+		System.out.println("Group id = " + groupId);
+		System.out.println("Data size = " + data.length);
 		UserType user = ServiceUtil.getUserFromSession(request);
 		if(user != null){
 			try{

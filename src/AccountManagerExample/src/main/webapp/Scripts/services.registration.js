@@ -1,7 +1,10 @@
 /*
  * Define who is providing the service layer
  */
-if(!window.uwmServices) window.uwmServices = Hemi.json.rpc.service;
+if(!window.uwmServices){
+	window.uwmServices = Hemi.json.rpc.service;
+	window.uwmServiceCache = Hemi.json.rpc.cache.service;
+}
 
 /*
  * Register the available services
@@ -58,6 +61,7 @@ if(!window.uwmServices) window.uwmServices = Hemi.json.rpc.service;
 			"/AccountManager/rest/data/smd"
 			, true
 			, true
+			, true
 	);
 	uwmServices.addService(
 			"Role",
@@ -68,6 +72,7 @@ if(!window.uwmServices) window.uwmServices = Hemi.json.rpc.service;
 	uwmServices.addService(
 			"Group",
 			"/AccountManager/rest/group/smd"
+			, true
 			, true
 			, true
 	);

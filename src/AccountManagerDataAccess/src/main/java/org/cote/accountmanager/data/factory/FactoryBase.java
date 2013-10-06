@@ -109,11 +109,12 @@ public abstract class FactoryBase {
 		if (table.getBulkInsert() == true)
 		{
 			/// addCounter = 0;
-			//synchronized(table){
+			synchronized(table){
+				//logger.info("Writing bulk spool");
 				if(BulkInsertUtil.insertBulk(table)){
 					table.getRows().clear();
 				}
-			//}
+			}
 			
 		}
 	}

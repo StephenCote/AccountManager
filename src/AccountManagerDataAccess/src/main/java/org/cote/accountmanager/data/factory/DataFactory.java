@@ -157,6 +157,9 @@ public class DataFactory extends NameIdFactory {
 	
 	public boolean addData(DataType new_data) throws FactoryException
 	{
+		if(new_data.getName() == null || new_data.getName().length() == 0) throw new FactoryException("Invalid object name");
+			
+
 		if (new_data.getBlob() && new_data.getReadDataBytes()) throw new FactoryException("Cannot add blob data whose byte store has been read");
 		if (new_data.getGroup() == null) throw new FactoryException("Cannot add new data without a group");
 

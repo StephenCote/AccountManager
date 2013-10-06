@@ -6,12 +6,16 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.objects.types.RetentionEnumType;
 
 public class DataMaintenance {
+	
+	public static final Logger logger = Logger.getLogger(DataMaintenance.class.getName());
+	
 	public static boolean cleanupExpiredAudits(RetentionEnumType retentionType){
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
@@ -23,9 +27,11 @@ public class DataMaintenance {
 			statement.setString(1, retentionType.toString());
 			statement.setTimestamp(2, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			int affected = statement.executeUpdate();
+			logger.info("Removed " + affected + " expired audit entries");
 			while (affected > 0)
 			{
 				affected = statement.executeUpdate();
+				logger.info("Removed " + affected + " expired audit entries");
 			}
 			statement.close();
 			out_bool = true;

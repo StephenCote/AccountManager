@@ -216,10 +216,21 @@
 			var userSvc = window.uwmServices.getService("User");
 			var user = new org.cote.beans.userType();
 			var ci = new org.cote.beans.contactInformationType();
+			var ct = new org.cote.beans.contactType();
 			user.name = u;
 			user.password = p;
 			user.organization = o;
-			ci.email = e;
+			//ci.email = e;
+			ci.contacts = [];
+			ci.contacts.push(ct);
+
+			ct.group = accountManager.getGroup("/Contacts");
+			ct.name = u + " Registration Email";
+			ct.preferred = true;
+			ct.contactType = "EMAIL";
+			ct.locationType = "HOME";
+			ct.contactValue = e;
+
 			Hemi.log("Submit registration: " + u + " / " + p + " / " + e + " in org " + (o ? o.name : "public"));
 			user.contactInformation = ci;
 			window.uwm.registration = userSvc.postRegistration(user);

@@ -31,7 +31,7 @@ public class DataService{
 	public DataService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 	}
-	@GET @Path("/count/{group:[~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	@GET @Path("/count/{group:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public int count(@PathParam("group") String group,@Context HttpServletRequest request){
 		return DataServiceImpl.count(group, request);
 	}
@@ -49,11 +49,11 @@ public class DataService{
 	public boolean update(DataType bean,@Context HttpServletRequest request){
 		return DataServiceImpl.update(bean, request);
 	}
-	@GET @Path("/read/{name: [%\\sa-zA-Z_0-9\\-\\.]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	@GET @Path("/read/{name: [@%\\sa-zA-Z_0-9\\-\\.]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public DataType read(@PathParam("name") String name,@Context HttpServletRequest request){
 		return DataServiceImpl.read(name, request);
 	}
-	@GET @Path("/readByGroupId/{groupId:[0-9]+}/{name: [%\\sa-zA-Z_0-9\\-\\.]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	@GET @Path("/readByGroupId/{groupId:[0-9]+}/{name: [@%\\sa-zA-Z_0-9\\-\\.]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public DataType readByGroupId(@PathParam("name") String name,@PathParam("groupId") long groupId,@Context HttpServletRequest request){
 		return DataServiceImpl.readByGroupId(groupId, name, request);
 	}	
@@ -68,7 +68,7 @@ public class DataService{
 		return DataServiceImpl.getGroupList(user, DataServiceImpl.defaultDirectory,0,0);
 
 	}
-	@GET @Path("/listInGroup/{path : [\\.~%\\s0-9a-zA-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	@GET @Path("/listInGroup/{path : [@\\.~%\\s0-9a-zA-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	
 	public List<DataType> listInGroup(@PathParam("path") String path,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);

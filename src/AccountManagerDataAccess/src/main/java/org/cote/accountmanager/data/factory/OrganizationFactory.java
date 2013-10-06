@@ -117,7 +117,7 @@ public class OrganizationFactory extends NameIdFactory {
 
 	public OrganizationType getOrganizationByName(String name, OrganizationType parent) throws FactoryException, ArgumentException
 	{
-		return getOrganizationByName(name, parent.getId());
+		return getOrganizationByName(name, (parent != null ? parent.getId() : 0));
 	}
 	public OrganizationType getOrganizationByName(String name, long parent_id) throws FactoryException, ArgumentException
 	{
