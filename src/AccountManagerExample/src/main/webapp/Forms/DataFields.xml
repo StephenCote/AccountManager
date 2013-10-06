@@ -1,0 +1,230 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<textarea rid = "description" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short"></textarea>
+		</p>
+	</div>
+	<div class = "rocket-column-2" rid = "dataTypeContainer">
+		<p>
+			Type:
+		</p>
+		<p>
+			<select onchange = "${this}.changeDataType()" rid = "mimeType" bind = "${bean.rocketType}">
+				<option>application/xml</option>
+				<option>text/plain</option>
+				<option>binary</option>
+			</select>
+		</p>
+	</div>
+	<div rid = "detailsOnlyContainer" class = "rocket-column-2">
+		<p>Details:</p>
+		<p>
+			<input type = "button" value = "Load" onclick = "${this}.loadDetailData()" />
+			<input type = "button" value = "Clear" onclick = "${this}.clearDetailData()" />
+			<input type = "button" value = "View" style = "display:none;" rid = "viewBtn" onclick = "${this}.viewData()" />
+		</p>
+	</div>
+	<div rid = "textContainer" class = "rocket-column-2">
+		<p>
+			Data:
+		</p>
+		<p>
+			<textarea rid = "textData" class = "rocket-text rocket-text-long"></textarea>
+		</p>
+	</div>
+	<div rid = "binaryContainer" class = "rocket-column-2">
+		<p>
+			Binary:
+		</p>
+		<p rid = "newBinary">
+			<iframe rid = "mediaUploadFrame" frameborder = "0" style = "display:none;height: 50px;width:100%;border: 0px none #000000;" />
+		</p>
+		<p rid = "viewBinary" style = "display: none;">
+			...
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Created:
+		</p>
+		<p>
+			<input type = "text" disabled = "true" rid = "createdDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Modified:
+		</p>
+		<p>
+			<input type = "text" disabled = "true" rid = "modifiedDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Expiry:
+		</p>
+		<p>
+			<input type = "text" component = "calendar" rid = "expiryDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			var oSel = this.GetElementByRID("mimeType");
+			if(oSel.selectedIndex == -1) oSel.value = "binary";
+			this.changeDataType();
+			this.displayData();
+			
+		},
+		embedded_destroy : function(){
+			if(this.getProperties().requestFrame){
+				Hemi.message.service.subscribe("frame_announcement",this._prehandle_frame_announcement);
+				Hemi.message.service.subscribe("frame_response",this._prehandle_frame_response);
+			}
+		},
+		displayData : function(){
+			var o = this.getBean("rocketType");
+			
+			if(o.id && o.detailsOnly) return;
+			
+			this.GetElementByRID("textData").value = "";
+			if(o.mimeType && o.mimeType.match(/^text/) && o.dataBytesStore){
+				this.GetElementByRID("textData").value = uwm.base64Decode(o.dataBytesStore);
+			}
+		},
+		addType : function(o){
+			Hemi.log("Add data type: " + o.name + ":" + o.mimeType);
+
+			var v = "";
+			if(o.mimeType && o.mimeType.match(/^text/)){
+				v = this.GetElementByRID("textData").value;
+				return accountManager.addData(o.name, o.description, o.mimeType, v, o.group);
+			}
+			else if(o.mimeType.match(/^binary$/)){
+				var oF = this.get_frame("mediaUploadFrame");
+				oF.document.forms["mediaForm"].elements["id"].value = "0";
+				oF.document.forms["mediaForm"].elements["name"].value = o.name;
+				oF.document.forms["mediaForm"].elements["description"].value = o.description;
+				oF.document.forms["mediaForm"].elements["groupId"].value = o.group.id;
+				oF.document.forms["mediaForm"].submit();
+				return -1;
+			}
+		},
+		clearDetailData : function(){
+			var o = this.getBean("rocketType");
+			o.dataBytesStore = "";
+			o.detailsOnly = false;
+			this.synchronizeForm(1);
+			this.changeDataType();
+			this.displayData();
+		},
+		loadDetailData : function(){
+			var o = this.getBean("rocketType");
+			o = accountManager["get" + this.getProperties().typeName](o.name,o.group);
+			if(o != null){
+				this.clearBean("rocketType");
+				this.setBean(o,"rocketType");
+			}
+			this.synchronizeForm(1);
+			this.changeDataType();
+			this.displayData();
+		},
+		viewData : function(){
+			var o = this.getBean("rocketType");
+			if(!o.id) return;
+			if(o.detailsOnly){
+				this.loadDetailData();
+				o = this.getBean("rocketType");
+			}
+			var vData = {media_name:o.name,media_id:o.id,maxWidth:500,maxHeight:500,media_url:"data:" + o.mimeType + ";base64," + o.dataBytesStore};
+			var oW = Hemi.app.createWindow("View " + o.name, "/AccountManagerExample/Forms/ImageViewer.xml", "View-" + o.id, 0, 0, vData);
+            if (oW) {
+            	oW.resizeTo(400, 200);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		},
+		changeDataType : function(){
+			var o = this.getBean("rocketType");
+			var oSel = this.GetElementByRID("mimeType");
+			var bBin = oSel.value == "binary";
+			var bDet = (o.id && o.detailsOnly);
+			this.GetElementByRID("detailsOnlyContainer").style.display = (bDet ? "block" : "none");
+			this.GetElementByRID("binaryContainer").style.display = (bDet ? "none" : (bBin ? "block" : "none"));
+			this.GetElementByRID("textContainer").style.display = (bDet ? "none" : (bBin ? "none" : "block"));
+			this.GetElementByRID("viewBtn").style.display = (bBin && o.mimeType.match(/^image/) ? "inline" : "none");
+			if(bBin) this.initFrame();
+		},
+		initFrame : function(){
+			if(this.getProperties().requestFrame) return;
+			this.getProperties().requestFrame = 1;
+			this.setupFrame();
+			this.scopeHandler("frame_announcement",0,0,1);
+			this.scopeHandler("frame_response",0,0,1);
+			Hemi.message.service.subscribe("frame_announcement",this._prehandle_frame_announcement);
+			Hemi.message.service.subscribe("frame_response",this._prehandle_frame_response);
+		},
+		setupFrame : function(){
+			var oF = this.get_frame("mediaUploadFrame");
+			if(!oF || !oF.document){
+				Hemi.logDebug("Waiting to setup frame");
+				setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').setupFrame()",50);
+			}
+			else{
+				this.GetElementByRID("mediaUploadFrame").style.display = "block";
+				oF.document.location.href = g_application_path + "Forms/MediaUpload.html";
+				this.probeFrame();
+			}
+		},
+		_handle_frame_announcement : function(s, v){
+			if(v && v.id == this.getObjectId()){
+				if(v.messages[0] == "submit"){
+					alert('upload');
+					this.setStatus("Uploading ...");
+				}
+				else if(v.messages[0] == "fileChange"){
+					var sN = this.GetElementByRID("name").value;
+					var sF = v.messages[1];
+					if(!sF || sF.length == 0) return;
+					sF = sF.replace(/\\/gi,"/");
+					sF = sF.substring(sF.lastIndexOf("/")+1,sF.length);
+					this.GetElementByRID("name").value = sF;
+				}
+			}
+		},
+		_handle_frame_response : function(s, v){
+			if(v && v.id == this.getObjectId()){
+				this.setupFrame();			
+				if(v && v.status){
+					this.postProcess();
+				}
+				
+				else{
+					this.setStatus("Failed to upload media.");
+				}
+			}
+		},
+		probeFrame : function(){
+			var oF = this.get_frame("mediaUploadFrame");
+			if(!oF || !oF.document || !oF.mediaFrameMark){
+				setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').probeFrame()",50);
+			}
+			else{
+				oF.setResponseId(this.getObjectId());
+			}
+		},
+		prepareSave : function(o){
+			///this.GetElementByRID("endTime").className = "rocket-text";
+			o.dataBytesStore = "";
+			if(o.mimeType && o.mimeType.match(/^text/)){
+				o.dataBytesStore = uwm.base64Encode(this.GetElementByRID("textData").value);
+			}
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

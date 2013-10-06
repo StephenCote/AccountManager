@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<div rid = "canvas-gallery"></div>
+	<!--
+	<p><input type = "button" onclick = "${this}.DoLogout()" value = "Logout" /></p>
+	-->
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				var oCG = this.GetElementByRID("canvas-gallery");
+				oCG.style.cssText = "position:absolute;top:0px;left:0px;";
+				this.scopeHandler("window_resize",0,0,1);
+				this.scopeHandler("component_loaded",0,0,1);
+				
+				Hemi.event.addEventListener(window,"resize",this._prehandle_window_resize);
+				
+				var oCIDec = Hemi.app.comp.newInstance(0, 0, this.getTemplateSpace().getSpaceObjectByName("canvas-gallery").object.getObjectId(), 0, 0, 1);
+				
+				Hemi.message.service.subscribe(this,"oncomponentload", this._prehandle_component_loaded,oCIDec);
+				///Hemi.app.comp.newInstance(0,oCG);
+				oCIDec.setAsync(0);
+				this.getObjects().canvasComponent = oCIDec;
+				oCIDec.loadComponent("cvsimg",g_application_path + "Components/component.cvsimg.xml");
+
+				//this.resizeFrame();
+			},
+			template_destroy : function(){
+				Hemi.message.service.unsubscribe(this,"oncomponentload", this._prehandle_component_loaded,this.getObjects().canvasComponent);
+				Hemi.event.removeEventListener(window,"resize",this._prehandle_window_resize);
+			},
+			_handle_component_loaded : function(){
+				this.resizeFrame();
+			},
+			_handle_window_resize : function(){
+				this.resizeFrame();
+			},
+			resizeFrame : function(){
+				var oAG = this.getObjects().canvasComponent;
+				var iW = (typeof window.innerWidth == "number" ? window.innerWidth : document.documentElement.clientWidth);
+				var iH = (typeof window.innerHeight == "number" ? window.innerHeight : document.documentElement.clientHeight);
+				oAG.setScale(iW, iH);
+				if(oAG.getProperties().showImage){
+					oAG.viewImage(0,oAG.getProperties().showImageId, oAG.getProperties().showImageIndex);
+				}
+				else{
+					oAG.clearView();
+				}
+			},
+			
+			DoLogout : function(){
+				window.uwm.logout();
+				window.uwm.operation("ContinueWorkflow");
+			}
+		]]>
+	</embedded-script>
+</Template>

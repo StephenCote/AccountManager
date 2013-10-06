@@ -1,0 +1,52 @@
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerExample/Forms/BaseType.xml" />
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.scopeHandler("manager_loaded", 0, 0, 1);
+		},
+		embedded_destroy : function(){
+			this._prehandle_manager_loaded;
+		},
+		_handle_manager_loaded: function (v) {
+			///
+        },
+		manageList : function(sType, sListId, sFN){
+			var oProps = {openerId:this.getObjectId(),listType:sType,picker:1,pickFunction:sFN,listId:sListId};
+			var oW = Hemi.app.createWindow("ManageList", "/AccountManagerExample/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, this._prehandle_manager_loaded);
+            if (oW) {
+            	oW.resizeTo(400, 200);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		},
+		openItem : function(o,typeName,viewTypeName){
+			if(!typeName) typeName = this.getProperties().typeName;
+			if(!viewTypeName) viewTypeName = typeName;
+			if(!o.populated){
+				if(o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
+					Hemi.log("Not pulling own blob data for " + o.name + " unless specifically requested.");
+				}
+				else{
+					Hemi.log("Not populated.  Fetching a populated version.");
+					o = accountManager["get" + typeName](o.name,o.group);
+					if(!o.populated) alert("still not populated");
+				}
+			}
+			this.openWindow(viewTypeName, o);
+		},
+		openWindow : function(sType,oType){
+			var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:0};
+			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), "/AccountManagerExample/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
+            if (oW) {
+            	oW.resizeTo(400, 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		}
+	]]></embedded-script>
+</Template>

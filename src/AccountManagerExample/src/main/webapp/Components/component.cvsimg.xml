@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-components>
+<application-component id="cvsimg" package-name = "canvas">
+<![CDATA[
+component_init : function()
+{
+	Hemi.include("hemi.util.logger");
+	Hemi.util.logger.addLogger(this, "Canvas Image Explorer", "Image Explorer", 231);
+	this.log("Canvas Image Explorer loaded");
+	var _s = this.getProperties();
+	var _o = this.getObjects();
+	
+	_o.galleryHome = accountManager.getCreatePath("~/GalleryHome");
+	_o.currentGroupList = [];
+	_o.currentObjectList = [];
+	
+	_s.matteConfig = {
+		left: 50,
+		right: 50,
+		top: 50,
+		bottom: 50
+	};
+	
+	_s.imgThumbWidth = 128;
+	_s.imgThumbHeight = 128;
+	_s.dirThumbBoxRightMargin = 5;
+	_s.dirThumbWidth = 50;
+	_s.dirThumbHeight = 50;
+	_s.dirThumbBoxWidth = 100;
+	_s.dirThumbBoxHeight = 0;
+	_s.imgThumbBoxWidth = 0;
+	_s.imgThumbBoxHeight = 0;
+	_s.ctlBoxHeight = 50;
+	_s.ctlBoxTopMargin = 5;
+	_s.iconLargeBase = g_application_path + "Media/Icons/Crystal/128x128/";
+	_s.iconSmallBase = g_application_path + "Media/Icons/Crystal/48x48/";
+	_s.suggestedGroupCount = 0;
+	_s.suggestedIconCount = 0;
+	_s.currentGroupCount = 0;
+	_s.currentIconCount = 0;
+	_s.groupStartIndex = 0;
+	_s.iconStartIndex = 0;
+	_s.totalGroupCount = 0;
+	_s.totalIconCount = 0;
+	
+	_s.showControlPanel = 0;
+	_s.showImage = 0;
+	_s.currentViewIndex = 0;
+
+	Hemi.include("hemi.graphics.canvas");
+	_o.cvs_container = this.getContainer();
+	if(!_o.cvs_container){
+		_o.cvs_container = document.createElement("div");
+		document.body.appendChild(_o.cvs_container);
+	}
+	_o.cvs_container.style.position = "relative";
+	_o.canvas = Hemi.graphics.canvas.newInstance(_o.cvs_container);
+
+	var oCIDec = Hemi.app.comp.newInstance();
+	oCIDec.setAsync(0);
+	oCIDec.loadComponent("cvsctl_decorator",g_application_path + "Components/component.cvsctl_decorator.xml");
+	oCIDec.setCanvas(_o.canvas);
+	oCIDec.setDelegate(this);
+	_o.ctlDecorator = oCIDec;
+	
+	oCIDec = Hemi.app.comp.newInstance();
+	oCIDec.setAsync(0);
+	oCIDec.loadComponent("cvsimg_decorator",g_application_path + "Components/component.cvsimg_decorator.xml");
+	oCIDec.setCanvas(_o.canvas);
+	oCIDec.setDelegate(this);
+	_o.icoDecorator = oCIDec;
+	
+	var oCfg = _o.canvas.newContextConfig("NoShadow");
+	oCfg.fillStyle = "#FFFFFF";
+    oCfg.strokeStyle = "#FFFFFF";
+    oCfg.shadowColor = "#FFFFFF";
+    oCfg.shadowOffsetX = 0;
+    oCfg.shadowOffsetY = 0;
+    oCfg.shadowBlur = 0;
+    _o.canvas.setTemporaryContextConfig(oCfg);
+    
+    oCfg = _o.canvas.newContextConfig("DropBlueShadow");
+    oCfg.fillStyle = "#FFFFFF";
+    oCfg.strokeStyle = "#FFFFFF";
+    oCfg.shadowColor = "#AAAAFF";
+    oCfg.shadowOffsetX = 5;
+    oCfg.shadowOffsetY = 5;
+    oCfg.shadowBlur = 1;
+    
+    oCfg = _o.canvas.newContextConfig("DropGreenShadow");
+    oCfg.fillStyle = "#FFFFFF";
+    oCfg.strokeStyle = "#FFFFFF";
+    oCfg.shadowColor = "#AAFFAA";
+    oCfg.shadowOffsetX = 5;
+    oCfg.shadowOffsetY = 5;
+    oCfg.shadowBlur = 1;
+    
+    //this.setScale(700,500);
+    //this.clearView();
+    
+    this.scopeHandler("grouppicker_loaded",0,0,1);
+    this.scopeHandler("dataform_loaded",0,0,1);
+},
+getCanvas : function(){
+	return this.getObjects().canvas;
+},
+getSuggestedGroupCount : function(){
+	return this.getProperties().suggestedGroupCount;
+},
+getSuggestedIconCount : function(){
+	return this.getProperties().suggestedIconCount;
+},
+paintControls : function(){
+	var iSlots = Math.floor(this.getProperties().width / this.getProperties().dirThumbWidth);
+	var iMid = Math.floor(iSlots/2);
+/// 48px-Crystal_Clear_mimetype_image
+	//this.paintControl("newGroup",0,"48px-Crystal_Clear_mimetype_misc.png");
+    this.paintControl("groupBack",0,"48px-Crystal_Clear_action_back.png");
+	this.paintControl("groupNext",1,"48px-Crystal_Clear_action_forward.png");
+	
+	this.paintControl("imageBack",iMid-2,"48px-Crystal_Clear_action_back.png");
+	this.paintControl("controlPanel",iMid,"48px-Crystal_Clear_app_ksysguard.png");
+	
+	//this.paintControl("newImage",4,"48px-Crystal_Clear_mimetype_image.png");
+	
+	this.paintControl("imageNext",iMid+2,"48px-Crystal_Clear_action_forward.png");
+	this.paintControl("deleteObject",iSlots - 2,"48px-Crystal_Clear_filesystem_trashcan_empty.png");
+	this.paintControl("logout",iSlots - 1,"48px-Crystal_Clear_app_logout.png");
+	//this.paintControl("newGroup",0,"48px-Crystal_Clear_mimetype_misc.png");
+},
+
+clearView : function(bTempOnly,bDataOnly){
+	var _o = this.getObjects(), _s = this.getProperties(), oM;
+
+	_s.currentGroupCount = 0;
+	_s.currentIconCount = 0;
+	_o.canvas.setTemporaryContextConfig(_o.canvas.getConfigByName("NoShadow"));
+	_o.canvas.setContextConfig(_o.canvas.getConfigByName("NoShadow"));
+	if(bTempOnly){
+		_o.canvas.ClearTempCanvas();
+		//return;
+	}
+	else _o.canvas.Clear();
+	
+
+	if(!_o.currentDirectory) _o.currentDirectory = _o.galleryHome;
+	if(_s.showImage && !bDataOnly){
+		return;
+	}
+	
+	if(!bTempOnly && !bDataOnly){
+		oM = _o.canvas.Rect(0, 0, _s.dirThumbBoxWidth, _s.dirThumbBoxHeight, "#FFFFFF","#FF0000");
+		oM.selectable = 0;
+		oM = _o.canvas.Rect(0, _s.height - _s.ctlBoxHeight,_s.width,_s.height,"#FFFFFF","#00FF00");
+		oM.selectable = 0;
+	}
+	if(!bDataOnly){
+		oM = _o.canvas.Rect( _s.dirThumbBoxWidth + _s.dirThumbBoxRightMargin,0, _s.dirThumbBoxWidth + _s.dirThumbBoxRightMargin + _s.imgThumbBoxWidth, _s.imgThumbBoxHeight, "#FFFFFF","#0000FF");
+		oM.selectable = 0;
+	}
+	if(!bTempOnly){
+		if(!bDataOnly){
+			if(_o.currentDirectory.id != _o.galleryHome.id){
+				if(_o.currentDirectory.parentId != _o.galleryHome.id){
+					this.paintGroup(_o.galleryHome,0);
+				}
+				this.paintGroup(accountManager.getGroupById(_o.currentDirectory.parentId),0,"48px-Crystal_Clear_action_1uparrow.png");
+			}
+			this.paintGroup(_o.currentDirectory,0,"48px-Crystal_Clear_filesystem_folder_grey_open.png");
+		}
+		_s.totalGroupCount = accountManager.countGroups(_o.currentDirectory.path);
+		var aSub = accountManager.listGroups(_o.currentDirectory.path,_s.groupStartIndex,_s.suggestedGroupCount);//accountManager.listGroups("~/GalleryHome");
+		_o.currentGroupList = [];
+		for(var i = 0; i < aSub.length;i++){
+			if(aSub[i].name.match(/^\.thumbnail$/gi)) continue;
+			_o.currentGroupList.push(aSub[i]);
+			if(!bDataOnly){
+				this.paintGroup(aSub[i],1,0,i);
+			}
+		}
+		if(!_s.showControlPanel){
+			_s.totalIconCount = accountManager.countDatas(_o.currentDirectory.path);
+			var aData = accountManager.listDatas(_o.currentDirectory.path, _s.iconStartIndex, _s.suggestedIconCount);
+			if(aData == null) this.logError(_o.currentDirectory.path + " returned an error");
+			_o.currentObjectList = aData;
+			if(!bDataOnly){
+				for(var i = 0; aData != null && i < aData.length;i++){
+					this.paintObject(aData[i],i);
+				}
+			}
+		}
+		if(!bDataOnly){
+			this.paintControls();
+			_o.canvas.Rasterize();
+		}
+	}
+	if(_s.showControlPanel){
+		this.paintControlPanelItem("newGroup","New Group","Crystal_Clear_action_filenew.png");
+		this.paintControlPanelItem("newImage","New Image","Crystal_Clear_mimetype_image.png");
+		this.paintControlPanelItem("openShare","Sharing","Crystal_Clear_app_Login_Manager.png");
+		this.paintControlPanelItem("openLog","Log","Crystal_Clear_app_kexi.png");
+		this.paintControlPanelItem("openDebug","Debug",g_application_path + "Media/Icons/Hemi_Logo_128x128.png");
+	}
+
+
+	
+	//this.paintGroup(accountManager.getHome());
+	
+	//if(!bTempOnly) _o.canvas.Rasterize(); 
+},
+scaleText : function(s){
+	var iLabelWidth = 12,b,i,x="";
+	
+	if(s.length <= iLabelWidth) return s;
+
+	if((i = s.lastIndexOf(".")) >= (s.length - iLabelWidth)){
+		x = s.substring(i,s.length);
+		s=s.substring(0,i);
+	}
+	return s.substring(0,iLabelWidth - x.length - 3) + "..." + x;
+},
+setScale : function(w, h){
+	var _s = this.getProperties();
+	var _o = this.getObjects();
+	_s.width = w;
+	_s.height = h;
+	_s.dirThumbBoxHeight = (h - _s.ctlBoxHeight - _s.ctlBoxTopMargin);
+	_s.imgThumbBoxHeight = (h - _s.ctlBoxHeight - _s.ctlBoxTopMargin);
+	_s.imgThumbBoxWidth = (w - _s.dirThumbBoxWidth - _s.dirThumbBoxRightMargin);
+	
+	_s.suggestedGroupCount = Math.floor(_s.dirThumbBoxHeight /( _s.dirThumbHeight + 10));
+	_s.suggestedIconCount = Math.floor(_s.imgThumbBoxHeight / (_s.imgThumbHeight+10)) * Math.floor(_s.imgThumbBoxWidth / (_s.imgThumbWidth+10));
+
+	_o.canvas.Resize(w + "px",h + "px");
+},
+paintControlPanelItem : function(a, i, s){
+	var _s = this.getProperties();
+	var sIcoSrc = (s.match(/\//) ? "" : _s.iconLargeBase) + s;
+	var img = new Image();
+	var oG = this.getObjects().canvas;
+	var t = this;
+	// # of icons per row
+	var iMaxX = parseInt(_s.imgThumbBoxWidth / (_s.imgThumbWidth + 10));
+	var iMaxY = parseInt(_s.imgThumbBoxHeight / (_s.imgThumbHeight + 10));
+	var slotX = _s.dirThumbBoxWidth + _s.dirThumbBoxRightMargin + (_s.currentIconCount % iMaxX)*(_s.imgThumbWidth+10);
+	var slotY = parseInt(_s.currentIconCount / iMaxX)*(_s.imgThumbHeight+10);
+	_s.currentIconCount++;
+	img.onload = function(){
+		var oShape = oG.Image(img, slotX, slotY);
+		oShape.action = a;
+		oShape.referenceName = i;
+		oShape.referenceType = "CTL";
+		oShape.icoType = "IMG";
+		oShape.hover = 1;
+		oG.Text(t.scaleText(i), slotX, slotY + t.getProperties().imgThumbHeight, "#000000","#000000","8pt","Arial");
+		oG.Rasterize();
+	}
+	img.src = sIcoSrc;
+},
+paintControl : function(a, i, s){
+	var _s = this.getProperties();
+	
+	// padding-right of 2 is hard coded here for the moment
+	var slotX = i*_s.dirThumbWidth;//(i * (_s.width / dirThumbWidth));
+	var sIcoSrc = _s.iconSmallBase + s;
+	var img = new Image();
+
+	var t = this;
+	var oG = this.getObjects().canvas;
+	img.onload = function(){
+		var _s = t.getProperties();
+		var oShape = oG.Image(img, slotX, _s.height - _s.ctlBoxHeight + 1);
+		oShape.action = a;
+		oShape.referenceType = "CTL";
+		oShape.icoType = "DIR";
+		oShape.hover = 1;
+		oG.Rasterize();
+	};
+	img.src = sIcoSrc;
+},
+
+paintGroup : function(o,a,s,i){
+	if(!o) return;
+	var _s = this.getProperties(),_o = this.getObjects();
+	var sIcoSrc = _s.iconSmallBase + "48px-Crystal_Clear_filesystem_folder_grey.png";
+	if(s) sIcoSrc = (s.match(/\//) ? "" : _s.iconSmallBase) + s;
+	if(o.id == _o.galleryHome.id){
+	//if(o.id == accountManager.getHome().id){
+		sIcoSrc =  _s.iconSmallBase + "48px-Crystal_Clear_filesystem_folder_home2.png";
+	}
+	var slotX = (a * _s.dirThumbWidth);//(_s.currentGroupCount > 0 ? 50 : 0);//(i%2==0 && i > 0) ? (i/2 * 50) : 0;
+	var slotY = _s.currentGroupCount++ * (_s.dirThumbWidth + 10);
+	var img = new Image();
+	var obj = o;
+	var refIndex = i;
+	var t = this;
+	img.onload = function(){
+		var oG = t.getObjects().canvas;
+		var iL =  slotX;
+		var iT = slotY;
+		//if(img.width > _s.dirThumbWidth) 
+		img.width = _s.dirThumbWidth;
+		//if(img.height > _s.dirThumbHeight) img.height = _s.dirThumbHeight;
+		var oShape = oG.Image(img, iL, iT);
+		oShape.action = "cd";
+		oShape.referenceIndex = refIndex;
+		oShape.path = obj.path;
+		oShape.referenceName = obj.name;
+		oShape.referenceId = obj.id;
+		oShape.referenceType = "GROUP";
+		oShape.icoType = "DIR";
+		oShape.hover = 1;
+		oShape.drag = 1;
+		oG.Text(t.scaleText(obj.name), slotX, slotY + img.height, "#000000","#000000","8pt","Arial");
+		oG.Rasterize();
+	}
+	img.src = sIcoSrc;
+
+},
+
+paintObject : function(o,i){
+	if(!o) return;
+	var _s = this.getProperties();
+	var sIcoSrc = _s.iconLargeBase + "Crystal_Clear_mimetype_misc.png";
+	if(o.mimeType && o.mimeType.match(/^image/gi)){
+		sIcoSrc = _s.iconLargeBase + "Crystal_Clear_mimetype_image.png";
+		if(o.group && !o.group.populated) o.group = accountManager.getGroupById(o.group.id);
+		if(o.group && o.group.path){
+			sIcoSrc = "/AccountManager/Thumbnail/" + accountManager.getOrganizationDotPath() + "/Data" + o.group.path + "/" + o.name + "/" + _s.imgThumbWidth + "x" + _s.imgThumbHeight;
+		}
+	}
+	var img = new Image();
+	var obj = o;
+	var oG = this.getObjects().canvas;
+	var t = this;
+	// # of icons per row
+	var iMaxX = parseInt(_s.imgThumbBoxWidth / (_s.imgThumbWidth + 10));
+	var iMaxY = parseInt(_s.imgThumbBoxHeight / (_s.imgThumbHeight + 10));
+	var slotX = _s.dirThumbBoxWidth + _s.dirThumbBoxRightMargin + (_s.currentIconCount % iMaxX)*(_s.imgThumbWidth+10);
+	var slotY = parseInt(_s.currentIconCount / iMaxX)*(_s.imgThumbHeight+10);
+	var refIndex = i;
+	this.log(obj.name + " " + sIcoSrc + " to " + slotX + ", " + slotY + " from " + _s.currentIconCount + ", " + iMaxX );
+	_s.currentIconCount++;
+	img.onload = function(){
+		var oShape = oG.Image(img, slotX, slotY);
+		oShape.action = "view";
+		oShape.referenceName = obj.name;
+		oShape.referenceId = obj.id;
+		oShape.referenceType = "OBJECT";
+		oShape.referenceIndex = refIndex;
+		oShape.icoType = "IMG";
+		oShape.groupId = obj.group.id;
+		oShape.hover = 1;
+		oShape.drag = 1;
+		oG.Text(t.scaleText(obj.name), slotX, slotY + t.getProperties().imgThumbHeight, "#000000","#000000","8pt","Arial");
+		oG.Rasterize();
+	}
+	img.src = sIcoSrc;
+},
+newImage : function(){
+	var oW = Hemi.app.createWindow("Picker",g_application_path + "Forms/Data.xml","Data-" + Hemi.guid(),0,0,{openerId:this.getObjectId()},this._prehandle_dataform_loaded);
+	if(!oW) return;
+	oW.setHideOnClose(0);
+	oW.resizeTo(400,400);
+	oW.center();
+	oW.setIsModal(true);
+
+},
+_handle_dataform_loaded : function(oW){
+	/// Will receive double call-backs from the data form due to the internal redirect to build-out the dynamic display
+	///
+	if(!oW.GetElementByRID) return;
+	oW.GetElementByRID("dataTypeContainer").style.display = "none";
+	oW.GetElementByRID("mimeType").value = "binary";
+	oW.GetElementByRID("path").value = this.getObjects().currentDirectory.path;
+	oW.changeDataType();
+},
+openShare : function(){
+
+},
+refreshList : function(){
+	window.uwmServiceCache.clearServiceCache("Data");
+	this.clearView();
+},
+groupNext : function(){
+	var _s = this.getProperties();
+	
+	_s.groupStartIndex += _s.suggestedGroupCount;
+	if(_s.totalGroupCount > 0 && _s.groupStartIndex >= _s.totalGroupCount){
+		_s.groupStartIndex = _s.totalGroupCount - _s.suggestedGroupCount;
+	}
+	if(_s.groupStartIndex < 0) _s.groupStartIndex = 0;
+	_s.showControlPanel = 0;
+	this.clearView();
+},
+groupBack : function(){
+	var _s = this.getProperties();
+	_s.groupStartIndex -= _s.suggestedGroupCount;
+	if(_s.groupStartIndex < 0) _s.groupStartIndex = 0;
+	_s.showControlPanel = 0;
+	this.clearView();
+
+},
+imageNext : function(b){
+	var _s = this.getProperties();
+	
+	_s.iconStartIndex += _s.suggestedIconCount;
+	if(_s.totalIconCount > 0 && _s.iconStartIndex >= _s.totalIconCount){
+		_s.iconStartIndex = _s.totalIconCount - _s.suggestedIconCount;
+	}
+	if(_s.iconStartIndex < 0) _s.iconStartIndex = 0;
+	_s.showControlPanel = 0;
+	this.clearView(0,(b==true));
+},
+imageBack : function(b){
+	var _s = this.getProperties();
+	_s.iconStartIndex -= _s.suggestedIconCount;
+	if(_s.iconStartIndex < 0) _s.iconStartIndex = 0;
+	_s.showControlPanel = 0;
+	this.clearView(0,(b==true));
+
+},
+
+newGroup : function(){
+	var oW = Hemi.app.createWindow("Picker",g_application_path + "Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{openerId:this.getObjectId()},this._prehandle_grouppicker_loaded);
+	if(!oW) return;
+	oW.setHideOnClose(0);
+	oW.resizeTo(400,100);
+	oW.center();
+	oW.setIsModal(true);
+	oW.hideButtons();
+},
+_handle_grouppicker_loaded : function(oW){
+	//alert('loaded');
+	oW.setPickerHandler("createNewGroup");
+	oW.setPickerLabel("New Group Name");
+},
+deleteObject : function(sType, sId){
+	var o;
+	switch(sType){
+		case "GROUP":
+			o = accountManager.getGroupById(sId);
+			if(o) accountManager.deleteGroup(o); 
+			break;
+		case "OBJECT":
+			o = accountManager.getDataById(sId);
+			o.detailsOnly = true;
+			delete o.dataBytesStore;
+			if(o) accountManager.deleteData(o);
+			break;
+	}
+	this.clearView();
+},
+createNewGroup : function(s){
+	this.log("Pick Group Name '" + s + "'");
+	/// getCreatePath is a GET request, and the service cache won't automatically clear out cached values
+	/// Since this assumes a new group, dump the cache after the attempt to create
+	///
+	accountManager.getCreatePath(this.getObjects().currentDirectory.path + "/" + s);
+	window.uwmServiceCache.clearServiceCache("Group");
+	this.clearView();
+},
+controlPanel : function(sType, sId){
+	var _s = this.getProperties();
+	_s.showControlPanel = (_s.showControlPanel ? 0 : 1);
+	this.clearView();
+},
+cd : function(sType, sId){
+	var _o = this.getObjects(),_s = this.getProperties();
+	var o = accountManager.getGroupById(sId);
+	if(!o || o.id == _o.currentDirectory) return;
+	_s.iconStartIndex = 0;
+	_s.showControlPanel = 0;
+	_o.currentDirectory = o;
+	this.log("View " + o.name);
+	_s.showControlPanel = 0;
+	this.clearView();
+},
+gestureMatteImage : function(sType, sId, oMatte){
+	if(!oMatte) return;
+	var _s = this.getProperties(), _p = this.getObjects(), bP =0, iML = this.getObjects().canvas.getProperties().MouseTrackLeft, iMT = this.getObjects().canvas.getProperties().MouseTrackTop, vM,iTI;
+	vM = _s.matteConfig;
+	/// Left Pane
+	this.log("Gesture idx " + oMatte.referenceIndex + " at " + iML + ", " + iMT + " within " + _s.width + "x" + _s.height);
+	
+	iTI = oMatte.referenceIndex;
+	
+	//_s.iconStartIndex >= _s.totalIconCount
+	if(iML <= vM.left){
+
+		if((iTI-1) < 0 && _s.iconStartIndex > 0){
+			//_s.showImage = 0;
+			this.imageBack(true);
+			iTI = _p.currentObjectList.length - 1;
+			bP = 1;
+		}
+		else if(iTI > 0){
+			iTI --;
+			bP = 1;
+		}
+		this.log("Gesture Left " + bP + " to " + iTI);
+	}
+	/// Right Pane
+	else if(iML >= (_s.width - vM.right)){
+		
+		if((iTI+1) >= _p.currentObjectList.length && (iTI+1) < _s.totalIconCount){
+			//_s.showImage = 0;
+			this.imageNext(true);
+			iTI = 0;
+			bP = 1;
+		}
+		else if((iTI+1) < _p.currentObjectList.length){
+			iTI++;
+			bP = 1;
+		}
+		this.log("Gesture Right " + bP + " to " + iTI);
+	}
+	/// Top Pane
+	else if(iMT <= vM.top){
+		this.log("Gesture Top");
+	}
+	/// Bottom Pane
+	else if(iMT >= (_s.height - vM.bottom)){
+		this.log("Gesture Bottom");
+	}
+	/// Center Pane
+	else{
+		this.log("Gesture Center");
+		this.closeImage();
+	}
+	if(bP){
+		this.view(0,_p.currentObjectList[iTI].id,iTI);
+	}
+},
+closeImage : function(){
+	this.getProperties().showImage = 0;
+	this.clearView();
+},
+openLog : function(){
+	Hemi.app.createWindow('Log Viewer','Templates/LogViewer.xml', 'LogViewer');
+},
+view : function(sType, sId, iViewIndex){
+	var o = accountManager.getDataById(sId),_o = this.getObjects(),_s = this.getProperties();
+	if(typeof iViewIndex == "object") iViewIndex = iViewIndex.referenceIndex;
+	_s.showImage = 1;
+	_s.showImageId = sId;
+	_s.showImageIndex = iViewIndex;
+	_s.showControlPanel = 0;
+	this.clearView(1);
+	var img = new Image();
+	
+	
+	
+	var oG = _o.canvas;
+
+	var oR = oG.Rect(0, 0, _s.width, _s.height, "#000000","#000000");
+	oR.referenceIndex = iViewIndex;
+	var t = this;
+	img.onload = function(){
+
+		var iMaxWidth = t.getProperties().width;
+		var iMaxHeight = t.getProperties().height;
+		if(img.width > iMaxWidth || img.height > iMaxHeight){
+			var iS1 = (iMaxWidth / img.width);
+			var iS2 = (iMaxHeight / img.height);
+			var iW = (iS1 * img.width);
+			var iH = (iS1 * img.height);
+			if(iMaxHeight < iH){
+				iW = (iS2 * img.width);
+				iH = (iS2 * img.height);
+			}
+			img.width = iW;
+			img.height = iH;			
+		}
+		var iX = (iMaxWidth - img.width) / 2;
+		var iY = (iMaxHeight - img.height) / 2; 
+		t.log("Image: " + img.width + "x" + img.height + " at " + iX + ", " + iY);
+		
+		var oShape = oG.Image(img, iX, iY);
+		oShape.action = "gestureMatteImage";
+		oShape.referenceName = o.name;
+		oShape.referenceId = o.id;
+		oShape.referenceType = "OBJECT";
+		oShape.matteId = oR.id;
+		oShape.noLabel = 1;
+		oShape.groupId = o.group.id;
+		oShape.referenceIndex = oR.referenceIndex;
+				
+		oR.noLabel = 1;
+		oR.action = "gestureMatteImage";
+		oR.referenceType = "MATTE";
+		oR.referenceId = oShape.id;
+
+
+		//oG.Rasterize();
+	}
+	
+	img.src = "data:" + o.mimeType + ";base64," + o.dataBytesStore;
+	/*
+	
+	if(_o.viewWindow && !_o.viewWindow.getIsClosed()) _o.viewWindow.Close();
+	var vData = {media_name:o.name,media_id:o.id,maxWidth:document.documentElement.offsetWidth-10,maxHeight:document.documentElement.offsetHeight - 70,media_url:"data:" + o.mimeType + ";base64," + o.dataBytesStore};
+	var oW = Hemi.app.createWindow("View " + o.name, "/AccountManagerExample/Forms/ImageViewer.xml", "View-" + o.id, 0, 0, vData);
+    if (oW) {
+    	oW.resizeTo(400, 200);
+    	Hemi.app.getWindowManager().CenterWindow(oW);
+    	// Destroy the window when closed
+    	//
+    	oW.setHideOnClose(0);
+    	oW.setCanMinimize(0);
+    	oW.setCanMaximize(0);
+    	oW.setCanResize(0);
+    	_o.viewWindow = oW;
+    }
+    */
+
+},
+copyShapeProperties : function(s, t){
+		t.id = s.id;
+		t.referenceName = s.referenceName;
+		t.referenceType = s.referenceType;
+		t.referenceId = s.referenceId;
+		t.referenceIndex = s.referenceIndex;
+		t.icoType = s.icoType;
+		t.action = s.action;
+		t.path = s.path;
+		t.drag = s.drag;
+		t.hover = s.hover;
+		t.noLabel = s.noLabel;
+		t.matteId = s.matteId;
+		t.selectable = s.selectable;
+		
+},
+getGroupById : function(sId){
+	var _o = this.getObjects(),i=0,o;
+	for(;i < _o.currentGroupList.length;i++){
+		if(_s.currentGroupList[i].id == sId){
+			o = _s.currentGroupList[i];
+		}
+	}
+	return o;
+
+},
+getObjectById : function(sId){
+	var _o = this.getObjects(),i=0,o;
+	for(;i < _o.currentObjectList.length;i++){
+		if(_o.currentObjectList[i].id == sId){
+			o = _o.currentObjectList[i];
+		}
+	}
+	if(o) return o;
+	return accountManager.getDataById(sId);
+},
+openObject : function(sType, sId, oShape){
+	var o = this.getObjectById(sId), _o = this.getObjects();
+	var oProps = {openerId:this.getObjectId(),picker:0,viewType:o};
+	if(_o.viewWindow && !_o.viewWindow.getIsClosed()) _o.viewWindow.Close();
+	var oW = Hemi.app.createWindow(o.name, "/AccountManagerExample/Forms/Data.xml", "View-" + o.id, 0, 0, oProps);
+    if (oW) {
+    	oW.resizeTo(400, 400);
+    	Hemi.app.getWindowManager().CenterWindow(oW);
+    	// Destroy the window when closed
+    	//
+    	oW.setHideOnClose(0);
+    	oW.setCanMinimize(0);
+    	oW.setCanMaximize(0);
+    	oW.setCanResize(0);
+    	_o.viewWindow = oW;
+    }
+
+},
+reparentGroup : function(s, t){
+	this.log("Reparent " + s.name + " to " + t.name);
+	s.parentId = t.id;
+	accountManager.updateGroup(s);
+	this.clearView();
+},
+reparentObject : function(s, t){
+	this.log("Reparent " + s.name + " to " + t.name);
+	s.group = t;
+	s.detailsOnly = true;
+	delete s.dataBytesStore;
+	accountManager.updateData(s);
+	this.clearView();
+},
+openDebug : function(){
+	var oW = Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler');
+	/// Create won't return an existing window object
+	if(!oW) return;
+	oW.setCanMinimize(0);
+	oW.setCanMaximize(0);
+	oW.moveTo(0,0);
+},
+logout : function(){
+	window.uwm.logout();
+	window.uwm.operation("ContinueWorkflow");
+}
+
+]]>
+</application-component>
+</application-components>

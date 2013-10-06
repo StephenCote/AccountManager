@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Data Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Data";
+			this.getProperties().defaultPath = "~/Data";
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.beans.dataType();
+					o.name = "";
+					o.blob = true;
+					o.dataBytesStore = "";
+					o.mimeType = "text/plain";
+					o.description = "";
+					o.id = 0;
+					o.createdDate = new Date();
+					o.modifiedDate = o.createdDate;
+					o.expiryDate = o.createdDate;
+				}
+				else if(o.group && o.group.path){
+					this.getProperties().defaultPath = o.group.path;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

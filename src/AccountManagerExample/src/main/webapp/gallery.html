@@ -1,0 +1,47 @@
+<!doctype html>
+<html class="windows no-js" lang="en-US" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+
+        <title>Gallery</title>
+        <meta name="apple-mobile-web-app-capable" content="yes">
+   		<link rel="stylesheet" href="Style/uwm.css" type="text/css" title = "uwm" />
+   		<link rel="stylesheet" href="Style/rocket.css" type="text/css" />
+        <script type = "text/javascript" src = "Scripts/bootstrap.js"></script>
+		<script type="text/javascript"><!--//
+			/// Specify the alternate main configuration
+			/// This is used in ContinueWorkflow
+			uwm.altMain = {
+				form : "Forms/CanvasGallery.xml"
+			};
+			uwm.addPageLoadHandler(function(){
+				if(uwm.rule("IsLoggedIn",0, "ContinueWorkflow","RequireAuthentication")){
+
+				}
+
+
+			});
+
+			//-->
+		</script>
+
+    </head>
+    <body>
+    	<!--
+         <div class = "uwm-header uwm-box-border">
+            <h1>Service Explorer</h1>
+			
+        </div>
+        <div class = "uwm-content uwm-box-border">
+
+            <div template = "ToolBar">&nbsp;</div>
+			<div id = "oMain">[ ... ]</div>
+			
+		</div>
+        <div class = "uwm-footer uwm-box-border">
+            
+        </div>
+		-->
+		<div id = "oMain">[ ... ]</div>
+    </body>
+</html>

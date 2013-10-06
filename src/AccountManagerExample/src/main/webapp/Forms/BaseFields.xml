@@ -1,0 +1,143 @@
+<html-fragment>
+<!-- 
+	<div class = "rocket-column-2">
+		<p>
+			Id:
+		</p>
+		<p>
+			<input type = "text" class = "rocket-text rocket-text-short" rid = "id" bind = "${bean.rocketType}" disable = "true" />
+		</p>
+	</div>
+-->
+	<div rid = "pathCont" class = "rocket-column-2">
+		<p>
+			Path:
+		</p>
+		<p>
+			<input type = "text" placeholder = "${property.defaultPath}" rid = "path" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Name:
+		</p>
+		<p>
+			<input type = "text" rid = "name" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	
+	<import-xml src = "/AccountManagerExample/Forms/${property.typeName}Fields.xml" id = "${property.typeName}Fields" />
+	
+	<div style = "clear:both;" class = "rocket-column-2">
+		<p rid = "lblSave">
+			Save:
+		</p>
+		<p>
+			<input type = "button" class = "rocket-button" value = "Save" onclick = "${this}.saveType()" />
+		</p>
+	</div>
+	<p style = "clear:both;"><span rid = "status"></span></p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			var o = this.getBean("rocketType");
+			if(!this.setStatus) this.setStatus = this._setStatus;
+			this.setStatus("");
+			this.GetElementByRID("name").focus();
+			if(!this.getProperties().viewTypeName) this.getProperties().viewTypeName = this.getProperties().typeName;
+			if(this.setTitle) this.setTitle(this.getProperties().viewTypeName + " - " + (o.id ? o.name : "New"));
+			if(this.resizeTo && this.getBody){
+				if(this.getBody().scrollHeight > this.getBody().offsetHeight){
+					var iH = this.getBody().scrollHeight + 50;
+					if(iH > document.documentElement.clientHeight) iH = document.documentElement.clientHeight;
+					this.resizeTo(this.getContainer().offsetWidth,iH);
+				}
+			}	
+		},
+		embedded_init : function(){
+
+			
+		},
+		saveType : function(){
+			this.synchronizeForm();
+			var o = this.getBean("rocketType");
+			this.GetElementByRID("path").className = "rocket-text";
+			this.GetElementByRID("endTime").className = "rocket-text";
+			this.GetElementByRID("name").className = "rocket-text";
+			this.setStatus("");
+			if(!this.ValidateForPattern("name","not-empty")){
+				this.GetElementByRID("name").className = "rocket-text rocket-text-error";
+				this.setStatus("Name cannot be empty");
+				return;
+			}
+			var sPath = this.getPath();
+			var oGroup = accountManager.getCreatePath(sPath);
+			if(!oGroup || oGroup == null){
+				this.GetElementByRID("path").className = "rocket-text rocket-text-error";
+				this.setStatus("Invalid group");
+				return;
+			}
+
+			/// TODO: Don't use the different bean class for the AM group object
+			///
+			o.group = accountManager.getCleanGroup(oGroup);
+
+			
+			if(this.prepareSave && !this.prepareSave(o)){
+				Hemi.logError("Prepare save failed for type " + this.getProperties().typeName);
+				return;
+			}
+			
+			var sAct = "add", bAct = 0;
+			if(o.id > 0) sAct = "update";
+			var sMeth= sAct + this.getProperties().typeName;
+			if(sAct.match(/^add$/) && this.addType){
+				bAct = this.addType(o);
+			}
+			else{
+				if(!accountManager[sMeth]){
+					this.setStatus("Invalid API: " + sMeth);
+					return;
+				}
+				
+				bAct = accountManager[sMeth](o);
+			}
+			if(bAct){
+				if(bAct != -1) this.postProcess();
+				else this.setStatus("Processing ...");
+			}
+			else{
+				this.setStatus("Failed to " + sAct);
+			}
+		
+		},
+		postProcess : function(){
+			var o = this.getBean("rocketType");
+			var n = accountManager["get" + this.getProperties().typeName](o.name,o.group);
+			if(n != null){
+				this.clearBean("rocketType");
+				this.setBean(n,"rocketType");
+			}
+			///Hemi.log("Refresh form for id #" + n.id);
+			this.synchronizeForm(1);
+			///if(this.getProperties().picker){
+				var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
+				if(oOpener && oOpener.refreshList) oOpener.refreshList();
+				///if(oOpener["refresh" + this.getProperties().typeName + "sList"]) oOpener["refresh" + this.getProperties().typeName + "sList"]();
+				if(this.Close) this.Close();
+			///}
+			///this.loadTemplate("/RocketWeb/Forms/BaseTemplate.xml");
+		
+		},
+		getPath : function(){
+			var o = this.GetElementByRID("path"), s;
+			if(!(s = o.value).length){
+				s = o.placeholder;
+				if(!s) s = "~/" + this.getProperties().typeName + "s";
+			}
+			return s;
+		},
+		_setStatus : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+		}
+	]]></embedded-script>
+</html-fragment>

@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<html-fragment>
+
+	<import-style src ="Styles/Designer.css" id ="designer" />
+	<import-style src ="Styles/GridStyle.css" id ="grid" />
+	<div class = "buttons_bar" rid = "buttons-bar">
+		<input type="button" rid = "button_refresh" class = "designer_button refresh_button" button-action = "Refresh" />
+		<input type="button" rid = "button_new" class = "designer_button new_button" button-action = "New" />
+		<input type="button" rid = "button_open" class = "designer_button open_button" button-action = "Open"  />
+		<input type="button" style ="display:none;" rid = "button_save" class = "designer_button save_button" button-action = "Save" />
+		<input type="button" rid = "button_delete" class = "designer_button delete_button" button-action = "Delete"  />
+		<div class = "designer_button_spacer"></div>
+		<input type = "text" rid = "path" style = "margin-top: 5px; width: 75px !important; float: left;" placeholder = "~/Path" class = "rocket-text" />
+		<div class = "designer_button_spacer"></div>
+		<input type="button" rid = "button_move_first" disabled = "true" class = "designer_button" button-action = "MoveFirst" value = "&lt;&lt;" />
+		<input type="button" rid = "button_move_prev" disabled = "true" class = "designer_button" button-action = "MovePrev" value = "&lt;" />
+		<input type="button" rid = "button_move_next" disabled = "true" class = "designer_button" button-action = "MoveNext" value = "&gt;" />
+		<input type="button" rid = "button_move_last" disabled = "true" class = "designer_button" button-action = "MoveLast" value = "&gt;&gt;" />
+		<div class = "designer_button_label" rid = "record_label"></div>
+	</div>
+	<div class = "uwm-box-border" component = "wideselect" rid = "typelist">
+	</div>
+	<p><span rid = "status">[ ... ]</span></p>
+	<!--
+	Members:
+		InitializeIOGrid
+		LoadIOGrid
+		SetTotalItemCount
+		ToggleIOGridSelectItem
+		
+	Virtuals:
+		CreateNewItem
+		SaveSelectedItem
+		openListItem
+		DeleteSelectedItem
+		refreshList
+		DrawIOGridItem
+		DrawIOGridHeader
+		DrawIOGridFooter
+	-->
+	<embedded-script>
+		<![CDATA[
+		initGrid : function(sTypeName, sDefPath, sViewTypeName){
+			
+			this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : "~/" + sTypeName + "s");
+			if(!sViewTypeName) sViewTypeName = sTypeName;
+			this.getProperties().typeName = sTypeName;
+			this.getProperties().viewTypeName = sViewTypeName;
+			this.getProperties().start_record = 0;
+			this.getProperties().record_count = 10;
+			this.GetComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
+			if(this.setTitle) this.setTitle(sViewTypeName);
+			
+		},
+		embedded_init : function(){
+		
+		},
+		embedded_destroy : function(){
+			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_list_session_refresh");
+		},
+		configList : function(){
+			this.getList().getContainer().style.height = (this.getProperties().record_count * 14) + "px";
+			this.getList().setResultHandler( this.scopeHandler("typelistclick",0,0,1));
+			this.refreshList();
+			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_list_session_refresh");
+		},
+				
+		getList : function(){
+			return this.GetComponentByRID("typelist").GetWideSelect();
+		},
+		getPath : function(){
+			var o = this.GetElementByRID("path"), s;
+			if(!(s = o.value).length){
+				s = o.placeholder;
+				if(!s) s = "~/" + this.getProperties().typeName + "s";
+			}
+			return s;
+		},
+		handle_list_session_refresh : function(s, v){
+			this.refreshList();
+		},
+		_handle_typelistclick : function(s, v){
+			this.EnableButton("button_delete");
+			this.EnableButton("button_open");
+			if(this.handle_list_click) this.handle_list_click(v);
+			if(this.getProperties().picker){
+				var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
+				if(this.getProperties().pickFunction && oOpener[this.getProperties().pickFunction]){
+					oOpener[this.getProperties().pickFunction](this.getProperties().formType,v.data, this.getProperties().sourceId);
+				}
+				else{
+					var oL = 0;
+					if(this.getProperties().listId) oL = Hemi.registry.service.getObject(this.getProperties().listId);
+					else if(oOpener.getList) oL = oOpener.getList();
+					else if(oOpener["get" + this.getProperties().typeName + "sList"]) oL = oOpener["get" + this.getProperties().typeName + "sList"]();
+					if(oL && v && v.data) oL.addItem(v.data.name, v.data);
+					else if(this.getProperties().pickFunction && oOpener[this.getProperties().pickFunction]) oOpener[this.getProperties().pickFunction](this.getProperties().formType,v.data, this.getProperties().sourceId);
+				}
+				if(this.Close) this.Close();
+			}
+		},
+		
+		showButton : function(n){
+				var o = this.GetElementByRID("button_" + n);
+				if(o) o.style.display = "";
+		},
+		hideButton : function(n){
+				var o = this.GetElementByRID("button_" + n);
+				if(o) o.style.display = "none";
+		},
+		_handle_exec_button : function(e){
+			var o = Hemi.event.getEventSource(e);
+			var d = this.get_frame("designer");
+			var s = o.getAttribute("button-action"); 
+			var bRM = this.getProperties().response_mode;
+			var oItem = this.getList().getActiveItem();
+			switch(s){
+				case "New":
+					this.createItem();
+					break;
+				case "Save":
+					if(typeof this.SaveSelectedItem == "function") this.SaveSelectedItem();
+					break;
+				case "MoveLast":
+					this.getProperties().start_record = this.getProperties().total_count - this.getProperties().record_count;
+					if(typeof this.refreshList == "function") this.refreshList(1);
+					break;
+				case "MoveFirst":
+					this.getProperties().start_record = 0;
+					if(typeof this.refreshList == "function") this.refreshList(1);
+					break;
+				case "MovePrev":
+					this.getProperties().start_record -= this.getProperties().record_count;
+					if(this.getProperties().start_record < 0) this.getProperties().start_record = 0;
+					if(typeof this.refreshList == "function") this.refreshList(1);
+					break;
+				case "MoveNext":
+					this.getProperties().start_record += this.getProperties().record_count;
+					if(this.getProperties().total_count > 0 && this.getProperties().start_record >= this.getProperties().total_count){
+						this.getProperties().start_record = this.getProperties().total_count - this.getProperties().record_count;
+					}
+					if(typeof this.refreshList == "function") this.refreshList(1);
+					break;
+				case "Refresh":
+					this.refreshList();
+					break;
+				case "Open":
+					if(!oItem) return;
+					this.openItem(oItem.data);
+					break;
+				case "Delete":
+					if(!oItem) return;
+					if(this.deleteItem(oItem.data)){
+						this.DisableButton("button_delete");
+						this.DisableButton("button_open");
+						this.refreshList();
+					}
+					break;
+			}
+		},
+		openItem : function(o){
+			if(!o.populated){
+				if(o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
+					Hemi.log("Not pulling own blob data for " + o.name + " unless specifically requested.");
+				}
+				else{
+					Hemi.log("Not populated.  Fetching a populated version.");
+					o = accountManager["get" + this.getProperties().typeName](o.name,o.group);
+					if(!o.populated) alert("still not populated");
+				}
+			}
+			this.openWindow(this.getProperties().viewTypeName, o);
+		},
+		createItem : function(){
+			this.openWindow(this.getProperties().viewTypeName);
+		},
+		openWindow : function(sType,oType){
+			var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:this.getList().getObjectId()};
+			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), "/AccountManagerExample/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
+            if (oW) {
+            	oW.resizeTo(400, 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		},
+		deleteItem : function(o){
+			var b = 0;
+			if(!uwm.rule("IsLoggedIn")){
+				this.setStatus("Not Authenticated with id " + uwm.getSession().sessionId);
+			}
+			else{
+				b = accountManager["delete" + this.getProperties().typeName](o);
+				if(b){
+					this.setStatus("Deleted object #" + o.id);
+				}	
+				else{
+					this.setStatus("Unable to delete object #" + o.id);
+				}
+			}
+			return b;
+		
+		},
+		disableButtons : function(){
+			this.DisableButton("button_delete");
+			this.DisableButton("button_open");
+			this.DisableButton("button_move_first");
+			this.DisableButton("button_move_last");
+			this.DisableButton("button_move_next");
+			this.DisableButton("button_move_prev");		
+		},
+
+		setTotalCount : function(i){
+			this.getProperties().total_count = i;
+			this.DisableButton("button_move_first");
+			this.DisableButton("button_move_last");
+			this.DisableButton("button_move_next");
+			this.DisableButton("button_move_prev");	
+			if(this.getProperties().start_record > 0){
+				this.GetElementByRID("button_move_prev").disabled = false;
+				this.GetElementByRID("button_move_first").disabled = false;
+			}
+			
+			if((this.getProperties().start_record + this.getProperties().record_count) < this.getProperties().total_count){
+				this.GetElementByRID("button_move_next").disabled = false;
+				this.GetElementByRID("button_move_last").disabled = false;
+			}
+
+			if(this.getProperties().total_count > 0) Hemi.xml.setInnerXHTML(this.GetElementByRID("record_label"),(this.getProperties().start_record + 1) + "-" + (this.getProperties().start_record + this.getProperties().record_count) + " of " + this.getProperties().total_count);
+			else Hemi.xml.setInnerXHTML(this.GetElementByRID("record_label"),"0 of 0");
+
+		},
+
+		refreshList : function(bSkipCountReset){
+			var sPath = this.getPath();
+			
+			var oL = this.getList();
+			oL.clearItems();
+			this.setStatus("");
+			if(!bSkipCountReset) this.setTotalCount(0);
+			var vComp = {};
+			if(this.getProperties().picker){
+				var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
+				var oL2 = 0;
+				if(this.getProperties().listId){
+					oL2 = Hemi.registry.service.getObject(this.getProperties().listId);
+					if(!oL2.getObjectType().match(/wideselect/gi)) oL2 = 0;
+				}
+
+				if(oOpener.getList) oL2 = oOpener.getList();
+				else if(oOpener["get" + this.getProperties().typeName + "sList"]) oL2 = oOpener["get" + this.getProperties().typeName + "sList"]();
+				if(oL2){
+					for(var i = 0; i < oL2.getItems().length;i++) vComp[oL2.getItems()[i].name]=1;
+				}
+			}
+			if(!this.getProperties().typeName){
+				this.setStatus("Pending ...");
+				return;
+			}
+			
+			if(!uwm.rule("IsLoggedIn")){
+				this.setStatus("Not Authenticated with id " + uwm.getSession().sessionId);
+			}
+			else{
+				/// TODO - change the count method API to use the path like the other calls
+				///
+				if(!bSkipCountReset){
+					var count = accountManager["count" + this.getProperties().typeName + "s"](sPath);
+					if(count != null) this.setTotalCount(count);
+				}
+				else{
+					this.setTotalCount(this.getProperties().total_count);
+				}
+				var aList = accountManager["list" + this.getProperties().typeName + "s"](sPath,this.getProperties().start_record,this.getProperties().record_count);	
+				for(var i = 0; aList != null && i < aList.length;i++){
+					if(vComp[aList[i].name]) continue;
+					oL.addItem(aList[i].name, aList[i]);
+				}
+				//if(aList != null) this.setTotalCount(aList.length);
+			}
+		
+		},
+		setStatus : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+		}
+
+	]]></embedded-script>
+</html-fragment>
