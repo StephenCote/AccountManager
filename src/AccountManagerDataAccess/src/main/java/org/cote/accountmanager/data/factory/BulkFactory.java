@@ -474,13 +474,15 @@ public class BulkFactory {
 			logger.error("Object cannot be of an unknown type");
 			throw new ArgumentException("Object cannot be of an unknown type");
 		}
+		
 		NameIdFactory factory = getFactory(factoryType);
 		NameIdFactory bulkFactory = getBulkFactory(factoryType);
 		
 		if(factory == null || bulkFactory == null){
 			logger.error("Factory or BulkFactory is null for type " + factoryType);
 			throw new ArgumentException("Factory or BulkFactory is null for type " + factoryType);
-		}		
+		}
+		
 		BulkSessionType session = sessions.get(sessionId);
 		if(session == null){
 			logger.error("Invalid session id '" + sessionId + "'");
@@ -517,7 +519,7 @@ public class BulkFactory {
 		
 		bulkFactory.addBulkId(sessionId, bulkId);
 		if(factory.addToCache(object,factory.getCacheKeyName(object))==false){
-			logger.error("Failed to add object to factory cache");
+			logger.error("Failed to add object '" + object.getName() + "' to factory cache");
 		}
 		
 		//sessionIdMap.put(bulkId, sessionId);

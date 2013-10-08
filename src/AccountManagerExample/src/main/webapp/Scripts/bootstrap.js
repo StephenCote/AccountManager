@@ -7,7 +7,7 @@
 	}
 	
 	if(!window.HemiConfig) window.HemiConfig = { hemi_base: "/HemiFramework/Hemi/" };
-	WriteScript("/HemiFramework/Hemi/hemi.js");
+	WriteScript("/HemiFramework/Hemi/hemi.comp.js");
 	WriteScript(g_application_path + "Scripts/3rdParty/base64.js");
 	WriteScript(g_application_path + "Scripts/3rdParty/Aes.complete.js");
 	WriteScript(g_application_path + "Scripts/pagescript.js");

@@ -8,7 +8,7 @@ public class MimeUtil {
 		String sLow = ext.toLowerCase();
 		if(sLow.indexOf(".") > -1) sLow = sLow.substring(sLow.lastIndexOf(".") + 1,sLow.length());
 		if(types.containsKey(sLow)){
-			System.out.println("Matched: '" + sLow + "'");
+			//System.out.println("Matched: '" + sLow + "'");
 			return types.get(sLow);
 		}
 		System.out.println("No match: '" + sLow + "'");

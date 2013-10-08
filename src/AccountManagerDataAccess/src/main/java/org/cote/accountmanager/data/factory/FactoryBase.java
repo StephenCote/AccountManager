@@ -111,9 +111,10 @@ public abstract class FactoryBase {
 			/// addCounter = 0;
 			synchronized(table){
 				//logger.info("Writing bulk spool");
-				if(BulkInsertUtil.insertBulk(table)){
-					table.getRows().clear();
+				if(BulkInsertUtil.insertBulk(table) == false){
+					logger.error("Error writing bulk spool.  NOTE: The bulk data set with the error will be cleared from memory.");
 				}
+				table.getRows().clear();
 			}
 			
 		}

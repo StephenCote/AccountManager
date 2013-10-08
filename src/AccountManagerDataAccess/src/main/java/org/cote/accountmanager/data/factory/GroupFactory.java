@@ -188,7 +188,7 @@ public class GroupFactory  extends NameIdFactory {
 		
 
 		
-		// System.out.println("Deleting " + directory.getName());
+		logger.info("Deleting " + directory.getName());
 		populate(directory);
 		populateSubDirectories(directory);
 		DirectoryGroupType[] sub_dirs = directory.getSubDirectories().toArray(new DirectoryGroupType[0]);
@@ -236,6 +236,9 @@ public class GroupFactory  extends NameIdFactory {
 	public BaseGroupType getGroupByName(String name, GroupEnumType group_type, BaseGroupType parent, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		String key_name = name + "-" + group_type + "-" + (parent == null ? 0 : parent.getId()) + "-" + organization.getId();
+	
+		//logger.info("Getting " + key_name);
+		
 		NameIdType out_group = readCache(key_name);
 		if (out_group != null) return (BaseGroupType)out_group;
 		//System.out.println("Fetching " + key_name);
@@ -413,6 +416,7 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	public DirectoryGroupType getCreateDirectory(UserType owner, String directory_name, DirectoryGroupType parent, OrganizationType organization) throws FactoryException, ArgumentException
 	{
+
 		DirectoryGroupType vdir = getDirectoryByName(directory_name, parent, organization);
 		if (vdir == null)
 		{

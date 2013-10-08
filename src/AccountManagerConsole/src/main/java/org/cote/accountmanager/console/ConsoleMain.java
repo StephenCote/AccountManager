@@ -64,6 +64,7 @@ public class ConsoleMain {
 		options.addOption("addOrganization",false,"Add a new user");
 		
 		options.addOption("setup",false,"Setup Account Manager");
+		options.addOption("email",true,"Email address");
 		options.addOption("confirm",false,"Confirm the activity");
 		options.addOption("schema",true,"Account Manager Database Schema");
 		options.addOption("rootPassword",true,"Account Manager Root Password");
@@ -72,7 +73,7 @@ public class ConsoleMain {
 		// options.addOption("importProject",true,"Local path or file");
 		// options.addOption("projectName",true,"Name of the imported project");
 		// options.addOption("lifecycleName",true,"Name of the lifecycle to which the project belongs");
-		options.addOption("dest",true,"AccountManager directory group");
+		options.addOption("path",true,"AccountManager directory group");
 		// options.addOption("test",false,"Run Tests");
 		CommandLineParser parser = new PosixParser();
 		try {
@@ -188,8 +189,8 @@ public class ConsoleMain {
 		    }
 	}
 	public static void processAction(UserType user, CommandLine cmd){
-		if(cmd.hasOption("importData") && cmd.hasOption("dest")){
-			DataAction.importDataPath(user, cmd.getOptionValue("importData"), cmd.getOptionValue("dest"));
+		if(cmd.hasOption("importData") && cmd.hasOption("path")){
+			DataAction.importDataPath(user, cmd.getOptionValue("importData"), cmd.getOptionValue("path"));
 		}
 		/*
 		if(cmd.hasOption("importProject") && cmd.hasOption("projectName") && cmd.hasOption("lifecycleName")){

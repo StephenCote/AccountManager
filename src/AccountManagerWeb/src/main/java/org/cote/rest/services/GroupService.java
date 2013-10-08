@@ -182,12 +182,12 @@ public class GroupService {
 	/// NOTE: This is the same as read, but is left as 'cd' for OS familiarity
 	/// But needs to be made consistent with the model used in the Rocket API.
 	///
-	@GET @Path("/cd/{path : [@\\.\\.~%\\s0-9a-zA-Z\\/\\-]+}")  @Produces(MediaType.APPLICATION_JSON)
+	@GET @Path("/cd/{path : [@\\.\\.~%\\s0-9a-z_A-Z\\/\\-]+}")  @Produces(MediaType.APPLICATION_JSON)
 	public DirectoryGroupType cd(@PathParam("path") String path,@Context HttpServletRequest request){
 		DirectoryGroupType bean = null;
 		if(path == null || path.length() == 0) path = "~";
 		if(path.startsWith("~") == false && path.startsWith("/") == false) path = "/" + path;
-		logger.error("Path = '" + path + "'");
+		//logger.error("Path = '" + path + "'");
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.SESSION,request.getSession(true).getId());
 		UserType user = ServiceUtil.getUserFromSession(audit, request);
 		if(user == null) return bean;
@@ -230,7 +230,7 @@ public class GroupService {
 		/// TODO - dir should return a list, not a single group
 		/// NOTE - this is the same as 'listInGroup', but is left as 'dir' for familiarity
 		/// Change this to CD, and then make dir use CD to obtain the parent.
-		@GET @Path("/dir/{path : [\\.~%\\s0-9a-zA-Z\\/\\-]+}")  @Produces(MediaType.APPLICATION_JSON)
+		@GET @Path("/dir/{path : [\\.~%\\s0-9a-z_A-Z\\/\\-]+}")  @Produces(MediaType.APPLICATION_JSON)
 		public DirectoryGroupType[] dir(@PathParam("path") String path,@Context HttpServletRequest request){
 			DirectoryGroupType dir = cd(path, request);
 
@@ -255,7 +255,7 @@ public class GroupService {
 	/// TODO - dir should return a list, not a single group
 	/// NOTE - this is the same as 'listInGroup', but is left as 'dir' for familiarity
 	/// Change this to CD, and then make dir use CD to obtain the parent.
-	@GET @Path("/listInGroup/{path : [@\\.~%\\s0-9a-zA-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}")  @Produces(MediaType.APPLICATION_JSON)
+	@GET @Path("/listInGroup/{path : [@\\.~%\\s0-9a-z_A-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}")  @Produces(MediaType.APPLICATION_JSON)
 	public DirectoryGroupType[] listInGroup(@PathParam("path") String path,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		DirectoryGroupType dir = cd(path, request);
 		List<DirectoryGroupType> dirs = new ArrayList<DirectoryGroupType>();
@@ -326,7 +326,7 @@ public class GroupService {
 		}
 		return bean;
 	}
-	@GET @Path("/getCreatePath/{path : [@\\.~%\\s0-9a-zA-Z\\/\\-]+}")  @Produces(MediaType.APPLICATION_JSON)
+	@GET @Path("/getCreatePath/{path : [@\\.~%\\s0-9_a-zA-Z\\/\\-]+}")  @Produces(MediaType.APPLICATION_JSON)
 	public DirectoryGroupType getCreatePath(@PathParam("path") String path, @Context HttpServletRequest request){
 		DirectoryGroupType bean = null;
 		String sessionId = request.getSession(true).getId();

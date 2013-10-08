@@ -194,9 +194,12 @@ public class MediaUtil {
 		try{
 			if(options.isThumbnail()){
 				String thumbName = objName + " " + options.getThumbWidth() + "x" + options.getThumbHeight();
-				DirectoryGroupType thumbGroup = Factories.getGroupFactory().getDirectoryByName(".thumbnail", group, org);
-				if(thumbGroup == null && AuthorizationService.canChangeGroup(user, group)){
-					thumbGroup = Factories.getGroupFactory().getCreateDirectory(user, ".thumbnail", group, org);
+				DirectoryGroupType thumbGroup = null;
+				synchronized(Factories.getGroupFactory()){
+					Factories.getGroupFactory().getDirectoryByName(".thumbnail", group, org);
+					if(thumbGroup == null && AuthorizationService.canChangeGroup(user, group)){
+						thumbGroup = Factories.getGroupFactory().getCreateDirectory(user, ".thumbnail", group, org);
+					}
 				}
 				//DataType thumbData = 
 				if(thumbGroup == null){

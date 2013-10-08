@@ -26,7 +26,7 @@ import java.util.List;
 
 @Path("/data")
 public class DataService{
-	private SchemaBean schemaBean = null;
+	private static SchemaBean schemaBean = null;
 	
 	public DataService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
@@ -68,7 +68,7 @@ public class DataService{
 		return DataServiceImpl.getGroupList(user, DataServiceImpl.defaultDirectory,0,0);
 
 	}
-	@GET @Path("/listInGroup/{path : [@\\.~%\\s0-9a-zA-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	@GET @Path("/listInGroup/{path : [@\\.~%\\s0-9a-z_A-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	
 	public List<DataType> listInGroup(@PathParam("path") String path,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
