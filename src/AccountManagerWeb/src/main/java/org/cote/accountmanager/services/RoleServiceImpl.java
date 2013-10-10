@@ -7,18 +7,23 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
@@ -68,6 +73,69 @@ public class RoleServiceImpl  {
 	public static boolean update(BaseRoleType bean,HttpServletRequest request){
 		return BaseService.update(AuditEnumType.ROLE, bean, request);
 	}
+	
+	public static boolean requestAccessToReadUserRole(UserType user) throws FactoryException, ArgumentException, DataAccessException{
+		return requestUserRoleAccess(user, RoleService.getAccountUsersReaderUserRole(user.getOrganization()));
+	}
+	public static boolean requestAccessToReadRoleRole(UserType user) throws FactoryException, ArgumentException, DataAccessException{
+		return requestUserRoleAccess(user, RoleService.getRoleReaderUserRole(user.getOrganization()));
+	}
+
+	public static boolean requestUserRoleAccess(UserType user, UserRoleType role) throws FactoryException, ArgumentException, DataAccessException{
+		boolean bAdd = false;
+		if(RoleService.getIsUserInRole(role, user)==false){
+			AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "Role Access", AuditEnumType.USER, user.getName());
+			AuditService.targetAudit(audit, AuditEnumType.ROLE, role.getName());
+			if(RoleService.addUserToRole(user, role)){
+				bAdd = true;
+				AuditService.permitResult(audit, "Granted access to role");
+			}
+			else{
+				AuditService.denyResult(audit, "Access to role not granted.");
+			}
+		}
+		return bAdd;
+	}
+	public static BaseRoleType getUserRole(OrganizationType org, HttpServletRequest request){
+		BaseRoleType targetRole = null;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "authorizeRole", AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditService.targetAudit(audit, AuditEnumType.ROLE, "User role");
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null) return null;
+		AuditService.targetAudit(audit, AuditEnumType.ROLE, user.getName() + " user role");
+		try{
+			BaseRoleType homeRole = Factories.getRoleFactory().getHomeUserRole(org);
+			if(homeRole == null){
+				logger.error("Account manager objects not correctly setup.  Home role is missing.");
+				return null;
+			}
+			targetRole = Factories.getRoleFactory().getCreateUserRole(user, user.getName(),homeRole);
+			
+			boolean bAddReadUsers = requestAccessToReadUserRole(user);
+			boolean bAddReadRoles = requestAccessToReadRoleRole(user); 
+			if(bAddReadUsers || bAddReadRoles){
+				EffectiveAuthorizationService.rebuildUserRoleCache(user);
+			}
+			
+			AuditService.permitResult(audit, "User authorized to read user role");
+			
+		}
+		catch(FactoryException fe){
+			logger.info(fe.getMessage());
+			fe.printStackTrace();
+		} catch (ArgumentException e) {
+			logger.info(e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DataAccessException e) {
+			logger.info(e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return targetRole;
+
+	}
+	
 	public static BaseRoleType read(String name,HttpServletRequest request){
 		return BaseService.readByName(AuditEnumType.ROLE, name, request);
 	}
@@ -122,6 +190,94 @@ public class RoleServiceImpl  {
 		}
 		return BaseService.countInParent(AuditEnumType.ROLE, role, request);
 	}
+	
+	public static List<BaseRoleType> getListOfRoles(UserType user, BaseGroupType group){
+		List<BaseRoleType> out_obj = new ArrayList<BaseRoleType>();
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All roles",AuditEnumType.ROLE,(user == null ? "Null" : user.getName()));
+		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All roles");
+		
+		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+			AuditService.denyResult(audit, "User is null or not authenticated");
+			return null;
+		}
+		if(group == null){
+			AuditService.denyResult(audit, "Target group is null");
+			return null;
+		}
+
+		try {
+			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
+			if(
+				AuthorizationService.isMapOwner(user, group)
+				||
+				AuthorizationService.isAccountAdministratorInOrganization(user,group.getOrganization())
+				||
+				(AuthorizationService.isRoleReaderInOrganization(user, group.getOrganization()) && AuthorizationService.isAccountReaderInOrganization(user, group.getOrganization()))
+			){
+				AuditService.permitResult(audit, "Access authorized to list roles");
+				out_obj = Factories.getGroupParticipationFactory().getRolesInGroup(group);
+				
+			}
+			else{
+				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
+				return out_obj;
+			}
+		} catch (ArgumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (FactoryException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+
+		return out_obj;
+		
+	}
+	
+	public static List<UserGroupType> getListOfGroups(UserType user, UserRoleType targRole){
+		List<UserGroupType> out_obj = new ArrayList<UserGroupType>();
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All groups in role",AuditEnumType.ROLE,(user == null ? "Null" : user.getName()));
+		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All groups in role");
+		
+		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+			AuditService.denyResult(audit, "User is null or not authenticated");
+			return null;
+		}
+		if(targRole == null){
+			AuditService.denyResult(audit, "Target role is null");
+			return null;
+		}
+
+		try {
+			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
+			if(
+				AuthorizationService.isMapOwner(user, targRole)
+				||
+				AuthorizationService.isAccountAdministratorInOrganization(user,targRole.getOrganization())
+				||
+				(AuthorizationService.isRoleReaderInOrganization(user, targRole.getOrganization()) && AuthorizationService.isAccountReaderInOrganization(user, targRole.getOrganization()))
+			){
+				AuditService.permitResult(audit, "Access authorized to list groups in role");
+				out_obj = Factories.getRoleParticipationFactory().getGroupsInRole(targRole);
+				
+			}
+			else{
+				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
+				return out_obj;
+			}
+		} catch (ArgumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (FactoryException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+
+		return out_obj;
+		
+	}
 	public static List<UserType> getListOfUsers(UserType user, UserRoleType targRole){
 		List<UserType> out_obj = new ArrayList<UserType>();
 
@@ -144,7 +300,7 @@ public class RoleServiceImpl  {
 				||
 				AuthorizationService.isAccountAdministratorInOrganization(user,targRole.getOrganization())
 				||
-				AuthorizationService.isRoleReaderInOrganization(user, targRole.getOrganization())
+				(AuthorizationService.isRoleReaderInOrganization(user, targRole.getOrganization()) && AuthorizationService.isAccountReaderInOrganization(user, targRole.getOrganization()))
 			){
 				AuditService.permitResult(audit, "Access authorized to list roles");
 				out_obj = Factories.getRoleParticipationFactory().getUsersInRole(targRole);

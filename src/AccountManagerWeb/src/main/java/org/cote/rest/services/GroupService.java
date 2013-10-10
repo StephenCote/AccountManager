@@ -32,6 +32,8 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -104,6 +106,33 @@ public class GroupService {
 		} 
 		return out_count;
 	}
+
+	@GET @Path("/listAuthorizedRoles/{organizationId:[\\d]+}/{groupId:[\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public List<BaseRoleType> listAuthorizedRoles(@PathParam("organizationId") long organizationId,@PathParam("groupId") long groupId, @Context HttpServletRequest request){
+		List<BaseRoleType> roles = new ArrayList<BaseRoleType>();
+		UserType user = ServiceUtil.getUserFromSession(request);
+		if(user == null){
+			return roles;
+		}
+		BaseGroupType group = null;
+		OrganizationType org = null;
+		try {
+			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
+			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, org);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		
+		if(group != null) roles = RoleServiceImpl.getListOfRoles(user, group);
+		return roles;
+	}
 	
 	@GET @Path("/authorizeRole/{organizationId:[\\d]+}/{roleId:[\\d]+}/{groupId:[\\d]+}/{view:(true|false)}/{edit:(true|false)}/{delete:(true|false)}/{create:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean authorizeRole(@PathParam("organizationId") long organizationId,@PathParam("roleId") long roleId,@PathParam("groupId") long groupId,@PathParam("view") boolean view,@PathParam("edit") boolean edit,@PathParam("delete") boolean delete,@PathParam("create") boolean create,@Context HttpServletRequest request){
@@ -123,7 +152,7 @@ public class GroupService {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		if(group != null) out_bool = BaseService.authorizeUser(AuditEnumType.GROUP, org, roleId, group, view, edit, delete, create, request);
+		if(group != null) out_bool = BaseService.authorizeRole(AuditEnumType.GROUP, org, roleId, group, view, edit, delete, create, request);
 		return out_bool;
 	}
 	

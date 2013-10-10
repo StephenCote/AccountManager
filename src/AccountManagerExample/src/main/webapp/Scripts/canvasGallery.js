@@ -11,6 +11,7 @@
 		var ctl = Hemi.newObject("CanvasController","1.0",true,true,{
 			object_destroy : function(){
 				this.getCanvas().destroy();
+				this.getObjects().cvs_container.parentNode.removeChild(this.getObjects().cvs_container);
 			},
 			object_create : function(){
 				initializeCanvasController(this);
@@ -156,8 +157,8 @@
 			},
 			handleDropShape : function(oSrc, oTarg){
 				
-				if(oSrc.referenceType == "GROUP" && oTarg.referenceType == "GROUP"){
-					var oPanel = Hemi.registry.service.getObject(oShape.panelId);
+				if((oSrc.referenceType == "GROUP" || oSrc.referenceType == "OBJECT") && (oTarg.referenceType == "GROUP" || oTarg.referenceType == "OBJECT")){
+					var oPanel = Hemi.registry.service.getObject(oSrc.panelId);
 					var oSGroup = accountManager.getGroupById(oSrc.referenceId);
 					var oTGroup = accountManager.getGroupById(oTarg.referenceId);
 					if(!oSGroup || !oTGroup){
@@ -221,6 +222,8 @@
 						this.handleDropShape(oDShape, oCShape);
 						this.logDebug("Handle drop: " + oDShape.id + " to " + oCShape.id);
 						Hemi.event.cancelEvent(e);
+						/// Returning false from the mouseup event will set the internal 'blockClick' event on the canvas service
+						///
 						return false;
 					}
 					else{
@@ -307,7 +310,7 @@
 					thumbTree:1,
 					smallIcon:1,
 					vslot:1,
-					suggestedCountOffset:2,
+					suggestedCountOffset:3,
 					itemType:"Group",
 					itemPath:"GalleryHome/",
 					//itemIcon:"48px-Crystal_Clear_mimetype_kmultiple.png",
@@ -543,13 +546,20 @@
 				Hemi.logError("Invalid object for " + sId + " type " + ot);
 				return;
 			}
-			if(accountManager["delete" + ot](o)){
-				Hemi.log("Deleted " + o.name);
-				oPanel.repaint();
-			}
-			else{
-				Hemi.logWarning("Failed to delete " + o.name);
-			}
+			var oObj = o;
+			accountManager["delete" + ot](o,{
+				hemiSvcCfg:1,
+				async:1,
+				handler:function(s, v){
+					if(typeof v.json == "boolean" && v.json){
+						Hemi.log("Deleted " + oObj.name);
+						oPanel.repaint();
+					}
+					else{
+						Hemi.logWarning("Unable to delete " + oObj.name);
+					}
+				}
+			});
 			
 		}
 		
@@ -656,7 +666,7 @@
 			var oG = oContentPanel.getCanvas();
 			var oPanel = oContentPanel;
 			
-			oG.Rect(0, 0, mP.width(), mP.height(), "#000000","#000000");
+			//oG.Rect(0, 0, mP.width(), mP.height(), "#000000","#000000");
 	
 			img.onload = function(){
 	
@@ -888,7 +898,7 @@
 				}
 			}
 			if(_s.itemType && _s.itemPath){
-				_o.view.getProperties().basePath + _s.itemPath
+				//_o.view.getProperties().basePath + _s.itemPath
 				refreshGroupType(p,_s.itemType,_o.view.getProperties().basePath + _s.itemPath,b);
 			}
 			if(!b) _s.visible = 1;
@@ -923,15 +933,19 @@
 		
 		function paintVerticalSlottedItem(p,o,a,z,i){
 			if(!o) return;
-			var _s = p.getProperties(),_o = p.getObjects(),s,sIcoSrc,oP;
+			var _s = p.getProperties(),_o = p.getObjects(),s,sIcoSrc,oP,sB,_no = p.getObjects().view.panel("nav").getObjects();
+			sB =  _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"];
 			s = (o.icon ? o.icon : _s.itemIcon);
-			if(!s) sIcoSrc = _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"] + "48px-Crystal_Clear_filesystem_folder_grey.png";
-			else sIcoSrc = (s.match(/\//) ? "" : _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"]) + s;
+			if(_no.baseGroup && o.id == _no.baseGroup.id){
+				sIcoSrc =  sB + "48px-Crystal_Clear_filesystem_folder_home2.png";
+			}
+			else if(a && a == "cdup") sIcoSrc = sB + "48px-Crystal_Clear_action_1uparrow.png";
+			else if(!z) sIcoSrc = sB + "48px-Crystal_Clear_filesystem_folder_grey_open.png";
+			else if(!s) sIcoSrc = sB + "48px-Crystal_Clear_filesystem_folder_grey.png";
+			else sIcoSrc = (s.match(/\//) ? "" : sB) + s;
 			//Hemi.log("Paint vertical slotted item: " + o);
 			//if(_s.itemType == 'Group' && o.id == _o.lifecycleHome.id){
-			if(o.id == accountManager.getHome().id){
-				sIcoSrc =  _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"] + "48px-Crystal_Clear_filesystem_folder_home2.png";
-			}
+
 			var slotX = (z * _s.thumbWidth);
 			var slotY = _s.currentCount * (_s.thumbWidth + 10);
 			if(!a) a = "cd";
@@ -1202,8 +1216,8 @@
 								_o.actions = cfg.actions;
 								_o.menu = cfg.menu;
 								
-								_s.currentCount = 0;
 								_s.suggestedCount = 0;
+								_s.currentCount = 0;
 								_s.totalCount = 0;
 								_s.startIndex = 0;
 								_s.viewIndex = 0;

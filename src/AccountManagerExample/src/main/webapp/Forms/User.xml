@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>User Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "User";
+			this.getProperties().defaultPath = "~/Users";
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.beans.userType();
+					o.parentId = 0;
+					o.ownerId = 0;
+					o.populated = false;
+					o.userStatus = "UNKNOWN";
+					o.userType = "NORMAL";
+					o.nameType = "USER";
+					o.accountId = 0;
+					o.name = "";
+					o.id = 0;
+				}
+				else if(o.group && o.group.path){
+					this.getProperties().defaultPath = o.group.path;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

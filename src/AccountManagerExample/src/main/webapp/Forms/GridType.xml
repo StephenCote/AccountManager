@@ -40,14 +40,23 @@
 	-->
 	<embedded-script>
 		<![CDATA[
-		initGrid : function(sTypeName, sDefPath, sViewTypeName){
-			
-			this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : "~/" + sTypeName + "s");
+		initGrid : function(sTypeName, sDefPath, sViewTypeName, bNotAGroup, bNoPopulate,vParent){
+			var _s = this.getProperties();
+			var _o = this.getObjects();
+			_s.populate = (bNoPopulate ? 0 : 1);
+			if(!bNotAGroup) this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : "~/" + sTypeName + "s");
+			else{
+				this.GetElementByRID("path").style.display = "none";
+				 _s.noGroup = 1;
+			}
+			if(vParent){
+				_o.parentRef = vParent;
+			}
 			if(!sViewTypeName) sViewTypeName = sTypeName;
-			this.getProperties().typeName = sTypeName;
-			this.getProperties().viewTypeName = sViewTypeName;
-			this.getProperties().start_record = 0;
-			this.getProperties().record_count = 10;
+			_s.typeName = sTypeName;
+			_s.viewTypeName = sViewTypeName;
+			_s.start_record = 0;
+			_s.record_count = 10;
 			this.GetComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
 			if(this.setTitle) this.setTitle(sViewTypeName);
 			
@@ -69,6 +78,7 @@
 			return this.GetComponentByRID("typelist").GetWideSelect();
 		},
 		getPath : function(){
+			if(this.getProperties().noGroup) return 0;
 			var o = this.GetElementByRID("path"), s;
 			if(!(s = o.value).length){
 				s = o.placeholder;
@@ -159,7 +169,8 @@
 			}
 		},
 		openItem : function(o){
-			if(!o.populated){
+			var _s = this.getProperties();
+			if(_s.populate && !o.populated){
 				if(o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
 					Hemi.log("Not pulling own blob data for " + o.name + " unless specifically requested.");
 				}
@@ -233,7 +244,8 @@
 		},
 
 		refreshList : function(bSkipCountReset){
-			var sPath = this.getPath();
+			var sPath, _s = this.getProperties(), _o = this.getObjects();
+			if(!_s.noGroup) sPath = this.getPath();
 			
 			var oL = this.getList();
 			oL.clearItems();
@@ -266,16 +278,21 @@
 				/// TODO - change the count method API to use the path like the other calls
 				///
 				if(!bSkipCountReset){
-					var count = accountManager["count" + this.getProperties().typeName + "s"](sPath);
+					var count = 0;
+					if(sPath) count = accountManager["count" + this.getProperties().typeName + "s"](sPath);
+					else count = accountManager["count" + this.getProperties().typeName + "s"](uwm.getUser().organization,_o.parentRef); 
 					if(count != null) this.setTotalCount(count);
 				}
 				else{
 					this.setTotalCount(this.getProperties().total_count);
 				}
-				var aList = accountManager["list" + this.getProperties().typeName + "s"](sPath,this.getProperties().start_record,this.getProperties().record_count);	
+				var aList = [];
+				if(sPath) aList = accountManager["list" + this.getProperties().typeName + "s"](sPath,this.getProperties().start_record,this.getProperties().record_count);
+				else aList = accountManager["list" + this.getProperties().typeName + "s"](uwm.getUser().organization,_o.parentRef,this.getProperties().start_record,this.getProperties().record_count);	
 				for(var i = 0; aList != null && i < aList.length;i++){
 					if(vComp[aList[i].name]) continue;
-					oL.addItem(aList[i].name, aList[i]);
+					var sn = (this.decorateListItemName ? this.decorateListItemName(aList[i]) : aList[i].name);
+					oL.addItem(sn, aList[i]);
 				}
 				//if(aList != null) this.setTotalCount(aList.length);
 			}

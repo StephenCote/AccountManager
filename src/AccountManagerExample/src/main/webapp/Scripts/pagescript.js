@@ -195,11 +195,25 @@
 			user.name = u;
 			user.password = p;
 			user.organization = o;
+			/*
 			window.uwm.user = userSvc.postLogin(user);
 			window.uwm.session = user.session;
 			//rocket.flushSession();
 			Hemi.log("Flush any session or cache references in related services");
 			return window.uwm.user;
+			*/
+			userSvc.postLogin(user,{
+				hemiSvcCfg:1,
+				async:1,
+				handler:function(s, v){
+					window.uwm.user = v.json;
+					window.uwm.session = v.json.session;
+					uwm.operation("ContinueWorkflow", {user:v.json}, 0, "Authenticate");
+				}
+			});
+
+			return 1;
+			
 		},
 		logout : function(){
 			if(uwm.rule("IsLoggedIn")){
@@ -207,6 +221,7 @@
 				var oSess = Hemi.registry.service.getObject("session");
 				if(oSess) oSess.Refresh(window.uwm.session);
 				Hemi.log("Flush any session or cache references in related services");
+				window.uwmServiceCache.clearCache();
 				//rocket.flushSession();
 				return 1;
 			}

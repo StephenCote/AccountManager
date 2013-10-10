@@ -706,7 +706,14 @@ public class AuthorizationService {
 			return true;
 		}
 */
-		return EffectiveAuthorizationService.getDataAuthorization(role,data, new BasePermissionType[] { getDeleteDataPermission(data.getOrganization())} );
+        /// TODO: Note, this currently favors the parent permission oven the granular permission
+        ///
+        return (
+    		EffectiveAuthorizationService.getGroupAuthorization(role,data.getGroup(), new BasePermissionType[] { getDeleteGroupPermission(data.getOrganization())} )
+    		||
+    		EffectiveAuthorizationService.getDataAuthorization(role,data, new BasePermissionType[] { getDeleteDataPermission(data.getOrganization())} )
+        );
+
 		//return false;
 	}
 	public static boolean canDeleteData(UserType user, DataType data) throws ArgumentException, FactoryException
@@ -740,7 +747,14 @@ public class AuthorizationService {
 
 		return false;
 		*/
-		return EffectiveAuthorizationService.getDataAuthorization(user,data, new BasePermissionType[] { getDeleteDataPermission(data.getOrganization())} );
+        /// TODO: Note, this currently favors the parent permission oven the granular permission
+        ///
+        return (
+    		EffectiveAuthorizationService.getGroupAuthorization(user,data.getGroup(), new BasePermissionType[] { getDeleteGroupPermission(data.getOrganization())} )
+    		||
+    		EffectiveAuthorizationService.getDataAuthorization(user,data, new BasePermissionType[] { getDeleteDataPermission(data.getOrganization())} )
+        );
+
 	}
 	public static boolean canChangeData(BaseRoleType role, DataType data) throws FactoryException, ArgumentException
 	{
@@ -760,7 +774,14 @@ public class AuthorizationService {
 
 		return false;
 		*/
-		return EffectiveAuthorizationService.getDataAuthorization(role,data, new BasePermissionType[] { getCreateDataPermission(data.getOrganization())} );
+        /// TODO: Note, this currently favors the parent permission oven the granular permission
+        ///
+        return (
+    		EffectiveAuthorizationService.getGroupAuthorization(role,data.getGroup(), new BasePermissionType[] { getEditGroupPermission(data.getOrganization())} )
+    		||
+    		EffectiveAuthorizationService.getDataAuthorization(role,data, new BasePermissionType[] { getEditDataPermission(data.getOrganization())} )
+        );
+
 	}
 	public static boolean canChangeData(UserType user, DataType data) throws ArgumentException, FactoryException
 	{
@@ -792,7 +813,14 @@ public class AuthorizationService {
 		}
 		//long part_id = Securit
 		*/
-		return EffectiveAuthorizationService.getDataAuthorization(user,data, new BasePermissionType[] { getEditDataPermission(data.getOrganization())} );
+        /// TODO: Note, this currently favors the parent permission oven the granular permission
+        ///
+        return (
+    		EffectiveAuthorizationService.getGroupAuthorization(user,data.getGroup(), new BasePermissionType[] { getEditGroupPermission(data.getOrganization())} )
+    		||
+    		EffectiveAuthorizationService.getDataAuthorization(user,data, new BasePermissionType[] { getEditDataPermission(data.getOrganization())} )
+        );
+
 		//return false;
 	}
     public static boolean canViewData(BaseRoleType role, DataType data) throws FactoryException, ArgumentException
@@ -815,7 +843,14 @@ public class AuthorizationService {
             return true;
         }
 		*/
-        return EffectiveAuthorizationService.getDataAuthorization(role,data, new BasePermissionType[] { getViewDataPermission(data.getOrganization())} );
+        
+        /// TODO: Note, this currently favors the parent permission oven the granular permission
+        ///
+        return (
+    		EffectiveAuthorizationService.getGroupAuthorization(role,data.getGroup(), new BasePermissionType[] { getViewGroupPermission(data.getOrganization())} )
+    		||
+    		EffectiveAuthorizationService.getDataAuthorization(role,data, new BasePermissionType[] { getViewDataPermission(data.getOrganization())} )
+        );
         //return false;
     }
     public static boolean canViewData(UserType user, DataType data) throws ArgumentException, FactoryException
@@ -849,10 +884,20 @@ public class AuthorizationService {
         }
         //long part_id = Securit
 */
-        return EffectiveAuthorizationService.getDataAuthorization(user,data, new BasePermissionType[] { getViewDataPermission(data.getOrganization())} );
+        /// TODO: Note, this currently favors the parent permission oven the granular permission
+        ///
+        return (
+    		EffectiveAuthorizationService.getGroupAuthorization(user,data.getGroup(), new BasePermissionType[] { getViewGroupPermission(data.getOrganization())} )
+    		||
+    		EffectiveAuthorizationService.getDataAuthorization(user,data, new BasePermissionType[] { getViewDataPermission(data.getOrganization())} )
+        );
+
         //return false;
     }
-    public static boolean canCreateData(BaseRoleType role, DataType data) throws FactoryException, ArgumentException
+    
+    /// TODO: What is the point of this method? checking to create something that doesn't exist yet?
+    ///
+    public static boolean canCreateDataXXX(BaseRoleType role, DataType data) throws FactoryException, ArgumentException
     {
 
         if (RoleService.getDataAdministratorAccountRole(data.getOrganization()).getId().compareTo(role.getId())==0)
@@ -871,7 +916,10 @@ public class AuthorizationService {
 
         //return false;
     }
-    public static boolean canCreateData(UserType user, DataType data) throws ArgumentException, FactoryException
+    
+    /// TODO: What is the point of this method? checking to create something that doesn't exist yet?
+    ///
+    public static boolean canCreateDataXXX(UserType user, DataType data) throws ArgumentException, FactoryException
     {
 
         if (isMapOwner(user, data))

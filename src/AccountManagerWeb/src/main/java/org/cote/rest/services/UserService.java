@@ -100,7 +100,7 @@ public class UserService{
 		//UserType bean = null;
 		String sessionId = request.getSession(true).getId();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHENTICATE, "postLogin", AuditEnumType.SESSION, sessionId);
-		logger.error(inBean.getName() + "/" + inBean.getPassword());
+		//logger.error(inBean.getName() + "/" + inBean.getPassword());
 		AuditService.targetAudit(audit, AuditEnumType.USER, inBean.getName());
 		if(inBean == null || inBean.getName() == null || inBean.getPassword() == null){
 			logger.error("Null name and/or password");
@@ -112,7 +112,7 @@ public class UserService{
 		String password_hash = SecurityUtil.getSaltedDigest(inBean.getPassword());
 		UserType user = null;
 		try{
-			logger.error("Login: " + inBean.getName() + " / " + password_hash + " from " + inBean.getPassword());
+			//logger.error("Login: " + inBean.getName() + " / " + password_hash + " from " + inBean.getPassword());
 			user = SessionSecurity.login(sessionId, inBean.getName(), password_hash, inBean.getOrganization());
 			if(user != null){
 				Factories.getUserFactory().populate(user);

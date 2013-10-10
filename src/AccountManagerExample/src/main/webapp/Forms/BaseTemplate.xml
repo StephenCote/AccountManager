@@ -23,9 +23,10 @@
             }
 		},
 		openItem : function(o,typeName,viewTypeName){
-			if(!typeName) typeName = this.getProperties().typeName;
+			var _s = this.getProperties();
+			if(!typeName) typeName = _s.typeName;
 			if(!viewTypeName) viewTypeName = typeName;
-			if(!o.populated){
+			if(_s.populate && !o.populated){
 				if(o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
 					Hemi.log("Not pulling own blob data for " + o.name + " unless specifically requested.");
 				}

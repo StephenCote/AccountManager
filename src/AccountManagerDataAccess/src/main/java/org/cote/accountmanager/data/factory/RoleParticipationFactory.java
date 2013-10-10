@@ -77,7 +77,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public List<BaseRoleType> getRolesInRole(BaseRoleType role)  throws FactoryException, ArgumentException
 	{
 		List<RoleParticipantType> ap = getRoleRoleParticipations(role);
-		return getRolesFromParticipations(ap.toArray(new RoleParticipantType[0]), role.getOrganization());
+		return getRoleListFromParticipations(ap.toArray(new RoleParticipantType[0]), role.getOrganization());
 	}
 	public List<RoleParticipantType> getRoleRoleParticipants(BaseRoleType child_role)  throws FactoryException, ArgumentException
 	{

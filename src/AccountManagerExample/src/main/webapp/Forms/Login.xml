@@ -25,7 +25,7 @@
 				<input type = "button" onclick = "uwm.operation('OfferRegistration')" value = "Register" />
 			</p>
 			<p>
-				<input type = "button" value = "Login" class = "input_button" onclick = "${this}.DoLogin()" />
+				<input rid = "btnLogin" type = "button" value = "Login" class = "input_button" onclick = "${this}.DoLogin()" />
 			</p>
 	</div>
 
@@ -50,6 +50,7 @@
 			var sPassword = this.GetFormValue("password");
 			this.SetFormValue("password","");
 			this.setStatus(" ");
+			this.GetElementByRID("btnLogin").disabled = true;
 			window.uwm.operation("Authenticate", {user_name : sName, password : sPassword, organization: oOrg});		
 		},
 

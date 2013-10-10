@@ -370,7 +370,11 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		List<UserParticipantType> ap = getUserGroupParticipations(group);
 		return getUserListFromParticipations(ap.toArray(new UserParticipantType[0]), group.getOrganization());
 	}
-	
+	public List<BaseRoleType> getRolesInGroup(BaseGroupType group) throws FactoryException, ArgumentException
+	{
+		List<RoleParticipantType> ap = getRoleGroupParticipations(group);
+		return getRoleListFromParticipations(ap.toArray(new RoleParticipantType[0]), group.getOrganization());
+	}	
 	public List<RoleParticipantType> getRoleGroupParticipations(BaseGroupType group) throws FactoryException, ArgumentException
 	{
 		return getRoleGroupParticipations(new BaseGroupType[] { group });

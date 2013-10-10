@@ -1,0 +1,48 @@
+<html-fragment>
+
+	<div rid = "parentPickerCont" class = "rocket-column-2">
+		<p rid = "parentPickerLabel">
+			Parent:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "parent" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseParent()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickParent(${this}.getProperties().typeName)" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openParent()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		var o = this.getBean("rocketType");
+		if(!this.getProperties().hideParent){
+			var oP;
+			if(o.parentId > 0) oP = accountManager["get" +  this.getProperties().typeName + "ById"](o.parentId);
+			this.pickParent(this.getProperties().typeName,oP);
+		}
+		else{
+			this.GetElementByRID("parentPickerCont").style.display = "none";
+		}
+	},
+	chooseParent : function(){
+		this.manageList( this.getProperties().typeName, this.getObjectId(),"pickParent");
+	},
+
+		openParent : function(){
+			var o = this.getBean("rocketType"),oP;
+			if(o && o.parentId && this.openItem){
+				oP = accountManager["get" +  this.getProperties().typeName + "ById"](o.parentId)
+				this.openItem(oP,this.getProperties().typeName);
+			}
+		},
+	pickParent : function(s, v){
+		var o = this.getBean("rocketType");
+		if(o.id > 0 && v && v.id > 0 && v.id == o.id){
+			Hemi.logError(o.id + " cannot be set to its own parent");
+			if(this.setStatus) this.setStatus("Object #" + o.id + " cannot be set to its own parent");
+			return;
+		}
+		o.parentId = (v ? v.id : 0);
+		this.GetElementByRID("parent").value = (v ? v.name : "");
+	}
+	]]></embedded-script>
+</html-fragment>

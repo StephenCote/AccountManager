@@ -36,6 +36,7 @@ import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -92,6 +93,12 @@ public class RoleService{
 	public boolean update(BaseRoleType bean,@Context HttpServletRequest request){
 		return RoleServiceImpl.update(bean, request);
 	}
+	
+	@GET @Path("/getUserRole") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public BaseRoleType read(@Context HttpServletRequest request){
+		return RoleServiceImpl.getUserRole(ServiceUtil.getOrganizationFromRequest(request),request);
+	}
+	
 	@GET @Path("/read/{name: [%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public BaseRoleType read(@PathParam("name") String name,@Context HttpServletRequest request){
 		return RoleServiceImpl.readByOrganizationId(ServiceUtil.getOrganizationFromRequest(request).getId(),name, request);
@@ -108,6 +115,27 @@ public class RoleService{
 	@GET @Path("/readById/{id: [0-9]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public BaseRoleType readById(@PathParam("id") long id,@Context HttpServletRequest request){
 		return RoleServiceImpl.readById(id, request);
+	}
+
+	@GET @Path("/listGroups/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public List<UserGroupType> listGroups(@PathParam("orgId") long orgId,@PathParam("recordId") long recordId,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		OrganizationType targOrg = null;
+		UserRoleType targRole = null;
+		try {
+			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
+			targRole = Factories.getRoleFactory().getById(recordId, targOrg);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return RoleServiceImpl.getListOfGroups(user, targRole);
 	}
 	
 	@GET @Path("/listUsers/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)

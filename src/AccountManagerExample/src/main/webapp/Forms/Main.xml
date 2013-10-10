@@ -2,6 +2,7 @@
 <Template>
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 	<p>Main</p>
+	<p><input type = "button" onclick = "${this}.DoGallery()" value = "Launch Gallery" /></p>
 	<p><input type = "button" onclick = "${this}.DoLogout()" value = "Logout" /></p>
 	<embedded-script>
 		<![CDATA[
@@ -11,6 +12,10 @@
 			DoLogout : function(){
 				window.uwm.logout();
 				window.uwm.operation("ContinueWorkflow");
+			},
+			DoGallery : function(){
+				var sTxt = Hemi.xml.getText(g_application_path + "Scripts/canvasGallery.js");
+				eval(sTxt);
 			}
 		]]>
 	</embedded-script>

@@ -285,7 +285,7 @@ public class BaseService{
 				if(!out_bool) out_bool = AuthorizationService.isAccountReaderInMapOrganization(user, (UserType)obj);
 				break;
 			case GROUP:
-				out_bool = AuthorizationService.canCreateGroup(user, (BaseGroupType)obj);
+				out_bool = AuthorizationService.canViewGroup(user, (BaseGroupType)obj);
 				break;
 		}
 		return out_bool;
@@ -908,12 +908,20 @@ public class BaseService{
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return 0;
 
-		return countInParent(audit,type, user, org, request);
+		return countInParent(audit,type, user, parent, request);
 	}
 	public static int countByOrganization(AuditType audit,AuditEnumType type, UserType user, OrganizationType org, HttpServletRequest request){
 		int out_count = 0;
 		try {
-			if(AuthorizationService.isDataAdministratorInOrganization(user, org) || AuthorizationService.isAccountAdministratorInOrganization(user, org)){
+			if(
+				AuthorizationService.isDataAdministratorInOrganization(user, org)
+				||
+				AuthorizationService.isAccountAdministratorInOrganization(user, org)
+				||
+				((type == AuditEnumType.USER || type == AuditEnumType.ACCOUNT) &&  AuthorizationService.isAccountReaderInOrganization(user, org))
+				||
+				(type == AuditEnumType.ROLE &&  AuthorizationService.isRoleReaderInOrganization(user, org))
+			){
 				out_count = count(type, org.getId());
 				AuditService.permitResult(audit, "Count " + out_count + " of " + type.toString());
 			}

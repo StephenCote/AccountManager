@@ -9,10 +9,23 @@ this.DoOperation = function(){
 	var sPass = this.getProperties().password;
 	var oOrg = this.getProperties().organization;
 	this.log(sName + "/" + sPass);
+	/*
 	var oUser = uwm.login(sName, sPass, oOrg);
 	if(oUser != null){
 		this.log("Logged in!");
 		uwm.operation("ContinueWorkflow", {user:oUser}, 0, this.ruleName);
+	}
+	*/
+	var oSession = uwm.login(sName, sPass);
+	if(oSession && oSession != null){
+		if(typeof oSession == "object"){
+			this.log("Logged in!");
+			uwm.operation("ContinueWorkflow", {session:oSession}, 0, this.ruleName);
+		}
+		else{
+			this.log("Pending Async Login Request ...");
+			
+		}
 	}
 	this.logError("Failed to log in");
 }

@@ -211,7 +211,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		return insertRow(row);
 
 	}
-	protected List<BaseRoleType> getRolesFromParticipations(RoleParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
+	protected List<BaseRoleType> getRoleListFromParticipations(RoleParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 	
 		QueryField field = QueryFields.getFieldParticipantIds(list);

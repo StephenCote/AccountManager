@@ -196,14 +196,14 @@ public class MediaUtil {
 				String thumbName = objName + " " + options.getThumbWidth() + "x" + options.getThumbHeight();
 				DirectoryGroupType thumbGroup = null;
 				synchronized(Factories.getGroupFactory()){
-					Factories.getGroupFactory().getDirectoryByName(".thumbnail", group, org);
+					thumbGroup = Factories.getGroupFactory().getDirectoryByName(".thumbnail", group, org);
 					if(thumbGroup == null && AuthorizationService.canChangeGroup(user, group)){
 						thumbGroup = Factories.getGroupFactory().getCreateDirectory(user, ".thumbnail", group, org);
 					}
 				}
 				//DataType thumbData = 
 				if(thumbGroup == null){
-					AuditService.denyResult(audit, "The thumbnail group could not be found or created in " + group.getName());
+					AuditService.denyResult(audit, "The thumbnail group could not be found or created in " + group.getName() + (group.getPath() != null ? " (" + group.getPath() + ")" : ""));
 					response.sendError(404);
 					return;	
 				}
@@ -249,6 +249,9 @@ public class MediaUtil {
 						}
 					
 				}
+				if(data == null){
+					logger.warn("Thumbnail data is null for data name " + objName + " and user " + user.getName());
+				}
 			} /// End if thumbnail
 			else{
 				data = Factories.getDataFactory().getDataByName(objName, group);
@@ -258,12 +261,15 @@ public class MediaUtil {
 			}
 		}
 		catch(FactoryException fe){
+			logger.error(fe.getMessage());
 			fe.printStackTrace();
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (DataException e) {
 			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		if(data == null){
@@ -272,7 +278,7 @@ public class MediaUtil {
 			return;
 		}
 		if(can_view == false){
-			AuditService.denyResult(audit, "User '" + user.getName() + "' is not authorized to view data '" + data.getName() + "' in organization '" + org.getName() + "'");
+			AuditService.denyResult(audit, "User '" + user.getName() + "' is not authorized to view data '" + data.getName() + "' in organization '" + org.getName() + "' because the view bit is set to false.");
 			response.sendError(404);
 			return;	
 		}

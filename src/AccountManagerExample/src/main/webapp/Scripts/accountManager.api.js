@@ -77,8 +77,8 @@
 
 				return uwmServices.getService("User").add(o);
 			},
-			deleteUser : function(oRec){
-				return uwmServices.getService("User").delete(oRec);
+			deleteUser : function(oRec, vCfg){
+				return uwmServices.getService("User").delete(oRec,vCfg);
 			},
 			updateUser : function(oRec){
 				return uwmServices.getService("User").update(oRec);
@@ -99,6 +99,10 @@
 				oOrg = oRole.organization;
 				iRoleId = oRole.id;
 				return uwmServices.getService("Role").listUsers(oOrg.id, iRoleId);
+			},
+			listRolesForGroup : function(oGroup){
+				var oOrg = oGroup.organization;
+				return uwmServices.getService("Group").listAuthorizedRoles(oOrg.id,oGroup.id);
 			},
 			listRolesForUser : function(oUser){
 				var oOrg, iUserId = 0;
@@ -135,20 +139,30 @@
 
 				return uwmServices.getService("Role").add(o);
 			},
-			deleteRole : function(oRec){
-				return uwmServices.getService("Role").delete(oRec);
+			deleteRole : function(oRec, vCfg){
+				return uwmServices.getService("Role").delete(oRec, vCfg);
 			},
-			updateRole : function(oRec){
-				return uwmServices.getService("Role").update(oRec);
+			updateRole : function(oRec, vCfg){
+				return uwmServices.getService("Role").update(oRec, vCfg);
+			},
+			getRoleById : function(iId){
+				return uwmServices.getService("Role").readById(iId);
 			},
 			getRole : function(sName, oParent, oOrg){
 				if(!oOrg) oOrg = uwm.getUser().organization;
 				if(!oParent) return uwmServices.getService("Role").readByOrganizationId(oOrg.id, sName);
 				return uwmServices.getService("Role").readByParentId(oOrg.id, oParent.id, sName);
 			},
-		authorizeGroupRole : function(oOrg, iRoleId, iRoleId, bView, bEdit, bDel, bCreate){
+			
+			/// Note: requesting the user's own role dynamically allocates the role, and also will add the user to the role and user reader role
+			/// This is a temporary setup in the RoleService
+			///
+			getUserRole : function(){
+				return uwmServices.getService("Role").getUserRole();
+			},
+		authorizeGroupRole : function(oOrg, iRoleId, iGroupId, bView, bEdit, bDel, bCreate){
 			if(!oOrg) oOrg = uwm.getUser().organization;
-			return uwmServices.getService("Group").authorizeRole(oOrg.id, iRoleId, iRoleId, bView, bEdit, bDel, bCreate);
+			return uwmServices.getService("Group").authorizeRole(oOrg.id, iRoleId, iGroupId, bView, bEdit, bDel, bCreate);
 		},
 		authorizeGroupUser : function(oOrg, iUserId, iRoleId, bView, bEdit, bDel, bCreate){
 			if(!oOrg) oOrg = uwm.getUser().organization;
@@ -171,8 +185,8 @@
 		getHome : function(){
 			return uwmServices.getService("Group").home();
 		},
-		deleteGroup : function(oRec){
-			return uwmServices.getService("Group").delete(oRec);
+		deleteGroup : function(oRec, vCfg){
+			return uwmServices.getService("Group").delete(oRec, vCfg);
 		},
 		getGroup : function(sPath){
 			return uwmServices.getService("Group").cd(sPath);
@@ -197,8 +211,8 @@
 		listDatas : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Data"),sPath, iStartIndex, iRecordCount);
 		},
-		deleteData : function(oRec){
-			return uwmServices.getService("Data").delete(oRec);
+		deleteData : function(oRec, vCfg){
+			return uwmServices.getService("Data").delete(oRec, vCfg);
 		},
 		updateData : function(oRec){
 			return uwmServices.getService("Data").update(oRec);

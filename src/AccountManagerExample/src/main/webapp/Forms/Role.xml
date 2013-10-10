@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Role Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Role";
+			this.getProperties().populate = 0;
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.beans.baseRoleType();
+					o.name = "";
+					o.parentId = 0;
+					o.nameType = "ROLE";
+					o.roleType = "USER";
+
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

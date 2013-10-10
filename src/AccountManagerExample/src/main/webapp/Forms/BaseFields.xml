@@ -39,12 +39,13 @@
 	<p style = "clear:both;"><span rid = "status"></span></p>
 	<embedded-script><![CDATA[
 		template_init : function(){
-			var o = this.getBean("rocketType");
+			var o = this.getBean("rocketType"), _s = this.getProperties();
 			if(!this.setStatus) this.setStatus = this._setStatus;
 			this.setStatus("");
+			if(typeof _s.populate == "undefined") _s.populate = 1;
 			this.GetElementByRID("name").focus();
-			if(!this.getProperties().viewTypeName) this.getProperties().viewTypeName = this.getProperties().typeName;
-			if(this.setTitle) this.setTitle(this.getProperties().viewTypeName + " - " + (o.id ? o.name : "New"));
+			if(!_s.viewTypeName) _s.viewTypeName = _s.typeName;
+			if(this.setTitle) this.setTitle(_s.viewTypeName + " - " + (o.id ? o.name : "New"));
 			if(this.resizeTo && this.getBody){
 				if(this.getBody().scrollHeight > this.getBody().offsetHeight){
 					var iH = this.getBody().scrollHeight + 50;

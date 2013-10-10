@@ -25,7 +25,7 @@ public class DataUtil {
 			SecurityBean useBean =  bean;
 			if(bean.getEncryptCipherKey()){
 				useBean = new SecurityBean();
-				System.out.println("KEY LENGTH: " + bean.getCipherKey().length + "::" + bean.getCipherIV().length);
+				///System.out.println("KEY LENGTH: " + bean.getCipherKey().length + "::" + bean.getCipherIV().length);
 				SecurityFactory.getSecurityFactory().setSecretKey(useBean, bean.getCipherKey(), bean.getCipherIV(), false);
 			}
 			data.setCipherKey(SecurityUtil.serializeToXml(useBean, false, false, true).getBytes());
@@ -107,7 +107,7 @@ public class DataUtil {
 		}
 		if (d.getPasswordProtect())
 		{
-			if (d.getPassKey().length == 0)
+			if (d.getPassKey() == null || d.getPassKey().length == 0)
 			{
 				// If there is no cipher key, then that is an error
 				// because the implementor specified to encipher it, and therefore
@@ -122,18 +122,24 @@ public class DataUtil {
 				SecurityBean bean = SecurityFactory.getSecurityFactory().createSecurityBean(d.getPassKey(), false);
 				value = SecurityUtil.encipher(bean, value);
 				d.setPasswordProtected(true);
+				/// Zero out the pass key - it's a risk to keep it after this
+				d.setPassKey(null);
 			}
 		}
 
 		if (d.getEncipher() == true)
 		{
-			if(d.getCipherKey().length == 0){
+
+			if(d.getCipherKey() == null || d.getCipherKey().length == 0){
 				throw new DataException("Cipher key not specified for enciphered data");
 			}
 			else{
 				SecurityBean bean = SecurityFactory.getSecurityFactory().createSecurityBean(d.getCipherKey(), false);
 				value = SecurityUtil.encipher(bean, value);
 				d.setEnciphered(true);
+				/// Zero out the cipher key - it's a risk to keep it after this
+				d.setCipherKey(null);
+				
 			}
 		}
 
@@ -171,22 +177,26 @@ public class DataUtil {
 				byte[] ret = d.getDataBytesStore();
 				if (d.getEnciphered())
 				{
-					if(d.getCipherKey().length == 0){
+					if(d.getCipherKey() == null || d.getCipherKey().length == 0){
 						throw new DataException("Cipher key was not specified for enciphered data.");
 					}
 					SecurityBean bean = SecurityFactory.getSecurityFactory().createSecurityBean(d.getCipherKey(), false);
 					ret = SecurityUtil.decipher(bean, ret);
 					d.setEnciphered(false);
+					/// Zero out the cipher key
+					d.setCipherKey(null);
 				}
 
 				if (d.getPasswordProtected())
 				{
-					if(d.getPassKey().length == 0){
+					if(d.getPassKey() == null || d.getPassKey().length == 0){
 						throw new DataException("Pass key was not specified for password-protected data.");
 					}
 					SecurityBean bean = SecurityFactory.getSecurityFactory().createSecurityBean(d.getPassKey(), false);
 					ret = SecurityUtil.decipher(bean, ret);
 					d.setPasswordProtected(false);
+					/// Zero out the pass key - it's a risk to keep it after this
+					d.setPassKey(null);
 				}
 				if (d.getVaulted() == false && d.getCompressed() && ret.length > 0)
 				{

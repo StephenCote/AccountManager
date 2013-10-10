@@ -1,0 +1,48 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Type:
+		</p>
+		<p>
+			<input rid = "userType" type = "text" class = "rocket-text" disabled = "true" bind = "${bean.rocketType}" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Status:
+		</p>
+		<p>
+			<input rid = "userStatus" type = "text" class = "rocket-text" disabled = "true" bind = "${bean.rocketType}" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Password:
+		</p>
+		<p>
+			<input rid = "password" type = "text" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Confirm Password:
+		</p>
+		<p>
+			<input rid = "confPassword" type = "text" class = "rocket-text" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.GetElementByRID("pathCont").style.display = "none";
+		},
+		addType : function(o){
+			Hemi.log("Add user type: " + o.name );
+			return accountManager.addUser(o.name, o.password, o.email);
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("text").className = "rocket-text";
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>
