@@ -27,7 +27,10 @@ this.DoOperation = function(){
 			
 		}
 	}
-	this.logError("Failed to log in");
+	else{
+		this.logError("Failed to log in");
+		uwm.operation("RequireAuthentication");
+	}
 }
 this.SetRule = function(sRule){
 	this.ruleName = sRule;

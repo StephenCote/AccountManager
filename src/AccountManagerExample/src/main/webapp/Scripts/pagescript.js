@@ -206,8 +206,10 @@
 				hemiSvcCfg:1,
 				async:1,
 				handler:function(s, v){
-					window.uwm.user = v.json;
-					window.uwm.session = v.json.session;
+					if(v && v.json && v.json.session){
+						window.uwm.user = v.json;
+						window.uwm.session = v.json.session;
+					}
 					uwm.operation("ContinueWorkflow", {user:v.json}, 0, "Authenticate");
 				}
 			});

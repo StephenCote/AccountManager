@@ -612,6 +612,23 @@ CREATE OR REPLACE FUNCTION roles_from_leaf(root_id BIGINT,organizationid BIGINT)
 	select * from role_tree;
         $$ LANGUAGE 'sql';
 
+CREATE OR REPLACE FUNCTION roles_from_leaf(IN root_id bigint)
+	RETURNS TABLE(leafid bigint, roleid bigint, parentid bigint, organizationid bigint)
+	AS $$
+	WITH RECURSIVE role_tree(leafed,roleid, parentid, organizationid) AS (
+	   SELECT $1 as leafid, R.id as roleid, R.parentid, R.organizationid
+	      FROM roles R WHERE R.id = $1
+	   UNION ALL
+	   SELECT $1 as leafid, P.id, P.parentid, P.organizationid
+	      FROM role_tree RT, roles P
+	      WHERE RT.parentid = P.id
+	)
+	select * from role_tree;
+	$$ LANGUAGE 'sql';
+
+
+
+
 --- Accumulate permissions for roles moving down from the leaf/trunk (reverse rbac)
 --- Note: The views must reference roles -> roleid and participation -> leafed
 CREATE OR REPLACE FUNCTION roles_to_leaf(root_id BIGINT,organizationid BIGINT) 
@@ -917,6 +934,16 @@ CREATE OR REPLACE FUNCTION cleanup_orphans()
 	delete from groupparticipation where id in (select id from orphanGroupParticipations);
 	delete from roles where id in (select id from orphanRoles);
 	delete from roleparticipation where id in (select id from orphanRoleParticipations);
+	SELECT true;
+        $$ LANGUAGE 'sql';
+
+
+CREATE OR REPLACE FUNCTION delete_thumbnails() 
+        RETURNS BOOLEAN
+        AS $$
+	delete from data where groupid in (select id from groups where name = '.thumbnail');
+	delete from groups where name = '.thumbnail';
+	select * from cleanup_orphans();
 	SELECT true;
         $$ LANGUAGE 'sql';
 

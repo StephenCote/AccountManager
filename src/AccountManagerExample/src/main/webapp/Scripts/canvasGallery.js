@@ -47,7 +47,7 @@
 	
 				if(oPanel && oPanel.getObjects().view.getObjects().controller[oShape.action]){
 					var o = oShape;
-					this.log("Delegate " + oShape.action);
+					this.logDebug("Delegate " + oShape.action);
 					if(oShape.matteId) o = oCanvas.getShapeById(oShape.matteId);
 					else if (oShape.referenceType == "MATTE") o = oShape;
 					oPanel.getObjects().view.getObjects().controller[oShape.action](oPanel,oShape.referenceType, oShape.referenceId, o);
@@ -289,7 +289,9 @@
 		window.galleryView = Hemi.newObject("GalleryView","1.0",true,true,{
 			object_destroy : function(){
 				this.getCanvasController().destroy();
+				Hemi.event.removeEventListener(window,"hashchange",this._prehandle_hash_change);
 				Hemi.event.removeEventListener(window,"resize",this._prehandle_window_resize);
+				Hemi.event.removeEventListener(window,"orientationchange",this._prehandle_window_resize);
 			},
 			object_create : function(){
 				var _s = this.getProperties();
@@ -297,6 +299,7 @@
 				
 				Hemi.event.addScopeBuffer(this);
 				this.scopeHandler("window_resize",0,0,1);
+				this.scopeHandler("hash_change",0,0,1);
 				
 				instrumentVC(this);
 				var v = this.view("gallery",{scaleHeight:1,scaleWidth:1,basePath:"~/"});
@@ -399,10 +402,17 @@
 				this.getCanvasController().getCanvasContainer().style.cssText = "position:absolute;top:0px;left:0px;";
 				
 				this.switchView("gallery",["nav","content","commands"]);
+				Hemi.event.addEventListener(window,"hashchange",this._prehandle_hash_change);
 				Hemi.event.addEventListener(window,"resize",this._prehandle_window_resize);
+				Hemi.event.addEventListener(window,"orientationchange",this._prehandle_window_resize);
 				
 			}, // end object create
+			_handle_hash_change : function(){
+				this.log("New Hash: " + location.hash);
+				//this.switchView("gallery",["nav","content","commands"]);
+			},
 			_handle_window_resize : function(){
+				/*
 				var v = this.getCurrentView(),aP;
 				scaleView(v);
 				aP = v.panels();
@@ -411,6 +421,10 @@
 						aP[i].repaint();
 					}
 				}
+				*/
+				var _s = this.getProperties();
+				if(_s.resizing) window.clearTimeout(_s.resizing);
+				_s.resizing = window.setTimeout(resetGalleryDimensions, 250);
 				
 			},
 			clearViewPanels : function(v){
@@ -418,7 +432,7 @@
 			},
 			switchView : function(sName,aP){
 				var v = this.view(sName),_s = this.getProperties();
-				v.getCanvas().Clear();
+				ctl.getCanvas().Clear();
 				///this.clearViewPanels(v);
 				scaleView(v);
 				//this.logDebug("Panels: " + v.panels().length);
@@ -441,10 +455,10 @@
 				return o.panel(n);
 			},
 			rasterize : function(){
-				this.getCanvasController().getCanvas().Rasterize();
+				ctl.getCanvas().Rasterize();
 			},
 			getCanvas : function(){
-				return this.getCanvasController().getCanvas();
+				return ctl.getCanvas();
 			},
 			getCanvasController : function(){
 				return ctl;
@@ -540,10 +554,26 @@
 	
 		});
 		
+		function resetGalleryDimensions(){
+			
+			var v = galleryView.getCurrentView(),_s = galleryView.getProperties(),aP;
+			
+			scaleView(v);
+			aP = v.panels();
+			for(var i = 0; i < aP.length;i++){
+				if(aP[i].getProperties().visible){
+					aP[i].repaint();
+				}
+			}
+			_s.resizing = 0;
+			
+		}
+
+		
 		function deleteObject(oPanel, sType, sId, oShape){
 			var o = getObjectById(oPanel, sType, sId,0),ot = getObjectType(oPanel);
 			if(!o){
-				Hemi.logError("Invalid object for " + sId + " type " + ot);
+				ctl.logError("Invalid object for " + sId + " type " + ot);
 				return;
 			}
 			var oObj = o;
@@ -552,11 +582,11 @@
 				async:1,
 				handler:function(s, v){
 					if(typeof v.json == "boolean" && v.json){
-						Hemi.log("Deleted " + oObj.name);
+						ctl.log("Deleted " + oObj.name);
 						oPanel.repaint();
 					}
 					else{
-						Hemi.logWarning("Unable to delete " + oObj.name);
+						ctl.logWarning("Unable to delete " + oObj.name);
 					}
 				}
 			});
@@ -568,8 +598,8 @@
 			var _s = oMattePanel.getProperties(),
 				_p = oMattePanel.getObjects(), 
 				bP =0,
-				iML = oMattePanel.getCanvas().getProperties().MouseTrackLeft,
-				iMT = oMattePanel.getCanvas().getProperties().MouseTrackTop,
+				iML = ctl.getCanvas().getProperties().MouseTrackLeft,
+				iMT = ctl.getCanvas().getProperties().MouseTrackTop,
 				vM,
 				oContentPanel = Hemi.registry.service.getObject(oMatte.contentPanelId),
 				_cs,
@@ -577,15 +607,15 @@
 				iTI
 			;
 			if(!oContentPanel){
-				Hemi.log("Invalid content panel id: " + oMatte.contentPanelId);
+				ctl.log("Invalid content panel id: " + oMatte.contentPanelId);
 				return;
 			}
 			_cs = oContentPanel.getProperties();
 			_cp = oContentPanel.getObjects();
 			vM = _s.matteConfig;
 			/// Left Pane
-			Hemi.log("Gesture idx " + oMatte.referenceIndex + " at " + iML + ", " + iMT + " within " + oMattePanel.width() + "x" + oMattePanel.height());
-			//Hemi.log("Panel: " + oMattePanel.getObjectId() + " <> " + oMatte.panelId);
+			ctl.logDebug("Gesture idx " + oMatte.referenceIndex + " at " + iML + ", " + iMT + " within " + oMattePanel.width() + "x" + oMattePanel.height());
+			//ctl.log("Panel: " + oMattePanel.getObjectId() + " <> " + oMatte.panelId);
 			iTI = oMatte.referenceIndex;
 			
 			//_s.iconStartIndex >= _s.totalIconCount
@@ -594,7 +624,7 @@
 				if((iTI-1) < 0 && _cs.startIndex > 0){
 					//_s.showImage = 0;
 					//this.imageBack(true);
-					Hemi.log("Paginate back");
+					ctl.log("Paginate back");
 					back(oContentPanel, 1);
 					iTI = _cp.currentList.length - 1;
 					bP = 1;
@@ -603,14 +633,15 @@
 					iTI--;
 					bP = 1;
 				}
-				Hemi.log("Gesture Left " + bP + " to " + iTI);
+				ctl.logDebug("Gesture Left " + bP + " to " + iTI);
 			}
 			/// Right Pane
 			else if(iML >= (oMattePanel.width() - vM.right)){
 				
 				if((iTI+1) >= _cp.currentList.length && (iTI+1) < _cs.totalCount){
 					//_s.showImage = 0;
-					Hemi.log("Paginate Forward");
+					ctl.log("Paginate Forward");
+					// because " + (iTI+1) + " >= " + _cp.currentList.length + " && " + (iTI+1) + " < " + _cs.totalCount);
 					next(oContentPanel,1);
 					iTI = 0;
 					bP = 1;
@@ -619,19 +650,19 @@
 					iTI++;
 					bP = 1;
 				}
-				Hemi.log("Gesture Right " + bP + " to " + iTI);
+				ctl.logDebug("Gesture Right " + bP + " to " + iTI);
 			}
 			/// Top Pane
 			else if(iMT <= vM.top){
-				Hemi.log("Gesture Top");
+				ctl.logDebug("Gesture Top");
 			}
 			/// Bottom Pane
 			else if(iMT >= (oMattePanel.height() - vM.bottom)){
-				Hemi.log("Gesture Bottom");
+				ctl.logDebug("Gesture Bottom");
 			}
 			/// Center Pane
 			else{
-				Hemi.log("Gesture Center");
+				ctl.logDebug("Gesture Center");
 				closeImage();
 			}
 			if(bP){
@@ -648,7 +679,7 @@
 		function viewObject(oContentPanel, sType, sId, iViewIndex){
 			var o = getObjectById(oContentPanel, sType, sId,0),_o = oContentPanel.getObjects(),_s = oContentPanel.getProperties(), ctl = oContentPanel.getObjects().view.getObjects().controller, mP;
 			if(!o || o==null){
-				Hemi.logError("Invalid object for id " + sId);
+				ctl.logError("Invalid object for id " + sId);
 				return;
 			}
 			if(typeof iViewIndex == "object") iViewIndex = iViewIndex.referenceIndex;
@@ -663,7 +694,7 @@
 			
 			
 			
-			var oG = oContentPanel.getCanvas();
+			var oG = ctl.getCanvas();
 			var oPanel = oContentPanel;
 			
 			//oG.Rect(0, 0, mP.width(), mP.height(), "#000000","#000000");
@@ -686,7 +717,7 @@
 				}
 				var iX = (iMaxWidth - img.width) / 2;
 				var iY = (iMaxHeight - img.height) / 2; 
-				galleryView.log("Image: " + img.width + "x" + img.height + " at " + iX + ", " + iY);
+				galleryView.logDebug("View image: " + o.name + " with dimensions " + img.width + "x" + img.height + " at " + iX + ", " + iY);
 				
 				clearPanel(mP);
 				
@@ -715,7 +746,7 @@
 				oR.contentPanelId = oPanel.getObjectId();
 				mP.getShapes().push(oR.id);
 				
-				oPanel.getCanvas().Rasterize();
+				ctl.getCanvas().Rasterize();
 			}
 			
 			img.src = "data:" + o.mimeType + ";base64," + o.dataBytesStore;
@@ -734,10 +765,10 @@
 		
 		
 		function refreshGroupType(o,sType,sPath, bSkipDraw){
-			var _o = o.getObjects(), _s = o.getProperties(), oM, _no = o.getObjects().view.panel("nav").getObjects();
+			var _o = o.getObjects(), _s = o.getProperties(), oM, _no = o.getObjects().view.panel("nav").getObjects(),iter = 0;
 			if(!_no.currentDirectory) _no.currentDirectory = accountManager.getCreatePath(sPath);
 			if(!_no.baseGroup) _no.baseGroup = _no.currentDirectory;
-			var iter = 0;
+
 			if(!bSkipDraw && sType == 'Group'){
 				/// If not in the base group
 				if(_no.currentDirectory.id != _no.baseGroup.id){
@@ -756,19 +787,29 @@
 			var aSub = accountManager["list" + sObjType + "s"](_no.currentDirectory.path,_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
 			
 			_o.currentList = [];
-			Hemi.log("Painting " + aSub.length + " items of " + _s.totalCount + " for " + _no.currentDirectory.path + " from " + _s.startIndex + " to " + _s.suggestedCount);
+			ctl.logDebug("Painting " + aSub.length + " items of " + _s.totalCount + " for " + _no.currentDirectory.path + " from " + _s.startIndex + " to " + _s.suggestedCount);
 			for(var i = 0; aSub && i < aSub.length;i++){
 				if(sType == 'Group' && aSub[i].name.match(/^\.thumbnail$/gi)) continue;
 				_o.currentList.push(aSub[i]);
 				if(bSkipDraw) continue;
 				if(_s.vslot){
 					paintVerticalSlottedItem(o,aSub[i],0,1,i);
+					iter++;
 				}
 				else{
 					paintItem(o,aSub[i],i);
+					iter++;
 				}
 			}
-	
+			
+			_s.rasterTotal += iter;
+		}
+		
+		function checkRaster(oPanel){
+			var _s = oPanel.getProperties();
+			if(_s.rasterCount == _s.rasterTotal){
+				ctl.getCanvas().Rasterize();
+			}
 		}
 		
 		function changeDirectory(sId,p, aF, bSkipDirReset){
@@ -776,10 +817,10 @@
 			var o = accountManager.getGroupById(sId);
 			if(!o || o.id == _o.currentDirectory) return;
 			_o.currentDirectory = o;
-			Hemi.log("Changing directory to " + o.path);
+			ctl.log("Changing directory to " + o.path);
 			
 			//if(!bSkipDirReset){
-				//Hemi.log("Resetting primary pagination");
+				//ctl.log("Resetting primary pagination");
 				/// For primary panel, move pagination markers back to beginning
 				///
 				_p.startIndex = 0;
@@ -787,15 +828,15 @@
 				_p.currentCount = 0;
 			//}
 
-			p.getCanvas().clearEventTrack();
+			ctl.getCanvas().clearEventTrack();
 			p.repaint();
 			
 			for(var i = 0; i < aF.length;i++){
 				var oP = galleryView.getCurrentView().panel(aF[i]);
-				if(!oP) Hemi.logError("Invalid panel: '" + aF[i] + "'");
+				if(!oP) ctl.logError("Invalid panel: '" + aF[i] + "'");
 				else{
-					//Hemi.log("Repaint '" + aF[i] + "'");
-					Hemi.log("Resetting secondary pagination");
+					//ctl.log("Repaint '" + aF[i] + "'");
+					ctl.logDebug("Resetting secondary pagination");
 					/// For reference panels, move pagination markers back to beginning
 					/// Note: the skip doesn't apply here
 					///
@@ -811,12 +852,20 @@
 		function next(p, b){
 			var _s = p.getProperties(), iCount;
 			iCount = _s.suggestedCount  - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0);
+			/*
+			if(_s.totalCount > 0 && (_s.startIndex + iCount) < _s.totalCount){
+				_s.startIndex += iCount;
+				repaintPanel(p,b);
+			}
+			*/
+			
 			_s.startIndex += iCount;
 			if(_s.totalCount > 0 && _s.startIndex >= _s.totalCount){
 				_s.startIndex = _s.totalCount - iCount;
 			}
 			if(_s.startIndex < 0) _s.startIndex = 0;
 			repaintPanel(p, b);
+			
 		}
 		function back(p, b){
 			var _s = p.getProperties(),iCount;
@@ -832,7 +881,7 @@
 		}
 		
 		function clearPanel(p){
-			var _o = p.getObjects(), _s = p.getProperties(), oM,aPS=p.getShapes(),oCvs = p.getCanvas();
+			var _o = p.getObjects(), _s = p.getProperties(), oM,aPS=p.getShapes(),oCvs = ctl.getCanvas();
 			_o.view.getObjects().controller.logDebug("Clear Panel " + _s.left + ", " + _s.top + " X " + _s.width + ", " + _s.height + " with " + aPS.length + " shapes");
 			for(var i = 0; i < aPS.length;i++){
 				var oS = oCvs.getShapeById(aPS[i]);
@@ -842,36 +891,43 @@
 			}
 			aPS.length = 0;
 			
-			p.getCanvas().ClearTempCanvas();
+			ctl.getCanvas().ClearTempCanvas();
 			
-			oCvs.setTemporaryContextConfig(p.getCanvas().getConfigByName("NoShadow"));
-			oCvs.setContextConfig(p.getCanvas().getConfigByName("NoShadow"));
+			oCvs.setTemporaryContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
+			oCvs.setContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
 			//oM = oCvs.Rect(_s.left, _s.top, _s.width, _s.height, "#FFFFFF","#FF0000");
 			var bC = (_s.backgroundColor ? _s.backgroundColor : "#FFFFFF");
 			var sC = (_s.strokeColor ? _s.strokeColor : "#FFFFFF");
 			oM = oCvs.Rect(p.left(), p.top(), p.width(), p.height(), bC,sC);
 			oM.selectable = 0;
 			_s.visible = 0;
-			
-			p.getCanvas().Rasterize();
+			_s.rasterCount = 0;
+			_s.rasterTotal = 0;
+			ctl.getCanvas().Rasterize();
 		}
 		function paintPanel(p, b){
 			var _o = p.getObjects(), _s = p.getProperties(),oA;
 			_s.currentCount = 0;
 			_o.view.getObjects().controller.logDebug("Paint Panel " + _s.left + ", " + _s.top + " X " + _s.width + ", " + _s.height);
 			_s.visible = 1;
+
+			_s.rasterTotal = 0;
+			_s.rasterCount = 0;
+			
+
 			if(!b){
-				p.getCanvas().setTemporaryContextConfig(p.getCanvas().getConfigByName("NoShadow"));
-				p.getCanvas().setContextConfig(p.getCanvas().getConfigByName("NoShadow"));
+				ctl.getCanvas().setTemporaryContextConfig(p.getCanvas().getConfigByName("NoShadow"));
+				ctl.getCanvas().setContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
 			}
 			if(!b && _o.actions){
 				var iSlots = Math.floor(p.width() / _s.thumbWidth);
 				var iMid = Math.floor(iSlots/2);
 				var iVSlots = Math.floor(p.height() / _s.thumbHeight);
 				var iVMid = Math.floor(iVSlots/2);		
+
 				for(var i = 0; i < _o.actions.length;i++){
 					oA = _o.actions[i];
-					///Hemi.log("Paint Panel Action " + oA.action);
+					///ctl.log("Paint Panel Action " + oA.action);
 					if(typeof oA.slot != "undefined"){
 						var iSlot = 0;
 						if(typeof oA.slot == "number"){
@@ -896,25 +952,28 @@
 						paintAction(p,oA);
 					}
 				}
+				_s.rasterTotal += _o.actions.length;
 			}
 			if(_s.itemType && _s.itemPath){
 				//_o.view.getProperties().basePath + _s.itemPath
 				refreshGroupType(p,_s.itemType,_o.view.getProperties().basePath + _s.itemPath,b);
 			}
+			checkRaster(p);
 			if(!b) _s.visible = 1;
 		}
 		
 		function paintItem(p,o,i){
 			if(!o) return;
 			
-			var _s = p.getProperties(),_o=p.getObjects(),oP, g = (o.nameType == 'GROUP' ? o : o.group);
+			var _s = p.getProperties(),_o=p.getObjects(),oP, g = (o.nameType == 'GROUP' ? o : o.group), _no = p.getObjects().view.panel("nav").getObjects();
 			
-			//Hemi.log("Paint item " + o.name + " in " + g.path);
+			//ctl.log("Paint item " + o.name + " in " + g.path);
 			
 			var sIcoSrc = _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"] + _s.itemIcon;
 			if(o.mimeType && o.mimeType.match(/^image/gi)){
 				sIcoSrc = _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"] + _s.itemIconImg;
-				if(g && !g.populated) g = accountManager.getGroupById(g.id);
+				if(g.id == _no.currentDirectory.id) g = _no.currentDirectory;
+				else if(g && !g.populated) g = accountManager.getGroupById(g.id);
 				if(g.path){
 					sIcoSrc = "/AccountManager/Thumbnail/" + accountManager.getOrganizationDotPath() + "/Data" + g.path + "/" + o.name + "/" + _s.thumbWidth + "x" + _s.thumbHeight;
 				}
@@ -943,7 +1002,7 @@
 			else if(!z) sIcoSrc = sB + "48px-Crystal_Clear_filesystem_folder_grey_open.png";
 			else if(!s) sIcoSrc = sB + "48px-Crystal_Clear_filesystem_folder_grey.png";
 			else sIcoSrc = (s.match(/\//) ? "" : sB) + s;
-			//Hemi.log("Paint vertical slotted item: " + o);
+			//ctl.log("Paint vertical slotted item: " + o);
 			//if(_s.itemType == 'Group' && o.id == _o.lifecycleHome.id){
 
 			var slotX = (z * _s.thumbWidth);
@@ -979,10 +1038,10 @@
 		function paintPanelObject(oPanel,oObj,oAct,iIndex,sIco, sLbl, iRefId, sRef,sAct,iX, iY, bText, bHover,bDrag){
 			var _s = oPanel.getProperties();
 			var img = new Image();
-			var oG = oPanel.getCanvas();
+			var oG = ctl.getCanvas();
 			var idx = iIndex;
 			_s.currentCount++;
-			//Hemi.log("Pre-Paint Object: " + sAct + " " + sLbl + " " + sRef + " "  + bText + ":" + bHover + ":" + bDrag);
+			//ctl.log("Pre-Paint Object: " + sAct + " " + sLbl + " " + sRef + " "  + bText + ":" + bHover + ":" + bDrag);
 			img.onload = function(){
 	
 				var oShape = oG.Image(img, iX, iY);
@@ -997,9 +1056,11 @@
 				if(sLbl) oShape.referenceName = sLbl;
 				
 				if(bText) oG.Text(scaleText(sLbl), iX, iY + _s.thumbHeight, "#000000","#000000","8pt","Arial");
-				oG.Rasterize();
+				//oG.Rasterize();
 				oPanel.getShapes().push(oShape.id);
-				//Hemi.log("Paint Object: " + sAct + " " + sLbl + " " + sRef + " "  + bText + ":" + bHover + ":" + bDrag);
+				oPanel.getProperties().rasterCount++;
+				checkRaster(oPanel);
+				//ctl.log("Paint Object: " + sAct + " " + sLbl + " " + sRef + " "  + bText + ":" + bHover + ":" + bDrag);
 			};
 			img.src = sIco;
 		}
@@ -1066,10 +1127,10 @@
 				else{
 					
 					_sp.suggestedCount = Math.floor(oP.height() / (_sp.thumbHeight+10)) * Math.floor(oP.width() / (_sp.thumbWidth+10));
-					//Hemi.log(_sp.suggestedCount + " from " + oP.width() + " x " + oP.height() + " / " + _sp.thumbWidth + "x" + _sp.thumbHeight);
+					//ctl.log(_sp.suggestedCount + " from " + oP.width() + " x " + oP.height() + " / " + _sp.thumbWidth + "x" + _sp.thumbHeight);
 				}
 			}
-			o.getCanvas().Resize(w + "px",h + "px");
+			ctl.getCanvas().Resize(w + "px",h + "px");
 		}
 	
 		function copyShapeProperties(s, t){
@@ -1111,13 +1172,13 @@
 			return s.substring(0,iLabelWidth - x.length - 3) + "..." + x;
 		}
 		function reparentGroup(oPanel,s, t){
-			Hemi.logDebug("Reparent " + s.name + " to " + t.name);
+			ctl.logDebug("Reparent " + s.name + " to " + t.name);
 			s.parentId = t.id;
 			accountManager.updateGroup(s);
 			repaintPanel(oPanel);
 		}
 		function reparentObject(s, t){
-			Hemi.logDebug("Reparent " + s.name + " to " + t.name);
+			ctl.logDebug("Reparent " + s.name + " to " + t.name);
 			s.group = t;
 			s.detailsOnly = true;
 			delete s.dataBytesStore;
@@ -1134,7 +1195,7 @@
 			var ot = getObjectType(oPanel),f;
 			f = accountManager["get" + ot + "ById"];
 			if(!f){
-				Hemi.logError("Invalid reference type to retrieve object: '" + ot + "'");
+				ctl.logError("Invalid reference type to retrieve object: '" + ot + "'");
 				return 0;
 			}
 			return f(sId);
@@ -1221,6 +1282,9 @@
 								_s.totalCount = 0;
 								_s.startIndex = 0;
 								_s.viewIndex = 0;
+								
+								_s.rasterCount = 0;
+								_s.rasterTotal = 0;
 	
 							},
 							getShapes : function(){
