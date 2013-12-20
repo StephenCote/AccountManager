@@ -32,7 +32,7 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id; don't check the DB for the negative value
 		///
 		
-		if(role.getId() < 0) return true;
+		if(role.getId() < 0L ) return true;
 		return getIsGroupInRole(role, group, null, AffectEnumType.UNKNOWN);
 	}
 	public static boolean getIsGroupInRole(BaseRoleType role, UserGroupType group, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
@@ -44,7 +44,7 @@ public class RoleService {
 
 		/// accommodate bulk inserts with a negative id
 		///
-		if(role.getId() < 0) return true;
+		if(role.getId() < 0L ) return true;
 		return Factories.getRoleParticipationFactory().getIsGroupInRole(role, group,permission,affect_type);
 	}
 	public static boolean addGroupToRole(UserGroupType group, UserRoleType role) throws ArgumentException, DataAccessException, FactoryException
@@ -56,7 +56,7 @@ public class RoleService {
 	{
 		/// accommodate bulk inserts with a negative id - skip the check for the getGroupInRole, which will return true for bulk jobs
 		///
-		if (role.getId() < 0 || getIsGroupInRole(role, account) == false)
+		if (role.getId() < 0L || getIsGroupInRole(role, account) == false)
 		{
 			GroupParticipantType ap = Factories.getRoleParticipationFactory().newGroupRoleParticipation(role, account);
 			if (Factories.getRoleParticipationFactory().addParticipant(ap))
@@ -85,7 +85,7 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id; don't check the DB for the negative value
 		///
 		
-		if(role.getId() < 0) return true;
+		if(role.getId() < 0L ) return true;
 		return getIsUserInEffectiveRole(role, user, null, AffectEnumType.UNKNOWN);
 	}
 	public static boolean getIsUserInEffectiveRole(BaseRoleType role, UserType user, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
@@ -97,7 +97,7 @@ public class RoleService {
 
 		/// accommodate bulk inserts with a negative id
 		///
-		if(role.getId() < 0) return true;
+		if(role.getId() < 0L ) return true;
 		return EffectiveAuthorizationService.getIsUserInEffectiveRole(role, user, permission, affect_type);
 	}
 	
@@ -109,7 +109,7 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id; don't check the DB for the negative value
 		///
 		
-		if(role.getId() < 0) return true;
+		if(role.getId() < 0L ) return true;
 		return getIsUserInRole(role, user, null, AffectEnumType.UNKNOWN);
 	}
 	public static boolean getIsUserInRole(BaseRoleType role, UserType user, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
@@ -121,7 +121,7 @@ public class RoleService {
 
 		/// accommodate bulk inserts with a negative id
 		///
-		if(role.getId() < 0) return true;
+		if(role.getId() < 0L ) return true;
 		return EffectiveAuthorizationService.getIsUserInEffectiveRole(role, user,permission,affect_type);
 		//return Factories.getRoleParticipationFactory().getIsUserInRole(role, user,permission,affect_type);
 	}
@@ -134,7 +134,7 @@ public class RoleService {
 	{
 		/// accommodate bulk inserts with a negative id - skip the check for the getUserInRole, which will return true for bulk jobs
 		///
-		if (role.getId() < 0 || getIsUserInRole(role, account) == false)
+		if (role.getId() < 0L || getIsUserInRole(role, account) == false)
 		{
 			UserParticipantType ap = Factories.getRoleParticipationFactory().newUserRoleParticipation(role, account);
 			if (Factories.getRoleParticipationFactory().addParticipant(ap))

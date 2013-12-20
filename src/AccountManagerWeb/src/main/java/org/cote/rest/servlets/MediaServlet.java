@@ -58,9 +58,8 @@ public class MediaServlet extends HttpServlet {
 		//response.sendError(404, "Invalid request: " + request.getPathInfo())
 		long expiry = new Date().getTime() + (defCacheSeconds*1000);
 		
+		response.setHeader("Cache-Control", "public,max-age="+ defCacheSeconds);
 	    response.setDateHeader("Expires", expiry);
-	    response.setHeader("Cache-Control", "max-age="+ defCacheSeconds);
-	    
 	    
 		MediaUtil.writeBinaryContent(request, response);
 	}

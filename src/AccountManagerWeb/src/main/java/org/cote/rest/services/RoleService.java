@@ -166,7 +166,7 @@ public class RoleService{
 		OrganizationType targOrg = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			targUser = Factories.getUserFactory().getById(recordId, targOrg);
+			if(targOrg != null) targUser = Factories.getUserFactory().getById(recordId, targOrg);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -176,7 +176,10 @@ public class RoleService{
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		
+		if(targUser == null){
+			logger.error("Null user specified for org id " + orgId + " and user id " + recordId);
+			return new ArrayList<UserRoleType>();
+		}
 		return RoleServiceImpl.getListForUser(user, targUser);
 	}
 	

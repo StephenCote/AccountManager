@@ -181,7 +181,7 @@ public class BulkInsertUtil {
 				
 			}
 			if(batch > 0){
-				logger.info("Execute last batch: " + batch);
+				logger.debug("Execute last batch: " + batch);
 				statement.executeBatch();
 				statement.clearBatch();
 			}
@@ -189,7 +189,7 @@ public class BulkInsertUtil {
 			connection.commit();
 			connection.setAutoCommit(lastCommit);
 			long stop = System.currentTimeMillis();
-			logger.info("Inserted " + table.getRows().size() + " rows in " + (stop - start) + "ms.");
+			logger.debug("Inserted " + table.getRows().size() + " rows in " + (stop - start) + "ms.");
 			out_bool = true;
 		}
 		catch(NullPointerException npe){

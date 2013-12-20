@@ -1,124 +1,183 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-               xsi:schemaLocation="http://java.sun.com/xml/ns/javaeehttp://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-               version="3.0">
-  <display-name>AccountManager</display-name>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaeehttp://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	<display-name>AccountManager</display-name>
+	<context-param>
+		<param-name>role.mapping.dynamic</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<description>Database Connection Type</description>
+		<param-name>database.conntype</param-name>
+		<param-value>jndi</param-value>
+	</context-param>
+	<context-param>
+		<description>Database Driver</description>
+		<param-name>database.driver</param-name>
+		<param-value>org.postgresql.Driver</param-value>
+	</context-param>
+	<context-param>
+		<description>Database Driver</description>
+		<param-name>database.drivercheck</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<description>Database Connection Type</description>
+		<param-name>database.dsname</param-name>
+		<param-value>jboss/datasources/postgresDS</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.cote.rest.listeners.AccountManagerFactoryInit
+		</listener-class>
+	</listener>
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>JerseyService</servlet-name>
+		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer
+		</servlet-class>
+		<init-param>
+			<param-name>com.sun.jersey.config.property.packages;org.codehaus.jackson.jaxrs
+			</param-name>
+			<param-value>org.cote.rest.services</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<display-name>AccountManagerServletInit</display-name>
+		<servlet-name>AccountManagerServletInit</servlet-name>
+		<servlet-class>org.cote.rest.servlets.AccountManagerServletInit
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<display-name>MediaFormServlet</display-name>
+		<servlet-name>MediaFormServlet</servlet-name>
+		<servlet-class>org.cote.rest.servlets.MediaFormServlet</servlet-class>
+		<enabled>true</enabled>
+		<async-supported>false</async-supported>
+	</servlet>
+	<servlet>
+		<display-name>MediaServlet</display-name>
+		<servlet-name>MediaServlet</servlet-name>
+		<servlet-class>org.cote.rest.servlets.MediaServlet</servlet-class>
+		<enabled>true</enabled>
+		<async-supported>false</async-supported>
+	</servlet>
+	<servlet>
+		<display-name>ThumbnailServlet</display-name>
+		<servlet-name>ThumbnailServlet</servlet-name>
+		<servlet-class>org.cote.rest.servlets.ThumbnailServlet</servlet-class>
+		<enabled>true</enabled>
+		<async-supported>false</async-supported>
+	</servlet>
+	<servlet>
+		<display-name>AccountManagerLogoutServlet</display-name>
+		<servlet-name>AccountManagerLogoutServlet</servlet-name>
+		<servlet-class>org.cote.rest.servlets.AccountManagerLogoutServlet
+		</servlet-class>
+		<enabled>true</enabled>
+		<async-supported>false</async-supported>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>/faces/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>JerseyService</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AccountManagerServletInit</servlet-name>
+		<url-pattern>/AccountManagerServletInit</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MediaFormServlet</servlet-name>
+		<url-pattern>/mediaForm</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MediaServlet</servlet-name>
+		<url-pattern>/Media/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ThumbnailServlet</servlet-name>
+		<url-pattern>/Thumbnail/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AccountManagerLogoutServlet</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+	<session-config>
+		<session-timeout>30</session-timeout>
+		<cookie-config>
+			<path>/</path>
+		</cookie-config>
+	</session-config>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Secure Content</web-resource-name>
+			<url-pattern>/restrictedPage.jsp</url-pattern>
+		</web-resource-collection>
 
-<session-config>
- <session-timeout>30</session-timeout>
-  <cookie-config>
-    <path>/</path>
-   </cookie-config>
-</session-config>
-  <listener>
-    <listener-class>
-     org.cote.rest.listeners.AccountManagerFactoryInit
-    </listener-class>
-  </listener>
-  <context-param>
-    <description>Database Connection Type</description>
-    <param-name>database.conntype</param-name>
-    <param-value>jndi</param-value>
-  </context-param>
-  <context-param>
-    <description>Database Connection Type</description>
-    <param-name>database.dsname</param-name>
-    <param-value>jboss/datasources/postgresDS</param-value>
-  </context-param>
-  <context-param>
-    <description>Database Driver</description>
-    <param-name>database.driver</param-name>
-    <param-value>org.postgresql.Driver</param-value>
-  </context-param>
-  <context-param>
-    <description>Database Driver</description>
-    <param-name>database.drivercheck</param-name>
-    <param-value>true</param-value>
-  </context-param>
-  <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
-  </welcome-file-list>
-  <servlet>
-    <servlet-name>Faces Servlet</servlet-name>
-    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Faces Servlet</servlet-name>
-    <url-pattern>/faces/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>Faces Servlet</servlet-name>
-    <url-pattern>*.xhtml</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>JerseyService</servlet-name>
-    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-    <init-param>
-      <param-name>com.sun.jersey.config.property.packages;org.codehaus.jackson.jaxrs</param-name>
-      <param-value>org.cote.rest.services</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>JerseyService</servlet-name>
-    <url-pattern>/rest/*</url-pattern>
-  </servlet-mapping>
+		<auth-constraint>
+			<role-name>AuthorizedUser</role-name>
+		</auth-constraint>
 
-  <servlet>
-    <description></description>
-    <display-name>AccountManagerServletInit</display-name>
-    <servlet-name>AccountManagerServletInit</servlet-name>
-    <servlet-class>org.cote.rest.servlets.AccountManagerServletInit</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>AccountManagerServletInit</servlet-name>
-    <url-pattern>/AccountManagerServletInit</url-pattern>
-  </servlet-mapping>
+		<user-data-constraint>
+			<transport-guarantee>NONE</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+	
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Secure Content</web-resource-name>
+			<url-pattern>/restrictedPage2.jsp</url-pattern>
+		</web-resource-collection>
 
-    <servlet>
-  	<description>
-  	</description>
-  	<display-name>MediaFormServlet</display-name>
-  	<servlet-name>MediaFormServlet</servlet-name>
-  	<servlet-class>org.cote.rest.servlets.MediaFormServlet</servlet-class>
-  	<enabled>true</enabled>
-  	<async-supported>false</async-supported>
-  </servlet>
-    <servlet>
-    	<description>
-    	</description>
-    	<display-name>MediaServlet</display-name>
-    	<servlet-name>MediaServlet</servlet-name>
-    	<servlet-class>org.cote.rest.servlets.MediaServlet</servlet-class>
-    	<enabled>true</enabled>
-    	<async-supported>false</async-supported>
-    </servlet>
-    <servlet>
-    	<description>
-    	</description>
-    	<display-name>ThumbnailServlet</display-name>
-    	<servlet-name>ThumbnailServlet</servlet-name>
-    	<servlet-class>org.cote.rest.servlets.ThumbnailServlet</servlet-class>
-    	<enabled>true</enabled>
-    	<async-supported>false</async-supported>
-    </servlet>
-    <servlet-mapping>
-  	<servlet-name>MediaFormServlet</servlet-name>
-  	<url-pattern>
-  	/mediaForm</url-pattern>
-  </servlet-mapping>
-    <servlet-mapping>
-    	<servlet-name>MediaServlet</servlet-name>
-    	<url-pattern>
-    	/Media/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-    	<servlet-name>ThumbnailServlet</servlet-name>
-    	<url-pattern>
-    	/Thumbnail/*</url-pattern>
-    </servlet-mapping>
+		<auth-constraint>
+			<role-name>AccountUsers</role-name>
+		</auth-constraint>
+
+		<user-data-constraint>
+			<transport-guarantee>NONE</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+
+	<login-config>
+		<auth-method>FORM</auth-method>
+		<realm-name>AccountManager5</realm-name>
+		<form-login-config>
+			<form-login-page>/jbossLogin.html</form-login-page>
+			<form-error-page>/jbossLoginErrors.html</form-error-page>
+		</form-login-config>
+	</login-config>
+
+	<security-role>
+		<description>The role required to access restricted content
+		</description>
+		<role-name>AuthorizedUser</role-name>
+	</security-role>
+	
+	<security-role>
+		<description>The AM role of an authenticated user.
+		</description>
+		<role-name>AccountUsers</role-name>
+	</security-role>
+	<!-- 
+	    <security-role-mapping>
+        <role-name>AuthorizedUser</role-name>
+        <group-name>AuthorizedUser</group-name>
+    </security-role-mapping>
+    -->
 </web-app>

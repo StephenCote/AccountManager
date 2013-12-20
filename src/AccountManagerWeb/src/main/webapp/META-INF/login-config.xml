@@ -1,0 +1,25 @@
+
+<application-policy name="accountmanager5">
+
+	<authentication>
+	<login-module code="org.cote.util.AccountManagerLoginModule"
+	<!-- 
+		<login-module code="org.cote.jboss.util.AccountManagerLoginModule"
+
+			flag="required">
+	-->
+			<!-- <module-option name="userPathPrefix" value="/security/store/password"/> 
+				<module-option name="rolesPathPrefix" value="/security/store/roles"/> -->
+			<module-option name="principalClass"
+				value="org.cote.util.AccountManagerPrincipal" />
+		</login-module>
+	</authentication>
+	<mapping>
+
+		<mapping-module
+			code="org.jboss.security.mapping.providers.DeploymentRolesMappingProvider"
+
+			type="role" />
+
+	</mapping>
+</application-policy>

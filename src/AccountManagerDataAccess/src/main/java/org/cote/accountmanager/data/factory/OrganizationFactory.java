@@ -72,13 +72,14 @@ public class OrganizationFactory extends NameIdFactory {
 				/// String buildDeleteQuery = (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM session WHERE sessionexpiration <= " + token  + (connection_type == CONNECTION_TYPE.MYSQL ? " LIMIT 200 " : "") + ";";
 				int delLimit = 1000;
 				String buildDeleteQuery = "SELECT '" + (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT " + 1000 + " " : "") + "DELETE FROM ' || tablename || ' WHERE organizationid = ?" + (connection_type == CONNECTION_TYPE.MYSQL ? " LIMIT " + delLimit + " " : "") + ";' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations';";
+				logger.debug(buildDeleteQuery);
 				Statement stat = conn.createStatement();
 				ResultSet rset = stat.executeQuery(buildDeleteQuery);
 				while(rset.next()){
 					String delQuery = rset.getString(1);
 					delQuery.replaceAll("\"","");
 					PreparedStatement pstat = conn.prepareStatement(delQuery);
-					logger.info(delQuery);
+					logger.debug(delQuery);
 					pstat.setLong(1, organization.getId());
 					int del = pstat.executeUpdate();
 					while(del >= delLimit){

@@ -383,6 +383,7 @@ public class Factories {
 		getTagFactory().clearCache();
 		getTagParticipationFactory().clearCache();
 		getUserFactory().clearCache();
+		getOrganizationFactory().clearCache();
 		EffectiveAuthorizationService.clearCache();
 		
 		return true;

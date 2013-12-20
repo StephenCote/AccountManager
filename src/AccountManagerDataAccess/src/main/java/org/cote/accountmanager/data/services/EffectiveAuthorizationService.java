@@ -89,10 +89,12 @@ public class EffectiveAuthorizationService {
 	
 	public static void pendUserRoleUpdate(UserRoleType role){
 		rebuildRoles.put(role.getId(), role);
+		logger.debug("Pend role " + role.getName() + " #" + role.getId() + " for total count " + rebuildRoles.size());
 	}
 
 	public static void pendDataRoleUpdate(DataType data){
 		rebuildData.put(data.getId(), data);
+		
 	}
 
 	
@@ -102,10 +104,12 @@ public class EffectiveAuthorizationService {
 
 	public static void pendGroupUpdate(BaseGroupType group){
 		rebuildGroups.put(group.getId(), group);
+		logger.debug("Pend group " + group.getName() + " #" + group.getId() + " for total count " + rebuildGroups.size());
 	}
 
 	
 	public static void clearCache(){
+		logger.debug("Clear Authorization Cache");
 		userRoleMap.clear();
 		userRolePerMap.clear();
 		userGroupMap.clear();
@@ -119,6 +123,7 @@ public class EffectiveAuthorizationService {
 		rebuildData.clear();
 	}
 	public static void clearCache(NameIdType object) throws ArgumentException{
+		//logger.debug("Clear Authorization Cache for " + object.getName());
 		switch(object.getNameType()){
 			case GROUP:
 				BaseGroupType group = (BaseGroupType)object;
@@ -127,6 +132,7 @@ public class EffectiveAuthorizationService {
 					clearPerCache(roleGroupMap, group);
 				}
 				rebuildGroups.remove(group.getId());
+				break;
 			case DATA:
 				DataType data = (DataType)object;
 				clearPerCache(userDataMap, data);
@@ -554,6 +560,7 @@ public class EffectiveAuthorizationService {
 					/// negative id indicates possible bulk entry
 					/// 
 					if(role.getId() < 0){
+						logger.error("Role BulkEntry with id " + role.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
 						throw new ArgumentException("Role BulkEntry with id " + role.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
 					}
 					List<UserType> rusers = Factories.getRoleParticipationFactory().getUsersInRole(role);
@@ -568,9 +575,9 @@ public class EffectiveAuthorizationService {
 				logger.info("Rebuilding role cache for " + roles.size() + " roles");
 				if(roles.size() > 0){
 					rebuildRoleRoleCache(roles,roles.get(0).getOrganization());
-					rebuildGroups.clear();
+					rebuildRoles.clear();
 				}
-				rebuildRoles.clear();
+				///rebuildRoles.clear();
 			}
 			synchronized(rebuildGroups){
 				List<BaseGroupType> groups = Arrays.asList(rebuildGroups.values().toArray(new BaseGroupType[0]));
@@ -579,6 +586,7 @@ public class EffectiveAuthorizationService {
 					/// negative id indicates possible bulk entry
 					/// 
 					if(group.getId() < 0){
+						logger.error("Group BulkEntry with id " + group.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
 						throw new ArgumentException("Group BulkEntry with id " + group.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
 					}
 					if(group.getGroupType() == GroupEnumType.USER){

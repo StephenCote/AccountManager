@@ -9,6 +9,7 @@ import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
+import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -51,6 +52,25 @@ public class TestAuditFactory{
 	}
 	
 	@Test
+	public void testAddDenyWithNullData(){
+
+		String id = UUID.randomUUID().toString();
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, null, AuditEnumType.GROUP, id);
+		logger.info("Audit expires: " + audit.getAuditExpiresDate());
+		AuditService.targetAudit(audit, AuditEnumType.USER, null);
+		AuditService.denyResult(audit, "Denied");
+		Factories.getAuditFactory().flushSpool();
+		AuditType[] audits = new AuditType[0];
+		try {
+			audits = Factories.getAuditFactory().getAuditBySource(AuditEnumType.GROUP, id);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		assertTrue("Failed to lookup audit", audits.length > 0);
+	}
+	
+	@Test
 	public void testAddAuditNoData(){
 		AuditType audit = Factories.getAuditFactory().newAudit();
 		audit.setAuditActionType(ActionEnumType.ADD);
@@ -63,14 +83,7 @@ public class TestAuditFactory{
 		boolean success = false;
 		try {
 			success = Factories.getAuditFactory().addAudit(audit);
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			//Factories.getAuditFactory().flushSpool();
+			Factories.getAuditFactory().flushSpool();
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

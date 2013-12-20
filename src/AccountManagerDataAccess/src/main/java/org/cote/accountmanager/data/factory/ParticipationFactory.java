@@ -227,7 +227,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	protected <T> List<T> getUserListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getAccountFactory().getList(new QueryField[]{ field }, organization);
+		return Factories.getUserFactory().getList(new QueryField[]{ field }, organization);
 	}	
 	protected <T> List<T> getAccountListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
 	{

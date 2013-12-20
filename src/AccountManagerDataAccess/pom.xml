@@ -50,20 +50,24 @@
 					<excludes>
 						<!-- 
 						
-						<exclude>**/TestImportContacts.java</exclude>
+						<exclude>**/TestDataAuthorization.java</exclude>
+						
 						-->
+						<exclude>**/TestDataFactory.java</exclude>
+						<exclude>**/TestAuditFactory.java</exclude>
+						<exclude>**/TestImportContacts.java</exclude>
 						<exclude>**/TestBulkPerson.java</exclude>
 						<exclude>**/TestUserRegistration.java</exclude>
 						
 						<exclude>**/TestBulkUser.java</exclude>	
 						
 						<exclude>**/TestPerson.java</exclude>
-						<exclude>**/TestDataAuthorization.java</exclude>
+						
 						
 
 						<exclude>**/TestBulkSession.java</exclude>
 						<exclude>**/TestFactoryCache.java</exclude>
-						<exclude>**/TestAuditFactory.java</exclude>
+						
 						<exclude>**/TestSecuritySpool.java</exclude>	
 						
 						<exclude>**/TestUserLogin.java</exclude>						
@@ -72,7 +76,7 @@
 
 						<exclude>**/TestSpoolFactory.java</exclude>
 						
-						<exclude>**/TestDataFactory.java</exclude>
+						
 						
 						<exclude>**/TestFindOrganization.java</exclude>
 						<exclude>**/TestAggregateCount.java</exclude>

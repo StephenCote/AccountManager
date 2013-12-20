@@ -10,7 +10,11 @@
 	<name>AccountManager</name>
 	<url>http://maven.apache.org</url>
 	<repositories>
-
+      <repository>
+        <id>deprecated</id>
+        <name>JBoss Deprecated</name>
+        <url>https://repository.jboss.org/nexus/content/repositories/deprecated</url>
+      </repository>
 		<repository>
 			<id>maven-repository.dev.java.net</id>
 			<name>Java.net Maven 1 Repository (legacy)</name>
@@ -52,6 +56,15 @@
 	</properties>
 
 	<dependencies>
+	<dependency>
+	<groupId>javax.security</groupId>
+	<artifactId>jacc</artifactId>
+	<version>1.0</version>
+	
+	<scope>provided</scope>
+	
+</dependency>
+            
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm</artifactId>
@@ -109,6 +122,13 @@
 			<artifactId>dataaccess</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>org.cote.accountmanager</groupId>
+	<artifactId>jbossutil</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		-->
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>

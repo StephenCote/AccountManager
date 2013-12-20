@@ -10,7 +10,9 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.DataService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
@@ -58,6 +60,72 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testEncryptedData(){
+		UserType user = getUser("testuser1","password");
+		
+		SecurityBean bean = OrganizationSecurity.getSecurityBean(Factories.getDevelopmentOrganization());
+		
+		try{
+			DirectoryGroupType dir = Factories.getGroupFactory().getCreateUserDirectory(user, "CryptoData");
+			DataType data = Factories.getDataFactory().newData(user, dir);
+			String d1name = UUID.randomUUID().toString();
+			String d2name = UUID.randomUUID().toString();
+			DataUtil.setPassword(data, "My special password");
+			data.setEncipher(true);
+			data.setMimeType("text/plain");
+			
+			DataUtil.setCipher(data,bean);
+			
+			DataUtil.setValue(data, "This is the example short text".getBytes());
+			data.setName(d1name);
+			Factories.getDataFactory().addData(data);
+			
+			DataType cdata = Factories.getDataFactory().getDataByName(d1name, dir);
+			assertNotNull("Data is null",cdata);
+			DataUtil.setCipher(cdata,bean);
+			DataUtil.setPassword(cdata, "My special password");
+			logger.info("Data Value: " + (new String(DataUtil.getValue(cdata))));
+		}
+		catch(FactoryException fe){
+			logger.error(fe.getMessage());
+			fe.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	/*
+	@Test
+	public void testSharedDataAuth(){
+		UserType user2 = null;
+		DirectoryGroupType dir = null;
+		DataType data = null;
+		boolean auth = false;
+		try {
+			user2 = Factories.getUserFactory().getUserByName("TestUser2", Factories.getPublicOrganization());
+			EffectiveAuthorizationService.rebuildGroupRoleCache(Factories.getPublicOrganization());
+			assertNotNull("User is null",user2);
+			dir = Factories.getGroupFactory().findGroup(null, "/Home/TestUser1/GalleryHome/.thumbnail", Factories.getPublicOrganization());
+			assertNotNull("Dir is null",dir);
+			data = Factories.getDataFactory().getDataByName("2355.jpg 128x128", dir);
+			assertNotNull("Data is null",data);
+			assertTrue("User not authorized to view data",AuthorizationService.canViewData(user2, data));
+			
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	*/
 	/*
 	@Test
 	public void testDataRoles(){
@@ -231,7 +299,7 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		assertFalse("Error occurred", error);
 	}
 	*/
-	
+	/*
 	@Test
 	public void testDataTags(){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
@@ -292,5 +360,5 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		}
 
 	}
-	
+	*/
 }

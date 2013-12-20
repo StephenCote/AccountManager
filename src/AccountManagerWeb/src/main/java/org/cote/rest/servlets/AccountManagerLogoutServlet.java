@@ -1,26 +1,27 @@
 package org.cote.rest.servlets;
 
 import java.io.IOException;
-import java.util.Date;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.cote.beans.MediaOptions;
-import org.cote.util.MediaUtil;
+import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.util.ServiceUtil;
 
 /**
- * Servlet implementation class ThumbnailServlet
+ * Servlet implementation class AccountManagerLogoutServlet
  */
-public class ThumbnailServlet extends HttpServlet {
+public class AccountManagerLogoutServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static int defCacheSeconds = 7200;
+       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ThumbnailServlet() {
+    public AccountManagerLogoutServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -30,22 +31,21 @@ public class ThumbnailServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		long expiry = new Date().getTime() + (defCacheSeconds*1000);
+		UserType user = null;
+		try {
+			user = SessionSecurity.getUserBySession(request.getSession().getId(), ServiceUtil.getOrganizationFromRequest(request));
+			if(user != null) SessionSecurity.logout(user);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		response.setHeader("Cache-Control", "public,max-age="+ defCacheSeconds);
-		response.setDateHeader("Expires", expiry);
-	    
-	    
-		MediaOptions options = new MediaOptions();
-		options.setThumbHeight(128);
-		options.setThumbWidth(128);
-		options.setThumbnail(true);
-		
-		MediaUtil.writeBinaryContent(request, response, options);
+		request.getSession().invalidate();
 	}
-	public long getLastModified(HttpServletRequest req) {
-		  return 0;
-	}
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */

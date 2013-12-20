@@ -50,6 +50,7 @@ public class DBFactory {
 		int len = fields.length;
 		int paramMarker = startMarker;
 		for(int i = 0; i < len; i++){
+			if(fields[i] == null) continue;
 			if(fields[i].getComparator() == ComparatorEnumType.GROUP_AND || fields[i].getComparator() == ComparatorEnumType.GROUP_OR){
 				paramMarker = setStatementParameters(fields[i].getFields().toArray(new QueryField[0]), paramMarker, statement);
 			}

@@ -446,6 +446,7 @@ public class GroupFactory  extends NameIdFactory {
 	public DirectoryGroupType getCreatePath(UserType user, String path, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		DirectoryGroupType dir = findGroup(user, path, organization);
+		if(dir == null) logger.debug("Make path: " + path + " in organization " + organization.getName() + " relative to user " + user.getName());
 		if(dir == null && makePath(user, path, organization)){
 			dir = findGroup(user, path, organization);
 		}
@@ -565,13 +566,14 @@ public class GroupFactory  extends NameIdFactory {
 
 			if (ref_group == null)
 			{
+				logger.error("Invalid reference group for path section: '" + name + "' at index " + i);
 				throw new FactoryException("MakeDirectoryPath: Invalid directory reference id");
 				//ret = false;
 				//break;
 			}
 
 			nested_group = getDirectoryByName(name, ref_group, organization);
-			System.out.println("Pathing " + name + " - " + (nested_group == null ? "NEW" : nested_group.getId()));
+			logger.debug("Pathing " + name + " - " + (nested_group == null ? "NEW" : nested_group.getId()));
 			if (nested_group == null)
 			{
 				nested_group = newDirectoryGroup(user, name, ref_group, organization);

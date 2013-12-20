@@ -424,6 +424,7 @@ public abstract class FactoryBase {
 		int len = fields.length;
 		for (int i = 0; i < len; i++)
 		{
+			if(fields[i] == null) continue;
 			///logger.info(i + ": " + fields[i].getName() + " " + fields[i].getComparator());
 			if (i > 0) match_buff.append(" " + joinType + " ");
 			if(fields[i].getComparator() == ComparatorEnumType.GROUP_AND || fields[i].getComparator() == ComparatorEnumType.GROUP_OR){
