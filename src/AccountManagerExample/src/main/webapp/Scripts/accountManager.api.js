@@ -194,17 +194,26 @@
 		getGroupById : function(iId){
 			return uwmServices.getService("Group").find(iId);
 		},
-		addGroup : function(sName, iParentId){
-			var o = new org.cote.beans.groupType();
+		addGroup : function(sName, sType, iParentId){
+			var o = new org.cote.beans.baseGroupType();
 			o.parentId = iParentId;
 			o.name = sName;
+			if(!sType) sType = 'DATA';
+			o.groupType = sType;
 			return uwmServices.getService("Group").add(o);
 		},
 		updateGroup : function(oGroup){
 			return uwmServices.getService("Group").update(oGroup);
 		},
 		
-		
+		authorizeDataRole : function(oOrg, iRoleId, iDataId, bView, bEdit, bDel, bCreate){
+			if(!oOrg) oOrg = uwm.getUser().organization;
+			return uwmServices.getService("Data").authorizeRole(oOrg.id, iRoleId, iDataId, bView, bEdit, bDel, bCreate);
+		},
+		authorizeDataUser : function(oOrg, iUserId, iDataId, bView, bEdit, bDel, bCreate){
+			if(!oOrg) oOrg = uwm.getUser().organization;
+			return uwmServices.getService("Data").authorizeUser(oOrg.id, iUserId, iDataId, bView, bEdit, bDel, bCreate);
+		},
 		countDatas : function(sPath){
 			return uwmServices.getService("Data").count(sPath);
 		},

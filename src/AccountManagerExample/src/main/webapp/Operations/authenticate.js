@@ -16,7 +16,7 @@ this.DoOperation = function(){
 		uwm.operation("ContinueWorkflow", {user:oUser}, 0, this.ruleName);
 	}
 	*/
-	var oSession = uwm.login(sName, sPass);
+	var oSession = uwm.login(sName, sPass, oOrg);
 	if(oSession && oSession != null){
 		if(typeof oSession == "object"){
 			this.log("Logged in!");
