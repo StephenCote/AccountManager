@@ -76,4 +76,4 @@ if(!window.uwmServices){
 			, true
 			, true
 	);
-}())
+})();

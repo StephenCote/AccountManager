@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template Title = "Designer">
+
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-style src ="Styles/Designer.css" id ="designer" />
+	<import-style src ="Styles/GridStyle.css" id ="grid" />
+	<!--
+	<div class = "field">
+		<div class = "field_label">To:</div>
+		<div class = "field_input">
+			<input type = "text" style = "width: 290px !important;" class = "input_text" rid = "email_to" />
+			<input type = "button" onclick = "${this}.SendEmail()" value = "Send" style = "width:65px;background: url(/AccountManagerExample/Media/Icons/email.gif) #CFCFCF left center no-repeat;padding-left: 20px;" />
+		</div>
+	</div>
+	<div class = "field">
+		<div class = "field_label">Fr:</div>
+		<div class = "field_input"><input type = "text" style = "width: 290px !important;" class = "input_text" rid = "email_from" /></div>
+	</div>
+	<div class = "field">
+		<div class = "field_label">Subject:</div>
+		<div class = "field_input"><input type = "text" style = "width: 290px !important;" class = "input_text" rid = "email_subject" /></div>
+	</div>
+	-->
+	<div style = "clear:both;">
+		<div rid = "designer_tab" onclick = "${this}.ShowTab(1)" class = "tab">Design</div>
+		<div rid = "source_tab" onclick = "${this}.ShowTab(2)" class = "tab">Source</div>
+		<div rid = "preview_tab" onclick = "${this}.ShowTab(3)" class = "tab">Preview</div>
+	</div>
+	<div style = "display:none;" rid = "source_container">
+		<!--
+		<div style = "clear:both;background-color:#CFCFCF;">
+			Modify the source of the email below.
+		</div>
+		-->
+		<textarea rid = "preview_source" style = "width:95%;border:1px solid #909090;font:8pt Courier;"></textarea>
+	</div>
+	<div rid = "preview_container" style = "display:none;">
+		<iframe rid = "preview_frame" frameborder = "0" style = "border:0px solid #000000;"></iframe>
+		
+	</div>
+	<div style = "display:none;" rid = "designer_container">
+	<div class = "style_bar">
+		<select rid = "template" onchange = "${this}.LoadDesignerTemplate()">
+			<option value = "0">TEMPLATE</option>
+		<option value = "/AccountManagerExample/Templates/DesignerContentTemplate.xml">Demo Template</option>
+
+		</select>
+		<select rid = "block" onchange = "${this}.ExecBlock()">
+			<option value = "0">BLOCK</option>
+			<option>H1</option>
+			<option>H2</option>
+			<option>H3</option>
+			<option>H4</option>
+			<option>H5</option>
+			<option>H6</option>
+			<option>BlockQuote</option>
+			<option>P</option>
+			<!--
+			<option>DIV</option>
+			-->
+		</select>
+		<select rid = "fonts" onchange = "${this}.ExecFont()"><option value = "0">FONT</option><option>Arial</option><option>Times</option><option>Verdana</option><option>Courier</option></select>
+		<select rid = "fontsize" onchange = "${this}.ExecFontSize()"><option value = "0">SIZE</option><option>Size 1</option><option>Size 2</option><option>Size 3</option><option>Size 4</option><option>Size 5</option><option>Size 6</option><option>Size 7</option></select>
+		<select rid = "fontcolor" onchange = "${this}.ExecFontColor()">
+			<option value = "0">COLOR</option>
+			<option>Black</option>
+			<option>Grey</option>
+			<option>White</option>
+			<option>Red</option>
+			<option>Orange</option>
+			<option>Yellow</option>
+			<option>Green</option>
+			<option>Blue</option>
+			<option>Violet</option>
+		</select>
+		<select rid = "fill" onchange = "${this}.ExecFill()">
+			<option value = "0">FILL</option>
+			<option>Black</option>
+			<option>Grey</option>
+			<option>White</option>
+			<option>Red</option>
+			<option>Orange</option>
+			<option>Yellow</option>
+			<option>Green</option>
+			<option>Blue</option>
+			<option>Violet</option>
+		</select>
+		</div>
+		<div class = "buttons_bar" rid = "buttons-bar">
+		<input type="button" class = "designer_button" button-action = "Bold" style = "background-image: url(/AccountManagerExample/Media/Icons/bold.gif);" />
+		<input type="button" class = "designer_button" button-action = "Italic" style = "background-image: url(/AccountManagerExample/Media/Icons/italic.gif);" />
+		<input type="button" class = "designer_button" button-action = "Underline" style = "background-image: url(/AccountManagerExample/Media/Icons/underline.gif);" />
+		
+		<div type="button" class = "button_spacer"></div>
+		
+		<input type="button" class = "designer_button" button-action = "JustifyLeft" style = "background-image: url(/AccountManagerExample/Media/Icons/left_just.gif);" />
+		<input type="button" class = "designer_button" button-action = "JustifyCenter" style = "background-image: url(/AccountManagerExample/Media/Icons/centre.gif);" />
+		<input type="button" class = "designer_button" button-action = "JustifyRight" style = "background-image: url(/AccountManagerExample/Media/Icons/right_just.gif);" />
+		
+		<div type="button" class = "button_spacer"></div>
+		
+		<input type="button" class = "designer_button" button-action = "InsertUnorderedList" style = "background-image: url(/AccountManagerExample/Media/Icons/list.gif);" />
+		<input type="button" class = "designer_button" button-action = "InsertOrderedList" style = "background-image: url(/AccountManagerExample/Media/Icons/numbered_list.gif);" />
+		
+		<div type="button" class = "button_spacer"></div>
+		
+		<input type="button" class = "designer_button" button-action = "Indent" style = "background-image: url(/AccountManagerExample/Media/Icons/indent.gif);" />
+		<input type="button" class = "designer_button" button-action = "Outdent" style = "background-image: url(/AccountManagerExample/Media/Icons/outdent.gif);" />
+		
+		<div type="button" class = "button_spacer"></div>
+		
+		<input type="button" class = "designer_button" button-action = "InsertHorizontalRule" style = "background-image: url(/AccountManagerExample/Media/Icons/hr.gif);" />
+		<input type="button" class = "designer_button" button-action = "CreateLink" style = "background-image: url(/AccountManagerExample/Media/Icons/hyperlink.gif);" />
+		<div style = "clear:both;"></div>	
+	</div>
+	
+	<iframe rid = "designer" frameborder = "0" style = "border:0px solid #000000;"></iframe>
+	</div>
+<!--
+	<div class = "buttons_bar_container">
+		<div rid = "buttons-bar" style = "margin-left:auto;margin-right:auto;width:100px;">
+			<input type="button" class = "designer_button" rid = "prev-button" onclick = "${this}.Prev()" button-action = "avoid" style = "background-color:#FFFFCC;width:50px;" value = "Prev" />
+		</div>
+	</div>
+-->
+	<embedded-script>
+		<![CDATA[
+		template_init : function(){
+			//this.createHandler("create_control",0,0,1);
+			// Show the designer first!
+			//
+			//
+			
+			
+			if(Hemi.text.trim(this.GetFormValue("email_from")) == ""){
+				//this.getTemplateObjectByName("email_from").value = g_merchant_email;
+			}
+			if(Hemi.text.trim(this.GetFormValue("email_subject")) == ""){
+				//this.getTemplateObjectByName("email_subject").value = this.getObjects().current_item.item_name;
+			}
+			this.local_handle_resize = this.resizers;
+			this.local_handle_minimize = this.local_minimize;
+			
+			this.getProperties().proxied = 0;
+			
+			this.getProperties().keep_buffers = 0;
+
+			this.setStatus("Setting up designer ...");
+			setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').setup_designer()",50);
+		},
+		
+		local_minimize : function(){
+			// fix for latest FF 1.5
+			//
+			this.disable_designer();
+		},
+		
+		template_destroy : function(){
+			var d = this.get_frame("designer"), h = 0;
+			if(this.getProperties().keep_buffers){
+				try{
+					if(d){
+						h = this.RefreshSource();
+					}
+					this.getProperties().designer_html = h;
+					}
+					catch(e){
+						
+						this.setStatus("Error enabling designer: " + (e.message ? e.message : e.description));
+					}
+			}
+			else{
+				this.getProperties().designer_html = 0;
+				this.getProperties().control_buffer = 0;
+			}
+			this.getProperties().showing_tab = 0;
+			this.local_handle_focus = 0;
+			this.local_handle_blur = 0;
+			this.local_handle_minimize = 0;
+			this._prehandle_toggle_highlight = 0;
+			this._prehandle_exec_button = 0;
+			this._prehandle_frame_blur = 0;
+			this.local_handle_resize = 0;
+			this._prehandle_create_control = 0;
+			
+		},
+
+		
+		LoadDesignerTemplate : function(){
+			this.setStatus("Loading template ...");
+			
+			var sTemplate = this.GetFormValue("template");
+			if(!sTemplate || !sTemplate.match(/\.xml/g)){
+				this.setStatus("Invalid template selection");
+				return;
+			}
+			/*
+			if(!this.getProperties().control_buffer){
+				this.setStatus("Missing control buffer");
+				return;
+			}
+			*/
+			this.getTemplateObjectByName("template").selectedIndex = 0;
+			
+			var oX = Hemi.xml.getXml(sTemplate,0,0,sTemplate,1);
+			if(!oX || !oX.documentElement){
+				this.setStatus("Error loading template");
+				return;
+			}
+			var sHtml = Hemi.xml.serialize(oX);
+			// Konqueror / Safari fix; Serialize document and strip off processing instruction
+			sHtml = sHtml.replace(/<\?xml (.[^<]*)>/gi,"");
+			/*
+			sHtml = sHtml.replace(/%EASY_LINK_NAME%/gi,this.getObjects().current_item.item_name);
+			sHtml = sHtml.replace(/%EASY_LINK_DESCRIPTION%/gi,this.getObjects().current_item.item_description);
+			sHtml = sHtml.replace(/%EASY_LINK_PRICE%/gi,this.getObjects().current_item.item_price);
+			sHtml = sHtml.replace(/%EMAIL_CONTENTS%/gi,this.getProperties().control_buffer);
+			*/
+			this.WriteContent("<html>" + sHtml + "</html>","designer");
+			this.setStatus("");
+		},
+		
+		ShowTab : function(i){
+			this.setStatus("Switching tabs ...");
+			this.getTemplateObjectByName("designer_container").style.display = "none";
+			this.getTemplateObjectByName("preview_container").style.display = "none";
+			this.getTemplateObjectByName("source_container").style.display = "none";
+			/*
+			this.getTemplateObjectByName("designer_tab").style.borderBottomColor = "#FFFFFF";
+			this.getTemplateObjectByName("preview_tab").style.borderBottomColor = "#FFFFFF";
+			this.getTemplateObjectByName("source_tab").style.borderBottomColor = "#FFFFFF";
+			*/
+			var sActiveSource = this.RefreshSource();
+			
+			this.getProperties().showing_tab = i;
+			switch(i){
+				case 1:
+					this.getTemplateObjectByName("designer_container").style.display = "block";
+					// this.getTemplateObjectByName("designer_tab").style.borderBottomColor = "#CFCFCF";
+
+					this.resize_designer();
+					
+					if(sActiveSource) this.WriteContent(sActiveSource,"designer");
+					break;
+				case 2:
+					this.getTemplateObjectByName("source_container").style.display = "block";
+					// this.getTemplateObjectByName("source_tab").style.borderBottomColor = "#CFCFCF";
+					this.resize_preview_source();
+					if(sActiveSource) this.getTemplateObjectByName("preview_source").value = sActiveSource;
+					break;
+				case 3:
+					this.getTemplateObjectByName("preview_container").style.display = "block";
+					// this.getTemplateObjectByName("preview_tab").style.borderBottomColor = "#CFCFCF";
+					this.resize_preview_frame();
+					if(sActiveSource){
+						sActiveSource = sActiveSource.replace(/<form/gi,"<form target = \"_blank\"")
+						this.WriteContent(sActiveSource,"preview_frame");
+					}
+					break;
+			}
+			this.setStatus("");
+		},
+		RefreshSource : function(){
+			var sSource = 0;
+			try{
+				switch(this.getProperties().showing_tab){
+					case 1:
+						var d = this.get_frame("designer");
+						if(!d || !d.document) return 0;
+						sSource = "<html>" + this.get_frame("designer").document.documentElement.innerHTML + "</html>";
+						break;
+					case 2:
+						sSource = this.getTemplateObjectByName("preview_source").value;
+						break;
+				}
+			}
+			catch(e){
+				this.setStatus("Error: " + (e.message ? e.message : e.description));
+			}
+			if(!sSource) sSource = this.getProperties().designer_html;
+			else this.getProperties().designer_html = sSource;
+			return sSource;
+		},
+		Prev : function(){
+			
+		},
+
+
+
+		ExecFontSize : function(){
+			var o = this.getTemplateObjectByName("fontsize");
+			var d = this.get_frame("designer");
+			
+			if(o.selectedIndex <= 0) return;
+			d.document.execCommand("FontSize", false, o.selectedIndex);
+			o.selectedIndex = 0;
+		},
+		ExecFont : function(){
+			var o = this.getTemplateObjectByName("fonts");
+			var d = this.get_frame("designer");
+			
+			if(o.selectedIndex <= 0) return;
+			var s = o.options[o.selectedIndex].text;
+			d.document.execCommand("FontName", false, s);
+			o.selectedIndex = 0;
+		},
+		ExecBlock : function(){
+			var o = this.getTemplateObjectByName("block");
+			var d = this.get_frame("designer");
+			
+			if(o.selectedIndex <= 0) return;
+			var s = o.options[o.selectedIndex].text;
+			d.document.execCommand("FormatBlock", false, "<" + s + ">");
+			o.selectedIndex = 0;
+		},
+		ExecFontColor : function(){
+			var o = this.getTemplateObjectByName("fontcolor");
+			var d = this.get_frame("designer");
+			
+			if(o.selectedIndex <= 0) return;
+			var s = o.options[o.selectedIndex].text;
+			d.document.execCommand("ForeColor", false, s.toLowerCase());
+			o.selectedIndex = 0;
+		},
+		ExecFill : function(){
+			var o = this.getTemplateObjectByName("fill");
+			var d = this.get_frame("designer");
+			
+			if(o.selectedIndex <= 0) return;
+			var s = o.options[o.selectedIndex].text;
+			d.document.execCommand("BackColor", false, s);
+			o.selectedIndex = 0;
+		},
+		_handle_exec_button : function(e){
+			var o = Hemi.event.getEventSource(e);
+			var d = this.get_frame("designer");
+			var s = o.getAttribute("button-action");
+			var opt;
+			var r;
+			d.focus();
+			// if(d.createTextRange) r = d.createTextRange();
+			// if(r) r.select();
+			switch(o.getAttribute("button-action")){
+				case "CreateLink":
+				case "Indent":
+				case "Outdent":
+				case "InsertHorizontalRule":
+				case "InsertOrderedList":
+				case "InsertUnorderedList":
+				case "JustifyLeft":
+				case "JustifyCenter":
+				case "JustifyRight":
+				case "Underline":
+				case "Italic":
+				case "Bold":
+					d.document.execCommand(s, false, opt);
+					break;
+			}
+			d.focus();
+		},
+
+	
+		setup_designer : function(){
+				try{
+					var d = this.get_frame("designer");
+					if(!d || !d.document){
+						alert("SetupDesigner: Unable to find document");
+						return;
+					}
+					this.ShowTab(1);
+					
+					var o = d.document;
+					o.documentElement.style.borderWidth = "0px";
+					o.documentElement.style.padding = "0px";
+					o.body.style.border = "0px solid black";
+					o.body.style.padding = "0px";
+					
+					this.local_handle_blur = this.disable_designer;
+					
+					this.resize_designer();
+				
+					this.PrepDesigner();
+				}
+				catch(e){
+					this.setStatus("Error setting up designer: " + (e.message ? e.message : e.description));
+				}
+			},
+				
+				PrepDesigner : function(){
+					var d = this.get_frame("designer");
+					if(!d || !d.document){
+						setTimeout("Hemi.registry.ObjectRegistry.getObject('" + this.getObjectId() + "').PrepDesigner()",50);
+						this.setStatus("Deferring Preparation ...");
+						return;
+					}
+
+					if(this.getProperties().designer_html){
+						this.WriteContent(this.getProperties().designer_html,"designer");
+					}
+					else if(this.getProperties().control_buffer){
+						this.WriteContent("<html><body>" + this.getProperties().control_buffer + "</body></html>","designer");
+					}
+					else{
+						this.WriteContent("<html><body><div>[ message body ]</div></body></html>","designer");
+					}
+					this.setStatus("");
+		},
+		WriteContent : function(s,n){
+			try{
+					var d = this.get_frame(n);
+					if(!d || !d.document){
+						alert("WriteContent: Unable to find document; " + this.WriteContent.caller);
+						return;
+					}
+					var o = d.document;
+					o.open();
+					o.write(s);
+					o.close();
+					this.enable_designer();
+				}
+				catch(e){
+					this.setStatus("Unexpected UI Error: " + (e.message ? e.message : e.description));
+				}
+
+		},
+		enable_designer : function(b){
+			try{
+				var d = this.get_frame("designer");
+				if(d){
+					d.document.designMode = "on";
+					d.focus();
+					//this.getTemplateObjectByName("notes").innerHTML = "Enable";
+				}
+				else{
+					this.setStatus("Could not find designer document to enabled");
+				}
+			}
+			catch(e){
+				this.setStatus("Error enabling designer: " + (e.message ? e.message : e.description));
+			}
+		},
+		disable_designer : function(){
+			if(this.getIsClosed()) return;
+			try{
+				var d = this.get_frame("designer");
+				//document.title = "disable " + (new Date()).getTime();
+				if(d){
+					this.getProperties().keep_buffers = 1;				
+					// var h = d.document.body.innerHTML;
+					this.loadTemplate("Templates/DesignerProxy.xml");
+				}
+			}
+			catch(e){
+				this.setStatus("Error enabling designer: " + (e.message ? e.message : e.description));
+			}
+		},
+		resizers : function(){
+			switch(this.getProperties().showing_tab){
+				case 1:
+					this.resize_designer();
+					break;
+				case 2:
+					this.resize_preview_source();
+					break;
+				case 3:
+					this.resize_preview_frame();
+					break;
+
+				}
+		},
+		resize_designer_delay : function(){
+			setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').resize_designer()",50);
+		},
+		
+		resize_designer : function(){
+			this.ResizeFrame("designer",0,0);
+		},
+
+		resize_preview_frame : function(){
+			this.ResizeFrame("preview_frame",0,0);
+		},
+		resize_preview_source : function(){
+			this.ResizeFrame("preview_source",10,0);
+		},
+		SendEmail : function(){
+			var sSub = Hemi.text.trim(this.GetFormValue("email_subject"));
+			//var sEmail = Hemi.text.trim(this.GetFormValue("email_to"));
+			var sFromEmail = Hemi.text.trim(this.GetFormValue("email_from"));
+			var sMsg = Hemi.text.trim(this.RefreshSource());
+			
+			try{
+				Assert(sSub.length > 0,"Invalid subject");
+				//Assert(sEmail.length > 0 && sEmail.match(/^([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)$/),"Invalid receiver email");
+				Assert(sFromEmail.length > 0 && sFromEmail.match(/^([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)$/),"Invalid sender email");
+				Assert(sMsg.length > 0,"Invalid message");
+			}
+			catch(e){
+				this.setStatus("Error sending email: " + (typeof e== "string" ? e : e.message ? e.message : e.description));
+				return;
+			}
+			
+			var oX = GetNewRequest();
+			AddParameter(oX, "Subject",sSub,1);
+			//AddParameter(oX, "Email",sEmail,1);
+			AddParameter(oX, "FromEmail",sFromEmail,1);
+			AddParameter(oX, "Message",sMsg,1);
+			
+			var oR = Hemi.xml.postXml(g_application_root + "/Products/beta/EasyLink/EasyLinkManager.aspx?is-xml=1&action=send-email",oX);
+			
+			if(oR == null){
+				this.setStatus("Unable to send email");
+				return;
+			}
+			else if(oR.getElementsByTagName("Invalid-Arguments").length > 0){
+				this.setStatus("Invalid email input.");
+			}
+			else if(oR.getElementsByTagName("Failed").length > 0){
+				this.setStatus("Unable to deliver email.");
+			}
+			else if(oR.getElementsByTagName("Duplicate").length > 0){
+				this.setStatus("That email was already sent.");
+			}
+			else{
+				this.setStatus("Email was sent.");
+			}
+	}
+		
+
+	]]>
+	</embedded-script>
+
+</Template>

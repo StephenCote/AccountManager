@@ -169,8 +169,8 @@
 			return uwmServices.getService("Group").authorizeUser(oOrg.id, iUserId, iRoleId, bView, bEdit, bDel, bCreate);
 		},
 		listGroups : function(sPath, iStartIndex, iRecordCount){
-			return accountManager.serviceListInGroup(uwmServices.getService("Group"),sPath, iStartIndex, iRecordCount);
-		
+			///return accountManager.serviceListInGroup(uwmServices.getService("Group"),sPath, iStartIndex, iRecordCount);
+			return uwmServices.getService("Group").listInDataGroup(sPath, iStartIndex, iRecordCount);
 			/*
 			return uwmServices.getService("Group").dir(sPath);
 			*/
@@ -281,5 +281,5 @@
 			return oSvc.listInParent(oOrg.id, oPar.id, iStartIndex, iRecordCount);		
 		}
 	}
-}());
+})();
 
