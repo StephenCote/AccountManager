@@ -176,7 +176,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 				logger.error("Invalid bulk session id");
 				throw new FactoryException("Invalid bulk session id");
 			}
-			logger.debug("Bulk id discovered.  Participant=" + participant.getParticipantId() + " / Participation=" + participant.getParticipationId() + ". Diverting to Bulk " + factoryType + " Operation");
+			/// logger.debug("Bulk id discovered.  Participant=" + participant.getParticipantId() + " / Participation=" + participant.getParticipationId() + ". Diverting to Bulk " + factoryType + " Operation");
 			try {
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, factoryType, participant);
 				//BulkFactories.getBulkFactory().setDirty(factoryType);

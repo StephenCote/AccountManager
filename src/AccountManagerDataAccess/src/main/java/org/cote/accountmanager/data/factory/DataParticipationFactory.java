@@ -10,6 +10,7 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataType;
@@ -134,7 +135,11 @@ public class DataParticipationFactory extends ParticipationFactory {
 		return (T)newParticipant(data, map, participant_type, permission, affect_type);
 
 	}
-
+	public List<BaseRoleType> getRolesForData(DataType data) throws FactoryException, ArgumentException
+	{
+		List<RoleParticipantType> ap = getRoleParticipations(data);
+		return getRoleListFromParticipations(ap.toArray(new RoleParticipantType[0]), data.getOrganization());
+	}	
 	public List<RoleParticipantType> getRoleParticipants(BaseRoleType role) throws FactoryException, ArgumentException
 	{
 		return convertList(getByField(QueryFields.getFieldParticipantMatch(role, ParticipantEnumType.ROLE),role.getOrganization().getId()));

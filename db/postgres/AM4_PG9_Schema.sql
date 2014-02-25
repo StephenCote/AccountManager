@@ -14,6 +14,21 @@
 				CREATE UNIQUE INDEX organizations_Id ON organizations(Id);
 			  	CREATE UNIQUE INDEX IdxorganizationsName on organizations(Name,ParentId);
 
+				DROP TABLE IF EXISTS attribute CASCADE;
+				CREATE TABLE attribute (
+						ReferenceId bigint not null default 0,
+						ReferenceType varchar(32) not null,
+						Name varchar(510) not null,
+						DataType varchar(32) not null,
+						ValueIndex int not null default 0,
+						Value text not null,
+						OrganizationId bigint not null default 0
+
+					);
+				CREATE INDEX idxattributerefid_Id ON attribute(ReferenceId,ReferenceType,OrganizationId);
+				CREATE INDEX idxattributelookup ON attribute(ReferenceId,ReferenceType,Name);
+			  	CREATE UNIQUE INDEX Idxattributes on attribute(ReferenceId,ReferenceType,Name,ValueIndex,OrganizationId);
+
 				DROP TABLE IF EXISTS asymmetrickeys CASCADE;
 				DROP SEQUENCE IF EXISTS asymmetrickeys_id_seq;
 				CREATE SEQUENCE asymmetrickeys_id_seq;
@@ -49,7 +64,7 @@
 				CREATE TABLE groups (
 						Id bigint not null default nextval('groups_id_seq'),
 						OwnerId bigint not null default 0,
-						Name varchar(255) not null,
+						Name varchar(511) not null,
 						GroupType varchar(16) not null,
 						ParentId bigint not null default 0,
 						ReferenceId bigint not null default 0,
@@ -185,7 +200,7 @@
 					OrganizationId bigint not null default 0,
 					OwnerId bigint not null default 0,
 					ParentId bigint not null default 0,
-					Name varchar(128) not null,
+					Name varchar(511) not null,
 					AccountStatus varchar(16) not null,
 					AccountType varchar(16) not null,
 					primary key(Id)
@@ -193,6 +208,17 @@
 				CREATE UNIQUE INDEX accounts_acct_id ON accounts(Id);
 				CREATE INDEX accounts_org_id ON accounts(OrganizationId);
 				CREATE UNIQUE INDEX IdxaccountsName on accounts(Name,ParentId,OrganizationId);
+
+				DROP TABLE IF EXISTS accountrolecache CASCADE;
+				CREATE TABLE accountrolecache (
+						AccountId bigint not null default 0,
+						EffectiveRoleId bigint not null default 0,
+						BaseRoleId bigint not null default 0,
+						OrganizationId bigint not null default 0
+					);
+				CREATE INDEX accountrolecache_id ON accountrolecache(AccountId);
+				CREATE INDEX accountrolecache_role_id ON accountrolecache(EffectiveRoleId);
+				CREATE INDEX accountrolecache_uorg_id ON accountrolecache(AccountId,OrganizationId);
 
 
 				DROP TABLE IF EXISTS users CASCADE;
@@ -203,7 +229,7 @@
 					OrganizationId bigint not null default 0,
 					AccountId bigint not null default 0,
 					UserId varchar(64) not null,
-					Name varchar(128) not null,
+					Name varchar(511) not null,
 					Password varchar(128),
 					UserStatus varchar(16) not null,
 					UserType varchar(16) not null,
@@ -211,7 +237,7 @@
 				);
 				CREATE UNIQUE INDEX users_acct_id ON users(Id);
 				CREATE INDEX users_org_id ON users(OrganizationId);
-				CREATE UNIQUE INDEX IdxusersName on users(Name,OrganizationId);
+				CREATE UNIQUE INDEX IdxusersName on users(Name,AccountId,OrganizationId);
 
 				DROP TABLE IF EXISTS userrolecache CASCADE;
 				CREATE TABLE userrolecache (
@@ -332,7 +358,7 @@
 				create table persons (
 						Id bigint not null default nextval('persons_id_seq'),
 						OwnerId bigint not null default 0,
-						Name varchar(128) not null,
+						Name varchar(511) not null,
 						ParentId bigint not null default 0,
 						GroupId bigint not null default 0,
 						OrganizationId bigint not null default 0,
@@ -351,6 +377,7 @@
 						primary key(Id)
 				);
 				CREATE UNIQUE INDEX persons_person_id ON persons(Id);
+				CREATE INDEX persons_group_id ON persons(groupId);
 				CREATE INDEX persons_parent_id ON persons(ParentId);				
 				CREATE UNIQUE INDEX persons_name ON persons(Name,ParentId,GroupId,OrganizationId);
 
@@ -370,6 +397,7 @@
 					);
 				CREATE UNIQUE INDEX personparticipation_id ON personparticipation(Id);
 				CREATE INDEX personparticipation_parttype ON personparticipation(ParticipantId,ParticipantType,AffectId,AffectType);
+				CREATE INDEX personparticipationtype_pid ON personparticipation(ParticipationId,ParticipantType);
 				CREATE INDEX personparticipation_pid ON personparticipation(ParticipationId);
 				CREATE INDEX personparticipant_pid ON personparticipation(ParticipantId);
 				CREATE INDEX personptype_pid ON personparticipation(ParticipantType);
@@ -595,8 +623,50 @@ select distinct U.id as userid,D.id as dataid, D.name as DataName, D.ownerid as 
 	 AND DP.participanttype = 'USER'
 	 AND DP.affectid > 0;
 
+create or replace view roleAccountRights as
+select distinct U.id as accountid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
+	P.name as permissionname,
+        RP.affecttype,RP.affectid
+	from Roles R
+	join roleparticipation RP on RP.participationid = R.id
+	join accounts U on RP.participantid = U.id
+	join permissions P on RP.affectid = P.id
+	where
+	RP.id > 0
+	 AND RP.participanttype = 'ACCOUNT'
+	 AND RP.affectid > 0;
+
+create or replace view groupAccountRights as
+select distinct U.id as accountid,G.id as groupid, G.name as GroupName, G.ownerid as groupownerid,G.grouptype,G.parentId,G.organizationid,
+	P.name as permissionname,
+        GP.affecttype,GP.affectid
+	from groups G
+	join groupparticipation GP on GP.participationid = G.id
+	join accounts U on GP.participantid = U.id
+	join permissions P on GP.affectid = P.id
+	where
+	GP.id > 0
+	 AND GP.participanttype = 'ACCOUNT'
+	 AND GP.affectid > 0
+;
+
+create or replace view dataAccountRights as
+select distinct U.id as accountid,D.id as dataid, D.name as DataName, D.ownerid as dataownerid,G.organizationid,
+	P.name as permissionname,
+        DP.affecttype,DP.affectid
+	from Data D
+	join Groups G on G.id = D.groupid
+	join dataparticipation DP on DP.participationid = D.id
+	join accounts U on DP.participantid = U.id
+	join permissions P on DP.affectid = P.id
+	where
+	DP.id > 0
+	 AND DP.participanttype = 'ACCOUNT'
+	 AND DP.affectid > 0;
+
 
 --- Accumulate permissions moving up from the leaf 
+--- this is actually coded reverse of what ‘from-leaf’ might imply - it looks DOWN from root_id
 --- Note: The views must reference roles -> roleid and participation -> leafed
 CREATE OR REPLACE FUNCTION roles_from_leaf(root_id BIGINT,organizationid BIGINT) 
         RETURNS TABLE (leafid BIGINT,roleid BIGINT, parentid BIGINT, organizationid BIGINT)
@@ -612,6 +682,7 @@ CREATE OR REPLACE FUNCTION roles_from_leaf(root_id BIGINT,organizationid BIGINT)
 	select * from role_tree;
         $$ LANGUAGE 'sql';
 
+-- this is actually coded reverse of what ‘from-leaf’ might imply - it looks DOWN from root_id
 CREATE OR REPLACE FUNCTION roles_from_leaf(IN root_id bigint)
 	RETURNS TABLE(leafid bigint, roleid bigint, parentid bigint, organizationid bigint)
 	AS $$
@@ -621,15 +692,44 @@ CREATE OR REPLACE FUNCTION roles_from_leaf(IN root_id bigint)
 	   UNION ALL
 	   SELECT $1 as leafid, P.id, P.parentid, P.organizationid
 	      FROM role_tree RT, roles P
-	      WHERE RT.parentid = P.id
+	      WHERE RT.roleid = P.parentid
 	)
 	select * from role_tree;
 	$$ LANGUAGE 'sql';
 
 
+-- similar function, but counting up the levels for use with hierarchical displays
+CREATE OR REPLACE FUNCTION leveled_roles_from_leaf(IN root_id bigint)
+	RETURNS TABLE(level bigint,leafid bigint, roleid bigint, parentid bigint, organizationid bigint)
+	AS $$
+	WITH RECURSIVE role_tree(level,leafed,roleid, parentid, organizationid) AS (
+	   SELECT CAST(1 AS bigint) as level,$1 as leafid, R.id as roleid, R.parentid, R.organizationid
+	      FROM roles R WHERE R.id = $1
+	   UNION ALL
+	   SELECT CAST((RT.level + 1) AS bigint) as level,$1 as leafid, P.id, P.parentid, P.organizationid
+	      FROM role_tree RT, roles P
+	      WHERE RT.roleid = P.parentid
+	)
+	select * from role_tree;
+	$$ LANGUAGE 'sql';
 
+-- similar function, but counting up the levels for use with hierarchical displays
+CREATE OR REPLACE FUNCTION leveled_roles_from_leaf(root_id BIGINT,organizationid BIGINT) 
+        RETURNS TABLE (level bigint,leafid BIGINT,roleid BIGINT, parentid BIGINT, organizationid BIGINT)
+        AS $$
+	WITH RECURSIVE role_tree(level,leafed,roleid, parentid, organizationid) AS (
+	   SELECT CAST(1 as bigint) as level,$1 as leafid, R.id as roleid, R.parentid, R.organizationid
+	      FROM roles R WHERE R.id = $1 AND R.organizationid = $2
+	   UNION ALL
+	   SELECT CAST((RT.level+1) as bigint) as level,$1 as leafid, P.id, P.parentid, P.organizationid
+	      FROM role_tree RT, roles P
+	      WHERE RT.roleid = P.parentid AND RT.organizationid = $2
+	)
+	select * from role_tree;
+        $$ LANGUAGE 'sql';
 
 --- Accumulate permissions for roles moving down from the leaf/trunk (reverse rbac)
+--- this is actually coded reverse of what ‘to-leaf’ might imply - it looks UP from root_id
 --- Note: The views must reference roles -> roleid and participation -> leafed
 CREATE OR REPLACE FUNCTION roles_to_leaf(root_id BIGINT,organizationid BIGINT) 
         RETURNS TABLE (leafid BIGINT,roleid BIGINT, parentid BIGINT, organizationid BIGINT)
@@ -649,28 +749,28 @@ CREATE OR REPLACE FUNCTION roles_to_leaf(root_id BIGINT,organizationid BIGINT)
 create or replace view effectiveDataRoles as
 WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
-FROM roles R  WHERE roletype = 'USER'
+FROM roles R  WHERE roletype = 'USER' OR roletype = 'ACCOUNT'
 )
 select DP.participationid as dataid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,DP.affectType,DP.affectId,R.organizationid from result R
-JOIN dataparticipation DP ON DP.participantid = (R.ats).roleid and DP.participanttype = 'ROLE'
+JOIN dataparticipation DP ON DP.participantid = (R.ats).leafid and DP.participanttype = 'ROLE'
 ;
 
 create or replace view effectiveGroupRoles as
 WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
-FROM roles R  WHERE roletype = 'USER'
+FROM roles R  WHERE roletype = 'USER' OR roletype = 'ACCOUNT'
 )
 select GP.participationid as groupid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,GP.affectType, GP.affectId, R.organizationid from result R
-JOIN groupparticipation GP ON GP.participantid = (R.ats).roleid and GP.participanttype = 'ROLE'
+JOIN groupparticipation GP ON GP.participantid = (R.ats).leafid and GP.participanttype = 'ROLE'
 ;
 
 create or replace view effectiveRoleRoles as
 WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
-FROM roles R  WHERE roletype = 'USER'
+FROM roles R  WHERE roletype = 'USER' OR roletype = 'ACCOUNT'
 )
 select RP.participationid as roleid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,RP.affectType, RP.affectId,R.organizationid from result R
-JOIN roleparticipation RP ON RP.participantid = (R.ats).roleid and RP.participanttype = 'ROLE'
+JOIN roleparticipation RP ON RP.participantid = (R.ats).leafid and RP.participanttype = 'ROLE'
 ;
 
 create or replace view effectiveUserRoles as
@@ -680,14 +780,21 @@ FROM roles R  WHERE roletype = 'USER'
 )
 select CASE WHEN RP.participanttype = 'USER' THEN U1.id WHEN RP.participanttype = 'GROUP' THEN U2.id ELSE -1 END as userid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
 JOIN roleparticipation RP ON RP.participationid = (R.ats).roleid
---JOIN roles R1 ON R1.id=(R.ats).leafid
 LEFT JOIN users U1 on U1.id = RP.participantid and RP.participanttype = 'USER'
--- allow for cross-org
---  and U1.organizationid = R.organizationid
 LEFT JOIN groupparticipation gp2 on gp2.participationid = RP.participantid and RP.participanttype = 'GROUP' and gp2.participanttype = 'USER'
--- allow for cross-org
--- and gp2.organizationid = RP.organizationid
 LEFT JOIN users U2 on U2.id = gp2.participantid AND U2.organizationid = gp2.organizationid
+;
+
+create or replace view effectiveAccountRoles as
+WITH result AS(
+select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
+FROM roles R  WHERE roletype = 'ACCOUNT'
+)
+select CASE WHEN RP.participanttype = 'ACCOUNT' THEN U1.id WHEN RP.participanttype = 'GROUP' THEN U2.id ELSE -1 END as accountid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
+JOIN roleparticipation RP ON RP.participationid = (R.ats).roleid
+LEFT JOIN accounts U1 on U1.id = RP.participantid and RP.participanttype = 'ACCOUNT'
+LEFT JOIN groupparticipation gp2 on gp2.participationid = RP.participantid and RP.participanttype = 'GROUP' and gp2.participanttype = 'ACCOUNT'
+LEFT JOIN accounts U2 on U2.id = gp2.participantid AND U2.organizationid = gp2.organizationid
 ;
 
 CREATE OR REPLACE FUNCTION cache_user_roles(user_id BIGINT[],organizationid BIGINT) 
@@ -717,6 +824,39 @@ CREATE OR REPLACE FUNCTION cache_all_user_roles(orgId BIGINT)
         BEGIN
 	DELETE FROM userrolecache WHERE userid = ANY(ids);
 	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid = ANY(ids);
+	RETURN true;
+	END
+
+        $BODY$ LANGUAGE 'plpgsql';
+
+
+CREATE OR REPLACE FUNCTION cache_account_roles(account_id BIGINT[],organizationid BIGINT) 
+        RETURNS BOOLEAN
+        AS $$
+	DELETE FROM accountrolecache where accountid = ANY($1);
+	--AND organizationid = $2;
+	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid = ANY($1);
+	--and organizationid = $2;
+	SELECT true;
+        $$ LANGUAGE 'sql';
+
+CREATE OR REPLACE FUNCTION cache_account_roles_OLD_REFACTOR(account_id BIGINT,organizationid BIGINT) 
+        RETURNS BOOLEAN
+        AS $$
+	DELETE FROM accountrolecache where accountid = $1;
+	--AND organizationid = $2;
+	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid=$1;
+	--and organizationid = $2;
+	SELECT true;
+        $$ LANGUAGE 'sql';
+
+CREATE OR REPLACE FUNCTION cache_all_account_roles(orgId BIGINT) 
+        RETURNS BOOLEAN
+        AS $BODY$
+        DECLARE ids BIGINT[] = ARRAY(SELECT id FROM accounts WHERE organizationid = $1);
+        BEGIN
+	DELETE FROM accountrolecache WHERE accountid = ANY(ids);
+	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid = ANY(ids);
 	RETURN true;
 	END
 
@@ -801,26 +941,37 @@ CREATE OR REPLACE FUNCTION cache_group_roles(group_id BIGINT[],organizationid BI
         $$ LANGUAGE 'plpgsql';
 
 
-create or replace view effectiveGroupRoleRights as
---select distinct GP.participationid as groupid,GP.affectId,GP.affectType,ER.userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
---join groupparticipation GP on GP.participantid=ER.effectiveRoleId AND GP.participanttype = 'ROLE'
+create or replace view effectiveGroupUserRoleRights as
 select distinct GC.groupid,GC.affectId,GC.affectType,ER.userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
 join groupRoleCache GC on GC.effectiveRoleId=ER.effectiveRoleId 
 ;
 
-create or replace view effectiveDataRoleRights as
---select distinct DP.participationid as dataid,DP.affectId,DP.affectType,ER.userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
---join dataparticipation DP on DP.participantid=ER.effectiveRoleId and DP.participanttype = 'ROLE'
+create or replace view effectiveGroupAccountRoleRights as
+select distinct GC.groupid,GC.affectId,GC.affectType,ER.accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
+join groupRoleCache GC on GC.effectiveRoleId=ER.effectiveRoleId 
+;
+
+create or replace view effectiveDataUserRoleRights as
 select distinct DRC.dataid,DRC.affectId,DRC.affectType,ER.userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
 join dataRoleCache DRC on DRC.effectiveRoleId=ER.effectiveRoleId
 ;
 
-create or replace view effectiveRoleRoleRights as
---select distinct RP.participationid as sourceroleid,RP.affectId,RP.affectType,ER.userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
---join roleparticipation RP on RP.participantid=ER.effectiveRoleId and RP.participanttype = 'ROLE'
+create or replace view effectiveDataAccountRoleRights as
+select distinct DRC.dataid,DRC.affectId,DRC.affectType,ER.accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
+join dataRoleCache DRC on DRC.effectiveRoleId=ER.effectiveRoleId
+;
+
+
+create or replace view effectiveRoleUserRoleRights as
 select distinct RRC.roleid as sourceroleid,RRC.affectId,RRC.affectType,ER.userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
 join roleRoleCache RRC on RRC.effectiveRoleId=ER.effectiveRoleId
 ;
+
+create or replace view effectiveRoleAccountRoleRights as
+select distinct RRC.roleid as sourceroleid,RRC.affectId,RRC.affectType,ER.accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
+join roleRoleCache RRC on RRC.effectiveRoleId=ER.effectiveRoleId
+;
+
 
 
 
@@ -835,35 +986,60 @@ CREATE OR REPLACE FUNCTION cache_roles()
 	insert into grouprolecache (groupid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveGroupRoles;
 	truncate userRoleCache;
 	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles;
+	truncate accountRoleCache;
+	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveAccountRoles;
 	SELECT true;
         $$ LANGUAGE 'sql';
 
 
 create or replace view groupRights as
-	select distinct userid,groupid,affecttype,affectid,organizationid from (
-		select userid,groupid,affecttype,affectid,organizationid
+	select distinct referenceid,referencetype,groupid,affecttype,affectid,organizationid from (
+		select userid as referenceid,'USER' as referencetype,groupid,affecttype,affectid,organizationid
 		FROM groupUserRights GUR
-	UNION ALL
-		select userid,groupid,affecttype,affectid,organizationid
-		FROM effectiveGroupRoleRights GRR
-	) as AM;
+		UNION ALL
+		select userid as referenceid,'USER',groupid,affecttype,affectid,organizationid
+		FROM effectiveGroupUserRoleRights GRR
+		UNION ALL
+		select accountid as referenceid,'ACCOUNT' as referencetype,groupid,affecttype,affectid,organizationid
+		FROM groupAccountRights GUR
+		UNION ALL
+		select accountid as referenceid,'ACCOUNT',groupid,affecttype,affectid,organizationid
+		FROM effectiveGroupAccountRoleRights GRR
+
+	) 
+	as AM;
 
 create or replace view dataRights as
-	select distinct userid,dataid,affecttype,affectid,organizationid from (
-	select userid,dataid,affecttype,affectid,organizationid
+	select distinct referenceid,referencetype,dataid,affecttype,affectid,organizationid from (
+	select userid as referenceid,'USER' as referencetype,dataid,affecttype,affectid,organizationid
 	FROM dataUserRights GUR
 	UNION ALL
-	select userid,dataid,affecttype,affectid,organizationid
-	FROM effectiveDataRoleRights GRR
+	select userid as referenceid,'USER' as referencetype,dataid,affecttype,affectid,organizationid
+	FROM effectiveDataUserRoleRights GRR
+	UNION ALL
+	select accountid as referenceid,'ACCOUNT' as referencetype,dataid,affecttype,affectid,organizationid
+	FROM dataAccountRights GUR
+	UNION ALL
+	select accountid as referenceid,'ACCOUNT' as referencetype,dataid,affecttype,affectid,organizationid
+	FROM effectiveDataAccountRoleRights GRR	
 ) as AM;
+
 create or replace view roleRights as
-	select distinct userid,roleid,affecttype,affectid,organizationid from (
-	select userid,roleid,affecttype,affectid,organizationid
+	select distinct referenceid,referencetype,roleid,affecttype,affectid,organizationid from (
+	select userid as referenceid,'USER' as referencetype,roleid,affecttype,affectid,organizationid
 	FROM roleUserRights GUR
 	UNION ALL
-	select userid,sourceroleid as roleid,affecttype,affectid,organizationid
-	FROM effectiveRoleRoleRights GRR
+	select userid as referenceid,'USER as referencetype',sourceroleid as roleid,affecttype,affectid,organizationid
+	FROM effectiveRoleUserRoleRights GRR
+	UNION ALL
+	select accountid as referenceid,'ACCOUNT' as referencetype,roleid,affecttype,affectid,organizationid
+	FROM roleAccountRights GUR
+	UNION ALL
+	select accountid as referenceid,'ACCOUNT' as referencetype,sourceroleid as roleid,affecttype,affectid,organizationid
+	FROM effectiveRoleAccountRoleRights GRR
 ) as AM;
+
+
 
 
 
@@ -924,11 +1100,35 @@ or
 organizationid not in (select id from organizations)
 ;
 
+create or replace view orphanAttributes as
+select referenceid, referencetype,organizationid from attribute R1
+where 
+(referencetype = 'GROUP' AND referenceid not in (select id from groups G1))
+OR
+(referencetype = 'ACCOUNT' AND referenceid not in (select id from accounts A1))
+OR
+(referencetype = 'PERSON' AND referenceid not in (select id from persons A1))
+OR
+organizationid not in (select id from organizations)
+;
+create or replace view orphanPersons as
+select id, name, groupid from persons R1
+where (groupid not in (select id from Groups G1)
+and R1.groupid > 0)
+or
+organizationid not in (select id from organizations)
+;
+
+
 CREATE OR REPLACE FUNCTION cleanup_orphans() 
         RETURNS BOOLEAN
         AS $$
+        delete from persons where id in (select id from orphanPersons);
+        delete from attribute where referencetype = 'PERSON' and referenceid not in (select id from persons);
 	delete from users where organizationid not in (select id from organizations);
+	delete from attribute where referencetype = 'USER' and referenceid not in (select id from users);
 	delete from data where id in (select id from orphanData);
+	delete from attribute where referencetype = 'DATA' and referenceid not in (select id from data);
 	delete from dataparticipation where id in (select id from orphanDataParticipations);
 	delete from groups where id in (select id from orphanGroups);
 	delete from groupparticipation where id in (select id from orphanGroupParticipations);
@@ -996,5 +1196,6 @@ inner join users U on U.id = PT.participantId
 -- delete from lifecycleparticipation where id in (select id from orphanLifecycleParticipations);
 
 -- select ((EXTRACT(EPOCH FROM AuditResultDate)*1000) - (EXTRACT(EPOCH FROM AuditDate)) * 1000) as PerfInMS from Audit order by AuditResultDate DESC limit 100
+
 
 

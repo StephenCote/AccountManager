@@ -415,10 +415,10 @@ public abstract class FactoryBase {
 	/// TODO: IS NULL not yet handled
 	///
 
-	protected String getQueryClause(QueryField[] fields, String paramToken){
+	public static String getQueryClause(QueryField[] fields, String paramToken){
 		return getQueryClause(fields, "AND", paramToken);
 	}
-	protected String getQueryClause(QueryField[] fields, String joinType, String paramToken)
+	public static String getQueryClause(QueryField[] fields, String joinType, String paramToken)
 	{
 		StringBuffer match_buff = new StringBuffer();
 		int len = fields.length;

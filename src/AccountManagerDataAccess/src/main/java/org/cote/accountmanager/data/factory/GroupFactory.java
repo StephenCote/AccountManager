@@ -157,6 +157,7 @@ public class GroupFactory  extends NameIdFactory {
 	public boolean addGroup(BaseGroupType group) throws FactoryException, ArgumentException
 	{
 		if (group.getOrganization() == null || group.getOrganization().getId() <= 0) throw new FactoryException("Cannot add group without Organization.");
+		if(group.getName().equals("Lifecycles") && group.getParentId() == 0L) throw new ArgumentException("Invalid parent id");
 		try{
 			DataRow row = prepareAdd(group, "groups");
 			row.setCellValue("grouptype", group.getGroupType().toString());
@@ -188,7 +189,7 @@ public class GroupFactory  extends NameIdFactory {
 		
 
 		
-		logger.info("Deleting " + directory.getName());
+		//logger.info("Deleting " + directory.getName());
 		populate(directory);
 		populateSubDirectories(directory);
 		DirectoryGroupType[] sub_dirs = directory.getSubDirectories().toArray(new DirectoryGroupType[0]);
@@ -445,25 +446,25 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	public DirectoryGroupType getCreatePath(UserType user, String path, OrganizationType organization) throws FactoryException, ArgumentException
 	{
-		DirectoryGroupType dir = findGroup(user, path, organization);
+		DirectoryGroupType dir = (DirectoryGroupType)findGroup(user, GroupEnumType.DATA, path, organization);
 		if(dir == null) logger.debug("Make path: " + path + " in organization " + organization.getName() + " relative to user " + user.getName());
 		if(dir == null && makePath(user, path, organization)){
-			dir = findGroup(user, path, organization);
+			dir = (DirectoryGroupType)findGroup(user, GroupEnumType.DATA, path, organization);
 		}
 		return dir;
 	}
-	public DirectoryGroupType findGroup(UserType user, String path, OrganizationType organization) throws FactoryException, ArgumentException
+	public BaseGroupType findGroup(UserType user, GroupEnumType groupType, String path, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		
-		DirectoryGroupType out_dir = null;
+		BaseGroupType out_dir = null;
 		if (path == null || path.length() == 0) throw new FactoryException("Invalid path");
 
 		String[] paths = path.split("/");
 
-		DirectoryGroupType nested_group = null;
+		BaseGroupType nested_group = null;
 
 		String name = null;
-		if (paths.length == 0 || path.equals("/"))
+		if (groupType == GroupEnumType.DATA && (paths.length == 0 || path.equals("/")))
 		{
 			return getRootDirectory(organization);
 		}
@@ -512,7 +513,8 @@ public class GroupFactory  extends NameIdFactory {
 			}
 			else
 			*/
-			nested_group = getDirectoryByName(paths[i], nested_group, organization);
+			nested_group = getGroupByName(paths[i], groupType,nested_group, organization);
+
 		}
 		out_dir = nested_group;
 
@@ -526,7 +528,7 @@ public class GroupFactory  extends NameIdFactory {
 
 		// Check if the path exists
 		//
-		DirectoryGroupType check_group = findGroup(user, path, organization);
+		DirectoryGroupType check_group = (DirectoryGroupType)findGroup(user, GroupEnumType.DATA, path, organization);
 		if (check_group != null) return false;
 
 		String[] paths = path.split("/");
@@ -631,7 +633,7 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.USER)}, group.getOrganization().getId());
 	}
-
+	/*
 	public List<UserGroupType>  getUserGroupListByParent(BaseGroupType parent, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getUserGroupList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(GroupEnumType.USER) }, startRecord, recordCount, organization);
@@ -667,28 +669,29 @@ public class GroupFactory  extends NameIdFactory {
 		List<NameIdType> dataList = getByField(fields, instruction, organization.getId());
 		return convertList(dataList);
 	}
-	
+	*/
 	public int getCount(DirectoryGroupType group) throws FactoryException
 	{
 		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.DATA)}, group.getOrganization().getId());
 	}
 	
-	public List<DirectoryGroupType>  getDirectoryListByParent(DirectoryGroupType parent, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+
+	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
-		return getDirectoryList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(GroupEnumType.DATA) }, startRecord, recordCount, organization);
+		return getList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(groupType) }, startRecord, recordCount, organization);
 	}
 	
-	public List<DirectoryGroupType>  getDirectoryListByParent(DirectoryGroupType parent, ProcessingInstructionType instruction, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, ProcessingInstructionType instruction, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
-		return getDirectoryList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(GroupEnumType.DATA) }, instruction, startRecord, recordCount,organization);
+		return getList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(groupType) }, instruction, startRecord, recordCount,organization);
 	}
-	public List<DirectoryGroupType>  getDirectoryList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
-		return getDirectoryList(fields, instruction, startRecord,recordCount,organization);
+		return getList(fields, instruction, startRecord,recordCount,organization);
 	}
-	public List<DirectoryGroupType>  getDirectoryList(QueryField[] fields, ProcessingInstructionType instruction,int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getList(QueryField[] fields, ProcessingInstructionType instruction,int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///
@@ -698,9 +701,9 @@ public class GroupFactory  extends NameIdFactory {
 			instruction.setStartIndex(startRecord);
 			instruction.setRecordCount(recordCount);
 		}
-		return getDirectoryList(fields, instruction, organization);
+		return getList(fields, instruction, organization);
 	}
-	public List<DirectoryGroupType> getDirectoryList(QueryField[] fields, ProcessingInstructionType instruction,OrganizationType organization) throws FactoryException, ArgumentException
+	public <T> List<T> getList(QueryField[] fields, ProcessingInstructionType instruction,OrganizationType organization) throws FactoryException, ArgumentException
 	{
 
 		if(instruction == null) instruction = new ProcessingInstructionType();

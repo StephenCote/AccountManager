@@ -1,6 +1,7 @@
 package org.cote.accountmanager.data;
 
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.BulkAccountFactory;
 import org.cote.accountmanager.data.factory.BulkAddressFactory;
 import org.cote.accountmanager.data.factory.BulkContactFactory;
 import org.cote.accountmanager.data.factory.BulkContactInformationFactory;
@@ -21,6 +22,7 @@ import org.cote.accountmanager.data.factory.BulkUserFactory;
 
 public class BulkFactories{
 	private static BulkFactory bulkFactory = null;
+	private static BulkAccountFactory bulkAccountFactory = null;
 	private static BulkPersonFactory bulkPersonFactory = null;
 	private static BulkContactFactory bulkContactFactory = null;
 	private static BulkAddressFactory bulkAddressFactory = null;
@@ -77,6 +79,13 @@ public class BulkFactories{
 			Factories.initializeFactory(bulkPersonFactory);
 		}
 		return bulkPersonFactory;
+	}
+	public static BulkAccountFactory getBulkAccountFactory() {
+		if(bulkAccountFactory == null){
+			bulkAccountFactory = new BulkAccountFactory();
+			Factories.initializeFactory(bulkAccountFactory);
+		}
+		return bulkAccountFactory;
 	}
 	public static BulkContactFactory getBulkContactFactory() {
 		if(bulkContactFactory == null){

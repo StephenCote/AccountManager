@@ -18,6 +18,7 @@ import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
@@ -183,6 +184,7 @@ public class BulkFactory {
 					continue;
 				}
 				writeObject(session, entry);
+				/// 2014/01/11  - need to update attributes, but in one bulk pass
 			}
 
 			synchronized(dirtyWrite){
@@ -232,6 +234,9 @@ public class BulkFactory {
 	}
 	protected void writeSpool(FactoryEnumType factoryType) throws FactoryException{
 		switch(factoryType){
+			case ACCOUNT:
+				BulkFactories.getBulkAccountFactory().writeSpool(BulkFactories.getBulkAccountFactory().getDataTables().get(0).getName());
+				break;
 			case PERSON:
 				BulkFactories.getBulkPersonFactory().writeSpool(BulkFactories.getBulkPersonFactory().getDataTables().get(0).getName());
 				break;
@@ -285,7 +290,7 @@ public class BulkFactory {
 		}		
 	}
 	protected void writeObject(BulkSessionType session, BulkEntryType entry) throws FactoryException, DataAccessException, ArgumentException{
-		logger.debug("Spooling " + entry.getFactoryType() + " " + entry.getObject().getName() + " with Local id=" + entry.getTemporaryId() + " and DB id=" + entry.getPersistentId());
+		/// logger.debug("Spooling " + entry.getFactoryType() + " " + entry.getObject().getName() + " with Local id=" + entry.getTemporaryId() + " and DB id=" + entry.getPersistentId());
 		/*
 		NameIdFactory factory = getFactory(entry.getFactoryType());
 		factory.removeFromCache(entry.getObject(),factory.getCacheKeyName(entry.getObject()));
@@ -296,6 +301,9 @@ public class BulkFactory {
 	}
 	protected void mapObjectIds(BulkEntryType entry){
 		switch(entry.getFactoryType()){
+			case ACCOUNT:
+				BulkFactories.getBulkAccountFactory().mapBulkIds(entry.getObject());
+				break;
 			case PERSON:
 				BulkFactories.getBulkPersonFactory().mapBulkIds(entry.getObject());
 				break;
@@ -333,6 +341,21 @@ public class BulkFactory {
 		switch(entry.getFactoryType()){
 			case ADDRESS:
 				BulkFactories.getBulkAddressFactory().addAddress((AddressType)entry.getObject());
+				break;
+			case ACCOUNT:
+				AccountType account = (AccountType)entry.getObject();
+				BulkFactories.getBulkAccountFactory().addAccount(account,false);
+				/// Do not allocate contact information through add user
+				/// If other contact info is added during the same session then the bulk insert statements for the factory type will be different
+				/// And this will cause unexpected results.
+				/// The same problem affects any other dirty entity writes
+				///
+				/*
+				if(account.getContactInformation() == null){
+					ContactInformationType cit = Factories.getContactInformationFactory().newContactInformation((UserType)entry.getObject());
+					createBulkEntry(session.getSessionId(), FactoryEnumType.CONTACTINFORMATION, cit);
+				}
+				*/
 				break;
 			case CONTACT:
 				BulkFactories.getBulkContactFactory().addContact((ContactType)entry.getObject());
@@ -459,13 +482,25 @@ public class BulkFactory {
 		return Factories.getFactory(factoryType);
 	}
 	public void createBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException{
-		long bulkId = (long)(rand.nextDouble()*1000000000L) * -1; 
+		long bulkId = (long)(rand.nextDouble()*1000000000L) * -1;
 				///rand.nextLong() * -1;
+		
+		/// With large datasets, the random quickly starts to repeat.  Very bad Java.  Very bad.
+		while(sessionIdMap.containsKey(bulkId) == true){
+			bulkId = (long)(rand.nextDouble()*1000000000L) * -1;
+		}
 		
 		if(object == null){
 			logger.error("Object is null");
 			throw new ArgumentException("Object is null");
 		}
+
+		
+		if(sessionIdMap.containsKey(bulkId)){
+			logger.error("Random id " + bulkId + " assigned to " + object.getName() + " already consumed");
+			throw new ArgumentException("Random id " + bulkId + " assigned to " + object.getName() + " already consumed");			
+		}
+		
 		if(object.getId() != 0){
 			logger.error("Object id is already set");
 			throw new ArgumentException("Object id is already set");
@@ -489,10 +524,7 @@ public class BulkFactory {
 			throw new ArgumentException("Invalid session id '" + sessionId + "'");
 		}
 		
-		if(sessionIdMap.containsKey(bulkId)){
-			logger.error("Random id already consumed");
-			throw new ArgumentException("Random id already consumed");			
-		}
+
 		sessionIdMap.put(bulkId,sessionId);
 		/*
 		if(idScanMap.containsKey(sessionId) == false){
@@ -506,7 +538,7 @@ public class BulkFactory {
 		}
 		scanMap.put(object.getNameType(), currentCount + 1);
 		*/
-		logger.debug("Creating Bulk Entry #" + bulkId + " for " + object.getNameType().toString() + " " + object.getName());
+		/// logger.debug("Creating Bulk Entry #" + bulkId + " for " + object.getNameType().toString() + " " + object.getName());
 		
 		object.setId(bulkId);
 		

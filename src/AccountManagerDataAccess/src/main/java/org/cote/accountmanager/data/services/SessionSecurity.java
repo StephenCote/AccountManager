@@ -26,7 +26,11 @@ public class SessionSecurity {
 	private static int maxSessionTime = 6;
 	
 	public static boolean isAuthenticated(UserType user){
-		if(user == null || user.getSession() == null) return false;
+		if(user == null) return false;
+		/// NOTE: Document Control is the user through with anonymous data requests may be proxied
+		///
+		if(user.getName().equals(Factories.getDocumentControlName())) return true;
+		else if(user.getSession() == null) return false;
 		return isAuthenticated(user.getSession());
 	}
 	public static boolean isAuthenticated(UserSessionType session){

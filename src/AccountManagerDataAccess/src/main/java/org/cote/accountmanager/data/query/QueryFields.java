@@ -21,8 +21,10 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.ContactEnumType;
 import org.cote.accountmanager.objects.types.ContactInformationEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.LocationEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
@@ -526,7 +528,18 @@ public class QueryFields {
 	public static QueryField getFieldAuditTargetData(String audit_data){
 		return getStringField("audittargetdata",audit_data);
 	}
-
+	public static QueryField getFieldReferenceType(NameEnumType type){
+		return getStringField("referencetype",type.toString());
+	}
+	public static QueryField getFieldReferenceType(SqlDataEnumType type){
+		return getStringField("datatype",type.toString());
+	}
+	public static QueryField getFieldIndex(int index){
+		return getIntField("valueindex",index);
+	}
+	public static QueryField getFieldValue(String val){
+		return getStringField("value",val);
+	}
 	public static QueryField[] getFieldParticipantMatch(NameIdType map, ParticipantEnumType type){
 		List<QueryField> matches = new ArrayList<QueryField>();
 		matches.add(getFieldParticipantType(type));

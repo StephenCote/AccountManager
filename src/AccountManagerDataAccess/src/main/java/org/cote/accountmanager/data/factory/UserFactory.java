@@ -72,7 +72,7 @@ public class UserFactory extends NameIdFactory {
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		UserType t = (UserType)obj;
-		return t.getName() + "-" + t.getOrganization().getId();
+		return t.getName() + "-" + t.getAccountId() + "-" + t.getOrganization().getId();
 	}
 	public void updateUserToCache(UserType user) throws ArgumentException{
 		String key_name = getCacheKeyName(user);

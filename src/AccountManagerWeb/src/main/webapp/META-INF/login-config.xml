@@ -2,7 +2,7 @@
 <application-policy name="accountmanager5">
 
 	<authentication>
-	<login-module code="org.cote.util.AccountManagerLoginModule"
+	<login-module code="org.cote.util.AccountManagerLoginModule">
 	<!-- 
 		<login-module code="org.cote.jboss.util.AccountManagerLoginModule"
 

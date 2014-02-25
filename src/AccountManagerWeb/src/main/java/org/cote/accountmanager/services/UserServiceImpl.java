@@ -64,7 +64,7 @@ public class UserServiceImpl  {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All users",AuditEnumType.USER,(user == null ? "Null" : user.getName()));
 		AuditService.targetAudit(audit, AuditEnumType.USER, "All users");
 		
-		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
 			return null;
 		}

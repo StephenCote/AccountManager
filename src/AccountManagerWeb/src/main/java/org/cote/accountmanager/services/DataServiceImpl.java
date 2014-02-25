@@ -15,9 +15,11 @@ import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
+import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.DataType;
 
 
@@ -53,7 +55,7 @@ public class DataServiceImpl  {
 		return BaseService.countByGroup(AuditEnumType.DATA, group, request);
 	}
 	
-	public static List<DataType> getGroupList(UserType user, String path, int startRecord, int recordCount){
+	public static List<DataType> getGroupList(UserType user, ProcessingInstructionType instruction, boolean detailsOnly,String path, int startRecord, int recordCount){
 		///return BaseService.getGroupList(AuditEnumType.DATA, user, path, startRecord, recordCount);
 		
 
@@ -62,13 +64,13 @@ public class DataServiceImpl  {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,(user == null ? "Null" : user.getName()));
 		AuditService.targetAudit(audit, AuditEnumType.DATA, path);
 		
-		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
 			return null;
 		}
 			
 		try {
-			DirectoryGroupType dir = Factories.getGroupFactory().findGroup(user, path, user.getOrganization());
+			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,path, user.getOrganization());
 			if(dir == null){
 				AuditService.denyResult(audit, "Invalid path: '" + path + "'");
 				return out_obj;
@@ -76,7 +78,7 @@ public class DataServiceImpl  {
 			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			if(AuthorizationService.canViewGroup(user, dir) == true){
 				AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
-				out_obj = getListByGroup(dir,startRecord,recordCount);
+				out_obj = getListByGroup(dir,instruction,detailsOnly,startRecord,recordCount);
 				//out_Lifecycles = Factories.getLifecycleFactory().getListByGroup(dir, 0, 0, user.getOrganization());
 			}
 			else{
@@ -94,9 +96,9 @@ public class DataServiceImpl  {
 		return out_obj;
 		
 	}
-	private static  List<DataType> getListByGroup(DirectoryGroupType group,int startRecord, int recordCount) throws ArgumentException, FactoryException {
+	private static  List<DataType> getListByGroup(DirectoryGroupType group,ProcessingInstructionType instruction, boolean detailsOnly, int startRecord, int recordCount) throws ArgumentException, FactoryException {
 
-		List<DataType> out_obj = Factories.getDataFactory().getDataListByGroup(group, true,startRecord, recordCount, group.getOrganization());
+		List<DataType> out_obj = Factories.getDataFactory().getDataListByGroup(group, instruction,detailsOnly,startRecord, recordCount, group.getOrganization());
 		for(int i = 0; i < out_obj.size();i++){
 			DataType ngt = out_obj.get(i);
 			if(ngt.getGroup().getPopulated() == true){

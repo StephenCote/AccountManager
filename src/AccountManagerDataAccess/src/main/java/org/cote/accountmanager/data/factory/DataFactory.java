@@ -376,7 +376,7 @@ public class DataFactory extends NameIdFactory {
 		// Can't just delete by group;
 		// Need to get ids so as to delete participations as well
 		//
-		logger.info("Deleting group data for " + group.getName());
+		//logger.info("Deleting group data for " + group.getName());
 		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
 		return deleteDataByIds(ids, group.getOrganization());
 	}

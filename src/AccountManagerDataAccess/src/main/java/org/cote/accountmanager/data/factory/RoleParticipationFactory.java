@@ -257,7 +257,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public List<AccountType> getAccountsInRole(AccountRoleType role) throws FactoryException, ArgumentException
 	{
 		List<AccountParticipantType> ap = getAccountRoleParticipations(role);
-		return getUserListFromParticipations(ap.toArray(new AccountParticipantType[0]), role.getOrganization());
+		return getAccountListFromParticipations(ap.toArray(new AccountParticipantType[0]), role.getOrganization());
 	}
 	public List<AccountParticipantType> getAccountRoleParticipants(AccountType account) throws FactoryException, ArgumentException
 	{

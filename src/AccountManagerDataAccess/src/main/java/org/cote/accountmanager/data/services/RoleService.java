@@ -180,9 +180,9 @@ public class RoleService {
 	{
 		return Factories.getRoleParticipationFactory().getIsAccountInRole(role, account,permission,affect_type);
 	}
-	public static boolean addAccountToRole(AccountType role_admin, AccountType account, AccountRoleType role) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean addAccountToRole(AccountType account, AccountRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
-		return addAccountToRole(role_admin, account, role, null, AffectEnumType.UNKNOWN);
+		return addAccountToRole(account, role, null, AffectEnumType.UNKNOWN);
 	}
 	public static UserRoleType getCreateAccountRole(UserType role_owner, String role_name) throws DataAccessException, FactoryException, ArgumentException
 	{
@@ -206,7 +206,7 @@ public class RoleService {
 	/// <param name="permission"></param>
 	/// <param name="affect_type"></param>
 	/// <returns></returns>
-	public static boolean addAccountToRole(AccountType role_admin, AccountType account, AccountRoleType role, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean addAccountToRole(AccountType account, AccountRoleType role, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, DataAccessException, FactoryException
 	{
 		if (getIsAccountInRole(role, account) == false)
 		{

@@ -364,6 +364,11 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	{
 		return getParticipant(group, map, type, permission, affect_type);
 	}
+	public List<AccountType> getAccountsInGroup(AccountGroupType group) throws FactoryException, ArgumentException
+	{
+		List<AccountParticipantType> ap = getAccountGroupParticipations(group);
+		return getAccountListFromParticipations(ap.toArray(new UserParticipantType[0]), group.getOrganization());
+	}
 
 	public List<UserType> getUsersInGroup(UserGroupType group) throws FactoryException, ArgumentException
 	{

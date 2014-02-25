@@ -54,9 +54,9 @@ public class NameIdGroupFactory extends NameIdFactory{
 
 		if (obj_list.size() > 0)
 		{
-			logger.debug("NGF BEGIN Add to Cache");
+			/// logger.debug("NGF BEGIN Add to Cache");
 			addToCache(obj_list.get(0),key_name);
-			logger.debug("NGF END Add to Cache");
+			/// logger.debug("NGF END Add to Cache");
 			out_data = (T)obj_list.get(0);
 		}
 		else{

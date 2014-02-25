@@ -2,6 +2,7 @@ package org.cote.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
@@ -9,6 +10,7 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.beans.*;
 
@@ -25,11 +27,15 @@ public class EntitySchema {
 	private SessionDataBean sessionDataBean = null;
 	private UserType userType = null;
 	private DirectoryGroupType directoryGroupType = null;
+	private BaseGroupType baseGroupType = null;
+	private UserGroupType userGroupType = null;
 	private ContactInformationType contactInformationType = null;
 	private PersonType personType = null;
 	private ContactType contactType = null;
 	private OrganizationType organizationType = null;
 	public EntitySchema(){
+		userGroupType = new UserGroupType();
+		baseGroupType = new BaseGroupType();
 		contactType = new ContactType();
 		personType = new PersonType();
 		organizationType = new OrganizationType();
@@ -43,6 +49,26 @@ public class EntitySchema {
 		sessionDataBean = new SessionDataBean();
 		userType = new UserType();
 		contactInformationType = new ContactInformationType();
+	}
+
+
+	public BaseGroupType getBaseGroupType() {
+		return baseGroupType;
+	}
+
+
+	public void setBaseGroupType(BaseGroupType baseGroupType) {
+		this.baseGroupType = baseGroupType;
+	}
+
+
+	public UserGroupType getUserGroupType() {
+		return userGroupType;
+	}
+
+
+	public void setUserGroupType(UserGroupType userGroupType) {
+		this.userGroupType = userGroupType;
 	}
 
 

@@ -118,10 +118,14 @@
 			oW.setIsModal(true);
 			return oW;
 		},
+		getRule : function(sName){
+			return Hemi.app.module.service.getModuleByName(sName.toLowerCase());
+		},
 		rule : function(sName, vParams, sSuccessOp, sFailOp, oNode, fStatus, fSuite){
 			var oTest = Hemi.app.module.test.service.NewTest(sName.toLowerCase(), oNode, fStatus, fSuite, g_application_path + "Rules/");
 			var bOut = 0;
 			Hemi.log("START RULE: " + sName);
+			if(!vParams && uwm.altPane) vParams = {opener:uwm.altPane.opener};
 			if(vParams){
 				for(var i in vParams){
 					oTest.getProperties()[i]=vParams[i];
@@ -150,6 +154,7 @@
 		},
 		operation : function(sName, vParams, oNode, sRule){
 			var oMod = Hemi.app.module.service.NewModule(sName.toLowerCase(), oNode, g_application_path + "Operations/");
+			if(!vParams && uwm.altPane) vParams = {opener:uwm.altPane.opener};
 			if(vParams){
 				for(var i in vParams){
 					oMod.getProperties()[i]=vParams[i];
@@ -189,12 +194,13 @@
 			window.uwm.user = userSvc.getSelf();
 			return window.uwm.user;
 		},
-		login : function(u, p, o){
+		login : function(u, p, o, v){
 			var userSvc = window.uwmServices.getService("User");
 			var user = new org.cote.beans.userType();
 			user.name = u;
 			user.password = p;
 			user.organization = o;
+			var vParms = (v ? v : {});
 			/*
 			window.uwm.user = userSvc.postLogin(user);
 			window.uwm.session = user.session;
@@ -210,7 +216,8 @@
 						window.uwm.user = v.json;
 						window.uwm.session = v.json.session;
 					}
-					uwm.operation("ContinueWorkflow", {user:v.json}, 0, "Authenticate");
+					vParms.user = v.json;
+					uwm.operation("ContinueWorkflow", vParms, 0, "Authenticate");
 				}
 			});
 

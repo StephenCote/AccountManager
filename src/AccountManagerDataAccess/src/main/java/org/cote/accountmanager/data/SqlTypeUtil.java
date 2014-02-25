@@ -3,22 +3,24 @@ package org.cote.accountmanager.data;
 import java.sql.Types;
 import java.util.Date;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class SqlTypeUtil {
+	public static final Logger logger = Logger.getLogger(SqlTypeUtil.class.getName());
 	public static SqlDataEnumType translateSqlType(DBFactory.CONNECTION_TYPE connectionType, String dataType){
+		
 		SqlDataEnumType out_type = SqlDataEnumType.NULL;
 		switch(connectionType){
 			case POSTGRES:
-				
-				if(dataType.startsWith("int") || dataType.equals("serial")){
+				if(dataType.equals("int8") || dataType.equals("long") || dataType.equals("bigserial")){
+					out_type = SqlDataEnumType.BIGINT;
+				}				
+				else if(dataType.startsWith("int") || dataType.equals("serial")){
 					out_type = SqlDataEnumType.INTEGER;
 				}
 				else if(dataType.equals("bool")){
 					out_type = SqlDataEnumType.BOOLEAN;
-				}
-				else if(dataType.equals("long") || dataType.equals("bigserial")){
-					out_type = SqlDataEnumType.BIGINT;
 				}
 				else if(dataType.equals("bytea")){
 					out_type = SqlDataEnumType.BLOB;
@@ -26,11 +28,12 @@ public class SqlTypeUtil {
 				else if(dataType.equals("float8")){
 					out_type = SqlDataEnumType.DOUBLE;
 				}
-				/*
+
 				else{
-					System.out.println("Unhandled data type: '" + dataType + "'");
+					//System.out.println("Unhandled data type: '" + dataType + "'");
+					//logger.error("Unhandled data type: '" + dataType + "'");
 				}
-				*/
+
 				break;
 			default:
 				System.out.println("Unhandled Type: " + connectionType);

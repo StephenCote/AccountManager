@@ -2,11 +2,15 @@ package org.cote.accountmanager.data;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.AddressFactory;
+import org.cote.accountmanager.data.factory.AttributeFactory;
 import org.cote.accountmanager.data.factory.AuditFactory;
 import org.cote.accountmanager.data.factory.ContactFactory;
 import org.cote.accountmanager.data.factory.ContactInformationFactory;
@@ -32,18 +36,26 @@ import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.objects.AddressType;
+import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.ContactInformationType;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 
+
 public class Factories {
 	
+	public static final Logger logger = Logger.getLogger(Factories.class.getName());
 	
 	private static OrganizationType rootOrganization = null;
 	private static OrganizationType developmentOrganization = null;
 	private static OrganizationType systemOrganization = null;
 	private static OrganizationType publicOrganization = null;
+	private static AttributeFactory attributeFactory = null;
 	private static ContactFactory contactFactory = null;
 	private static AddressFactory addressFactory = null;
 	private static PersonFactory personFactory = null;
@@ -68,13 +80,17 @@ public class Factories {
 	private static SecurityTokenFactory securityTokenFactory = null;
 	private static SessionFactory sessionFactory = null;
 	private static SessionDataFactory sessionDataFactory = null;
+	private static String documentControlName = "Document Control";
 	static{
 		getOrganizationFactory();
+	}
+	public static String getDocumentControlName(){
+		return documentControlName;
 	}
 	public static UserType getDocumentControl(OrganizationType org){
 		UserType user = null;
 		try {
-			user = Factories.getUserFactory().getUserByName("Document Control", org);
+			user = Factories.getUserFactory().getUserByName(documentControlName, org);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,6 +134,13 @@ public class Factories {
 			initializeFactory(sessionFactory);
 		}
 		return sessionFactory;
+	}
+	public static AttributeFactory getAttributeFactory(){
+		if(attributeFactory == null){
+			attributeFactory = new AttributeFactory();
+			initializeFactory(attributeFactory);
+		}
+		return attributeFactory;
 	}
 	public static ContactFactory getContactFactory(){
 		if(contactFactory == null){
@@ -297,7 +320,7 @@ public class Factories {
 			}
 			catch(FactoryException fe){
 				fe.printStackTrace();
-				System.out.println(fe.getMessage());
+				logger.error(fe.getMessage());
 				rootOrganization = null;
 				systemOrganization = null;
 				publicOrganization = null;
@@ -305,7 +328,7 @@ public class Factories {
 			} catch (ArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				System.out.println(e.getMessage());
+				logger.error(e.getMessage());
 				rootOrganization = null;
 				systemOrganization = null;
 				publicOrganization = null;
@@ -345,11 +368,11 @@ public class Factories {
 					out_bool = true;
 				}
 				else{
-					System.out.println("Could not find 'Admin' user in org " + org.getName());
+					logger.info("Organization not configured.  Could not find 'Admin' user in org " + org.getName());
 				}
 			}
 			catch(FactoryException fe){
-				System.out.println(fe.getMessage());
+				logger.error(fe.getMessage());
 				fe.printStackTrace();
 			} catch (ArgumentException e) {
 				// TODO Auto-generated catch block
@@ -357,7 +380,7 @@ public class Factories {
 			}
 		}
 		else{
-			System.out.println("Organization is null");
+			logger.error("Organization is null");
 		}
 		return out_bool;
 	}
@@ -393,6 +416,9 @@ public class Factories {
 		switch(factoryType){
 			case PERSON:
 				fact = (T)BulkFactories.getBulkPersonFactory();
+				break;
+			case ACCOUNT:
+				fact = (T)BulkFactories.getBulkAccountFactory();
 				break;
 			case CONTACT:
 				fact = (T)BulkFactories.getBulkContactFactory();
@@ -446,6 +472,9 @@ public class Factories {
 	public static <T> T getFactory(FactoryEnumType factoryType){
 		T fact = null;
 		switch(factoryType){
+			case ACCOUNT:
+				fact = (T)getAccountFactory();
+				break;
 			case PERSON:
 				fact = (T)getPersonFactory();
 				break;
@@ -497,4 +526,55 @@ public class Factories {
 		}
 		return fact;
 	}
+	
+	public static <T> void populate(FactoryEnumType factoryType, T object) throws FactoryException, ArgumentException{
+		switch(factoryType){
+
+			case ADDRESS:
+				getAddressFactory().populate((AddressType)object);
+				break;
+			case CONTACTINFORMATION:
+				getContactInformationFactory().populate((ContactInformationType)object);
+				break;
+			case USER:
+				getUserFactory().populate((UserType)object);
+				break;
+			case PERSON:
+				getPersonFactory().populate((PersonType)object);
+				break;
+			case GROUP:
+				getGroupFactory().populate((BaseGroupType)object);
+				break;
+			case ROLE:
+			case TAG:
+			case DATA:
+			default:
+				break;
+		
+		}
+	}
+	
+	public static boolean cleanupOrphans(){
+		boolean out_bool = false;
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		try {
+			Statement stat = connection.createStatement();
+			stat.executeQuery("SELECT * FROM cleanup_orphans();");
+			out_bool = true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		clearCaches();
+		return out_bool;
+	}
+	
 }

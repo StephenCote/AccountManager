@@ -12,18 +12,16 @@ import java.util.UUID;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
@@ -32,7 +30,6 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.SessionSecurity;
-
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.ContactInformationType;
@@ -108,7 +105,12 @@ public class UserService{
 			return null;
 		}
 		if(inBean.getOrganization() == null) inBean.setOrganization(Factories.getPublicOrganization());
-		
+		AuditService.targetAudit(audit, AuditEnumType.USER, inBean.getName() + " in " + inBean.getOrganization().getName());
+		boolean requireSSL = Boolean.parseBoolean(request.getServletContext().getInitParameter("ssl.login.required"));
+		if(requireSSL && request.isSecure() == false){
+			AuditService.denyResult(audit, "Authentication requires a secure connection");
+			return null;
+		}
 		String password_hash = SecurityUtil.getSaltedDigest(inBean.getPassword());
 		UserType user = null;
 		try{
@@ -142,23 +144,27 @@ public class UserService{
 	
 	@GET @Path("/getLogout") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public SessionBean postLogout(@Context HttpServletRequest request, @Context HttpServletResponse response){
-		String sessionId = request.getSession(true).getId();
+		HttpSession session = request.getSession(true);
+		String sessionId = session.getId();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "getLogout",AuditEnumType.SESSION, sessionId);
 		OrganizationType org = null;
 		
 		UserType user = null;
-		UserSessionType session = null;
+		UserSessionType userSession = null;
 		try{
 			user = SessionSecurity.getUserBySession(sessionId, ServiceUtil.getOrganizationFromRequest(request));
 			if(user != null){
 				AuditService.targetAudit(audit, AuditEnumType.USER, user.getName());
 				SessionSecurity.logout(user.getSession());
+				userSession = user.getSession();
 				AuditService.permitResult(audit, "User session logged out");
 			}
 			else{
 				AuditService.denyResult(audit, "User not found");
-				session = SessionSecurity.getUserSession(sessionId, ServiceUtil.getOrganizationFromRequest(request));
+				userSession = SessionSecurity.getUserSession(sessionId, ServiceUtil.getOrganizationFromRequest(request));
 			}
+			session.invalidate();
+			
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -171,7 +177,7 @@ public class UserService{
 			e.printStackTrace();
 		}
 		ServiceUtil.clearCookie(response, "OrganizationId");
-		return BeanUtil.getSessionBean(session, sessionId);
+		return BeanUtil.getSessionBean(userSession, sessionId);
 	}
 
 	//@POST @Path("/postConfirmation") @Produces(MediaType.TEXT_PLAIN) @Consumes(MediaType.APPLICATION_JSON)

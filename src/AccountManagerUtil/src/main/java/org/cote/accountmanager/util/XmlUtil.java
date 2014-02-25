@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,6 +20,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -27,6 +29,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,26 +39,62 @@ import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
 public class XmlUtil {
+	public static final Logger logger = Logger.getLogger(XmlUtil.class.getName());
+	private static TransformerFactory transFactory = null;
+	private static TransformerFactory getTransformerFactory(){
+		//return TransformerFactory.newInstance("org.apache.xalan.processor.TransformerFactoryImpl",null);
 		
+		if(transFactory == null){
+			//transFactory = TransformerFactory.newInstance("org.apache.xalan.processor.TransformerFactoryImpl",null);
+			transFactory = TransformerFactory.newInstance();
+			/*
+			try {
+				
+				transFactory.setFeature("http://xml.org/sax/features/validation", false);
+				transFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+				transFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+			} catch (TransformerConfigurationException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+				e.printStackTrace();
+			}
+			*/
+
+		}
+		return transFactory;
+		
+	}
 
 	public static Transformer loadTransformer(byte[] data){
-		TransformerFactory transFactory=TransformerFactory.newInstance();
+		
 		Transformer transformer = null;
 		try{
 			ByteArrayInputStream bais=new ByteArrayInputStream(data);
 			InputStreamReader isr=new InputStreamReader(bais);
 			StreamSource source=new StreamSource(isr);
-			transformer=transFactory.newTransformer(source);
+			
+			transformer=getTransformerFactory().newTransformer(source);
+			
 			transformer.setOutputProperty(javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION,"yes");
+			/*
+			// Sax
+			dbf.setFeature("http://xml.org/sax/features/validation", false);
+
+			// Xerces: to disable Internet searching...
+			dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+			dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+			*/
 			bais.close();
 			isr.close();
 		}
 		catch(TransformerConfigurationException tce){
-			System.out.println("Transformer Configuration Exception: " + tce.toString());
+			logger.error(tce.getMessage());
+			tce.printStackTrace();
 	
 		}
 		catch(IOException e){
-			System.out.println("IOException: " + e.toString());
+			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
 		return transformer;
 	}
@@ -86,7 +125,17 @@ public class XmlUtil {
 		return returnData;
 	}
 	
-	
+	public static Node selectSingleNode(Node refNode, String expression){
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		Node outNode = null;
+		try {
+			outNode = (Node)xPath.compile(expression).evaluate(refNode, XPathConstants.NODE);
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return outNode;
+	}	
 	public static Node selectSingleNode(Document refNode, String expression){
 		XPath xPath =  XPathFactory.newInstance().newXPath();
 		Node outNode = null;
@@ -99,7 +148,17 @@ public class XmlUtil {
 		return outNode;
 	}
 
-	
+	public static NodeList selectNodes(Node refNode, String expression){
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		NodeList outNodes = null;
+		try {
+			outNodes = (NodeList)xPath.compile(expression).evaluate(refNode, XPathConstants.NODESET);
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return outNodes;
+	}	
 	public static NodeList selectNodes(Document refNode, String expression){
 		XPath xPath =  XPathFactory.newInstance().newXPath();
 		NodeList outNodes = null;
@@ -116,12 +175,36 @@ public class XmlUtil {
 	///
 
 	public static String GetStringFromDoc(Document d)    {
+		/*
 	    DOMImplementationLS domImplementation = (DOMImplementationLS) d.getImplementation();
 	    LSSerializer lsSerializer = domImplementation.createLSSerializer();
-	    return lsSerializer.writeToString(d);   
+
+	    return lsSerializer.writeToString(d);
+	    */
+	    StringWriter output = new StringWriter();
+
+	    
+		try {
+			//Transformer transformer = TransformerFactory.newInstance("org.apache.xalan.processor.TransformerFactoryImpl",null).newTransformer();
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			transformer.transform(new DOMSource(d.getDocumentElement()), new StreamResult(output));
+		} catch (TransformerConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformerFactoryConfigurationError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+
+	    return output.toString();
 	}
 	
 	public static Document GetDocumentFromBytes(byte[] data){
+		//DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance("org.apache.xerces.jaxp.DocumentBuilderFactoryImpl",null);
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 		DocumentBuilder db = null;

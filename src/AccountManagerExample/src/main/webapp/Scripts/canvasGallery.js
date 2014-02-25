@@ -372,8 +372,9 @@
 						{action:"itemBack",small:1,slot:"mid-2",icon:"48px-Crystal_Clear_action_back.png"},
 						{action:"controlPanel",small:1,slot:"mid",icon:"48px-Crystal_Clear_app_ksysguard.png"},
 						{action:"itemNext",small:1,slot:"mid+2",icon:"48px-Crystal_Clear_action_forward.png"},
-						{action:"deleteObject",small:1,slot:"slots - 2",icon:"48px-Crystal_Clear_filesystem_trashcan_empty.png"},
-						{action:"logout",small:1,slot:"slots - 1",icon:"48px-Crystal_Clear_app_logout.png"}
+						{action:"deleteObject",small:1,slot:"slots - 3",icon:"48px-Crystal_Clear_filesystem_trashcan_empty.png"},
+						{action:"logout",small:1,slot:"slots - 2",icon:"48px-Crystal_Clear_app_logout.png"},
+						{action:"exit",small:1,slot:"slots - 1",icon:"48px-Crystal_Clear_app_shutdown.png"}
 					]
 	
 				});
@@ -550,7 +551,11 @@
 				window.uwm.logout();
 				window.uwm.operation("ContinueWorkflow");
 				this.destroy();
+			},
+			exit : function(){
+				this.destroy();
 			}
+
 	
 		});
 		

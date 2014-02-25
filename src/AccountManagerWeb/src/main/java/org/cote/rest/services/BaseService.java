@@ -18,7 +18,7 @@ public class BaseService {
 	public static final Logger logger = Logger.getLogger(BaseService.class.getName());
 	public UserType getUserFromSession(AuditType audit, HttpServletRequest request){
 		UserType user = getUserFromSession(request);
-		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit,  "Invalid user. " + (user == null ? "Null user" : "Status is " + user.getSession().getSessionStatus()));
 			System.out.println("User is null or not authenticated");
 			return null;

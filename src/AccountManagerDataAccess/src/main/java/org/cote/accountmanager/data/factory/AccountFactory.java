@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.UUID;
 
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ContactInformationType;
@@ -27,6 +29,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
@@ -38,10 +41,12 @@ public class AccountFactory extends NameIdFactory {
 	public AccountFactory(){
 		super();
 		this.scopeToOrganization = true;
-		this.hasParentId = false;
+		this.hasParentId = true;
 		this.hasOwnerId = false;
 		this.hasName = true;
 		this.tableNames.add("accounts");
+		this.factoryType = FactoryEnumType.ACCOUNT;
+		
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
@@ -50,18 +55,23 @@ public class AccountFactory extends NameIdFactory {
 		}
 
 	}
+	@Override
+	public <T> String getCacheKeyName(T obj){
+		AccountType t = (AccountType)obj;
+		return t.getName() + "-" + t.getParentId() + "-" + t.getOrganization().getId();
+	}
 	public boolean updateAccount(AccountType account) throws FactoryException{
 		removeAccountFromCache(account);
 		return update(account);
 	}
 	protected void updateAccountToCache(AccountType account) throws ArgumentException{
-		String key_name = account.getName() + "-" + account.getOrganization().getId();
+		String key_name = getCacheKeyName(account);
 		System.out.println("Update account to cache: " + key_name);
 		if(this.haveCacheId(account.getId())) removeAccountFromCache(account);
 		addToCache(account, key_name);
 	}
 	protected void removeAccountFromCache(AccountType account){
-		String key_name = account.getName() + "-" + account.getOrganization().getId();
+		String key_name = getCacheKeyName(account);
 		System.out.println("Remove account from cache: " + key_name);
 		removeFromCache(account, key_name);
 	}
@@ -92,11 +102,15 @@ public class AccountFactory extends NameIdFactory {
 		}
 		return (deleted > 0);
 	}
-
 	public AccountType newAccount(String name, AccountEnumType type, AccountStatusEnumType status, OrganizationType organization)
+	{
+		return newAccount(name, null, type, status, organization);
+	}
+	public AccountType newAccount(String name, AccountType parentAccount, AccountEnumType type, AccountStatusEnumType status, OrganizationType organization)
 	{
 		AccountType new_account = new AccountType();
 		new_account.setNameType(NameEnumType.ACCOUNT);
+		if(parentAccount != null) new_account.setParentId(parentAccount.getId());
 		new_account.setAccountStatus(status);
 		new_account.setAccountType(type);
 		new_account.setOrganization(organization);
@@ -105,15 +119,24 @@ public class AccountFactory extends NameIdFactory {
 		return new_account;
 	}
 	public boolean getAccountNameExists(String name, OrganizationType organization) throws FactoryException {
-		return (getIdByName(name, organization.getId()) > 0);
+		return getAccountNameExists(name, null, organization);
+	}
+	public boolean getAccountNameExists(String name, AccountType parent, OrganizationType organization) throws FactoryException {
+		return (getIdByField(new QueryField[]{QueryFields.getFieldName(name),QueryFields.getFieldParent((parent != null ? parent.getId() : 0))}, organization.getId()).length > 0);
 	}
 
 	public AccountType getAccountByName(String name, OrganizationType organization) throws FactoryException, ArgumentException
 	{
-		String key_name = name + "-" + organization.getId();
+		return getAccountByName(name, null, organization);
+	}
+	
+	public AccountType getAccountByName(String name, AccountType parent, OrganizationType organization) throws FactoryException, ArgumentException
+		{
+
+		String key_name = name + "-" + (parent != null ? parent.getId() : 0) + "-" + organization.getId();
 		AccountType out_user = (AccountType)readCache(key_name);
 		if(out_user != null) return out_user;
-		List<NameIdType> users = getByName(name, organization.getId());
+		List<NameIdType> users = getByField(new QueryField[] { QueryFields.getFieldName(name), QueryFields.getFieldParent(( parent != null ? parent.getId() : 0)) }, organization.getId());
 		if (users.size() > 0)
 		{
 			out_user = (AccountType)users.get(0);
@@ -128,7 +151,7 @@ public class AccountFactory extends NameIdFactory {
 	public boolean addAccount(AccountType new_account, boolean allot_contact_info) throws FactoryException, ArgumentException
 	{
 		if (new_account.getOrganization() == null || new_account.getOrganization().getId() <= 0) throw new FactoryException("Cannot add contact information to invalid organization");
-		if (getAccountNameExists(new_account.getName(), new_account.getOrganization()))
+		if (!bulkMode && getAccountNameExists(new_account.getName(), (new_account.getParentId() != 0L ?  (AccountType)getById(new_account.getParentId(), new_account.getOrganization()) : null), new_account.getOrganization()))
 		{
 			throw new FactoryException("Account name " + new_account.getName() + " already exists");
 		}
@@ -139,22 +162,46 @@ public class AccountFactory extends NameIdFactory {
 			row.setCellValue("accountid", new_account.getAccountId());
 			row.setCellValue("referenceid", new_account.getReferenceId());
 			if (insertRow(row)){
-				new_account = getAccountByName(new_account.getName(), new_account.getOrganization());
+
+				new_account = (bulkMode ? new_account : getAccountByName(new_account.getName(), (new_account.getParentId() != 0L ?  (AccountType)getById(new_account.getParentId(), new_account.getOrganization()) : null), new_account.getOrganization()));
 				if(new_account == null) throw new FactoryException("Failed to retrieve new account object");
 				StatisticsType stats = Factories.getStatisticsFactory().newStatistics(new_account);
-				if(Factories.getStatisticsFactory().addStatistics(stats) == false) throw new FactoryException("Failed to add statistics to new account #" + new_account.getId());
-				stats = Factories.getStatisticsFactory().getStatistics(new_account);
-				if(stats == null) throw new FactoryException("Failed to retrieve statistics for account #" + new_account.getId());
-				new_account.setStatistics(stats);
-				if(allot_contact_info){
-					ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_account);
-					System.out.println("Adding cinfo for account in org " + new_account.getOrganization().getId());
-					if(Factories.getContactInformationFactory().addContactInformation(cinfo) == false) throw new FactoryException("Failed to assign contact information for account #" + new_account.getId());
-					cinfo = Factories.getContactInformationFactory().getContactInformationForAccount(new_account);
-					if(cinfo == null) throw new FactoryException("Failed to retrieve contact information for account #" + new_account.getId());
-					new_account.setContactInformation(cinfo);
+				if(bulkMode){
+					BulkFactories.getBulkFactory().setDirty(FactoryEnumType.STATISTICS);
+					BulkFactories.getBulkStatisticsFactory().addStatistics(stats);
+					if(allot_contact_info){
+						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_account);
+						if(new_account.getId() > 0){
+							BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATION);
+							BulkFactories.getBulkContactInformationFactory().addContactInformation(cinfo);
+						}
+						else{
+							if(this.factoryType == FactoryEnumType.UNKNOWN) throw new FactoryException("Invalid Factory Type for Bulk Identifiers");
+							String sessionId = BulkFactories.getBulkFactory().getSessionForBulkId(new_account.getId());
+							if(sessionId == null){
+								logger.error("Invalid bulk session id");
+								throw new FactoryException("Invalid bulk session id");
+							}
+							logger.debug("Bulk id discovered.  User=" + new_account.getId() + ". Diverting to Bulk " + FactoryEnumType.CONTACTINFORMATION + " Operation");
+							BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cinfo);
+
+						}
+					}
 				}
-				
+				else{
+					if(Factories.getStatisticsFactory().addStatistics(stats) == false) throw new FactoryException("Failed to add statistics to new account #" + new_account.getId());
+					stats = Factories.getStatisticsFactory().getStatistics(new_account);
+					if(stats == null) throw new FactoryException("Failed to retrieve statistics for account #" + new_account.getId());
+					new_account.setStatistics(stats);
+					if(allot_contact_info){
+						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_account);
+						System.out.println("Adding cinfo for account in org " + new_account.getOrganization().getId());
+						if(Factories.getContactInformationFactory().addContactInformation(cinfo) == false) throw new FactoryException("Failed to assign contact information for account #" + new_account.getId());
+						cinfo = Factories.getContactInformationFactory().getContactInformationForAccount(new_account);
+						if(cinfo == null) throw new FactoryException("Failed to retrieve contact information for account #" + new_account.getId());
+						new_account.setContactInformation(cinfo);
+					}
+				}
 				return true;
 				
 			}

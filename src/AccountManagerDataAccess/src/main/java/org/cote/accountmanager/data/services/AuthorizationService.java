@@ -31,30 +31,61 @@ public class AuthorizationService {
 	public static <T> boolean authorizeRoleType(UserType adminUser, BaseRoleType targetRole, T bucket, boolean view, boolean edit, boolean delete, boolean create) throws FactoryException, DataAccessException, ArgumentException{
 		NameIdType tBucket = (NameIdType)bucket;
 		boolean out_bool = false;
+		
 		switch(tBucket.getNameType()){
 			case DATA:
 				DataType data = (DataType)bucket;
-				switchData(adminUser, targetRole, data, getViewDataPermission(data.getGroup().getOrganization()), view);
-				switchData(adminUser, targetRole, data, getEditDataPermission(data.getGroup().getOrganization()), edit);
-				switchData(adminUser, targetRole, data, getDeleteDataPermission(data.getGroup().getOrganization()), delete);
-				switchData(adminUser, targetRole, data, getCreateDataPermission(data.getGroup().getOrganization()), create);
-				out_bool = true;
+				if(
+					switchData(adminUser, targetRole, data, getViewDataPermission(data.getGroup().getOrganization()), view)
+					&&
+					switchData(adminUser, targetRole, data, getEditDataPermission(data.getGroup().getOrganization()), edit)
+					&&
+					switchData(adminUser, targetRole, data, getDeleteDataPermission(data.getGroup().getOrganization()), delete)
+					&&
+					switchData(adminUser, targetRole, data, getCreateDataPermission(data.getGroup().getOrganization()), create)
+				){
+					out_bool = true;
+				
+					EffectiveAuthorizationService.pendDataUpdate(data);
+				}
+
 				break;
 			case GROUP:
 				BaseGroupType group = (BaseGroupType)bucket;
-				switchGroup(adminUser, targetRole, group, getViewGroupPermission(group.getOrganization()), view);
-				switchGroup(adminUser, targetRole, group, getEditGroupPermission(group.getOrganization()), edit);
-				switchGroup(adminUser, targetRole, group, getDeleteGroupPermission(group.getOrganization()), delete);
-				switchGroup(adminUser, targetRole, group, getCreateGroupPermission(group.getOrganization()), create);
-				out_bool = true;
+				if(
+					switchGroup(adminUser, targetRole, group, getViewGroupPermission(group.getOrganization()), view)
+					&&
+					switchGroup(adminUser, targetRole, group, getEditGroupPermission(group.getOrganization()), edit)
+					&&
+					switchGroup(adminUser, targetRole, group, getDeleteGroupPermission(group.getOrganization()), delete)
+					&&
+					switchGroup(adminUser, targetRole, group, getCreateGroupPermission(group.getOrganization()), create)
+				){
+					out_bool = true;
+					EffectiveAuthorizationService.pendGroupUpdate(group);
+				}
 				break;
+			default:
+				throw new ArgumentException("Unhandled bucket type: " + tBucket.getNameType());
 			
 		}
-		if(targetRole.getRoleType() == RoleEnumType.USER) EffectiveAuthorizationService.pendUserRoleUpdate((UserRoleType)targetRole);
+		if(out_bool == false){
+			logger.warn(adminUser.getName() + " is not authorized to alter object for role " + targetRole.getName());
+		}
+		else{
+			EffectiveAuthorizationService.pendRoleUpdate(targetRole);
+		}
 		return out_bool;
 	}
-	
+
 	public static <T> boolean authorizeUserType(UserType adminUser, UserType targetUser, T bucket, boolean view, boolean edit, boolean delete, boolean create) throws FactoryException, DataAccessException, ArgumentException{
+		return authorizeUserAndAccountTypes(adminUser, targetUser, bucket, view, edit, delete, create);
+	}
+	public static <T> boolean authorizeAccountType(UserType adminUser, AccountType targetAccount, T bucket, boolean view, boolean edit, boolean delete, boolean create) throws FactoryException, DataAccessException, ArgumentException{
+		return authorizeUserAndAccountTypes(adminUser, targetAccount, bucket, view, edit, delete, create);
+	}
+
+	private static <T> boolean authorizeUserAndAccountTypes(UserType adminUser, NameIdType targetUser, T bucket, boolean view, boolean edit, boolean delete, boolean create) throws FactoryException, DataAccessException, ArgumentException{
 		boolean out_bool = false;
 		NameIdType tBucket = (NameIdType)bucket;
 		switch(tBucket.getNameType()){
@@ -83,7 +114,8 @@ public class AuthorizationService {
 				out_bool = true;
 				break;
 		}
-		EffectiveAuthorizationService.pendUserUpdate(targetUser);
+		if(targetUser.getNameType() == NameEnumType.USER) EffectiveAuthorizationService.pendUserUpdate((UserType)targetUser);
+		else if(targetUser.getNameType() == NameEnumType.ACCOUNT) EffectiveAuthorizationService.pendAccountUpdate((AccountType)targetUser);
 		
 		return out_bool;
 	}
@@ -501,7 +533,7 @@ public class AuthorizationService {
 			if (bp == null) out_boolean = true;
 			else out_boolean = Factories.getRoleParticipationFactory().deleteParticipant(bp);
 		}
-		if(out_boolean && role.getRoleType() == RoleEnumType.USER) EffectiveAuthorizationService.pendUserRoleUpdate((UserRoleType)role);
+		if(out_boolean && (role.getRoleType() == RoleEnumType.USER || role.getRoleType() == RoleEnumType.ACCOUNT)) EffectiveAuthorizationService.pendRoleUpdate(role);
 		return out_boolean;
 	}
 	public static boolean canChangeRole(UserType user, BaseRoleType role) throws ArgumentException, FactoryException{
@@ -667,7 +699,7 @@ public class AuthorizationService {
 			else out_boolean = Factories.getDataParticipationFactory().deleteParticipant(bp);
 		}
 		//if(out_boolean && role.getRoleType() == RoleEnumType.USER) EffectiveAuthorizationService.pendUserRoleUpdate((UserRoleType)role);
-		if(out_boolean) EffectiveAuthorizationService.pendDataRoleUpdate(data);
+		if(out_boolean) EffectiveAuthorizationService.pendDataUpdate(data);
 		return out_boolean;
 	}
 	public static boolean switchData(UserType admin, DataTagType tag, DataType data, boolean enable) throws FactoryException, ArgumentException, DataAccessException
@@ -1033,6 +1065,9 @@ public class AuthorizationService {
 		*/
 		return EffectiveAuthorizationService.getGroupAuthorization(role,group, new BasePermissionType[] { getEditGroupPermission(group.getOrganization())} );
 	}
+	public static boolean canChangeGroup(AccountType account, BaseGroupType group) throws ArgumentException, FactoryException{
+		return EffectiveAuthorizationService.getGroupAuthorization(account,group, new BasePermissionType[] { getEditGroupPermission(group.getOrganization())} );
+	}
 	public static boolean canChangeGroup(UserType user, BaseGroupType group) throws ArgumentException, FactoryException
 	{
 
@@ -1119,6 +1154,10 @@ public class AuthorizationService {
         return false;
         */
         return EffectiveAuthorizationService.getGroupAuthorization(role,group, new BasePermissionType[] { getDeleteGroupPermission(group.getOrganization())} );
+    }
+    public static boolean canDeleteGroup(AccountType user, BaseGroupType group) throws ArgumentException, FactoryException
+    {
+        return EffectiveAuthorizationService.getGroupAuthorization(user,group, new BasePermissionType[] { getDeleteGroupPermission(group.getOrganization())} );
     }
     public static boolean canDeleteGroup(UserType user, BaseGroupType group) throws ArgumentException, FactoryException
     {
@@ -1209,6 +1248,10 @@ public class AuthorizationService {
 		return false;
 		*/
 		return EffectiveAuthorizationService.getGroupAuthorization(role,group, new BasePermissionType[] { getViewGroupPermission(group.getOrganization())} );
+	}
+	public static boolean canViewGroup(AccountType account, BaseGroupType group) throws ArgumentException, FactoryException
+	{
+		return EffectiveAuthorizationService.getGroupAuthorization(account,group, new BasePermissionType[] { getViewGroupPermission(group.getOrganization())} );
 	}
 	public static boolean canViewGroup(UserType user, BaseGroupType group) throws ArgumentException, FactoryException
 	{

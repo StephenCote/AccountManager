@@ -127,6 +127,7 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 	}
 	*/
 	/*
+	 * NOTE: This test was written for the reverse-RBAC method, which is not configured by default, so it will fail.
 	@Test
 	public void testDataRoles(){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
@@ -245,7 +246,7 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			e.printStackTrace();
 		}
 	}
-	
+	*/
 	@Test
 	public void testDataPermissions(){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
@@ -298,8 +299,6 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		}
 		assertFalse("Error occurred", error);
 	}
-	*/
-	/*
 	@Test
 	public void testDataTags(){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
@@ -360,5 +359,5 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		}
 
 	}
-	*/
+	
 }

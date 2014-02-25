@@ -43,38 +43,39 @@
 
     
     <simpleType name="SqlDataEnumType">
-    			<restriction base="string">
-    				<enumeration value="ARRAY"></enumeration>
-    				<enumeration value="BIGINT"></enumeration>
-    				<enumeration value="BINARY"></enumeration>
-    				<enumeration value="BIT"></enumeration>
-    				<enumeration value="BLOB"></enumeration>
-    				<enumeration value="BOOLEAN"></enumeration>
-    				<enumeration value="CHAR"></enumeration>
-    				<enumeration value="CLOB"></enumeration>
-    				<enumeration value="DATALINK"></enumeration>
-    				<enumeration value="DATE"></enumeration>
-    				<enumeration value="DECIMAL"></enumeration>
-    				<enumeration value="DISTINCT"></enumeration>
-    				<enumeration value="DOUBLE"></enumeration>
-    				<enumeration value="FLOAT"></enumeration>
-    				<enumeration value="INTEGER"></enumeration>
-    				<enumeration value="JAVA_OBJECT"></enumeration>
-    				<enumeration value="LONGVARBINARY"></enumeration>
-    				<enumeration value="LONGVARCHAR"></enumeration>
-    				<enumeration value="NULL"></enumeration>
-    				<enumeration value="NUMERIC"></enumeration>
-    				<enumeration value="OTHER"></enumeration>
-    				<enumeration value="REAL"></enumeration>
-    				<enumeration value="REF"></enumeration>
-    				<enumeration value="SMALLINT"></enumeration>
-    				<enumeration value="STRUCT"></enumeration>
-    				<enumeration value="TIME"></enumeration>
-    				<enumeration value="TIMESTAMP"></enumeration>
-    				<enumeration value="TINYINT"></enumeration>
-    				<enumeration value="VARBINARY"></enumeration>
-    				<enumeration value="VARCHAR"></enumeration>
-    			</restriction>
+    	<restriction base="string">
+    		<enumeration value="ARRAY"></enumeration>
+    		<enumeration value="BIGINT"></enumeration>
+    		<enumeration value="BINARY"></enumeration>
+    		<enumeration value="BIT"></enumeration>
+    		<enumeration value="BLOB"></enumeration>
+    		<enumeration value="BOOLEAN"></enumeration>
+    		<enumeration value="CHAR"></enumeration>
+    		<enumeration value="CLOB"></enumeration>
+    		<enumeration value="DATALINK"></enumeration>
+    		<enumeration value="DATE"></enumeration>
+    		<enumeration value="DECIMAL"></enumeration>
+    		<enumeration value="DISTINCT"></enumeration>
+    		<enumeration value="DOUBLE"></enumeration>
+    		<enumeration value="FLOAT"></enumeration>
+    		<enumeration value="INTEGER"></enumeration>
+    		<enumeration value="JAVA_OBJECT"></enumeration>
+    		<enumeration value="LONGVARBINARY"></enumeration>
+    		<enumeration value="LONGVARCHAR"></enumeration>
+    		<enumeration value="NULL"></enumeration>
+    		<enumeration value="NUMERIC"></enumeration>
+    		<enumeration value="OTHER"></enumeration>
+    		<enumeration value="REAL"></enumeration>
+    		<enumeration value="REF"></enumeration>
+    		<enumeration value="SMALLINT"></enumeration>
+    		<enumeration value="STRUCT"></enumeration>
+    		<enumeration value="TIME"></enumeration>
+    		<enumeration value="TIMESTAMP"></enumeration>
+    		<enumeration value="TINYINT"></enumeration>
+    		<enumeration value="VARBINARY"></enumeration>
+    		<enumeration value="VARCHAR"></enumeration>
+    		<enumeration value="TEXT"></enumeration>
+    	</restriction>
     </simpleType>
 
     <simpleType name="PermissionEnumType">

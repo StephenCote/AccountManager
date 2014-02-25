@@ -79,13 +79,19 @@ public class DBFactory {
 				case BLOB:
 					statement.setBytes(index, (byte[])value);
 					break;
+				case TEXT:
 				case VARCHAR:
 					//System.out.println("Str=" + (String)value);
 					if(value == null) statement.setNull(index, Types.VARCHAR);
 					else statement.setString(index,  (String)value);
 					break;
 				case INTEGER:
-					statement.setInt(index,  ((Integer)value).intValue());
+					if(value != null) statement.setInt(index,  ((Integer)value).intValue());
+					else{
+						logger.warn("Null int detected.  If this is for an id field, the probable cause is that a bulk insert session includes both bulk and dirty writes of the same factory type");
+						statement.setNull(index, Types.BIGINT);
+					}
+
 					break;
 				case BIGINT:
 					
@@ -123,6 +129,9 @@ public class DBFactory {
 	public static void setPreparedStatementValue(PreparedStatement ps, DataCell cell, int index) throws FactoryException{
 
 		try {
+			if(cell.getValue() == null && cell.getDataType().equals(SqlDataEnumType.INTEGER)){
+				logger.warn("Null integer value detected for cell " + cell.getColumnName());
+			}
 		//	System.out.println(cell.getColumnName() + ":" + cell.getDataType() + ":" + cell.getValue());
 			setStatementParameter(ps, cell.getDataType(), cell.getValue(), index);
 		} catch (DataAccessException e) {
@@ -294,7 +303,7 @@ public class DBFactory {
 			DatabaseMetaData meta = connection.getMetaData();
 			
 			ResultSet rset = meta.getColumns(null, null, tableName, null);
-			
+			//logger.debug("Analyzing Table Schema: " + tableName);
 			while(rset.next()){
 				//DataColumnType col = new DataColumnType();
 				String colName = rset.getString("COLUMN_NAME");
@@ -302,7 +311,7 @@ public class DBFactory {
 				int colSize = rset.getInt("COLUMN_SIZE");
 				
 				SqlDataEnumType dataType = SqlTypeUtil.translateSqlType(connectionType, colType);
-				//System.out.println("Column name: " + colName + " / Column type: " + colType + "->" + dataType);
+				//logger.debug("\tColumn name: " + colName + " / Column type: " + colType + "->" + dataType);
 				out_table.addColumn(colName,  colIndex++, colSize, dataType);
 				/*
 				col.setColumnName(colName);

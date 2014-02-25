@@ -18,6 +18,7 @@ import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -28,6 +29,7 @@ import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.util.ServiceUtil;
 
@@ -37,7 +39,6 @@ import org.cote.accountmanager.util.ServiceUtil;
 
 public class RoleServiceImpl  {
 	
-	public static final String defaultDirectory = "~/Users";
 	public static final Logger logger = Logger.getLogger(RoleServiceImpl.class.getName());
 	
 	public static boolean authorizeUser(long orgId, long userId, long roleId, boolean view, boolean edit, boolean delete, boolean create, HttpServletRequest request){
@@ -158,13 +159,17 @@ public class RoleServiceImpl  {
 		return BaseService.readByNameInParent(AuditEnumType.ROLE, parent, name, request);
 	}
 	public static BaseRoleType readByParent(BaseRoleType parent, String name,HttpServletRequest request){
-		return BaseService.readByNameInParent(AuditEnumType.ROLE, parent, name, request);
+		BaseRoleType role = BaseService.readByNameInParent(AuditEnumType.ROLE, parent, name, request);
+		Factories.getAttributeFactory().populateAttributes(role);
+		return role;
 	}
 	public static BaseRoleType readByOrganizationId(long orgId, String name,HttpServletRequest request){
 		return BaseService.readByNameInOrganization(AuditEnumType.ROLE, orgId, name, request);
 	}	
 	public static BaseRoleType readById(long id,HttpServletRequest request){
-		return BaseService.readById(AuditEnumType.ROLE, id, request);
+		BaseRoleType role = BaseService.readById(AuditEnumType.ROLE, id, request);
+		Factories.getAttributeFactory().populateAttributes(role);
+		return role;
 	}
 	public static int count(long orgId, HttpServletRequest request){
 		return BaseService.countByOrganization(AuditEnumType.ROLE, orgId, request);
@@ -191,32 +196,42 @@ public class RoleServiceImpl  {
 		return BaseService.countInParent(AuditEnumType.ROLE, role, request);
 	}
 	
-	public static List<BaseRoleType> getListOfRoles(UserType user, BaseGroupType group){
+	public static List<BaseRoleType> getListOfRoles(UserType user, NameIdType type){
 		List<BaseRoleType> out_obj = new ArrayList<BaseRoleType>();
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All roles",AuditEnumType.ROLE,(user == null ? "Null" : user.getName()));
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All roles");
 		
-		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
 			return null;
 		}
-		if(group == null){
-			AuditService.denyResult(audit, "Target group is null");
+		if(type == null){
+			AuditService.denyResult(audit, "Target type is null");
 			return null;
 		}
 
 		try {
 			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			if(
-				AuthorizationService.isMapOwner(user, group)
+				AuthorizationService.isMapOwner(user, type)
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user,group.getOrganization())
+				AuthorizationService.isAccountAdministratorInOrganization(user,type.getOrganization())
 				||
-				(AuthorizationService.isRoleReaderInOrganization(user, group.getOrganization()) && AuthorizationService.isAccountReaderInOrganization(user, group.getOrganization()))
+				//(AuthorizationService.isRoleReaderInOrganization(user, type.getOrganization()) && AuthorizationService.isAccountReaderInOrganization(user, type.getOrganization()))
+				AuthorizationService.isRoleReaderInOrganization(user, type.getOrganization())
 			){
 				AuditService.permitResult(audit, "Access authorized to list roles");
-				out_obj = Factories.getGroupParticipationFactory().getRolesInGroup(group);
+				switch(type.getNameType()){
+					case GROUP:
+						out_obj = Factories.getGroupParticipationFactory().getRolesInGroup((BaseGroupType)type);
+						break;
+					case DATA:
+						out_obj = Factories.getDataParticipationFactory().getRolesForData((DataType)type);
+						break;
+					
+				}
+				
 				
 			}
 			else{
@@ -241,7 +256,7 @@ public class RoleServiceImpl  {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All groups in role",AuditEnumType.ROLE,(user == null ? "Null" : user.getName()));
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All groups in role");
 		
-		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
 			return null;
 		}
@@ -284,7 +299,7 @@ public class RoleServiceImpl  {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All roles",AuditEnumType.ROLE,(user == null ? "Null" : user.getName()));
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All roles");
 		
-		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
 			return null;
 		}
@@ -326,7 +341,7 @@ public class RoleServiceImpl  {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All roles",AuditEnumType.ROLE,(user == null ? "Null" : user.getName()));
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All roles");
 		
-		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
 			return null;
 		}
@@ -371,7 +386,7 @@ public class RoleServiceImpl  {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All roles",AuditEnumType.ROLE,(user == null ? "Null" : user.getName()));
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All roles");
 		
-		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
 			return null;
 		}
@@ -410,7 +425,7 @@ public class RoleServiceImpl  {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All roles",AuditEnumType.ROLE,(user == null ? "Null" : user.getName()));
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All roles");
 		
-		if(user==null || SessionSecurity.isAuthenticated(user.getSession()) == false){
+		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
 			return null;
 		}

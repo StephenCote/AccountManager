@@ -72,7 +72,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		person.getNotes().addAll(Factories.getPersonParticipationFactory().getDatasFromParticipation(person));
 		person.getAccounts().addAll(Factories.getPersonParticipationFactory().getAccountsFromParticipation(person));
 		person.getUsers().addAll(Factories.getPersonParticipationFactory().getUsersFromParticipation(person));
-		Factories.getContactInformationFactory().populate(person.getContact());
+		if(person.getContact() != null) Factories.getContactInformationFactory().populate(person.getContact());
 		person.setPopulated(true);
 		
 		updateToCache(person);

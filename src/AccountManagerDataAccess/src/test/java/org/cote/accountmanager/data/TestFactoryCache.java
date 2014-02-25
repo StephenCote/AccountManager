@@ -19,6 +19,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.DataUtil;
@@ -239,7 +240,7 @@ public class TestFactoryCache{
 		UserType user = sessionUser;
 		if(user == null) return bean;
 
-			DirectoryGroupType dir = Factories.getGroupFactory().findGroup(user, path, user.getOrganization());
+			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, path, user.getOrganization());
 			if(dir == null){
 				AuditService.denyResult(audit, "Invalid path");
 				return bean;

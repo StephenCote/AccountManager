@@ -8,6 +8,11 @@
 		<param-value>true</param-value>
 	</context-param>
 	<context-param>
+		<description>SSL Login Only</description>
+		<param-name>ssl.login.required</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
 		<description>Database Connection Type</description>
 		<param-name>database.conntype</param-name>
 		<param-value>jndi</param-value>
@@ -83,6 +88,15 @@
 		<enabled>true</enabled>
 		<async-supported>false</async-supported>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>EAIServlet</display-name>
+		<servlet-name>EAIServlet</servlet-name>
+		<servlet-class>org.cote.rest.services.EAIServlet</servlet-class>
+		<enabled>true</enabled>
+		<async-supported>false</async-supported>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>/faces/*</url-pattern>
@@ -114,6 +128,16 @@
 	<servlet-mapping>
 		<servlet-name>AccountManagerLogoutServlet</servlet-name>
 		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>EAIServlet</servlet-name>
+		<url-pattern>
+		/eai</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>EAIServlet</servlet-name>
+		<url-pattern>
+		/EAIServlet</url-pattern>
 	</servlet-mapping>
 	<session-config>
 		<session-timeout>30</session-timeout>

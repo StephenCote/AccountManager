@@ -65,11 +65,11 @@ public abstract class NameIdFactory extends FactoryBase {
 	
 	public void mapBulkIds(NameIdType map){
 		long tmpId = 0;
-		if(hasOwnerId && map.getOwnerId() < 0){
+		if(hasOwnerId && map.getOwnerId() < 0L){
 			tmpId = BulkFactories.getBulkFactory().getMappedId(map.getOwnerId());
 			if(tmpId > 0) map.setOwnerId(tmpId);
 		}
-		if(hasParentId && map.getParentId() < 0){
+		if(hasParentId && map.getParentId() < 0L){
 			tmpId = BulkFactories.getBulkFactory().getMappedId(map.getParentId());
 			logger.debug("Map parentId " + map.getParentId() + " to " + tmpId);
 			if(tmpId > 0) map.setParentId(tmpId);

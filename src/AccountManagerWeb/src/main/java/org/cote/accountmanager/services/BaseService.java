@@ -16,6 +16,7 @@ import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 //import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.FactoryService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.DataException;
@@ -31,6 +32,7 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
@@ -82,6 +84,15 @@ public class BaseService{
 				BaseRoleType new_role = Factories.getRoleFactory().newUserRole(user, rlbean.getName(), parentRole);
 				out_bool = Factories.getRoleFactory().addRole(new_role);
 				break;
+			case GROUP:
+				BaseGroupType gbean = (BaseGroupType)in_obj;
+				BaseGroupType parentGroup = null;
+				if(gbean.getParentId() > 0L){
+					parentGroup = Factories.getGroupFactory().getById(gbean.getParentId(), gbean.getOrganization());
+				}
+				BaseGroupType new_group = Factories.getGroupFactory().newGroup(user, gbean.getName(), gbean.getGroupType(), parentGroup, gbean.getOrganization());
+				out_bool = Factories.getGroupFactory().addGroup(new_group);
+				break;
 			case USER:
 				UserType ubean = (UserType)in_obj;
 				UserType new_user = Factories.getUserFactory().newUser(ubean.getName(), SecurityUtil.getSaltedDigest(ubean.getPassword()), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, ubean.getOrganization());
@@ -115,7 +126,10 @@ public class BaseService{
 				break;
 			case DATA:
 				out_bool = Factories.getDataFactory().updateData((DataType)in_obj);
-				break;	
+				break;
+			case GROUP:
+				out_bool = Factories.getGroupFactory().updateGroup((BaseGroupType)in_obj);
+				break;
 		}
 		return out_bool;		
 	}
@@ -130,6 +144,11 @@ public class BaseService{
 				break;
 			case DATA:
 				out_bool = Factories.getDataFactory().deleteData((DataType)in_obj);
+				break;
+			case GROUP:
+				BaseGroupType gobj = (BaseGroupType)in_obj;
+				if(gobj.getGroupType() == GroupEnumType.DATA) out_bool = Factories.getGroupFactory().deleteDirectoryGroup((DirectoryGroupType)in_obj);
+				else Factories.getGroupFactory().deleteGroup(gobj);
 				break;
 
 		}
@@ -146,6 +165,9 @@ public class BaseService{
 				break;
 			case DATA:
 				out_obj = (T)Factories.getDataFactory();
+				break;
+			case GROUP:
+				out_obj = (T)Factories.getGroupFactory();
 				break;
 			
 		}
@@ -182,7 +204,7 @@ public class BaseService{
 		T out_obj = null;
 		switch(type){
 			case ROLE:
-				out_obj = (T)Factories.getRoleFactory().getUserRoleByName(name, (BaseRoleType)parent, parent.getOrganization());
+				out_obj = (T)Factories.getRoleFactory().getRoleByName(name, (BaseRoleType)parent, parent.getOrganization());
 				break;
 		}		
 		populate(type, out_obj);
@@ -295,7 +317,7 @@ public class BaseService{
 		switch(type){
 			case ROLE:
 
-				if(obj.getParentId() > 0){
+				if(obj.getParentId() > 0L){
 					BaseRoleType parent = Factories.getRoleFactory().getById(obj.getParentId(),obj.getOrganization());
 					out_bool = AuthorizationService.canChangeRole(user, parent);
 				}
@@ -310,7 +332,10 @@ public class BaseService{
 				out_bool = AuthorizationService.isAccountAdministratorInMapOrganization(user, obj);
 				break;
 			case GROUP:
-				out_bool = AuthorizationService.canCreateGroup(user, (BaseGroupType)obj);
+				if(obj.getParentId() > 0L){
+					BaseGroupType parent = Factories.getGroupFactory().getById(obj.getParentId(),obj.getOrganization());
+					out_bool = AuthorizationService.canCreateGroup(user, parent);
+				}
 				break;
 		}
 		return out_bool;
@@ -336,6 +361,22 @@ public class BaseService{
 				if(!out_bool) out_bool = AuthorizationService.isAccountAdministratorInMapOrganization(user, (UserType)obj);
 				break;
 			case GROUP:
+				DirectoryGroupType edir = Factories.getGroupFactory().getDirectoryById(obj.getId(), user.getOrganization());
+				BaseGroupType opdir = Factories.getGroupFactory().getById(edir.getParentId(), user.getOrganization());
+				BaseGroupType pdir = Factories.getGroupFactory().getById(((BaseGroupType)obj).getParentId(), user.getOrganization());
+				if(opdir == null){
+					logger.error("Original Parent group (#" + ((BaseGroupType)obj).getParentId() + ") doesn't exist in organization " + user.getOrganization().getName() + " (#" + user.getOrganization().getId() + ")");
+					return false;
+				}
+				if(pdir == null){
+					logger.error("Specified Parent group (#" + ((BaseGroupType)obj).getParentId()+ ") doesn't exist in organization " + user.getOrganization().getName() + " (#" + user.getOrganization().getId() + ")");
+					return false;
+				}
+				if(opdir.getId() != pdir.getId() && !AuthorizationService.canCreateGroup(user, pdir)){
+					logger.error("User " + user.getName() + " (#" + user.getId() + ") is not authorized to create in group " + pdir.getName() + " (#" + pdir.getId() + ")");
+					return false;
+				}
+
 				out_bool = AuthorizationService.canChangeGroup(user, (BaseGroupType)obj);
 				break;
 		}
@@ -346,6 +387,9 @@ public class BaseService{
 		switch(type){
 			case ROLE:
 				out_bool = AuthorizationService.canDeleteRole(user, (BaseRoleType)obj);
+				break;
+			case GROUP:
+				out_bool = AuthorizationService.canDeleteGroup(user,(BaseGroupType)obj);
 				break;
 			case DATA:
 				out_bool = AuthorizationService.canDeleteData(user, (DataType)obj);
@@ -435,6 +479,7 @@ public class BaseService{
 				targetRole = Factories.getRoleFactory().getById(targetRoleId, org);
 				if(targetRole != null){
 					if(authorizeRoleType(type, user, targetRole, bucket, view, edit, delete, create)){
+						EffectiveAuthorizationService.rebuildPendingRoleCache();
 						AuditService.permitResult(audit, "Applied authorization policy updates for role #" + targetRoleId);
 						out_bool = true;
 					}
@@ -473,6 +518,7 @@ public class BaseService{
 				targetUser = Factories.getUserFactory().getById(targetUserId, org);
 				if(targetUser != null){
 					if(authorizeUserType(type, user, targetUser, bucket, view, edit, delete, create)){
+						EffectiveAuthorizationService.rebuildPendingRoleCache();
 						AuditService.permitResult(audit, "Applied authorization policy updates");
 						out_bool = true;
 					}
@@ -833,7 +879,7 @@ public class BaseService{
 		if(user==null) return 0;
 
 		try{
-			dir = Factories.getGroupFactory().findGroup(user, path, user.getOrganization());
+			dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,path, user.getOrganization());
 			//dir = Factories.getGroupFactory().getById(groupId, user.getOrganization());
 		}
 		 catch (FactoryException e1) {
@@ -921,6 +967,9 @@ public class BaseService{
 				((type == AuditEnumType.USER || type == AuditEnumType.ACCOUNT) &&  AuthorizationService.isAccountReaderInOrganization(user, org))
 				||
 				(type == AuditEnumType.ROLE &&  AuthorizationService.isRoleReaderInOrganization(user, org))
+				||
+				(type == AuditEnumType.GROUP && AuthorizationService.isGroupReaderInOrganization(user, org))
+				
 			){
 				out_count = count(type, org.getId());
 				AuditService.permitResult(audit, "Count " + out_count + " of " + type.toString());

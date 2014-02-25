@@ -50,9 +50,12 @@
 					<excludes>
 						<!-- 
 						
-						<exclude>**/TestDataAuthorization.java</exclude>
-						
+						<exclude>**/TestBulkAccount.java</exclude>
 						-->
+						
+					<exclude>**/TestDataAuthorization.java</exclude>	
+						<exclude>**/TestAttributes.java</exclude>
+						
 						<exclude>**/TestDataFactory.java</exclude>
 						<exclude>**/TestAuditFactory.java</exclude>
 						<exclude>**/TestImportContacts.java</exclude>

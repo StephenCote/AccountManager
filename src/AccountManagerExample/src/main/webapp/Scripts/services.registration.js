@@ -33,6 +33,12 @@ if(!window.uwmServices){
 			true
 	);
 	uwmServices.addService(
+			"Blog",
+			"/AccountManager/rest/blog/smd",
+			true,
+			true
+	);
+	uwmServices.addService(
 			"Message",
 			"/AccountManager/rest/message/smd"
 			, true

@@ -166,14 +166,14 @@ public class FactoryDefaults {
 		AccountRoleType sys_admin_role = RoleService.getSystemAdministratorAccountRole(admin_user);
 		AccountRoleType users_role = RoleService.getAccountUsersAccountRole(admin_user);
 
-		RoleService.addAccountToRole(root_account, root_account, obj_admin_role);
-		RoleService.addAccountToRole(root_account,root_account,account_admin_role);
-		RoleService.addAccountToRole(root_account, root_account,data_admin_role);
-		RoleService.addAccountToRole(root_account, root_account,sys_admin_role);
-		RoleService.addAccountToRole(root_account, admin_account, obj_admin_role);
-		RoleService.addAccountToRole(root_account, admin_account, account_admin_role);
-		RoleService.addAccountToRole(root_account, admin_account, data_admin_role);
-		RoleService.addAccountToRole(root_account, admin_account,sys_admin_role);
+		RoleService.addAccountToRole(root_account, obj_admin_role);
+		RoleService.addAccountToRole(root_account,account_admin_role);
+		RoleService.addAccountToRole(root_account,data_admin_role);
+		RoleService.addAccountToRole(root_account,sys_admin_role);
+		RoleService.addAccountToRole(admin_account, obj_admin_role);
+		RoleService.addAccountToRole(admin_account, account_admin_role);
+		RoleService.addAccountToRole(admin_account, data_admin_role);
+		RoleService.addAccountToRole(admin_account,sys_admin_role);
 		
 		// Add admin user and root user to Administrators and Users user roles
 		//

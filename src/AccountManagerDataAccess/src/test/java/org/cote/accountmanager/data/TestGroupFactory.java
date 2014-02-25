@@ -8,6 +8,7 @@ import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.SecurityUtil;
@@ -65,7 +66,7 @@ public class TestGroupFactory{
 	public void testFindUserDir(){
 		DirectoryGroupType dir = null;
 		try {
-			dir = Factories.getGroupFactory().findGroup(sessionUser, "~", sessionUser.getOrganization());
+			dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(sessionUser, GroupEnumType.DATA, "~", sessionUser.getOrganization());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -168,12 +169,12 @@ public class TestGroupFactory{
 		boolean path = false;
 		boolean cleanUp = false;
 		try {
-			DirectoryGroupType dir = Factories.getGroupFactory().findGroup(null,  "/Example1", dev);
+			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(null,  GroupEnumType.DATA,"/Example1", dev);
 			if(dir != null){
 				logger.info("Cleanup example path");
 				cleanUp = Factories.getGroupFactory().deleteDirectoryGroup(dir);
 				assertTrue("Unable to cleanup directory path", cleanUp);
-				dir = Factories.getGroupFactory().findGroup(null,  "/Example1", dev);
+				dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, "/Example1", dev);
 				assertNull("Directory was not fully removed", dir);
 			}
 			else{

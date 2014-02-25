@@ -21,6 +21,7 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.GraphicsUtil;
 import org.cote.accountmanager.util.ServiceUtil;
@@ -133,7 +134,7 @@ public class MediaUtil {
 		
 		DirectoryGroupType dir = null;
 		try{
-			dir = Factories.getGroupFactory().findGroup(user, objPath, org);
+			dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, objPath, org);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());

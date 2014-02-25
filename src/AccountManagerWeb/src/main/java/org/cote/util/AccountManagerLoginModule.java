@@ -31,6 +31,8 @@ import org.cote.accountmanager.util.ServiceUtil;
 
 public class AccountManagerLoginModule implements LoginModule {
 
+	//private static String EAI_PASSWORD = "debugdebug";
+	
     // initial state
     protected Subject _subject;
     protected CallbackHandler _callbackHandler;
@@ -132,7 +134,6 @@ public class AccountManagerLoginModule implements LoginModule {
         //HttpServletResponse response = null;
         try {
 			request = (HttpServletRequest) PolicyContext.getContext("javax.servlet.http.HttpServletRequest");
-			//response = (HttpServletResponse) PolicyContext.getContext("javax.servlet.http.HttpServletResponse");
 		} catch (PolicyContextException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -141,7 +142,7 @@ public class AccountManagerLoginModule implements LoginModule {
         
         String username = ((NameCallback)callbacks[0]).getName();
         String password = new String(((PasswordCallback)callbacks[1]).getPassword());
-        String orgPath = request.getParameter("j_organizationpath");//"/Public";//((TextInputCallback)callbacks[2]).getText();
+        String orgPath = request.getParameter("j_organizationpath");
         if(orgPath == null || orgPath.length() == 0){
         	throw new LoginException("Null organization path");
         }
@@ -155,7 +156,7 @@ public class AccountManagerLoginModule implements LoginModule {
 	        if(orgType == null){
 	        	throw new LoginException("Organization is null for path: '" + orgPath);
 	        }
-			user = SessionSecurity.login(request.getSession().getId(),username, password_hash, orgType);
+			user = SessionSecurity.login(request.getSession(true).getId(),username, password_hash, orgType);
 
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
