@@ -447,7 +447,7 @@
 				if(d){
 					this.getProperties().keep_buffers = 1;				
 					// var h = d.document.body.innerHTML;
-					this.loadTemplate("Templates/DesignerProxy.xml");
+					this.loadTemplate(g_application_path + "Templates/DesignerProxy.xml");
 				}
 			}
 			catch(e){

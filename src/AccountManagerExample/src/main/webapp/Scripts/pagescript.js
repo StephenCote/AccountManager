@@ -49,20 +49,22 @@
 		/// sKey and sIv are in Base64 string format
 		///
 		encipher : function(sText, sKey, sIv){
-		 return slowAES.encrypt(uwm.strToBin(dec),
+		 var enc = slowAES.encrypt(uwm.strToBin(sText),
         		slowAES.modeOfOperation.CBC,
         		slowAES.padding.PKCS7,
-                uwm.strToBin(uwm.base64Decode(key)),
-                uwm.strToBin(uwm.base64Decode(iv))
-		 );
+                uwm.strToBin(uwm.base64Decode(sKey)),
+                uwm.strToBin(uwm.base64Decode(sIv))
+          );
+          return enc.cipher;
+
 		},
 		decipher : function(sText, sKey, sIv){
         
-        	return slowAES.decrypt(uwm.strToBin(uwm.base64Decode(encSvr)),
+        	return slowAES.decrypt(uwm.strToBin(uwm.base64Decode(sText)),
         			slowAES.modeOfOperation.CBC,
         			slowAES.padding.PKCS7,
-        			uwm.strToBin(uwm.base64Decode(key)),
-        			uwm.strToBin(uwm.base64Decode(iv))
+        			uwm.strToBin(uwm.base64Decode(sKey)),
+        			uwm.strToBin(uwm.base64Decode(sIv))
         	);
 		},
 		

@@ -2,6 +2,9 @@
 	
 	window.accountManager = {
 			organization_paths : {},
+			getPublicUser : function(){
+				return uwmServices.getService("User").getPublicUser();
+			},
 			getOrganizationPath : function(o){
 				if(!o && uwm.getUser()) o = uwm.getUser().organization;
 				if(!o) return null;
@@ -186,7 +189,8 @@
 			return uwmServices.getService("Group").home();
 		},
 		deleteGroup : function(oRec, vCfg){
-			return uwmServices.getService("Group").delete(oRec, vCfg);
+			if(oRec.groupType.match(/^DATA$/)) return uwmServices.getService("Group").deleteDirectory(oRec, vCfg);
+			else return uwmServices.getService("Group").delete(oRec, vCfg);
 		},
 		getGroup : function(sPath){
 			return uwmServices.getService("Group").cd(sPath);
@@ -194,8 +198,10 @@
 		getGroupById : function(iId){
 			return uwmServices.getService("Group").find(iId);
 		},
-		addGroup : function(sName, sType, iParentId){
+		addGroup : function(sName, sType, iParentId, oOrg){
 			var o = new org.cote.beans.baseGroupType();
+			if(!oOrg) oOrg = uwm.getUser().organization;
+			o.organization = oOrg;
 			o.parentId = iParentId;
 			o.name = sName;
 			if(!sType) sType = 'DATA';
