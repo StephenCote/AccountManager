@@ -114,6 +114,18 @@ public class AttributeFactory extends NameIdFactory{
 		}
 		return attr;
 	}
+	public boolean updateAttributes(NameIdType obj){
+		return updateAttributes(new NameIdType[]{obj});
+	}
+	public boolean updateAttributes(NameIdType[] obj){
+		/// Todo: Add bulk support for delete
+		///
+		for(int i = 0; i < obj.length;i++){
+			deleteAttributes(obj[0],true);
+		}
+		addAttributes(obj);
+		return true;
+	}
 	public boolean addAttributes(NameIdType obj){
 		return addAttributes(new NameIdType[]{obj});
 		//DataTable table = getDataTable("attribute");
@@ -244,6 +256,9 @@ public class AttributeFactory extends NameIdFactory{
 		return attributes;
 	}
 	public boolean deleteAttributes(NameIdType object){
+		return deleteAttributes(object,false);
+	}
+	public boolean deleteAttributes(NameIdType object, boolean preserveValues){
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldReferenceId(object.getId()));
 		fields.add(QueryFields.getFieldReferenceType(object.getNameType()));
@@ -252,7 +267,7 @@ public class AttributeFactory extends NameIdFactory{
 		try {
 			int delCount = deleteByField(fields.toArray(new QueryField[0]),object.getOrganization().getId());
 			out_bool = (delCount > 0);
-			object.getAttributes().clear();
+			if(!preserveValues) object.getAttributes().clear();
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

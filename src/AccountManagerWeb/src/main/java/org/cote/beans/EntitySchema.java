@@ -2,6 +2,7 @@ package org.cote.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactInformationType;
@@ -33,7 +34,10 @@ public class EntitySchema {
 	private PersonType personType = null;
 	private ContactType contactType = null;
 	private OrganizationType organizationType = null;
+	private AttributeType attributeType = null;
 	public EntitySchema(){
+		attributeType = new AttributeType();
+		attributeType.getValues();
 		userGroupType = new UserGroupType();
 		baseGroupType = new BaseGroupType();
 		contactType = new ContactType();
@@ -49,6 +53,16 @@ public class EntitySchema {
 		sessionDataBean = new SessionDataBean();
 		userType = new UserType();
 		contactInformationType = new ContactInformationType();
+	}
+
+
+	public AttributeType getAttributeType() {
+		return attributeType;
+	}
+
+
+	public void setAttributeType(AttributeType attributeType) {
+		this.attributeType = attributeType;
 	}
 
 

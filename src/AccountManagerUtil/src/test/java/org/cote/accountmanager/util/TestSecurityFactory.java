@@ -269,20 +269,34 @@ public class TestSecurityFactory {
 	@Test
 	public void testPassKey(){
 		SecurityBean bean = new SecurityBean();
-		byte[] passphrase = SecurityUtil.getPassphraseBytes("the password");
-		SecurityFactory.getSecurityFactory().setPassKey(bean, passphrase, false);
+		//byte[] passphrase = SecurityUtil.getPassphraseBytes("the password");
+		byte[] salt = SecurityFactory.getSecurityFactory().getRandomSalt();
+		SecurityFactory.getSecurityFactory().setPassKey(bean, "The password", false);
 		String sourceText = "Example text";
+		logger.info("Enc Key = " + BinaryUtil.toBase64Str(bean.getCipherKey()));
+		logger.info("Enc IV = " + BinaryUtil.toBase64Str(bean.getCipherIV()));
+
 		byte[] encBytes = SecurityUtil.encipher(bean, sourceText.getBytes());
+		assertTrue("Enciphered value is empty",encBytes.length > 0);
+		
+		StringBuffer buff = new StringBuffer();
+		for(int i = 0; i < salt.length;i++){
+			if(i > 0) buff.append(",");
+			buff.append(salt[i]);
+		}
+		logger.info(buff.toString());
 		
 		SecurityBean dec_bean = new SecurityBean();
-		SecurityFactory.getSecurityFactory().setPassKey(dec_bean, passphrase, false);
+		SecurityFactory.getSecurityFactory().setPassKey(dec_bean, "The password", false);
+		logger.info("Dec Key = " + BinaryUtil.toBase64Str(dec_bean.getCipherKey()));
+		logger.info("Dec IV = " + BinaryUtil.toBase64Str(dec_bean.getCipherIV()));
 		byte[] decBytes = SecurityUtil.decipher(dec_bean, encBytes);
 		String outText = new String(decBytes);
 		assertTrue("The decrypted text does not match the input text", outText.equals(sourceText));
 		logger.info("Deciphered: " + outText);
 	}
 
-	
+	/*
 	@Test
 	public void testSharedPassKey(){
 		SecurityBean bean = new SecurityBean();
@@ -303,6 +317,41 @@ public class TestSecurityFactory {
 		
 		SecurityBean dec_bean = new SecurityBean();
 		SecurityFactory.getSecurityFactory().setPassKey(dec_bean, passphrase, false);
+	
+		SecurityBean decBean = new SecurityBean();
+		byte[] key = BinaryUtil.fromBase64("+nurnv86BqUnHM+5tthyjQ==".getBytes());
+		byte[] iv = BinaryUtil.fromBase64("DHozTXSLAwce799T6nXDdA==".getBytes());
+		byte[] enc = BinaryUtil.fromBase64("QFt5k19VAzqtd5TzZdqsB3f9Qp+hVi+xQE/GJKNkgQ0=".getBytes());
+		SecurityFactory.getSecurityFactory().setSecretKey(decBean, key, iv, false);
+		String inText = new String(SecurityUtil.decipher(decBean, enc));
+		logger.info(inText);
+
+	}
+	*/
+	@Test
+	public void testSharedPassKey2(){
+		SecurityBean bean = new SecurityBean();
+		//byte[] passphrase = BinaryUtil.fromBase64("dGRwVmxOMnZaVTBVNHBoWQ==".getBytes());
+		///byte[] passphrase = SecurityUtil.getPassphraseBytes("the password");
+		String passphrase = "password password";
+		byte[] salt = SecurityFactory.getSecurityFactory().getRandomSalt();
+		logger.info("PASSPHRASE = " + new String(passphrase));
+		
+		SecurityFactory.getSecurityFactory().setPassKey(bean, passphrase, salt,false);
+		
+		logger.info("Key=" + BinaryUtil.toBase64Str(bean.getCipherKey()) + " / " + BinaryUtil.toBase64Str(bean.getCipherIV()));
+		//for(int i = 0; i < bean.getCipherKey().length; i++) logger.info(bean.getCipherKey()[i]);
+		
+		String sourceText = "Example text";
+		byte[] encBytes = SecurityUtil.encipher(bean, sourceText.getBytes());
+		logger.info("Enc=" + BinaryUtil.toBase64Str(encBytes) + " from " + encBytes.length + " bytes");
+		logger.info("Base 64 test: " + BinaryUtil.toBase64Str(sourceText));
+		//for(int i = 0; i < encBytes.length;i++) logger.info("Byte: " + (char)encBytes[i]);
+		logger.info(bean.getSecretKey().getAlgorithm());
+		logger.info(bean.getSecretKey().getFormat());
+		
+		SecurityBean dec_bean = new SecurityBean();
+		SecurityFactory.getSecurityFactory().setPassKey(dec_bean, passphrase, salt,false);
 		
 		//logger.info("Example enc: " + BinaryUtil.toBase64Str(SecurityUtil.encipher(dec_bean,  "example".getBytes())));
 		//5/u/g9Qdn3EVj9Y6g85Z+A==
@@ -316,19 +365,7 @@ public class TestSecurityFactory {
 		SecurityFactory.getSecurityFactory().setSecretKey(decBean, key, iv, false);
 		String inText = new String(SecurityUtil.decipher(decBean, enc));
 		logger.info(inText);
-/*
-		byte[] enc = new byte[0];
-		try {
-			enc = BinaryUtil.fromBase64("w6fDu8K/woPDlB3Cn3EVwo/DljrCg8OOWcO4".getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		byte[] decBytes = SecurityUtil.decipher(dec_bean, enc);
-		String outText = new String(decBytes);
-		
-		logger.info("Deciphered: " + outText);
-		*/
+
 	}
 	
 }

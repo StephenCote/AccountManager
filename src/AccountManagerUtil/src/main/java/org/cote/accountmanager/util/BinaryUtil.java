@@ -23,7 +23,14 @@ public class BinaryUtil {
 		return Base64.decodeBase64(in_base64);
 	}
 	public static String toBase64Str(String in_str){
-		return toBase64Str(in_str.getBytes());
+		byte[] b = new byte[0];
+		try {
+			b = in_str.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return toBase64Str(b);
 	}
 	public static String toBase64Str(byte[] in_str){
 		String out_str = null;

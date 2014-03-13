@@ -19,6 +19,12 @@ import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.OrganizationType;
 
 public class OrganizationSecurity {
+	
+	//// TODO: I don't like the general setup of organization-level key persistence since it pretty much makes it only good for a single set of organization-level ciphers and keys.
+	/// The general strategy for user-owned keys is to use DataType objects that are enciphered with the organization level keys
+	/// This is captured in the original .NET Vault implementation
+	/// The SessionSecurity implementation uses the spool to cache by-session cipher sets, but the implementation is still somewhat dirty on deciphering/validating
+	///
 	private static Map<Integer,SecurityBean> securityBeanMap = Collections.synchronizedMap(new HashMap<Integer,SecurityBean>());
 	public static void clearCache(){
 		securityBeanMap.clear();

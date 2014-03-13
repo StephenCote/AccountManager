@@ -15,10 +15,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContextListener;
 
+import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
+import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.SessionDataMaintenance;
+import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.UserRoleType;
+import org.cote.util.ArticleUtil;
 
 /**
  * Servlet implementation class AccountManagerFactoryInit
@@ -93,6 +99,28 @@ public class AccountManagerFactoryInit implements ServletContextListener {
 		auditThread.setThreadDelay(10000);
 		
 		sessionThread = new SessionDataMaintenance();
+		
+		/// Prime the article roles
+		String orgPath = context.getInitParameter("organization.default");
+		OrganizationType org = null;
+		if(orgPath != null && orgPath.length() > 0){
+			try {
+				org = Factories.getOrganizationFactory().findOrganization(context.getInitParameter("organization.default"));
+			} catch (FactoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			for(int i = 0; i < ArticleUtil.ARTICLE_ROLES.length; i++){
+				UserRoleType role = ArticleUtil.getRoleByName(ArticleUtil.ARTICLE_ROLES[i], org);
+			}
+		}
+		else{
+			// logger.info("Skipping config check for default organization");
+		}
+		
 	}
 
 

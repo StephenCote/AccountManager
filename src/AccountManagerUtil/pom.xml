@@ -50,13 +50,14 @@
 					<excludes>
 						<!--
 						
-						
-						-->
 						<exclude>**/TestSecurityFactory.java</exclude>
+						-->
+						<exclude>**/TestText.java</exclude>
+						<exclude>**/TestAMCode.java</exclude>
 						<exclude>**/TestWTPAType.java</exclude>
 						<exclude>**/TestDataUtil.java</exclude>
 						<exclude>**/TestDataType.java</exclude>
-						<exclude>**/TestSecurityFactory.java</exclude>
+						
 						<exclude>**/TestGraphics.java</exclude>
 
 					</excludes>

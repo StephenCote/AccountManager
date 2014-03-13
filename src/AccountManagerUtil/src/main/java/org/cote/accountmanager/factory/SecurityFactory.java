@@ -1,6 +1,8 @@
 package org.cote.accountmanager.factory;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -9,11 +11,12 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.Security;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
-
+import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAKeyGenParameterSpec;
@@ -28,9 +31,11 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.log4j.Logger;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
 import org.cote.accountmanager.beans.SecurityBean;
@@ -40,6 +45,11 @@ import org.cote.accountmanager.util.XmlUtil;
 import org.w3c.dom.Document;
 
 public class SecurityFactory {
+	public static final Logger logger = Logger.getLogger(SecurityFactory.class.getName());
+	private static int SALT_LENGTH = 16;
+	private final byte[] defaultSalt = new byte[]{
+			110,41,-1,-64,-107,14,1,68,-127,-93,-110,-23,-73,-113,-98,-62
+	};
 	public static SecurityFactory securityFactory = null;
 	public static SecurityFactory getSecurityFactory(){
 		if(securityFactory != null) return securityFactory;
@@ -157,13 +167,74 @@ public class SecurityFactory {
 		buff.append("</RSAKeyValue>\r\n");
 		return buff.toString().getBytes();
 	}
-	public void setPassKey(SecurityBean bean, byte[] passKey, boolean encrypted_pass_key){
+	public byte[] getRandomSalt(){
+		byte[] salt = new byte [SALT_LENGTH];
+	    SecureRandom rnd = new SecureRandom ();
+	    rnd.nextBytes (salt);
+	    return salt;
+	}
+	public void setPassKey(SecurityBean bean, String passKey, boolean encrypted_pass_key){
+	    //byte[] salt = getRandomSalt();
+		
+		setPassKey(bean, passKey, defaultSalt, encrypted_pass_key);
+	}
+	public void setPassKey(SecurityBean bean, String passKey, byte[] salt, boolean encrypted_pass_key){
+		/*
 		final byte[] iv = {
 				64, 65, 66, 64, 65, 66, 78, 94,
 				64, 65, 66, 64, 65, 66, 78, 94
 		};
-		setSecretKey(bean, passKey, iv, encrypted_pass_key);
-		
+		*/
+		try{
+			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+			KeySpec spec = new javax.crypto.spec.PBEKeySpec(passKey.toCharArray(),salt, 65536, 256);
+			SecretKey tmp = factory.generateSecret(spec);
+			SecretKey secret = new SecretKeySpec(tmp.getEncoded(), bean.getCipherKeySpec());
+
+			Cipher cipher = Cipher.getInstance(bean.getSymetricCipherKeySpec());
+			//cipher.init(Cipher.ENCRYPT_MODE, secret);
+			cipher.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(salt, 0, 16));
+			//IvParameterSpec ivSpec = new IvParameterSpec(cipher.doFinal(salt, 3, 16));
+			AlgorithmParameters params = cipher.getParameters();
+			byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
+			setSecretKey(bean, secret.getEncoded(), iv, encrypted_pass_key);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (NoSuchPaddingException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}  catch (InvalidAlgorithmParameterException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} 
+		/*
+		catch (IllegalBlockSizeException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (BadPaddingException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		*/
+		catch (InvalidParameterSpecException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} 
 	}
 	public void setSecretKey(SecurityBean bean, byte[] key, byte iv[], boolean encrypted_cipher){
 		byte[] dec_key = new byte[0];
@@ -209,7 +280,7 @@ public class SecurityFactory {
 			privKey = k_fact.generatePrivate(privKeySpec);		
 		}
 		catch(Exception e){
-			System.out.println("DSAKeyUtil:: decodeX509PrivateKey: " + e.toString());
+			logger.error("DSAKeyUtil:: decodeX509PrivateKey: " + e.toString());
 			e.printStackTrace();
 		}
 		bean.setPrivateKey(privKey);
@@ -228,9 +299,11 @@ public class SecurityFactory {
 			pubKey = factory.generatePublic(pubSpec);
 		} catch (InvalidKeySpecException e) {
 			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		bean.setPublicKey(pubKey);
@@ -276,10 +349,14 @@ public class SecurityFactory {
 
 	}
 	public SecurityBean createSecurityBean(byte[] keys, boolean encrypted_cipher){
-
-		Document d = XmlUtil.GetDocumentFromBytes(keys);
-		if(d == null) return null;
 		SecurityBean bean = new SecurityBean();
+		importSecurityBean(bean, keys, encrypted_cipher);
+		return bean;
+	}
+	public void importSecurityBean(SecurityBean bean, byte[] keys, boolean encrypted_cipher){
+		Document d = XmlUtil.GetDocumentFromBytes(keys);
+		if(d == null) return;
+
 		String pubKey = XmlUtil.FindElementText(d.getDocumentElement(), "public", "key");
 		if(pubKey != null){
 			setRSAXMLPublicKey(bean, BinaryUtil.fromBase64(pubKey.getBytes()));
@@ -293,7 +370,6 @@ public class SecurityFactory {
 		if(cipKey != null && cipIv != null){
 			setSecretKey(bean, BinaryUtil.fromBase64(cipKey.getBytes()),BinaryUtil.fromBase64(cipIv.getBytes()), encrypted_cipher);
 		}
-		return bean;
 	}
 	public Cipher getEncryptCipherKey(SecurityBean bean){
 		return getCipherKey(bean, false);
@@ -325,16 +401,20 @@ public class SecurityFactory {
        }
        catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
+    	   logger.error(e.getMessage());
 			e.printStackTrace();
 		}
        catch (NoSuchPaddingException e) {
 			// TODO Auto-generated catch block
+    	   logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (InvalidKeyException e) {
 		// TODO Auto-generated catch block
-		e.printStackTrace();
+			logger.error(e.getMessage());
+			e.printStackTrace();
 		} catch (InvalidAlgorithmParameterException e) {
 			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
        ///bean.setCipher(cipher_key);
@@ -342,8 +422,9 @@ public class SecurityFactory {
 	}
 	public boolean generateSecretKey(SecurityBean bean){
 		boolean ret = false;
-		if(bean.getEncryptCipherKey() && bean.getPrivateKey() == null){
+		if(bean.getEncryptCipherKey() && bean.getPublicKey() == null){
 			/// Cannot generate encrypted cipher if PKI is not initialized
+			logger.error("Cannot encrypt secret key with missing PKI data");
 			return false;
 		}
 		KeyGenerator kgen;
@@ -373,7 +454,7 @@ public class SecurityFactory {
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 		
 		/*

@@ -1,6 +1,11 @@
 package org.cote.accountmanager.console;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -16,13 +21,103 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.MimeUtil;
 import org.cote.accountmanager.util.StreamUtil;
+import org.cote.accountmanager.util.ZipUtil;
 
 public class DataAction {
 	public static final Logger logger = Logger.getLogger(DataAction.class.getName());
 	private static Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s])",Pattern.MULTILINE);
+	public static void migrateData(UserType user, long sourceOwnerId){
+		try {
+		    Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+		    throw new RuntimeException("Cannot find the driver in the classpath!", e);
+		}	
+		
+		String url = "jdbc:mysql://192.168.1.120:3306/coredb";
+		String username = "coreuser";
+		String password = "Password1";
+		Connection connection = null;
+		try {
+		    connection = DriverManager.getConnection(url, username, password);
+		    Statement statement = connection.createStatement();
+		    String sql = "SELECT A.Name as AccountName,A.Id as AccountId,G.Name as GroupName,D.Id as DataId, D.Name as DataName,Description,Size,Dimensions,MimeType,IsCompressed,CompressionType,GroupId,CreatedDate,ModifiedDate,Expiration,IsBlob,DataBlob,DataString FROM Data D INNER JOIN Account A ON A.Id = D.OwnerId INNER JOIN Groups G ON G.Id = D.GroupId WHERE A.Id = " + Long.toString(sourceOwnerId) + ";";
+		    logger.info("Migration Query: " + sql);
+		    ResultSet rset = statement.executeQuery(sql);
+		    String sessionId = BulkFactories.getBulkFactory().newBulkSession();
+		    Factories.getUserFactory().populate(user);
+		    while(rset.next()){
+		    	String name = rset.getString("DataName");
+		    	String mimeType = rset.getString("MimeType");
+		    	String groupName = rset.getString("GroupName");
+		    	if(groupName.equals("Media")) groupName = "GalleryHome";
+		    	if(!groupName.equals("Media") && !groupName.equals("Blog")){
+		    		logger.info("Skip extraneous data");
+		    		continue;
+		    	}
+		    	DirectoryGroupType group = Factories.getGroupFactory().getCreateDirectory(user, groupName, user.getHomeDirectory(), user.getOrganization());
+		    	
+		    	
+		    	DataType data = Factories.getDataFactory().newData(user, group);
+		    	data.setName(name);
+		    	data.setMimeType(mimeType);
+		    	data.setDescription(rset.getString("Description"));
+		    	byte[] dataComp = new byte[0];
+		    	if(rset.getBoolean("IsBlob")){
+		    		dataComp = rset.getBytes("DataBlob");
+		    		if(rset.getBoolean("IsCompressed")){
+		    			dataComp = ZipUtil.gunzipBytes(dataComp);
+		    			logger.info("Gunzipped " + dataComp.length + " bytes");
+		    		}
+		    	}
+		    	else{
+		    		DataUtil.setValueString(data, rset.getString("DataString"));
+		    	}
+		    	if(groupName.equals("Blog")){
+		    		String[] source = (new String(dataComp)).split("\n");
+		    		StringBuffer buff = new StringBuffer();
+		    		for(int i = 0; i < source.length;i++){
+		    			buff.append("[p]" + source[i] + "[/p]");
+		    		}
+		    		dataComp = buff.toString().getBytes();
+		    	}
+		       	DataUtil.setValue(data, dataComp);
+		    	data.setDimensions(rset.getString("Dimensions"));
+		    	data.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("CreatedDate")));
+		    	data.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("ModifiedDate")));
+		    	logger.info("Migrating data '" + name + "' from " + data.getCreatedDate().toString() + " to group " + group.getName());
+		    	BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.DATA,data);
+		    }
+		    BulkFactories.getBulkFactory().write(sessionId);
+		    rset.close();
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		    throw new RuntimeException("Cannot connect the database!", e);
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} finally {
+		    System.out.println("Closing the connection.");
+		    if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+		}
+		
+	}
 	public static void importDataPath(UserType user, String localPath, String targetPath){
 		try{
 			DirectoryGroupType dir = Factories.getGroupFactory().getCreatePath(user, targetPath, user.getOrganization());

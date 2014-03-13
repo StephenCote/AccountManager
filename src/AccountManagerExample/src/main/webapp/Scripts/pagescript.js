@@ -217,6 +217,9 @@
 					if(v && v.json && v.json.session){
 						window.uwm.user = v.json;
 						window.uwm.session = v.json.session;
+						var oSess = Hemi.registry.service.getObject("session");
+						if(oSess) oSess.Refresh(window.uwm.session);
+
 					}
 					vParms.user = v.json;
 					uwm.operation("ContinueWorkflow", vParms, 0, "Authenticate");
@@ -343,6 +346,13 @@
 		uwm.processLoadHandlers();
 		
 	});
+	
+	function checkForUpgrades(){
+		if(typeof Upgradeable != "object") return;
+		Hemi.app.createWindow(0, "/AccountManagerExample/Templates/UpgradeAvailable.xml","Upgradeable",0,0,{old_project_name:Upgradeable.old_project_name,old_project_version:Upgradeable.old_project_version,new_project_name:Upgradeable.new_project_name,new_project_version:Upgradeable.new_project_version,new_project_path:Upgradeable.new_project_path,upgrade_notes:Upgradeable.upgrade_notes});
+	}
+	
+	window.uwm.addPageLoadHandler(checkForUpgrades);
     
     
 })();

@@ -66,6 +66,21 @@ public class RoleService{
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 
 	}
+	
+	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean flushCache(@Context HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditService.targetAudit(audit, AuditEnumType.INFO, "Request clear factory cache");
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null){
+			AuditService.denyResult(audit, "Deny for anonymous user");
+			return false;
+		}
+		AuditService.targetAudit(audit, AuditEnumType.ROLE, "Role Factory");
+		Factories.getRoleFactory().clearCache();
+		AuditService.permitResult(audit,user.getName() + " flushed Role Factory cache");
+		return true;
+	}
 
 	@GET @Path("/authorizeUser/{organizationId:[\\d]+}/{userId:[\\d]+}/{roleId:[\\d]+}/{view:(true|false)}/{edit:(true|false)}/{delete:(true|false)}/{create:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean authorizeUser(@PathParam("organizationId") long organizationId,@PathParam("userId") long userId,@PathParam("roleId") long roleId,@PathParam("view") boolean view,@PathParam("edit") boolean edit,@PathParam("delete") boolean delete,@PathParam("create") boolean create,@Context HttpServletRequest request){

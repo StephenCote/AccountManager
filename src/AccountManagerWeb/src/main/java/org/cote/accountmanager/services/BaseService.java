@@ -131,6 +131,7 @@ public class BaseService{
 				out_bool = Factories.getGroupFactory().updateGroup((BaseGroupType)in_obj);
 				break;
 		}
+
 		return out_bool;		
 	}
 	private static <T> boolean deleteObject(AuditEnumType type, T in_obj) throws ArgumentException, FactoryException{
@@ -217,6 +218,10 @@ public class BaseService{
 		switch(type){
 			case DATA:
 				out_obj = (T)Factories.getDataFactory().getDataByName(name, group);
+				if(out_obj == null){
+					logger.error("Data '" + name + "' is null");
+					return out_obj;
+				}
 				DataType d = (DataType)out_obj;
 				if(d.getCompressed()){
 					d = BeanUtil.getBean(DataType.class, d);
@@ -480,7 +485,7 @@ public class BaseService{
 				if(targetRole != null){
 					if(authorizeRoleType(type, user, targetRole, bucket, view, edit, delete, create)){
 						EffectiveAuthorizationService.rebuildPendingRoleCache();
-						AuditService.permitResult(audit, "Applied authorization policy updates for role #" + targetRoleId);
+						AuditService.permitResult(audit, "Applied authorization policy updates for role #" + targetRoleId + " " + targetRole.getName());
 						out_bool = true;
 					}
 				}
@@ -519,7 +524,7 @@ public class BaseService{
 				if(targetUser != null){
 					if(authorizeUserType(type, user, targetUser, bucket, view, edit, delete, create)){
 						EffectiveAuthorizationService.rebuildPendingRoleCache();
-						AuditService.permitResult(audit, "Applied authorization policy updates");
+						AuditService.permitResult(audit, "Applied authorization policy updates for user #" + user.getId() + " " + user.getName());
 						out_bool = true;
 					}
 				}
@@ -671,7 +676,7 @@ public class BaseService{
 			
 			NameIdType dirType = getById(type,id, user.getOrganization());
 			if(dirType == null){
-				AuditService.denyResult(audit, "#" + id + " doesn't exist in organization " + user.getOrganization().getName());
+				AuditService.denyResult(audit, "#" + id + " (" + type + ") doesn't exist in organization " + user.getOrganization().getName());
 				return null;
 			}			
 			if(canViewType(type, user, dirType) == true){

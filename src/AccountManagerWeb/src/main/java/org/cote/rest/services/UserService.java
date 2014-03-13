@@ -65,6 +65,24 @@ public class UserService{
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 
 	}
+	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean flushCache(@Context HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditService.targetAudit(audit, AuditEnumType.INFO, "Request clear factory cache");
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null){
+			AuditService.denyResult(audit, "Deny for anonymous user");
+			return false;
+		}
+		AuditService.targetAudit(audit, AuditEnumType.USER, "User Factory");
+		Factories.getUserFactory().clearCache();
+		AuditService.permitResult(audit,user.getName() + " flushed User Factory cache");
+		return true;
+	}
+	@GET @Path("/getPublicUser") @Produces(MediaType.APPLICATION_JSON)
+	public UserType getPublicUser(@Context HttpServletRequest request){
+		 return Factories.getDocumentControl(ServiceUtil.getOrganizationFromRequest(request));
+	}
 	@GET @Path("/getSelf") @Produces(MediaType.APPLICATION_JSON)
 	public UserType getSelf(@Context HttpServletRequest request){
 		//UserType bean = null;
@@ -238,6 +256,14 @@ public class UserService{
 		String sessionId = request.getSession(true).getId();
 		SessionBean ctxSession = null;
 		
+		boolean regEnabled = Boolean.parseBoolean(request.getServletContext().getInitParameter("test.registration.enabled"));
+		if(regEnabled == false){
+			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Registration", AuditEnumType.USER, "Random test registration");
+			AuditService.denyResult(audit, "Test Registration is disabled");
+			return null;
+		}
+
+		
 		OrganizationType org = null;
 		try {
 			org = Factories.getOrganizationFactory().findOrganization(path);
@@ -303,6 +329,14 @@ public class UserService{
 		
 		logger.error("Configuring registration for organization " + user.getOrganization().getName());
 		
+		boolean regEnabled = Boolean.parseBoolean(request.getServletContext().getInitParameter("registration.enabled"));
+		if(regEnabled == false){
+			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Registration", AuditEnumType.USER, user.getName() + " in " + user.getOrganization().getName());
+			AuditService.denyResult(audit, "Web Registration is disabled");
+			return null;
+		}
+
+				
 		UserSessionType session1 = RegistrationUtil.createUserRegistration(user, request.getRemoteAddr());
 		if(session1 != null){
 			try{

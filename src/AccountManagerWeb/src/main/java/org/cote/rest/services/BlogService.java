@@ -12,13 +12,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
-
+import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.DataType;
-
+import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.services.BlogServiceImpl;
-
 import org.cote.beans.SchemaBean;
 import org.cote.rest.schema.ServiceSchemaBuilder;
+import org.cote.util.ArticleUtil;
 
 import java.util.List;
 
@@ -31,6 +34,21 @@ public class BlogService{
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 	}
 	
+	@GET @Path("/getAuthorRole/{organizationId:[\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public UserRoleType getAuthorRole(@PathParam("organizationId") long orgId,@Context HttpServletRequest request){
+		OrganizationType org = null;
+		try {
+			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(org == null) return null;
+		return ArticleUtil.getRoleByType("Blog", org);
+	}
 	
 	@GET @Path("/read/{organizationId:[\\d]+}/{user : [@\\.~%\\s0-9a-z_A-Z\\/\\-]+}/{name: [@%\\sa-zA-Z_0-9\\-\\.]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public DataType read(@PathParam("organizationId") long orgId, @PathParam("user") String userName, @PathParam("name") String name,@Context HttpServletRequest request){

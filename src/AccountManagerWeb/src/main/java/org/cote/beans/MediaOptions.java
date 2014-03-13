@@ -4,6 +4,23 @@ public class MediaOptions {
 	private boolean thumbnail = false;
 	private int thumbWidth = 100;
 	private int thumbHeight = 100;
+	private String mediaBase = null;
+	
+	public MediaOptions(){
+		
+	}
+	public MediaOptions(String type){
+		mediaBase = type;
+	}
+	
+	public String getMediaBase() {
+		return mediaBase;
+	}
+
+	public void setMediaBase(String mediaBase) {
+		this.mediaBase = mediaBase;
+	}
+
 	public boolean isThumbnail() {
 		return thumbnail;
 	}

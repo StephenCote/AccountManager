@@ -70,6 +70,21 @@ public class GroupService {
 
 	}
 	
+	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean flushCache(@Context HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditService.targetAudit(audit, AuditEnumType.INFO, "Request clear factory cache");
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null){
+			AuditService.denyResult(audit, "Deny for anonymous user");
+			return false;
+		}
+		AuditService.targetAudit(audit, AuditEnumType.GROUP, "Group Factory");
+		Factories.getGroupFactory().clearCache();
+		AuditService.permitResult(audit,user.getName() + " flushed Group Factory cache");
+		return true;
+	}
+	
 	@GET @Path("/countInParent/{organizationId:[\\d]+}/{parentId:[\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public int countInParent(@PathParam("organizationId") long organizationId,@PathParam("parentId") long parentId,@Context HttpServletRequest request){
 		return GroupServiceImpl.countInParent(organizationId, parentId,request);
@@ -322,7 +337,7 @@ public class GroupService {
 		try{
 			DirectoryGroupType dir = Factories.getGroupFactory().getById(parentId, user.getOrganization());
 			if(dir == null){
-				AuditService.denyResult(audit, "Id " + parentId + " doesn't exist in org " + user.getOrganization().getId());
+				AuditService.denyResult(audit, "Id " + parentId + " (Group) doesn't exist in org " + user.getOrganization().getId());
 				return bean;
 			}
 	
@@ -514,6 +529,14 @@ public class GroupService {
 		} 
 		return out_bool;
 		*/
+	}
+	/// Jackson chokes on reconstituting the correct object when the base class is specified as the parameter type
+	/// The REST parser chokes on overloading the path
+	/// The backend code is mostly the same except for a processing fork, so the choice here is just define an alternate method name
+	///
+	@POST @Path("/deleteDirectory")  @Produces(MediaType.APPLICATION_JSON)
+	public boolean deleteDirectory(DirectoryGroupType group, @Context HttpServletRequest request){
+		return GroupServiceImpl.delete(group, request);
 	}
 	@POST @Path("/delete")  @Produces(MediaType.APPLICATION_JSON)
 	public boolean delete(BaseGroupType group, @Context HttpServletRequest request){

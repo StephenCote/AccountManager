@@ -1,5 +1,7 @@
 package org.cote.accountmanager.util;
 
+import java.io.UnsupportedEncodingException;
+
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
@@ -42,8 +44,8 @@ public class DataUtil {
 		}
 		else{
 			SecurityBean bean = new SecurityBean();
-			byte[] passKey = SecurityUtil.getPassphraseBytes(password);
-			SecurityFactory.getSecurityFactory().setPassKey(bean, passKey, false);
+			//byte[] passKey = SecurityUtil.getPassphraseBytes(password);
+			SecurityFactory.getSecurityFactory().setPassKey(bean, password, false);
 			updatePassword(data, bean);
 		}
 	}
@@ -61,7 +63,12 @@ public class DataUtil {
 		if (value != null && value.length() > 255)
 		{
 			
-			setValue(d, value.getBytes());
+			try {
+				setValue(d, value.getBytes("UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			d.setShortData(null);
 			if(d.getMimeType() == null || d.getMimeType().length() == 0){
 				d.setMimeType("text/plain");
@@ -77,12 +84,15 @@ public class DataUtil {
 	{
 		if (d.getBlob())
 		{
-			return (new String(getValue(d)));
+			try {
+				return (new String(getValue(d),"UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		else
-		{
-			return d.getShortData();
-		}
+		return d.getShortData();
+		
 	}
 
 	public static void setValue(DataType d, byte[] value) throws DataException

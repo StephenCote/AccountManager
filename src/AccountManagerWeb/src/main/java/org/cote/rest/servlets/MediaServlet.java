@@ -60,7 +60,7 @@ public class MediaServlet extends HttpServlet {
 		
 		response.setHeader("Cache-Control", "public,max-age="+ defCacheSeconds);
 	    response.setDateHeader("Expires", expiry);
-	    
+	    response.setCharacterEncoding("UTF-8");
 		MediaUtil.writeBinaryContent(request, response);
 	}
 	public long getLastModified(HttpServletRequest req) {

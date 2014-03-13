@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema targetNamespace="http://www.cote.org/accountmanager/objects"
 	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:pref="http://www.cote.org/accountmanager/objects/types">
+	xmlns:tns="http://www.cote.org/accountmanager/objects"
+	xmlns:pref="http://www.cote.org/accountmanager/objects/types">
 
-	<import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
+	<import schemaLocation="Types.xsd"
+		namespace="http://www.cote.org/accountmanager/objects/types">
+	</import>
+	<include schemaLocation="QueryType.xsd"></include>
 	<complexType name="StatementParameterType">
 		<attribute name="parameterName" type="string"></attribute>
 		<attribute name="parameterIndex" type="int"></attribute>
-		<attribute name="parameterType"
-			type="pref:SqlDataEnumType">
+		<attribute name="parameterType" type="pref:SqlDataEnumType">
 		</attribute>
 	</complexType>
 
@@ -18,8 +21,11 @@
 			<element name="havingClause" type="string"></element>
 			<element name="groupClause" type="string"></element>
 			<element name="orderClause" type="string"></element>
+			<element name="sortQuery" type="tns:SortQueryType"></element>
 		</sequence>
-		<attribute name="alternateQuery" type="boolean" default="false"></attribute>
+		<attribute name="alternateQuery" type="boolean"
+			default="false">
+		</attribute>
 		<attribute name="topCount" type="int" default="0"></attribute>
 		<attribute name="startIndex" type="int" default="0"></attribute>
 		<attribute name="recordCount" type="int" default="0"></attribute>
@@ -28,14 +34,18 @@
 
 	<complexType name="DataRowType">
 		<sequence>
-			<element name="cells" type="tns:DataCellType" maxOccurs="unbounded"></element>
+			<element name="cells" type="tns:DataCellType"
+				maxOccurs="unbounded">
+			</element>
 		</sequence>
 	</complexType>
 
 	<complexType name="DataCellType">
 		<attribute name="columnName" type="string"></attribute>
 		<attribute name="columnIndex" type="int"></attribute>
-		<attribute name="dataType" type="pref:SqlDataEnumType" default="NULL"></attribute>
+		<attribute name="dataType" type="pref:SqlDataEnumType"
+			default="NULL">
+		</attribute>
 	</complexType>
 
 	<complexType name="DataColumnType">
@@ -68,7 +78,9 @@
 
 	<complexType name="FieldMatch">
 		<sequence>
-			<element name="fields" type="tns:FieldMatch" minOccurs="0" maxOccurs="unbounded"></element>
+			<element name="fields" type="tns:FieldMatch" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
 		</sequence>
 		<attribute name="comparator" type="pref:ComparatorEnumType"
 			default="UNKNOWN">

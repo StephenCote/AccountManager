@@ -14,3 +14,4 @@
 <%@include file="pagescript.js" %>
 <%@include file="services.registration.js" %>
 <%@include file="accountManager.api.js" %>
+<%@include file="bbscript.js" %>

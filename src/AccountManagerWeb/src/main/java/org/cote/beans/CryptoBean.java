@@ -19,9 +19,19 @@ import org.cote.accountmanager.objects.SecurityType;
 })
 public class CryptoBean extends SecurityType {
 	private final String javaClass = "org.cote.beans.CryptoBean";
+	private String spoolId = null;
 	public CryptoBean(){
 
 	}
+	
+	public String getSpoolId() {
+		return spoolId;
+	}
+
+	public void setSpoolId(String spoolId) {
+		this.spoolId = spoolId;
+	}
+
 	public String getJavaClass() {
 		return javaClass;
 	}

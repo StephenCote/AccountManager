@@ -17,21 +17,24 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.SecurityType;
 import org.w3c.dom.Document;
 
 public class SecurityUtil {
+	public static final Logger logger = Logger.getLogger(SecurityUtil.class.getName());
 	private static MessageDigest hash_algorithm = null;
 	private static String HASH_PROVIDER = "SHA-256";
 	private static String HASH_SALT = "aostnh234stnh;qk234;2354!@#$%10";
 	
+	/*
 	public static byte[] getPassphraseBytes(String passphrase){
 		String passphrase_tmp = getSaltedDigest(passphrase);
 		return Arrays.copyOf(getSaltedDigest(passphrase).getBytes(), 16);
 	}
-	
+	*/
 	public static String getSaltedDigest(String in_value)
 	{
 		if (in_value == null || in_value.length() == 0) return null;
@@ -53,6 +56,7 @@ public class SecurityUtil {
 		if(use_singleton && digest != null) hash_algorithm = digest;
 		return digest;
 	}
+
 	public static byte[] getDigest(byte[] in_bytes){
 		MessageDigest digest = getMessageDigest();
 		
@@ -68,13 +72,24 @@ public class SecurityUtil {
 		byte[] digest = getDigest(in_str.getBytes());
 		return new String(BinaryUtil.toBase64(digest));
 	}
+	public static SecurityBean getPasswordBean(String password, byte[] salt){
+		SecurityBean bean = new SecurityBean();
+		SecurityFactory.getSecurityFactory().setPassKey(bean, password, salt,false);
+		return bean;
+	}
+	public static byte[] encipher(byte[] data, String password, byte[] salt){
+		return encipher(getPasswordBean(password, salt),data);
+	}
+	public static byte[] decipher(byte[] data, String password, byte[] salt){
+		return decipher(getPasswordBean(password, salt),data);
+	}
 	public static byte[] decipher(SecurityBean bean, byte[] data){
 		byte[] ret = new byte[0];
 		/// Cipher cipher = generateSecretCipherKey();
 		Cipher cipher = SecurityFactory.getSecurityFactory().getDecryptCipherKey(bean);;
 		SecretKey secret_key = bean.getSecretKey();
 		if(cipher == null || secret_key == null ){
-			System.out.println("Secret key is null");
+			logger.error("Secret key is null");
 			return ret;
 		}
 		try {
@@ -83,11 +98,11 @@ public class SecurityUtil {
 		catch (IllegalBlockSizeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		} catch (BadPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 		return ret;
 	}
@@ -117,7 +132,7 @@ public class SecurityUtil {
 		try{
 			Cipher cipher = Cipher.getInstance(bean.getAsymetricCipherKeySpec());
 			if(cipher == null){
-				System.out.println("Null Cipher");
+				logger.error("Null Cipher");
 				return ret;
 			}
 

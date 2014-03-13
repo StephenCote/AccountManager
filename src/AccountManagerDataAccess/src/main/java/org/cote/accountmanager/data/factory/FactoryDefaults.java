@@ -195,8 +195,10 @@ public class FactoryDefaults {
 		RoleService.getGroupReaderUserRole(admin_user);
 		RoleService.getObjectReaderUserRole(admin_user);
 
-		RoleService.addUserToRole(dc_user, user_data_admin_role);
-		RoleService.addUserToRole(dc_user, user_obj_admin_role);
+		/// 2014/03/03 - Document control shouldn't be an admin, it should be delegated as needed
+		///
+		/// RoleService.addUserToRole(dc_user, user_data_admin_role);
+		/// RoleService.addUserToRole(dc_user, user_obj_admin_role);
 		RoleService.addUserToRole(root_user,user_admin_role);
 		RoleService.addUserToRole(root_user,user_data_admin_role);
 		RoleService.addUserToRole(root_user,user_obj_admin_role);

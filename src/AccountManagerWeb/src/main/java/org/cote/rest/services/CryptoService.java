@@ -39,12 +39,14 @@ public class CryptoService{
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 	}
 	
-	private CryptoBean getCryptoBean(SecurityBean bean){
+	private CryptoBean getCryptoBean(SecurityBean bean,String guid){
 		CryptoBean cBean = new CryptoBean();
+		cBean.setSpoolId(guid);
 		cBean.setCipherIV(bean.getCipherIV());
 		cBean.setCipherKey(bean.getCipherKey());
 		cBean.setCipherKeySpec(bean.getCipherKeySpec());
 		cBean.setCipherProvider(bean.getCipherProvider());
+		cBean.setSymetricCipherKeySpec(bean.getSymetricCipherKeySpec());
 		return cBean;
 	}
 
@@ -70,12 +72,13 @@ public class CryptoService{
 			e.printStackTrace();
 		}
 		
-		if(tokens.length > 0){
+		if(tokens.length == 0){
+			
 			for(int i = 0; i < tokens.length; i++){
 				String[] pairs = tokens[i].getData().split("&&");
 				SecurityBean bean = new SecurityBean();
 				SecurityFactory.getSecurityFactory().setSecretKey(bean, BinaryUtil.fromBase64(pairs[0].getBytes()), BinaryUtil.fromBase64(pairs[1].getBytes()), false);
-				secs.add(getCryptoBean(bean));
+				secs.add(getCryptoBean(bean,tokens[i].getGuid()));
 			}
 		}
 		else{
@@ -84,13 +87,16 @@ public class CryptoService{
 				for(int i = 0; i < 10;i++){
 					SecurityBean bean = new SecurityBean();
 					SecurityFactory.getSecurityFactory().generateSecretKey(bean);
-					secs.add(getCryptoBean(bean));
 					SecuritySpoolType tokenType = Factories.getSecurityTokenFactory().newSecurityToken(sessionId, org);
+					secs.add(getCryptoBean(bean,tokenType.getGuid()));
+					
+					tokenType.setOwnerId(session.getUserId());
 					tokenType.setData(BinaryUtil.toBase64Str(bean.getCipherKey()) + "&&" + BinaryUtil.toBase64Str(bean.getCipherIV()));
 					tokenTypes.add(tokenType);
 				}
 				if(Factories.getSecurityTokenFactory().addSecurityTokens(tokenTypes.toArray(new SecuritySpoolType[0])) == false){
 					logger.error("Failed to persist tokens");
+					secs.clear();
 				}
 			}
 			catch(FactoryException fe){
@@ -101,10 +107,6 @@ public class CryptoService{
 		}
 		
 		///System.out.println(request.getSession(true).getId());
-
-		
-		
-		
 
 		return secs.toArray(new CryptoBean[0]);
 	}

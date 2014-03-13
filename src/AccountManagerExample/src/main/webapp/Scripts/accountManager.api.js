@@ -49,6 +49,11 @@
 			findOrganization : function(sPath){
 				return uwmServices.getService("Organization").find(sPath);
 			},
+			clearUserCache : function(){
+				uwmServices.getService("User").clearCache();
+				uwmServiceCache.clearServiceCache("User");
+			},
+
 			countUsers : function(oOrg){
 				return uwmServices.getService("User").count(oOrg.id);
 			},
@@ -120,6 +125,11 @@
 				
 				return uwmServices.getService("Role").listForUser(oOrg.id, iUserId);
 			},
+			clearRoleCache : function(){
+				uwmServices.getService("Role").clearCache();
+				uwmServiceCache.clearServiceCache("Role");
+			},
+
 			countRoles : function(oOrg,oPar){
 				if(!oOrg) oOrg = uwm.getUser().organization;
 				if(!oPar) return uwmServices.getService("Role").count(oOrg.id);
@@ -178,7 +188,10 @@
 			return uwmServices.getService("Group").dir(sPath);
 			*/
 		},
-		
+		clearGroupCache : function(){
+			uwmServices.getService("Group").clearCache();
+			uwmServiceCache.clearServiceCache("Group");
+		},
 		countGroups : function(sPath){
 			return uwmServices.getService("Group").count(sPath);
 		},
@@ -220,6 +233,11 @@
 			if(!oOrg) oOrg = uwm.getUser().organization;
 			return uwmServices.getService("Data").authorizeUser(oOrg.id, iUserId, iDataId, bView, bEdit, bDel, bCreate);
 		},
+		clearDataCache : function(){
+			uwmServices.getService("Data").clearCache();
+			uwmServiceCache.clearServiceCache("Data");
+		},
+
 		countDatas : function(sPath){
 			return uwmServices.getService("Data").count(sPath);
 		},
@@ -232,12 +250,29 @@
 		updateData : function(oRec){
 			return uwmServices.getService("Data").update(oRec);
 		},
+		getProfile : function(){
+			return uwmServices.getService("Data").getProfile();
+		},
+		updateProfile : function(o){
+			return uwmServices.getService("Data").updateProfile(o);
+		},
+
 		getData : function(sName, oGroup){
 			if(oGroup) return uwmServices.getService("Data").readByGroupId(oGroup.id,sName);
 			return uwmServices.getService("Data").read(sName);
 		},
 		getDataById : function(iId){
 			return uwmServices.getService("Data").readById(iId);
+		},
+		sendFeedback : function(sName, vData){
+			var o = new org.cote.beans.dataType();
+			o.name = sName;
+			o.dataBytesStore = uwm.base64Encode(vData);
+			o.blob = true;
+			o.group = null;
+			o.mimeType = null;
+			o.description = null;
+			return uwmServices.getService("Data").addFeedback(o);
 		},
 		addData : function(sName, sDesc, sType, vData, oGroup){
 			var o = new org.cote.beans.dataType();

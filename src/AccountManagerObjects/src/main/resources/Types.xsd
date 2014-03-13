@@ -544,4 +544,25 @@
     		<enumeration value="NETWORK"></enumeration>
     	</restriction>
     </simpleType>
+
+
+
+    <simpleType name="QueryEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="CREATED_DATE"></enumeration>
+    		<enumeration value="MODIFIED_DATE"></enumeration>
+    		<enumeration value="NAME"></enumeration>
+    		<enumeration value="ID"></enumeration>
+    	</restriction>
+    </simpleType>
+
+
+    <simpleType name="OrderEnumType">
+    	<restriction base="string">
+    		<enumeration value="ASCENDING"></enumeration>
+    		<enumeration value="DESCENDING"></enumeration>
+    		<enumeration value="UNKNOWN"></enumeration>
+    	</restriction>
+    </simpleType>
 </schema>

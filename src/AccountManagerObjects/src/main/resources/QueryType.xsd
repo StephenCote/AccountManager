@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:pref="http://www.cote.org/accountmanager/objects/types">
+	<import></import>
+	<import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
+	<complexType name="SortQueryType">
+		<attribute name="sortOrder" type="pref:OrderEnumType"
+			default="UNKNOWN">
+		</attribute>
+		<attribute name="sortField" type="pref:QueryEnumType" default="UNKNOWN"></attribute>
+	</complexType>
+
+</schema>

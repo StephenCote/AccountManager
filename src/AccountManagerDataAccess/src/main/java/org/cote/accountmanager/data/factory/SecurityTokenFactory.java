@@ -55,28 +55,29 @@ public class SecurityTokenFactory extends SpoolFactory {
 		return (deleted > 0);
 	}
 	
-	
-	public SecuritySpoolType popSecurityToken(String ReferenceId, OrganizationType organization) throws FactoryException, ArgumentException
-	{
-		SecuritySpoolType token = getSecurityToken(ReferenceId, organization);
-		if (token == null || deleteToken(token) == false) return null;
-		return token;
-	}
-	public SecuritySpoolType[] getSecurityTokens(String referenceId, OrganizationType organization) throws FactoryException, ArgumentException
-	{
-		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldSpoolName(referenceId), QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organization.getId());
-		if (tokens.size() == 0) return new SecuritySpoolType[0];
-		return tokens.toArray(new SecuritySpoolType[0]);
-	}
 	public SecuritySpoolType getSecurityToken(String referenceId, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		SecuritySpoolType[] tokens = getSecurityTokens(referenceId, organization);
 		if (tokens.length == 0) return null;
 		return tokens[0];
 	}
-	public SecuritySpoolType getSecurityToken(String guid, String referenceId, OrganizationType organization) throws FactoryException, ArgumentException
+
+	public SecuritySpoolType[] getSecurityTokens(String spoolName, OrganizationType organization) throws FactoryException, ArgumentException
 	{
-		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldSpoolGuid(guid),QueryFields.getFieldSpoolName(referenceId), QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organization.getId());
+		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldSpoolName(spoolName), QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organization.getId());
+		if (tokens.size() == 0) return new SecuritySpoolType[0];
+		return tokens.toArray(new SecuritySpoolType[0]);
+	}
+	public SecuritySpoolType popSecurityToken(String guid, OrganizationType organization) throws FactoryException, ArgumentException
+	{
+		SecuritySpoolType token = getSecurityToken(guid, organization);
+		if (token == null || deleteToken(token) == false) return null;
+		return token;
+	}
+
+	public SecuritySpoolType getSecurityTokenById(String guid, OrganizationType organization) throws FactoryException, ArgumentException
+	{
+		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldSpoolGuid(guid),QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organization.getId());
 		if (tokens.size() == 0) return null;
 		return (SecuritySpoolType)tokens.get(0);
 	}

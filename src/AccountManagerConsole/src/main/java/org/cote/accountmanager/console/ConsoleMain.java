@@ -62,6 +62,8 @@ public class ConsoleMain {
 		options.addOption("name",true,"Variable name");
 		options.addOption("addUser",false,"Add a new user");
 		options.addOption("addOrganization",false,"Add a new user");
+		options.addOption("migrateData",false,"Migrate data from a pre-configured target");
+		options.addOption("ownerId",true,"Migrate data from a pre-configured target");
 		
 		options.addOption("setup",false,"Setup Account Manager");
 		options.addOption("email",true,"Email address");
@@ -191,6 +193,9 @@ public class ConsoleMain {
 	public static void processAction(UserType user, CommandLine cmd){
 		if(cmd.hasOption("importData") && cmd.hasOption("path")){
 			DataAction.importDataPath(user, cmd.getOptionValue("importData"), cmd.getOptionValue("path"));
+		}
+		if(cmd.hasOption("migrateData") && cmd.hasOption("ownerId")){
+			DataAction.migrateData(user,Long.parseLong(cmd.getOptionValue("ownerId")));
 		}
 		/*
 		if(cmd.hasOption("importProject") && cmd.hasOption("projectName") && cmd.hasOption("lifecycleName")){

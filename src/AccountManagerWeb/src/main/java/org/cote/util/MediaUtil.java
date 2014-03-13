@@ -70,11 +70,10 @@ public class MediaUtil {
 				logger.debug("New Path: " + subPath);
 			}
 			else{
-				logger.error("No alternate dimensions specified: " + d.groupCount());
+				logger.debug("No alternate dimensions discovered: " + d.groupCount());
 			}
 			name = subPath.substring(index+1,subPath.length()).trim();
 			subPath = subPath.substring(0,index);
-
 		}
 		
 		if(orgPath.length() == 0 || type.length() == 0 || subPath.length() == 0 || name == null || name.length() == 0){
@@ -208,11 +207,13 @@ public class MediaUtil {
 					response.sendError(404);
 					return;	
 				}
+
 				if(AuthorizationService.canViewGroup(user, thumbGroup) == false){
 					AuditService.denyResult(audit, "User " + user.getName() + " is not authorized to view the thumbnail group in " + group.getName());
 					response.sendError(404);
 					return;	
 				}
+
 				/// Get the thumbnail data
 				data = Factories.getDataFactory().getDataByName(thumbName, thumbGroup);
 				/// If it doesn't exist, try to create it
@@ -232,7 +233,15 @@ public class MediaUtil {
 							}
 							byte[] imageBytes = DataUtil.getValue(chkData);
 							byte[] thumbBytes = GraphicsUtil.createThumbnail(imageBytes, options.getThumbWidth(), options.getThumbHeight());
-							DataType thumbData = Factories.getDataFactory().newData(user, thumbGroup);
+							/// 2014/03/13 - Thumbnail data is owned by the original image owner, not by the context user
+							///
+							UserType dataOwner = Factories.getUserFactory().getById(chkData.getOwnerId(), group.getOrganization());
+							if(dataOwner == null){
+								AuditService.denyResult(audit, "Deny '" + objName + "' owner #" + chkData.getOwnerId() + " was not found in Org #"  + group.getOrganization().getId());;
+								response.sendError(404);
+								return;
+							}
+							DataType thumbData = Factories.getDataFactory().newData(dataOwner, thumbGroup);
 							thumbData.setMimeType("image/jpg");
 							thumbData.setName(thumbName);
 							DataUtil.setValue(thumbData, thumbBytes);

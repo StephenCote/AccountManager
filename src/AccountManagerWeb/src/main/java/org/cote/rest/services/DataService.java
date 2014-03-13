@@ -13,14 +13,19 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.services.BaseService;
 import org.cote.accountmanager.services.DataServiceImpl;
@@ -28,6 +33,9 @@ import org.cote.accountmanager.services.RoleServiceImpl;
 import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.beans.SchemaBean;
 import org.cote.rest.schema.ServiceSchemaBuilder;
+
+
+
 
 
 
@@ -41,6 +49,75 @@ public class DataService{
 	public DataService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 	}
+	@POST @Path("/updateProfile") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean updateProfile(DataType data, @Context HttpServletRequest request){
+		boolean out_bool = false;
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getProfile",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditService.targetAudit(audit, AuditEnumType.DATA, "Read profile information");
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null){
+			AuditService.denyResult(audit, "Deny for anonymous user");
+			return false;
+		}
+		try{
+		Factories.getUserFactory().populate(user);
+		if(data.getOwnerId() != user.getId() || data.getGroup().getId() != user.getHomeDirectory().getId() || data.getName().equals(".profile") == false){
+			AuditService.denyResult(audit, "Profile data is not the right name, owner, or in the right group");
+			return false;
+		}
+		if(Factories.getDataFactory().updateData(data) && Factories.getAttributeFactory().updateAttributes(data)){
+			AuditService.permitResult(audit, "Updated profile information with " + data.getAttributes().size() + " attributes");
+			out_bool = true;
+		}
+		else{
+			AuditService.denyResult(audit, "Failed to update profile information");
+		}
+		}
+		catch(FactoryException e){
+			logger.error(e.getMessage());
+			AuditService.denyResult(audit,e.getMessage());
+
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			AuditService.denyResult(audit,e.getMessage());
+
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			AuditService.denyResult(audit,e.getMessage());
+
+		}
+		return out_bool;
+	}
+	@GET @Path("/getProfile") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public DataType getProfile(@Context HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getProfile",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditService.targetAudit(audit, AuditEnumType.DATA, "Read profile information");
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null){
+			AuditService.denyResult(audit, "Deny for anonymous user");
+			return null;
+		}
+		return DataServiceImpl.getProfile(user,audit);
+	}
+	
+	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean flushCache(@Context HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditService.targetAudit(audit, AuditEnumType.INFO, "Request clear factory cache");
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null){
+			AuditService.denyResult(audit, "Deny for anonymous user");
+			return false;
+		}
+		AuditService.targetAudit(audit, AuditEnumType.DATA, "Data Factory");
+		Factories.getDataFactory().clearCache();
+		AuditService.permitResult(audit,user.getName() + " flushed Data Factory cache");
+		return true;
+	}
+	
 	@GET @Path("/count/{group:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public int count(@PathParam("group") String group,@Context HttpServletRequest request){
 		return DataServiceImpl.count(group, request);
@@ -128,15 +205,21 @@ public class DataService{
 		return DataServiceImpl.add(bean, request);
 	}
 	
+	@POST @Path("/addFeedback") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean addFeedback(DataType bean,@Context HttpServletRequest request){
+		return DataServiceImpl.addFeedback(bean, request);
+	}
+
+	
 	@POST @Path("/update") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean update(DataType bean,@Context HttpServletRequest request){
 		return DataServiceImpl.update(bean, request);
 	}
-	@GET @Path("/read/{name: [@%\\sa-zA-Z_0-9\\-\\.]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	@GET @Path("/read/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public DataType read(@PathParam("name") String name,@Context HttpServletRequest request){
 		return DataServiceImpl.read(name, request);
 	}
-	@GET @Path("/readByGroupId/{groupId:[0-9]+}/{name: [@%\\sa-zA-Z_0-9\\-\\.]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	@GET @Path("/readByGroupId/{groupId:[0-9]+}/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public DataType readByGroupId(@PathParam("name") String name,@PathParam("groupId") long groupId,@Context HttpServletRequest request){
 		return DataServiceImpl.readByGroupId(groupId, name, request);
 	}	
@@ -155,8 +238,9 @@ public class DataService{
 	
 	public List<DataType> listInGroup(@PathParam("path") String path,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
-		return DataServiceImpl.getGroupList(user, null,true,path, startIndex, recordCount );
-
+		ProcessingInstructionType instruction = new ProcessingInstructionType();
+		instruction.setOrderClause("name ASC");
+		return DataServiceImpl.getGroupList(user, instruction,true,path, startIndex, recordCount );
 	}
 	
 	

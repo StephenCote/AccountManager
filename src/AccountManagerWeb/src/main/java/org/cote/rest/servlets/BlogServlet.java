@@ -9,18 +9,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.cote.beans.MediaOptions;
+import org.cote.util.ArticleUtil;
 import org.cote.util.MediaUtil;
 
 /**
- * Servlet implementation class ThumbnailServlet
+ * Servlet implementation class BlogServlet
  */
-public class ThumbnailServlet extends HttpServlet {
+public class BlogServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static int defCacheSeconds = 7200;
+       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ThumbnailServlet() {
+    public BlogServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,19 +35,11 @@ public class ThumbnailServlet extends HttpServlet {
 		long expiry = new Date().getTime() + (defCacheSeconds*1000);
 		
 		response.setHeader("Cache-Control", "public,max-age="+ defCacheSeconds);
-		response.setDateHeader("Expires", expiry);
-		response.setCharacterEncoding("UTF-8");
-	    
-		MediaOptions options = new MediaOptions();
-		options.setThumbHeight(128);
-		options.setThumbWidth(128);
-		options.setThumbnail(true);
-		
-		MediaUtil.writeBinaryContent(request, response, options);
+	    response.setDateHeader("Expires", expiry);
+	    response.setCharacterEncoding("UTF-8");
+		ArticleUtil.writeBinaryContent(request, response,new MediaOptions("Blog"));
 	}
-	public long getLastModified(HttpServletRequest req) {
-		  return 0;
-	}
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
