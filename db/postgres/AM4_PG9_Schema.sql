@@ -1142,7 +1142,7 @@ CREATE OR REPLACE FUNCTION delete_thumbnails()
         RETURNS BOOLEAN
         AS $$
 	delete from data where groupid in (select id from groups where name = '.thumbnail');
-	delete from groups where name = '.thumbnail';
+	-- delete from groups where name = '.thumbnail';
 	select * from cleanup_orphans();
 	SELECT true;
         $$ LANGUAGE 'sql';
@@ -1196,6 +1196,5 @@ inner join users U on U.id = PT.participantId
 -- delete from lifecycleparticipation where id in (select id from orphanLifecycleParticipations);
 
 -- select ((EXTRACT(EPOCH FROM AuditResultDate)*1000) - (EXTRACT(EPOCH FROM AuditDate)) * 1000) as PerfInMS from Audit order by AuditResultDate DESC limit 100
-
 
 
