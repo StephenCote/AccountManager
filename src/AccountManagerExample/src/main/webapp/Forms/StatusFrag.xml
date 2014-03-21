@@ -1,0 +1,15 @@
+<html-fragment>
+<p style = "display:none;clear:both;"><span rid = "status"></span></p>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			if(!this.setStatus){
+				this.setStatus = this._setStatus;
+				this.GetElementByRID("status").style.display = "block";
+			}
+		},
+		_setStatus : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+		}
+]]></embedded-script>
+</html-fragment>

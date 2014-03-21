@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template Title = "Sharing">
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<div class = "rocket-column-2">
+		<p>
+			What:
+		</p>
+		<p>
+			<select rid = "shareType" disabled = "true">
+				<option value = "DATA">Data</option>
+				<option value = "GROUP">Group</option>
+			</select>
+			<input type = "text" rid = "shareName" class = "rocket-text" style = "width:150px !important" disabled = "true" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			With:
+		</p>
+		<p>
+			<select rid = "shareWith">
+				<option>Nobody</option>
+				<option selected = "true">Public</option>
+				<option>User</option>
+				<option>Role</option>
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Permissions:
+		</p>
+		<p>
+			<input type = "checkbox" rid = "chkRead" /> : Read
+			<br />
+			<input type = "checkbox" rid = "chkUpdate" /> : Update
+			<br />
+			<input type = "checkbox" rid = "chkAdd" /> : Add
+			<br />
+			<input type = "checkbox" rid = "chkDelete" /> : Delete
+		</p>
+	</div>
+	<div rid = "systemGroupContainer" style = "display: none;" class = "rocket-column-2">
+		<p>
+			Include System Groups:
+		</p>
+		<p>
+			<input type = "checkbox" rid = "chkSystemGroups" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Authorize:
+		</p>
+		<p>
+			<input type = "button" value = "Authorize" disabled = "true" rid = "btnAuthZ" class = "rocket-button" onclick = "${this}.authorize()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Unauthorize:
+		</p>
+		<p>
+			<input type = "button" value = "Unauthorize" disabled = "true" rid = "btnUAuthZ" class = "rocket-button" onclick = "${this}.uauthorize()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Note:
+		</p>
+		<p>
+			Sharing an image will not automatically share the thumbnail directory.  To share the thumbnail directory, check the <i>Include System Groups</i> checkbox.
+		</p>
+	</div>	
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				var o = this.getProperties().viewType;
+				if(!o){
+					Hemi.logError("View type is not specified");
+					if(this.setStatus) this.setStatus("View type is not specified");
+					return;
+				}
+				this.GetElementByRID("btnAuthZ").disabled = false;
+				this.GetElementByRID("btnUAuthZ").disabled = false;
+				this.GetElementByRID("shareName").value = o.nameType + " " + o.name + " (#" + o.id + ")";
+				this.GetElementByRID("shareType").value = o.nameType;
+				this.GetElementByRID("systemGroupContainer").style.display = (o.nameType == "GROUP" ? "" : "none");
+			},
+			authorize : function(){
+				this.authorizeType();
+			},
+			unauthorize : function(){
+				this.authorizeType(1);
+			},
+			
+			authorizeType : function(b,x){
+				var o = (x ? x : this.getProperties().viewType);
+				if(!o || !o.id){
+					Hemi.logError("View type is not specified");
+					if(this.setStatus) this.setStatus("View type is not specified");
+					return;
+				}
+				var oS = this.GetElementByRID("shareType");
+				var sW = this.GetElementByRID("shareWith").value;
+				if(sW == "nobody"){
+					Hemi.logError("Policy OM not yet ready to strip all rights without specifying a specific target");
+					if(this.setStatus) this.setStatus("Policy OM not yet ready to strip all rights without specifying a specific target");
+					return;
+				}
+				var oO = 0;
+
+				if(sW == "Public"){
+					oO = accountManager.getPublicUser();
+					sW = "User";
+				}
+				
+				if(!oO){
+					Hemi.logError("Target " + sT + " not specified");
+					if(this.setStatus) this.setStatus("Target " + sT + " not specified");
+					return;
+				
+				}
+
+				var sT = oS.options[oS.selectedIndex].text;
+				var r = accountManager["authorize" + sT + sW](0, oO.id, o.id, (b ? false : this.GetElementByRID("chkRead").checked), (b ? false : this.GetElementByRID("chkUpdate").checked), (b ? false : this.GetElementByRID("chkDelete").checked), (b ? false : this.GetElementByRID("chkAdd").checked));
+				if(this.setStatus) this.setStatus((r ? "Successfully" : "Failed to") + " " + (b ? "Unauthorized" : "Authorized") + " " + sT + " " + oO.name + " for " + o.name); 
+
+				if(this.GetElementByRID("chkSystemGroups").checked){
+					if(o.nameType == "GROUP" && !o.name.match(/^\.thumbnail$/)){
+						var oT = accountManager.getGroup(o.path + "/.thumbnail");
+						if(oT) this.authorizeType(b,oT);
+					}
+				}
+
+			},
+			
+		]]>
+	</embedded-script>
+</Template>

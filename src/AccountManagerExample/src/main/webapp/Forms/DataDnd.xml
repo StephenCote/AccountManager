@@ -1,0 +1,91 @@
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<div style = "text-align:center;">
+		<input disabled = "true" type = "text" placeholder = "${property.defaultPath}" rid = "path" style = "width:250px !important;" class = "rocket-text" />
+		<br />
+		<div rid = "droptarget" style = "text-align:center;height:250px;width:250px;display:inline-block;border: 10px dashed #505050;">
+		<progress rid="uploadprogress" style = "margin-top:115px;" min="0" max="100" value="0">0</progress>
+		</div>
+	</div>
+
+	<import-xml src = "/AccountManagerExample/Forms/StatusFrag.xml" id = "StatusFrag" />
+<embedded-script><![CDATA[
+		template_init : function(){
+			this.setStatus("");
+			if(this.setCanResize){
+				this.setCanResize(0);
+				this.setCanMinimize(0);
+				this.setCanMaximize(0);
+			}
+			;
+			Hemi.message.service.subscribe(this,"onchangedirectory", this.scopeHandler("change_directory",0,0,1),Hemi.registry.service.getObject(this.getProperties().openerId));
+			var o = this.GetElementByRID("droptarget");
+			var ctl = this;
+			o.ondragover = function () { this.style.borderColor = "#00FF00";return false; };
+			o.ondragend = function () { this.style.borderColer = "#505050"; return false; };
+			o.ondragleave = o.ondragend;
+			o.ondrop = function (e) {
+				this.style.borderColer = "#505050";
+			   	e.preventDefault();
+			   	ctl.readFiles(e.dataTransfer.files);
+			};
+		},
+		_handle_change_directory : function(s,v){
+			if(v && v.getCurrentGroup){
+				this.GetElementByRID("path").value = v.getCurrentGroup().path;
+			}
+		},
+		updateWaitingCount : function(){
+			var _p = this.getProperties();
+			_p.currentCount++;
+        	this.setStatus("Read " + _p.currentCount + " of " + _p.waitingCount);
+			if(_p.waitingCount == _p.currentCount){
+				var o = this.GetElementByRID("droptarget");
+				o.style.borderColor = "#505050";
+				this.setStatus("Finished");	
+			}
+		    
+
+		},
+		readFiles : function(aF){
+			this.setStatus("Reading " + aF.length + " files into " + this.getPath());
+			var oGroup = accountManager.getGroup(this.getPath());
+			if(!oGroup || oGroup == null){-
+				this.setStatus(this.getPath() + " is not a valid group");
+				return;
+			}
+			var ctl = this;
+			var _p = this.getProperties();
+			_p.waitingCount = aF.length;
+			_p.currentCount = 0;
+			this.GetElementByRID("uploadprogress").max = _p.waitingCount;
+			
+			this.GetElementByRID("uploadprogress").value = 0;
+		    for (var i = 0; i < aF.length; i++) {
+		    	var formData = new FormData();
+		    	formData.append("groupId",oGroup.id);
+		    	formData.append("name",aF[i].name);
+		    	formData.append("dataFile",aF[i]);
+		    	
+		        var xhr = new XMLHttpRequest();
+		        xhr.open('POST', '/AccountManager/mediaForm');
+		        xhr.onload = function(){
+		        	ctl.updateWaitingCount();
+		        };
+		        xhr.upload.onprogress = function(event){
+		        	 
+		        };
+		        xhr.send(formData);
+		   }
+		},
+		getPath : function(){
+			var o = this.GetElementByRID("path"), s;
+			if(!(s = o.value).length){
+				s = o.placeholder;
+				if(!s) s = "~/Datas";
+			}
+			return s;
+		}
+
+	]]></embedded-script>
+</Template>

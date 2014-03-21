@@ -55,6 +55,7 @@
 			},
 
 			countUsers : function(oOrg){
+				if(!oOrg) oOrg = window.uwm.getUser().organization;
 				return uwmServices.getService("User").count(oOrg.id);
 			},
 			listUsers : function(oOrg, iStartIndex, iRecordCount){

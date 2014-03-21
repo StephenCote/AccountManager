@@ -1,0 +1,53 @@
+<html-fragment>
+	<import-xml src = "/AccountManagerExample/Forms/ParentPicker.xml" id = "ParentPicker" />
+
+	<div class = "rocket-column-2" rid = "dataTypeContainer">
+		<p>
+			Type:
+		</p>
+		<p>
+			<select rid = "groupType" disabled = "true" bind = "${bean.rocketType}">
+				<option>ACCOUNT</option>
+				<option selected = "true">DATA</option>
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2" rid = "shareContainer" style = "display:none;">
+		<p>
+			Sharing:
+		</p>
+		<p>
+			<input type = "button" class = "rocket-button" value = "Configure Authorization" onclick = "${this}.openShare()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			var o = this.getBean("rocketType");
+			this.GetElementByRID("groupType").disabled = (o.id ? true : false);
+			this.GetElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
+			/*
+			
+			if(o){
+				this.GetElementByRID("path").value = o.path;
+			}
+			*/
+		},
+		openShare : function(){
+			var o = this.getBean("rocketType");
+			var oProps = {viewType:o};
+			var oW = Hemi.app.createWindow('Sharing','/AccountManagerExample/Forms/Sharing.xml','Sharing-' + o.id,0,0,oProps);
+			if(oW){
+				oW.setCanMinimize(0);
+				oW.setCanMaximize(0);
+		    	oW.resizeTo(400, 400);
+		    	oW.setHideOnClose(0);
+		    	Hemi.app.getWindowManager().CenterWindow(oW);
+			}
+		},
+		addType : function(o){
+			Hemi.log("Add group type: " + o.name + ":" + o.mimeType);
+
+			return accountManager.addGroup(o.name, o.groupType, o.parentId);
+		}
+	]]></embedded-script>
+</html-fragment>

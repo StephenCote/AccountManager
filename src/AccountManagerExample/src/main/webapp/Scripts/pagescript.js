@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
 	
 	window.uwm = {
 		handlers : {
@@ -183,7 +183,7 @@
 		getSession : function(bRefresh){
 			if(!bRefresh && window.uwm.session) return window.uwm.session;
 			var sessionSvc = window.uwmServices.getService("Session");
-			window.uwm.session = sessionSvc.getSession();
+			window.uwm.session = sessionSvc.getSafeSession(Hemi.guid());
 			var oSess = Hemi.registry.service.getObject("session");
 			if(oSess) oSess.Refresh(window.uwm.session);
 			//rocket.flushSession();
@@ -231,7 +231,7 @@
 		},
 		logout : function(){
 			if(uwm.rule("IsLoggedIn")){
-				window.uwm.session = window.uwmServices.getService("User").getLogout();
+				window.uwm.session = window.uwmServices.getService("User").safeLogout(Hemi.guid());
 				var oSess = Hemi.registry.service.getObject("session");
 				if(oSess) oSess.Refresh(window.uwm.session);
 				Hemi.log("Flush any session or cache references in related services");
@@ -328,7 +328,7 @@
     Hemi.include("hemi.app.comp");
     Hemi.include("hemi.app.module");
     Hemi.include("hemi.app.module.test");
-    Hemi.include("uwm.io", g_application_path + "/Scripts/");
+    /// Hemi.include("uwm.io", g_application_path + "Scripts/");
     Hemi.include("hemi.data.validator");
     Hemi.include("hemi.json.rpc");
     

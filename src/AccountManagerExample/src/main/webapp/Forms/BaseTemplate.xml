@@ -6,14 +6,14 @@
 			this.scopeHandler("manager_loaded", 0, 0, 1);
 		},
 		embedded_destroy : function(){
-			this._prehandle_manager_loaded;
+			this._prehandle_manager_loaded = 0;
 		},
 		_handle_manager_loaded: function (v) {
 			///
         },
 		manageList : function(sType, sListId, sFN){
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:1,pickFunction:sFN,listId:sListId};
-			var oW = Hemi.app.createWindow("ManageList", "/AccountManagerExample/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, this._prehandle_manager_loaded);
+			var oW = Hemi.app.createWindow("ManageList", g_application_path + "Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, this._prehandle_manager_loaded);
             if (oW) {
             	oW.resizeTo(400, 200);
             	Hemi.app.getWindowManager().CenterWindow(oW);
@@ -40,7 +40,7 @@
 		},
 		openWindow : function(sType,oType){
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:0};
-			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), "/AccountManagerExample/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
+			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), g_application_path + "Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
             if (oW) {
             	oW.resizeTo(400, 400);
             	Hemi.app.getWindowManager().CenterWindow(oW);

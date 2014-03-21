@@ -35,10 +35,17 @@
 		},
 		Refresh : function(o)
 {
-	   var _t = Hemi.web.security.PageTickets;
+	  		var _t = Hemi.web.security.PageTickets;
 
    			if(o) this._handle_get_sessiondata("json",{json:o});
-			else uwmServices.getService("Session").getSession(this._prehandle_get_sessiondata);
+			else{
+				//alert("Unsupported: Direct session query");
+				uwmServices.getService("Session").getSafeSession(Hemi.guid(),{
+					hemiSvcCfg:1,
+					async:1,
+					handler:this._prehandle_get_sessiondata
+				});
+			}
 },
 
 _handle_get_sessiondata : function(s, v)
@@ -46,14 +53,14 @@ _handle_get_sessiondata : function(s, v)
    var _s = this.getProperties(), _si;
             this.getObjects().session = {};
 			_si = this.getObjects().session;
-						
-			if(!v || !v.json){
+		
+			if(!v){
 				alert("Error retrieving session data: " + v + " / " + v.json);
 			}
 			else{
 
-  
-			  var oSession =v.json;
+	  
+			  var oSession = (v.json ? v.json : v);
 			
 				if(oSession){
 

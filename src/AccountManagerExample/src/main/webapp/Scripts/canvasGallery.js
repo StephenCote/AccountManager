@@ -64,6 +64,10 @@
 				if(oShape.type == "Image"){
 					this.logDebug("Panel #:" + oShape.panelId);
 					var oPanel = Hemi.registry.service.getObject(oShape.panelId);
+					if(isRendering()){
+						this.logDebug("Disable effect while content is rendering");
+						return;
+					}
 					var oLast = oCanvas.getTemporaryContextConfig();
 					var oCfg = oCanvas.getConfigByName("DropGreenShadow");
 	
@@ -89,6 +93,12 @@
 					this.logDebug("Don't clear because " + (!oShape ? " no shape" : (!oShape.hover ? " no hover " : oShape.action)));
 					return;
 				}
+				var oPanel = Hemi.registry.service.getObject(oShape.panelId);
+				if(isRendering()){
+					this.logDebug("Disable effect while content rendering");
+					return;
+				}
+
 				this.logDebug("Clear because " + (!oShape ? " no shape" : (!oShape.hover ? " no hover " : oShape.action)));
 				oCanvas.ClearTempCanvas();
 	
@@ -157,7 +167,8 @@
 			},
 			handleDropShape : function(oSrc, oTarg){
 				
-				if((oSrc.referenceType == "GROUP" || oSrc.referenceType == "OBJECT") && (oTarg.referenceType == "GROUP" || oTarg.referenceType == "OBJECT")){
+				//if((oSrc.referenceType == "GROUP" || oSrc.referenceType == "OBJECT") && (oTarg.referenceType == "GROUP" || oTarg.referenceType == "OBJECT")){
+				if(oSrc.referenceType == "GROUP" && oTarg.referenceType == "GROUP"){
 					var oPanel = Hemi.registry.service.getObject(oSrc.panelId);
 					var oSGroup = accountManager.getGroupById(oSrc.referenceId);
 					var oTGroup = accountManager.getGroupById(oTarg.referenceId);
@@ -170,6 +181,7 @@
 						return;
 					}
 					reparentGroup(oPanel,oSGroup, oTGroup);
+					//reparentObject(oObj, oTGroup);
 				}
 				else if ((oSrc.referenceType == "GROUP" || oSrc.referenceType == "OBJECT") && oTarg.referenceType == "CTL"){
 					var oPanel = Hemi.registry.service.getObject(oTarg.panelId);
@@ -177,11 +189,12 @@
 					if(oTarg.action == "deleteObject" && oPanel.getObjects().view.getObjects().controller[oTarg.action]){
 						oPanel.getObjects().view.getObjects().controller[oTarg.action](oPanel,oSrc.referenceType,oSrc.referenceId,oSrc);
 					}
-					if(oSrc.referenceType == "OBJECT" && oTarg.action == "controlPanel"){
+					if((oSrc.referenceType == "GROUP" || oSrc.referenceType == "OBJECT") && oTarg.action == "controlPanel"){
 						openObject(oPanel,oSrc.referenceType, oSrc.referenceId, oSrc);
 					}
 				}
 				else if (oSrc.referenceType == "OBJECT" && oTarg.referenceType == "GROUP"){
+					Hemi.logError("DEAD CODE WARNING");
 					var oSPanel = Hemi.registry.service.getObject(oSrc.panelId);
 					var oObj = getObjectById(oSPanel,oSrc.referenceType,oSrc.referenceId,oSrc);
 					var oTGroup = accountManager.getGroupById(oTarg.referenceId);
@@ -305,7 +318,7 @@
 				var v = this.view("gallery",{scaleHeight:1,scaleWidth:1,basePath:"~/"});
 				v.panel("nav",{
 					width:100,
-					height:"boxHeight-55",
+					height:"boxHeight-50",
 					top:0,
 					left:0,
 					thumbWidth:50,
@@ -328,10 +341,10 @@
 					]
 				});
 				v.panel("content",{
-					width:"boxWidth-105",
-					height:"boxHeight-55",
+					width:"boxWidth-100",
+					height:"boxHeight-50",
 					top:0,
-					left:105,
+					left:100,
 					thumbWidth:128,
 					thumbHeight:128,
 					thumbScroll:0,
@@ -344,17 +357,19 @@
 					itemIconImg : "Crystal_Clear_mimetype_image.png"
 				});
 				v.panel("controlPanel",{
-					width:"boxWidth-105",
-					height:"boxHeight-55",
+					width:"boxWidth-100",
+					height:"boxHeight-50",
 					top:0,
-					left:105,
+					left:100,
 					thumbWidth:128,
 					thumbHeight:128,
 					thumbScroll:0,
 					actions:[
 			         {action: "newGroup",label: "New Group",icon : "Crystal_Clear_action_filenew.png"},
+			         {action: "dndUpload",label:"Drag/Drop Upload",icon:"Crystal_Clear_action_2uparrow.png"},
 				     {action: "newImage",label: "New Image",icon : "Crystal_Clear_mimetype_image.png"},
 				     {action: "openShare",label: "Sharing",icon : "Crystal_Clear_app_Login_Manager.png"},
+				     {action: "openCache",label: "Cache",icon : "Crystal_Clear_app_database.png"},
 				     {action: "openLog",label: "Log",icon : "Crystal_Clear_app_kexi.png"},
 				     {action: "openDebug",label: "Debug",icon : g_application_path + "Media/Icons/Hemi_Logo_128x128.png"}
 					]
@@ -464,6 +479,9 @@
 			getCanvasController : function(){
 				return ctl;
 			},
+			isShowingControlPanel : function(){
+				return this.getCurrentViewPanel("controlPanel").getProperties().visible;
+			},
 			controlPanel : function(sType, sId){
 				var oP =  this.getCurrentViewPanel("controlPanel");
 				var oP2 = this.getCurrentViewPanel("content");
@@ -480,6 +498,29 @@
 			openLog : function(){
 				Hemi.app.createWindow('Log Viewer','Templates/LogViewer.xml', 'LogViewer');
 			},
+			openShare : function(oTargetPanel, sType, sId, oShape){
+				var d = this.getCurrentViewPanel("nav").getObjects().currentDirectory;
+				var oProps = {viewType:d};
+				var oW = Hemi.app.createWindow('Sharing',g_application_path + 'Forms/Sharing.xml','Sharing-' + d.id,0,0,oProps);
+				if(oW){
+					oW.setCanMinimize(0);
+					oW.setCanMaximize(0);
+			    	oW.resizeTo(400, 400);
+			    	oW.setHideOnClose(0);
+			    	Hemi.app.getWindowManager().CenterWindow(oW);
+				}
+			},
+			openCache : function(oTargetPanel, sType, sId, oShape){
+				var oW = Hemi.app.createWindow('Cache',g_application_path + 'Forms/CacheUtility.xml','Cache');
+				if(oW){
+					oW.setCanMinimize(0);
+					oW.setCanMaximize(0);
+			    	oW.resizeTo(400, 400);
+			    	oW.setHideOnClose(0);
+			    	Hemi.app.getWindowManager().CenterWindow(oW);
+				}
+			},
+
 			openDebug : function(){
 				var oW = Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler');
 				if(!oW) return;
@@ -516,7 +557,9 @@
 			cdup : function(oPanel,sType, sId, oShape){
 				changeDirectory(sId, oPanel,["content"],1);
 			},
-
+			getCurrentGroup : function(){
+				return this.getCurrentView().panel("nav").getObjects().currentDirectory;
+			},
 			createGroup : function(s){
 				var d = this.getCurrentViewPanel("nav").getObjects().currentDirectory;
 				var b = accountManager.getCreatePath(d.path + "/" + s);
@@ -537,6 +580,12 @@
 			newImage : function(){
 				var oP = this.getCurrentViewPanel("nav");
 				openWindow(oP, "Data", 0, showDataForm);
+			},
+			dndUpload : function(){
+				var oP = this.getCurrentViewPanel("nav");
+				//openWindow(oP, "DataDnd", 0, showDNDForm);
+				var vProps = {openerId:this.getObjectId()};
+				Hemi.app.createWindow("DataDnD", g_application_path + "Forms/DataDnd.xml", "DataDnD", 0, 0, vProps, showDNDForm);
 			},
 			viewObject : function(oTargetPanel,sType, sId, oShape){
 				var oP = Hemi.registry.service.getObject(oShape.panelId);
@@ -758,7 +807,14 @@
 	
 	
 		}
-		
+		function showDNDForm(oW){
+			if(!oW.GetElementByRID) return;
+			oW.setHideOnClose(0);
+			oW.setTitle("Drag-n-Drop");
+			oW.resizeTo(290,350);
+			var oP = galleryView.getCurrentViewPanel("nav");
+			oW.GetElementByRID("path").value = oP.getObjects().currentDirectory.path;
+		}
 		function showDataForm(oW){
 			if(!oW.GetElementByRID) return;
 			var oP = galleryView.getCurrentViewPanel("nav");
@@ -809,10 +865,14 @@
 			
 			_s.rasterTotal += iter;
 		}
-		
+		function isRendering(oPanel){
+			var _s = (oPanel ? oPanel : galleryView.getCurrentView().panel("content")).getProperties();
+			return (_s.rasterCount != _s.rasterTotal);
+		}
 		function checkRaster(oPanel){
 			var _s = oPanel.getProperties();
 			if(_s.rasterCount == _s.rasterTotal){
+				ctl.log("Raster " + oPanel.access_name + " with " + _s.rasterCount + ":" + _s.rasterTotal);
 				ctl.getCanvas().Rasterize();
 			}
 		}
@@ -823,12 +883,16 @@
 			if(!o || o.id == _o.currentDirectory) return;
 			_o.currentDirectory = o;
 			ctl.log("Changing directory to " + o.path);
+
+			if(galleryView.isShowingControlPanel()){
+				galleryView.controlPanel();
+			}
 			
 			//if(!bSkipDirReset){
 				//ctl.log("Resetting primary pagination");
 				/// For primary panel, move pagination markers back to beginning
 				///
-				_p.startIndex = 0;
+				_p.startIndex = (_o.groupState[o.path] ? _o.groupState[o.path] : 0);
 				_p.totalCount = 0;
 				_p.currentCount = 0;
 			//}
@@ -845,13 +909,13 @@
 					/// For reference panels, move pagination markers back to beginning
 					/// Note: the skip doesn't apply here
 					///
-					oP.getProperties().startIndex = 0;
+					oP.getProperties().startIndex = (oP.getObjects().groupState[o.path] ? oP.getObjects().groupState[o.path] : 0);;
 					oP.getProperties().totalCount = 0;
 					oP.getProperties().currentCount = 0;
 					oP.repaint();
 				}
 			}
-			
+			Hemi.message.service.publish("onchangedirectory", galleryView);
 		}
 		
 		function next(p, b){
@@ -869,6 +933,7 @@
 				_s.startIndex = _s.totalCount - iCount;
 			}
 			if(_s.startIndex < 0) _s.startIndex = 0;
+			p.getObjects().groupState[galleryView.getCurrentGroup().path] = _s.startIndex;
 			repaintPanel(p, b);
 			
 		}
@@ -877,6 +942,7 @@
 			iCount = _s.suggestedCount  - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0);
 			_s.startIndex -= iCount;
 			if(_s.startIndex < 0) _s.startIndex = 0;
+			p.getObjects().groupState[galleryView.getCurrentGroup().path] = _s.startIndex;
 			repaintPanel(p, b);
 		}
 		
@@ -1180,14 +1246,25 @@
 			ctl.logDebug("Reparent " + s.name + " to " + t.name);
 			s.parentId = t.id;
 			accountManager.updateGroup(s);
+			accountManager.clearGroupCache();
 			repaintPanel(oPanel);
 		}
 		function reparentObject(s, t){
-			ctl.logDebug("Reparent " + s.name + " to " + t.name);
-			s.group = t;
-			s.detailsOnly = true;
-			delete s.dataBytesStore;
-			accountManager.updateData(s);
+			ctl.log("Reparent " + s.name + " (" + s.nameType + ") to " + t.name + " (" + t.nameType + ")");
+			if(s.nameType.match(/^DATA/)){
+				s.group = t;
+				s.detailsOnly = true;
+				delete s.dataBytesStore;
+			}
+			else if(s.nameType.match(/^GROUP$/)){
+				s.parentId = t.id;
+			}
+			else{
+				s.groupId = t.id;
+			}
+			accountManager["update" + s.nameType.substring(0,1) + s.nameType.substring(1,s.nameType.length).toLowerCase()](s);
+			uwmServiceCache.clearCache(s.nameType);
+			uwmServiceCache.clearCache(t.nameType);
 			galleryView.getCurrentView().panel("nav").repaint();
 			galleryView.getCurrentView().panel("content").repaint();
 			//repaintPanel(oPanel);
@@ -1205,12 +1282,13 @@
 			}
 			return f(sId);
 		}
+		
 		function openObject(oTargPanel,sType, sId, oShape){
 			var oPanel = Hemi.registry.service.getObject(oShape.panelId);
 			var o = getObjectById(oPanel,sType, sId, oShape), _o = galleryView.getCurrentView().panel("content").getObjects();
 			var oProps = {openerId:oPanel.getObjectId(),picker:0,viewType:o};
 			if(_o.viewWindow && !_o.viewWindow.getIsClosed()) _o.viewWindow.Close();
-			var oW = Hemi.app.createWindow(o.name, "/AccountManagerExample/Forms/Data.xml", "View-" + o.id, 0, 0, oProps);
+			var oW = Hemi.app.createWindow(o.name, g_application_path + "Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps);
 		    if (oW) {
 		    	oW.resizeTo(400, 400);
 		    	Hemi.app.getWindowManager().CenterWindow(oW);
@@ -1270,6 +1348,7 @@
 								//_o.config = cfg;
 								_o.shapes = [];
 								_o.grid = {};
+								_o.groupState = {};
 								for(var c in cfg){
 									if(c.match(/^actions$/gi)) continue;
 									if(c.match(/^menu/gi)) continue;
@@ -1360,7 +1439,7 @@
 		}
 		function openWindow(oPanel,sType,oType, fHandler){
 			var oProps = {openerId:oPanel.getObjectId(),listType:sType,picker:0,viewType:oType};
-			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), "/AccountManagerExample/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
+			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), g_application_path + "Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
 	        if (oW) {
 	        	oW.resizeTo(400, 400);
 	        	Hemi.app.getWindowManager().CenterWindow(oW);

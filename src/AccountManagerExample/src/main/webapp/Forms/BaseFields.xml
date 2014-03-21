@@ -70,18 +70,19 @@
 				this.setStatus("Name cannot be empty");
 				return;
 			}
-			var sPath = this.getPath();
-			var oGroup = accountManager.getCreatePath(sPath);
-			if(!oGroup || oGroup == null){
-				this.GetElementByRID("path").className = "rocket-text rocket-text-error";
-				this.setStatus("Invalid group");
-				return;
+			if(!o.nameType || !o.nameType.match(/^GROUP$/)){
+				var sPath = this.getPath();
+				var oGroup = accountManager.getCreatePath(sPath);
+				if(!oGroup || oGroup == null){
+					this.GetElementByRID("path").className = "rocket-text rocket-text-error";
+					this.setStatus("Invalid group");
+					return;
+				}
+	
+				/// TODO: Don't use the different bean class for the AM group object
+				///
+				o.group = accountManager.getCleanGroup(oGroup);
 			}
-
-			/// TODO: Don't use the different bean class for the AM group object
-			///
-			o.group = accountManager.getCleanGroup(oGroup);
-
 			
 			if(this.prepareSave && !this.prepareSave(o)){
 				Hemi.logError("Prepare save failed for type " + this.getProperties().typeName);
@@ -112,8 +113,9 @@
 		
 		},
 		postProcess : function(){
-			var o = this.getBean("rocketType");
-			var n = accountManager["get" + this.getProperties().typeName](o.name,o.group);
+			var o = this.getBean("rocketType"),n;
+			if(o.nameType && o.nameType.match(/^group$/gi)) n = accountManager.getGroup(this.getPath() + "/" + o.name);
+			else n = accountManager["get" + this.getProperties().typeName](o.name,o.group);
 			if(n != null){
 				this.clearBean("rocketType");
 				this.setBean(n,"rocketType");

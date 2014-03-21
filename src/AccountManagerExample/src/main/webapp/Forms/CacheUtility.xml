@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template Title = "Sharing">
+
+	<div class = "rocket-column-2">
+		<p>
+			Data Cache:
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "accountManager.clearDataCache()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Group Cache:
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "accountManager.clearGroupCache()" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Role Cache:
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "accountManager.clearRoleCache()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			User Cache:
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "accountManager.clearUserCache()" />
+		</p>
+	</div>
+
+
+</Template>
