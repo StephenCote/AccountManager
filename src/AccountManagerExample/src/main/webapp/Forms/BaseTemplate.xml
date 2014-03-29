@@ -15,7 +15,7 @@
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:1,pickFunction:sFN,listId:sListId};
 			var oW = Hemi.app.createWindow("ManageList", g_application_path + "Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, this._prehandle_manager_loaded);
             if (oW) {
-            	oW.resizeTo(400, 200);
+            	oW.resizeTo(450, 300);
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	// Destroy the window when closed
             	//

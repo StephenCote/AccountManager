@@ -94,6 +94,34 @@
 		lookup : function(s){
 			return Hemi.lookup(s);
 		},
+		openPopInImage : function(sUrl){
+			var i1, i2, i3;
+			if((i1 = sUrl.indexOf("/Media") )== -1 || (i2 = sUrl.indexOf("/Data/")) == -1){
+				return;
+			}
+			var sOrgPath = sUrl.substring(i1 + 6,i2);
+			var oOrg = accountManager.findOrganization(sOrgPath);
+			var sPath = sUrl.substring(i2 + 5,sUrl.length);
+			var sName = sPath.substring((i3 = sPath.lastIndexOf("/")) + 1, sPath.length);
+			var iW = parseInt(.8 * document.documentElement.clientWidth);
+			var iH = parseInt(.8 * document.documentElement.clientHeight);
+			iW = Math.floor(iW/250) * 250;
+			if(iW <= 0) iW = 250;
+			iH = Math.floor(iH/250) * 250;
+			if(iH <= 0) iH = 250;
+			var sMediaUrl = "/AccountManager/Thumbnail" + sOrgPath + "/Data" + sPath + "/" + iW + "x" + iH;
+			var vProps = {
+				media_name : sName,
+				media_id : "N/A",
+				media_url: sMediaUrl
+			};
+			Hemi.app.createWindow(sName,"/Forms/ImageViewer.xml",sUrl,0,0,vProps,function(oW){
+				oW.setIsModal(1);
+				oW.setCanMinimize(0);
+				oW.setCanMaximize(0);
+				oW.center();
+			});
+		},
 		createContent : function(i, u, f){
 			var o = document.getElementById(i);
 			var ai = Hemi.GetSpecifiedAttribute(o, "acrid");

@@ -49,6 +49,12 @@
 			findOrganization : function(sPath){
 				return uwmServices.getService("Organization").find(sPath);
 			},
+			flushCache : function(){
+				return uwmServices.getService("AccountManager").flushCache();
+			},
+			clearAuthorizationCache : function(){
+				return uwmServices.getService("AccountManager").clearAuthorizationCache();
+			},
 			clearUserCache : function(){
 				uwmServices.getService("User").clearCache();
 				uwmServiceCache.clearServiceCache("User");
