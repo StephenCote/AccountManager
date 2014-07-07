@@ -163,6 +163,7 @@
 			}
 			oTest.RunTests();
 			var oTestResult = oTest.getTestByName("Test" + sName);
+			/// alert(g_application_path + "Rules/" + sName + ":" + oTestResult + ":" + (oTestResult ? oTestResult.data : "NA"));
 			if(oTestResult && oTestResult.data == true){
 				/// Only set return val to op if all operations are updated to expect a return value
 				/// There was a few hours well spent

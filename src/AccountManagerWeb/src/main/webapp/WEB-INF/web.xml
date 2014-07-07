@@ -15,7 +15,7 @@
   <context-param>
     <description>Registration Enabled</description>
     <param-name>registration.enabled</param-name>
-    <param-value>false</param-value>
+    <param-value>true</param-value>
   </context-param>
   <context-param>
     <description>Feedback User</description>
@@ -33,6 +33,25 @@
     <description>Article Template</description>
     <param-name>template.article</param-name>
     <param-value>articleTemplate.xhtml</param-value>
+  </context-param>
+
+
+  <context-param>
+    <description>Restrict Image Size</description>
+    <param-name>image.restrict.size</param-name>
+    <param-value>true</param-value>
+  </context-param>
+
+  <context-param>
+    <description>Maximum Image Width</description>
+    <param-name>image.maximum.width</param-name>
+    <param-value>1024</param-value>
+  </context-param>
+
+  <context-param>
+    <description>Maximum Image Height</description>
+    <param-name>image.maximum.height</param-name>
+    <param-value>1024</param-value>
   </context-param>
   
    <context-param>
@@ -56,7 +75,7 @@
   <context-param>
     <description>SSL Login Only</description>
     <param-name>ssl.login.required</param-name>
-    <param-value>true</param-value>
+    <param-value>false</param-value>
   </context-param>
   <context-param>
     <description>Database Connection Type</description>

@@ -42,8 +42,9 @@ public class AccountManagerLogoutServlet extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		//logger.info("Invalidate the session because the JEE LoginModule was used.");		
 		request.getSession().invalidate();
+		ServiceUtil.clearCookie(response, "OrganizationId");
 	}
 
 	/**

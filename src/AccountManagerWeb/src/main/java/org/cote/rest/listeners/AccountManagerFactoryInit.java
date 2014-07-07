@@ -95,6 +95,10 @@ public class AccountManagerFactoryInit implements ServletContextListener {
 			sqe.printStackTrace();
 		}
 		
+		/// invoke clear caches to queue up the table schemas
+		///
+		Factories.clearCaches();
+		
 		auditThread = new AuditDataMaintenance();
 		auditThread.setThreadDelay(10000);
 		

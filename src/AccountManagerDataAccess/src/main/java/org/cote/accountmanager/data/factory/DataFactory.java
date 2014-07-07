@@ -40,6 +40,12 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class DataFactory extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
+	
+	private long currentCacheSize = 0L;
+	
+	/// Max cache size = 50MB;
+	///
+	private long maximumCacheSize = 1048576L*100L;
 	public DataFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -47,6 +53,24 @@ public class DataFactory extends NameIdFactory {
 		this.hasOwnerId = true;
 		this.tableNames.add("data");
 		factoryType = FactoryEnumType.DATA;
+	}
+	@Override
+	protected void checkCacheExpires(){
+		super.checkCacheExpires();
+		//logger.info("Current cache size: " + (currentCacheSize > 0L ? (currentCacheSize / 1024) + " kb" : "0"));
+		if(currentCacheSize >= maximumCacheSize){
+			logger.info("Exceeded maximum data cache size " + (maximumCacheSize / 1024) + " KB.  Clearing data cache.");
+			clearCache();
+			currentCacheSize = 0L;
+		}
+	}
+	@Override
+	public synchronized boolean addToCache(NameIdType map, String key_name) throws ArgumentException{
+		boolean ret = super.addToCache(map, key_name);
+		if(ret){
+			currentCacheSize += (long)((DataType)map).getSize();
+		}
+		return ret;
 	}
 	@Override
 	public <T> String getCacheKeyName(T obj){

@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DataAccessException;
@@ -43,7 +44,9 @@ import org.cote.accountmanager.objects.types.ValueEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class SessionFactory extends FactoryBase {
-
+	
+	public static final Logger logger = Logger.getLogger(SessionFactory.class.getName());
+	
 	private int defaultPageSize = 10;
 	private Map<String,Integer> typeIdMap = null;
 	private List<UserSessionType> typeMap = null;
@@ -303,6 +306,7 @@ public class SessionFactory extends FactoryBase {
 			removeFromCache(map);
 		}
 		catch(SQLException sqe){
+			logger.error(sqe.getMessage());
 			sqe.printStackTrace();
 		}
 		finally{
@@ -310,9 +314,11 @@ public class SessionFactory extends FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 		}
+
 		return (updated > 0);
 	}
 	public void setFactoryFields(List<QueryField> fields, UserSessionType map, ProcessingInstructionType instruction){
@@ -403,7 +409,17 @@ public class SessionFactory extends FactoryBase {
 		
 		return true;
 	}
-	public UserSessionType getCreateSession(String session_id, OrganizationType organization) throws FactoryException{
+	/// 2014/03/13 - made this synchronized due to race condition from initial session sending in multiple requests
+	///
+	public synchronized UserSessionType getCreateSession(String session_id, OrganizationType organization) throws FactoryException{
+		if(session_id == null){
+			logger.error("Session ID is null");
+			return null;
+		}
+		if(organization == null){
+			logger.error("Organization is null");
+			return null;
+		}
 		UserSessionType session = getSession(session_id, organization);
 		if(session != null) return session;
 		session = this.newUserSession(session_id);
@@ -560,6 +576,7 @@ public class SessionFactory extends FactoryBase {
 	public void updateSessionToCache(UserSessionType session){
 		//String key_name = session.getSessionId();
 		//System.out.println("Update user to cache: " + key_name);
+		logger.info("Updating Session To Cache: " + session.getSessionId() + " / Remove: " + (haveCacheId(session.getSessionId()) ? "true":"false"));
 		if(this.haveCacheId(session.getSessionId())) removeFromCache(session.getSessionId());
 		addToCache(session);
 	}
@@ -581,8 +598,8 @@ public class SessionFactory extends FactoryBase {
 		UserSessionType obj = readCache(sessionId);
 		if(obj != null) removeFromCache(obj);
 	}
-	public void removeFromCache(UserSessionType obj){
-		synchronized(typeMap){
+	public synchronized void removeFromCache(UserSessionType obj){
+		//synchronized(typeMap){
 
 			//System.out.println("Remove from cache: " + obj.getSessionId() + " : " + typeIdMap.containsKey(obj.getSessionId()));
 			if(typeIdMap.containsKey(obj.getSessionId())){
@@ -590,7 +607,7 @@ public class SessionFactory extends FactoryBase {
 				typeMap.set(indexId, null);
 				typeIdMap.remove(obj.getSessionId());
 			}
-		}
+		//}
 	}
 
 
@@ -602,16 +619,16 @@ public class SessionFactory extends FactoryBase {
 		return null;
 	}
 
-	public boolean addToCache(UserSessionType map){
+	public synchronized boolean addToCache(UserSessionType map){
 		//System.out.println("Add to cache: " + (map == null ? "NULL" : map.getName()) + " AT " + key_name);
-		synchronized(typeMap){
+		//synchronized(typeMap){
 			int length = typeMap.size();
 			if(typeIdMap.containsKey(map.getSessionId())){
 				return false;
 			}
 			typeMap.add(map);
 			typeIdMap.put(map.getSessionId(), length);
-		}
+		//}
 		return true;
 	}
 }

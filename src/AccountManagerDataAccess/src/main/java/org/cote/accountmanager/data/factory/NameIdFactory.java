@@ -63,6 +63,11 @@ public abstract class NameIdFactory extends FactoryBase {
 		clearCache();
 	}
 	
+	public <T> T clone(T source) throws FactoryException{
+		throw new FactoryException("Method must be overriden.  Yes, this could be abstract, but not every factory needs it.");
+	}
+		
+	
 	public void mapBulkIds(NameIdType map){
 		long tmpId = 0;
 		if(hasOwnerId && map.getOwnerId() < 0L){
@@ -521,11 +526,12 @@ public abstract class NameIdFactory extends FactoryBase {
 	public boolean addToCache(NameIdType map) throws ArgumentException{
 		return addToCache(map, map.getName());
 	}
-	public boolean addToCache(NameIdType map, String key_name) throws ArgumentException{
+	public synchronized boolean addToCache(NameIdType map, String key_name) throws ArgumentException{
 		if(map == null) return false;
 		if(key_name == null) throw new ArgumentException("Key name is null");
+		//checkCacheExpires();
 		//logger.debug("Add to cache: " + (map == null ? "NULL" : map.getNameType() + " " + map.getName()) + " AT " + key_name);
-		synchronized(typeMap){
+		//synchronized(typeMap){
 			int length = typeMap.size();
 			if(typeNameMap.containsKey(key_name) || typeIdMap.containsKey(map.getId())){
 				return false;
@@ -535,7 +541,7 @@ public abstract class NameIdFactory extends FactoryBase {
 			typeNameMap.put(key_name, length);
 			typeIdMap.put(map.getId(), length);
 			typeNameIdMap.put(map.getId(), map.getName());
-		}
+		//}
 		return true;
 	}
 	protected boolean isValid(NameIdType map)

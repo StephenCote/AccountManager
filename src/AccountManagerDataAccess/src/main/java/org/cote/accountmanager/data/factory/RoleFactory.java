@@ -232,6 +232,8 @@ public class RoleFactory extends NameIdFactory {
 	}
 	public <T> T getRoleByName(String name, BaseRoleType Parent, RoleEnumType role_type, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
+		if(name == null || organization == null) throw new ArgumentException((name == null ? "Name" : "Organization") + " is null");
+		if(Parent != null && Parent.getId() == null) throw new ArgumentException("Parent id is null");
 		long parent_id = 0;
 		if (Parent != null) parent_id = Parent.getId();
 		String key_name = role_type.toString() + "-" + name + "-" + parent_id + "-" + organization.getId();

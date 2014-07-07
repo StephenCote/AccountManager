@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en-US" dir="ltr">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>%TITLE%</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
 	<link rel="stylesheet" href="/Style/uwm.css" type="text/css" title = "uwm" />
 	<link rel="stylesheet" href="/Style/rocket.css" type="text/css" />
 	<link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -11,6 +11,19 @@
 		var g_application_path = "/";
 	</script>
     <script type = "text/javascript" src = "/AccountManagerExample/Scripts/bootstrap.jsp"></script>
+		<script type="text/javascript"><!--//
+			uwm.addPageLoadHandler(function(){
+				var aL = document.documentElement.getElementsByTagName("a");
+				for(var i = 0; i < aL.length;i++){
+					if(!aL[i].href || !aL[i].href.match(/\/AccountManager\/Media/)) continue;
+					aL[i].onclick = function(){
+						uwm.openPopInImage(this.href);
+						return false;
+					}
+				}
+			});
+			//-->
+		</script>
     </head>
     <body>
          <div class = "uwm-header">

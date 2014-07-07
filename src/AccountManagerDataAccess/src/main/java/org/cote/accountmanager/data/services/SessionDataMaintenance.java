@@ -11,7 +11,7 @@ public class SessionDataMaintenance extends ThreadService {
 	}
 	public void execute(){
 		boolean cleanup = DataMaintenance.cleanupSessions();
-		System.out.println("SessionDataMaintenance: Cleanup sessions: " + cleanup);
+		//System.out.println("SessionDataMaintenance: Cleanup sessions: " + cleanup);
 
 	}
 }

@@ -50,10 +50,11 @@
 					<excludes>
 						<!--
 						
-						<exclude>**/TestSecurityFactory.java</exclude>
+						
+						<exclude>**/TestAMCode.java</exclude>
 						-->
 						<exclude>**/TestText.java</exclude>
-						<exclude>**/TestAMCode.java</exclude>
+						<exclude>**/TestSecurityFactory.java</exclude>
 						<exclude>**/TestWTPAType.java</exclude>
 						<exclude>**/TestDataUtil.java</exclude>
 						<exclude>**/TestDataType.java</exclude>

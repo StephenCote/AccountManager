@@ -13,7 +13,7 @@ public class AuditDataMaintenance extends ThreadService {
 		this.setThreadDelay(spoolFlushDelay);
 	}
 	public void execute(){
-		logger.info("AuditDataMaintenance: Flush Spool - " + Factories.getAuditFactory().getDataTable("audit").getRows().size());
+		logger.debug("AuditDataMaintenance: Flush Spool - " + Factories.getAuditFactory().getDataTable("audit").getRows().size());
 		Factories.getAuditFactory().flushSpool();
 		DataMaintenance.cleanupExpiredAudits(RetentionEnumType.OPERATIONAL);
 		

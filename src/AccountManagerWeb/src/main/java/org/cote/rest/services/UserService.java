@@ -160,8 +160,17 @@ public class UserService{
 		return user;
 	}
 	
-	@GET @Path("/getLogout") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public SessionBean postLogout(@Context HttpServletRequest request, @Context HttpServletResponse response){
+
+	@GET @Path("/safeLogout/{id : [a-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public SessionBean safeLogout(@PathParam("id") String id,@Context HttpServletRequest request, @Context HttpServletResponse response){
+		return doLogout(request, response);
+	}
+
+	@GET @Path("/logout/") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public SessionBean logout(@Context HttpServletRequest request, @Context HttpServletResponse response){
+		return doLogout(request, response);
+	}
+	public SessionBean doLogout(HttpServletRequest request, HttpServletResponse response){
 		HttpSession session = request.getSession(true);
 		String sessionId = session.getId();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "getLogout",AuditEnumType.SESSION, sessionId);
@@ -181,8 +190,9 @@ public class UserService{
 				AuditService.denyResult(audit, "User not found");
 				userSession = SessionSecurity.getUserSession(sessionId, ServiceUtil.getOrganizationFromRequest(request));
 			}
-			session.invalidate();
-			
+			logger.info("Not invalidating the session while JEE LoginModule is not being used.");
+			//session.invalidate();
+
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -195,6 +205,7 @@ public class UserService{
 			e.printStackTrace();
 		}
 		ServiceUtil.clearCookie(response, "OrganizationId");
+		//ServiceUtil.clearCookie(response, "JSESSIONID");
 		return BeanUtil.getSessionBean(userSession, sessionId);
 	}
 
@@ -354,8 +365,8 @@ public class UserService{
 	}
 	
 	
-	@GET @Path("/count/{organizationId:[\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public int count(@PathParam("organization") long organizationId,@Context HttpServletRequest request){
+	@GET @Path("/count/{organizationId:[0-9]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public int count(@PathParam("organizationId") long organizationId,@Context HttpServletRequest request){
 		return UserServiceImpl.count(organizationId, request);
 	}
 	@POST @Path("/delete") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)

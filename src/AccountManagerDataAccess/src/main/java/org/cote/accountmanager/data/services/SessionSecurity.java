@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -18,6 +19,7 @@ import org.cote.accountmanager.objects.types.SessionStatusEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class SessionSecurity {
+	public static final Logger logger = Logger.getLogger(SessionSecurity.class.getName());
 	// default expiry in hours
 	//
 	private static int defaultSessionExpiry = 1;
@@ -59,6 +61,10 @@ public class SessionSecurity {
 	}
 	protected static boolean verifySessionAuthentication(UserSessionType session) throws FactoryException{
 		boolean out_bool = false;
+		if(session == null){
+			logger.error("Null session object");
+			return out_bool;
+		}
 		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED) && Factories.getSessionFactory().isValid(session) == false){
 			session.setSessionStatus(SessionStatusEnumType.NOT_AUTHENTICATED);
 			out_bool = updateSession(session);
@@ -124,34 +130,61 @@ public class SessionSecurity {
 	}
 	public static UserType login(UserSessionType session, String user_name, String password_hash, OrganizationType organization) throws FactoryException, ArgumentException{
 		UserType user = null;
+		
 		if (session == null)
 		{
 			throw new FactoryException("New session was not allocated for account '" + user_name + "'");
 		}
-
+		if(user_name == null || password_hash == null || organization == null){
+			throw new ArgumentException("One or more arguments were null");
+		}
+		
+		/*
 		if (session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED)) user = Factories.getUserFactory().getUserBySession(session);
-		if (user == null)
-		{
-			List<NameIdType> users = Factories.getUserFactory().getList(new QueryField[]{QueryFields.getFieldName(user_name), QueryFields.getFieldPassword(password_hash)}, organization);
+		
+		
+	 	//2014/03/17 - Removed - this was causing a problem when logging out /in as the same user in the same session
+		logger.info("User: " + (user == null ? "Null User" : user.getName()));
+		logger.info("Password: " + (user == null ? "Null User" : user.getPassword()));
+		logger.info("Organization: " + (organization == null ? "Null Org" : organization.getName()));
+		if(user != null){
+			/// If a user logs in with an existing valid session
+			/// Then double check the user id from the session with the provided password hash
+			/// BUG: The original code tried to match password against the object, whose value is explicitly excluded in the Factory.
+			/// NOTE: Password isn't returned from user factory, so it can't be checked in code - it must be matched at the data level.
+			List<NameIdType> users = Factories.getUserFactory().getList(new QueryField[]{QueryFields.getFieldId(user), QueryFields.getFieldPassword(password_hash)}, organization);
 			if (users.size() == 0){
-				throw new FactoryException("Failed to retrieve user");
+				throw new FactoryException("Organization " + organization.getId() + " and user id " + user.getId() + " did not match for supplied password and session id " + session.getSessionId()+ ".");
 			}
-
 			user = (UserType)users.get(0);
-
-			session.setUserId(user.getId());
-			session.setOrganizationId(user.getOrganization().getId());
-			user.setSession(session);
-			Factories.getUserFactory().populate(user);
-			Factories.getUserFactory().updateUserToCache(user);
+			/ *
+			else if (user.getPassword() == null || user.getPassword().equals(password_hash) == false || user.getName().equals(user_name) == false || user.getOrganization() == null || user.getOrganization().getId() != organization.getId())
+			{
+				throw new FactoryException("Invalid user, password, or organization.");
+			}
+			* /
 		}
-		/// If a user logs in with an existing valid session
-		/// Then double check the user name and password hash
+		/// user is null
 		///
-		else if (user.getPassword().equals(password_hash) == false || user.getName().equals(user_name) == false || user.getOrganization().getId() != organization.getId())
+		else
 		{
-			throw new FactoryException("Invalid user, password, or orginization");
+		*/
+			/// Slightly different query
+			///
+		List<NameIdType> users = Factories.getUserFactory().getList(new QueryField[]{QueryFields.getFieldName(user_name), QueryFields.getFieldPassword(password_hash)}, organization);
+		if (users.size() == 0){
+			throw new FactoryException("Failed to retrieve user");
 		}
+		user = (UserType)users.get(0);
+		//}
+		
+		session.setUserId(user.getId());
+		session.setOrganizationId(user.getOrganization().getId());
+		user.setSession(session);
+		Factories.getUserFactory().populate(user);
+		Factories.getUserFactory().updateUserToCache(user);
+		/// }
+
 
 		//account.IsLoggedIn = true;
 		//account.Session.SetBool(KEY_LOGGED_IN,true);
@@ -180,11 +213,20 @@ public class SessionSecurity {
 	}
 	public static boolean logout(String session_id, OrganizationType organization) throws FactoryException {
 		UserSessionType session = Factories.getSessionFactory().getSession(session_id, organization);
-		if(session == null) return false;
+		if(session_id == null || organization == null){
+			logger.error("Invalid parameters");
+			return false;
+		}
+		if(session == null){
+			logger.info("Session " + session_id + " does not exist in " + organization.getName() + ".  Skipping logout procedure");
+			return false;
+		}
+		/*
 		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED) == false){
 			Factories.getSessionFactory().updateSessionToCache(session);
 			return true;
 		}
+		*/
 		return logout(session);
 	}
 	public static boolean logout(UserSessionType session) throws FactoryException{
@@ -193,7 +235,7 @@ public class SessionSecurity {
 		session.setUserId((long)0);
 
 		if(Factories.getSessionFactory().clearSessionData(session.getSessionId()) == false){
-			System.out.println("Failed to clear session data");
+			logger.warn("Failed to clear session data for " + session.getSessionId());
 		}
 		session.getChangeSessionData().clear();
 		session.getSessionData().clear();

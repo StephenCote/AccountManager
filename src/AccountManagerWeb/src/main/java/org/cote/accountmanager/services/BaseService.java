@@ -936,7 +936,6 @@ public class BaseService{
 		AuditService.targetAudit(audit, type, Long.toString(orgId));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return 0;
-
 		try{
 			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
 		}

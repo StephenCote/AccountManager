@@ -27,11 +27,11 @@ public class DataMaintenance {
 			statement.setString(1, retentionType.toString());
 			statement.setTimestamp(2, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			int affected = statement.executeUpdate();
-			logger.info("Removed " + affected + " expired audit entries");
+			logger.debug("Removed " + affected + " expired audit entries");
 			while (affected > 0)
 			{
 				affected = statement.executeUpdate();
-				logger.info("Removed " + affected + " expired audit entries");
+				logger.debug("Removed " + affected + " expired audit entries");
 			}
 			statement.close();
 			out_bool = true;

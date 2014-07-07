@@ -31,6 +31,43 @@ public class MediaUtil {
 	public static final Logger logger = Logger.getLogger(MediaUtil.class.getName());
 	private static Pattern recPattern = Pattern.compile("^\\/([A-Za-z0-9\\.]+)\\/([\\w]+)([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static Pattern dimPattern = Pattern.compile("(\\/\\d+x\\d+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	
+	private static int maximumImageWidth = -1;
+	private static int maximumImageHeight = -1;
+	private static boolean restrictImageSize = false;
+	private static boolean checkConfig = false;
+	protected static boolean getRestrictImageSize(HttpServletRequest request){
+		if(checkConfig) return restrictImageSize;
+		restrictImageSize = getBoolParam(request,"image.restrict.size");
+		checkConfig = true;
+		return restrictImageSize;
+	}
+	protected static int getMaximumImageWidth(HttpServletRequest request){ 
+		if(maximumImageWidth >= 0) return maximumImageWidth;
+		maximumImageWidth = getIntParam(request, "image.maximum.width");
+		return maximumImageWidth;
+	}
+	protected static int getMaximumImageHeight(HttpServletRequest request){ 
+		if(maximumImageHeight >= 0) return maximumImageHeight;
+		maximumImageHeight = getIntParam(request, "image.maximum.height");
+		return maximumImageHeight;
+	}
+	protected static boolean getBoolParam(HttpServletRequest request, String name){
+		boolean ret = false;
+		String iV = request.getServletContext().getInitParameter(name);
+		if(iV != null && iV.length() > 0){
+			ret = Boolean.parseBoolean(iV);
+		}
+		return ret;
+	}
+	protected static int getIntParam(HttpServletRequest request, String name){
+		int ret = 0;
+		String iV = request.getServletContext().getInitParameter(name);
+		if(iV != null && iV.length() > 0){
+			ret = Integer.parseInt(iV);
+		}
+		return ret;
+	}
 	public static void writeBinaryContent(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		writeBinaryContent(request, response, new MediaOptions());
 	}
@@ -185,11 +222,32 @@ public class MediaUtil {
 	) throws IOException{
 		DataType data = null;
 		boolean can_view = false;
+		
+		/// If the config stipulates a maximum width and height, then force thumbnail size to be no larger
+		/// If the optional force image bit is set, force all image requests through the thumbnail mechanism to prevent delivery of the full original resolution
+		///
+		int maxWidth = getMaximumImageWidth(request);
+		int maxHeight = getMaximumImageHeight(request);
+		boolean restrictSize = getRestrictImageSize(request);
+		if(maxWidth > 0 && maxHeight > 0 && options.isThumbnail()){
+			boolean bLim = false;
+			if(options.getThumbHeight() > maxHeight){
+				bLim = true;
+				options.setThumbHeight(maximumImageHeight);
+			}
+			if(options.getThumbWidth() > maxWidth){
+				bLim = true;
+				options.setThumbWidth(maximumImageWidth);
+			}
+			if(bLim){
+				logger.info("Limiting width and height to " + maxWidth + "," + maxHeight);
+			}
+		}
 	
 		/// If this is a thumbnail request, then:
 		/// 1) get the details only data and confirm it's an image
 		/// 
-
+	
 		
 		try{
 			if(options.isThumbnail()){
@@ -219,6 +277,11 @@ public class MediaUtil {
 				/// If it doesn't exist, try to create it
 				if(data == null){
 						DataType chkData = Factories.getDataFactory().getDataByName(objName, true, group);
+						if(chkData == null){
+							AuditService.denyResult(audit, "Data is invalid: '" + objName + "'");
+							response.sendError(404);
+							return;
+						}
 						 if(chkData.getMimeType() == null || chkData.getMimeType().startsWith("image/") == false){
 								AuditService.denyResult(audit, "Data type '" + chkData.getMimeType() + " is not supported for thumbnails for " + objName);
 								response.sendError(404);
@@ -233,6 +296,10 @@ public class MediaUtil {
 							}
 							byte[] imageBytes = DataUtil.getValue(chkData);
 							byte[] thumbBytes = GraphicsUtil.createThumbnail(imageBytes, options.getThumbWidth(), options.getThumbHeight());
+							if(thumbBytes.length == 0 && imageBytes.length > 0){
+								logger.info("Thumbnail size exceeds source image dimensions.  Returning source bytearray.");
+								thumbBytes = imageBytes;
+							}
 							/// 2014/03/13 - Thumbnail data is owned by the original image owner, not by the context user
 							///
 							UserType dataOwner = Factories.getUserFactory().getById(chkData.getOwnerId(), group.getOrganization());
@@ -265,6 +332,15 @@ public class MediaUtil {
 			} /// End if thumbnail
 			else{
 				data = Factories.getDataFactory().getDataByName(objName, group);
+				//logger.info("Restrict Size: " + restrictSize + " / " + data.getMimeType());
+				if(data.getMimeType() != null && data.getMimeType().startsWith("image/") && restrictSize){
+					logger.info("Redirecting to restricted image path");
+					Factories.getGroupFactory().populate(group);
+					
+					AuditService.pendResult(audit, "Redirecting user " + user.getName() + " to " + request.getServletContext().getContextPath() + "/Thumbnail" + Factories.getOrganizationFactory().getOrganizationPath(org) + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight + " with restricted dimensions");
+					response.sendRedirect(request.getServletContext().getContextPath() + "/Thumbnail" + Factories.getOrganizationFactory().getOrganizationPath(org) + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight);
+					return;
+				}
 			}
 			if(data != null && AuthorizationService.canViewData(user, data) == true){
 				can_view = true;

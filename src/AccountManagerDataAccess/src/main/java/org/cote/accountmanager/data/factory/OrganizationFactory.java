@@ -206,7 +206,16 @@ public class OrganizationFactory extends NameIdFactory {
 		
 		return null;
 	}
-	
+	public String getOrganizationPath(OrganizationType org) throws FactoryException, ArgumentException{
+		String path = "";
+		/// Note: Skip 'Global' Organization, which is always 1L
+		/// (always == until it's not, but it's never been not because it must be setup first)
+		if(org.getParentId() > 1L){
+			path = getOrganizationPath(getOrganizationById(org.getParentId()));
+		}
+		path = path + "/" + org.getName();
+		return path;
+	}
 	public OrganizationType findOrganization(String path) throws FactoryException, ArgumentException
 	{
 		

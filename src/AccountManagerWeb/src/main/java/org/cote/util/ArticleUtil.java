@@ -285,7 +285,13 @@ public class ArticleUtil {
 		}
 		/// Single mode
 		else{
-			articleData.add((DataType)BaseService.readByName(audit,AuditEnumType.DATA,user,dir,name,request));
+			DataType data = (DataType)BaseService.readByName(audit,AuditEnumType.DATA,user,dir,name,request);
+			if(data == null){
+				AuditService.denyResult(audit, "Null data returned for " + name);
+				response.sendError(404);
+				return;
+			}
+			articleData.add(data);
 		}
 		if(articleData == null){
 			AuditService.denyResult(audit, "Null data list returned - this is an internal error");
