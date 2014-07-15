@@ -52,7 +52,8 @@ public class ServiceUtil {
 			boolean adminHasRole = RoleService.getIsUserInRole(adminRole, admin);
 			boolean rootHasRole = RoleService.getIsUserInRole(adminRole, root);
 			boolean docHasRole = RoleService.getIsUserInRole(dataRole, doc);
-			if(adminHasRole == false || rootHasRole == false || docHasRole == false){
+			/* 2014/07/14 - see below comment || docHasRole == false */
+			if(adminHasRole == false || rootHasRole == false ){
 				logger.warn("Required organization users not found in administration roles.");
 				logger.info("Admin " + admin.getId() + " Has Role " + adminRole.getId() + " = " + adminHasRole);
 				logger.info("Root " + root.getId() + " Has Role " + adminRole.getId() + " = " + rootHasRole);
@@ -60,7 +61,10 @@ public class ServiceUtil {
 				logger.warn("Attempting to rebuild role cache.");
 				EffectiveAuthorizationService.rebuildUserRoleCache(Factories.getPublicOrganization());
 				EffectiveAuthorizationService.rebuildUserRoleCache(Factories.getSystemOrganization());
-				if(RoleService.getIsUserInRole(adminRole, admin) == false || RoleService.getIsUserInRole(adminRole, root) == false || RoleService.getIsUserInRole(dataRole, doc) == false){
+				
+				/// 2014/07/14 - Removed check for doc control in data admin role per prior authorization changes where doc control is delegated permission instead of receiving carte blanche data admin rigths
+				///  || RoleService.getIsUserInRole(dataRole, doc) == false
+				if(RoleService.getIsUserInRole(adminRole, admin) == false || RoleService.getIsUserInRole(adminRole, root) == false){
 					logger.error("Root, Admin, or Document Control were not in the admin role in the public org.");
 					return out_bool;
 				}

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects"
+	xmlns:Q1="http://www.cote.org/accountmanager/objects/types">
+	<include schemaLocation="AttributeType.xsd"></include>
+	<include schemaLocation="GroupType.xsd"></include>
+	<import schemaLocation="Types.xsd"
+		namespace="http://www.cote.org/accountmanager/objects/types">
+	</import>
+	<include schemaLocation="SessionType.xsd"></include>
+	<include schemaLocation="NameId.xsd"></include>
+
+	<include schemaLocation="ParticipantType.xsd"></include>
+	<complexType name="PolicyType">
+		<complexContent>
+			<extension base="tns:BaseAuthorizationType">
+				<sequence>
+					<element name="rules" type="tns:RuleType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+				</sequence>
+				<attribute name="enabled" type="boolean" default="false"></attribute>
+				<attribute name="expires" type="dateTime"></attribute>
+				<attribute name="decisionAge" type="long" default="0"></attribute>
+				<attribute name="modified" type="dateTime"></attribute>
+
+				<attribute name="created" type="dateTime"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="RuleType">
+		<complexContent>
+			<extension base="tns:BaseAuthorizationType">
+				<sequence>
+					<element name="rules" type="tns:RuleType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+					<element name="patterns" type="tns:PatternType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+				</sequence>
+				<attribute name="ruleType" type="tns:RuleEnumType" default="UNKNOWN"></attribute>
+				<attribute name="condition" type="tns:ConditionEnumType" default="UNKNOWN"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FactType">
+		<complexContent>
+			<extension base="tns:BaseAuthorizationType">
+				<sequence>
+					<element name="factReference"
+						type="tns:NameIdType">
+					</element>
+					<element name="factData" type="string"></element>
+				</sequence>
+				<attribute name="sourceUrn" type="string"></attribute>
+				<attribute name="sourceDataType"
+					type="Q1:SqlDataEnumType" default="UNKNOWN">
+				</attribute>
+				<attribute name="sourceUrl" type="string"></attribute>
+				<attribute name="factType" type="tns:FactEnumType"
+					default="UNKNOWN">
+				</attribute>
+				<attribute name="factoryType" type="Q1:FactoryEnumType"
+					default="UNKNOWN">
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="PatternType">
+		<complexContent>
+			<extension base="tns:BaseAuthorizationType">
+				<sequence>
+					<element name="fact" type="tns:FactType"></element>
+					<element name="match" type="tns:FactType"></element>
+					<element name="operation" type="tns:OperationType"></element>
+				</sequence>
+				<attribute name="factUrn" type="string"></attribute>
+				<attribute name="comparator"
+					type="Q1:ComparatorEnumType">
+				</attribute>
+				<attribute name="patternType"
+					type="tns:PatternEnumType">
+				</attribute>
+				<attribute name="matchUrn" type="string"></attribute>
+				<attribute name="operationUrn" type="string"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FunctionType">
+		<complexContent>
+			<extension base="tns:BaseAuthorizationType">
+				<sequence>
+					<element name="facts" type="tns:FunctionFactType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+					<element name="functionData" type="tns:DataType"></element>
+				</sequence>
+				<attribute name="functionType"
+					type="tns:FunctionEnumType" default="UNKNOWN">
+				</attribute>
+				<attribute name="sourceUrl" type="string"></attribute>
+				<attribute name="sourceUrn" type="string"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<simpleType name="FunctionEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="JAVASCRIPT"></enumeration>
+			<enumeration value="JAVA"></enumeration>
+			<enumeration value="REST"></enumeration>
+		</restriction>
+	</simpleType>
+
+
+	<simpleType name="PatternEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="FUNCTION"></enumeration>
+			<enumeration value="OPERATION"></enumeration>
+			<enumeration value="EXPRESSION"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="RuleEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="PERMIT"></enumeration>
+			<enumeration value="DENY"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="FactEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="STATIC"></enumeration>
+			<enumeration value="FACTORY"></enumeration>
+			<enumeration value="REST"></enumeration>
+			<enumeration value="FUNCTION"></enumeration>
+			<enumeration value="SUBJECT"></enumeration>
+			<enumeration value="CONTEXT"></enumeration>
+			<enumeration value="PARAMETER"></enumeration>
+			<enumeration value="OPERATION"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="FunctionFactType">
+		<complexContent>
+			<extension base="tns:BaseAuthorizationType">
+				<attribute name="functionUrn" type="string"></attribute>
+				<attribute name="factUrn" type="string"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="BaseAuthorizationType">
+		<complexContent>
+			<extension base="tns:NameIdDirectoryGroupType">
+				<sequence>
+					<element name="description" type="string"></element>
+				</sequence>
+				<attribute name="urn" type="string"></attribute>
+				<attribute name="logicalOrder" type="int" default="0"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="OperationType">
+		<complexContent>
+			<extension base="tns:BaseAuthorizationType">
+				<sequence>
+					<element name="operation" type="string"></element>
+				</sequence>
+				<attribute name="operationType"
+					type="tns:OperationEnumType">
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<simpleType name="OperationEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="NAMED"></enumeration>
+			<enumeration value="PERMISSION"></enumeration>
+			<enumeration value="FUNCTION"></enumeration>
+			<enumeration value="INTERNAL"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="FactParticipantType">
+		<complexContent>
+			<extension base="tns:BaseParticipantType"></extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="RuleParticipantType">
+		<complexContent>
+			<extension base="tns:BaseParticipantType"></extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="PatternParticipantType">
+		<complexContent>
+			<extension base="tns:BaseParticipantType"></extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FunctionFactParticipantType">
+		<complexContent>
+			<extension base="tns:BaseParticipantType"></extension>
+		</complexContent>
+	</complexType>
+
+
+	<simpleType name="ConditionEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="ALL"></enumeration>
+			<enumeration value="ANY"></enumeration>
+			<enumeration value="NONE"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="PolicyRequestType">
+		<sequence>
+			<element name="facts" type="tns:FactType" minOccurs="0" maxOccurs="unbounded"></element>
+		</sequence>
+		<attribute name="urn" type="string"></attribute>
+		<attribute name="subject" type="string"></attribute>
+		<attribute name="credential" type="tns:CredentialEnumType"></attribute>
+		<attribute name="requestType"
+			type="tns:PolicyRequestEnumType">
+		</attribute>
+		<attribute name="asyncRequest" type="boolean" default="false"></attribute>
+		<attribute name="organizationPath" type="string"></attribute>
+	</complexType>
+
+	<complexType name="PolicyResponseType"></complexType>
+
+	<complexType name="PolicyDefinitionType">
+		<sequence>
+			<element name="parameters" type="tns:FactType" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
+		</sequence>
+		<attribute name="urn" type="string"></attribute>
+		<attribute name="expires" type="dateTime"></attribute>
+		<attribute name="decisionAge" type="long"></attribute>
+		<attribute name="enabled" type="boolean"></attribute>
+		<attribute name="modified" type="dateTime"></attribute>
+		<attribute name="created" type="dateTime"></attribute>
+	</complexType>
+	
+
+    <simpleType name="CredentialEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="PASSWORD"></enumeration>
+    		<enumeration value="TOKEN"></enumeration>
+    		<enumeration value="SESSION"></enumeration>
+    	</restriction>
+    </simpleType>
+
+
+    <simpleType name="PolicyRequestEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="AUTHENTICATE"></enumeration>
+    		<enumeration value="DECIDE"></enumeration>
+    		<enumeration value="DEFINE"></enumeration>
+    	</restriction>
+    </simpleType>
+    
+    <simpleType name="PolicyResponseEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="AUTHENTICATED"></enumeration>
+    		<enumeration value="PERMIT"></enumeration>
+    		<enumeration value="DENY"></enumeration>
+    		<enumeration value="PENDING"></enumeration>
+    		<enumeration value="PENDING_OPERATION"></enumeration>
+    		<enumeration value="INVALID_ARGUMENT"></enumeration>
+    		<enumeration value="ERROR"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="OperationResponseEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="SUCCEEDED"></enumeration>
+    		<enumeration value="FAILED"></enumeration>
+    		<enumeration value="ERROR"></enumeration>
+    	</restriction>
+    </simpleType>
+</schema>

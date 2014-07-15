@@ -81,6 +81,7 @@ public abstract class FactoryBase {
 	
 	protected boolean insertRow(DataRow row){
 		boolean out_bool = false;
+
 		if(row.getTable().getBulkInsert() == false){
 			addCounter = 0;
 			try {

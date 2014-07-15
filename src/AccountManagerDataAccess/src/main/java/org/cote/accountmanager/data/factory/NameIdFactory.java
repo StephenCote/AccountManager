@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
@@ -153,6 +154,9 @@ public abstract class NameIdFactory extends FactoryBase {
 	public DataRow prepareAdd(NameIdType obj, String tableName) throws FactoryException{
 		DataTable table = getDataTable(tableName);
 		if(table == null) throw new FactoryException("Table doesn't exist:" + tableName);
+		/// If the factory specifies the object should have an object id, then auto generate it if it doesn't exist
+		///
+		if(hasObjectId && obj.getObjectId() == null) obj.setObjectId(UUID.randomUUID().toString());
 		if(bulkMode && obj.getId() < 0){
 			throw new FactoryException("Object id is invalid for bulk mode insert: " + obj.getId());
 		}

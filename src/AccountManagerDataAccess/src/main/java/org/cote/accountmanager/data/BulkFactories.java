@@ -1,24 +1,34 @@
 package org.cote.accountmanager.data;
 
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.factory.BulkAccountFactory;
-import org.cote.accountmanager.data.factory.BulkAddressFactory;
-import org.cote.accountmanager.data.factory.BulkContactFactory;
-import org.cote.accountmanager.data.factory.BulkContactInformationFactory;
-import org.cote.accountmanager.data.factory.BulkContactInformationParticipationFactory;
-import org.cote.accountmanager.data.factory.BulkDataFactory;
-import org.cote.accountmanager.data.factory.BulkDataParticipationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkAccountFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkAddressFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkContactFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkContactInformationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkContactInformationParticipationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkDataFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkDataParticipationFactory;
 import org.cote.accountmanager.data.factory.BulkFactory;
-import org.cote.accountmanager.data.factory.BulkGroupFactory;
-import org.cote.accountmanager.data.factory.BulkGroupParticipationFactory;
-import org.cote.accountmanager.data.factory.BulkPersonFactory;
-import org.cote.accountmanager.data.factory.BulkPersonParticipationFactory;
-import org.cote.accountmanager.data.factory.BulkRoleFactory;
-import org.cote.accountmanager.data.factory.BulkRoleParticipationFactory;
-import org.cote.accountmanager.data.factory.BulkStatisticsFactory;
-import org.cote.accountmanager.data.factory.BulkTagFactory;
-import org.cote.accountmanager.data.factory.BulkTagParticipationFactory;
-import org.cote.accountmanager.data.factory.BulkUserFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkFactFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkFunctionFactFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkFunctionFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkFunctionParticipationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkGroupFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkGroupParticipationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkOperationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkPatternFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkPersonFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkPersonParticipationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkPolicyFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkPolicyParticipationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkRoleFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkRoleParticipationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkRuleFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkRuleParticipationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkStatisticsFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkTagFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkTagParticipationFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkUserFactory;
 
 public class BulkFactories{
 	private static BulkFactory bulkFactory = null;
@@ -39,11 +49,93 @@ public class BulkFactories{
 	private static BulkRoleParticipationFactory bulkRoleParticipationFactory = null;
 	private static BulkTagFactory bulkTagFactory = null;
 	private static BulkTagParticipationFactory bulkTagParticipationFactory = null;
+	
+	private static BulkFactFactory bulkFactFactory = null;
+	private static BulkFunctionFactFactory bulkFunctionFactFactory = null;
+	private static BulkFunctionFactory bulkFunctionFactory = null;
+	private static BulkFunctionParticipationFactory bulkFunctionParticipationFactory = null;
+	private static BulkPolicyParticipationFactory bulkPolicyParticipationFactory = null;
+	private static BulkRuleParticipationFactory bulkRuleParticipationFactory = null;
+	private static BulkOperationFactory bulkOperationFactory = null;
+	private static BulkPatternFactory bulkPatternFactory = null;
+	private static BulkPolicyFactory bulkPolicyFactory = null;
+	private static BulkRuleFactory bulkRuleFactory = null;
+	
 	public static BulkFactory getBulkFactory(){
 		if(bulkFactory == null){
 			bulkFactory = new BulkFactory();
 		}
 		return bulkFactory;
+	}
+	public static BulkFactFactory getBulkFactFactory() {
+		if(bulkFactFactory == null){
+			bulkFactFactory = new BulkFactFactory();
+			Factories.initializeFactory(bulkFactFactory);
+		}
+		return bulkFactFactory;
+	}
+	public static BulkFunctionFactory getBulkFunctionFactory() {
+		if(bulkFunctionFactory == null){
+			bulkFunctionFactory = new BulkFunctionFactory();
+			Factories.initializeFactory(bulkFunctionFactory);
+		}
+		return bulkFunctionFactory;
+	}
+	public static BulkFunctionParticipationFactory getBulkFunctionParticipationFactory() {
+		if(bulkFunctionParticipationFactory == null){
+			bulkFunctionParticipationFactory = new BulkFunctionParticipationFactory();
+			Factories.initializeFactory(bulkFunctionParticipationFactory);
+		}
+		return bulkFunctionParticipationFactory;
+	}
+	public static BulkPolicyParticipationFactory getBulkPolicyParticipationFactory() {
+		if(bulkPolicyParticipationFactory == null){
+			bulkPolicyParticipationFactory = new BulkPolicyParticipationFactory();
+			Factories.initializeFactory(bulkPolicyParticipationFactory);
+		}
+		return bulkPolicyParticipationFactory;
+	}
+	public static BulkRuleParticipationFactory getBulkRuleParticipationFactory() {
+		if(bulkRuleParticipationFactory == null){
+			bulkRuleParticipationFactory = new BulkRuleParticipationFactory();
+			Factories.initializeFactory(bulkRuleParticipationFactory);
+		}
+		return bulkRuleParticipationFactory;
+	}
+	public static BulkFunctionFactFactory getBulkFunctionFactFactory() {
+		if(bulkFunctionFactFactory == null){
+			bulkFunctionFactFactory = new BulkFunctionFactFactory();
+			Factories.initializeFactory(bulkFunctionFactFactory);
+		}
+		return bulkFunctionFactFactory;
+	}
+	public static BulkOperationFactory getBulkOperationFactory() {
+		if(bulkOperationFactory == null){
+			bulkOperationFactory = new BulkOperationFactory();
+			Factories.initializeFactory(bulkOperationFactory);
+		}
+		return bulkOperationFactory;
+	}
+	public static BulkPatternFactory getBulkPatternFactory() {
+		if(bulkPatternFactory == null){
+			bulkPatternFactory = new BulkPatternFactory();
+			Factories.initializeFactory(bulkPatternFactory);
+		}
+		return bulkPatternFactory;
+	}
+	public static BulkPolicyFactory getBulkPolicyFactory() {
+		if(bulkPolicyFactory == null){
+			bulkPolicyFactory = new BulkPolicyFactory();
+			Factories.initializeFactory(bulkPolicyFactory);
+		}
+		return bulkPolicyFactory;
+	}
+	public static BulkRuleFactory getBulkRuleFactory() {
+		if(bulkRuleFactory == null){
+			bulkRuleFactory = new BulkRuleFactory();
+			Factories.initializeFactory(bulkRuleFactory);
+		}
+		return bulkRuleFactory;
 	}
 	public static BulkContactInformationFactory getBulkContactInformationFactory(){
 		if(bulkContactInformationFactory == null){

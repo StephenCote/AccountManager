@@ -13,9 +13,15 @@ import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseSpoolType;
+import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.ContactInformationType;
+import org.cote.accountmanager.objects.FactEnumType;
+import org.cote.accountmanager.objects.FunctionEnumType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.OperationEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PatternEnumType;
+import org.cote.accountmanager.objects.RuleEnumType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
@@ -83,6 +89,83 @@ public class QueryFields {
 		of.setComparator(ComparatorEnumType.EQUALS);
 		return of;
 	}
+	public static QueryField getFieldFactoryType(FactoryEnumType type)
+	{
+		return getStringField("factorytype", type.toString());
+	}
+	public static QueryField getFieldFactType(FactEnumType type)
+	{
+		return getStringField("facttype", type.toString());
+	}
+	public static QueryField getFieldRuleType(RuleEnumType type)
+	{
+		return getStringField("ruletype", type.toString());
+	}
+	public static QueryField getFieldUrn(String urn)
+	{
+		return getStringField("urn", urn);
+	}
+	public static QueryField getFieldFactData(String factData)
+	{
+		return getStringField("factdata", factData);
+	}
+
+	public static QueryField getFieldFunctionUrn(String urn)
+	{
+		return getStringField("functionurn", urn);
+	}
+	public static QueryField getFieldFunctionType(FunctionEnumType type)
+	{
+		return getStringField("functiontype", type.toString());
+	}
+
+	public static QueryField getFieldOperation(String op)
+	{
+		return getStringField("operation", op);
+	}
+	public static QueryField getFieldOperationType(OperationEnumType op)
+	{
+		return getStringField("operationtype", op.toString());
+	}
+	public static QueryField getFieldPatternType(PatternEnumType op)
+	{
+		return getStringField("patterntype", op.toString());
+	}
+	public static QueryField getFieldComparatorType(ComparatorEnumType op)
+	{
+		return getStringField("comparator", op.toString());
+	}
+	public static QueryField getFieldCondition(ConditionEnumType op)
+	{
+		return getStringField("condition", op.toString());
+	}
+
+	public static QueryField getFieldMatchUrn(String urn)
+	{
+		return getStringField("matchurn", urn);
+	}
+	public static QueryField getFieldOperationUrn(String urn)
+	{
+		return getStringField("operationurn", urn);
+	}
+
+	public static QueryField getFieldFactUrn(String urn)
+	{
+		return getStringField("facturn", urn);
+	}
+	public static QueryField getFieldSourceUrn(String urn)
+	{
+		return getStringField("sourceurn", urn);
+	}
+	public static QueryField getFieldSourceUrl(String url)
+	{
+		return getStringField("sourceurl", url);
+	}
+	public static QueryField getFieldSourceDataType(SqlDataEnumType dataType)
+	{
+		return getStringField("sourcedatatype", dataType.toString());
+	}
+
 	public static QueryField getFieldPreferred(boolean val)
 	{
 		return getBooleanField("preferred", val);
@@ -255,6 +338,10 @@ public class QueryFields {
 	{
 		return getBigIntField("logicalid", id);
 	}
+	public static QueryField getFieldLogicalOrder(int order){
+		return getIntField("logicalorder", order);
+	}
+
 	public static QueryField getFieldReferenceId(OrganizationType map)
 	{
 		return getFieldReferenceId(map.getLogicalId());

@@ -12,12 +12,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
-
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BaseGroupType;
@@ -29,8 +29,15 @@ import org.cote.accountmanager.objects.BulkSessionType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.FactType;
+import org.cote.accountmanager.objects.FunctionFactType;
+import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.OperationType;
+import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.PolicyType;
+import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.StatisticsType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -234,6 +241,37 @@ public class BulkFactory {
 	}
 	protected void writeSpool(FactoryEnumType factoryType) throws FactoryException{
 		switch(factoryType){
+			case FACT:
+				BulkFactories.getBulkFactFactory().writeSpool(BulkFactories.getBulkFactFactory().getDataTables().get(0).getName());
+				break;
+			case FUNCTIONFACT:
+				BulkFactories.getBulkFunctionFactFactory().writeSpool(BulkFactories.getBulkFunctionFactFactory().getDataTables().get(0).getName());
+				break;
+			case FUNCTION:
+				BulkFactories.getBulkFunctionFactory().writeSpool(BulkFactories.getBulkFunctionFactory().getDataTables().get(0).getName());
+				break;
+			case FUNCTIONPARTICIPATION:
+				BulkFactories.getBulkFunctionParticipationFactory().writeSpool(BulkFactories.getBulkFunctionParticipationFactory().getDataTables().get(0).getName());
+				break;
+			case POLICYPARTICIPATION:
+				BulkFactories.getBulkPolicyParticipationFactory().writeSpool(BulkFactories.getBulkPolicyParticipationFactory().getDataTables().get(0).getName());
+				break;
+			case RULEPARTICIPATION:
+				BulkFactories.getBulkRuleParticipationFactory().writeSpool(BulkFactories.getBulkRuleParticipationFactory().getDataTables().get(0).getName());
+				break;
+
+			case OPERATION:
+				BulkFactories.getBulkOperationFactory().writeSpool(BulkFactories.getBulkOperationFactory().getDataTables().get(0).getName());
+				break;
+			case PATTERN:
+				BulkFactories.getBulkPatternFactory().writeSpool(BulkFactories.getBulkPatternFactory().getDataTables().get(0).getName());
+				break;
+			case POLICY:
+				BulkFactories.getBulkPolicyFactory().writeSpool(BulkFactories.getBulkPolicyFactory().getDataTables().get(0).getName());
+				break;
+			case RULE:
+				BulkFactories.getBulkRuleFactory().writeSpool(BulkFactories.getBulkRuleFactory().getDataTables().get(0).getName());
+				break;
 			case ACCOUNT:
 				BulkFactories.getBulkAccountFactory().writeSpool(BulkFactories.getBulkAccountFactory().getDataTables().get(0).getName());
 				break;
@@ -300,7 +338,32 @@ public class BulkFactory {
 		writePreparedObject(session,entry);
 	}
 	protected void mapObjectIds(BulkEntryType entry){
+		/// TODO - Why is this not just looking up the factory type and invoking the method instead of the big switch here?
+		/// Note: Not all types are supported, and operations should gracefully fall through 
+		///
+		
 		switch(entry.getFactoryType()){
+			case FACT:
+				BulkFactories.getBulkFactFactory().mapBulkIds(entry.getObject());
+				break;
+			case FUNCTIONFACT:
+				BulkFactories.getBulkFunctionFactFactory().mapBulkIds(entry.getObject());
+				break;
+			case FUNCTION:
+				BulkFactories.getBulkFunctionFactory().mapBulkIds(entry.getObject());
+				break;
+			case OPERATION:
+				BulkFactories.getBulkOperationFactory().mapBulkIds(entry.getObject());
+				break;
+			case PATTERN:
+				BulkFactories.getBulkPatternFactory().mapBulkIds(entry.getObject());
+				break;
+			case POLICY:
+				BulkFactories.getBulkPolicyFactory().mapBulkIds(entry.getObject());
+				break;
+			case RULE:
+				BulkFactories.getBulkRuleFactory().mapBulkIds(entry.getObject());
+				break;
 			case ACCOUNT:
 				BulkFactories.getBulkAccountFactory().mapBulkIds(entry.getObject());
 				break;
@@ -339,6 +402,27 @@ public class BulkFactory {
 	protected void writePreparedObject(BulkSessionType session,BulkEntryType entry) throws FactoryException, ArgumentException, DataAccessException{
 		BaseParticipantType part = null;
 		switch(entry.getFactoryType()){
+			case FACT:
+				BulkFactories.getBulkFactFactory().addFact((FactType)entry.getObject());
+				break;
+			case FUNCTIONFACT:
+				BulkFactories.getBulkFunctionFactFactory().addFunctionFact((FunctionFactType)entry.getObject());
+				break;
+			case FUNCTION:
+				BulkFactories.getBulkFunctionFactory().addFunction((FunctionType)entry.getObject());
+				break;
+			case OPERATION:
+				BulkFactories.getBulkOperationFactory().addOperation((OperationType)entry.getObject());
+				break;
+			case PATTERN:
+				BulkFactories.getBulkPatternFactory().addPattern((PatternType)entry.getObject());
+				break;
+			case POLICY:
+				BulkFactories.getBulkPolicyFactory().addPolicy((PolicyType)entry.getObject());
+				break;
+			case RULE:
+				BulkFactories.getBulkRuleFactory().addRule((RuleType)entry.getObject());
+				break;
 			case ADDRESS:
 				BulkFactories.getBulkAddressFactory().addAddress((AddressType)entry.getObject());
 				break;

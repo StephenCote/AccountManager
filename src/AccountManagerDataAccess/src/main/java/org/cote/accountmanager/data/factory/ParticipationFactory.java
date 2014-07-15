@@ -24,6 +24,8 @@ import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactParticipantType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.FactParticipantType;
+import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -217,6 +219,14 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return  Factories.getRoleFactory().getRoles(new QueryField[] { field }, organization);
 		//return new ArrayList<BaseRoleType>();
+
+	}
+	protected List<FactType> getFactListFromParticipations(FactParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
+	{
+	
+		QueryField field = QueryFields.getFieldParticipantIds(list);
+		return  Factories.getFactFactory().getFacts(new QueryField[] { field }, organization);
+		//return new ArrayList<BaseFactType>();
 
 	}
 	protected <T> List<T> getGroupListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException

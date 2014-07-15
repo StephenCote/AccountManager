@@ -17,17 +17,27 @@ import org.cote.accountmanager.data.factory.ContactInformationFactory;
 import org.cote.accountmanager.data.factory.ContactInformationParticipationFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.DataParticipationFactory;
+import org.cote.accountmanager.data.factory.FactFactory;
 import org.cote.accountmanager.data.factory.FactoryBase;
+import org.cote.accountmanager.data.factory.FunctionFactFactory;
+import org.cote.accountmanager.data.factory.FunctionFactory;
+import org.cote.accountmanager.data.factory.FunctionParticipationFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
 import org.cote.accountmanager.data.factory.MessageFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
+import org.cote.accountmanager.data.factory.OperationFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.PatternFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.factory.PersonParticipationFactory;
+import org.cote.accountmanager.data.factory.PolicyFactory;
+import org.cote.accountmanager.data.factory.PolicyParticipationFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
+import org.cote.accountmanager.data.factory.RuleFactory;
+import org.cote.accountmanager.data.factory.RuleParticipationFactory;
 import org.cote.accountmanager.data.factory.SecurityTokenFactory;
 import org.cote.accountmanager.data.factory.SessionDataFactory;
 import org.cote.accountmanager.data.factory.SessionFactory;
@@ -55,6 +65,18 @@ public class Factories {
 	private static OrganizationType developmentOrganization = null;
 	private static OrganizationType systemOrganization = null;
 	private static OrganizationType publicOrganization = null;
+	
+	private static FactFactory factFactory = null;
+	private static FunctionFactory functionFactory = null;
+	private static FunctionFactFactory functionFactFactory = null;
+	private static FunctionParticipationFactory functionParticipationFactory = null;
+	private static PolicyParticipationFactory policyParticipationFactory = null;
+	private static RuleParticipationFactory ruleParticipationFactory = null;
+	private static OperationFactory operationFactory = null;
+	private static PatternFactory patternFactory = null;
+	private static PolicyFactory policyFactory = null;
+	private static RuleFactory ruleFactory = null;
+	
 	private static AttributeFactory attributeFactory = null;
 	private static ContactFactory contactFactory = null;
 	private static AddressFactory addressFactory = null;
@@ -148,6 +170,76 @@ public class Factories {
 			initializeFactory(contactFactory);
 		}
 		return contactFactory;
+	}
+	public static FactFactory getFactFactory(){
+		if(factFactory == null){
+			factFactory = new FactFactory();
+			initializeFactory(factFactory);
+		}
+		return factFactory;
+	}
+	public static FunctionFactory getFunctionFactory(){
+		if(functionFactory == null){
+			functionFactory = new FunctionFactory();
+			initializeFactory(functionFactory);
+		}
+		return functionFactory;
+	}
+	public static FunctionFactFactory getFunctionFactFactory(){
+		if(functionFactFactory == null){
+			functionFactFactory = new FunctionFactFactory();
+			initializeFactory(functionFactFactory);
+		}
+		return functionFactFactory;
+	}
+	public static FunctionParticipationFactory getFunctionParticipationFactory(){
+		if(functionParticipationFactory == null){
+			functionParticipationFactory = new FunctionParticipationFactory();
+			initializeFactory(functionParticipationFactory);
+		}
+		return functionParticipationFactory;
+	}
+	public static PolicyParticipationFactory getPolicyParticipationFactory(){
+		if(policyParticipationFactory == null){
+			policyParticipationFactory = new PolicyParticipationFactory();
+			initializeFactory(policyParticipationFactory);
+		}
+		return policyParticipationFactory;
+	}
+	public static RuleParticipationFactory getRuleParticipationFactory(){
+		if(ruleParticipationFactory == null){
+			ruleParticipationFactory = new RuleParticipationFactory();
+			initializeFactory(ruleParticipationFactory);
+		}
+		return ruleParticipationFactory;
+	}
+	public static OperationFactory getOperationFactory(){
+		if(operationFactory == null){
+			operationFactory = new OperationFactory();
+			initializeFactory(operationFactory);
+		}
+		return operationFactory;
+	}
+	public static PatternFactory getPatternFactory(){
+		if(patternFactory == null){
+			patternFactory = new PatternFactory();
+			initializeFactory(patternFactory);
+		}
+		return patternFactory;
+	}
+	public static PolicyFactory getPolicyFactory(){
+		if(policyFactory == null){
+			policyFactory = new PolicyFactory();
+			initializeFactory(policyFactory);
+		}
+		return policyFactory;
+	}
+	public static RuleFactory getRuleFactory(){
+		if(ruleFactory == null){
+			ruleFactory = new RuleFactory();
+			initializeFactory(ruleFactory);
+		}
+		return ruleFactory;
 	}
 	public static AddressFactory getAddressFactory(){
 		if(addressFactory == null){
@@ -414,6 +506,38 @@ public class Factories {
 	public static <T> T getBulkFactory(FactoryEnumType factoryType){
 		T fact = null;
 		switch(factoryType){
+			case FACT:
+				fact = (T)BulkFactories.getBulkFactFactory();
+				break;
+			case FUNCTIONFACT:
+				fact = (T)BulkFactories.getBulkFunctionFactFactory();
+				break;
+			case FUNCTION:
+				fact = (T)BulkFactories.getBulkFunctionFactory();
+				break;
+			case FUNCTIONPARTICIPATION:
+				fact = (T)BulkFactories.getBulkFunctionParticipationFactory();
+				break;
+			case POLICYPARTICIPATION:
+				fact = (T)BulkFactories.getBulkPolicyParticipationFactory();
+				break;
+			case RULEPARTICIPATION:
+				fact = (T)BulkFactories.getBulkRuleParticipationFactory();
+				break;
+
+			case OPERATION:
+				fact = (T)BulkFactories.getBulkOperationFactory();
+				break;
+			case PATTERN:
+				fact = (T)BulkFactories.getBulkPatternFactory();
+				break;
+			case POLICY:
+				fact = (T)BulkFactories.getBulkPolicyFactory();
+				break;
+			case RULE:
+				fact = (T)BulkFactories.getBulkRuleFactory();
+				break;
+
 			case PERSON:
 				fact = (T)BulkFactories.getBulkPersonFactory();
 				break;
@@ -472,6 +596,38 @@ public class Factories {
 	public static <T> T getFactory(FactoryEnumType factoryType){
 		T fact = null;
 		switch(factoryType){
+			case FACT:
+				fact = (T)Factories.getFactFactory();
+				break;
+			case FUNCTIONFACT:
+				fact = (T)Factories.getFunctionFactFactory();
+				break;
+			case FUNCTION:
+				fact = (T)Factories.getFunctionFactory();
+				break;
+			case FUNCTIONPARTICIPATION:
+				fact = (T)Factories.getFunctionParticipationFactory();
+				break;
+			case POLICYPARTICIPATION:
+				fact = (T)Factories.getPolicyParticipationFactory();
+				break;
+			case RULEPARTICIPATION:
+				fact = (T)Factories.getRuleParticipationFactory();
+				break;
+
+			case OPERATION:
+				fact = (T)Factories.getOperationFactory();
+				break;
+			case PATTERN:
+				fact = (T)Factories.getPatternFactory();
+				break;
+			case POLICY:
+				fact = (T)Factories.getPolicyFactory();
+				break;
+			case RULE:
+				fact = (T)Factories.getRuleFactory();
+				break;
+
 			case ACCOUNT:
 				fact = (T)getAccountFactory();
 				break;

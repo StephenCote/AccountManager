@@ -44,6 +44,7 @@
     
     <simpleType name="SqlDataEnumType">
     	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
     		<enumeration value="ARRAY"></enumeration>
     		<enumeration value="BIGINT"></enumeration>
     		<enumeration value="BINARY"></enumeration>
@@ -147,6 +148,13 @@
     		<enumeration value="TIME"></enumeration>
     		<enumeration value="VALIDATIONRULE"></enumeration>
     		<enumeration value="WORK"></enumeration>
+    		<enumeration value="FACT"></enumeration>
+    		<enumeration value="FUNCTIONFACT"></enumeration>
+    		<enumeration value="FUNCTION"></enumeration>
+    		<enumeration value="OPERATION"></enumeration>
+    		<enumeration value="POLICY"></enumeration>
+    		<enumeration value="PATTERN"></enumeration>
+    		<enumeration value="RULE"></enumeration>
     	</restriction>
     </simpleType>
 
@@ -216,6 +224,10 @@
     		<enumeration value="FORM"></enumeration>
     		<enumeration value="FORMELEMENT"></enumeration>
     		<enumeration value="VALIDATIONRULE"></enumeration>
+    		
+    		<enumeration value="FUNCTION"></enumeration>
+    		<enumeration value="POLICY"></enumeration>
+    		<enumeration value="RULE"></enumeration>
     	</restriction>
     </simpleType>
 
@@ -256,6 +268,12 @@
     		<enumeration value="FORMELEMENT"></enumeration>
     		<enumeration value="VALIDATIONRULE"></enumeration>
     		<enumeration value="FORMELEMENTVALUE"></enumeration>
+    		
+			<enumeration value="RULE"></enumeration>
+	   		<enumeration value="FACT"></enumeration>
+	   		<enumeration value="FUNCTIONFACT"></enumeration>
+	   		<enumeration value="MATCHFACT"></enumeration>
+	   		<enumeration value="PATTERN"></enumeration>
     	</restriction>
     </simpleType>
 
@@ -371,6 +389,13 @@
     		<enumeration value="PROCESS"></enumeration>
     		<enumeration value="PROCESSSTEP"></enumeration>
     		<enumeration value="VALIDATIONRULE"></enumeration>
+    		<enumeration value="FACT"></enumeration>
+    		<enumeration value="FUNCTION"></enumeration>
+    		<enumeration value="FUNCTIONFACT"></enumeration>
+    		<enumeration value="OPERATION"></enumeration>
+    		<enumeration value="PATTERN"></enumeration>
+    		<enumeration value="POLICY"></enumeration>
+    		<enumeration value="RULE"></enumeration>
     	</restriction>
     </simpleType>
 
@@ -520,6 +545,16 @@
     		<enumeration value="VALIDATIONRULEPARTICIPATION"></enumeration>
     		<enumeration value="WORK"></enumeration>
     		<enumeration value="WORKPARTICIPATION"></enumeration>
+    		<enumeration value="FACT"></enumeration>
+    		<enumeration value="FUNCTION"></enumeration>
+    		<enumeration value="FUNCTIONPARTICIPATION"></enumeration>
+    		<enumeration value="FUNCTIONFACT"></enumeration>
+    		<enumeration value="OPERATION"></enumeration>
+    		<enumeration value="PATTERN"></enumeration>
+    		<enumeration value="POLICY"></enumeration>
+    		<enumeration value="POLICYPARTICIPATION"></enumeration>
+    		<enumeration value="RULE"></enumeration>
+    		<enumeration value="RULEPARTICIPATION"></enumeration>
     	</restriction>
     </simpleType>
 
