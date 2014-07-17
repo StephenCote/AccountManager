@@ -8,11 +8,8 @@
 	<import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
 	<complexType name="DataType">
 		<complexContent>
-			<extension base="tns:NameIdType">
+			<extension base="tns:NameIdDirectoryGroupType">
 				<sequence>
-					<element name="group"
-						type="tns:DirectoryGroupType">
-					</element>
 
 					<element name="securityType"
 						type="tns:SecurityType">

@@ -15,13 +15,20 @@ if(!window.uwmServices){
 	///
 	/// The following scripts are generated using the service pack script.
 	///
+	/*
 	uwmServices.addService(
 			"AMSchema",
 			"/AccountManager/rest/schema/smd",
 			{"serviceType":"JSON-REST","serviceURL":"/AccountManager/rest/schema","methods":[{"name":"get","httpMethod":"GET","parameters":[],"returnValue":{"name":"retVal","type":"org.cote.beans.SchemaBean"}},{"name":"entity","httpMethod":"GET","parameters":[],"returnValue":{"name":"retVal","type":"org.cote.beans.EntitySchema"}},{"name":"smd","httpMethod":"GET","parameters":[{"name":"p0","type":"javax.ws.rs.core.UriInfo"}],"returnValue":{"name":"retVal","type":"org.cote.beans.SchemaBean"}}]},
 			{"defaultPackage":"org.cote.beans","baseRoleType":{"attributes":null,"nameType":null,"parentId":null,"name":null,"id":null,"ownerId":null,"populated":null,"objectId":null,"attributesPopulated":null,"roleType":null,"referenceId":null},"messageBeanSchema":{"javaClass":"org.cote.beans.MessageBean"},"dataTypeSchema":{"dataBytesStore":null,"cipherKey":null,"passKey":null,"attributes":null,"nameType":null,"parentId":null,"name":null,"id":null,"ownerId":null,"populated":null,"objectId":null,"attributesPopulated":null,"detailsOnly":null,"publicId":null,"description":null,"dimensions":null,"mimeType":null,"size":null,"createdDate":null,"modifiedDate":null,"expiryDate":null,"blob":null,"compressed":null,"shortData":null,"passwordProtected":null,"passwordProtect":null,"enciphered":null,"encipher":null,"vaulted":null,"vaultId":null,"keyId":null,"readDataBytes":null,"wasDataBlob":null,"rating":null,"pointer":null,"dataHash":null,"compressionType":null,"volatile":null},"cryptoBeanSchema":{"publicKeyBytes":null,"privateKeyBytes":null,"cipherIV":null,"cipherKey":null,"encryptedCipherIV":null,"cipherProvider":null,"symetricCipherKeySpec":null,"asymetricCipherKeySpec":null,"randomSeedLength":null,"encryptCipherKey":null,"reverseEncrypt":null,"hashProvider":null,"cipherKeySpec":null,"keySize":null,"javaClass":"org.cote.beans.CryptoBean","spoolId":null},"sessionBean":{"dataSize":null,"sessionId":null,"securityId":null,"userId":null,"sessionCreated":null,"sessionAccessed":null,"sessionExpires":null,"sessionStatus":null,"expired":null,"organizationId":null,"javaClass":"org.cote.beans.SessionBean"},"sessionDataBean":{"name":null,"value":null,"javaClass":"org.cote.beans.SessionDataBean"},"userType":{"attributes":null,"nameType":null,"parentId":null,"name":null,"id":null,"ownerId":null,"populated":null,"objectId":null,"attributesPopulated":null,"password":null,"sessionStatus":null,"userStatus":null,"userType":null,"databaseRecord":null,"userId":null,"accountId":null},"directoryGroupType":{"subDirectories":null,"data":null,"attributes":null,"nameType":null,"parentId":null,"name":null,"id":null,"ownerId":null,"populated":null,"objectId":null,"attributesPopulated":null,"groupType":null,"referenceId":null,"readData":null,"path":null},"baseGroupType":{"attributes":null,"nameType":null,"parentId":null,"name":null,"id":null,"ownerId":null,"populated":null,"objectId":null,"attributesPopulated":null,"groupType":null,"referenceId":null},"userGroupType":{"attributes":null,"nameType":null,"parentId":null,"name":null,"id":null,"ownerId":null,"populated":null,"objectId":null,"attributesPopulated":null,"groupType":null,"referenceId":null},"contactInformationType":{"contacts":null,"addresses":null,"attributes":null,"nameType":null,"parentId":null,"name":null,"id":null,"ownerId":null,"populated":null,"objectId":null,"attributesPopulated":null,"contactInformationType":null,"description":null,"referenceId":null},"personType":{"attributes":null,"nameType":null,"parentId":null,"name":null,"id":null,"ownerId":null,"populated":null,"objectId":null,"attributesPopulated":null},"contactType":{"attributes":null,"nameType":null,"parentId":null,"name":null,"id":null,"ownerId":null,"populated":null,"objectId":null,"attributesPopulated":null,"contactType":null,"locationType":null,"preferred":null},"organizationType":{"attributes":null,"nameType":null,"parentId":null,"name":null,"id":null,"ownerId":null,"populated":null,"objectId":null,"attributesPopulated":null,"logicalId":null,"referenceId":null,"organizationType":null},"attributeType":{"values":[],"dataType":null,"index":null,"referenceType":null,"referenceId":null,"organizationId":null}}
 		);
-
+	*/
+	uwmServices.addService(
+			"AMSchema",
+			"/AccountManager/rest/schema/smd"
+			, true
+			, true
+	);
 		uwmServices.addService(
 			"AccountManager",
 			"/AccountManager/rest/accountmanager/smd",
@@ -96,6 +103,63 @@ if(!window.uwmServices){
 			{"serviceType":"JSON-REST","serviceURL":"/AccountManager/rest/group","methods":[{"name":"add","httpMethod":"POST","parameters":[{"name":"p0","type":"org.cote.accountmanager.objects.BaseGroupType"},{"name":"p1","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"boolean"}},{"name":"count","httpMethod":"GET","parameters":[{"name":"p0","type":"java.lang.String"},{"name":"p1","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"int"}},{"name":"find","httpMethod":"GET","parameters":[{"name":"p0","type":"long"},{"name":"p1","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"org.cote.accountmanager.objects.DirectoryGroupType"}},{"name":"delete","httpMethod":"POST","parameters":[{"name":"p0","type":"org.cote.accountmanager.objects.BaseGroupType"},{"name":"p1","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"boolean"}},{"name":"update","httpMethod":"POST","parameters":[{"name":"p0","type":"org.cote.accountmanager.objects.DirectoryGroupType"},{"name":"p1","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"boolean"}},{"name":"cd","httpMethod":"GET","parameters":[{"name":"p0","type":"java.lang.String"},{"name":"p1","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"org.cote.accountmanager.objects.DirectoryGroupType"}},{"name":"home","httpMethod":"GET","parameters":[{"name":"p0","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"org.cote.accountmanager.objects.DirectoryGroupType"}},{"name":"dir","httpMethod":"GET","parameters":[{"name":"p0","type":"java.lang.String"},{"name":"p1","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"[Lorg.cote.accountmanager.objects.DirectoryGroupType;"}},{"name":"clearCache","httpMethod":"GET","parameters":[{"name":"p0","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"boolean"}},{"name":"smd","httpMethod":"GET","parameters":[{"name":"p0","type":"javax.ws.rs.core.UriInfo"}],"returnValue":{"name":"retVal","type":"org.cote.beans.SchemaBean"}},{"name":"authorizeUser","httpMethod":"GET","parameters":[{"name":"p0","type":"long"},{"name":"p1","type":"long"},{"name":"p2","type":"long"},{"name":"p3","type":"boolean"},{"name":"p4","type":"boolean"},{"name":"p5","type":"boolean"},{"name":"p6","type":"boolean"},{"name":"p7","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"boolean"}},{"name":"countInParent","httpMethod":"GET","parameters":[{"name":"p0","type":"long"},{"name":"p1","type":"long"},{"name":"p2","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"int"}},{"name":"listAuthorizedRoles","httpMethod":"GET","parameters":[{"name":"p0","type":"long"},{"name":"p1","type":"long"},{"name":"p2","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"java.util.List"}},{"name":"authorizeRole","httpMethod":"GET","parameters":[{"name":"p0","type":"long"},{"name":"p1","type":"long"},{"name":"p2","type":"long"},{"name":"p3","type":"boolean"},{"name":"p4","type":"boolean"},{"name":"p5","type":"boolean"},{"name":"p6","type":"boolean"},{"name":"p7","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"boolean"}},{"name":"listInDataGroup","httpMethod":"GET","parameters":[{"name":"p0","type":"java.lang.String"},{"name":"p1","type":"int"},{"name":"p2","type":"int"},{"name":"p3","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"java.util.List"}},{"name":"listInUserGroup","httpMethod":"GET","parameters":[{"name":"p0","type":"java.lang.String"},{"name":"p1","type":"int"},{"name":"p2","type":"int"},{"name":"p3","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"java.util.List"}},{"name":"getCreatePath","httpMethod":"GET","parameters":[{"name":"p0","type":"java.lang.String"},{"name":"p1","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"org.cote.accountmanager.objects.DirectoryGroupType"}},{"name":"deleteDirectory","httpMethod":"POST","parameters":[{"name":"p0","type":"org.cote.accountmanager.objects.DirectoryGroupType"},{"name":"p1","type":"javax.servlet.http.HttpServletRequest"}],"returnValue":{"name":"retVal","type":"boolean"}}]},
 			false,
 			true
+		);
+		
+		uwmServices.addService(
+				"Fact",
+				"/AccountManager/rest/fact/smd",
+				true,
+				false,
+				true
+		);
+		
+		uwmServices.addService(
+				"Function",
+				"/AccountManager/rest/function/smd",
+				true,
+				false,
+				true
+		);
+		
+		uwmServices.addService(
+				"FunctionFact",
+				"/AccountManager/rest/functionfact/smd",
+				true,
+				false,
+				true
+		);
+		
+		uwmServices.addService(
+				"Pattern",
+				"/AccountManager/rest/pattern/smd",
+				true,
+				false,
+				true
+				
+		);
+		
+		uwmServices.addService(
+				"Policy",
+				"/AccountManager/rest/policy/smd",
+				true,
+				false,
+				true
+		);
+		
+		uwmServices.addService(
+				"Operation",
+				"/AccountManager/rest/operation/smd",
+				true,
+				false,
+				true
+		);
+		
+		uwmServices.addService(
+				"Rule",
+				"/AccountManager/rest/rule/smd",
+				true,
+				false,
+				true
 		);
 
 	/*

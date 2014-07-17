@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContextListener;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.Factories;
@@ -24,12 +25,14 @@ import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.SessionDataMaintenance;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
+import org.cote.accountmanager.services.BaseService;
 import org.cote.util.ArticleUtil;
 
 /**
  * Servlet implementation class AccountManagerFactoryInit
  */
 public class AccountManagerFactoryInit implements ServletContextListener {
+	public static final Logger logger = Logger.getLogger(AccountManagerFactoryInit.class.getName());
 	private static final long serialVersionUID = 1L;
 	private static AuditDataMaintenance auditThread = null;
 	private static SessionDataMaintenance sessionThread = null;
@@ -51,7 +54,7 @@ public class AccountManagerFactoryInit implements ServletContextListener {
       public void contextDestroyed(ServletContextEvent event)
       {
 
-    	  System.out.println("Cleanup AccountManager Factory Servlet");
+        logger.info("Cleaning up AccountManager");
         this.context = null;
         if(auditThread != null){
         	auditThread.requestStop();
@@ -69,11 +72,13 @@ public class AccountManagerFactoryInit implements ServletContextListener {
 
       public void contextInitialized(ServletContextEvent event)
       {
+    	logger.info("Initializing Account Manager");
         this.context = event.getServletContext();
 
-    //public void init(ServletConfig config) throws ServletException {
-		// TODO Auto-generated method stub
+    	logger.info("Adding Security Provider");
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+		
+		logger.info("Testing Database Connection");
 		ConnectionFactory cf = ConnectionFactory.getInstance();
 		cf.setConnectionType(CONNECTION_TYPE.DS);
 		cf.setJndiDataSource(context.getInitParameter("database.dsname"));
@@ -84,27 +89,30 @@ public class AccountManagerFactoryInit implements ServletContextListener {
 
 		try{
 			if(c == null || c.isClosed() == true){
-				System.out.println("Warning: Connection is null or closed");
+				logger.error("Warning: Connection is null or closed");
 			}
 			else{
 				c.close();
 			}
 		}
 		catch(SQLException sqe){
-			System.out.println(sqe.getMessage());
+			logger.error(sqe.getMessage());
 			sqe.printStackTrace();
 		}
 		
+		logger.info("Priming Factories");
 		/// invoke clear caches to queue up the table schemas
 		///
 		Factories.clearCaches();
 		
+		logger.info("Starting Maintenance Threads");
 		auditThread = new AuditDataMaintenance();
 		auditThread.setThreadDelay(10000);
 		
 		sessionThread = new SessionDataMaintenance();
 		
 		/// Prime the article roles
+		logger.info("Priming Public Roles");
 		String orgPath = context.getInitParameter("organization.default");
 		OrganizationType org = null;
 		if(orgPath != null && orgPath.length() > 0){
@@ -124,6 +132,9 @@ public class AccountManagerFactoryInit implements ServletContextListener {
 		else{
 			// logger.info("Skipping config check for default organization");
 		}
+		
+		BaseService.enableExtendedAttributes = Boolean.parseBoolean(context.getInitParameter("extended.attributes.enabled"));
+		logger.info("Extended attributes enabled: " + BaseService.enableExtendedAttributes);
 		
 	}
 

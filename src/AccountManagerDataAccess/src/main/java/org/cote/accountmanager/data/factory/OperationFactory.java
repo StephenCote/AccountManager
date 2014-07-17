@@ -94,6 +94,7 @@ public class OperationFactory extends NameIdGroupFactory {
 			row.setCellValue("groupid", obj.getGroup().getId());
 			row.setCellValue("description", obj.getDescription());
 			row.setCellValue("urn", obj.getUrn());
+			row.setCellValue("score", obj.getScore());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("operation", obj.getOperation());
 			
@@ -112,10 +113,11 @@ public class OperationFactory extends NameIdGroupFactory {
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
 		OperationType new_obj = new OperationType();
-		new_obj.setNameType(NameEnumType.MODEL);
+		new_obj.setNameType(NameEnumType.OPERATION);
 		super.read(rset, new_obj);
 		new_obj.setOperationType(OperationEnumType.valueOf(rset.getString("operationtype")));
 		new_obj.setUrn(rset.getString("urn"));
+		new_obj.setScore(rset.getInt("score"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setOperation(rset.getString("operation"));
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
@@ -134,6 +136,7 @@ public class OperationFactory extends NameIdGroupFactory {
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		OperationType use_map = (OperationType)map;
 		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldOperation(use_map.getOperation()));
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
 		fields.add(QueryFields.getFieldOperationType(use_map.getOperationType()));

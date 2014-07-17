@@ -2,6 +2,25 @@
 	
 	window.accountManager = {
 			organization_paths : {},
+			
+			addAttribute : function(o,s,v){
+				if(!o.attributes) o.attributes = [];
+				o.attributes.push(accountManager.newAttribute(s,v));
+				return 1;
+			},
+			newAttribute : function(s,v){
+				var a = new org.cote.beans.attributeType(),x=[];
+				a.dataType = "VARCHAR";
+				a.name = s;
+				
+				if(typeof v == "string") x.push(v);
+				else if(typeof v == "object" && v instanceof Array) x = v;
+				a.values = x;
+				return a;
+			},
+
+				
+			
 			getPublicUser : function(){
 				return uwmServices.getService("User").getPublicUser();
 			},

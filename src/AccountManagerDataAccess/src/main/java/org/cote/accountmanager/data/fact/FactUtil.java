@@ -1,4 +1,4 @@
-package org.cote.accountmanager.data.operation;
+package org.cote.accountmanager.data.fact;
 
 import java.util.regex.Pattern;
 
@@ -12,13 +12,86 @@ import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
+import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.OperationResponseEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
-;
 
-public class OperationUtil {
-	public static final Logger logger = Logger.getLogger(OperationUtil.class.getName());
+public class FactUtil {
+	public static final Logger logger = Logger.getLogger(FactUtil.class.getName());
 	private static final Pattern idPattern = Pattern.compile("^\\d+$");
+	
+	public static void setFactReference(FactType sourceFact, FactType matchFact){
+		if(sourceFact.getFactReference() != null) return;
+		
+		NameIdType obj = factoryRead(sourceFact,matchFact);
+		if(obj == null){
+			logger.error("Failed to find object " + sourceFact.getSourceUrn() + " in organization " + matchFact.getOrganization().getName());
+			return;
+		}
+		logger.info("Found object " + sourceFact.getSourceUrn() + " in organization " + matchFact.getOrganization().getName() + " having id " + obj.getId());
+		sourceFact.setFactReference(obj);
+	}
+	public static String getFactAttributeValue(FactType sourceFact, FactType matchFact){
+		setFactReference(sourceFact, matchFact);
+		if(sourceFact.getFactReference() == null) return null;
+		Factories.getAttributeFactory().populateAttributes(sourceFact.getFactReference());
+		return Factories.getAttributeFactory().getAttributeValueByName(sourceFact.getFactReference(), matchFact.getSourceUrn());
+	}
+	/*
+	public static <T> T getFactPropertyValue(FactType sourceFact, FactType matchFact){
+		setFactReference(sourceFact, matchFact);
+		if(sourceFact.getFactReference() == null) return null;
+	
+        Field field = Other.class.getDeclaredField(matchFact.getSourceUrn());
+        field.setAccessible(true);
+        T value = (T)field.get(t);
+	    
+		
+		return Factories.getAttributeFactory().getAttributeValueByName(sourceFact.getFactReference(), matchFact.getSourceUrn());
+	}
+	*/
+	public static String getFactValue(FactType sourceFact, FactType matchFact){
+		String out_val = null;
+		/// Fact value is driven by a combination of what the source fact has and what  the matchFact expects
+		/// The source fact provides context, and the match fact provides specificity
+		///
+		switch(matchFact.getFactType()){
+			case STATIC:
+				out_val = sourceFact.getFactData();
+				break;
+			case ATTRIBUTE:
+				out_val = getFactAttributeValue(sourceFact, matchFact);
+				break;
+			/*
+			case PROPERTY:
+				out_val = getFactPropertyValue(sourceFact, matchFact);
+				break;
+			*/
+			default:
+				logger.error("Unhandled fact type: " + matchFact.getFactType());
+				break;
+		}
+		return out_val;
+	}
+	public static String getMatchFactValue(FactType sourceFact, FactType matchFact){
+		String out_val = null;
+		switch(matchFact.getFactType()){
+			/// Note: The match of an attribute fact is presently the static value
+			/// This is because the source type got cross-purposed to parameter
+			case ATTRIBUTE:
+			case STATIC:
+				out_val = matchFact.getFactData();
+				break;
+			default:
+				logger.error("Unhandled fact type: " + matchFact.getFactType());
+				break;
+		}
+		return out_val;
+	}
+	
 	private static DirectoryGroupType getDirectoryFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException{
 		if(sourceFact.getSourceUrl() == null){
 			logger.error("Source URL is null");
@@ -33,6 +106,10 @@ public class OperationUtil {
 	 */
 	public static <T> T factoryRead(FactType sourceFact,final FactType referenceFact){
 		T out_obj = null;
+		if(sourceFact.getFactoryType() == FactoryEnumType.UNKNOWN || referenceFact.getFactoryType() == FactoryEnumType.UNKNOWN){
+			logger.error("Source fact (" + sourceFact.getFactoryType() + ") or reference fact (" + referenceFact.getFactoryType() + ") is not configured for a factory read operation");
+			return null;
+		}
 		if(sourceFact.getSourceUrn() == null){
 			logger.error("Source URN is null");
 			return out_obj;
@@ -80,6 +157,4 @@ public class OperationUtil {
 		return out_obj;
 	}
 
-	
-	
 }

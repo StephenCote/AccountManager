@@ -41,7 +41,11 @@
     <param-name>image.restrict.size</param-name>
     <param-value>true</param-value>
   </context-param>
-
+  <context-param>
+    <description>Enable Extended Attributes</description>
+    <param-name>extended.attributes.enabled</param-name>
+    <param-value>true</param-value>
+  </context-param>
   <context-param>
     <description>Maximum Image Width</description>
     <param-name>image.maximum.width</param-name>

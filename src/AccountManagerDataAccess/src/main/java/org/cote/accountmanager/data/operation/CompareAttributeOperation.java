@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.fact.FactUtil;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.rule.RuleUtil;
 import org.cote.accountmanager.objects.AttributeType;
@@ -19,7 +20,7 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 public class CompareAttributeOperation implements IOperation {
 	public static final Logger logger = Logger.getLogger(CompareAttributeOperation.class.getName());
 	public <T> T read(FactType sourceFact,final FactType referenceFact){
-		return OperationUtil.factoryRead(sourceFact, referenceFact);
+		return FactUtil.factoryRead(sourceFact, referenceFact);
 	}
 	public OperationResponseEnumType operate(final PatternType pattern, FactType sourceFact,final FactType referenceFact){
 		if(referenceFact.getSourceUrn() == null){

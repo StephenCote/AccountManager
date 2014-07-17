@@ -97,6 +97,7 @@ public class FactFactory extends NameIdGroupFactory {
 			row.setCellValue("factdata", obj.getFactData());
 			row.setCellValue("description", obj.getDescription());
 			row.setCellValue("urn", obj.getUrn());
+			row.setCellValue("score", obj.getScore());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("sourceurn", obj.getSourceUrn());
 			row.setCellValue("sourceurl", obj.getSourceUrl());
@@ -117,11 +118,12 @@ public class FactFactory extends NameIdGroupFactory {
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
 		FactType new_obj = new FactType();
-		new_obj.setNameType(NameEnumType.MODEL);
+		new_obj.setNameType(NameEnumType.FACT);
 		super.read(rset, new_obj);
 		new_obj.setFactType(FactEnumType.valueOf(rset.getString("facttype")));
 		new_obj.setFactoryType(FactoryEnumType.valueOf(rset.getString("factorytype")));
 		new_obj.setUrn(rset.getString("urn"));
+		new_obj.setScore(rset.getInt("score"));
 		new_obj.setFactData(rset.getString("factdata"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setSourceUrn(rset.getString("sourceurn"));
@@ -143,6 +145,7 @@ public class FactFactory extends NameIdGroupFactory {
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		FactType use_map = (FactType)map;
 		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldFactData(use_map.getFactData()));
 		fields.add(QueryFields.getFieldSourceUrn(use_map.getSourceUrn()));
 		fields.add(QueryFields.getFieldSourceUrl(use_map.getSourceUrl()));

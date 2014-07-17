@@ -478,6 +478,13 @@ public class Factories {
 	}
 	
 	public static boolean clearCaches(){
+		getFactFactory().clearCache();
+		getFunctionFactory().clearCache();
+		getFunctionFactFactory().clearCache();
+		getPatternFactory().clearCache();
+		getPolicyFactory().clearCache();
+		getOperationFactory().clearCache();
+		getRuleFactory().clearCache();
 		getAddressFactory().clearCache();
 		getContactFactory().clearCache();
 		getPersonFactory().clearCache();

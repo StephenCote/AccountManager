@@ -102,6 +102,7 @@ public class PatternFactory extends NameIdGroupFactory {
 			row.setCellValue("groupid", obj.getGroup().getId());
 			row.setCellValue("description", obj.getDescription());
 			row.setCellValue("urn", obj.getUrn());
+			row.setCellValue("score", obj.getScore());
 			row.setCellValue("facturn", obj.getFactUrn());
 			row.setCellValue("operationurn", obj.getOperationUrn());
 			row.setCellValue("matchurn", obj.getMatchUrn());
@@ -123,10 +124,11 @@ public class PatternFactory extends NameIdGroupFactory {
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
 		PatternType new_obj = new PatternType();
-		new_obj.setNameType(NameEnumType.MODEL);
+		new_obj.setNameType(NameEnumType.PATTERN);
 		super.read(rset, new_obj);
 		new_obj.setPatternType(PatternEnumType.valueOf(rset.getString("patterntype")));
 		new_obj.setUrn(rset.getString("urn"));
+		new_obj.setScore(rset.getInt("score"));
 		new_obj.setFactUrn(rset.getString("facturn"));
 		new_obj.setOperationUrn(rset.getString("operationurn"));
 		new_obj.setMatchUrn(rset.getString("matchurn"));
@@ -147,6 +149,7 @@ public class PatternFactory extends NameIdGroupFactory {
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		PatternType use_map = (PatternType)map;
 		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldFactUrn(use_map.getFactUrn()));
 		fields.add(QueryFields.getFieldMatchUrn(use_map.getMatchUrn()));
 		fields.add(QueryFields.getFieldOperationUrn(use_map.getOperationUrn()));

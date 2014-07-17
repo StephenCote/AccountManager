@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.util.AuthorizationTypeComparator;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
@@ -30,7 +32,6 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.FunctionEnumType;
-
 import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -40,6 +41,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
+
 
 public class FunctionFactory extends NameIdGroupFactory {
 	
@@ -59,6 +61,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 	public void populate(FunctionType func) throws FactoryException,ArgumentException{
 		if(func.getPopulated()) return;
 		func.getFacts().addAll(Factories.getFunctionParticipationFactory().getFunctionFactsFromParticipation(func));
+		Collections.sort(func.getFacts(),new AuthorizationTypeComparator());
 		func.setPopulated(true);
 		updateToCache(func);
 	}
@@ -85,6 +88,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 			row.setCellValue("functiontype", obj.getFunctionType().toString());
 			row.setCellValue("groupid", obj.getGroup().getId());
 			row.setCellValue("description", obj.getDescription());
+			row.setCellValue("score", obj.getScore());
 			row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("sourceurn", obj.getSourceUrn());
@@ -119,10 +123,11 @@ public class FunctionFactory extends NameIdGroupFactory {
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
 		FunctionType new_obj = new FunctionType();
-		new_obj.setNameType(NameEnumType.MODEL);
+		new_obj.setNameType(NameEnumType.FUNCTION);
 		super.read(rset, new_obj);
 		new_obj.setFunctionType(FunctionEnumType.valueOf(rset.getString("functiontype")));
 		new_obj.setUrn(rset.getString("urn"));
+		new_obj.setScore(rset.getInt("score"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setSourceUrn(rset.getString("sourceurn"));
 		new_obj.setSourceUrl(rset.getString("sourceurl"));
@@ -164,6 +169,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		FunctionType use_map = (FunctionType)map;
 		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldSourceUrn(use_map.getSourceUrn()));
 		fields.add(QueryFields.getFieldSourceUrl(use_map.getSourceUrl()));
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));

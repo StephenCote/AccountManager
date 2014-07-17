@@ -24,4 +24,6 @@ response.setCharacterEncoding("UTF-8");
 <%@include file="pagescript.js" %>
 <%@include file="services.registration.js" %>
 <%@include file="accountManager.api.js" %>
+<%@include file="rule.api.js" %>
+<%@include file="accountManagerAzn.js" %>
 <%@include file="bbscript.js" %>

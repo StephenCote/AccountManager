@@ -9,8 +9,18 @@ import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.FactType;
+import org.cote.accountmanager.objects.FunctionFactType;
+import org.cote.accountmanager.objects.FunctionType;
+import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.PolicyDefinitionType;
+import org.cote.accountmanager.objects.PolicyRequestType;
+import org.cote.accountmanager.objects.PolicyResponseType;
+import org.cote.accountmanager.objects.PolicyType;
+import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.beans.*;
@@ -35,7 +45,28 @@ public class EntitySchema {
 	private ContactType contactType = null;
 	private OrganizationType organizationType = null;
 	private AttributeType attributeType = null;
+	
+	private PolicyDefinitionType policyDefinitionType = null;
+	private PolicyRequestType policyRequestType = null;
+	private PolicyResponseType policyResponseType = null;
+	private FactType factType = null;
+	private FunctionType functionType = null;
+	private FunctionFactType functionFactType = null;
+	private PatternType patternType = null;
+	private PolicyType policyType = null;
+	private OperationType operationType = null;
+	private RuleType ruleType = null;
 	public EntitySchema(){
+		policyDefinitionType = new PolicyDefinitionType();
+		policyRequestType = new PolicyRequestType();
+		policyResponseType = new PolicyResponseType();
+		factType = new FactType();
+		functionType = new FunctionType();
+		functionFactType = new FunctionFactType();
+		patternType = new PatternType();
+		policyType = new PolicyType();
+		operationType = new OperationType();
+		ruleType = new RuleType();
 		attributeType = new AttributeType();
 		attributeType.getValues();
 		userGroupType = new UserGroupType();
@@ -53,6 +84,106 @@ public class EntitySchema {
 		sessionDataBean = new SessionDataBean();
 		userType = new UserType();
 		contactInformationType = new ContactInformationType();
+	}
+
+
+	public PolicyDefinitionType getPolicyDefinitionType() {
+		return policyDefinitionType;
+	}
+
+
+	public void setPolicyDefinitionType(PolicyDefinitionType policyDefinitionType) {
+		this.policyDefinitionType = policyDefinitionType;
+	}
+
+
+	public PolicyRequestType getPolicyRequestType() {
+		return policyRequestType;
+	}
+
+
+	public void setPolicyRequestType(PolicyRequestType policyRequestType) {
+		this.policyRequestType = policyRequestType;
+	}
+
+
+	public PolicyResponseType getPolicyResponseType() {
+		return policyResponseType;
+	}
+
+
+	public void setPolicyResponseType(PolicyResponseType policyResponseType) {
+		this.policyResponseType = policyResponseType;
+	}
+
+
+	public FactType getFactType() {
+		return factType;
+	}
+
+
+	public void setFactType(FactType factType) {
+		this.factType = factType;
+	}
+
+
+	public FunctionType getFunctionType() {
+		return functionType;
+	}
+
+
+	public void setFunctionType(FunctionType functionType) {
+		this.functionType = functionType;
+	}
+
+
+	public FunctionFactType getFunctionFactType() {
+		return functionFactType;
+	}
+
+
+	public void setFunctionFactType(FunctionFactType functionFactType) {
+		this.functionFactType = functionFactType;
+	}
+
+
+	public PatternType getPatternType() {
+		return patternType;
+	}
+
+
+	public void setPatternType(PatternType patternType) {
+		this.patternType = patternType;
+	}
+
+
+	public PolicyType getPolicyType() {
+		return policyType;
+	}
+
+
+	public void setPolicyType(PolicyType policyType) {
+		this.policyType = policyType;
+	}
+
+
+	public OperationType getOperationType() {
+		return operationType;
+	}
+
+
+	public void setOperationType(OperationType operationType) {
+		this.operationType = operationType;
+	}
+
+
+	public RuleType getRuleType() {
+		return ruleType;
+	}
+
+
+	public void setRuleType(RuleType ruleType) {
+		this.ruleType = ruleType;
 	}
 
 

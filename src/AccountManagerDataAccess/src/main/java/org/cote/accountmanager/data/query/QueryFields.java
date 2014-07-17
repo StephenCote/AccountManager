@@ -105,6 +105,11 @@ public class QueryFields {
 	{
 		return getStringField("urn", urn);
 	}
+	public static QueryField getFieldScore(int score)
+	{
+		return getIntField("score", score);
+	}
+
 	public static QueryField getFieldFactData(String factData)
 	{
 		return getStringField("factdata", factData);

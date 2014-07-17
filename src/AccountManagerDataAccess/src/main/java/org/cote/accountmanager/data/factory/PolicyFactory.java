@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.util.AuthorizationTypeComparator;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
@@ -80,7 +82,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 		policy.getPolicys().addAll(Factories.getPolicyParticipationFactory().getPolicysFromParticipation(policy));
 		*/
 		policy.getRules().addAll(Factories.getPolicyParticipationFactory().getRulesFromParticipation(policy));
-
+		Collections.sort(policy.getRules(),new AuthorizationTypeComparator());
 		policy.setPopulated(true);
 		updateToCache(policy);
 	}
@@ -114,6 +116,8 @@ public class PolicyFactory extends NameIdGroupFactory {
 			row.setCellValue("groupid", obj.getGroup().getId());
 			row.setCellValue("description", obj.getDescription());
 			row.setCellValue("urn", obj.getUrn());
+			
+			row.setCellValue("score", obj.getScore());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("createddate", obj.getCreated());
 			row.setCellValue("modifieddate", obj.getModified());
@@ -151,9 +155,10 @@ public class PolicyFactory extends NameIdGroupFactory {
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
 		PolicyType new_obj = new PolicyType();
-		new_obj.setNameType(NameEnumType.MODEL);
+		new_obj.setNameType(NameEnumType.POLICY);
 		super.read(rset, new_obj);
 		new_obj.setUrn(rset.getString("urn"));
+		new_obj.setScore(rset.getInt("score"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
 		new_obj.setEnabled(rset.getBoolean("enabled"));
@@ -200,6 +205,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		PolicyType use_map = (PolicyType)map;
 		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
 		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));

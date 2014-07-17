@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.util.AuthorizationTypeComparator;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
@@ -69,6 +71,7 @@ public class RuleFactory extends NameIdGroupFactory {
 		rule.getRules().addAll(Factories.getRuleParticipationFactory().getRulesFromParticipation(rule));
 		*/
 		rule.getPatterns().addAll(Factories.getRuleParticipationFactory().getPatternsFromParticipation(rule));
+		Collections.sort(rule.getPatterns(),new AuthorizationTypeComparator());
 		rule.setPopulated(true);
 		updateToCache(rule);
 	}
@@ -97,6 +100,7 @@ public class RuleFactory extends NameIdGroupFactory {
 			row.setCellValue("groupid", obj.getGroup().getId());
 			row.setCellValue("description", obj.getDescription());
 			row.setCellValue("urn", obj.getUrn());
+			row.setCellValue("score", obj.getScore());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			if (insertRow(row)){
 				RuleType cobj = (bulkMode ? obj : (RuleType)getByName(obj.getName(), obj.getGroup()));
@@ -128,11 +132,12 @@ public class RuleFactory extends NameIdGroupFactory {
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
 		RuleType new_obj = new RuleType();
-		new_obj.setNameType(NameEnumType.MODEL);
+		new_obj.setNameType(NameEnumType.RULE);
 		super.read(rset, new_obj);
 		new_obj.setRuleType(RuleEnumType.valueOf(rset.getString("ruletype")));
 		new_obj.setCondition(ConditionEnumType.valueOf(rset.getString("condition")));
 		new_obj.setUrn(rset.getString("urn"));
+		new_obj.setScore(rset.getInt("score"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
 		long group_id = rset.getLong("groupid");
@@ -173,6 +178,7 @@ public class RuleFactory extends NameIdGroupFactory {
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		RuleType use_map = (RuleType)map;
 		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
 		fields.add(QueryFields.getFieldRuleType(use_map.getRuleType()));
 		fields.add(QueryFields.getFieldCondition(use_map.getCondition()));

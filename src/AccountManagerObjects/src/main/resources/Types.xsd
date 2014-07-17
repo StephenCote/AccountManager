@@ -345,6 +345,7 @@
     <simpleType name="AuditEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ATTRIBUTE"></enumeration>
     		<enumeration value="PERSON"></enumeration>
     		<enumeration value="ADDRESS"></enumeration>
     		<enumeration value="CONTACT"></enumeration>

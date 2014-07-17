@@ -110,7 +110,7 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
 		FunctionFactType new_obj = new FunctionFactType();
-		new_obj.setNameType(NameEnumType.MODEL);
+		new_obj.setNameType(NameEnumType.FUNCTIONFACT);
 		super.read(rset, new_obj);
 
 		new_obj.setUrn(rset.getString("urn"));

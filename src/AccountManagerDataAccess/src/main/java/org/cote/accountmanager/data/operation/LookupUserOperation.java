@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.fact.FactUtil;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.PatternType;
@@ -13,7 +14,7 @@ public class LookupUserOperation implements IOperation {
 	public static final Logger logger = Logger.getLogger(LookupUserOperation.class.getName());
 
 	public <T> T read(FactType sourceFact,final FactType referenceFact){
-		return OperationUtil.factoryRead(sourceFact, referenceFact);
+		return FactUtil.factoryRead(sourceFact, referenceFact);
 	}
 	public OperationResponseEnumType operate(final PatternType pattern, FactType sourceFact,final FactType referenceFact){
 		if(sourceFact.getSourceUrn() == null){

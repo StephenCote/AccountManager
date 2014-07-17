@@ -46,7 +46,7 @@ public class RuleUtil {
 			switch(comparator){
 				case EQUALS:
 					if(chkData != null && compData != null) out_bool = chkData.equals(compData);
-					else{
+					else if(chkData == null && compData == null){
 						logger.info("Both values are null with an equals comparator.  Returning true");
 						out_bool = true;
 					}
