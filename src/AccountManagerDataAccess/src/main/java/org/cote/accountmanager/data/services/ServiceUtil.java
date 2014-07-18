@@ -33,7 +33,7 @@ public class ServiceUtil {
 				logger.error("Admin role in public org is null");
 				return out_bool;
 			}
-			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getSystemOrganization());
+			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization()));
 			root = Factories.getUserFactory().getUserByName("Root", Factories.getSystemOrganization());
 			if(rootAcct == null || root == null){
 				logger.error("Root account or root user is null");

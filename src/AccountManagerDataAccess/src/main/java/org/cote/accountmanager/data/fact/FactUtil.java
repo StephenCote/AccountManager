@@ -129,6 +129,7 @@ public class FactUtil {
 						break;
 						
 					/// NameIdGroupFactory types
+					case ACCOUNT:
 					case CONTACT:
 					case PERSON:
 					case ADDRESS:

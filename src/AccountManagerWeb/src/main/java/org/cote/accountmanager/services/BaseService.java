@@ -1,3 +1,7 @@
+/*
+ * ContactInformation is currently commented out until the factory gets refactored
+ */
+
 package org.cote.accountmanager.services;
 
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ import org.cote.accountmanager.data.services.FactoryService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -33,6 +38,7 @@ import org.cote.accountmanager.objects.FunctionFactType;
 import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.PatternType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserRoleType;
@@ -82,19 +88,26 @@ public class BaseService{
 		switch(type){
 			case ACCOUNT:
 				AccountType v1bean = (AccountType)in_obj;
-				AccountType new_acct = Factories.getAccountFactory().newAccount(v1bean.getName(),v1bean.getAccountType(), v1bean.getAccountStatus(), v1bean.getOrganization());
+				AccountType new_acct = Factories.getAccountFactory().newAccount(v1bean.getName(),v1bean.getAccountType(), v1bean.getAccountStatus(), v1bean.getGroup());
+				/// Note: Older style AccountType factory still being migrated, so specify the ownerid here in order to allow for contact information to be created
+				///
+				new_acct.setOwnerId(user.getId());
 				MapUtil.shallowCloneNameIdDirectoryType(v1bean, new_acct);
-				out_bool = Factories.getAccountFactory().addAccount(new_acct);
+				out_bool = Factories.getAccountFactory().addAccount(new_acct,true);
 				break;
 			case CONTACT:
 				ContactType v2bean = (ContactType)in_obj;
-				ContactType new_ct = new ContactType();
+				ContactType new_ct = Factories.getContactFactory().newContact(user, v2bean.getGroup());
 	
 				MapUtil.shallowCloneNameIdDirectoryType(v2bean, new_ct);
 				new_ct.setContactType(v2bean.getContactType());
-				new_ct.setOwnerId(v2bean.getOwnerId());
+				new_ct.setDescription(v2bean.getDescription());
+				new_ct.setLocationType(v2bean.getLocationType());
+				new_ct.setContactValue(v2bean.getContactValue());
+				new_ct.setPreferred(v2bean.getPreferred());
 				out_bool = Factories.getContactFactory().addContact(new_ct);
 				break;
+				/*
 			case CONTACTINFORMATION:
 				ContactInformationType v3bean = (ContactInformationType)in_obj;
 				ContactInformationType new_cti = new ContactInformationType();
@@ -104,6 +117,7 @@ public class BaseService{
 				new_cti.setOwnerId(v3bean.getOwnerId());
 				out_bool = Factories.getContactInformationFactory().addContactInformation(new_cti);
 				break;
+				*/
 			case FACT:
 				FactType v4bean = (FactType)in_obj;
 				FactType new_fa = Factories.getFactFactory().newFact(user, v4bean.getGroup());
@@ -178,7 +192,40 @@ public class BaseService{
 	
 				out_bool = Factories.getRuleFactory().addRule(new_ru);
 				break;
-
+			case PERSON:
+				PersonType v11bean = (PersonType)in_obj;
+				PersonType new_per = Factories.getPersonFactory().newPerson(user, v11bean.getGroup());
+	
+				MapUtil.shallowCloneNameIdDirectoryType(v11bean, new_per);
+				new_per.setAlias(v11bean.getAlias());
+				new_per.setBirthDate(v11bean.getBirthDate());
+				//new_per.setContact(v11bean.getContact());
+				new_per.setDescription(v11bean.getDescription());
+				new_per.setFirstName(v11bean.getFirstName());
+				new_per.setGender(v11bean.getGender());
+				new_per.setLastName(v11bean.getLastName());
+				new_per.setMiddleName(v11bean.getMiddleName());
+				//new_per.setParentId(v11bean.getParentId());
+				new_per.setPrefix(v11bean.getPrefix());
+				new_per.setSuffix(v11bean.getSuffix());
+				new_per.setTitle(v11bean.getTitle());
+				out_bool = Factories.getPersonFactory().addPerson(new_per);
+				break;
+			case ADDRESS:
+				AddressType v12bean = (AddressType)in_obj;
+				AddressType new_addr = Factories.getAddressFactory().newAddress(user, v12bean.getGroup());
+				MapUtil.shallowCloneNameIdDirectoryType(v12bean, new_addr);
+				new_addr.setAddressLine1(v12bean.getAddressLine1());
+				new_addr.setAddressLine2(v12bean.getAddressLine2());
+				new_addr.setCity(v12bean.getCity());
+				new_addr.setCountry(v12bean.getCountry());
+				new_addr.setDescription(v12bean.getDescription());
+				new_addr.setLocationType(v12bean.getLocationType());
+				new_addr.setPostalCode(v12bean.getPostalCode());
+				new_addr.setPreferred(v12bean.getPreferred());
+				new_addr.setRegion(v12bean.getRegion());
+				new_addr.setState(v12bean.getState());
+				out_bool = Factories.getAddressFactory().addAddress(new_addr);
 			case ROLE:
 				BaseRoleType rlbean = (BaseRoleType)in_obj;
 				BaseRoleType parentRole = null;
@@ -226,12 +273,21 @@ public class BaseService{
 			case ACCOUNT:
 				out_bool = Factories.getAccountFactory().updateAccount((AccountType)in_obj);
 				break;
+			case PERSON:
+				out_bool = Factories.getPersonFactory().updatePerson((PersonType)in_obj);
+				break;
+			case ADDRESS:
+				out_bool = Factories.getAddressFactory().updateAddress((AddressType)in_obj);
+				break;
+
 			case CONTACT:
 				out_bool = Factories.getContactFactory().updateContact((ContactType)in_obj);
 				break;
+			/*
 			case CONTACTINFORMATION:
 				out_bool = Factories.getContactInformationFactory().updateContactInformation((ContactInformationType)in_obj);
 				break;
+			*/
 			case FACT:
 				out_bool = Factories.getFactFactory().updateFact((FactType)in_obj);
 				break;
@@ -284,12 +340,20 @@ public class BaseService{
 			case ACCOUNT:
 				out_bool = Factories.getAccountFactory().deleteAccount((AccountType)in_obj);
 				break;
+			case PERSON:
+				out_bool = Factories.getPersonFactory().deletePerson((PersonType)in_obj);
+				break;
+			case ADDRESS:
+				out_bool = Factories.getAddressFactory().deleteAddress((AddressType)in_obj);
+				break;
 			case CONTACT:
 				out_bool = Factories.getContactFactory().deleteContact((ContactType)in_obj);
 				break;
+			/*
 			case CONTACTINFORMATION:
 				out_bool = Factories.getContactInformationFactory().deleteContactInformation((ContactInformationType)in_obj);
 				break;
+			*/
 			case FACT:
 				out_bool = Factories.getFactFactory().deleteFact((FactType)in_obj);
 				break;
@@ -335,12 +399,20 @@ public class BaseService{
 			case ACCOUNT:
 				out_obj = (T)Factories.getAccountFactory();
 				break;
+			case PERSON:
+				out_obj = (T)Factories.getPersonFactory();
+				break;
+			case ADDRESS:
+				out_obj = (T)Factories.getAddressFactory();
+				break;
 			case CONTACT:
 				out_obj = (T)Factories.getContactFactory();
 				break;
+				/*
 			case CONTACTINFORMATION:
 				out_obj = (T)Factories.getContactInformationFactory();
 				break;
+				*/
 			case FACT:
 				out_obj = (T)Factories.getFactFactory();
 				break;
@@ -432,6 +504,9 @@ public class BaseService{
 	private static boolean isDirectoryType(AuditEnumType type){
 		boolean out_bool = false;
 		switch(type){
+			case ACCOUNT:
+			case PERSON:
+			case ADDRESS:
 			case CONTACT:
 			case FACT:
 			case FUNCTION:
@@ -451,6 +526,9 @@ public class BaseService{
 		
 		T out_obj = null;
 		switch(type){
+			case ACCOUNT:
+			case PERSON:
+			case ADDRESS:
 			case CONTACT:
 			case FACT:
 			case FUNCTION:
@@ -517,6 +595,9 @@ public class BaseService{
 	private static <T> void delink(AuditEnumType type, T obj){
 		DirectoryGroupType dir = null;
 		switch(type){
+			case ACCOUNT:
+			case PERSON:
+			case ADDRESS:
 			case CONTACT:
 			case FACT:
 			case FUNCTION:
@@ -540,12 +621,24 @@ public class BaseService{
 	private static <T> void populate(AuditEnumType type,T object){
 		try{
 		switch(type){
-			case CONTACT:
-				Factories.getContactFactory().populate((ContactType)object);
+			case ACCOUNT:
+				Factories.getAccountFactory().populate((AccountType)object);
 				break;
+			case PERSON:
+				Factories.getPersonFactory().populate((PersonType)object);
+				break;
+			case ADDRESS:
+				Factories.getAddressFactory().populate((AddressType)object);
+				break;
+	
+			case CONTACT:
+					Factories.getContactFactory().populate((ContactType)object);
+					break;
+			/*
 			case CONTACTINFORMATION:
 				Factories.getContactInformationFactory().populate((ContactInformationType)object);
 				break;
+			*/
 			case FACT:
 				Factories.getFactFactory().populate((FactType)object);
 				break;
@@ -589,6 +682,9 @@ public class BaseService{
 	private static boolean canViewType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
+			case ACCOUNT:
+			case PERSON:
+			case ADDRESS:
 			case CONTACT:
 			case FACT:
 			case FUNCTION:
@@ -623,6 +719,9 @@ public class BaseService{
 	private static boolean canCreateType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
+			case ACCOUNT:
+			case PERSON:
+			case ADDRESS:
 			case CONTACT:
 			case FACT:
 			case FUNCTION:
@@ -662,6 +761,9 @@ public class BaseService{
 	private static boolean canChangeType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
+			case ACCOUNT:
+			case PERSON:
+			case ADDRESS:
 			case CONTACT:
 			case FACT:
 			case FUNCTION:
@@ -715,6 +817,9 @@ public class BaseService{
 	private static boolean canDeleteType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
+			case ACCOUNT:
+			case PERSON:
+			case ADDRESS:
 			case CONTACT:
 			case FACT:
 			case FUNCTION:

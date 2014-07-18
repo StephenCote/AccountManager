@@ -22,6 +22,8 @@ import org.cote.accountmanager.objects.OperationEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.RuleEnumType;
+import org.cote.accountmanager.objects.types.AccountEnumType;
+import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
@@ -632,6 +634,16 @@ public class QueryFields {
 	public static QueryField getFieldValue(String val){
 		return getStringField("value",val);
 	}
+	public static QueryField getFieldAccountId(String val){
+		return getStringField("accountid",val);
+	}
+	public static QueryField getFieldAccountStatus(AccountStatusEnumType val){
+		return getStringField("accountstatus",val.toString());
+	}
+	public static QueryField getFieldAccountType(AccountEnumType val){
+		return getStringField("accounttype",val.toString());
+	}
+
 	public static QueryField[] getFieldParticipantMatch(NameIdType map, ParticipantEnumType type){
 		List<QueryField> matches = new ArrayList<QueryField>();
 		matches.add(getFieldParticipantType(type));

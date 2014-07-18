@@ -208,11 +208,15 @@ public class ContactInformationFactory extends NameIdFactory {
 	}
 	public ContactInformationType newContactInformation(PersonType map)
 	{
-		return newContactInformation(map,ContactInformationEnumType.PERSON);
+		ContactInformationType cit = newContactInformation(map,ContactInformationEnumType.PERSON);
+		cit.setOwnerId(map.getOwnerId());
+		return cit;
 	}
 	public ContactInformationType newContactInformation(AccountType map)
 	{
-		return newContactInformation(map,ContactInformationEnumType.ACCOUNT);
+		ContactInformationType cit = newContactInformation(map,ContactInformationEnumType.ACCOUNT);
+		cit.setOwnerId(map.getOwnerId());
+		return cit;
 	}	
 	public ContactInformationType newContactInformation(UserType map)
 	{

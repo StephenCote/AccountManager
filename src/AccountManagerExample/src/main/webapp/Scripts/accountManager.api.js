@@ -78,7 +78,131 @@
 				uwmServices.getService("User").clearCache();
 				uwmServiceCache.clearServiceCache("User");
 			},
+			
+			
+			
+			countAccounts : function(sPath){
+				return uwmServices.getService("Account").count(sPath);
+			},
+			listAccounts : function(sPath, iStartIndex, iRecordCount){
+				return accountManager.serviceListInGroup(uwmServices.getService("Account"),sPath, iStartIndex, iRecordCount);
+			},
+			addAccount : function(sName, sType, sStatus, oGroup){
+				var o = new org.cote.beans.accountType();
+				o.name = sName;
+				o.accountType = sType;
+				o.accountStatus = sStatus;
+				if(oGroup){
+					o.group = accountManager.getCleanGroup(oGroup);
+				}
+				return uwmServices.getService("Account").add(o);
+			},
+			populateAccount : function(o){
+				return uwmServices.getService("Account").populate(o);
+			},
 
+			deleteAccount : function(oRec){
+				return uwmServices.getService("Account").delete(oRec);
+			},
+			updateAccount : function(oRec){
+				return uwmServices.getService("Account").update(oRec);
+			},
+			getAccount : function(sName, oGroup){
+				if(oGroup) return uwmServices.getService("Account").readByGroupId(oGroup.id,sName);
+				return uwmServices.getService("Account").read(sName);
+			},
+			
+			countPersons : function(sPath){
+				return uwmServices.getService("Person").count(sPath);
+			},
+			listPersons : function(sPath, iStartIndex, iRecordCount){
+				return accountManager.serviceListInGroup(uwmServices.getService("Person"),sPath, iStartIndex, iRecordCount);
+			},
+			addPerson : function(sName, oGroup){
+				var o = new org.cote.beans.personType();
+				o.name = sName;
+				o.birthDate = new Date();
+				if(oGroup){
+					o.group = accountManager.getCleanGroup(oGroup);
+				}
+				return uwmServices.getService("Person").add(o);
+			},
+			populatePerson : function(o){
+				return uwmServices.getService("Person").populate(o);
+			},
+
+			deletePerson : function(oRec){
+				return uwmServices.getService("Person").delete(oRec);
+			},
+			updatePerson : function(oRec){
+				return uwmServices.getService("Person").update(oRec);
+			},
+			getPerson : function(sName, oGroup){
+				if(oGroup) return uwmServices.getService("Person").readByGroupId(oGroup.id,sName);
+				return uwmServices.getService("Person").read(sName);
+			},
+			
+			countAddresss : function(sPath){
+				return uwmServices.getService("Address").count(sPath);
+			},
+			listAddresss : function(sPath, iStartIndex, iRecordCount){
+				return accountManager.serviceListInGroup(uwmServices.getService("Address"),sPath, iStartIndex, iRecordCount);
+			},
+			addAddress : function(sName, sLocType, oGroup){
+				var o = new org.cote.beans.addressType();
+				o.name = sName;
+				o.locationType = sLocType;
+				if(oGroup){
+					o.group = accountManager.getCleanGroup(oGroup);
+				}
+				return uwmServices.getService("Address").add(o);
+			},
+			populateAddress : function(o){
+				return uwmServices.getService("Address").populate(o);
+			},
+
+			deleteAddress : function(oRec){
+				return uwmServices.getService("Address").delete(oRec);
+			},
+			updateAddress : function(oRec){
+				return uwmServices.getService("Address").update(oRec);
+			},
+			getAddress : function(sName, oGroup){
+				if(oGroup) return uwmServices.getService("Address").readByGroupId(oGroup.id,sName);
+				return uwmServices.getService("Address").read(sName);
+			},
+			
+			countContacts : function(sPath){
+				return uwmServices.getService("Contact").count(sPath);
+			},
+			listContacts : function(sPath, iStartIndex, iRecordCount){
+				return accountManager.serviceListInGroup(uwmServices.getService("Contact"),sPath, iStartIndex, iRecordCount);
+			},
+			addContact : function(sName, sType, sLocType, oGroup){
+				var o = new org.cote.beans.contactType();
+				o.name = sName;
+				o.locationType = sLocType;
+				o.contactType = sType;
+				if(oGroup){
+					o.group = accountManager.getCleanGroup(oGroup);
+				}
+				return uwmServices.getService("Contact").add(o);
+			},
+			populateContact : function(o){
+				return uwmServices.getService("Contact").populate(o);
+			},
+
+			deleteContact : function(oRec){
+				return uwmServices.getService("Contact").delete(oRec);
+			},
+			updateContact : function(oRec){
+				return uwmServices.getService("Contact").update(oRec);
+			},
+			getContact : function(sName, oGroup){
+				if(oGroup) return uwmServices.getService("Contact").readByGroupId(oGroup.id,sName);
+				return uwmServices.getService("Contact").read(sName);
+			},
+			
 			countUsers : function(oOrg){
 				if(!oOrg) oOrg = window.uwm.getUser().organization;
 				return uwmServices.getService("User").count(oOrg.id);

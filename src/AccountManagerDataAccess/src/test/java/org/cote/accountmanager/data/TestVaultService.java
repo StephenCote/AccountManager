@@ -33,28 +33,7 @@ import org.junit.Test;
 public class TestVaultService extends BaseDataAccessTest{
 	public static final Logger logger = Logger.getLogger(TestVaultService.class.getName());
 	
-	private AccountType getAccount(String name){
-		
-		AccountType qaAccount = null;
-		try{
-			qaAccount = Factories.getAccountFactory().getAccountByName(name, Factories.getDevelopmentOrganization());
-	
-			if(qaAccount == null){
-				qaAccount = Factories.getAccountFactory().newAccount(name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
-				Factories.getAccountFactory().addAccount(qaAccount);
-				qaAccount = Factories.getAccountFactory().getAccountByName(name, Factories.getDevelopmentOrganization());
-			}
-		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			fe.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
-		return qaAccount;
-	}
+
 	@Test
 	public void TestVaultData(){
 		UserType qaUser = getUser("QA Vault User", "password");

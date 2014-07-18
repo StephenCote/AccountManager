@@ -29,14 +29,16 @@ public class TestBulkAccount extends BaseDataAccessTest{
 	
 	private AccountType getAccount(String name){
 		
+		DirectoryGroupType rootDir = null;
 		AccountType qaAccount = null;
 		try{
-			qaAccount = Factories.getAccountFactory().getAccountByName(name, Factories.getDevelopmentOrganization());
+			rootDir = Factories.getGroupFactory().getRootDirectory(Factories.getDevelopmentOrganization());
+			qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
 	
 			if(qaAccount == null){
-				qaAccount = Factories.getAccountFactory().newAccount(name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
+				qaAccount = Factories.getAccountFactory().newAccount(name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir);
 				Factories.getAccountFactory().addAccount(qaAccount);
-				qaAccount = Factories.getAccountFactory().getAccountByName(name, Factories.getDevelopmentOrganization());
+				qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
 			}
 		}
 		catch(FactoryException fe){

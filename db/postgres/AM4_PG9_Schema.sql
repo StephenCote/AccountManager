@@ -200,6 +200,7 @@
 					OrganizationId bigint not null default 0,
 					OwnerId bigint not null default 0,
 					ParentId bigint not null default 0,
+					GroupId bigint not null,
 					Name varchar(511) not null,
 					AccountStatus varchar(16) not null,
 					AccountType varchar(16) not null,
@@ -207,7 +208,7 @@
 				);
 				CREATE UNIQUE INDEX accounts_acct_id ON accounts(Id);
 				CREATE INDEX accounts_org_id ON accounts(OrganizationId);
-				CREATE UNIQUE INDEX IdxaccountsName on accounts(Name,ParentId,OrganizationId);
+				CREATE UNIQUE INDEX IdxaccountsName on accounts(Name,ParentId,GroupId,OrganizationId);
 
 				DROP TABLE IF EXISTS accountrolecache CASCADE;
 				CREATE TABLE accountrolecache (

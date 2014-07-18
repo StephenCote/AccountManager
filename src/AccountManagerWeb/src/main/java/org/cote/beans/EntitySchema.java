@@ -2,6 +2,7 @@ package org.cote.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -56,6 +57,8 @@ public class EntitySchema {
 	private PolicyType policyType = null;
 	private OperationType operationType = null;
 	private RuleType ruleType = null;
+	
+	private AccountType accountType = null;
 	public EntitySchema(){
 		policyDefinitionType = new PolicyDefinitionType();
 		policyRequestType = new PolicyRequestType();
@@ -84,6 +87,17 @@ public class EntitySchema {
 		sessionDataBean = new SessionDataBean();
 		userType = new UserType();
 		contactInformationType = new ContactInformationType();
+		accountType = new AccountType();
+	}
+
+
+	public AccountType getAccountType() {
+		return accountType;
+	}
+
+
+	public void setAccountType(AccountType accountType) {
+		this.accountType = accountType;
 	}
 
 

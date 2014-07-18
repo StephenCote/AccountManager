@@ -110,7 +110,7 @@ public class TestFactorySetup {
 		try{
 			adminRole = RoleService.getAccountAdministratorUserRole(Factories.getPublicOrganization());
 			assertNotNull("Role is null", adminRole);
-			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getSystemOrganization());
+			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getRootDirectory(Factories.getSystemOrganization()));
 			root = Factories.getUserFactory().getUserByName("Root", Factories.getSystemOrganization());
 			assertNotNull("Root is null", root);
 			Factories.getUserFactory().populate(root);
