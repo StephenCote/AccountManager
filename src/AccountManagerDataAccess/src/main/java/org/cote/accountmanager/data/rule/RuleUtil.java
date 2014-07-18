@@ -1,5 +1,7 @@
 package org.cote.accountmanager.data.rule;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -8,7 +10,13 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 public class RuleUtil {
 	private static final Pattern intPattern = Pattern.compile("^\\d+$");
 	public static final Logger logger = Logger.getLogger(RuleUtil.class.getName());
-
+	private static final Map<String,Pattern> patterns = new HashMap<String,Pattern>();
+	private static Pattern getPattern(String pattern){
+		if(patterns.containsKey(pattern)) return patterns.get(pattern);
+		Pattern p = Pattern.compile(pattern);
+		patterns.put(pattern, p);
+		return p;
+	}
 	public static boolean compareValue(String chkData, ComparatorEnumType comparator, String compData){
 		boolean out_bool = false;
 		
@@ -17,6 +25,7 @@ public class RuleUtil {
 			long lChk = Long.parseLong(chkData);
 			long lComp = Long.parseLong(compData);
 			switch(comparator){
+
 				case EQUALS:
 					out_bool = (lChk == lComp);
 					break;
@@ -44,6 +53,11 @@ public class RuleUtil {
 		else{
 			logger.info("Comparing as string " + chkData + " is " + comparator + " " + compData);
 			switch(comparator){
+				case LIKE:
+					String likePat = "^" + compData.replaceAll("%", ".*") + "$";
+					Pattern pat = getPattern(likePat);
+					out_bool = pat.matcher(chkData).find();
+					break;
 				case EQUALS:
 					if(chkData != null && compData != null) out_bool = chkData.equals(compData);
 					else if(chkData == null && compData == null){
