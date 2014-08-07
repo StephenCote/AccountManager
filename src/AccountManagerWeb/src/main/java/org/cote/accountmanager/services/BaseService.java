@@ -28,6 +28,7 @@ import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
@@ -50,6 +51,8 @@ import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
+import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.DataUtil;
@@ -88,7 +91,7 @@ public class BaseService{
 		switch(type){
 			case ACCOUNT:
 				AccountType v1bean = (AccountType)in_obj;
-				AccountType new_acct = Factories.getAccountFactory().newAccount(v1bean.getName(),v1bean.getAccountType(), v1bean.getAccountStatus(), v1bean.getGroup());
+				AccountType new_acct = Factories.getAccountFactory().newAccount(user,v1bean.getName(),v1bean.getAccountType(), v1bean.getAccountStatus(), v1bean.getGroup());
 				/// Note: Older style AccountType factory still being migrated, so specify the ownerid here in order to allow for contact information to be created
 				///
 				new_acct.setOwnerId(user.getId());
@@ -229,13 +232,25 @@ public class BaseService{
 			case ROLE:
 				BaseRoleType rlbean = (BaseRoleType)in_obj;
 				BaseRoleType parentRole = null;
-				if(rlbean.getParentId() > 0){
+				if(rlbean.getParentId() > 0L){
 					parentRole = Factories.getRoleFactory().getById(rlbean.getParentId(), rlbean.getOrganization());
 					if(parentRole == null) throw new ArgumentException("Role parent #" + rlbean.getParentId() + " is invalid");
 				}
 				BaseRoleType new_role = Factories.getRoleFactory().newUserRole(user, rlbean.getName(), parentRole);
 				out_bool = Factories.getRoleFactory().addRole(new_role);
 				break;
+				
+			case PERMISSION:
+				BasePermissionType perbean = (BasePermissionType)in_obj;
+				BasePermissionType parentPermission = null;
+				if(perbean.getParentId() > 0L){
+					parentPermission = Factories.getPermissionFactory().getById(perbean.getParentId(), perbean.getOrganization());
+					if(parentPermission == null) throw new ArgumentException("Permission parent #" + perbean.getParentId() + " is invalid");
+				}
+				BasePermissionType new_per2 = Factories.getPermissionFactory().newPermission(user, perbean.getName(), perbean.getPermissionType(), parentPermission, perbean.getOrganization());
+				out_bool = Factories.getPermissionFactory().addPermission(new_per2);
+				break;
+				
 			case GROUP:
 				BaseGroupType gbean = (BaseGroupType)in_obj;
 				BaseGroupType parentGroup = null;
@@ -245,6 +260,7 @@ public class BaseService{
 				BaseGroupType new_group = Factories.getGroupFactory().newGroup(user, gbean.getName(), gbean.getGroupType(), parentGroup, gbean.getOrganization());
 				out_bool = Factories.getGroupFactory().addGroup(new_group);
 				break;
+				
 			case USER:
 				UserType ubean = (UserType)in_obj;
 				UserType new_user = Factories.getUserFactory().newUser(ubean.getName(), SecurityUtil.getSaltedDigest(ubean.getPassword()), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, ubean.getOrganization());
@@ -282,6 +298,9 @@ public class BaseService{
 
 			case CONTACT:
 				out_bool = Factories.getContactFactory().updateContact((ContactType)in_obj);
+				break;
+			case PERMISSION:
+				out_bool = Factories.getPermissionFactory().updatePermission((BasePermissionType)in_obj);
 				break;
 			/*
 			case CONTACTINFORMATION:
@@ -378,6 +397,9 @@ public class BaseService{
 			case ROLE:
 				out_bool = Factories.getRoleFactory().deleteRole((BaseRoleType)in_obj);
 				break;
+			case PERMISSION:
+				out_bool = Factories.getPermissionFactory().deletePermission((BasePermissionType)in_obj);
+				break;
 			case USER:
 				out_bool = Factories.getUserFactory().deleteUser((UserType)in_obj);
 				break;
@@ -393,9 +415,12 @@ public class BaseService{
 		}
 		return out_bool;
 	}
-	private static <T> T getFactory(AuditEnumType type){
+	public static <T> T getFactory(AuditEnumType type){
 		T out_obj = null;
 		switch(type){
+			case PERMISSION:
+				out_obj = (T)Factories.getPermissionFactory();
+				break;
 			case ACCOUNT:
 				out_obj = (T)Factories.getAccountFactory();
 				break;
@@ -483,13 +508,19 @@ public class BaseService{
 		}
 		return out_obj;		
 	}
-	private static <T> T getByNameInParent(AuditEnumType type, String name, NameIdType parent) throws ArgumentException, FactoryException {
+	private static <T> T getByNameInParent(AuditEnumType type, String name, String otype, NameIdType parent) throws ArgumentException, FactoryException {
 		
 		T out_obj = null;
 		switch(type){
 			case ROLE:
-				out_obj = (T)Factories.getRoleFactory().getRoleByName(name, (BaseRoleType)parent, parent.getOrganization());
+				RoleEnumType rolType = RoleEnumType.fromValue(otype);
+				out_obj = (T)Factories.getRoleFactory().getRoleByName(name, (BaseRoleType)parent, rolType, parent.getOrganization());
 				break;
+			case PERMISSION:
+				PermissionEnumType perType = PermissionEnumType.fromValue(otype);
+				out_obj = (T)Factories.getPermissionFactory().getPermissionByName(name, perType, (BasePermissionType)parent, parent.getOrganization());
+				break;
+
 		}
 		if(out_obj != null){
 			populate(type, out_obj);
@@ -679,7 +710,7 @@ public class BaseService{
 		}
 	
 	}
-	private static boolean canViewType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
+	public static boolean canViewType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
 			case ACCOUNT:
@@ -698,6 +729,10 @@ public class BaseService{
 			case ROLE:
 				out_bool = AuthorizationService.canViewRole(user, (BaseRoleType)obj);
 				break;
+			case PERMISSION:
+				out_bool = AuthorizationService.canViewPermission(user, (BasePermissionType)obj);
+				break;
+
 			case DATA:
 				out_bool = AuthorizationService.canViewData(user, (DataType)obj);
 				break;
@@ -716,7 +751,7 @@ public class BaseService{
 		}
 		return out_bool;
 	}
-	private static boolean canCreateType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
+	public static boolean canCreateType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
 			case ACCOUNT:
@@ -732,7 +767,15 @@ public class BaseService{
 			case RULE:
 				out_bool = AuthorizationService.canChangeGroup(user,((NameIdDirectoryGroupType)obj).getGroup());
 				break;
-
+			case PERMISSION:
+				if(obj.getParentId() > 0L){
+					BasePermissionType parent = Factories.getPermissionFactory().getById(obj.getParentId(),obj.getOrganization());
+					out_bool = AuthorizationService.canChangePermission(user, parent);
+				}
+				if(!out_bool){
+					out_bool = AuthorizationService.isAccountAdministratorInMapOrganization(user, obj);
+				}
+				break;
 			case ROLE:
 
 				if(obj.getParentId() > 0L){
@@ -758,7 +801,7 @@ public class BaseService{
 		}
 		return out_bool;
 	}
-	private static boolean canChangeType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
+	public static boolean canChangeType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
 			case ACCOUNT:
@@ -774,7 +817,9 @@ public class BaseService{
 			case RULE:
 				out_bool = AuthorizationService.canChangeGroup(user,((NameIdDirectoryGroupType)obj).getGroup());
 				break;
-
+			case PERMISSION:
+				out_bool = AuthorizationService.canChangePermission(user, (BasePermissionType)obj);
+				break;
 			case ROLE:
 				out_bool = AuthorizationService.canChangeRole(user, (BaseRoleType)obj);
 	
@@ -814,7 +859,7 @@ public class BaseService{
 		}
 		return out_bool;
 	}
-	private static boolean canDeleteType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
+	public static boolean canDeleteType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
 			case ACCOUNT:
@@ -830,7 +875,9 @@ public class BaseService{
 			case RULE:
 				out_bool = AuthorizationService.canChangeGroup(user,((NameIdDirectoryGroupType)obj).getGroup());
 				break;
-
+			case PERMISSION:
+				out_bool = AuthorizationService.canDeletePermission(user, (BasePermissionType)obj);
+				break;
 			case ROLE:
 				out_bool = AuthorizationService.canDeleteRole(user, (BaseRoleType)obj);
 				break;
@@ -1242,20 +1289,20 @@ public class BaseService{
 		return out_obj;
 	}
 	
-	public static <T> T readByNameInParent(AuditEnumType type, NameIdType parent, String name,HttpServletRequest request){
+	public static <T> T readByNameInParent(AuditEnumType type, NameIdType parent, String name, String otype, HttpServletRequest request){
 		T out_obj = null;
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByNameInParent",AuditEnumType.SESSION, request.getSession(true).getId());
 		AuditService.targetAudit(audit, type, name);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return out_obj;
-		return readByNameInParent(audit,type, user, parent, name, request);
+		return readByNameInParent(audit,type, user, parent, name, otype, request);
 	}
-	public static <T> T readByNameInParent(AuditType audit,AuditEnumType type, UserType user, NameIdType parent, String name,HttpServletRequest request){
+	public static <T> T readByNameInParent(AuditType audit,AuditEnumType type, UserType user, NameIdType parent, String name,String otype, HttpServletRequest request){
 		T out_obj = null;
 		try {
 
-			out_obj = getByNameInParent(type, name, parent);
+			out_obj = getByNameInParent(type, name, otype, parent);
 			if(out_obj == null){
 				AuditService.denyResult(audit, "'" + name + "' doesn't exist");
 				return null;

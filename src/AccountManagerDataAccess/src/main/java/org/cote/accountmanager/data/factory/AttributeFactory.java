@@ -188,7 +188,7 @@ public class AttributeFactory extends NameIdFactory{
 				logger.error(e.getMessage());
 			}
 		}
-		logger.info("Out Bool = " + out_bool);
+		//logger.info("Out Bool = " + out_bool);
 		return out_bool;
 	}
 
@@ -208,7 +208,7 @@ public class AttributeFactory extends NameIdFactory{
 		DataTable table = this.dataTables.get(0);
 		String selectString = getSelectTemplate(table, instruction);
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, obj.getOrganization().getId());
-		logger.debug(sqlQuery);
+		//logger.debug(sqlQuery);
 		try {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);

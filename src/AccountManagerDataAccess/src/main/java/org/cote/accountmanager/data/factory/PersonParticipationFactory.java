@@ -268,7 +268,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	}
 	public List<DataParticipantType> getPersonDataParticipations(PersonType[] person) throws FactoryException, ArgumentException
 	{
-		return convertList(getPersonParticipations(person, ParticipantEnumType.ACCOUNT));
+		return convertList(getPersonParticipations(person, ParticipantEnumType.PERSON));
 	}
 	public List<AccountParticipantType> getPersonAccountParticipations(PersonType[] person) throws FactoryException, ArgumentException
 	{

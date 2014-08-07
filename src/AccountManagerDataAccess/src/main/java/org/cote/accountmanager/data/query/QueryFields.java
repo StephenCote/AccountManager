@@ -168,6 +168,11 @@ public class QueryFields {
 	{
 		return getStringField("sourceurl", url);
 	}
+	public static QueryField getFieldSourceType(String type)
+	{
+		return getStringField("sourcetype", type);
+	}
+
 	public static QueryField getFieldSourceDataType(SqlDataEnumType dataType)
 	{
 		return getStringField("sourcedatatype", dataType.toString());

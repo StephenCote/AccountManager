@@ -10,18 +10,15 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
@@ -29,7 +26,6 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.SessionSecurity;
-
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.ContactInformationType;
@@ -44,6 +40,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.services.DataServiceImpl;
+import org.cote.accountmanager.services.PermissionServiceImpl;
 import org.cote.accountmanager.services.RoleServiceImpl;
 import org.cote.accountmanager.services.RoleServiceImpl;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -109,11 +106,14 @@ public class RoleService{
 		return RoleServiceImpl.update(bean, request);
 	}
 	
-	@GET @Path("/getUserRole") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public BaseRoleType read(@Context HttpServletRequest request){
-		return RoleServiceImpl.getUserRole(ServiceUtil.getOrganizationFromRequest(request),request);
+	@GET @Path("/getUserRole/{type : [~%\\s0-9a-zA-Z\\/]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public BaseRoleType read(@PathParam("type") String type,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return RoleServiceImpl.getUserRole(user,type,request);
+
+		//return RoleServiceImpl.getUserRole(ServiceUtil.getOrganizationFromRequest(request),request);
 	}
-	
+	/*
 	@GET @Path("/read/{name: [%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public BaseRoleType read(@PathParam("name") String name,@Context HttpServletRequest request){
 		return RoleServiceImpl.readByOrganizationId(ServiceUtil.getOrganizationFromRequest(request).getId(),name, request);
@@ -122,10 +122,11 @@ public class RoleService{
 	public BaseRoleType readByOrganizationId(@PathParam("name") String name,@PathParam("orgId") long orgId,@Context HttpServletRequest request){
 		return RoleServiceImpl.readByOrganizationId(orgId, name, request);
 	}
-	@GET @Path("/readByParentId/{orgId: [0-9]+}/{parentId:[0-9]+}/{name: [%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public BaseRoleType readByParentId(@PathParam("name") String name,@PathParam("orgId") long orgId,@PathParam("parentId") long parentId,@Context HttpServletRequest request){
+	*/
+	@GET @Path("/readByParentId/{orgId: [0-9]+}/{parentId:[0-9]+}/{type: [%\\sa-zA-Z_0-9\\-]+}/{name: [%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public BaseRoleType readByParentId(@PathParam("name") String name,@PathParam("type") String type, @PathParam("orgId") long orgId,@PathParam("parentId") long parentId,@Context HttpServletRequest request){
 
-		return RoleServiceImpl.readByParent(orgId, parentId, name, request);
+		return RoleServiceImpl.readByParent(orgId, parentId, name, type, request);
 	}
 	@GET @Path("/readById/{id: [0-9]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public BaseRoleType readById(@PathParam("id") long id,@Context HttpServletRequest request){
@@ -197,14 +198,15 @@ public class RoleService{
 		}
 		return RoleServiceImpl.getListForUser(user, targUser);
 	}
-	
+	/*
 	@GET @Path("/list") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public List<BaseRoleType> list(@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		return RoleServiceImpl.getListInOrganization(user, user.getOrganization(),0,0);
 	}
-	@GET @Path("/listInParent/{orgId : [\\d]+}/{parentId : [\\d]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public List<BaseRoleType> listInParent(@PathParam("orgId") long orgId,@PathParam("parentId") long parentId,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
+	*/
+	@GET @Path("/listInParent/{orgId : [\\d]+}/{parentId : [\\d]+}/{type: [%\\sa-zA-Z_0-9\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public List<BaseRoleType> listInParent(@PathParam("orgId") long orgId,@PathParam("parentId") long parentId,@PathParam("type") String type, @PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		BaseRoleType parent = null;
 		OrganizationType org = null;
@@ -224,9 +226,10 @@ public class RoleService{
 			System.out.println("Null role for id " + parentId + " in org " + org);
 			return new ArrayList<BaseRoleType>();
 		}
-		return RoleServiceImpl.getListInParent(user, parent, startIndex, recordCount );
+		return RoleServiceImpl.getListInParent(user, type, parent, startIndex, recordCount );
 
 	}
+	/*
 	@GET @Path("/listInOrganization/{orgId : [\\d]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public List<BaseRoleType> listInOrganization(@PathParam("orgId") long orgId,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
@@ -250,6 +253,7 @@ public class RoleService{
 		return RoleServiceImpl.getListInOrganization(user, org, startIndex, recordCount );
 
 	}
+	*/
 	 @GET @Path("/smd") @Produces(MediaType.APPLICATION_JSON)
 	 public SchemaBean getSmdSchema(@Context UriInfo uri){
 		 if(schemaBean != null) return schemaBean;

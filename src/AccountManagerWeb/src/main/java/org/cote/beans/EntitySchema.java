@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
@@ -57,9 +58,11 @@ public class EntitySchema {
 	private PolicyType policyType = null;
 	private OperationType operationType = null;
 	private RuleType ruleType = null;
+	private BasePermissionType basePermissionType = null;
 	
 	private AccountType accountType = null;
 	public EntitySchema(){
+		basePermissionType = new BasePermissionType();
 		policyDefinitionType = new PolicyDefinitionType();
 		policyRequestType = new PolicyRequestType();
 		policyResponseType = new PolicyResponseType();
@@ -88,6 +91,16 @@ public class EntitySchema {
 		userType = new UserType();
 		contactInformationType = new ContactInformationType();
 		accountType = new AccountType();
+	}
+
+
+	public BasePermissionType getBasePermissionType() {
+		return basePermissionType;
+	}
+
+
+	public void setBasePermissionType(BasePermissionType basePermissionType) {
+		this.basePermissionType = basePermissionType;
 	}
 
 

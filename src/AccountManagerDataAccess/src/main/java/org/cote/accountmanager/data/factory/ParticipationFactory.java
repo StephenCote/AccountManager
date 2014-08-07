@@ -171,9 +171,11 @@ public abstract class ParticipationFactory extends NameIdFactory {
 			return true;
 		}
 		*/
-		if(participant.getParticipantId() < 0 || participant.getParticipationId() < 0){
+		if(participant.getParticipantId() < 0L || participant.getParticipationId() < 0L || participant.getAffectId() < 0L){
 			if(this.factoryType == FactoryEnumType.UNKNOWN) throw new FactoryException("Invalid Factory Type for Bulk Identifiers");
-			String sessionId = BulkFactories.getBulkFactory().getSessionForBulkId(participant.getParticipantId() < 0 ? participant.getParticipantId() : participant.getParticipationId());
+			/// One of the numbers is from a bulk session - find that bulk session
+			///
+			String sessionId = BulkFactories.getBulkFactory().getSessionForBulkId(participant.getParticipantId() < 0L ? participant.getParticipantId() : (participant.getParticipationId() < 0L ? participant.getParticipationId() : participant.getAffectId()));
 			if(sessionId == null){
 				logger.error("Invalid bulk session id");
 				throw new FactoryException("Invalid bulk session id");
@@ -243,6 +245,11 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getAccountFactory().getList(new QueryField[]{ field }, organization);
+	}
+	protected <T> List<T> getPersonListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
+	{
+		QueryField field = QueryFields.getFieldParticipantIds(list);
+		return Factories.getPersonFactory().getList(new QueryField[]{ field }, organization);
 	}
 /*
 	protected List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, OrganizationType organization) throws FactoryException

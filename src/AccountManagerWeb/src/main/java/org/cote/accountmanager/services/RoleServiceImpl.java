@@ -30,6 +30,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.util.ServiceUtil;
 
@@ -97,28 +98,28 @@ public class RoleServiceImpl  {
 		}
 		return bAdd;
 	}
-	public static BaseRoleType getUserRole(OrganizationType org, HttpServletRequest request){
+	public static BaseRoleType getUserRole(UserType user, String type, HttpServletRequest request){
 		BaseRoleType targetRole = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "authorizeRole", AuditEnumType.SESSION, request.getSession(true).getId());
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "User role");
-		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return null;
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, user.getName() + " user role");
+		RoleEnumType roleType = RoleEnumType.fromValue(type);
 		try{
-			BaseRoleType homeRole = Factories.getRoleFactory().getHomeUserRole(org);
-			if(homeRole == null){
-				logger.error("Account manager objects not correctly setup.  Home role is missing.");
+			targetRole = Factories.getRoleFactory().getUserRole(user, roleType, user.getOrganization());
+			if(targetRole == null){
+				logger.error("Account manager objects not correctly setup.  User role is missing.");
 				return null;
 			}
-			targetRole = Factories.getRoleFactory().getCreateUserRole(user, user.getName(),homeRole);
-			
+			/*
 			boolean bAddReadUsers = requestAccessToReadUserRole(user);
 			boolean bAddReadRoles = requestAccessToReadRoleRole(user); 
 			if(bAddReadUsers || bAddReadRoles){
 				EffectiveAuthorizationService.rebuildUserRoleCache(user);
 			}
-			
 			AuditService.permitResult(audit, "User authorized to read user role");
+			*/
+			AuditService.permitResult(audit, "Returning user role");
 			
 		}
 		catch(FactoryException fe){
@@ -140,7 +141,7 @@ public class RoleServiceImpl  {
 	public static BaseRoleType read(String name,HttpServletRequest request){
 		return BaseService.readByName(AuditEnumType.ROLE, name, request);
 	}
-	public static BaseRoleType readByParent(long orgId, long parentId, String name,HttpServletRequest request){
+	public static BaseRoleType readByParent(long orgId, long parentId, String name, String type, HttpServletRequest request){
 		OrganizationType org = null;
 		BaseRoleType parent = null;
 		try{
@@ -156,10 +157,10 @@ public class RoleServiceImpl  {
 			e.printStackTrace();
 		}
 		if(parent == null) return null;
-		return BaseService.readByNameInParent(AuditEnumType.ROLE, parent, name, request);
+		return BaseService.readByNameInParent(AuditEnumType.ROLE, parent, name, type, request);
 	}
-	public static BaseRoleType readByParent(BaseRoleType parent, String name,HttpServletRequest request){
-		BaseRoleType role = BaseService.readByNameInParent(AuditEnumType.ROLE, parent, name, request);
+	public static BaseRoleType readByParent(BaseRoleType parent, String name, String type, HttpServletRequest request){
+		BaseRoleType role = BaseService.readByNameInParent(AuditEnumType.ROLE, parent, name, type, request);
 		Factories.getAttributeFactory().populateAttributes(role);
 		return role;
 	}
@@ -377,6 +378,7 @@ public class RoleServiceImpl  {
 		return out_obj;
 		
 	}
+	/*
 	public static List<BaseRoleType> getListInOrganization(UserType user, OrganizationType org, int startRecord, int recordCount){
 		///return BaseService.getGroupList(AuditEnumType.ROLE, user, path, startRecord, recordCount);
 		
@@ -416,7 +418,8 @@ public class RoleServiceImpl  {
 		return out_obj;
 		
 	}
-	public static List<BaseRoleType> getListInParent(UserType user, BaseRoleType parentRole, int startRecord, int recordCount){
+	*/
+	public static List<BaseRoleType> getListInParent(UserType user, String type, BaseRoleType parentRole, int startRecord, int recordCount){
 		///return BaseService.getGroupList(AuditEnumType.ROLE, user, path, startRecord, recordCount);
 		
 
@@ -438,7 +441,7 @@ public class RoleServiceImpl  {
 				AuthorizationService.isRoleReaderInMapOrganization(user, parentRole)
 			){
 				AuditService.permitResult(audit, "Access authorized to list roles");
-				out_obj = getList(parentRole,startRecord,recordCount,parentRole.getOrganization() );
+				out_obj = getList(type,parentRole,startRecord,recordCount,parentRole.getOrganization() );
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
@@ -455,11 +458,10 @@ public class RoleServiceImpl  {
 		return out_obj;
 		
 	}
-	private static List<BaseRoleType> getList(BaseRoleType parentRole, int startRecord, int recordCount, OrganizationType organization) throws ArgumentException, FactoryException {
-
-		if(parentRole == null) return Factories.getRoleFactory().getRoleList(startRecord, recordCount, organization);
-		return Factories.getRoleFactory().getRoleList(parentRole,startRecord, recordCount, organization);
-		
+	private static List<BaseRoleType> getList(String type,BaseRoleType parentRole, int startRecord, int recordCount, OrganizationType organization) throws ArgumentException, FactoryException {
+		//if(parentRole == null) return Factories.getRoleFactory().getRoleList(startRecord, recordCount, organization);
+		RoleEnumType roleType = RoleEnumType.fromValue(type);
+		return Factories.getRoleFactory().getRoleList(roleType,parentRole,startRecord, recordCount, organization);
 	}
 	
 	

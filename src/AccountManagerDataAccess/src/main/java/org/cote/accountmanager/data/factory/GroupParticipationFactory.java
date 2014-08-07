@@ -19,6 +19,9 @@ import org.cote.accountmanager.objects.BucketGroupType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.PersonGroupType;
+import org.cote.accountmanager.objects.PersonParticipantType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.RoleParticipantType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserParticipantType;
@@ -43,12 +46,23 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	}
 	public boolean deleteRoleGroupParticipant(BaseGroupType group, BaseRoleType role, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
 	{
-		if(group.getGroupType() != GroupEnumType.ACCOUNT && group.getGroupType() != GroupEnumType.USER) throw new FactoryException("Can only delete user and account group participants");
+		if(group.getGroupType() != GroupEnumType.PERSON && group.getGroupType() != GroupEnumType.ACCOUNT && group.getGroupType() != GroupEnumType.USER) throw new FactoryException("Can only delete user and account group participants");
 		RoleParticipantType dp = getRoleGroupParticipant(group, role, permission, affect_type);
 		if (dp == null) return true;
 
 		removeFromCache(dp);
 
+		return deleteParticipant(dp);
+	}
+	public boolean deletePersonGroupParticipant(BaseGroupType group, PersonType person) throws FactoryException, ArgumentException
+	{
+		return deletePersonGroupParticipant(group, person, null, AffectEnumType.UNKNOWN);
+	}
+	public boolean deletePersonGroupParticipant(BaseGroupType group, PersonType person, BasePermissionType permission, AffectEnumType affect_type) throws FactoryException, ArgumentException
+	{
+		PersonParticipantType dp = getGroupParticipant(group, person, ParticipantEnumType.PERSON, permission, affect_type);
+		if (dp == null) return true;
+		removeFromCache(dp);
 		return deleteParticipant(dp);
 	}
 	public boolean deleteAccountGroupParticipant(BaseGroupType group, AccountType account) throws FactoryException, ArgumentException
@@ -85,6 +99,13 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		if (dp.size() == 0) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), group.getOrganization());
 	}
+	public boolean deletePersonGroupParticipants(PersonGroupType group, PersonType person) throws FactoryException, ArgumentException
+	{
+		List<PersonParticipantType> dp = getPersonGroupParticipants(group, person);
+		if (dp.size() == 0) return true;
+		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), group.getOrganization());
+	}
+
 	public boolean deleteUserGroupParticipants(UserGroupType group, UserType user) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> dp = getUserGroupParticipants(group, user);
@@ -97,6 +118,13 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		List<RoleParticipantType> dp = getRoleGroupParticipants(role);
 		if (dp.size() == 0) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), role.getOrganization());
+	}
+	public boolean deletePersonGroupParticipations(PersonType person) throws FactoryException, ArgumentException
+	{
+
+		List<PersonParticipantType> dp = getPersonGroupParticipants(person);
+		if (dp.size() == 0) return true;
+		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), person.getOrganization());
 	}
 	public boolean deleteAccountGroupParticipations(AccountType account) throws FactoryException, ArgumentException
 	{
@@ -119,12 +147,15 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		if (dp.size() == 0) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), data.getOrganization());
 	}
+	/*
+	/// TODO: Deprecated
 	public boolean deleteDataGroupParticipationsForAccount(AccountType account) throws FactoryException
 	{
 		long[] data_ids = ParticipationUtil.getDataFromGroupForAccount(account);
 		///return deleteParts(data_ids, "participantid", account.getOrganization());
 		return deleteParticipants(data_ids, account.getOrganization());
 	}
+	*/
 	public boolean deleteDataGroupParticipants(BucketGroupType group, DataType data) throws FactoryException, ArgumentException
 	{
 		List<DataParticipantType> dp = getDataGroupParticipants(group, data);
@@ -190,6 +221,26 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		if (group.getGroupType() == GroupEnumType.ACCOUNT || group.getGroupType() == GroupEnumType.USER) throw new ArgumentException("Cannot create account/group participation with permission affecting an account group");
 		return (AccountParticipantType)newParticipant(group, account, ParticipantEnumType.ACCOUNT, permission, affect_type);
 	}
+	public PersonParticipantType newPersonGroupParticipation(
+			BaseGroupType group,
+			PersonType person
+		) throws ArgumentException
+		{
+			/// TODO: Verify business case for this restriction
+			if (group.getGroupType() != GroupEnumType.PERSON && group.getGroupType() != GroupEnumType.USER) throw new ArgumentException("Cannot create person/group participation to non-person group");
+			return (PersonParticipantType)newParticipant(group, person, ParticipantEnumType.PERSON, null, AffectEnumType.AGGREGATE);
+		}
+		public PersonParticipantType newPersonGroupParticipation(
+			BaseGroupType group, 
+			PersonType person,
+			BasePermissionType permission,
+			AffectEnumType affect_type
+			) throws ArgumentException
+		{
+			/// TODO: Verify business case for this restriction
+			if (group.getGroupType() == GroupEnumType.PERSON || group.getGroupType() == GroupEnumType.USER) throw new ArgumentException("Cannot create person/group participation with permission affecting an person group");
+			return (PersonParticipantType)newParticipant(group, person, ParticipantEnumType.PERSON, permission, affect_type);
+		}
 	public RoleParticipantType newRoleGroupParticipation(
 		BaseGroupType group, 
 		BaseRoleType role,
@@ -199,15 +250,23 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	{
 		return (RoleParticipantType)newParticipant(group, role, ParticipantEnumType.ROLE, permission, affect_type);
 	}
+/*
+	public List<DataType> getDataForPerson(BaseGroupType group, PersonType person) throws FactoryException, ArgumentException
+	{
+		long[] data_ids = ParticipationUtil.getDataFromGroupForPerson(group, person);
+		List<DataType> out_list = new ArrayList<DataType>();
+		if(data_ids.length == 0) return out_list;
+		return Factories.getDataFactory().getDataListByIds(data_ids, true, person.getOrganization());
 
+	}
 	public List<DataType> getDataForAccount(BaseGroupType group, AccountType account) throws FactoryException, ArgumentException
 	{
 		long[] data_ids = ParticipationUtil.getDataFromGroupForAccount(group, account);
 		List<DataType> out_list = new ArrayList<DataType>();
 		if(data_ids.length == 0) return out_list;
 		return Factories.getDataFactory().getDataListByIds(data_ids, true, account.getOrganization());
-
 	}
+*/
 	public boolean getIsDataInGroup(BaseGroupType group, DataType data) throws ArgumentException, FactoryException
 	{
 		return (getDataGroupParticipant(group, data) != null);
@@ -354,6 +413,54 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	{
 		return getGroupParticipant(group, account, ParticipantEnumType.ACCOUNT, null, AffectEnumType.UNKNOWN);
 	}
+	
+	public boolean getIsPersonInGroup(BaseGroupType group, PersonType person) throws ArgumentException, FactoryException
+	{
+		return (getPersonGroupParticipant(group, person) != null);
+	}
+	public boolean getIsPersonInGroup(BaseGroupType group, PersonType person, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	{
+		return (getGroupParticipant(group, person, ParticipantEnumType.PERSON, permission, affect_type) != null);
+	}
+
+	public List<PersonParticipantType> getPersonGroupParticipations(BaseGroupType group) throws FactoryException, ArgumentException
+	{
+		return getPersonGroupParticipations(new BaseGroupType[] { group });
+	}
+	public List<PersonParticipantType> getPersonGroupParticipations(BaseGroupType[] groups) throws FactoryException, ArgumentException
+	{
+		return convertList(getParticipations(groups, ParticipantEnumType.PERSON));
+	}
+
+
+	public List<PersonParticipantType> getPersonGroupParticipants(PersonType person) throws FactoryException, ArgumentException
+	{
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(person, ParticipantEnumType.PERSON), person.getOrganization().getId()));
+	}
+
+
+	public List<PersonParticipantType> getPersonGroupParticipants(
+		BaseGroupType group,
+		PersonType person
+	) throws FactoryException, ArgumentException
+	{
+		return getPersonGroupParticipants(group, person, null, AffectEnumType.UNKNOWN);
+	}
+	public List<PersonParticipantType> getPersonGroupParticipants(
+		BaseGroupType group,
+		PersonType person,
+		BasePermissionType permission,
+		AffectEnumType affect_type
+	) throws FactoryException, ArgumentException
+	{
+		
+		return convertList(getParticipants(group, person, ParticipantEnumType.PERSON, permission, affect_type));
+	}
+	public PersonParticipantType getPersonGroupParticipant(BaseGroupType group, PersonType person) throws ArgumentException, FactoryException
+	{
+		return getGroupParticipant(group, person, ParticipantEnumType.PERSON, null, AffectEnumType.UNKNOWN);
+	}
+	
 	public <T> T getGroupParticipant(
 			BaseGroupType group,
 			NameIdType map,
@@ -368,6 +475,11 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	{
 		List<AccountParticipantType> ap = getAccountGroupParticipations(group);
 		return getAccountListFromParticipations(ap.toArray(new UserParticipantType[0]), group.getOrganization());
+	}
+	public List<PersonType> getPersonsInGroup(PersonGroupType group) throws FactoryException, ArgumentException
+	{
+		List<PersonParticipantType> ap = getPersonGroupParticipations(group);
+		return getPersonListFromParticipations(ap.toArray(new UserParticipantType[0]), group.getOrganization());
 	}
 
 	public List<UserType> getUsersInGroup(UserGroupType group) throws FactoryException, ArgumentException

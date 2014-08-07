@@ -22,6 +22,7 @@ import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
+import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.BulkEntryType;
@@ -272,6 +273,10 @@ public class BulkFactory {
 			case RULE:
 				BulkFactories.getBulkRuleFactory().writeSpool(BulkFactories.getBulkRuleFactory().getDataTables().get(0).getName());
 				break;
+			case PERMISSION:
+				BulkFactories.getBulkPermissionFactory().writeSpool(BulkFactories.getBulkPermissionFactory().getDataTables().get(0).getName());
+				break;
+
 			case ACCOUNT:
 				BulkFactories.getBulkAccountFactory().writeSpool(BulkFactories.getBulkAccountFactory().getDataTables().get(0).getName());
 				break;
@@ -364,6 +369,9 @@ public class BulkFactory {
 			case RULE:
 				BulkFactories.getBulkRuleFactory().mapBulkIds(entry.getObject());
 				break;
+			case PERMISSION:
+				BulkFactories.getBulkPermissionFactory().mapBulkIds(entry.getObject());
+				break;
 			case ACCOUNT:
 				BulkFactories.getBulkAccountFactory().mapBulkIds(entry.getObject());
 				break;
@@ -422,6 +430,9 @@ public class BulkFactory {
 				break;
 			case RULE:
 				BulkFactories.getBulkRuleFactory().addRule((RuleType)entry.getObject());
+				break;
+			case PERMISSION:
+				BulkFactories.getBulkPermissionFactory().addPermission((BasePermissionType)entry.getObject());
 				break;
 			case ADDRESS:
 				BulkFactories.getBulkAddressFactory().addAddress((AddressType)entry.getObject());
@@ -523,22 +534,30 @@ public class BulkFactory {
 		return out_id;
 	}
 	protected void updateParticipantIds(BaseParticipantType part) throws ArgumentException{
-		if(part.getParticipantId() < 0){
+		if(part.getParticipantId() < 0L){
 			if(idMap.containsKey(part.getParticipantId())){
 				//logger.debug("Remapping Participant Id " + part.getParticipantId() + " to " + idMap.get(part.getParticipantId()));
 				part.setParticipantId(idMap.get(part.getParticipantId()));
 			}
 			else{
-				throw new ArgumentException("Unable to correct participant ids");
+				throw new ArgumentException("Unable to correct participant id");
 			}
 		}
-		if(part.getParticipationId() < 0){
+		if(part.getParticipationId() < 0L){
 			if(idMap.containsKey(part.getParticipationId())){
 				//logger.debug("Remapping Participation Id " + part.getParticipationId() + " to " + idMap.get(part.getParticipationId()));
 				part.setParticipationId(idMap.get(part.getParticipationId()));
 			}
 			else{
-				throw new ArgumentException("Unable to correct participant ids");
+				throw new ArgumentException("Unable to correct participation id");
+			}
+		}
+		if(part.getAffectId() < 0L){
+			if(idMap.containsKey(part.getAffectId())){
+				part.setAffectId(idMap.get(part.getAffectId()));
+			}
+			else{
+				throw new ArgumentException("Unable to correct affect id");
 			}
 		}
 	}

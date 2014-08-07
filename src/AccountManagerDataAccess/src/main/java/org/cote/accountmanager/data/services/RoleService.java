@@ -14,6 +14,9 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PersonParticipantType;
+import org.cote.accountmanager.objects.PersonRoleType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserRoleType;
@@ -160,6 +163,37 @@ public class RoleService {
 		Factories.getGroupParticipationFactory().addParticipant(bp);
 	}
 	*/
+	
+	public static PersonRoleType getCreatePersonRole(UserType role_owner, PersonType person, String role_name) throws DataAccessException, FactoryException, ArgumentException
+	{
+		PersonRoleType parent_role = Factories.getRoleFactory().getPersonRole(person);
+		return getCreatePersonRole(role_owner, role_name, parent_role);
+	}
+	public static PersonRoleType getCreatePersonRole(UserType role_owner, String role_name, PersonRoleType Parent) throws DataAccessException, FactoryException, ArgumentException
+	{
+		return Factories.getRoleFactory().getCreatePersonRole(role_owner, role_name, Parent);
+	}
+
+	public static PersonRoleType getPersonRole(String role_name, PersonRoleType Parent, OrganizationType organization) throws FactoryException, ArgumentException{
+		return Factories.getRoleFactory().getPersonRoleByName(role_name, Parent, organization);
+	}
+	public static boolean getIsPersonInRole(BaseRoleType role, PersonType person) throws ArgumentException, FactoryException{
+		return getIsPersonInRole(role, person, null, AffectEnumType.UNKNOWN);
+	}
+	public static boolean getIsPersonInRole(BaseRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	{
+		return Factories.getRoleParticipationFactory().getIsPersonInRole(role, person,permission,affect_type);
+	}
+	public static boolean addPersonToRole(PersonType person, PersonRoleType role) throws ArgumentException, DataAccessException, FactoryException
+	{
+		return addPersonToRole(person, role, null, AffectEnumType.UNKNOWN);
+	}
+	public static UserRoleType getCreatePersonRole(UserType role_owner, String role_name) throws DataAccessException, FactoryException, ArgumentException
+	{
+		UserRoleType parent_role = Factories.getRoleFactory().getUserRole(role_owner);
+		return getCreateUserRole(role_owner, role_name, parent_role);
+	}
+	
 	public static AccountRoleType getCreateAccountRole(UserType role_owner, AccountType account, String role_name) throws DataAccessException, FactoryException, ArgumentException
 	{
 		AccountRoleType parent_role = Factories.getRoleFactory().getAccountRole(account);
@@ -221,6 +255,27 @@ public class RoleService {
 	public static boolean removeAccountFromRole(AccountRoleType role, AccountType account) throws FactoryException, ArgumentException
 	{
 		if (Factories.getRoleParticipationFactory().deleteAccountRoleParticipants(role, account))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean addPersonToRole(PersonType person, PersonRoleType role, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, DataAccessException, FactoryException
+	{
+		if (getIsPersonInRole(role, person) == false)
+		{
+			PersonParticipantType ap = Factories.getRoleParticipationFactory().newPersonRoleParticipation(role, person);
+			if (Factories.getRoleParticipationFactory().addParticipant(ap))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean removePersonFromRole(PersonRoleType role, PersonType person) throws FactoryException, ArgumentException
+	{
+		if (Factories.getRoleParticipationFactory().deletePersonRoleParticipants(role, person))
 		{
 			return true;
 		}
@@ -408,4 +463,50 @@ public class RoleService {
 		{
 			return getCreateAccountRole(role_owner, "AccountAdministrators",null);
 		}
+		
+		/// Person
+		///
+		public static PersonRoleType getAccountUsersPersonRole(UserType role_owner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreatePersonRole(role_owner, "AccountUsers", null);
+		}
+		public static PersonRoleType getAccountDevelopersPersonRole(UserType role_owner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreatePersonRole(role_owner, "AccountDevelopers", null);
+		}
+		public static PersonRoleType getSystemAdministratorPersonRole(OrganizationType org) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getPersonRole("SystemAdministrators",null, org);
+		}
+		public static PersonRoleType getSystemAdministratorPersonRole(UserType role_owner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreatePersonRole(role_owner, "SystemAdministrators",null);
+		}
+		public static PersonRoleType getDataAdministratorPersonRole(UserType role_owner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreatePersonRole(role_owner, "DataAdministrators",null);
+		}
+		public static PersonRoleType getDataAdministratorPersonRole(OrganizationType organization) throws FactoryException, ArgumentException
+		{
+			return getPersonRole("DataAdministrators", null, organization);
+		}
+
+		public static PersonRoleType getObjectAdministratorPersonRole(UserType role_owner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreatePersonRole(role_owner, "ObjectAdministrators",null);
+		}
+		public static PersonRoleType getObjectAdministratorPersonRole(OrganizationType organization) throws FactoryException, ArgumentException
+		{
+			return getPersonRole("ObjectAdministrators", null, organization);
+		}
+		
+		public static PersonRoleType getAccountAdministratorPersonRole(OrganizationType organization) throws FactoryException, ArgumentException
+		{
+			return getPersonRole("AccountAdministrators", null,organization);
+		}
+		public static PersonRoleType getAccountAdministratorPersonRole(UserType role_owner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreatePersonRole(role_owner, "AccountAdministrators",null);
+		}
+		
 }

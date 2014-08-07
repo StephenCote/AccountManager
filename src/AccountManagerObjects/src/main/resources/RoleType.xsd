@@ -24,4 +24,10 @@
 			<extension base="tns:BaseRoleType"></extension>
 		</complexContent>
 	</complexType>
+
+	<complexType name="PersonRoleType">
+		<complexContent>
+			<extension base="tns:BaseRoleType"></extension>
+		</complexContent>
+	</complexType>
 </schema>

@@ -61,4 +61,10 @@
 			<extension base="tns:BaseGroupType"></extension>
 		</complexContent>
 	</complexType>
+
+	<complexType name="PersonGroupType">
+		<complexContent>
+			<extension base="tns:BaseGroupType"></extension>
+		</complexContent>
+	</complexType>
 </schema>

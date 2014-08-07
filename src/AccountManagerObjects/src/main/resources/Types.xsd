@@ -87,6 +87,7 @@
     		<enumeration value="ROLE"></enumeration>
     		<enumeration value="ACCOUNT"></enumeration>
     		<enumeration value="USER"></enumeration>
+    		<enumeration value="PERSON"></enumeration>
     		<enumeration value="OBJECT"></enumeration>
     		<enumeration value="APPLICATION"></enumeration>
     	</restriction>
@@ -175,6 +176,7 @@
     		<enumeration value="DATA"></enumeration>
     		<enumeration value="BUCKET"></enumeration>
     		<enumeration value="USER"></enumeration>
+    		<enumeration value="PERSON"></enumeration>
     	</restriction>
     </simpleType>
 
@@ -291,6 +293,7 @@
     		<enumeration value="UNKNOWN"></enumeration>
     		<enumeration value="ACCOUNT"></enumeration>
     		<enumeration value="USER"></enumeration>
+    		<enumeration value="PERSON"></enumeration>
     	</restriction>
     </simpleType>
 

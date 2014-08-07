@@ -52,4 +52,10 @@
     		<extension base="tns:BasePermissionType"></extension>
     	</complexContent>
     </complexType>
+
+    <complexType name="PersonPermissionType">
+    	<complexContent>
+    		<extension base="tns:BasePermissionType"></extension>
+    	</complexContent>
+    </complexType>
 </schema>

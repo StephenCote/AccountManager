@@ -21,7 +21,6 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.query.QueryField;
-
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
@@ -34,9 +33,11 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PersonGroupType;
+import org.cote.accountmanager.objects.PersonRoleType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserRoleType;
-
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
@@ -47,6 +48,20 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 
 /*
  
+ Updates
+    2014/08/04 - Extended authorization query to view rights inherited from linked user and account entities.  Does not include siblings or dependency persons. This allows for asserting whether a person has an entitlement because their account or user has that entitlement.
+    Example Query:
+    	SELECT distinct referenceid FROM grouprights WHERE referenceid = 8 AND groupid = 5307 AND affecttype = 'GRANT_PERMISSION' AND affectid IN (343) and organizationid = 4 and referencetype = 'PERSON'
+		UNION ALL
+		SELECT distinct participantid FROM grouprights GR2
+		inner join personparticipation PU on GR2.referencetype = PU.participanttype AND PU.participantid = GR2.referenceid 
+		WHERE PU.participationid = 8 AND GR2.groupid = 5307 AND GR2.affecttype = 'GRANT_PERMISSION' AND GR2.affectid IN (343) and GR2.organizationid = 4 and (GR2.referencetype = 'ACCOUNT' or GR2.referencetype = 'USER')
+
+ 	This hasn't been incorporated in the role check code yet, only the entitlement level.  While this denormalized views breaks any abstraction, it does allow for simpler authorization checks that can target person types for functional roles.
+ 	
+ VIEW NOTES
+ * There may be more views than described here
+ * 
  The Effective Authorization Service leverages the indirect maps and caches created or stored in the following database tables, views, and functions:
  view groupUserRights - direct group<-user permission assignments
  view dataUserRights - direct data<-user permission assignments
@@ -58,6 +73,8 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
  view effectiveDataRoleRights - maps userrolecache to dataparticipation to yield all effective permissions by data id by user
  view groupRights - Union of effectiveGroupRoleRights and groupUserRights.  Can be pretty efficient when used with a userid and organization id
  view dataRights - Union of effectiveDataRoleRights and dataUserRights.  Can be pretty efficient when used with a userid and organization id
+ 
+ THESE HAVE BEEN DEPRECATED
  DEP: view groupRoleTrace - maps permissions<->roles<->users - not as efficient
  DEP: view groupRoleGroupRights
  DEP: view groupRoleRights
@@ -79,7 +96,10 @@ public class EffectiveAuthorizationService {
 	public static final Logger logger = Logger.getLogger(EffectiveAuthorizationService.class.getName());
 	private static Map<Long,UserType> rebuildUsers = new HashMap<Long,UserType>();
 	private static Map<Long,AccountType> rebuildAccounts = new HashMap<Long,AccountType>();
+	private static Map<Long,PersonType> rebuildPersons = new HashMap<Long,PersonType>();
 
+	public static int maximum_insert_size = 250;
+	
 	/// TODO - these individual caches coud be consolidated - though then it would be more difficult to unwind, and not sure about the perf savings
 	///
 	/// userRoleMap - caches users who participate in a role
@@ -91,7 +111,10 @@ public class EffectiveAuthorizationService {
 	private static Map<Long,Map<Long,Map<Long,Boolean>>> accountGroupMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();
 	private static Map<Long,Map<Long,Map<Long,Boolean>>> accountDataMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();
 
-	
+	private static Map<Long,Map<Long,Boolean>> personRoleMap = new HashMap<Long,Map<Long,Boolean>>();
+	private static Map<Long,Map<Long,Map<Long,Boolean>>> personGroupMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();
+	private static Map<Long,Map<Long,Map<Long,Boolean>>> personDataMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();
+
 	private static Map<Long,Map<Long,Map<Long,Boolean>>> roleRoleMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();
 	private static Map<Long,Map<Long,Map<Long,Boolean>>> roleGroupMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();
 	private static Map<Long,Map<Long,Map<Long,Boolean>>> roleDataMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();
@@ -100,6 +123,7 @@ public class EffectiveAuthorizationService {
 	///
 	private static Map<Long,Map<Long,Map<Long,Boolean>>> userRolePerMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();
 	private static Map<Long,Map<Long,Map<Long,Boolean>>> accountRolePerMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();
+	private static Map<Long,Map<Long,Map<Long,Boolean>>> personRolePerMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();
 	private static Map<Long,BaseGroupType> rebuildGroups = new HashMap<Long,BaseGroupType>();
 	private static Map<Long,BaseRoleType> rebuildRoles = new HashMap<Long,BaseRoleType>();
 	private static Map<Long,DataType> rebuildData = new HashMap<Long,DataType>();
@@ -110,10 +134,13 @@ public class EffectiveAuthorizationService {
 	///
 	private static Map<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>> actorMap = new HashMap<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>>();
 	static{
+		actorMap.put(NameEnumType.PERSON, new HashMap<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>());
 		actorMap.put(NameEnumType.USER, new HashMap<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>());
 		actorMap.put(NameEnumType.ACCOUNT, new HashMap<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>());
 		actorMap.put(NameEnumType.ROLE, new HashMap<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>());
-		//actorMap.put(NameEnumType.PERSON, new HashMap<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>());
+		actorMap.get(NameEnumType.PERSON).put(NameEnumType.GROUP, personGroupMap);
+		actorMap.get(NameEnumType.PERSON).put(NameEnumType.DATA, personDataMap);
+		actorMap.get(NameEnumType.PERSON).put(NameEnumType.ROLE, personRolePerMap);
 		actorMap.get(NameEnumType.ACCOUNT).put(NameEnumType.GROUP, accountGroupMap);
 		actorMap.get(NameEnumType.ACCOUNT).put(NameEnumType.DATA, accountDataMap);
 		actorMap.get(NameEnumType.ACCOUNT).put(NameEnumType.ROLE, accountRolePerMap);
@@ -143,7 +170,9 @@ public class EffectiveAuthorizationService {
 	public static void pendAccountUpdate(AccountType account){
 		rebuildAccounts.put(account.getId(), account);
 	}
-
+	public static void pendPersonUpdate(PersonType person){
+		rebuildPersons.put(person.getId(), person);
+	}
 	public static void pendGroupUpdate(BaseGroupType group){
 		rebuildGroups.put(group.getId(), group);
 		/// logger.debug("Pend group " + group.getName() + " #" + group.getId() + " for total count " + rebuildGroups.size());
@@ -156,7 +185,10 @@ public class EffectiveAuthorizationService {
 		accountRolePerMap.clear();
 		accountGroupMap.clear();
 		accountDataMap.clear();
-
+		personRoleMap.clear();
+		personRolePerMap.clear();
+		personGroupMap.clear();
+		personDataMap.clear();
 		userRoleMap.clear();
 		userRolePerMap.clear();
 		userGroupMap.clear();
@@ -165,6 +197,7 @@ public class EffectiveAuthorizationService {
 		roleGroupMap.clear();
 		roleDataMap.clear();
 		rebuildAccounts.clear();
+		rebuildPersons.clear();
 		rebuildUsers.clear();
 		rebuildGroups.clear();
 		rebuildRoles.clear();
@@ -197,11 +230,18 @@ public class EffectiveAuthorizationService {
 				accountRoleMap.keySet().remove(account.getId());
 				rebuildAccounts.remove(account.getId());
 				break;
+			case PERSON:
+				PersonType person = (PersonType)object;
+				personRoleMap.keySet().remove(person.getId());
+				rebuildPersons.remove(person.getId());
+				break;
 			case ROLE:
 				BaseRoleType role = (BaseRoleType)object;
 				rebuildRoles.remove(role.getId());
 				clearCache(accountRoleMap, role);
+				clearCache(personRoleMap, role);
 				clearCache(userRoleMap, role);
+				clearPerCache(personRolePerMap, role);
 				clearPerCache(accountRolePerMap, role);
 				clearPerCache(userRolePerMap, role);
 				clearPerCache(roleRoleMap,role);
@@ -251,6 +291,16 @@ public class EffectiveAuthorizationService {
 	protected static boolean getCacheValue(AccountType account, DataType data, BasePermissionType[] permissions){
 		return getPerCacheValue(accountDataMap, account, data, permissions);
 	}
+	protected static boolean getCacheValue(PersonType person, BaseRoleType role, BasePermissionType[] permissions){
+		return getPerCacheValue(personRolePerMap, person, role, permissions);
+	}
+	protected static boolean getCacheValue(PersonType person, BaseGroupType group, BasePermissionType[] permissions){
+		return getPerCacheValue(personGroupMap, person, group, permissions);
+	}
+	protected static boolean getCacheValue(PersonType person, DataType data, BasePermissionType[] permissions){
+		return getPerCacheValue(personDataMap, person, data, permissions);
+	}
+
 	/*
 	protected static boolean getCacheValue(UserType user, BaseRoleType role){
 		return getCacheValue(userRoleMap, user, role);
@@ -268,6 +318,9 @@ public class EffectiveAuthorizationService {
 				break;
 			case ACCOUNT:
 				out_bool = getCacheValue(accountRoleMap, (AccountType)actor, role);
+				break;
+			case PERSON:
+				out_bool = getCacheValue(personRoleMap, (PersonType)actor, role);
 				break;
 			default:
 				logger.error("Unhandled actor type: " + actor.getNameType().toString());
@@ -295,6 +348,9 @@ public class EffectiveAuthorizationService {
 				break;
 			case ACCOUNT:
 				out_bool = hasCache(accountRoleMap, (AccountType)actor, role);
+				break;
+			case PERSON:
+				out_bool = hasCache(personRoleMap, (PersonType)actor, role);
 				break;
 			default:
 				logger.error("Unhandled actor type: " + actor.getNameType().toString());
@@ -327,37 +383,7 @@ public class EffectiveAuthorizationService {
 	protected static boolean hasPerCache(NameIdType actor, NameIdType object, BasePermissionType[] permission){
 		return hasPerCache(getActorMap(actor.getNameType(),object.getNameType()), actor, object, permission);
 	}
-	/*
-	protected static boolean hasCache(AccountType account, BaseRoleType role, BasePermissionType[] permissions){
-		return hasPerCache(accountRolePerMap, account, role, permissions);
-	}
-	protected static boolean hasCache(AccountType account, BaseGroupType group, BasePermissionType[] permissions){
-		return hasPerCache(accountGroupMap, account, group, permissions);
-	}
-	protected static boolean hasCache(AccountType account, DataType data, BasePermissionType[] permissions){
-		return hasPerCache(accountDataMap, account, data, permissions);
-	}
-	
-	protected static boolean hasCache(UserType user, BaseRoleType role, BasePermissionType[] permissions){
-		return hasPerCache(userRolePerMap, user, role, permissions);
-	}
-	protected static boolean hasCache(UserType user, BaseGroupType group, BasePermissionType[] permissions){
-		return hasPerCache(userGroupMap, user, group, permissions);
-	}
-	protected static boolean hasCache(UserType user, DataType data, BasePermissionType[] permissions){
-		return hasPerCache(userDataMap, user, data, permissions);
-	}
-	
-	protected static boolean hasCache(BaseRoleType actor, BaseRoleType role, BasePermissionType[] permissions){
-		return hasPerCache(roleRoleMap, actor, role, permissions);
-	}
-	protected static boolean hasCache(BaseRoleType actor, BaseGroupType group, BasePermissionType[] permissions){
-		return hasPerCache(roleGroupMap, actor, group, permissions);
-	}
-	protected static boolean hasCache(BaseRoleType actor, DataType data, BasePermissionType[] permissions){
-		return hasPerCache(roleDataMap, actor, data, permissions);
-	}
-	*/
+
 	private static boolean getPerCacheValue(Map<Long,Map<Long,Map<Long,Boolean>>> map, NameIdType actor, NameIdType obj, BasePermissionType[] permissions){
 		boolean out_bool = false;
 		if(map.containsKey(actor.getId()) && map.get(actor.getId()).containsKey(obj.getId())){
@@ -409,54 +435,21 @@ public class EffectiveAuthorizationService {
 			case ACCOUNT:
 				addToCache(accountRoleMap, (AccountType)actor, role, val);
 				break;
+			case PERSON:
+				addToCache(personRoleMap, (PersonType)actor, role, val);
+				break;
+
 			default:
 				logger.error("Unhandled actor type: " + actor.getNameType().toString());
 				break;
 		}
 		
 	}
-	/*
-	protected static void addToCache(UserType user, BaseRoleType role, boolean val){
-		addToCache(userRoleMap, user, role, val);
-	}
-	protected static void addToCache(AccountType account, BaseRoleType role, boolean val){
-		addToCache(accountRoleMap, account, role, val);
-	}
-	*/
+
 	protected static void addToPerCache(NameIdType actor, NameIdType object, BasePermissionType[] permissions, boolean val){
 		addToPerCache(getActorMap(actor.getNameType(),object.getNameType()),actor,object,permissions,val);
 	}
-	/*
-	protected static void addToPerCache(UserType user, BaseGroupType group, BasePermissionType[] permissions, boolean val){
-		addToPerCache(userGroupMap, user, group, permissions, val);
-	}
-	protected static void addToPerCache(UserType user, BaseRoleType role, BasePermissionType[] permissions, boolean val){
-		addToPerCache(userRolePerMap, user, role, permissions, val);
-	}
-	protected static void addToPerCache(UserType user, DataType data, BasePermissionType[] permissions, boolean val){
-		addToPerCache(userDataMap, user, data, permissions, val);
-	}
 
-	protected static void addToPerCache(AccountType account, BaseGroupType group, BasePermissionType[] permissions, boolean val){
-		addToPerCache(accountGroupMap, account, group, permissions, val);
-	}
-	protected static void addToPerCache(AccountType account, BaseRoleType role, BasePermissionType[] permissions, boolean val){
-		addToPerCache(accountRolePerMap, account, role, permissions, val);
-	}
-	protected static void addToPerCache(AccountType account, DataType data, BasePermissionType[] permissions, boolean val){
-		addToPerCache(accountDataMap, account, data, permissions, val);
-	}
-
-	protected static void addToPerCache(BaseRoleType actor,BaseGroupType group, BasePermissionType[] permissions, boolean val){
-		addToPerCache(roleGroupMap, actor, group, permissions, val);
-	}
-	protected static void addToPerCache(BaseRoleType actor,BaseRoleType role, BasePermissionType[] permissions, boolean val){
-		addToPerCache(roleRoleMap, actor, role, permissions, val);
-	}
-	protected static void addToPerCache(BaseRoleType actor,DataType data, BasePermissionType[] permissions, boolean val){
-		addToPerCache(roleDataMap, actor, data, permissions, val);
-	}
-	*/
 	private static void addToCache(Map<Long,Map<Long,Boolean>> map, NameIdType actor, NameIdType obj, boolean val){
 		if(map.containsKey(actor.getId()) == false) map.put(actor.getId(), new HashMap<Long,Boolean>());
 		map.get(actor.getId()).put(obj.getId(),val);
@@ -485,19 +478,35 @@ public class EffectiveAuthorizationService {
 		Connection conn = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connType = DBFactory.getConnectionType(conn);
 		String token = DBFactory.getParamToken(connType);
+		boolean linkPerson = (requireReference && actor.getNameType() == NameEnumType.PERSON);;
 		try{
-			PreparedStatement stat = conn.prepareStatement("SELECT distinct " + idColumnName + " FROM " + tableName + " WHERE " + idColumnName + " = " + token + " AND " + matchColumnName + " = " + token + " AND affecttype = '" + AffectEnumType.GRANT_PERMISSION.toString() + "' AND affectid IN (" + buff.toString() + ") and organizationid = " + token + (requireReference ? " and referencetype = " + token : ""));
-			logger.debug("SELECT distinct " + idColumnName + " FROM " + tableName + " WHERE " + idColumnName + " = " + actor.getId() + " AND " + matchColumnName + " = " + obj.getId() + " AND affecttype = '" + AffectEnumType.GRANT_PERMISSION.toString() + "' AND affectid IN (" + buff.toString() + ") and organizationid = " + obj.getOrganization().getId() + (requireReference ? " and referencetype = " + actor.getNameType().toString() : ""));
+			String sql = "SELECT distinct " + idColumnName + " FROM " + tableName + " WHERE " + idColumnName + " = " + token + " AND " + matchColumnName + " = " + token + " AND affecttype = '" + AffectEnumType.GRANT_PERMISSION.toString() + "' AND affectid IN (" + buff.toString() + ") and organizationid = " + token + (requireReference ? " and referencetype = " + token : "");
+
+			if(linkPerson){
+				sql += " UNION ALL SELECT distinct participantid FROM " + tableName + " T2 "
+						+ " inner join personparticipation PU on T2.referencetype = PU.participanttype AND PU.participantid = T2.referenceid "
+						+ " WHERE PU.participationid = " + token + " AND T2." + matchColumnName + " = " + token + " AND T2.affecttype = 'GRANT_PERMISSION' AND T2.affectid IN (" + buff.toString() + ") and T2.organizationid = " + token + " and (T2.referencetype = 'ACCOUNT' or T2.referencetype = 'USER')"
+				;
+				logger.debug("Extending query to link person authorization check to direct user and child participants.");
+			}
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			//logger.debug(sql);
 			stat.setLong(1, actor.getId());
 			stat.setLong(2,obj.getId());
 			stat.setLong(3, obj.getOrganization().getId());
 			if(requireReference) stat.setString(4, actor.getNameType().toString());
+			if(linkPerson){
+				stat.setLong(5, actor.getId());
+				stat.setLong(6, obj.getId());
+				stat.setLong(7, obj.getOrganization().getId());
+			}
 			ResultSet rset = stat.executeQuery();
 			if(rset.next()){
 				long match_id = rset.getLong(1);
 				//addToCache(user,role);
 				out_bool = true;
-				logger.debug("Matched " + actor.getNameType() + " " + match_id + " having at least one permission in (" + buff.toString() + ") for " + obj.getNameType() + " " + obj.getId() + " in org " + obj.getOrganization().getId());
+				logger.debug("Matched " + actor.getNameType() + " " + match_id + (linkPerson ? " (via person linkage)" : "") + " having at least one permission in (" + buff.toString() + ") for " + obj.getNameType() + " " + obj.getId() + " in org " + obj.getOrganization().getId());
 
 			}
 			else{
@@ -519,6 +528,58 @@ public class EffectiveAuthorizationService {
 				e.printStackTrace();
 			}
 		}
+		return out_bool;
+		
+	}
+	
+	/// TODO: These can all be refactored into three statements, but the cache lookup has to change where the actor type differs between user/account/person and role
+	///
+	public static boolean getDataAuthorization(PersonType person, DataType data, BasePermissionType[] permissions) throws ArgumentException, FactoryException
+	{
+		boolean out_bool = false;
+		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
+		
+		if(hasPerCache(person, data, permissions)){
+			logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
+			return getCacheValue(person,data,permissions);
+
+		}
+
+		out_bool = getAuthorization("datarights","referenceid","dataid",person,true,data,permissions);
+		addToPerCache(person,data,permissions,out_bool);
+		return out_bool;
+		
+	}
+
+	public static boolean getRoleAuthorization(PersonType person, BaseRoleType role, BasePermissionType[] permissions) throws ArgumentException, FactoryException
+	{
+		boolean out_bool = false;
+		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
+		
+		if(hasPerCache(person, role, permissions)){
+			logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			return getCacheValue(person,role,permissions);
+
+		}
+
+		out_bool = getAuthorization("rolerights","referenceid","roleid",person,true,role,permissions);
+		addToPerCache(person,role,permissions,out_bool);
+		return out_bool;
+		
+	}
+	public static boolean getGroupAuthorization(PersonType person, BaseGroupType group, BasePermissionType[] permissions) throws ArgumentException, FactoryException
+	{
+		boolean out_bool = false;
+		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
+		
+		if(hasPerCache(person, group, permissions)){
+			logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
+			return getCacheValue(person,group,permissions);
+
+		}
+
+		out_bool = getAuthorization("grouprights","referenceid","groupid",person,true,group,permissions);
+		addToPerCache(person,group,permissions,out_bool);
 		return out_bool;
 		
 	}
@@ -671,6 +732,14 @@ public class EffectiveAuthorizationService {
 		return out_bool;
 		
 	}
+	public static boolean getIsPersonInEffectiveRole(BaseRoleType role, PersonType person) throws ArgumentException, FactoryException
+	{
+		return getIsPersonInEffectiveRole(role, person, null, AffectEnumType.UNKNOWN);
+	}	
+	public static boolean getIsPersonInEffectiveRole(BaseRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	{
+		return getIsActorInEffectiveRole(role, person, permission, affect_type);
+	}
 	public static boolean getIsAccountInEffectiveRole(BaseRoleType role, AccountType account) throws ArgumentException, FactoryException
 	{
 		return getIsAccountInEffectiveRole(role, account, null, AffectEnumType.UNKNOWN);
@@ -696,8 +765,13 @@ public class EffectiveAuthorizationService {
 			return getCacheValue(actor,role);
 		}
 		String prefix = null;
+		boolean linkPerson = false;
 		if(actor.getNameType() == NameEnumType.USER) prefix = "user";
 		else if(actor.getNameType() == NameEnumType.ACCOUNT) prefix = "account";
+		else if(actor.getNameType() == NameEnumType.PERSON){
+			prefix = "person";
+			linkPerson = true;
+		}
 		else throw new ArgumentException("Unexpected actor type " + actor.getNameType());
 		
 		boolean out_bool = false;
@@ -705,12 +779,29 @@ public class EffectiveAuthorizationService {
 		CONNECTION_TYPE connType = DBFactory.getConnectionType(conn);
 		String token = DBFactory.getParamToken(connType);
 		try{
-			PreparedStatement stat = conn.prepareStatement("SELECT distinct " + prefix + "id FROM " + prefix + "rolecache WHERE " + prefix + "id = " + token + " AND effectiveroleid = " + token + " and organizationid = " + token);
-			logger.info("SELECT distinct " + prefix + "id FROM " + prefix + "rolecache WHERE " + prefix + "id = " + token + " AND effectiveroleid = " + token + " and organizationid = " + token);
+			String sql = "SELECT distinct " + prefix + "id FROM " + prefix + "rolecache WHERE " + prefix + "id = " + token + " AND effectiveroleid = " + token + " and organizationid = " + token;
+			if(linkPerson){
+				sql += " UNION ALL "
+					+ " SELECT distinct participantid FROM userrolecache URC "
+					+ " inner join personparticipation PU on URC.userid = PU.participantid AND PU.participanttype = 'USER' AND PU.participationid = " + token + " AND URC.effectiveroleid = " + token + " AND URC.organizationid = " + token
+					+ " UNION ALL "
+					+ " SELECT distinct participantid FROM accountrolecache ARC "
+					+ " inner join personparticipation PU2 on ARC.accountid = PU2.participantid AND PU2.participanttype = 'ACCOUNT' AND PU2.participationid = " + token + " AND ARC.effectiveroleid = " + token + " AND ARC.organizationid = " + token;
+			}
+			PreparedStatement stat = conn.prepareStatement(sql);
+			logger.debug(sql);
 
 			stat.setLong(1, actor.getId());
 			stat.setLong(2,role.getId());
 			stat.setLong(3, role.getOrganization().getId());
+			if(linkPerson){
+				stat.setLong(4, actor.getId());
+				stat.setLong(5,role.getId());
+				stat.setLong(6, role.getOrganization().getId());
+				stat.setLong(7, actor.getId());
+				stat.setLong(8,role.getId());
+				stat.setLong(9, role.getOrganization().getId());
+			}
 			ResultSet rset = stat.executeQuery();
 			if(rset.next()){
 				long match_id = rset.getLong(1);
@@ -720,7 +811,7 @@ public class EffectiveAuthorizationService {
 				///
 				addToCache(actor,role,true);
 				out_bool = true;
-				logger.debug("Matched " + actor.getNameType() + " " + match_id + " having role " + role.getId() + " in org " + role.getOrganization().getId());
+				logger.debug("Matched " + actor.getNameType() + " " + match_id + (linkPerson ? " (via person linkage)" : "") + " having role " + role.getId() + " in org " + role.getOrganization().getId());
 			}
 			else{
 				addToCache(actor,role,false);
@@ -746,13 +837,14 @@ public class EffectiveAuthorizationService {
 		
 	}
 	public static boolean hasPendingEntries(){
-		return (rebuildUsers.size() > 0 || rebuildRoles.size() > 0 || rebuildGroups.size() > 0 || rebuildData.size() > 0);
+		return (rebuildPersons.size() > 0 || rebuildAccounts.size() > 0 || rebuildUsers.size() > 0 || rebuildRoles.size() > 0 || rebuildGroups.size() > 0 || rebuildData.size() > 0);
 	}
 	public static boolean rebuildPendingRoleCache() throws FactoryException, ArgumentException{
 		boolean out_bool = false;
 		long start = System.currentTimeMillis();
 		UserType user = null;
 		AccountType account = null;
+		PersonType person = null;
 		BaseRoleType role = null;
 		BaseGroupType group = null;
 		synchronized(lockObject){
@@ -780,6 +872,15 @@ public class EffectiveAuthorizationService {
 						account = raccounts.get(r);
 						if(rebuildAccounts.containsKey(account.getId())==false){
 							rebuildAccounts.put(account.getId(),account);
+						}
+					}
+				}
+				else if(role.getRoleType() == RoleEnumType.PERSON){
+					List<PersonType> rpersons = Factories.getRoleParticipationFactory().getPersonsInRole((PersonRoleType)role);
+					for(int r = 0; r < rpersons.size();r++){
+						person = rpersons.get(r);
+						if(rebuildPersons.containsKey(person.getId())==false){
+							rebuildPersons.put(person.getId(),person);
 						}
 					}
 				}
@@ -816,6 +917,14 @@ public class EffectiveAuthorizationService {
 						}
 					}
 				}
+				else if(group.getGroupType() == GroupEnumType.PERSON){
+					List<PersonType> gpersons = Factories.getGroupParticipationFactory().getPersonsInGroup((PersonGroupType)group);
+					for(int g = 0; g < gpersons.size();g++){
+						if(rebuildPersons.containsKey(gpersons.get(g).getId()) == false){
+							rebuildPersons.put(gpersons.get(g).getId(), gpersons.get(g));
+						}
+					}
+				}
 
 				clearCache(groups.get(i));
 			}
@@ -840,6 +949,12 @@ public class EffectiveAuthorizationService {
 				rebuildAccounts.clear();
 			}
 
+			List<PersonType> persons = Arrays.asList(rebuildPersons.values().toArray(new PersonType[0]));
+			logger.info("Rebuilding role cache for " + persons.size() + " persons");
+			if(persons.size() > 0){
+				out_bool = rebuildPersonRoleCache(persons,persons.get(0).getOrganization());
+				rebuildPersons.clear();
+			}
 			
 			List<DataType> data = Arrays.asList(rebuildData.values().toArray(new DataType[0]));
 			logger.info("Rebuilding role cache for " + data.size() + " data");
@@ -884,11 +999,17 @@ public class EffectiveAuthorizationService {
 	public static boolean rebuildAccountRoleCache(List<AccountType> accounts, OrganizationType org) throws ArgumentException{
 		return rebuildRoleCache("cache_account_roles",accounts,org);
 	}
+	public static boolean rebuildPersonRoleCache(PersonType person) throws ArgumentException{
+		return rebuildRoleCache("cache_person_roles",Arrays.asList(person),person.getOrganization());
+	}
+	public static boolean rebuildPersonRoleCache(List<PersonType> persons, OrganizationType org) throws ArgumentException{
+		return rebuildRoleCache("cache_person_roles",persons,org);
+	}
 
 	private static <T> boolean rebuildRoleCache(String functionName, List<T> objects,OrganizationType org) throws ArgumentException{
 		boolean out_bool = false;
 		Connection conn = ConnectionFactory.getInstance().getConnection();
-		int maxIn = 250;
+		int maxIn = maximum_insert_size;
 		List<StringBuffer> buffs = new ArrayList<StringBuffer>();
 		StringBuffer uBuff = new StringBuffer();
 		NameIdType object = null;
@@ -957,6 +1078,13 @@ public class EffectiveAuthorizationService {
 	public static boolean rebuildUserRoleCache(OrganizationType org){
 		return rebuildRoleCache("cache_all_user_roles",org);
 	}
+	public static boolean rebuildAccountRoleCache(OrganizationType org){
+		return rebuildRoleCache("cache_all_account_roles",org);
+	}
+	public static boolean rebuildPersonRoleCache(OrganizationType org){
+		return rebuildRoleCache("cache_all_person_roles",org);
+	}
+
 	private static boolean rebuildRoleCache(String functionName,OrganizationType org){
 		boolean out_bool = false;
 		Connection conn = ConnectionFactory.getInstance().getConnection();

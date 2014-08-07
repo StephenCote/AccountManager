@@ -71,7 +71,10 @@
 				<attribute name="factoryType" type="Q1:FactoryEnumType"
 					default="UNKNOWN">
 				</attribute>
-				<attribute name="parameter" type="boolean" default="false"></attribute>
+				<attribute name="parameter" type="boolean"
+					default="false">
+				</attribute>
+				<attribute name="sourceType" type="string"></attribute>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -134,6 +137,7 @@
 			<enumeration value="FUNCTION"></enumeration>
 			<enumeration value="OPERATION"></enumeration>
 			<enumeration value="EXPRESSION"></enumeration>
+			<enumeration value="AUTHORIZATION"></enumeration>
 		</restriction>
 	</simpleType>
 

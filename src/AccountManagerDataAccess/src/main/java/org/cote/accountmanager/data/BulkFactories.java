@@ -17,6 +17,7 @@ import org.cote.accountmanager.data.factory.bulk.BulkGroupFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkGroupParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkOperationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkPatternFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkPermissionFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkPersonFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkPersonParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkPolicyFactory;
@@ -49,7 +50,7 @@ public class BulkFactories{
 	private static BulkRoleParticipationFactory bulkRoleParticipationFactory = null;
 	private static BulkTagFactory bulkTagFactory = null;
 	private static BulkTagParticipationFactory bulkTagParticipationFactory = null;
-	
+	private static BulkPermissionFactory bulkPermissionFactory = null;
 	private static BulkFactFactory bulkFactFactory = null;
 	private static BulkFunctionFactFactory bulkFunctionFactFactory = null;
 	private static BulkFunctionFactory bulkFunctionFactory = null;
@@ -115,6 +116,13 @@ public class BulkFactories{
 			Factories.initializeFactory(bulkOperationFactory);
 		}
 		return bulkOperationFactory;
+	}
+	public static BulkPermissionFactory getBulkPermissionFactory() {
+		if(bulkPermissionFactory == null){
+			bulkPermissionFactory = new BulkPermissionFactory();
+			Factories.initializeFactory(bulkPermissionFactory);
+		}
+		return bulkPermissionFactory;
 	}
 	public static BulkPatternFactory getBulkPatternFactory() {
 		if(bulkPatternFactory == null){

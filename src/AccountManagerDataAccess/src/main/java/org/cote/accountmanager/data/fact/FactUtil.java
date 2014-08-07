@@ -4,13 +4,16 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
+import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
@@ -18,6 +21,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
+import org.cote.accountmanager.objects.types.RoleEnumType;
 
 public class FactUtil {
 	public static final Logger logger = Logger.getLogger(FactUtil.class.getName());
@@ -28,10 +32,10 @@ public class FactUtil {
 		
 		NameIdType obj = factoryRead(sourceFact,matchFact);
 		if(obj == null){
-			logger.error("Failed to find object " + sourceFact.getSourceUrn() + " in organization " + matchFact.getOrganization().getName());
+			logger.error("Failed to find object " + sourceFact.getSourceUrn() + " (" + sourceFact.getFactoryType().toString() + ") in organization " + matchFact.getOrganization().getName());
 			return;
 		}
-		logger.info("Found object " + sourceFact.getSourceUrn() + " in organization " + matchFact.getOrganization().getName() + " having id " + obj.getId());
+		logger.info("Found object " + sourceFact.getSourceUrn() + " (" + sourceFact.getFactoryType().toString() + ") in organization " + matchFact.getOrganization().getName() + " having id " + obj.getId());
 		sourceFact.setFactReference(obj);
 	}
 	public static String getFactAttributeValue(FactType sourceFact, FactType matchFact){
@@ -101,11 +105,23 @@ public class FactUtil {
 		if(dir == null) throw new ArgumentException("Invalid group path " + sourceFact.getSourceUrl());
 		return dir;
 	}
+	private static BaseRoleType getRoleFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException, DataAccessException{
+		if(sourceFact.getSourceUrl() == null){
+			logger.error("Source URL is null");
+			return null;
+		}
+		BaseRoleType role = (BaseRoleType)Factories.getRoleFactory().findRole(RoleEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganization());
+		if(role == null) throw new ArgumentException("Invalid role path " + sourceFact.getSourceUrl());
+		return role;
+	}
 	/* 
 	 * NOTE: Authorization factories intentionally not included in the lookup by name for rules
 	 */
+
 	public static <T> T factoryRead(FactType sourceFact,final FactType referenceFact){
 		T out_obj = null;
+		boolean lookupRef = false;
+		FactType useRef = (lookupRef ? referenceFact : sourceFact);
 		if(sourceFact.getFactoryType() == FactoryEnumType.UNKNOWN || referenceFact.getFactoryType() == FactoryEnumType.UNKNOWN){
 			logger.error("Source fact (" + sourceFact.getFactoryType() + ") or reference fact (" + referenceFact.getFactoryType() + ") is not configured for a factory read operation");
 			return null;
@@ -116,12 +132,13 @@ public class FactUtil {
 		}
 		try {
 			//out_obj = (T)Factories.getUserFactory().getUserByName(sourceFact.getFactData(), referenceFact.getOrganization());
-			NameIdFactory fact = Factories.getFactory(referenceFact.getFactoryType());
+			NameIdFactory fact = Factories.getFactory(useRef.getFactoryType());
+			DirectoryGroupType dir = null;
 			if(idPattern.matcher(sourceFact.getSourceUrn()).matches()){
 				out_obj = fact.getById(Long.parseLong(sourceFact.getSourceUrn()), referenceFact.getOrganization());
 			}
 			else{
-				switch(referenceFact.getFactoryType()){
+				switch(useRef.getFactoryType()){
 					/// User is one of the only organization level schemas with a unique constraint on just the name
 					///
 					case USER:
@@ -133,17 +150,27 @@ public class FactUtil {
 					case CONTACT:
 					case PERSON:
 					case ADDRESS:
-						out_obj = (T)((NameIdGroupFactory)fact).getByName(sourceFact.getSourceUrn(), getDirectoryFromFact(sourceFact,referenceFact));
+						dir =  getDirectoryFromFact(sourceFact,referenceFact);
+						
+						out_obj = (T)((NameIdGroupFactory)fact).getByName(sourceFact.getSourceUrn(), dir);
+						logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (out_obj == null ? "Null":"Found"));
 						break;
 					/// Data is a predecessor to the NameIdGroupFactory type, but it doesn't inherity from that base class
 					case DATA:
 						out_obj = (T)((DataFactory)fact).getDataByName(sourceFact.getSourceUrn(), getDirectoryFromFact(sourceFact,referenceFact));
 						break;
 					case GROUP:
-						out_obj = (T)((GroupFactory)fact).getDirectoryByName(sourceFact.getSourceUrn(), getDirectoryFromFact(sourceFact,referenceFact),referenceFact.getOrganization());
+						dir =  getDirectoryFromFact(sourceFact,referenceFact);
+						out_obj = (T)((GroupFactory)fact).getDirectoryByName(sourceFact.getSourceUrn(), dir,referenceFact.getOrganization());
+						logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (out_obj == null ? "Null":"Found"));
+						break;
+					case ROLE:
+						BaseRoleType parent = getRoleFromFact(sourceFact, referenceFact);
+						out_obj = (T)((RoleFactory)fact).getRoleByName(sourceFact.getSourceUrn(), parent, referenceFact.getOrganization());
+						logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (parent != null ? sourceFact.getSourceUrl() : "Null Role") + " - Result is " + (out_obj == null ? "Null":"Found"));
 						break;
 					default:
-						throw new ArgumentException("Unhandled factory type " + referenceFact.getFactoryType());
+						throw new ArgumentException("Unhandled factory type " + useRef.getFactoryType());
 				}
 			}
 		} catch (FactoryException e) {
@@ -151,6 +178,10 @@ public class FactUtil {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();

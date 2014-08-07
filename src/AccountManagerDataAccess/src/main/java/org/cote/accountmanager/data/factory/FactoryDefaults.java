@@ -11,6 +11,7 @@ import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
@@ -37,6 +38,12 @@ public class FactoryDefaults {
 		"ObjectCreate"
 	};
 	protected static String[] default_account_permissions = new String[]{
+		"AccountView",
+		"AccountEdit",
+		"AccountDelete",
+		"AccountCreate"
+	};
+	protected static String[] default_person_permissions = new String[]{
 		"AccountView",
 		"AccountEdit",
 		"AccountDelete",
@@ -79,7 +86,7 @@ public class FactoryDefaults {
 		
 		AccountType root_account = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization()));
 		if(root_account == null){
-			root_account = Factories.getAccountFactory().newAccount("Root", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization()));
+			root_account = Factories.getAccountFactory().newAccount(null,"Root", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization()));
 			if (!Factories.getAccountFactory().addAccount(root_account)) throw new FactoryException("Unable to add root account");
 	
 			UserType root_user = Factories.getUserFactory().newUserForAccount("Root", root_hash, root_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
@@ -102,7 +109,7 @@ public class FactoryDefaults {
 		
 		// Create administration user
 		//
-		AccountType admin_account = Factories.getAccountFactory().newAccount("Admin", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, agroup);
+		AccountType admin_account = Factories.getAccountFactory().newAccount(null,"Admin", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, agroup);
 		if (!Factories.getAccountFactory().addAccount(admin_account)) throw new FactoryException("Unable to add admin account");
 		admin_account = Factories.getAccountFactory().getAccountByName("Admin", agroup);
 
@@ -127,6 +134,12 @@ public class FactoryDefaults {
 		{
 			Factories.getPermissionFactory().addPermission(
 				Factories.getPermissionFactory().newPermission(default_account_permissions[i], PermissionEnumType.ACCOUNT, organization)
+			);
+		}
+		for (int i = 0; i < default_person_permissions.length; i++)
+		{
+			Factories.getPermissionFactory().addPermission(
+				Factories.getPermissionFactory().newPermission(default_person_permissions[i], PermissionEnumType.PERSON, organization)
 			);
 		}
 		for (int i = 0; i < default_data_permissions.length; i++)
@@ -160,6 +173,14 @@ public class FactoryDefaults {
 			);
 		}
 
+		// Request the person roles to create them
+		//
+		PersonRoleType person_admin_role = RoleService.getAccountAdministratorPersonRole(admin_user);
+		PersonRoleType per_data_admin_role = RoleService.getDataAdministratorPersonRole(admin_user);
+		PersonRoleType per_obj_admin_role = RoleService.getObjectAdministratorPersonRole(admin_user);
+		PersonRoleType per_sys_admin_role = RoleService.getSystemAdministratorPersonRole(admin_user);
+		PersonRoleType per_users_role = RoleService.getAccountUsersPersonRole(admin_user);
+		
 		// Add admin account and root account to Administrators and Users account roles
 		//
 		AccountType root_account = Factories.getAccountFactory().getAccountByName("Root",Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization()));

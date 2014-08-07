@@ -23,6 +23,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.StatisticsType;
+import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -108,16 +109,16 @@ public class AccountFactory extends NameIdGroupFactory {
 		return (deleted > 0);
 	}
 
-	public AccountType newAccount(String name, AccountType parentAccount, AccountEnumType type, AccountStatusEnumType status){
-		AccountType account = newAccount(name, type, status, parentAccount.getGroup());
+	public AccountType newAccount(UserType owner, String name, AccountType parentAccount, AccountEnumType type, AccountStatusEnumType status){
+		AccountType account = newAccount(owner, name, type, status, parentAccount.getGroup());
 		account.setParentId(parentAccount.getId());
 		return account;
 	}
-	public AccountType newAccount(String name, AccountEnumType type, AccountStatusEnumType status, DirectoryGroupType group)
+	public AccountType newAccount(UserType owner, String name, AccountEnumType type, AccountStatusEnumType status, DirectoryGroupType group)
 	{
 		AccountType new_account = new AccountType();
 		new_account.setNameType(NameEnumType.ACCOUNT);
-		
+		if(owner != null) new_account.setOwnerId(owner.getId());
 		new_account.setAccountStatus(status);
 		new_account.setAccountType(type);
 		new_account.setOrganization(group.getOrganization());

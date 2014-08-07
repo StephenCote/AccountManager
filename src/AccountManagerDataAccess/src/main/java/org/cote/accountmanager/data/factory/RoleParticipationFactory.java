@@ -17,6 +17,9 @@ import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PersonParticipantType;
+import org.cote.accountmanager.objects.PersonRoleType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserRoleType;
@@ -207,6 +210,107 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public boolean getIsUserInRole(BaseRoleType role, UserType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
 	{
 		return (getUserRoleParticipant(role, account,permission, affect_type) != null);
+	}
+	
+	// Person
+	//
+
+	public boolean deletePersonRoleParticipant(PersonRoleType role, PersonType person)  throws ArgumentException, FactoryException
+	{
+		return deletePersonRoleParticipant(role, person, null,AffectEnumType.UNKNOWN);
+	}
+	public boolean deletePersonRoleParticipant(PersonRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	{
+		PersonParticipantType dp = getPersonRoleParticipant(role, person, permission, affect_type);
+		if (dp == null) return true;
+
+		removeParticipantFromCache(dp);
+
+		return deleteParticipant(dp);
+	}
+	public boolean deletePersonRoleParticipants(PersonRoleType role, PersonType person) throws FactoryException, ArgumentException
+	{
+		List<PersonParticipantType> dp = getPersonRoleParticipants(role, person);
+		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), person.getOrganization());
+	}
+
+	public boolean deletePersonParticipations(PersonType person)  throws FactoryException, ArgumentException
+	{
+
+		List<PersonParticipantType> dp = getPersonRoleParticipants(person);
+		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), person.getOrganization());
+	}
+
+	public PersonParticipantType newPersonRoleParticipation(BaseRoleType role, PersonType person) throws ArgumentException
+	{
+		return newPersonRoleParticipation(role, person, null, AffectEnumType.UNKNOWN);
+	}
+	public PersonParticipantType newPersonRoleParticipation(BaseRoleType role, PersonType person,BasePermissionType permission,AffectEnumType affect_type) throws ArgumentException
+	{
+		return (PersonParticipantType)newParticipant(role, person, ParticipantEnumType.PERSON, permission, affect_type);
+	}
+
+
+	public List<PersonRoleType> getPersonRoles(PersonType person) throws FactoryException, ArgumentException
+	{
+		List<PersonParticipantType> list = getPersonRoleParticipants(person);
+		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new PersonParticipantType[0]));
+		return Factories.getRoleFactory().getPersonRoles(match, person.getOrganization());
+	}
+	public List<PersonType> getPersonsInRole(PersonRoleType role) throws FactoryException, ArgumentException
+	{
+		List<PersonParticipantType> ap = getPersonRoleParticipations(role);
+		return getPersonListFromParticipations(ap.toArray(new PersonParticipantType[0]), role.getOrganization());
+	}
+	public List<PersonParticipantType> getPersonRoleParticipants(PersonType person) throws FactoryException, ArgumentException
+	{
+		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipantMatch(person,ParticipantEnumType.PERSON), person.getOrganization().getId());
+		return convertList(dtlist);
+	}
+	public List<PersonParticipantType> getPersonRoleParticipations(BaseRoleType role)  throws FactoryException, ArgumentException
+	{
+		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipationMatch(role,ParticipantEnumType.PERSON), role.getOrganization().getId());
+		return convertList(dtlist);
+	}
+
+	public List<PersonParticipantType> getPersonRoleParticipants(
+		BaseRoleType role, 
+		PersonType person
+	)  throws FactoryException, ArgumentException
+	{
+		return getPersonRoleParticipants(role, person, null, AffectEnumType.UNKNOWN);
+	}
+	public List<PersonParticipantType> getPersonRoleParticipants(
+		BaseRoleType role,
+		PersonType person,
+		BasePermissionType permission,
+		AffectEnumType affect_type
+	)  throws FactoryException, ArgumentException
+	{
+		List<NameIdType> list = getParticipants(role, person, ParticipantEnumType.PERSON, permission, affect_type);
+		return convertList(list);
+
+	}
+	public PersonParticipantType getPersonRoleParticipant(BaseRoleType role, PersonType person)  throws ArgumentException, FactoryException
+	{
+		return getPersonRoleParticipant(role, person, null, AffectEnumType.UNKNOWN);
+	} 
+	public PersonParticipantType getPersonRoleParticipant(
+		BaseRoleType role,
+		PersonType person,
+		BasePermissionType permission,
+		AffectEnumType affect_type
+	)  throws ArgumentException, FactoryException
+	{
+		return getParticipant(role, person, ParticipantEnumType.PERSON, permission, affect_type);
+	}
+	public boolean getIsPersonInRole(BaseRoleType role, PersonType person)  throws ArgumentException, FactoryException
+	{
+		return (getPersonRoleParticipant(role, person) != null);
+	}
+	public boolean getIsPersonInRole(BaseRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	{
+		return (getPersonRoleParticipant(role, person,permission, affect_type) != null);
 	}
 	
 	// Account

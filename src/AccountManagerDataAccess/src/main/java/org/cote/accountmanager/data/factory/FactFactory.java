@@ -101,6 +101,7 @@ public class FactFactory extends NameIdGroupFactory {
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("sourceurn", obj.getSourceUrn());
 			row.setCellValue("sourceurl", obj.getSourceUrl());
+			row.setCellValue("sourcetype", obj.getSourceType());
 			row.setCellValue("sourcedatatype", obj.getSourceDataType().toString());
 			
 			if (insertRow(row)) return true;
@@ -128,6 +129,7 @@ public class FactFactory extends NameIdGroupFactory {
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setSourceUrn(rset.getString("sourceurn"));
 		new_obj.setSourceUrl(rset.getString("sourceurl"));
+		new_obj.setSourceType(rset.getString("sourcetype"));
 		new_obj.setSourceDataType(SqlDataEnumType.valueOf(rset.getString("sourcedatatype")));
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
 		long group_id = rset.getLong("groupid");
@@ -149,6 +151,7 @@ public class FactFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldFactData(use_map.getFactData()));
 		fields.add(QueryFields.getFieldSourceUrn(use_map.getSourceUrn()));
 		fields.add(QueryFields.getFieldSourceUrl(use_map.getSourceUrl()));
+		fields.add(QueryFields.getFieldSourceType(use_map.getSourceType()));
 		fields.add(QueryFields.getFieldSourceDataType(use_map.getSourceDataType()));
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
 		fields.add(QueryFields.getFieldFactType(use_map.getFactType()));

@@ -21,6 +21,8 @@ import org.cote.accountmanager.objects.BucketGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PersonGroupType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
@@ -84,6 +86,16 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		if (parent != null) clearGroupCache(parent, false);
 		return (UserGroupType)newGroup(owner, group_name, GroupEnumType.USER, parent, organization);
+	}
+	public PersonGroupType newPersonGroup(UserType owner, String group_name, BaseGroupType parent, OrganizationType organization) throws ArgumentException
+	{
+		if (parent != null) clearGroupCache(parent, false);
+		return (PersonGroupType)newGroup(owner, group_name, GroupEnumType.PERSON, parent, organization);
+	}
+	public AccountGroupType newAccountGroup(UserType owner, String group_name, BaseGroupType parent, OrganizationType organization) throws ArgumentException
+	{
+		if (parent != null) clearGroupCache(parent, false);
+		return (AccountGroupType)newGroup(owner, group_name, GroupEnumType.ACCOUNT, parent, organization);
 	}	
 	public DirectoryGroupType newDirectoryGroup(String group_name, BaseGroupType parent, OrganizationType organization) throws ArgumentException
 	{
@@ -135,6 +147,9 @@ public class GroupFactory  extends NameIdFactory {
 				break;
 			case USER:
 				new_group = new UserGroupType();
+				break;
+			case PERSON:
+				new_group = new PersonGroupType();
 				break;
 			default:
 				new_group = new BaseGroupType();
@@ -225,6 +240,23 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		return (DirectoryGroupType)getGroupByName(name, GroupEnumType.DATA, parent, organization);
 	}
+	public PersonGroupType getPersonByName(String name, OrganizationType organization) throws FactoryException, ArgumentException
+	{
+		return (PersonGroupType)getGroupByName(name, GroupEnumType.PERSON, null, organization);
+	}
+	public PersonGroupType getPersonByName(String name, PersonGroupType parent, OrganizationType organization) throws FactoryException, ArgumentException
+	{
+		return (PersonGroupType)getGroupByName(name, GroupEnumType.PERSON, parent, organization);
+	}
+	public AccountGroupType getAccountByName(String name, OrganizationType organization) throws FactoryException, ArgumentException
+	{
+		return (AccountGroupType)getGroupByName(name, GroupEnumType.ACCOUNT, null, organization);
+	}
+	public AccountGroupType getAccountByName(String name, AccountGroupType parent, OrganizationType organization) throws FactoryException, ArgumentException
+	{
+		return (AccountGroupType)getGroupByName(name, GroupEnumType.ACCOUNT, parent, organization);
+	}
+
 	public BaseGroupType getGroupByName(String name, GroupEnumType group_type, BaseGroupType parent, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		String key_name = name + "-" + group_type + "-" + (parent == null ? 0 : parent.getId()) + "-" + organization.getId();
@@ -263,6 +295,8 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		return (UserGroupType)getGroupById(id, GroupEnumType.USER, organization);
 	}
+	
+	
 	public List<DirectoryGroupType> getDirectoryGroups(DirectoryGroupType parent) throws FactoryException, ArgumentException
 	{
 		List<QueryField> fields = new ArrayList<QueryField>();
@@ -281,6 +315,50 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		return (DirectoryGroupType)getGroupById(id, GroupEnumType.DATA, organization);
 	}
+	
+	
+	
+	public List<PersonGroupType> getPersonGroups(PersonGroupType parent) throws FactoryException, ArgumentException
+	{
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldParent(parent.getId()));
+		fields.add(QueryFields.getFieldGroupType(GroupEnumType.PERSON.toString()));
+		return getPersonGroups(fields, parent.getOrganization());
+	}
+	public List<PersonGroupType> getPersonGroups(List<QueryField> fields, OrganizationType organization) throws FactoryException, ArgumentException
+	{
+		List<NameIdType> in_list = getByField(fields.toArray(new QueryField[0]), organization.getId());
+		return convertList(in_list);
+
+	}
+	
+	public PersonGroupType getPersonById(long id, OrganizationType organization) throws ArgumentException
+	{
+		return (PersonGroupType)getGroupById(id, GroupEnumType.PERSON, organization);
+	}
+	
+	
+	
+	public List<AccountGroupType> getAccountGroups(AccountGroupType parent) throws FactoryException, ArgumentException
+	{
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldParent(parent.getId()));
+		fields.add(QueryFields.getFieldGroupType(GroupEnumType.ACCOUNT.toString()));
+		return getAccountGroups(fields, parent.getOrganization());
+	}
+	public List<AccountGroupType> getAccountGroups(List<QueryField> fields, OrganizationType organization) throws FactoryException, ArgumentException
+	{
+		List<NameIdType> in_list = getByField(fields.toArray(new QueryField[0]), organization.getId());
+		return convertList(in_list);
+
+	}
+	
+	public AccountGroupType getAccountById(long id, OrganizationType organization) throws ArgumentException
+	{
+		return (AccountGroupType)getGroupById(id, GroupEnumType.ACCOUNT, organization);
+	}
+	
+	
 	public BaseGroupType getGroupById(long id, OrganizationType organization) throws ArgumentException
 	{
 		return getGroupById(id, GroupEnumType.UNKNOWN, organization);
@@ -624,6 +702,16 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.USER)}, group.getOrganization().getId());
 	}
+	public int getCount(PersonGroupType group) throws FactoryException
+	{
+		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.PERSON)}, group.getOrganization().getId());
+	}
+
+	public int getCount(AccountGroupType group) throws FactoryException
+	{
+		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.ACCOUNT)}, group.getOrganization().getId());
+	}
+
 	/*
 	public List<UserGroupType>  getUserGroupListByParent(BaseGroupType parent, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{

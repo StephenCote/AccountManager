@@ -103,6 +103,7 @@ public class Factories {
 	private static SessionFactory sessionFactory = null;
 	private static SessionDataFactory sessionDataFactory = null;
 	private static String documentControlName = "Document Control";
+	
 	static{
 		getOrganizationFactory();
 	}
@@ -122,6 +123,37 @@ public class Factories {
 		}
 		return user;
 	}
+	public static UserType getAdminUser(OrganizationType org){
+		UserType u = null;
+		try {
+			u = Factories.getUserFactory().getUserByName("Admin", org);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return u;
+	}
+	public static UserType getRootUser(){
+		UserType u = null;
+		try {
+			u = Factories.getUserFactory().getUserByName("Root", getSystemOrganization());
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return u;
+	}
+	
 	public static OrganizationType getRootOrganization() {
 		return rootOrganization;
 	}
@@ -597,6 +629,9 @@ public class Factories {
 			case DATAPARTICIPATION:
 				fact = (T)BulkFactories.getBulkDataParticipationFactory();
 				break;
+			case PERMISSION:
+				fact = (T)BulkFactories.getBulkPermissionFactory();
+				break;
 		}
 		return fact;
 	}	
@@ -685,6 +720,9 @@ public class Factories {
 				break;
 			case DATAPARTICIPATION:
 				fact = (T)getDataParticipationFactory();
+				break;
+			case PERMISSION:
+				fact = (T)Factories.getPermissionFactory();
 				break;
 		}
 		return fact;

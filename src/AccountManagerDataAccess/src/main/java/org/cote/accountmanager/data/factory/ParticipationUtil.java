@@ -21,6 +21,7 @@ import org.cote.accountmanager.objects.types.ParticipantEnumType;
 
 public class ParticipationUtil {
 	public static final Logger logger = Logger.getLogger(ParticipationUtil.class.getName());
+	/*
 	public static long[] getDataFromGroupForAccount(AccountType account)
 	{
 		return getMapIdFromParticipation(
@@ -51,7 +52,7 @@ public class ParticipationUtil {
 			group.getOrganization().getId()
 		);
 	}
-
+	*/
 	public static long[] getMapIdFromParticipation(
 		String participation_table,
 		long participation_id,
