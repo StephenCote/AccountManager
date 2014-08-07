@@ -285,17 +285,18 @@
 				if(!oPar) return uwmServices.getService("Role").count(oOrg.id);
 				return uwmServices.getService("Role").countInParent(oOrg.id, oPar.id);
 			},
-			listRoles : function(oOrg, oParent, iStartIndex, iRecordCount){
+			listRoles : function(oOrg, oParent, sType,iStartIndex, iRecordCount){
 				// param difference when funneled through GridType.xml
 				if(typeof oOrg == "string") oOrg = 0;
-				if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Role"),oOrg, iStartIndex, iRecordCount);
-				return accountManager.serviceListInParent(uwmServices.getService("Role"),oOrg, oParent,iStartIndex, iRecordCount);
+				return uwmServices.getService("Permission").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
+				//if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Role"),oOrg, iStartIndex, iRecordCount);
+				//return accountManager.serviceListInParent(uwmServices.getService("Role"),oOrg, oParent,iStartIndex, iRecordCount);
 			},
-			addRole : function(sName, oPar, oOrg){
+			addRole : function(sName, sType, oPar, oOrg){
 				if(!oOrg) oOrg = uwm.getUser().organization;
 				var o = new org.cote.beans.baseRoleType();
 				o.name = sName;
-				o.roleType = "USER";
+				o.roleType = sType;
 				o.organization = oOrg;
 				if(oPar) o.parentId = oPar.id;
 				else o.parentId = 0;
@@ -311,18 +312,72 @@
 			getRoleById : function(iId){
 				return uwmServices.getService("Role").readById(iId);
 			},
-			getRole : function(sName, oParent, oOrg){
+			getRole : function(sName, sType, oParent, oOrg){
 				if(!oOrg) oOrg = uwm.getUser().organization;
-				if(!oParent) return uwmServices.getService("Role").readByOrganizationId(oOrg.id, sName);
-				return uwmServices.getService("Role").readByParentId(oOrg.id, oParent.id, sName);
+				return uwmServices.getService("Permission").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
+				//if(!oParent) return uwmServices.getService("Role").readByOrganizationId(oOrg.id, sName);
+				//return uwmServices.getService("Role").readByParentId(oOrg.id, oParent.id, sName);
 			},
 			
 			/// Note: requesting the user's own role dynamically allocates the role, and also will add the user to the role and user reader role
 			/// This is a temporary setup in the RoleService
 			///
-			getUserRole : function(){
-				return uwmServices.getService("Role").getUserRole();
+			getUserRole : function(sType){
+				return uwmServices.getService("Role").getUserRole(sType);
 			},
+			
+			clearPermissionCache : function(){
+				uwmServices.getService("Permission").clearCache();
+				uwmServiceCache.clearServiceCache("Permission");
+			},
+
+			countPermissions : function(oOrg,oPar){
+				if(!oOrg) oOrg = uwm.getUser().organization;
+				if(!oPar) return uwmServices.getService("Permission").count(oOrg.id);
+				return uwmServices.getService("Permission").countInParent(oOrg.id, oPar.id);
+			},
+			listPermissions : function(oOrg, oParent, sType, iStartIndex, iRecordCount){
+				// param difference when funneled through GridType.xml
+				if(typeof oOrg == "string" || !oOrg) oOrg = uwm.getUser().organization;
+				if(!iStartIndex) iStartIndex = 0;
+				if(!iRecordCount) iRecordCount = 0;
+				return uwmServices.getService("Permission").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
+				//if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Permission"),oOrg, iStartIndex, iRecordCount);
+				//return accountManager.serviceListInParent(uwmServices.getService("Permission"),oOrg, oParent,iStartIndex, iRecordCount);
+			},
+			addPermission : function(sName, sType, oPar, oOrg){
+				if(!oOrg) oOrg = uwm.getUser().organization;
+				var o = new org.cote.beans.basePermissionType();
+				o.name = sName;
+				o.permissionType = sType;
+				o.organization = oOrg;
+				if(oPar) o.parentId = oPar.id;
+				else o.parentId = 0;
+
+				return uwmServices.getService("Permission").add(o);
+			},
+			deletePermission : function(oRec, vCfg){
+				return uwmServices.getService("Permission").delete(oRec, vCfg);
+			},
+			updatePermission : function(oRec, vCfg){
+				return uwmServices.getService("Permission").update(oRec, vCfg);
+			},
+			getPermissionById : function(iId){
+				return uwmServices.getService("Permission").readById(iId);
+			},
+			getPermission : function(sName, sType, oParent, oOrg){
+				if(!oOrg) oOrg = uwm.getUser().organization;
+				return uwmServices.getService("Permission").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
+			},
+			
+			/// Note: requesting the user's own permission dynamically allocates a permission that the user owns.
+			/// Similar to roles, this is because Roles and Permissions scope to the parent and not to a groupid.
+			/// This is a temporary setup in the PermissionService
+			///
+			getUserPermission : function(sType){
+				return uwmServices.getService("Permission").getUserPermission(sType);
+			},
+			
 		authorizeGroupRole : function(oOrg, iRoleId, iGroupId, bView, bEdit, bDel, bCreate){
 			if(!oOrg) oOrg = uwm.getUser().organization;
 			return uwmServices.getService("Group").authorizeRole(oOrg.id, iRoleId, iGroupId, bView, bEdit, bDel, bCreate);
