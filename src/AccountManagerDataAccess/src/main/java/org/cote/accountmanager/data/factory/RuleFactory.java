@@ -85,6 +85,7 @@ public class RuleFactory extends NameIdGroupFactory {
 		obj.setOwnerId(user.getId());
 		obj.setGroup(group);
 		obj.setRuleType(RuleEnumType.UNKNOWN);
+		obj.setCondition(ConditionEnumType.UNKNOWN);
 		obj.setNameType(NameEnumType.RULE);
 		return obj;
 	}
@@ -152,7 +153,7 @@ public class RuleFactory extends NameIdGroupFactory {
 			try{
 				
 				Set<Long> set = new HashSet<Long>();
-				BaseParticipantType[] maps = Factories.getRuleParticipationFactory().getFactParticipations(data).toArray(new BaseParticipantType[0]);
+				BaseParticipantType[] maps = Factories.getRuleParticipationFactory().getPatternParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getPatterns().size();i++){

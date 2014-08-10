@@ -25,6 +25,7 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseSpoolType;
@@ -63,6 +64,25 @@ public class RoleService{
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 
 	}
+	
+	@GET @Path("/setRoleForPerson/{peid : [0-9]+}/{rid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setRoleForPerson(@PathParam("peid") long personId, @PathParam("rid") long roleId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return RoleServiceImpl.setRole(user, roleId, AuditEnumType.PERSON, personId, enable);
+	}
+
+	@GET @Path("/setRoleForAccount/{peid : [0-9]+}/{rid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setRoleForAccount(@PathParam("peid") long accountId, @PathParam("rid") long roleId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return RoleServiceImpl.setRole(user, roleId, AuditEnumType.ACCOUNT, accountId, enable);
+	}
+
+	@GET @Path("/setRoleForUser/{peid : [0-9]+}/{rid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setRoleForUser(@PathParam("peid") long userId, @PathParam("rid") long roleId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return RoleServiceImpl.setRole(user, roleId, AuditEnumType.USER, userId, enable);
+	}
+
 	
 	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean flushCache(@Context HttpServletRequest request){

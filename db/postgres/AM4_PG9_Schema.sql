@@ -338,9 +338,9 @@ CREATE TABLE contactinformationparticipation (
 	Id bigint not null default nextval('contactinformationparticipation_id_seq'),
 	OwnerId bigint not null,
 	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null default 0,
+	ParticipantType varchar(16) not null,
 	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null default 0,
+	AffectType varchar(16) not null,
 	AffectId bigint not null default 0,
 	OrganizationId bigint not null default 0,
 	primary key(Id)
@@ -400,9 +400,9 @@ CREATE TABLE personparticipation (
 	Id bigint not null default nextval('personparticipation_id_seq'),
 	OwnerId bigint not null,
 	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null default 0,
+	ParticipantType varchar(16) not null,
 	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null default 0,
+	AffectType varchar(16) not null,
 	AffectId bigint not null default 0,
 	OrganizationId bigint not null default 0,
 	primary key(Id)
@@ -423,7 +423,7 @@ create table roles (
 	Id bigint not null default nextval('roles_id_seq'),
 	OwnerId bigint not null default 0,
 	Name varchar(511) not null,
-	RoleType varchar(16) not null default 0,
+	RoleType varchar(16) not null,
 	ParentId bigint not null default 0,
 	ReferenceId bigint not null default 0,
 	OrganizationId bigint not null default 0,
@@ -440,9 +440,9 @@ CREATE TABLE roleparticipation (
 	Id bigint not null default nextval('roleparticipation_id_seq'),
 	OwnerId bigint not null,
 	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null default 0,
+	ParticipantType varchar(16) not null,
 	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null default 0,
+	AffectType varchar(16) not null,
 	AffectId bigint not null default 0,
 	OrganizationId bigint not null default 0,
 	primary key(Id)
@@ -493,7 +493,7 @@ CREATE SEQUENCE tags_id_seq;
 CREATE TABLE tags (
 	Id bigint not null default nextval('tags_id_seq'),
 	OwnerId bigint not null,
-	TagType varchar(16) not null default 0,
+	TagType varchar(16) not null,
 	Name varchar(255) not null,
 	OrganizationId bigint not null default 0,
 	primary key(Id)
@@ -508,7 +508,7 @@ CREATE TABLE tagparticipation (
 	Id bigint not null default nextval('tagparticipation_id_seq'),
 	OwnerId bigint not null,
 	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null default 0,
+	ParticipantType varchar(16) not null,
 	ParticipantId bigint not null default 0,
 	OrganizationId bigint not null default 0,
 	primary key(Id)
@@ -522,7 +522,7 @@ DROP TABLE IF EXISTS spool CASCADE;
 CREATE TABLE spool (
 	SpoolGuid varchar(42) not null,
 	SpoolBucketName varchar(64) not null,
-	SpoolBucketType varchar(16) not null default 0,
+	SpoolBucketType varchar(16) not null,
 	SpoolOwnerId bigint not null default 0,
 	SpoolCreated timestamp not null,
 	SpoolExpiration timestamp not null,
@@ -605,13 +605,13 @@ create table fact (
 	LogicalOrder int not null default 0,
 	Score int not null default 0,
 	Urn varchar(255) not null,
-	FactType varchar(64),
+	FactType varchar(64) not null,
 	SourceType varchar(255),
 	SourceUrn varchar(255),
 	SourceUrl varchar(2047),
 	SourceDataType varchar(64),
 	FactData varchar(255),
-	FactoryType varchar(64),
+	FactoryType varchar(64) not null,
 	GroupId bigint not null,
 	ObjectId varchar(64),
 	OrganizationId bigint not null default 0,
@@ -656,7 +656,7 @@ create table function (
 	LogicalOrder int not null default 0,
 	Score int not null default 0,
 	Urn varchar(255) not null,
-	FunctionType varchar(64),
+	FunctionType varchar(64) not null,
 	SourceUrn varchar(255),
 	SourceUrl varchar(2047),
 	GroupId bigint not null,
@@ -699,7 +699,7 @@ create table operation (
 	LogicalOrder int not null default 0,
 	Score int not null default 0,
 	Urn varchar(255) not null,
-	OperationType varchar(64),
+	OperationType varchar(64) not null,
 	Operation varchar(2047),
 	GroupId bigint not null,
 	ObjectId varchar(64),
@@ -724,7 +724,7 @@ create table pattern (
 	Urn varchar(255) not null,
 	FactUrn varchar(255),
 	Comparator varchar(32),
-	PatternType varchar(64),
+	PatternType varchar(64) not null,
 	MatchUrn varchar(255),
 	OperationUrn varchar(255),
 	GroupId bigint not null,
@@ -753,6 +753,7 @@ create table policy (
 	ModifiedDate timestamp not null,
 	ExpirationDate timestamp not null,
 	DecisionAge bigint not null default 0,
+	Condition varchar(64) not null,
 	GroupId bigint not null,
 	ObjectId varchar(64),
 	OrganizationId bigint not null default 0,
@@ -793,8 +794,8 @@ create table rule (
 	LogicalOrder int not null default 0,
 	Score int not null default 0,
 	Urn varchar(255) not null,
-	RuleType varchar(64),
-	Condition varchar(64),
+	RuleType varchar(64) not null,
+	Condition varchar(64) not null,
 	GroupId bigint not null,
 	ObjectId varchar(64),
 	OrganizationId bigint not null default 0,
@@ -1231,6 +1232,9 @@ CREATE OR REPLACE FUNCTION cache_group_roles(group_id BIGINT[],organizationid BI
 	END
         $$ LANGUAGE 'plpgsql';
 
+--create or replace view effectiveGroupRoleRights as
+--select distinct GC.groupid,GC.affectId,GC.affectType,GC.effectiveRoleId as roleid,GC.organizationid from grouprolecache GC
+--;
 
 create or replace view effectiveGroupPersonRoleRights as
 select distinct GC.groupid,GC.affectId,GC.affectType,ER.personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER
@@ -1319,7 +1323,10 @@ create or replace view groupRights as
 	UNION ALL
 	select accountid as referenceid,'ACCOUNT',groupid,affecttype,affectid,organizationid
 	FROM effectiveGroupAccountRoleRights GRR
-
+--	Role rights are not included in this view since the role member privileges are also reflected
+--	UNION ALL
+--	select roleid as referenceid,'ROLE',groupid,affecttype,affectid,organizationid
+--	FROM effectiveGroupRoleRights GRR
 	) 
 	as AM;
 

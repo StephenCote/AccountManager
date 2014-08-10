@@ -144,7 +144,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 			try{
 				
 				Set<Long> set = new HashSet<Long>();
-				BaseParticipantType[] maps = Factories.getFunctionParticipationFactory().getFactParticipations(data).toArray(new BaseParticipantType[0]);
+				BaseParticipantType[] maps = Factories.getFunctionParticipationFactory().getFunctionFactParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getFacts().size();i++){

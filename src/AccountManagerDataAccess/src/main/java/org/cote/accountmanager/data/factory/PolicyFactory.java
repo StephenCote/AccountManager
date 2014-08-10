@@ -33,6 +33,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.BaseParticipantType;
+import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
@@ -96,7 +97,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 		obj.setOwnerId(user.getId());
 		obj.setGroup(group);
 		obj.setNameType(NameEnumType.POLICY);
-		
+		obj.setCondition(ConditionEnumType.UNKNOWN);
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(new Date());
 		obj.setCreated(dtFactory.newXMLGregorianCalendar(cal));
@@ -124,6 +125,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 			row.setCellValue("expirationdate", obj.getExpires());
 			row.setCellValue("decisionage", obj.getDecisionAge());
 			row.setCellValue("enabled", obj.getEnabled());
+			row.setCellValue("condition", obj.getCondition().toString());
 
 			if (insertRow(row)){
 				PolicyType cobj = (bulkMode ? obj : (PolicyType)getByName(obj.getName(), obj.getGroup()));
@@ -166,7 +168,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 		new_obj.setCreated(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
 		new_obj.setModified(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
 		new_obj.setExpires(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
-
+		new_obj.setCondition(ConditionEnumType.fromValue(rset.getString("condition")));
 		long group_id = rset.getLong("groupid");
 		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
 		return new_obj;
@@ -204,6 +206,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		PolicyType use_map = (PolicyType)map;
+		fields.add(QueryFields.getFieldCondition(use_map.getCondition()));
 		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
 		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));

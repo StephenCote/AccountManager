@@ -135,9 +135,43 @@ public class PermissionService{
 	@GET @Path("/setPermissionOnGroupForUser/{gid : [0-9]+}/{uid : [0-9]+}/{pid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean setPermissionOnGroupForUser(@PathParam("gid") long groupId, @PathParam("uid") long userId, @PathParam("pid") long permissionId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
-		return PermissionServiceImpl.setPermissionOnGroupForUser(user,groupId,userId,permissionId, enable);
+		return PermissionServiceImpl.setPermission(user, AuditEnumType.GROUP, groupId, AuditEnumType.USER, userId, permissionId, enable);
 	}
-	
+	@GET @Path("/setPermissionOnGroupForAccount/{gid : [0-9]+}/{aid : [0-9]+}/{pid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setPermissionOnGroupForAccount(@PathParam("gid") long groupId, @PathParam("aid") long accountId, @PathParam("pid") long permissionId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return PermissionServiceImpl.setPermission(user, AuditEnumType.GROUP, groupId, AuditEnumType.ACCOUNT, accountId, permissionId, enable);
+	}
+	@GET @Path("/setPermissionOnGroupForPerson/{gid : [0-9]+}/{peid : [0-9]+}/{pid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setPermissionOnGroupForPerson(@PathParam("gid") long groupId, @PathParam("peid") long personId, @PathParam("pid") long permissionId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return PermissionServiceImpl.setPermission(user, AuditEnumType.GROUP, groupId, AuditEnumType.PERSON, personId, permissionId, enable);
+	}
+	@GET @Path("/setPermissionOnGroupForRole/{gid : [0-9]+}/{rid : [0-9]+}/{pid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setPermissionOnGroupForRole(@PathParam("gid") long groupId, @PathParam("rid") long roleId, @PathParam("pid") long permissionId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return PermissionServiceImpl.setPermission(user, AuditEnumType.GROUP, groupId, AuditEnumType.ROLE, roleId, permissionId, enable);
+	}
+	@GET @Path("/setPermissionOnDataForUser/{did : [0-9]+}/{uid : [0-9]+}/{pid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setPermissionOnDataForUser(@PathParam("did") long dataId, @PathParam("uid") long userId, @PathParam("pid") long permissionId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return PermissionServiceImpl.setPermission(user, AuditEnumType.DATA, dataId, AuditEnumType.USER, userId, permissionId, enable);
+	}
+	@GET @Path("/setPermissionOnDataForAccount/{did : [0-9]+}/{aid : [0-9]+}/{pid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setPermissionOnDataForAccount(@PathParam("did") long dataId, @PathParam("aid") long accountId, @PathParam("pid") long permissionId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return PermissionServiceImpl.setPermission(user, AuditEnumType.DATA, dataId, AuditEnumType.ACCOUNT, accountId, permissionId, enable);
+	}
+	@GET @Path("/setPermissionOnDataForPerson/{did : [0-9]+}/{peid : [0-9]+}/{pid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setPermissionOnDataForPerson(@PathParam("did") long dataId, @PathParam("peid") long personId, @PathParam("pid") long permissionId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return PermissionServiceImpl.setPermission(user, AuditEnumType.DATA, dataId, AuditEnumType.PERSON, personId, permissionId, enable);
+	}
+	@GET @Path("/setPermissionOnDataForRole/{did : [0-9]+}/{rid : [0-9]+}/{pid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setPermissionOnDataForRole(@PathParam("did") long dataId, @PathParam("rid") long roleId, @PathParam("pid") long permissionId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return PermissionServiceImpl.setPermission(user, AuditEnumType.DATA, dataId, AuditEnumType.ROLE, roleId, permissionId, enable);
+	}
 	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean flushCache(@Context HttpServletRequest request){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());

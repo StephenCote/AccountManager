@@ -236,7 +236,7 @@ public class BaseService{
 					parentRole = Factories.getRoleFactory().getById(rlbean.getParentId(), rlbean.getOrganization());
 					if(parentRole == null) throw new ArgumentException("Role parent #" + rlbean.getParentId() + " is invalid");
 				}
-				BaseRoleType new_role = Factories.getRoleFactory().newUserRole(user, rlbean.getName(), parentRole);
+				BaseRoleType new_role = Factories.getRoleFactory().newRoleType(rlbean.getRoleType(),user, rlbean.getName(), parentRole);
 				out_bool = Factories.getRoleFactory().addRole(new_role);
 				break;
 				

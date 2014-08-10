@@ -11,8 +11,10 @@ import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
+import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactEnumType;
@@ -21,6 +23,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 
 public class FactUtil {
@@ -105,6 +108,15 @@ public class FactUtil {
 		if(dir == null) throw new ArgumentException("Invalid group path " + sourceFact.getSourceUrl());
 		return dir;
 	}
+	private static BasePermissionType getPermissionFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException, DataAccessException{
+		if(sourceFact.getSourceUrl() == null){
+			logger.error("Source URL is null");
+			return null;
+		}
+		BasePermissionType permission = (BasePermissionType)Factories.getPermissionFactory().findPermission(PermissionEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganization());
+		if(permission == null) throw new ArgumentException("Invalid permission path " + sourceFact.getSourceUrl());
+		return permission;
+	}
 	private static BaseRoleType getRoleFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException, DataAccessException{
 		if(sourceFact.getSourceUrl() == null){
 			logger.error("Source URL is null");
@@ -127,7 +139,7 @@ public class FactUtil {
 			return null;
 		}
 		if(sourceFact.getSourceUrn() == null){
-			logger.error("Source URN is null");
+			logger.error("Source URN is null for " + sourceFact.getUrn());
 			return out_obj;
 		}
 		try {
@@ -166,9 +178,15 @@ public class FactUtil {
 						break;
 					case ROLE:
 						BaseRoleType parent = getRoleFromFact(sourceFact, referenceFact);
-						out_obj = (T)((RoleFactory)fact).getRoleByName(sourceFact.getSourceUrn(), parent, referenceFact.getOrganization());
+						out_obj = (T)((RoleFactory)fact).getRoleByName(sourceFact.getSourceUrn(), parent, RoleEnumType.fromValue(sourceFact.getSourceType()), referenceFact.getOrganization());
 						logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (parent != null ? sourceFact.getSourceUrl() : "Null Role") + " - Result is " + (out_obj == null ? "Null":"Found"));
 						break;
+					case PERMISSION:
+						BasePermissionType perparent = getPermissionFromFact(sourceFact, referenceFact);
+						out_obj = (T)((PermissionFactory)fact).getPermissionByName(sourceFact.getSourceUrn(),PermissionEnumType.fromValue(sourceFact.getSourceType()), perparent, referenceFact.getOrganization());
+						logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (perparent != null ? sourceFact.getSourceUrl() : "Null Permission") + " - Result is " + (out_obj == null ? "Null":"Found"));
+						break;
+
 					default:
 						throw new ArgumentException("Unhandled factory type " + useRef.getFactoryType());
 				}

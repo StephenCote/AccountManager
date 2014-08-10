@@ -10,12 +10,16 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.objects.AccountRoleType;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DataType;
@@ -24,6 +28,8 @@ import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.PersonRoleType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
@@ -138,15 +144,90 @@ public class RoleServiceImpl  {
 
 	}
 	
+	public static boolean setRole(UserType user, long roleId, AuditEnumType objType, long objId, boolean enable){
+		boolean out_bool = false;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Role " + roleId,objType,"Object #" + objId);
+		BaseRoleType role = null;
+		NameIdType obj = null;
+		try {
+			role = Factories.getRoleFactory().getRoleById(roleId, user.getOrganization());
+			if(role == null){
+				AuditService.denyResult(audit, "Role does not exist");
+				return out_bool;
+			}
+			if(RoleEnumType.fromValue(objType.toString()) != role.getRoleType()){
+				AuditService.denyResult(audit, "Role type must match the object type");
+				return out_bool;
+			}
+			if(objType != AuditEnumType.DATA) obj = ((NameIdFactory)BaseService.getFactory(objType)).getById(objId, user.getOrganization());
+			else obj = ((DataFactory)BaseService.getFactory(objType)).getDataById(objId, true, user.getOrganization());
+			if(obj == null){
+				AuditService.denyResult(audit, "Object does not exist");
+				return out_bool;
+			}
+			if(
+				BaseService.canViewType(objType, user,obj)
+				&&
+				BaseService.canChangeType(AuditEnumType.ROLE, user, role)
+			){
+				boolean set = false;
+				switch(objType){
+					case PERSON:
+						if(enable) set = RoleService.addPersonToRole((PersonType)obj, (PersonRoleType)role);
+						else set = RoleService.removePersonFromRole((PersonRoleType)role,(PersonType)obj);
+						break;
+					case ACCOUNT:
+						if(enable) set = RoleService.addAccountToRole((AccountType)obj, (AccountRoleType)role);
+						else set = RoleService.removeAccountFromRole((AccountRoleType)role,(AccountType)obj);
+						break;
+					case USER:
+						if(enable) set = RoleService.addUserToRole((UserType)obj, (UserRoleType)role);
+						else set = RoleService.removeUserFromRole((UserRoleType)role,(UserType)obj);
+						break;
+					case GROUP:
+						logger.warn("Group to role implementation needs to be expanded to include groups of accounts and groups of persons.");
+						if(enable) set = RoleService.addGroupToRole((UserGroupType)obj, (UserRoleType)role);
+						else set = RoleService.removeGroupFromRole((UserRoleType)role,(UserGroupType)obj);
+						break;
+				}
+				if(set){
+					EffectiveAuthorizationService.rebuildPendingRoleCache();
+					AuditService.permitResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is authorized to change the role.");
+					out_bool = true;
+				}
+				else{
+					AuditService.denyResult(audit, "Unable to change the role");
+				}
+			}
+			else{
+				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is not authorized to change the role with this object.");
+				return out_bool;
+			}
+
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return out_bool;
+	}
+	
 	public static BaseRoleType read(String name,HttpServletRequest request){
 		return BaseService.readByName(AuditEnumType.ROLE, name, request);
 	}
 	public static BaseRoleType readByParent(long orgId, long parentId, String name, String type, HttpServletRequest request){
 		OrganizationType org = null;
 		BaseRoleType parent = null;
+		logger.info("Reading " + name + " in #" + parentId + " in org #" + orgId);
 		try{
 			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(org != null) parent = Factories.getRoleFactory().getById(parentId, org);
+			else logger.error("Organization id #" + orgId + " is null");
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -156,7 +237,10 @@ public class RoleServiceImpl  {
 			
 			e.printStackTrace();
 		}
-		if(parent == null) return null;
+		if(parent == null){
+			logger.error("Parent id #" + parentId + " is null in organization #" + orgId);
+			return null;
+		}
 		return BaseService.readByNameInParent(AuditEnumType.ROLE, parent, name, type, request);
 	}
 	public static BaseRoleType readByParent(BaseRoleType parent, String name, String type, HttpServletRequest request){

@@ -288,7 +288,7 @@
 			listRoles : function(oOrg, oParent, sType,iStartIndex, iRecordCount){
 				// param difference when funneled through GridType.xml
 				if(typeof oOrg == "string") oOrg = 0;
-				return uwmServices.getService("Permission").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
+				return uwmServices.getService("Role").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
 				//if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Role"),oOrg, iStartIndex, iRecordCount);
 				//return accountManager.serviceListInParent(uwmServices.getService("Role"),oOrg, oParent,iStartIndex, iRecordCount);
 			},
@@ -314,7 +314,7 @@
 			},
 			getRole : function(sName, sType, oParent, oOrg){
 				if(!oOrg) oOrg = uwm.getUser().organization;
-				return uwmServices.getService("Permission").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
+				return uwmServices.getService("Role").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
 				//if(!oParent) return uwmServices.getService("Role").readByOrganizationId(oOrg.id, sName);
 				//return uwmServices.getService("Role").readByParentId(oOrg.id, oParent.id, sName);
 			},

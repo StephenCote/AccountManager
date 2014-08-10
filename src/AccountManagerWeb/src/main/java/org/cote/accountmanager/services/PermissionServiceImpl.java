@@ -16,12 +16,15 @@ import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -162,7 +165,7 @@ public class PermissionServiceImpl  {
 		return Factories.getPermissionFactory().getPermissionList(parentPermission,ptype,startRecord, recordCount, organization);
 		
 	}
-	private static boolean setPermission(UserType user, AuditEnumType srcType, long srcId, AuditEnumType targType, long targId, long permissionId, boolean enable){
+	public static boolean setPermission(UserType user, AuditEnumType srcType, long srcId, AuditEnumType targType, long targId, long permissionId, boolean enable){
 		NameIdType src = null;
 		NameIdType targ = null;
 		BasePermissionType perm = null;
@@ -174,7 +177,12 @@ public class PermissionServiceImpl  {
 			if(targType != AuditEnumType.DATA) targ = ((NameIdFactory)BaseService.getFactory(targType)).getById(targId, user.getOrganization());
 			else targ = ((DataFactory)BaseService.getFactory(srcType)).getDataById(targId, true, user.getOrganization());
 			perm = Factories.getPermissionFactory().getById(permissionId, user.getOrganization());
-			
+			if(src == null || targ == null || perm == null){
+				AuditService.denyResult(audit, "One or more reference ids were invalid: " + (src == null ? " " + srcType.toString() + " #" +srcId + " Source is null." : "") + (targ == null ? " " + targType.toString() + " #" +srcId + " Target is null." : "") + (perm == null ? " #" +srcId + " Permission is null." : ""));
+				return false;
+			}
+			AuditService.sourceAudit(audit, AuditEnumType.PERMISSION, srcType.toString() + " " + src.getName() + " (#" + src.getId() + ")");
+			AuditService.targetAudit(audit, targType, targ.getName() + " (#" + targ.getId() + ")");
 			/// To set the permission on or off, the user must:
 			/// 1) be able to change src,
 			/// 2) be able to change targ,
@@ -186,7 +194,37 @@ public class PermissionServiceImpl  {
 				&&
 				AuthorizationService.canChangePermission(user, perm)
 			){
-				AuditService.permitResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is authorized to change the permission.");
+				boolean set = false;
+				if(srcType == AuditEnumType.GROUP && targType == AuditEnumType.ROLE){
+					logger.info("Setting permission for role on group");
+					set = AuthorizationService.setPermission(user,(BaseRoleType)targ,(BaseGroupType)src,perm,enable);
+				}
+				else if(srcType == AuditEnumType.DATA && targType == AuditEnumType.ROLE){
+					logger.info("Setting permission for role on data");
+					set = AuthorizationService.setPermission(user,(BaseRoleType)targ,(DataType)src,perm,enable);
+				}
+				else if(srcType == AuditEnumType.GROUP){
+					logger.info("Setting permission for entity on group");
+					set = AuthorizationService.setPermission(user,targ,(BaseGroupType)src,perm,enable);
+				}
+				else if(srcType == AuditEnumType.ROLE){
+					logger.info("Setting permission for entity on role");
+					set = AuthorizationService.setPermission(user,targ,(BaseRoleType)src,perm,enable);
+				}
+				else if(srcType == AuditEnumType.DATA){
+					logger.info("Setting permission for entity on data");
+					set = AuthorizationService.setPermission(user,targ,(DataType)src,perm,enable);
+				}
+				else{
+					AuditService.denyResult(audit, "Unhandled type combination");
+				}
+
+				if(set){
+					EffectiveAuthorizationService.rebuildPendingRoleCache();
+					out_bool = true;
+					AuditService.permitResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is authorized to change the permission.");
+				}
+				else AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") did not change the permission.");
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to set the permission.");
@@ -198,12 +236,13 @@ public class PermissionServiceImpl  {
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return out_bool;
 	}
-	public static boolean setPermissionOnGroupForUser(UserType user, long groupId, long userId, long permissionId, boolean enable){
-		return setPermission(user, AuditEnumType.GROUP, groupId, AuditEnumType.USER, userId, permissionId, enable);
-	}
+
 	
 
 	

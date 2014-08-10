@@ -68,7 +68,7 @@ public class PolicyEvaluator {
 
 	}
 	public static PolicyResponseType evaluatePolicyRequest(PolicyRequestType prt) throws FactoryException, ArgumentException{
-		logger.info("Evaluating Policy " + prt.getUrn() + " in Organization " + prt.getOrganizationPath());
+		logger.info("Evaluating Policy Request " + prt.getUrn() + " in Organization " + prt.getOrganizationPath());
 		PolicyType pol = getPolicyFromRequest(prt);
 		PolicyResponseType prr = new PolicyResponseType();
 		prr.setUrn(prt.getUrn());
@@ -98,21 +98,48 @@ public class PolicyEvaluator {
 		List<RuleType> rules = pol.getRules();
 		int pass = 0;
 		int size = rules.size();
+		logger.info("Evaluating Policy " + pol.getUrn() + " " + pol.getCondition().toString());
 		for(int i = 0; i < size;i++){
 			RuleType rule = rules.get(i);
 			Factories.getRuleFactory().populate(rule);
 			if(evaluateRule(rule, facts,prr)){
 				pass++;
+				if(pol.getCondition() == ConditionEnumType.ANY){
+					logger.info("Breaking on Policy Condition " + pol.getCondition());
+					break;
+				}
 			}
 		}
-		if(pass == size) prr.setResponse(PolicyResponseEnumType.PERMIT);
+		boolean success = (
+				(pol.getCondition() == ConditionEnumType.ANY && pass > 0)
+				||
+				(pol.getCondition() == ConditionEnumType.ALL && pass == size)
+				||
+				(pol.getCondition() == ConditionEnumType.NONE && pass == 0)
+			);
+		//logger.info("TODO: Policy needs a condition type like rules have");
+		if(success){
+			prr.setScore(prr.getScore() + pol.getScore());
+			prr.setResponse(PolicyResponseEnumType.PERMIT);
+		}
 		else prr.setResponse(PolicyResponseEnumType.DENY);
 	}
 	public static boolean evaluateRule(RuleType rule, List<FactType> facts, PolicyResponseType prr) throws FactoryException, ArgumentException{
-		logger.debug("Evaluating rule " + rule.getUrn());
-		List<PatternType> patterns = rule.getPatterns();
+		logger.info("Evaluating Rule " + rule.getUrn() + " " + rule.getRuleType().toString() + " " + rule.getCondition().toString());
 		int pass = 0;
+
+		List<PatternType> patterns = rule.getPatterns();
+		
 		int size = patterns.size();
+		/*
+		List<RuleType> rules = rule.getRules();
+		int rsize = rules.size();
+		for(int i = 0; i < rsize;i++){
+			if(evaluateRule(rules.get(i), facts, prr)){
+				pass++;
+			}
+		}
+		*/
 		for(int i = 0; i < patterns.size(); i++){
 			PatternType pat = patterns.get(i);
 			Factories.getPatternFactory().populate(pat);
@@ -126,9 +153,14 @@ public class PolicyEvaluator {
 				/// If the compare operation is any, then break here
 				pass++;
 				if(rule.getCondition() == ConditionEnumType.ANY){
-					logger.debug("Breaking on " + rule.getRuleType() + " " + rule.getCondition());
+					logger.info("Breaking on " + pat.getUrn() + " with rule " + rule.getRuleType() + " " + rule.getCondition());
 					break;
 				}
+			}
+			else if(rule.getCondition() == ConditionEnumType.ALL && !bPat){
+				logger.info("Breaking on " + pat.getUrn() + " with rule " + rule.getRuleType() + " " + rule.getCondition() + " failure");
+				break;
+				
 			}
 		}
 		boolean success = (
@@ -142,7 +174,7 @@ public class PolicyEvaluator {
 		return success;
 	}
 	public static boolean evaluatePattern(PatternType pattern, List<FactType> facts,PolicyResponseType prr) throws ArgumentException, NumberFormatException, FactoryException{
-		logger.debug("Evaluating pattern " + pattern.getUrn());
+		logger.info("Evaluating Pattern " + pattern.getUrn() + " " + pattern.getPatternType().toString());
 		FactType fact = pattern.getFact();
 		FactType mfact = pattern.getMatch();
 		FactType pfact = fact;
@@ -211,7 +243,7 @@ public class PolicyEvaluator {
 		NameIdType p = FactUtil.factoryRead(fact, matchFact);
 		NameIdType g = FactUtil.factoryRead(matchFact, matchFact);
 		if(p == null || g == null){
-			logger.error("Either the fact or match fact reference was null");
+			logger.error("The " + (g == null ? "match ":"") + "fact reference was null");
 			return OperationResponseEnumType.ERROR;
 		}
 		if(matchFact.getFactType() == FactEnumType.PERMISSION){
@@ -264,6 +296,7 @@ public class PolicyEvaluator {
 	public static OperationResponseEnumType evaluatePermissionAuthorization(PatternType pattern, NameIdType src, NameIdType targ, BasePermissionType permission) throws ArgumentException, FactoryException{
 		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
 		boolean authZ = false;
+		logger.info("Evaluating Permission Authorization on " + targ.getNameType() + " (#" + targ.getId() + ") for " + src.getNameType() + " (#" + src.getId() + ") having " + permission.getName() + " (#" + permission.getId() + ")");
 		if(targ.getNameType() == NameEnumType.GROUP){
 
 			BaseGroupType group = (BaseGroupType)targ;

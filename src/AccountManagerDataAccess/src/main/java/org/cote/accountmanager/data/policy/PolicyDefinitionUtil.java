@@ -32,6 +32,7 @@ public class PolicyDefinitionUtil {
 	}
 	private static void copyParameters(PolicyDefinitionType pdt, PolicyType pol) throws FactoryException, ArgumentException{
 		Factories.getPolicyFactory().populate(pol);
+		logger.info("Processing " + pol.getRules().size() + " rules");
 		for(int i = 0;i < pol.getRules().size();i++){
 			copyParameters(pdt,pol.getRules().get(i));
 		}
@@ -39,17 +40,34 @@ public class PolicyDefinitionUtil {
 	}
 	private static void copyParameters(PolicyDefinitionType pdt, RuleType rule) throws FactoryException, ArgumentException{
 		Factories.getRuleFactory().populate(rule);
+		logger.info("Processing " + rule.getPatterns().size() + " patterns");
 		for(int i = 0; i < rule.getPatterns().size();i++){
 			copyParameters(pdt,rule.getPatterns().get(i));
 		}
+		logger.info("Processing " + rule.getRules().size() + " child rules");
 		for(int i = 0; i < rule.getRules().size();i++){
 			copyParameters(pdt,rule.getRules().get(i));
 		}
 
 	}
+	private static boolean haveParameter(PolicyDefinitionType pdt, FactType fact){
+		boolean out_bool = false;
+		for(int i = 0; i < pdt.getParameters().size();i++){
+			if(pdt.getParameters().get(i).getUrn().equals(fact.getUrn())){
+				out_bool = true;
+				break;
+			}
+		}
+		return out_bool;
+	}
 	private static void copyParameters(PolicyDefinitionType pdt, PatternType pattern) throws FactoryException, ArgumentException{
 		Factories.getPatternFactory().populate(pattern);
 		if(pattern.getFact() != null && pattern.getFact().getFactType() == FactEnumType.PARAMETER){
+			logger.info("Processing Parameter");
+			if(haveParameter(pdt,pattern.getFact())){
+				logger.info("Skipping duplicate parameter");
+				return;
+			}
 			logger.info(pdt.getUrn() + " Parameter " + pattern.getFactUrn());
 			FactType parmFact = new FactType();
 			parmFact.setUrn(pattern.getFactUrn());
@@ -58,6 +76,7 @@ public class PolicyDefinitionUtil {
 			parmFact.setSourceDataType(pattern.getFact().getSourceDataType());
 			parmFact.setSourceUrn(pattern.getFact().getSourceUrn());
 			parmFact.setSourceUrl(pattern.getFact().getSourceUrl());
+			logger.info("Defining Parameter " + parmFact.getUrn());
 			pdt.getParameters().add(parmFact);
 		}
 		else{
