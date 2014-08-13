@@ -288,6 +288,9 @@
 			listRoles : function(oOrg, oParent, sType,iStartIndex, iRecordCount){
 				// param difference when funneled through GridType.xml
 				if(typeof oOrg == "string") oOrg = 0;
+				if(!iStartIndex) iStartIndex = 0;
+				if(!iRecordCount) iRecordCount = 0;
+				if(!sType) sType = "UNKNOWN";
 				return uwmServices.getService("Role").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
 				//if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Role"),oOrg, iStartIndex, iRecordCount);
 				//return accountManager.serviceListInParent(uwmServices.getService("Role"),oOrg, oParent,iStartIndex, iRecordCount);
@@ -314,6 +317,7 @@
 			},
 			getRole : function(sName, sType, oParent, oOrg){
 				if(!oOrg) oOrg = uwm.getUser().organization;
+				if(!sType) sType = "UNKNOWN";
 				return uwmServices.getService("Role").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
 				//if(!oParent) return uwmServices.getService("Role").readByOrganizationId(oOrg.id, sName);
 				//return uwmServices.getService("Role").readByParentId(oOrg.id, oParent.id, sName);
@@ -323,6 +327,7 @@
 			/// This is a temporary setup in the RoleService
 			///
 			getUserRole : function(sType){
+				if(!sType) sType = "ACCOUNT";
 				return uwmServices.getService("Role").getUserRole(sType);
 			},
 			
@@ -341,6 +346,7 @@
 				if(typeof oOrg == "string" || !oOrg) oOrg = uwm.getUser().organization;
 				if(!iStartIndex) iStartIndex = 0;
 				if(!iRecordCount) iRecordCount = 0;
+				if(!sType) sType = "UNKNOWN";
 				return uwmServices.getService("Permission").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
 				//if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Permission"),oOrg, iStartIndex, iRecordCount);
 				//return accountManager.serviceListInParent(uwmServices.getService("Permission"),oOrg, oParent,iStartIndex, iRecordCount);
@@ -367,6 +373,7 @@
 			},
 			getPermission : function(sName, sType, oParent, oOrg){
 				if(!oOrg) oOrg = uwm.getUser().organization;
+				if(!sType) sType = "UNKNOWN";
 				return uwmServices.getService("Permission").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
 			},
 			

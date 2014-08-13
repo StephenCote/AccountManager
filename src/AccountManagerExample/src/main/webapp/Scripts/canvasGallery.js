@@ -1232,7 +1232,8 @@
 			return (typeof window.innerHeight == "number" ? window.innerHeight : document.documentElement.clientHeight);
 		}
 		function scaleText(s){
-			var iLabelWidth = 12,b,i,x="";
+			var iLabelWidth = (l > 0 ? l : 12),b,i,x="";
+
 			
 			if(s.length <= iLabelWidth) return s;
 		
