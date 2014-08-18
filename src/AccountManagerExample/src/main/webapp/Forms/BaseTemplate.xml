@@ -4,9 +4,11 @@
 	<embedded-script><![CDATA[
 		embedded_init : function(){
 			this.scopeHandler("manager_loaded", 0, 0, 1);
+			this.scopeHandler("picker_loaded", 0, 0, 1);
 		},
 		embedded_destroy : function(){
-			this._prehandle_manager_loaded = 0;
+			this._prehandle_manager_loaded;
+			this._prehandle_picker_loaded;
 		},
 		_handle_manager_loaded: function (v) {
 			///
@@ -48,6 +50,18 @@
             	//
             	oW.setHideOnClose(0);
             }
+		},
+		pickText : function(o,sL,sH, sDV){
+			var oW = Hemi.app.createWindow("Picker",g_application_path + "Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},this._prehandle_picker_loaded);
+			if(!oW) return;
+			oW.setHideOnClose(0);
+			oW.resizeTo(400,100);
+			oW.center();
+			oW.setIsModal(true);
+			oW.hideButtons();
+		},
+		_handle_picker_loaded : function(oW){
+	
 		}
 	]]></embedded-script>
 </Template>

@@ -3,6 +3,35 @@
 	window.accountManager = {
 			organization_paths : {},
 			
+			
+			setPermission : function(oObj, oActor, oPerm, bEnable){
+				if(!oObj) return 0;
+				if(!oObj.nameType.match(/^GROUP|DATA|ROLE$/)){
+					Hemi.logError("Unsupported object type: " + oObj.nameType);
+					return 0;
+				}
+				if(!oActor.nameType.match(/^PERSON|USER|ACCOUNT|ROLE$/)){
+					Hemi.logError("Unsupported actor type: " + oActor.nameType);
+					return 0;
+				}
+				var sObj= oObj.nameType.substring(0,1) + oObj.nameType.substring(1,oObj.nameType.length).toLowerCase();
+				var sAct= oActor.nameType.substring(0,1) + oActor.nameType.substring(1,oActor.nameType.length).toLowerCase();
+				return uwmServices.getService("Permission")["setPermissionOn" + sObj + "For" + sAct](oObj.id, oActor.id, oPerm.id,bEnable);
+			},
+			getAttribute : function(o,n){
+				var v = 0;
+				for(var i = 0; o.attributes && i < o.attributes.length;i++){
+					if(o.attributes[i].name == n){
+						v = o.attributes[i];
+					}
+				}
+				return v;
+			},
+			getAttributeValue : function(o,n,d){
+				var a = accountManager.getAttribute(o,n);
+				if(!a) return d;
+				return a.values[0];
+			},
 			addAttribute : function(o,s,v){
 				if(!o.attributes) o.attributes = [];
 				o.attributes.push(accountManager.newAttribute(s,v));

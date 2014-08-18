@@ -11,6 +11,8 @@
 		<input type="button" rid = "button_delete" class = "designer_button delete_button" button-action = "Delete"  />
 		<div class = "designer_button_spacer"></div>
 		<input type = "text" rid = "path" style = "margin-top: 5px; width: 75px !important; float: left;" placeholder = "~/Path" class = "rocket-text" />
+		<input class = "rocket-text rocket-text-pick" style = "display:none;margin-top: 5px; width: 75px !important; float: left;" type = "text" rid = "filter" value = "" />
+		<input class = "rocket-button" type = "button" rid = "button_search" style = "display:none;margin-top: 5px; float: left;" value = "..." onclick = "${this}._search()" />
 		<div class = "designer_button_spacer"></div>
 		<input type="button" rid = "button_move_first" disabled = "true" class = "designer_button" button-action = "MoveFirst" value = "&lt;&lt;" />
 		<input type="button" rid = "button_move_prev" disabled = "true" class = "designer_button" button-action = "MovePrev" value = "&lt;" />
@@ -19,6 +21,11 @@
 		<div class = "designer_button_label" rid = "record_label"></div>
 	</div>
 	<div class = "uwm-box-border" component = "wideselect" rid = "typelist">
+	</div>
+	<div rid = "control_bar" style = "display:none;">
+		<input class = "rocket-button" type = "button" value = "Pick and Continue" rid = "button_pickmulti" onclick = "${this}.pickItem(1)" />
+		<input class = "rocket-button" type = "button" value = "Pick" rid = "button_pickone" onclick = "${this}.pickItem()" />
+		<input class = "rocket-button" type = "button" value = "Cancel" rid = "button_cancelpick" onclick = "${this}.cancelPickItem()" />
 	</div>
 	<p><span rid = "status">[ ... ]</span></p>
 	<!--
@@ -37,17 +44,28 @@
 		DrawIOGridItem
 		DrawIOGridHeader
 		DrawIOGridFooter
+		provideList
+		provideCount
+		search
 	-->
 	<embedded-script>
 		<![CDATA[
-		initGrid : function(sTypeName, sDefPath, sViewTypeName, bNotAGroup, bNoPopulate,vParent){
+		initGrid : function(sTypeName, sDefPath, sViewTypeName, bNotAGroup, bNoPopulate,vParent,bManualPick,bShowSearch){
 			var _s = this.getProperties();
 			var _o = this.getObjects();
 			_s.populate = (bNoPopulate ? 0 : 1);
+			_s.manualPick = (bManualPick ? 1 : 0);
+			if(_s.manualPick){
+				this.GetElementByRID("control_bar").style.display = "block";
+			}
 			if(!bNotAGroup) this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : "~/" + sTypeName + "s");
 			else{
 				this.GetElementByRID("path").style.display = "none";
 				 _s.noGroup = 1;
+			}
+			if(bShowSearch){
+				this.GetElementByRID("filter").style.display = "";
+				this.GetElementByRID("button_search").style.display = "";
 			}
 			if(vParent){
 				_o.parentRef = vParent;
@@ -66,6 +84,14 @@
 		},
 		embedded_destroy : function(){
 			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_list_session_refresh");
+		},
+		cancelPickItem : function(){
+			if(this.Close) this.Close();
+		},
+		
+		_search : function(){
+			var filter = this.GetElementByRID("filter").value;
+			if(this.search) this.search(filter);
 		},
 		configList : function(){
 			this.getList().getContainer().style.height = (this.getProperties().record_count * 14) + "px";
@@ -89,11 +115,22 @@
 		handle_list_session_refresh : function(s, v){
 			this.refreshList();
 		},
+		pickItem : function(b){
+			var o = this.getList().getActiveItem();
+			this.setStatus("");
+			if(!o){
+				this.setStatus("Nothing is selected");
+				return;
+			}
+			this._handle_typelistclick("manualpick",o);
+			if(!b && this.Close) this.Close();
+		},
+
 		_handle_typelistclick : function(s, v){
 			this.EnableButton("button_delete");
 			this.EnableButton("button_open");
 			if(this.handle_list_click) this.handle_list_click(v);
-			if(this.getProperties().picker){
+			if(this.getProperties().picker && (!this.getProperties().manualPick || s == "manualpick")){
 				var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
 				if(this.getProperties().pickFunction && oOpener[this.getProperties().pickFunction]){
 					oOpener[this.getProperties().pickFunction](this.getProperties().formType,v.data, this.getProperties().sourceId);
@@ -106,7 +143,7 @@
 					if(oL && v && v.data) oL.addItem(v.data.name, v.data);
 					else if(this.getProperties().pickFunction && oOpener[this.getProperties().pickFunction]) oOpener[this.getProperties().pickFunction](this.getProperties().formType,v.data, this.getProperties().sourceId);
 				}
-				if(this.Close) this.Close();
+				if(this.Close && s != "manualpick") this.Close();
 			}
 		},
 		
@@ -169,14 +206,15 @@
 			}
 		},
 		openItem : function(o){
-			var _s = this.getProperties();
+			var _s = this.getProperties(),_o = this.getObjects();
 			if(_s.populate && !o.populated){
 				if(o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
 					Hemi.log("Not pulling own blob data for " + o.name + " unless specifically requested.");
 				}
 				else{
 					Hemi.log("Not populated.  Fetching a populated version.");
-					o = accountManager["get" + this.getProperties().typeName](o.name,o.group);
+					if(o.nameType == "ROLE") o = accountManager["get" + this.getProperties().typeName](o.name,o.roleType,_o.parentRef);
+					else o = accountManager["get" + this.getProperties().typeName](o.name,o.group);
 					if(!o.populated) alert("still not populated");
 				}
 			}
@@ -279,7 +317,9 @@
 				///
 				if(!bSkipCountReset){
 					var count = 0;
-					if(sPath) count = accountManager["count" + this.getProperties().typeName + "s"](sPath);
+					var sFilt = this.GetElementByRID("filter").value;
+					if(this.provideCount) count = this.provideCount(sPath, sFilt);
+					else if(sPath) count = accountManager["count" + this.getProperties().typeName + "s"](sPath);
 					else count = accountManager["count" + this.getProperties().typeName + "s"](uwm.getUser().organization,_o.parentRef); 
 					if(count != null) this.setTotalCount(count);
 				}
@@ -287,8 +327,15 @@
 					this.setTotalCount(this.getProperties().total_count);
 				}
 				var aList = [];
-				if(sPath) aList = accountManager["list" + this.getProperties().typeName + "s"](sPath,this.getProperties().start_record,this.getProperties().record_count);
-				else aList = accountManager["list" + this.getProperties().typeName + "s"](uwm.getUser().organization,_o.parentRef,this.getProperties().start_record,this.getProperties().record_count);	
+				var sFilt = this.GetElementByRID("filter").value;
+				var tname = this.getProperties().typeName;
+				if(this.provideList) aList = this.provideList(sPath, sFilt, this.getProperties().start_record,this.getProperties().record_count);
+				else if(sPath) aList = accountManager["list" + tname + "s"](sPath,this.getProperties().start_record,this.getProperties().record_count);
+				else{
+				
+					if(tname != "Role") aList = accountManager["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,this.getProperties().start_record,this.getProperties().record_count);
+					else aList = accountManager["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,"UNKNOWN",this.getProperties().start_record,this.getProperties().record_count);
+				}	
 				for(var i = 0; aList != null && i < aList.length;i++){
 					if(vComp[aList[i].name]) continue;
 					var sn = (this.decorateListItemName ? this.decorateListItemName(aList[i]) : aList[i].name);

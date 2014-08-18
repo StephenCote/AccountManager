@@ -88,7 +88,11 @@
 				Hemi.logError("Prepare save failed for type " + this.getProperties().typeName);
 				return;
 			}
-			
+			if(_s.customSave){
+				Hemi.log("Concluding custom save operation");
+				if(this.Close) this.Close();
+				return;
+			}
 			var sAct = "add", bAct = 0;
 			if(o.id > 0) sAct = "update";
 			var sMeth= sAct + this.getProperties().typeName;
