@@ -539,7 +539,9 @@ public class AuthorizationService {
 			if (bp == null) out_boolean = true;
 			else out_boolean = Factories.getRoleParticipationFactory().deleteParticipant(bp);
 		}
-		if(out_boolean && (role.getRoleType() == RoleEnumType.PERSON || role.getRoleType() == RoleEnumType.USER || role.getRoleType() == RoleEnumType.ACCOUNT)) EffectiveAuthorizationService.pendRoleUpdate(role);
+		if(out_boolean && (role.getRoleType() == RoleEnumType.PERSON || role.getRoleType() == RoleEnumType.USER || role.getRoleType() == RoleEnumType.ACCOUNT)){
+			EffectiveAuthorizationService.pendRoleUpdate(role);
+		}
 		return out_boolean;
 	}
 	public static boolean canDeletePermission(UserType user, BasePermissionType permission) throws ArgumentException, FactoryException{
@@ -902,7 +904,9 @@ public class AuthorizationService {
 			else out_boolean = Factories.getGroupParticipationFactory().deleteParticipant(bp);
 		}
 		//if(out_boolean && role.getRoleType() == RoleEnumType.USER) EffectiveAuthorizationService.pendUserRoleUpdate((UserRoleType)role);
-		if(out_boolean) EffectiveAuthorizationService.pendGroupUpdate(group);
+		if(out_boolean){
+			EffectiveAuthorizationService.pendGroupUpdate(group);
+		}
 		return out_boolean;
 	}
 	public static boolean canChangeGroup(BaseRoleType role, BaseGroupType group) throws FactoryException, ArgumentException

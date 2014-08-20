@@ -181,10 +181,15 @@ public class BulkFactory {
 			}
 
 			/// 2013/06/26 - Third pass, write objects into the bulk table queues
-			///
+			/// 2014/08/15 - Add attribute dump
+			List<NameIdType> attrDump = new ArrayList<NameIdType>();
+			long totalAttrs = 0;
 			for(int i = offset; i < eLen; i++){
 				BulkEntryType entry = session.getBulkEntries().get(i);
-
+				if(entry.getObject().getAttributes().size() > 0){
+					totalAttrs += entry.getObject().getAttributes().size();
+					attrDump.add(entry.getObject());
+				}
 				/// 2013/06/26 - Second pass, map ids
 				///
 				if(entry.getPersisted() == false){
@@ -194,6 +199,8 @@ public class BulkFactory {
 				writeObject(session, entry);
 				/// 2014/01/11  - need to update attributes, but in one bulk pass
 			}
+			logger.info("Writing " + totalAttrs + " attributes for " + attrDump.size() + " objects");
+			Factories.getAttributeFactory().addAttributes(attrDump.toArray(new NameIdType[0]));
 
 			synchronized(dirtyWrite){
 				Iterator<FactoryEnumType> keys = factoryIds.keySet().iterator();

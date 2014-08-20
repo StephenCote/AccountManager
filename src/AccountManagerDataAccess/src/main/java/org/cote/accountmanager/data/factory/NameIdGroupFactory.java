@@ -29,7 +29,11 @@ public class NameIdGroupFactory extends NameIdFactory{
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		NameIdDirectoryGroupType t = (NameIdDirectoryGroupType)obj;
-		return t.getName() + "-" + t.getParentId() + "-" + t.getGroup().getId();
+		if(t.getGroup() == null){
+			logger.error("ORPHAN " + t.getNameType() + " OBJECT #" + t.getId());
+		}
+		///logger.info("CKN: " + t.getParentId() + (t.getGroup() == null ? "NULL GROUP" : t.getGroup().getId()));
+		return t.getName() + "-" + t.getParentId() + "-" + (t.getGroup() == null ? "ORPHAN" : t.getGroup().getId());
 	}
 	
 	public int getCount(DirectoryGroupType group) throws FactoryException

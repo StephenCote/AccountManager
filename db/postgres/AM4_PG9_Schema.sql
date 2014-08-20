@@ -1374,7 +1374,15 @@ create or replace view roleRights as
 
 
 
-
+create or replace view orphanPersonParticipations as
+select id from PersonParticipation RP1
+where (participanttype = 'USER' and participantid not in (select id from Users U1))
+OR ((participanttype = 'PERSON' OR participanttype = 'DEPENDENT') and participantid not in (select id from Persons P1))
+OR (participanttype = 'ACCOUNT' and participantid not in (select id from Accounts A1))
+OR (participationid not in (select id from persons D1))
+or
+organizationid not in (select id from organizations)
+;
 
 create or replace view orphanDataParticipations as
 select id from DataParticipation RP1
@@ -1408,6 +1416,13 @@ OR (participanttype = 'ACCOUNT' and participantid not in (select id from Account
 OR (participanttype = 'ROLE' and participantid not in (select id from Roles R1))
 OR (participanttype = 'GROUP' and participantid not in (select id from Groups G1))
 OR (participationid not in (select id from Groups))
+or
+organizationid not in (select id from organizations)
+;
+
+create or replace view orphanContactInformationParticipations as
+select id from ContactInformationParticipation GP1
+where (participanttype = 'CONTACT' and participantid not in (select id from ContactInformation U1))
 or
 organizationid not in (select id from organizations)
 ;
@@ -1452,6 +1467,8 @@ OR
 OR
 (referencetype = 'PERSON' AND referenceid not in (select id from persons A1))
 OR
+(referencetype = 'DATA' AND referenceid not in (select id from data D1))
+OR
 organizationid not in (select id from organizations)
 ;
 create or replace view orphanPersons as
@@ -1462,23 +1479,37 @@ or
 organizationid not in (select id from organizations)
 ;
 
+create or replace view orphanContactInformation as
+select id,contactinformationtype,organizationid from contactinformation RP1
+where (contactinformationtype = 'USER' and referenceid not in (select id from Users U1))
+or (contactinformationtype = 'PERSON' and referenceid not in (select id from Persons P1))
+OR (contactinformationtype = 'ACCOUNT' and referenceid not in (select id from Accounts A1))
+or
+organizationid not in (select id from organizations)
+;
+
 
 CREATE OR REPLACE FUNCTION cleanup_orphans() 
         RETURNS BOOLEAN
         AS $$
+
         delete from persons where id in (select id from orphanPersons);
-        delete from attribute where referencetype = 'PERSON' and referenceid not in (select id from persons);
 	delete from users where organizationid not in (select id from organizations);
-	delete from attribute where referencetype = 'USER' and referenceid not in (select id from users);
 	delete from data where id in (select id from orphanData);
-	delete from attribute where referencetype = 'DATA' and referenceid not in (select id from data);
-	delete from dataparticipation where id in (select id from orphanDataParticipations);
 	delete from accounts where id in (select id from orphanAccounts);
-	delete from attribute where referencetype = 'ACCOUNT' and referenceid not in (select id from accounts);
 	delete from groups where id in (select id from orphanGroups);
-	delete from groupparticipation where id in (select id from orphanGroupParticipations);
 	delete from roles where id in (select id from orphanRoles);
+
+	delete from dataparticipation where id in (select id from orphanDataParticipations);
 	delete from roleparticipation where id in (select id from orphanRoleParticipations);
+	delete from groupparticipation where id in (select id from orphanGroupParticipations);
+	delete from personparticipation where id in (select id from orphanPersonParticipations);
+
+        delete from attribute where referencetype = 'PERSON' and referenceid not in (select id from persons);
+	delete from attribute where referencetype = 'USER' and referenceid not in (select id from users);
+	delete from attribute where referencetype = 'DATA' and referenceid not in (select id from data);
+	delete from attribute where referencetype = 'ACCOUNT' and referenceid not in (select id from accounts);
+
 	SELECT true;
         $$ LANGUAGE 'sql';
 

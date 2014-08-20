@@ -11,21 +11,22 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.FactoryException;
-
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.services.ServiceUtil;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.SecurityUtil;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -215,5 +216,31 @@ public class BaseDataAccessTest{
 		return user;
 	}
 	
+	public <T> T getCreatePermission(UserType user, String name, PermissionEnumType type, T parent, OrganizationType org){
+		T per = null;
+		try {
+			per = (T)Factories.getPermissionFactory().getPermissionByName(name, type, (BasePermissionType)parent,org);
+			if(per == null){
+				per = (T)Factories.getPermissionFactory().newPermission(user, name, type, (BasePermissionType)parent, org);
+				if(Factories.getPermissionFactory().addPermission((BasePermissionType)per)){
+					per = (T)Factories.getPermissionFactory().getPermissionByName(name, type, (BasePermissionType)parent,org);
+				}
+			}
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return per;
+	}
 	
 }

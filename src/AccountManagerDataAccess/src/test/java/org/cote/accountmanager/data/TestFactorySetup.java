@@ -1,3 +1,11 @@
+/*
+ * WARNING: TestFactorySetup WILL ERASE EVERYTHING IN THE DATABASE
+ * 
+ * This unit test (fine, functional test for you pedantic blowhards) will connect to the database and rip it all down
+ * This is what it's supposed to do - test the setup process
+ * But that means if you run it, assuming the right database settings are provided, it will re-apply the database schema, which in turn will replace existing schema  
+ */
+
 package org.cote.accountmanager.data;
 
 import static org.junit.Assert.assertFalse;

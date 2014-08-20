@@ -191,6 +191,8 @@ public class RoleServiceImpl  {
 						break;
 				}
 				if(set){
+					EffectiveAuthorizationService.pendUpdate(role);
+					EffectiveAuthorizationService.pendUpdate(obj);
 					EffectiveAuthorizationService.rebuildPendingRoleCache();
 					AuditService.permitResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is authorized to change the role.");
 					out_bool = true;
@@ -545,7 +547,13 @@ public class RoleServiceImpl  {
 	private static List<BaseRoleType> getList(String type,BaseRoleType parentRole, int startRecord, int recordCount, OrganizationType organization) throws ArgumentException, FactoryException {
 		//if(parentRole == null) return Factories.getRoleFactory().getRoleList(startRecord, recordCount, organization);
 		RoleEnumType roleType = RoleEnumType.fromValue(type);
-		return Factories.getRoleFactory().getRoleList(roleType,parentRole,startRecord, recordCount, organization);
+		List<BaseRoleType> roles = Factories.getRoleFactory().getRoleList(roleType,parentRole,startRecord, recordCount, organization);
+		if(BaseService.enableExtendedAttributes){
+			for(int i = 0; i < roles.size(); i++){
+				Factories.getAttributeFactory().populateAttributes((NameIdType)roles.get(i));
+			}
+		}
+		return roles;
 	}
 	
 	

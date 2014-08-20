@@ -234,7 +234,7 @@ public class PersonFactory extends NameIdGroupFactory {
 				///
 				Set<Long> set = new HashSet<Long>();
 				BaseParticipantType[] maps = Factories.getPersonParticipationFactory().getPartnerParticipations(data).toArray(new BaseParticipantType[0]);
-				logger.info("Updating " + maps.length + " Partner References");
+				//logger.info("Updating " + maps.length + " Partner References");
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getPartners().size();i++){

@@ -153,6 +153,22 @@ public class EffectiveAuthorizationService {
 		
 	}
 	
+	
+	public static void pendUpdate(NameIdType map){
+		switch(map.getNameType()){
+			case ACCOUNT: pendAccountUpdate((AccountType)map); break;
+			case USER: pendUserUpdate((UserType)map); break;
+			case PERSON: pendPersonUpdate((PersonType)map); break;
+			case ROLE: pendRoleUpdate((BaseRoleType)map); break;
+			case GROUP: pendGroupUpdate((BaseGroupType)map); break;
+			case DATA: pendDataUpdate((DataType)map); break;
+			default:
+				logger.error("Invalid NameIdType: " + map.getNameType());
+				break;
+		}
+
+	}
+	
 	public static void pendRoleUpdate(BaseRoleType role){
 		rebuildRoles.put(role.getId(), role);
 		/// logger.debug("Pend role " + role.getName() + " #" + role.getId() + " for total count " + rebuildRoles.size());
@@ -1042,7 +1058,7 @@ public class EffectiveAuthorizationService {
 				String sql = "SELECT " + functionName + "(ARRAY[" + buffs.get(i).toString() + "]," + org.getId() + ")";
 				//logger.debug(sql);
 				ResultSet rset = stat.executeQuery(sql);
-				while(rset.next()){
+				if(rset.next()){
 					updated++;
 				}
 				rset.close();
@@ -1063,11 +1079,11 @@ public class EffectiveAuthorizationService {
 				e.printStackTrace();
 			}
 		}
-		logger.info("Rebuilt role cache For " + updated + " objects");
+		logger.info("Rebuilt role cache with " + updated + " operations");
 		return (updated > 0);
 	}
 	public static boolean rebuildGroupRoleCache(OrganizationType org){
-		return rebuildRoleCache("cache_all_group_roles",org);
+		return rebuildRoleCache("cache_all_group_roles",org); 
 	}
 	public static boolean rebuildRoleRoleCache(OrganizationType org){
 		return rebuildRoleCache("cache_all_role_roles",org);
@@ -1083,6 +1099,21 @@ public class EffectiveAuthorizationService {
 	}
 	public static boolean rebuildPersonRoleCache(OrganizationType org){
 		return rebuildRoleCache("cache_all_person_roles",org);
+	}
+	public static boolean rebuildRoleCache(OrganizationType org){
+		return (
+				rebuildRoleCache("cache_all_group_roles",org)
+				&&
+				rebuildRoleCache("cache_all_role_roles",org)
+				&&
+				rebuildRoleCache("cache_all_data_roles",org)
+				&&
+				rebuildRoleCache("cache_all_user_roles",org)
+				&&
+				rebuildRoleCache("cache_all_account_roles",org)
+				&&
+				rebuildRoleCache("cache_all_person_roles",org)
+			);
 	}
 
 	private static boolean rebuildRoleCache(String functionName,OrganizationType org){

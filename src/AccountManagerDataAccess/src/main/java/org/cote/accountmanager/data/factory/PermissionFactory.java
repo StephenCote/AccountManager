@@ -177,7 +177,10 @@ public class PermissionFactory extends NameIdFactory {
 			}
 			if(user != null) per = getCreatePermission(user, seg, type, (T)parent, org);
 			else per = getPermissionByName(seg,type,(BasePermissionType)parent,org);
-			if(per == null) throw new ArgumentException("Failed to find permission '" + seg + "' in " + (parent == null ? "Null Parent":parent.getName()));
+			if(per == null){
+				logger.warn("Failed to find permission '" + seg + "' in " + (parent == null ? "Null Parent":parent.getName()));
+				return null;
+			}
 			parent = (BasePermissionType)per;
 		}
 		return per;
@@ -282,5 +285,10 @@ public class PermissionFactory extends NameIdFactory {
 		List<NameIdType> PermissionList = getByField(fields, instruction, organization.getId());
 		return convertList(PermissionList);
 	}
+	public int deletePermissionsByIds(long[] ids, OrganizationType organization) throws FactoryException
+	{
+		return deleteById(ids, organization.getId());
+	}
+
 
 }

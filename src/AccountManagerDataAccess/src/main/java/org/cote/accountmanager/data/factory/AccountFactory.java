@@ -81,6 +81,29 @@ public class AccountFactory extends NameIdGroupFactory {
 		System.out.println("Remove account from cache: " + key_name);
 		removeFromCache(account, key_name);
 	}
+	public int deleteAccountsInGroup(DirectoryGroupType group)  throws FactoryException
+	{
+		// Can't just delete by group;
+		// Need to get ids so as to delete participations as well
+		//
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
+		/// TODO: Delete participations
+		///
+		return deleteAccountsByIds(ids, group.getOrganization());
+	}
+	public int deleteAccountsByIds(long[] ids, OrganizationType organization) throws FactoryException
+	{
+		int deleted = deleteById(ids, organization.getId());
+		if (deleted > 0)
+		{
+			/*
+			Factories.getContactInformationFactory().deleteContactInformationByReferenceIds(ids,organization.getId());
+			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
+			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
+			*/
+		}
+		return deleted;
+	}
 	public boolean deleteAccount(AccountType account) throws FactoryException, ArgumentException
 	{
 		removeFromCache(account);

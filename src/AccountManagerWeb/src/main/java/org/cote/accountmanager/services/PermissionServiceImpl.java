@@ -165,6 +165,7 @@ public class PermissionServiceImpl  {
 		return Factories.getPermissionFactory().getPermissionList(parentPermission,ptype,startRecord, recordCount, organization);
 		
 	}
+
 	public static boolean setPermission(UserType user, AuditEnumType srcType, long srcId, AuditEnumType targType, long targId, long permissionId, boolean enable){
 		NameIdType src = null;
 		NameIdType targ = null;
@@ -198,6 +199,7 @@ public class PermissionServiceImpl  {
 				if(srcType == AuditEnumType.GROUP && targType == AuditEnumType.ROLE){
 					logger.info("Setting permission for role on group");
 					set = AuthorizationService.setPermission(user,(BaseRoleType)targ,(BaseGroupType)src,perm,enable);
+					
 				}
 				else if(srcType == AuditEnumType.DATA && targType == AuditEnumType.ROLE){
 					logger.info("Setting permission for role on data");
@@ -220,6 +222,7 @@ public class PermissionServiceImpl  {
 				}
 
 				if(set){
+					EffectiveAuthorizationService.pendUpdate(targ);
 					EffectiveAuthorizationService.rebuildPendingRoleCache();
 					out_bool = true;
 					AuditService.permitResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is authorized to change the permission.");
@@ -232,12 +235,15 @@ public class PermissionServiceImpl  {
 
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
+			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			e.printStackTrace();
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
+			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			e.printStackTrace();
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
+			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			e.printStackTrace();
 		}
 		return out_bool;

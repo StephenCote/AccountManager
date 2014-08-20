@@ -281,7 +281,9 @@ public abstract class NameIdFactory extends FactoryBase {
 		if(hasObjectId) obj.setObjectId(rset.getString("objectid"));
 		if(hasName) obj.setName(rset.getString("name"));
 		if(hasOwnerId) obj.setOwnerId(rset.getLong("ownerid"));
+		else obj.setOwnerId(0L);
 		if(hasParentId) obj.setParentId(rset.getLong("parentid"));
+		else obj.setParentId(0L);
 		if(scopeToOrganization){
 			OrganizationType org = Factories.getOrganizationFactory().getOrganizationById(rset.getLong("organizationid"));
 			obj.setOrganization(org);

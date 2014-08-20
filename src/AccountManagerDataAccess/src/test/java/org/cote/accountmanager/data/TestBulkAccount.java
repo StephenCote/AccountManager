@@ -27,16 +27,16 @@ import org.junit.Test;
 public class TestBulkAccount extends BaseDataAccessTest{
 	public static final Logger logger = Logger.getLogger(TestBulkAccount.class.getName());
 	
-	private AccountType getAccount(String name){
+	private AccountType getAccount(UserType owner, String name){
 		
 		DirectoryGroupType rootDir = null;
 		AccountType qaAccount = null;
 		try{
-			rootDir = Factories.getGroupFactory().getRootDirectory(Factories.getDevelopmentOrganization());
+			rootDir = Factories.getGroupFactory().getRootDirectory(owner.getOrganization());
 			qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
 	
 			if(qaAccount == null){
-				qaAccount = Factories.getAccountFactory().newAccount(name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir);
+				qaAccount = Factories.getAccountFactory().newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir);
 				Factories.getAccountFactory().addAccount(qaAccount);
 				qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
 			}
@@ -54,9 +54,9 @@ public class TestBulkAccount extends BaseDataAccessTest{
 	
 	@Test
 	public void TestAccountAuthZ(){
-		AccountType qaAccount1 = getAccount("QA Account 1");
-		AccountType qaAccount2 = getAccount("QA Account 2");
-		AccountType qaAccount3 = getAccount("QA Account 3");
+		AccountType qaAccount1 = getAccount(testUser,"QA Account 1");
+		AccountType qaAccount2 = getAccount(testUser,"QA Account 2");
+		AccountType qaAccount3 = getAccount(testUser,"QA Account 3");
 		DirectoryGroupType dir = null;
 		AccountRoleType art = null;
 		AccountRoleType readerRole = null;
