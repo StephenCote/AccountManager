@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template Title = "Sharing">
-
 	<div class = "rocket-column-2">
+		<p>
+			Client Cache:
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed UWM Service Cache: ' + uwmServiceCache.clearCache())" />
+		</p>
+	</div>
+	<div class = "rocket-column-2" style = "border-top:.2em solid #000000;">
 		<p>
 			Data Cache:
 		</p>
 		<p>
-			<input type = "button" value = "Clear" onclick = "accountManager.clearDataCache()" />
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed Data Cache: ' + accountManager.clearDataCache())" />
 		</p>
 	</div>
 	<div class = "rocket-column-2">
@@ -14,7 +21,7 @@
 			Group Cache:
 		</p>
 		<p>
-			<input type = "button" value = "Clear" onclick = "accountManager.clearGroupCache()" />
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed Group Cache: ' + accountManager.clearGroupCache())" />
 		</p>
 	</div>
 
@@ -23,7 +30,7 @@
 			Role Cache:
 		</p>
 		<p>
-			<input type = "button" value = "Clear" onclick = "accountManager.clearRoleCache()" />
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed Role Cache: ' + accountManager.clearRoleCache())" />
 		</p>
 	</div>
 	<div class = "rocket-column-2">
@@ -31,9 +38,27 @@
 			User Cache:
 		</p>
 		<p>
-			<input type = "button" value = "Clear" onclick = "accountManager.clearUserCache()" />
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed User Cache: ' + accountManager.clearUserCache())" />
+		</p>
+	</div>
+	<div class = "rocket-column-2" style = "border-top:.2em solid #000000;">
+		<p>
+			Flush Authorization
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed Authorization Cache: ' + accountManager.clearAuthorizationCache())" />
 		</p>
 	</div>
 
+	<div class = "rocket-column-2" style = "border-top:.2em solid #000000;">
+		<p>
+			Flush All
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed All Caches: ' + accountManager.flushCache())" />
+		</p>
+	</div>
+	
+	<import-xml src = "/Forms/StatusFrag.xml" id = "StatusFrag" />
 
 </Template>

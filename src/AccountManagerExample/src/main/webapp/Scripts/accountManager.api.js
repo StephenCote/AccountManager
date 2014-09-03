@@ -98,6 +98,7 @@
 				return uwmServices.getService("Organization").find(sPath);
 			},
 			flushCache : function(){
+				uwmServiceCache.clearCache();
 				return uwmServices.getService("AccountManager").flushCache();
 			},
 			clearAuthorizationCache : function(){
