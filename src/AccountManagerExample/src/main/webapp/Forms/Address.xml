@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Address Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Address";
+			this.getProperties().defaultPath = "~/Addresses";
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.beans.addressType();
+					o.name = "";
+					o.id = 0;
+					o.locationType = "UNKNOWN";
+					o.preferred = false;
+					o.addressLine1 = "";
+					o.addressLine2 = "";
+					o.city = "";
+					o.state = "";
+					o.region = "";
+					o.state = "";
+					o.postalCode = "";
+					o.country = "";
+					o.description = "";
+				}
+				else if(o.group && o.group.path){
+					this.getProperties().defaultPath = o.group.path;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

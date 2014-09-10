@@ -60,7 +60,7 @@
 		},
 		saveType : function(){
 			this.synchronizeForm();
-			var o = this.getBean("rocketType");
+			var o = this.getBean("rocketType"),_s = this.getProperties();
 			this.GetElementByRID("path").className = "rocket-text";
 			this.GetElementByRID("endTime").className = "rocket-text";
 			this.GetElementByRID("name").className = "rocket-text";

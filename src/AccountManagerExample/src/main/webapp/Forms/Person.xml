@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Person Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Person";
+			this.getProperties().defaultPath = "~/Persons";
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.beans.personType();
+					o.name = "";
+					o.description = "";
+					o.suffix = "";
+					o.prefix = "";
+					o.title = "";
+					o.alias = "";
+					o.firstName = "";
+					o.lastName = "";
+					o.middleName = "";
+					o.id = 0;
+					o.gender = "unknown";
+					o.birthDate = new Date();
+					o.users = [];
+					o.accounts = [];
+					o.partners = [];
+					o.dependents = [];
+					o.notes = [];
+				}
+				else if(o.group && o.group.path){
+					this.getProperties().defaultPath = o.group.path;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

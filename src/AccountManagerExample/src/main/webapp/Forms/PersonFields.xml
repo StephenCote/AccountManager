@@ -1,0 +1,118 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Title:
+		</p>
+		<p>
+			<input type = "text" rid = "title" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Prefix:
+		</p>
+		<p>
+			<input type = "text" rid = "prefix" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			First Name:
+		</p>
+		<p>
+			<input type = "text" rid = "firstName" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Middle Name:
+		</p>
+		<p>
+			<input type = "text" rid = "middleName" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Last Name:
+		</p>
+		<p>
+			<input type = "text" rid = "lastName" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Suffix:
+		</p>
+		<p>
+			<input type = "text" rid = "suffix" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Alias:
+		</p>
+		<p>
+			<input type = "text" rid = "alias" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Birthdate:
+		</p>
+		<p>
+			<input component = "calendar" type = "text" rid = "birthDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Gender:
+		</p>
+		<p>
+			<select rid = "gender" bind = "${bean.rocketType}">
+				<option default = "true" value = "unknown">Unknown</option>
+				<option value = "male">Male</option>
+				<option value = "female">Female</option>
+				<option value = "unspecified">Unspecified</option>
+			</select>
+		</p>
+	</div>
+
+	<import-xml src = "/AccountManagerExample/Forms/ContactInformation.xml" id = "ContactInformation" />
+	<import-xml src = "/AccountManagerExample/Forms/PersonPicker.xml" id = "PersonPicker" />
+	<import-xml src = "/AccountManagerExample/Forms/AccountPicker.xml" id = "AccountPicker" />
+	<import-xml src = "/AccountManagerExample/Forms/AttributePicker.xml" id = "AttributePicker" />
+
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.GetElementByRID("pathCont").style.display = "none";
+			this.initAccountPicker();
+			this.initAttributePicker();
+			this.initContactInformation();
+			this.getProperties().personListProp = "dependents";
+			this.setPersonPickerLabel("Dependents");
+			this.initPersonPicker();
+		},
+		addType : function(o){
+			Hemi.log("Add person type: " + o.name );
+			var b = false;
+			o.group = accountManager.getCleanGroup(o.group);
+			return uwmServices.getService("Person").add(o);
+		},
+		prepareSave : function(o){
+			this.prepareSaveContactInformation(o);
+			this.prepareSaveAccountsList(o);
+			this.prepareSavePersonsList(o);
+			this.prepareSaveAttributesList(o);
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

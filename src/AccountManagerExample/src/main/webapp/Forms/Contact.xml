@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Contact Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Contact";
+			this.getProperties().defaultPath = "~/Contacts";
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.beans.contactType();
+					o.name = "";
+					o.id = 0;
+					o.locationType = "UNKNOWN";
+					o.contactType = "UNKNOWN";
+					o.preferred = false;
+					o.description = "";
+					o.contactValue = "";
+				}
+				else if(o.group && o.group.path){
+					this.getProperties().defaultPath = o.group.path;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

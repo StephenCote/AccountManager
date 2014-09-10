@@ -1,0 +1,53 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Type:
+		</p>
+		<p>
+			<select rid = "accountType" bind = "${bean.rocketType}">
+    		<option>UNKNOWN</option>
+    		<option>GUEST</option>
+    		<option>SYSTEM</option>
+    		<option>NORMAL</option>
+    		<option>DEVELOPMENT</option>
+
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Status:
+		</p>
+		<p>
+			<select rid = "accountStatus" bind = "${bean.rocketType}">
+    		<option>UNKNOWN</option>
+    		<option>UNREGISTERED</option>
+    		<option>NORMAL</option>
+    		<option>RESTRICTED</option>
+    		<option>REGISTERED</option>
+    		<option>DISABLED</option>
+
+			</select>
+		</p>
+	</div>
+	
+	<import-xml src = "/AccountManagerExample/Forms/ContactInformation.xml" id = "ContactInformation" />
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.GetElementByRID("pathCont").style.display = "none";
+			
+			this.initContactInformation();
+		},
+		addType : function(o){
+			Hemi.log("Add account type: " + o.name );
+			var b = false;
+			o.group = accountManager.getCleanGroup(o.group);
+			return uwmServices.getService("Account").add(o);
+		},
+		prepareSave : function(o){
+			this.prepareSaveContactInformation(o);
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

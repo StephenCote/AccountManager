@@ -24,6 +24,37 @@
             	oW.setHideOnClose(0);
             }
 		},
+		resizeForm : function(){
+			if(this.resizeTo && this.getBody){
+				if(this.getBody().scrollHeight > this.getBody().offsetHeight){
+					var iH = this.getBody().scrollHeight + 50;
+					if(iH > document.documentElement.clientHeight) iH = document.documentElement.clientHeight;
+					Hemi.log("Resize To: " + this.getContainer().offsetWidth + "x" + iH);
+					this.resizeTo(this.getContainer().offsetWidth,iH);
+				}
+			}
+		},
+		toggleField : function(l, n){
+			var lbl =  this.GetElementByRID(l);//(typeof l == "string" ? this.GetElementByRID(l) : l);
+			var cnt =  this.GetElementByRID(n);//(typeof n == "string" ? this.GetElementByRID(n) : n);
+			var b = cnt.mark;
+			var s = (b ? "[ - ]" : "[ + ]");
+			var d = (b ? "block" : "none");
+			cnt.mark = (b ? 0 : 1);
+			Hemi.xml.setInnerXHTML(lbl,s);
+			cnt.style.display = d;
+			if(!lbl.mark){
+				var ctl = this;
+				lbl.mark = 1;
+				var sL = l;
+				var sN = n;
+				lbl.onclick = function(){
+					ctl.toggleField(sL,sN);
+					ctl.resizeForm();
+				};
+			}
+			//this.resizeForm();
+		},
 		openItem : function(o,typeName,viewTypeName){
 			var _s = this.getProperties();
 			if(!typeName) typeName = _s.typeName;

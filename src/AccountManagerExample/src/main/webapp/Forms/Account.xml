@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Account Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Account";
+			this.getProperties().defaultPath = "~/Accounts";
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.beans.accountType();
+					o.name = "";
+					o.id = 0;
+					o.referenceId = 0;
+					o.accountId = "";
+					o.accountType = "UNKNOWN";
+					o.accountStatus = "UNKNOWN";
+				}
+				else if(o.group && o.group.path){
+					this.getProperties().defaultPath = o.group.path;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>
