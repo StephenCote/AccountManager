@@ -32,7 +32,7 @@
 			_s.enablePersonInformation = (o != null ? 1 : 0);
 			
 			if(_s.enablePersonInformation){
-				this.getProperties().personListProp = "persons";
+				//this.getProperties().personListProp = "persons";
 				this.GetComponentByRID("personsList").setLoadHandler(this.scopeHandler("configPersonsList",0,1,1));
 			}
 		},

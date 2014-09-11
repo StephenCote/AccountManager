@@ -98,7 +98,7 @@
 			this.initAttributePicker();
 			this.initContactInformation();
 			this.getProperties().personListProp = "dependents";
-			this.setPersonPickerLabel("Dependents");
+			this.setPersonPickerLabel("Deps");
 			this.initPersonPicker();
 		},
 		addType : function(o){
