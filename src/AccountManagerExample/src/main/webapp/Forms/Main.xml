@@ -14,7 +14,7 @@
 				window.uwm.operation("ContinueWorkflow");
 			},
 			DoGallery : function(){
-				var sTxt = Hemi.xml.getText(g_application_path + "Scripts/canvasGallery.js");
+				var sTxt = Hemi.xml.getText("/AccountManagerExample/Scripts/canvasGallery.js");
 				eval(sTxt);
 			}
 		]]>

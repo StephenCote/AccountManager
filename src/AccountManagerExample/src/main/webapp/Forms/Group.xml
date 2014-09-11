@@ -5,6 +5,7 @@
 	<embedded-script><![CDATA[
 		template_init : function(){
 			this.getProperties().typeName = "Group";
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
 			if(!this.getProperties().defaultPath) this.getProperties().defaultPath = "~";
 			this.getProperties().populate = 0;
 			if(!this.getBean("rocketType")){

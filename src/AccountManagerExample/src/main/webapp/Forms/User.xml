@@ -5,6 +5,7 @@
 	<embedded-script><![CDATA[
 		template_init : function(){
 			this.getProperties().typeName = "User";
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
 			this.getProperties().defaultPath = "~/Users";
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;

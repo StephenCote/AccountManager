@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+<div rid = "cntLogin" style = "display:none;">
+<input type = "hidden" rid = "organization_path" value = "/Public" />
+<input type = "text" class = "rocket-text rocket-text-short" rid = "user_name" />
+<input type = "password" class = "rocket-text rocket-text-short" rid = "password" />
+<img valign = "middle" rid = "btnLogin" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/user-auth.png" onclick = "${this}.doLogin()" width = "24" height = "24" alt = "Crystal SVG Icon - User Auth" />
+</div>
+	<embedded-script>
+		<![CDATA[
+		// Requires TemplateTools to be included
+		//
+		template_init : function(){
+			if(!location.protocol.match(/^https/gi)) return;
+			var oMod = uwm.getRule("IsLoggedIn");
+			if(!oMod){
+				uwm.altMain = {
+					form : "Forms/MainIn.xml"
+				};
+				uwm.altLogin = {
+					form : "Forms/LoginIn.xml"	
+				};
+				
+				uwm.altPane = {
+					opener : this.getObjectId()
+				};
+				
+				uwm.rule("IsLoggedIn",{opener:this.getObjectId()}, "ContinueWorkflow","RequireAuthentication");
+			}
+			else{
+				this.GetElementByRID("cntLogin").style.display = "";
+				this.GetElementByRID("user_name").focus();
+				this.scopeHandler("input_keypress",0,0,1);
+				this.GetElementByRID("password").onkeypress = this._prehandle_input_keypress;
+				
+			}
+		},
+		template_destroy:function(){
+			this._prehandle_input_keypress = null;
+		},
+		_handle_input_keypress : function(e){
+			e = Hemi.event.getEvent(e);
+			if(e.keyCode == 13) this.doLogin();
+		},
+		doLogin : function(){
+			if(!this.Validate()) return;
+			//var oOrg = accountManager.findOrganization(this.getOrgPath());
+			var oOrg = accountManager.findOrganization(this.GetFormValue("organization_path"));
+			if(!oOrg){
+				//this.setStatus("Invalid organization");
+				return;
+			}
+			
+			var sName = this.GetFormValue("user_name");
+			var sPassword = this.GetFormValue("password");
+			this.GetElementByRID("user_name").disabled = true;
+			this.GetElementByRID("password").disabled = true;
+			this.GetElementByRID("btnLogin").disabled = true;
+			this.SetFormValue("password","");
+			//this.setStatus(" ");
+			//this.GetElementByRID("btnLogin").disabled = true;
+			window.uwm.operation("Authenticate", {opener:this.getObjectId(),user_name : sName, password : sPassword, organization: oOrg});		
+		},
+
+		Validate : function(){
+		
+			try{
+				this.Assert(this.ValidateForPattern("user_name","not-empty"),"Invalid user_name");
+				this.Assert(this.ValidateForPattern("password","not-empty"),"Invalid password");
+			}
+			catch(e){
+				//this.setStatus((typeof e== "string" ? e : e.message ? e.message : e.description));
+				return 0;
+			}
+			return 1;
+		}
+		]]>
+	</embedded-script>
+</Template>

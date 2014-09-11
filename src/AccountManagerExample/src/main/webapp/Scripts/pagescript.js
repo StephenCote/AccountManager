@@ -1,6 +1,29 @@
 (function () {
 	
 	window.uwm = {
+		apiTypes : {},
+		apiTypeHash : {},
+		addApi : function(sApi, sViewBase){
+			uwm.apiTypes[sApi] = {
+				api : sApi,
+				viewBase : sViewBase,
+				types : []
+			};
+		},
+		getApi : function(sType){
+			return uwm.apiTypeHash[sType];
+		},
+		getApiTypeView : function(sType){
+			var sApi = uwm.apiTypeHash[sType];
+			if(!sApi) return "/ERROR";
+			return uwm.apiTypes[sApi].viewBase;
+		},
+		addApiTypes : function(sApi,aTypes){
+			if(!uwm.apiTypes[sApi]) return 0;
+			uwm.apiTypes[sApi].types = aTypes;
+			for(var i = 0; i < aTypes.length;i++) uwm.apiTypeHash[aTypes[i]] = sApi;
+			return 1;
+		},
 		handlers : {
 			load : [],
 			unload : []
@@ -369,7 +392,7 @@
 		if(!v.is_primary) return;
 		var oSpace = Hemi.app.space.service.getPrimarySpace();
 		
-		var oSession = Hemi.app.createApplicationComponent(g_application_path + "Components/component.session.xml",0, oSpace,"session");
+		var oSession = Hemi.app.createApplicationComponent("/AccountManagerExample/Components/component.session.xml",0, oSpace,"session");
 		oSession.Refresh(1);
 
 		uwm.processLoadHandlers();

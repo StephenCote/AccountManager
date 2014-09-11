@@ -11,12 +11,13 @@ if(!window.uwmServices){
  * NOTE: The 3rd and 4th parameters of the service registration may be used to define static service and object models so they are not queried everytime
  */
 (function(){
-	/// Jersey JSON+REST w/ Basic AM SMD Support
-	///
+
+	var enableRecommendedCache = true;
+
+	
 	/// The following scripts are generated using the service pack script.
 	///
-	var enableRecommendedCache = true;
-	
+
 	uwmServices.addService(
 			"AccountManager",
 			"/AccountManager/rest/accountmanager/smd",

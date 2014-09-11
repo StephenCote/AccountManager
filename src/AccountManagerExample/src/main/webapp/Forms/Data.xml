@@ -5,7 +5,8 @@
 	<embedded-script><![CDATA[
 		template_init : function(){
 			this.getProperties().typeName = "Data";
-			this.getProperties().defaultPath = "~/Data";
+			if(!this.getProperties().defaultPath) this.getProperties().defaultPath = "~/Data";
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
@@ -26,7 +27,8 @@
 				delete this.getProperties().viewType;
 				this.setBean(o,"rocketType");
 			}
-			this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
+			if(this.getProperties().designMode) this.loadTemplate("/AccountManagerExample/Templates/Designer.xml");
+			else this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
 		}
 	]]></embedded-script>
 </Template>

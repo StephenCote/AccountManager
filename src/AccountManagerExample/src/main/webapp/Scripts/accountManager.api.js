@@ -1,9 +1,14 @@
 (function () {
 	
+	/// The following script classifies Type to API assignment, used for discovery when multiple service APIs are intermixed in the same common View code
+	///
+	uwm.addApi("accountManager", "/AccountManagerExample");
+	uwm.addApiTypes("accountManager", ["Account","Address","Contact","Group","Person","User","Data","Role","Permission"]);
+	
 	window.accountManager = {
+
 			organization_paths : {},
-			
-			
+
 			setPermission : function(oObj, oActor, oPerm, bEnable){
 				if(!oObj) return 0;
 				if(!oObj.nameType.match(/^GROUP|DATA|ROLE$/)){
@@ -141,7 +146,10 @@
 				if(oGroup) return uwmServices.getService("Account").readByGroupId(oGroup.id,sName);
 				return uwmServices.getService("Account").read(sName);
 			},
-			
+			getAccountById : function(iId){
+				return uwmServices.getService("Account").readById(iId);
+			},
+
 			countPersons : function(sPath){
 				return uwmServices.getService("Person").count(sPath);
 			},
@@ -171,7 +179,10 @@
 				if(oGroup) return uwmServices.getService("Person").readByGroupId(oGroup.id,sName);
 				return uwmServices.getService("Person").read(sName);
 			},
-			
+			getPersonById : function(iId){
+				return uwmServices.getService("Person").readById(iId);
+			},
+
 			countAddresss : function(sPath){
 				return uwmServices.getService("Address").count(sPath);
 			},

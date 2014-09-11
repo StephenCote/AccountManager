@@ -5,6 +5,7 @@
 	<embedded-script><![CDATA[
 		template_init : function(){
 			this.getProperties().typeName = "Role";
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
 			this.getProperties().populate = 0;
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;

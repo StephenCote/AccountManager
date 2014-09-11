@@ -94,7 +94,7 @@
 		</style>
 	</head>
 	<body>
-		<h1>Core Web</h1>
+		<h1>Account Manager Web</h1>
 		<div class = "product-label">
 			<div class = "product-label-left-margin">.</div>
 			<div class = "product-label-text-block">Demonstration</div>
@@ -105,11 +105,11 @@
 			Demonstration content
 		</div>
 		<div class = "field">
-			<div class = "label">Pay Now:</div>
-			<div class = "input_field">%CONTENT_TOKEN%</div>
+			<div class = "label">Field Name:</div>
+			<div class = "input_field">Fielid Value</div>
 		</div>
 		<div class = "content">
-			2006 - 2008, Stephen W. Cote.
+			2006 - 2014, Stephen W. Cote.
 		</div>
 	</body>
 </html>

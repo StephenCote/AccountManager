@@ -88,14 +88,13 @@
 	<import-xml src = "/AccountManagerExample/Forms/ContactInformation.xml" id = "ContactInformation" />
 	<import-xml src = "/AccountManagerExample/Forms/PersonPicker.xml" id = "PersonPicker" />
 	<import-xml src = "/AccountManagerExample/Forms/AccountPicker.xml" id = "AccountPicker" />
-	<import-xml src = "/AccountManagerExample/Forms/AttributePicker.xml" id = "AttributePicker" />
+	
 
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
 			this.GetElementByRID("pathCont").style.display = "none";
 			this.initAccountPicker();
-			this.initAttributePicker();
 			this.initContactInformation();
 			this.getProperties().personListProp = "dependents";
 			this.setPersonPickerLabel("Deps");
@@ -111,7 +110,6 @@
 			this.prepareSaveContactInformation(o);
 			this.prepareSaveAccountsList(o);
 			this.prepareSavePersonsList(o);
-			this.prepareSaveAttributesList(o);
 			return 1;
 		}
 	]]></embedded-script>

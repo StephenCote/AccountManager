@@ -7,7 +7,11 @@
 	<embedded-script>
 		<![CDATA[
 		template_init : function(){
-			this.setTitle(this.getProperties().media_name + " (" + this.getProperties().media_id + ")");
+			var _s = this.getProperties();
+			if(!_s.media_name){
+				return;
+			}
+			this.setTitle(_s.media_name + " (" + _s.media_id + ")");
 			this.scopeHandler("imageviewer_load",0,0,1);
 			
 			var oI = document.createElement("img");
@@ -17,7 +21,7 @@
 				t.Close();
 			};
 			this.GetElementByRID("image-field").appendChild(oI);
-			oI.src = this.getProperties().media_url;
+			oI.src = _s.media_url;
 		},
 		_handle_imageviewer_load : function(e){
 			var o = this.GetElementByRID("image-field").getElementsByTagName("img")[0];

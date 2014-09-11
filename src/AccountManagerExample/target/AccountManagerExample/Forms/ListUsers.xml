@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template>
-
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 	<import-xml src = "/AccountManagerExample/Forms/GridType.xml" id = "GridType" />
 	<embedded-script>
@@ -8,9 +7,9 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-			//this.initList("Note");
-			this.initGrid("Data","~/Data");
 
+			this.initGrid("User");
+			//this.GetElementByRID("path").style.display = "none";
 		},
 		template_destroy : function(){
 			

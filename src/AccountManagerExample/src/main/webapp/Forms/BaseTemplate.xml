@@ -7,15 +7,15 @@
 			this.scopeHandler("picker_loaded", 0, 0, 1);
 		},
 		embedded_destroy : function(){
-			this._prehandle_manager_loaded;
-			this._prehandle_picker_loaded;
+			this._prehandle_manager_loaded = 0;
+			this._prehandle_picker_loaded = 0;
 		},
 		_handle_manager_loaded: function (v) {
 			///
         },
 		manageList : function(sType, sListId, sFN){
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:1,pickFunction:sFN,listId:sListId};
-			var oW = Hemi.app.createWindow("ManageList", g_application_path + "Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, this._prehandle_manager_loaded);
+			var oW = Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, this._prehandle_manager_loaded);
             if (oW) {
             	oW.resizeTo(450, 300);
             	Hemi.app.getWindowManager().CenterWindow(oW);
@@ -65,7 +65,8 @@
 				}
 				else{
 					Hemi.log("Not populated.  Fetching a populated version.");
-					o = accountManager["get" + typeName](o.name,o.group);
+					var oApi = window[uwm.getApi(typeName)];
+					o = oApi["get" + typeName](o.name,o.group);
 					if(!o.populated) alert("still not populated");
 				}
 			}
@@ -73,9 +74,9 @@
 		},
 		openWindow : function(sType,oType){
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:0};
-			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), g_application_path + "Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
+			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
             if (oW) {
-            	oW.resizeTo(400, 400);
+            	oW.resizeTo(450, 400);
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	// Destroy the window when closed
             	//
@@ -83,7 +84,7 @@
             }
 		},
 		pickText : function(o,sL,sH, sDV){
-			var oW = Hemi.app.createWindow("Picker",g_application_path + "Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},this._prehandle_picker_loaded);
+			var oW = Hemi.app.createWindow("Picker","/AccountManagerExample/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},this._prehandle_picker_loaded);
 			if(!oW) return;
 			oW.setHideOnClose(0);
 			oW.resizeTo(400,100);

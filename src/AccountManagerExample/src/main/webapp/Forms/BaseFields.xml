@@ -26,8 +26,8 @@
 		</p>
 	</div>
 	
-	<import-xml src = "/AccountManagerExample/Forms/${property.typeName}Fields.xml" id = "${property.typeName}Fields" />
-	
+	<import-xml src = "${property.viewBase}/Forms/${property.typeName}Fields.xml" id = "${property.typeName}Fields" />
+	<import-xml src = "/AccountManagerExample/Forms/AttributePicker.xml" id = "AttributePicker" />
 	<div style = "clear:both;" class = "rocket-column-2">
 		<p rid = "lblSave">
 			Save:
@@ -52,7 +52,8 @@
 					if(iH > document.documentElement.clientHeight) iH = document.documentElement.clientHeight;
 					this.resizeTo(this.getContainer().offsetWidth,iH);
 				}
-			}	
+			}
+			this.initAttributePicker();
 		},
 		embedded_init : function(){
 
@@ -88,6 +89,9 @@
 				Hemi.logError("Prepare save failed for type " + this.getProperties().typeName);
 				return;
 			}
+			
+			this.prepareSaveAttributePicker(o);
+			
 			if(_s.customSave){
 				Hemi.log("Concluding custom save operation");
 				if(this.Close) this.Close();
@@ -96,16 +100,17 @@
 			var sAct = "add", bAct = 0;
 			if(o.id > 0) sAct = "update";
 			var sMeth= sAct + this.getProperties().typeName;
+			var oApi = window[uwm.getApi(this.getProperties().typeName)];
 			if(sAct.match(/^add$/) && this.addType){
 				bAct = this.addType(o);
 			}
 			else{
-				if(!accountManager[sMeth]){
+				if(!oApi[sMeth]){
 					this.setStatus("Invalid API: " + sMeth);
 					return;
 				}
 				
-				bAct = accountManager[sMeth](o);
+				bAct = oApi[sMeth](o);
 			}
 			if(bAct){
 				if(bAct != -1) this.postProcess();
@@ -118,8 +123,9 @@
 		},
 		postProcess : function(){
 			var o = this.getBean("rocketType"),n;
+			var oApi = window[uwm.getApi(this.getProperties().typeName)];
 			if(o.nameType && o.nameType.match(/^group$/gi)) n = accountManager.getGroup(this.getPath() + "/" + o.name);
-			else n = accountManager["get" + this.getProperties().typeName](o.name,o.group);
+			else n = oApi["get" + this.getProperties().typeName](o.name,o.group);
 			if(n != null){
 				this.clearBean("rocketType");
 				this.setBean(n,"rocketType");
@@ -132,7 +138,7 @@
 				///if(oOpener["refresh" + this.getProperties().typeName + "sList"]) oOpener["refresh" + this.getProperties().typeName + "sList"]();
 				if(this.Close) this.Close();
 			///}
-			///this.loadTemplate("/RocketWeb/Forms/BaseTemplate.xml");
+			///this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
 		
 		},
 		getPath : function(){

@@ -39,7 +39,7 @@
 			if(oW){
 				oW.setCanMinimize(0);
 				oW.setCanMaximize(0);
-		    	oW.resizeTo(400, 400);
+		    	oW.resizeTo(450, 400);
 		    	oW.setHideOnClose(0);
 		    	Hemi.app.getWindowManager().CenterWindow(oW);
 			}

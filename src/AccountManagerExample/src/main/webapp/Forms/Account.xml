@@ -6,6 +6,7 @@
 		template_init : function(){
 			this.getProperties().typeName = "Account";
 			this.getProperties().defaultPath = "~/Accounts";
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){

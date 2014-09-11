@@ -1,0 +1,9 @@
+SetEnvIfNoCase Referer "^http://www.whitefrost.com/.*" locally_linked=1
+SetEnvIfNoCase Referer "^http://whitefrost.com/.*" locally_linked=1
+SetEnvIfNoCase Referer "^http://192.168.1.15/.*" locally_linked=1
+SetEnvIfNoCase Referer "^http://localhost/.*" locally_linked=1
+SetEnvIfNoCase Referer "^$" locally_linked=1
+<FilesMatch "\.(gif|png|jpe?g)$">
+  Order Allow,Deny
+  Allow from env=locally_linked
+</FilesMatch>

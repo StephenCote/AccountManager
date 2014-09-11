@@ -9,15 +9,20 @@
 			<br />
 			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addAttribute()" />
 			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeAttribute()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openAttribute()" />
 		</p>
 	</div>
 
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			this.GetElementByRID("attributePicker").style.display = "block";
-			this.toggleField("attributePickerToggle","attributePickerContent");
-			if(!this.getProperties().attributeListProp) this.getProperties().attributeListProp = "attributes";
+			var o = this.getBean("rocketType"),_s = this.getProperties();
+			if(o && o != null && o.id > 0){
+				this.GetElementByRID("attributePicker").style.display = "block";
+				this.toggleField("attributePickerToggle","attributePickerContent");
+				if(!this.getProperties().attributeListProp) this.getProperties().attributeListProp = "attributes";
+				_s.enableAttributeInformation = 1;
+			}
 		},
 		prepareSaveAttributePicker : function(o){
 			this.prepareSaveAttributesList(o);
@@ -26,17 +31,31 @@
 			Hemi.xml.setInnerXHTML(this.GetElementByRID("attributePickerLabel"),s);
 		},
 		initAttributePicker : function(){
-			/// Have to put a little extra logic here because attribute information is optional for addresses
+			/// Have to put a little extra logic here because attribute information is optional
 			var _s = this.getProperties(),  o = this.getBean("rocketType");
-			_s.enableAttributeInformation = (o != null ? 1 : 0);
+			_s.enableAttributeInformation = (o != null && o.id > 0 ? 1 : 0);
 			
 			if(_s.enableAttributeInformation){
 				this.getProperties().attributeListProp = "attributes";
 				this.GetComponentByRID("attributesList").setLoadHandler(this.scopeHandler("configAttributesList",0,1,1));
 			}
 		},
+		openAttributeView : function(oA){
+			var oProps = {openerId:this.getObjectId(),viewType:this.getBean("rocketType"),attributeType:oA,listId:this.getAttributesList().getObjectId()};
+			var oW = Hemi.app.createWindow((oA ? oA.name : "New") + " Attribute", "/AccountManagerExample/Forms/Attribute.xml", "View-" + (oA ? oA.name + "-" + oA.referenceId : Hemi.guid()), 0, 0, oProps);
+            if (oW) {
+            	oW.resizeTo(450, 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	oW.setHideOnClose(0);
+            }
+		},
+		openAttribute : function(){
+			var oI = this.getAttributesList().getActiveItem();
+			if(oI) this.openAttributeView(oI.data);
+
+		},
 		addAttribute : function(){
-			this.manageList("Attribute", this.getAttributesList().getObjectId());
+			this.openAttributeView();
 		},
 		removeAttribute : function(){
 			var oI = this.getAttributesList().getActiveItem();
@@ -55,25 +74,32 @@
 			if(!o || !o || !o[aP]) return;
 			for(var i = 0; i < o[aP].length;i++){
 				var oA = o[aP][i];
-				for(var v = 0; v < oA.values.length; v++){
-					var oL = document.createElement("div");
-					var oE = document.createElement("div");
-					var oV = document.createElement("div");
-					var oC = document.createElement("span");
-					oC.appendChild(oL);
-					oC.appendChild(oE);
-					oC.appendChild(oV);
-					oL.style.cssText= "float:left;width:100px;";
-					oE.style.cssText = "float:left; width: 25px; text-align:center;";
-					oV.style.cssText = "float:left;";
-					oL.appendChild(document.createTextNode(oA.name));
-					oE.appendChild(document.createTextNode("="));
-					oV.appendChild(document.createTextNode(oA.values[v]));
-					oList.addItem(oC,oA);
-				}
+
+				oList.addItem(this.decorateAttributeItem(oA),oA);
 			}
 		},
-
+		decorateAttributeItem : function(oA){
+			var oL = document.createElement("div");
+			var oE = document.createElement("div");
+			var oV = document.createElement("div");
+			var oB = document.createElement("div");
+			var oC = document.createElement("span");
+			oC.appendChild(oL);
+			oC.appendChild(oE);
+			oC.appendChild(oV);
+			oC.appendChild(oB);
+			oL.style.cssText= "float:left;width:100px;";
+			oE.style.cssText = "float:left; width: 25px; text-align:center;";
+			oV.style.cssText = "float:left;";
+			oB.style.cssText = "clear:both;";
+			oL.appendChild(document.createTextNode(oA.name));
+			oE.appendChild(document.createTextNode("="));
+			for(var v = 0; v < oA.values.length; v++){
+				if(v > 0) oV.appendChild(document.createElement("br"));
+				oV.appendChild(document.createTextNode(oA.values[v]));
+			}
+			return oC;
+		},
 		getAttributesList : function(){
 			return this.GetComponentByRID("attributesList").GetWideSelect();
 		},

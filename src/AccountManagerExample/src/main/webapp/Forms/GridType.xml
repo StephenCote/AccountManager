@@ -3,10 +3,12 @@
 
 	<import-style src ="Styles/Designer.css" id ="designer" />
 	<import-style src ="Styles/GridStyle.css" id ="grid" />
+
 	<div class = "buttons_bar" rid = "buttons-bar">
 		<input type="button" rid = "button_refresh" class = "designer_button refresh_button" button-action = "Refresh" />
 		<input type="button" rid = "button_new" class = "designer_button new_button" button-action = "New" />
 		<input type="button" rid = "button_open" class = "designer_button open_button" button-action = "Open"  />
+		<input type ="button" rid = "button_design" class ="designer_button design_button" button-action = "Design" />
 		<input type="button" style ="display:none;" rid = "button_save" class = "designer_button save_button" button-action = "Save" />
 		<input type="button" rid = "button_delete" class = "designer_button delete_button" button-action = "Delete"  />
 		<div class = "designer_button_spacer"></div>
@@ -58,7 +60,12 @@
 			if(_s.manualPick){
 				this.GetElementByRID("control_bar").style.display = "block";
 			}
-			if(!bNotAGroup) this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : "~/" + sTypeName + "s");
+			if(!bNotAGroup){
+				this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : "~/" + sTypeName + "s");
+				this.scopeHandler("input_keypress",0,0,1);
+				this.GetElementByRID("path").onkeypress = this._prehandle_input_keypress;
+				
+			}
 			else{
 				this.GetElementByRID("path").style.display = "none";
 				 _s.noGroup = 1;
@@ -78,12 +85,25 @@
 			this.GetComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
 			if(this.setTitle) this.setTitle(sViewTypeName);
 			
+			
+		},
+		resizeList : function(){
+			if(this.getBody) this.ResizeFrame(this.getList().getContainer());
+			else{
+				var iH = this.getContainer().parentNode.parentNode.offsetHeight - this.GetElementByRID("typelist").offsetTop;
+				this.getList().getContainer().style.height = iH + "px";
+			}
 		},
 		embedded_init : function(){
 		
 		},
 		embedded_destroy : function(){
 			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_list_session_refresh");
+			this._prehandle_input_keypress = null;
+		},
+		_handle_input_keypress : function(e){
+			e = Hemi.event.getEvent(e);
+			if(e.keyCode == 13) this.refreshList();
 		},
 		cancelPickItem : function(){
 			if(this.Close) this.Close();
@@ -94,7 +114,8 @@
 			if(this.search) this.search(filter);
 		},
 		configList : function(){
-			this.getList().getContainer().style.height = (this.getProperties().record_count * 14) + "px";
+			if(!this.local_handle_resize) this.local_handle_resize = this.resizeList;
+			this.resizeList();
 			this.getList().setResultHandler( this.scopeHandler("typelistclick",0,0,1));
 			this.refreshList();
 			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_list_session_refresh");
@@ -133,7 +154,7 @@
 			if(this.getProperties().picker && (!this.getProperties().manualPick || s == "manualpick")){
 				var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
 				if(this.getProperties().pickFunction && oOpener[this.getProperties().pickFunction]){
-					oOpener[this.getProperties().pickFunction](this.getProperties().formType,v.data, this.getProperties().sourceId);
+					oOpener[this.getProperties().pickFunction](this.getProperties().formType,v.data, this.getProperties().sourceId,this);
 				}
 				else{
 					var oL = 0;
@@ -141,7 +162,7 @@
 					else if(oOpener.getList) oL = oOpener.getList();
 					else if(oOpener["get" + this.getProperties().typeName + "sList"]) oL = oOpener["get" + this.getProperties().typeName + "sList"]();
 					if(oL && v && v.data) oL.addItem(v.data.name, v.data);
-					else if(this.getProperties().pickFunction && oOpener[this.getProperties().pickFunction]) oOpener[this.getProperties().pickFunction](this.getProperties().formType,v.data, this.getProperties().sourceId);
+					else if(this.getProperties().pickFunction && oOpener[this.getProperties().pickFunction]) oOpener[this.getProperties().pickFunction](this.getProperties().formType,v.data, this.getProperties().sourceId,this);
 				}
 				if(this.Close && s != "manualpick") this.Close();
 			}
@@ -195,6 +216,14 @@
 					if(!oItem) return;
 					this.openItem(oItem.data);
 					break;
+				case "Design":
+					if(!oItem){
+						if(this.getProperties().typeName == "Data") this.openWindow(this.getProperties().viewTypeName,0,"Design");
+					}
+					else{
+						this.designItem(oItem.data);
+					}
+					break;
 				case "Delete":
 					if(!oItem) return;
 					if(this.deleteItem(oItem.data)){
@@ -205,29 +234,51 @@
 					break;
 			}
 		},
-		openItem : function(o){
-			var _s = this.getProperties(),_o = this.getObjects();
+		designItem : function(o){
+			/// Data
+			if(o.nameType == "DATA" && o.mimeType && o.mimeType.match(/^text/)){
+				this.openItem(o,"Design");
+			}
+			else if(o.nameType == "FORM" && !o.isTemplate){
+				//if(!o.populated) o = rocket.getFormById(o.id);
+				//var oProps = {viewType:oForm};
+				//var oW = Hemi.app.createWindow(oForm.name, "/RocketWeb/Forms/FormView.xml", "View-" + oForm.id, 0, 0, oProps);
+				this.openItem(o,"FormView");
+			}
+			else if(o.nameType == "GROUP"){
+				if(!o.populated) o = accountManager.getGroupById(o.id);
+				this.GetElementByRID("path").value = o.path;
+				this.getProperties().start_record = 0;
+				this.getProperties().viewType = o;
+				this.refreshList();
+				//this.openItem(o,"ListGroups",1);
+			}
+		},
+		openItem : function(o,v,b){
+			var _s = this.getProperties();
+			var oApi = window[uwm.getApi(this.getProperties().typeName)];
 			if(_s.populate && !o.populated){
-				if(o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
+				if(!v && o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
 					Hemi.log("Not pulling own blob data for " + o.name + " unless specifically requested.");
 				}
-				else{
+				else if(!o.nameType.match(/^data$/gi) || o.detailsOnly){
 					Hemi.log("Not populated.  Fetching a populated version.");
-					if(o.nameType == "ROLE") o = accountManager["get" + this.getProperties().typeName](o.name,o.roleType,_o.parentRef);
-					else o = accountManager["get" + this.getProperties().typeName](o.name,o.group);
+					if(o.nameType.match(/^group$/gi)) o = accountManager.getGroupById(o.id);
+					else if(o.nameType.match(/^role$/gi)) o = oApi["get" + this.getProperties().typeName](o.name,o.roleType,_o.parentRef);
+					else o = oApi["get" + this.getProperties().typeName](o.name,o.group);
 					if(!o.populated) alert("still not populated");
 				}
 			}
-			this.openWindow(this.getProperties().viewTypeName, o);
+			this.openWindow(this.getProperties().viewTypeName, o, v, (b ? o.path : 0));
 		},
 		createItem : function(){
 			this.openWindow(this.getProperties().viewTypeName);
 		},
-		openWindow : function(sType,oType){
-			var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:this.getList().getObjectId()};
-			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), "/AccountManagerExample/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
+		openWindow : function(sType,oType,v, p){
+			var oProps = {defaultPath:(p ? p : this.getPath()),openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:this.getList().getObjectId()};
+			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + (v ? v : sType) + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
             if (oW) {
-            	oW.resizeTo(400, 400);
+            	oW.resizeTo((v ? 600 : 450), 400);
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	// Destroy the window when closed
             	//
@@ -240,7 +291,8 @@
 				this.setStatus("Not Authenticated with id " + uwm.getSession().sessionId);
 			}
 			else{
-				b = accountManager["delete" + this.getProperties().typeName](o);
+				var oApi = window[uwm.getApi(this.getProperties().typeName)];
+				b = oApi["delete" + this.getProperties().typeName](o);
 				if(b){
 					this.setStatus("Deleted object #" + o.id);
 				}	
@@ -284,7 +336,7 @@
 		refreshList : function(bSkipCountReset){
 			var sPath, _s = this.getProperties(), _o = this.getObjects();
 			if(!_s.noGroup) sPath = this.getPath();
-			
+			var oApi = window[uwm.getApi(this.getProperties().typeName)];
 			var oL = this.getList();
 			oL.clearItems();
 			this.setStatus("");
@@ -319,8 +371,8 @@
 					var count = 0;
 					var sFilt = this.GetElementByRID("filter").value;
 					if(this.provideCount) count = this.provideCount(sPath, sFilt);
-					else if(sPath) count = accountManager["count" + this.getProperties().typeName + "s"](sPath);
-					else count = accountManager["count" + this.getProperties().typeName + "s"](uwm.getUser().organization,_o.parentRef); 
+					else if(sPath) count = oApi["count" + this.getProperties().typeName + "s"](sPath);
+					else count = oApi["count" + this.getProperties().typeName + "s"](uwm.getUser().organization,_o.parentRef); 
 					if(count != null) this.setTotalCount(count);
 				}
 				else{
@@ -330,11 +382,18 @@
 				var sFilt = this.GetElementByRID("filter").value;
 				var tname = this.getProperties().typeName;
 				if(this.provideList) aList = this.provideList(sPath, sFilt, this.getProperties().start_record,this.getProperties().record_count);
-				else if(sPath) aList = accountManager["list" + tname + "s"](sPath,this.getProperties().start_record,this.getProperties().record_count);
+				else if(sPath) aList = oApi["list" + tname + "s"](sPath,this.getProperties().start_record,this.getProperties().record_count);
 				else{
 				
-					if(tname != "Role") aList = accountManager["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,this.getProperties().start_record,this.getProperties().record_count);
-					else aList = accountManager["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,"UNKNOWN",this.getProperties().start_record,this.getProperties().record_count);
+					if(tname != "Role") aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,this.getProperties().start_record,this.getProperties().record_count);
+					else aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,"UNKNOWN",this.getProperties().start_record,this.getProperties().record_count);
+				}
+				if(_s.start_record == 0 && _s.typeName.match(/^group$/gi) && _s.viewType){
+					var oP = accountManager.getGroupById(_s.viewType.parentId);
+					if(oP != null){
+						var sn = (this.decorateListItemName ? this.decorateListItemName(oP) : "..");
+						oL.addItem(sn, oP);
+					}
 				}	
 				for(var i = 0; aList != null && i < aList.length;i++){
 					if(vComp[aList[i].name]) continue;

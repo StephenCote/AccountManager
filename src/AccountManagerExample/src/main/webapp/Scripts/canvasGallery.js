@@ -304,12 +304,17 @@
 				this.getCanvasController().destroy();
 				Hemi.event.removeEventListener(window,"hashchange",this._prehandle_hash_change);
 				Hemi.event.removeEventListener(window,"resize",this._prehandle_window_resize);
+				Hemi.event.removeEventListener(window,"hashchange",this._prehandle_window_resize);
 				Hemi.event.removeEventListener(window,"orientationchange",this._prehandle_window_resize);
 			},
 			object_create : function(){
 				var _s = this.getProperties();
 				Hemi.util.logger.addLogger(this, "Gallery View", "Gallery View", 232);
-				
+				if(!uwm.rule("IsLoggedIn")){
+					this.log("User is not authenticated");
+					this.destroy();
+					return;
+				}
 				Hemi.event.addScopeBuffer(this);
 				this.scopeHandler("window_resize",0,0,1);
 				this.scopeHandler("hash_change",0,0,1);
@@ -414,12 +419,13 @@
 				});			
 				//this.view("tasks",{scaleHeight:1,scaleWidth:1}).panel("nav",{width:100}).panel("content",{left:100}).panel("control",{row:2,top:0,height:100}).panel("footer",{row:3,height:50,width:"33%"}).panel("footer2",{row:3,height:50,width:"33%"}).panel("footer3",{row:3,height:50,width:"33%"});
 				//initializeVC(this);
-				
-				this.getCanvasController().getCanvasContainer().style.cssText = "position:absolute;top:0px;left:0px;";
+				var gc = ctl.getObjects().galleryContainer;
+				this.getCanvasController().getCanvasContainer().style.cssText = "position:absolute;top:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteTop(gc)) + "px;left:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteLeft(gc)) + "px;";
 				
 				this.switchView("gallery",["nav","content","commands"]);
 				Hemi.event.addEventListener(window,"hashchange",this._prehandle_hash_change);
 				Hemi.event.addEventListener(window,"resize",this._prehandle_window_resize);
+				Hemi.event.addEventListener(window,"hashchange",this._prehandle_window_resize);
 				Hemi.event.addEventListener(window,"orientationchange",this._prehandle_window_resize);
 				
 			}, // end object create
@@ -441,7 +447,7 @@
 				var _s = this.getProperties();
 				if(_s.resizing) window.clearTimeout(_s.resizing);
 				_s.resizing = window.setTimeout(resetGalleryDimensions, 250);
-				
+		
 			},
 			clearViewPanels : function(v){
 				for(var i = 0; i < v.getPanels().length;i++) clearPanel(v.getPanels()[i]);
@@ -501,21 +507,21 @@
 			openShare : function(oTargetPanel, sType, sId, oShape){
 				var d = this.getCurrentViewPanel("nav").getObjects().currentDirectory;
 				var oProps = {viewType:d};
-				var oW = Hemi.app.createWindow('Sharing',g_application_path + 'Forms/Sharing.xml','Sharing-' + d.id,0,0,oProps);
+				var oW = Hemi.app.createWindow('Sharing','/AccountManagerExample/Forms/Sharing.xml','Sharing-' + d.id,0,0,oProps);
 				if(oW){
 					oW.setCanMinimize(0);
 					oW.setCanMaximize(0);
-			    	oW.resizeTo(400, 400);
+			    	oW.resizeTo(450, 400);
 			    	oW.setHideOnClose(0);
 			    	Hemi.app.getWindowManager().CenterWindow(oW);
 				}
 			},
 			openCache : function(oTargetPanel, sType, sId, oShape){
-				var oW = Hemi.app.createWindow('Cache',g_application_path + 'Forms/CacheUtility.xml','Cache');
+				var oW = Hemi.app.createWindow('Cache','/AccountManagerExample/Forms/CacheUtility.xml','Cache');
 				if(oW){
 					oW.setCanMinimize(0);
 					oW.setCanMaximize(0);
-			    	oW.resizeTo(400, 400);
+			    	oW.resizeTo(450, 400);
 			    	oW.setHideOnClose(0);
 			    	Hemi.app.getWindowManager().CenterWindow(oW);
 				}
@@ -585,7 +591,7 @@
 				var oP = this.getCurrentViewPanel("nav");
 				//openWindow(oP, "DataDnd", 0, showDNDForm);
 				var vProps = {openerId:this.getObjectId()};
-				Hemi.app.createWindow("DataDnD", g_application_path + "Forms/DataDnd.xml", "DataDnD", 0, 0, vProps, showDNDForm);
+				Hemi.app.createWindow("DataDnD", "/AccountManagerExample/Forms/DataDnd.xml", "DataDnD", 0, 0, vProps, showDNDForm);
 			},
 			viewObject : function(oTargetPanel,sType, sId, oShape){
 				var oP = Hemi.registry.service.getObject(oShape.panelId);
@@ -603,6 +609,9 @@
 			},
 			exit : function(){
 				this.destroy();
+			},
+			alignViews : function(){
+				resetGalleryDimensions();
 			}
 
 	
@@ -612,6 +621,11 @@
 			
 			var v = galleryView.getCurrentView(),_s = galleryView.getProperties(),aP;
 			
+			var gc = ctl.getObjects().galleryContainer;
+			var sCss = "position:absolute;top:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteTop(gc)) + "px;left:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteLeft(gc)) + "px;";
+			Hemi.log('CSS=' + sCss);
+			galleryView.getCanvasController().getCanvasContainer().style.cssText = sCss;
+
 			scaleView(v);
 			aP = v.panels();
 			for(var i = 0; i < aP.length;i++){
@@ -1142,10 +1156,10 @@
 			o.logDebug("Example UIC Initializing");
 			var _s = o.getProperties();
 			var _o = o.getObjects();
-	
+			_o.galleryContainer = (typeof g_gallery_container == "object" ? g_gallery_container : document.body);
 			if(!_o.cvs_container){
 				_o.cvs_container = document.createElement("div");
-				document.body.appendChild(_o.cvs_container);
+				_o.galleryContainer.appendChild(_o.cvs_container);
 			}
 			_o.cvs_container.style.position = "relative";
 	
@@ -1224,16 +1238,15 @@
 			
 		}
 		function boxWidth(o){
-			if(!o) o = window;
-			return (typeof window.innerWidth == "number" ? window.innerWidth : document.documentElement.clientWidth);
+			if(!o) o = ctl.getObjects().galleryContainer;
+			return (o == document.body ? (typeof window.innerWidth == "number" ? window.innerWidth : document.documentElement.clientWidth) : o.clientWidth);
 		}
 		function boxHeight(o){
-			if(!o) o = window;
-			return (typeof window.innerHeight == "number" ? window.innerHeight : document.documentElement.clientHeight);
+			if(!o) o = ctl.getObjects().galleryContainer;
+			return (o == document.body ? (typeof window.innerHeight == "number" ? window.innerHeight : document.documentElement.clientHeight) : o.clientHeight);
 		}
 		function scaleText(s){
-			var iLabelWidth = (l > 0 ? l : 12),b,i,x="";
-
+			var iLabelWidth = 12,b,i,x="";
 			
 			if(s.length <= iLabelWidth) return s;
 		
@@ -1289,9 +1302,10 @@
 			var o = getObjectById(oPanel,sType, sId, oShape), _o = galleryView.getCurrentView().panel("content").getObjects();
 			var oProps = {openerId:oPanel.getObjectId(),picker:0,viewType:o};
 			if(_o.viewWindow && !_o.viewWindow.getIsClosed()) _o.viewWindow.Close();
-			var oW = Hemi.app.createWindow(o.name, g_application_path + "Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps);
+			var sType = o.nameType.substring(1,o.nameType.length).toLowerCase() ;
+			var oW = Hemi.app.createWindow(o.name, uwm.getApiTypeView(sType) + "/Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps);
 		    if (oW) {
-		    	oW.resizeTo(400, 400);
+		    	oW.resizeTo(450, 400);
 		    	Hemi.app.getWindowManager().CenterWindow(oW);
 		    	// Destroy the window when closed
 		    	//
@@ -1427,10 +1441,10 @@
 			return v;
 		}
 		function pickText(o,sL,sH){
-			var oW = Hemi.app.createWindow("Picker",g_application_path + "Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},HandlePickerLoaded);
+			var oW = Hemi.app.createWindow("Picker","/AccountManagerExample/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},HandlePickerLoaded);
 			if(!oW) return;
 			oW.setHideOnClose(0);
-			oW.resizeTo(400,100);
+			oW.resizeTo(450,100);
 			oW.center();
 			oW.setIsModal(true);
 			oW.hideButtons();
@@ -1440,9 +1454,9 @@
 		}
 		function openWindow(oPanel,sType,oType, fHandler){
 			var oProps = {openerId:oPanel.getObjectId(),listType:sType,picker:0,viewType:oType};
-			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), g_application_path + "Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
+			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
 	        if (oW) {
-	        	oW.resizeTo(400, 400);
+	        	oW.resizeTo(450, 400);
 	        	Hemi.app.getWindowManager().CenterWindow(oW);
 	        	// Destroy the window when closed
 	        	//

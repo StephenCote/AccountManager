@@ -16,11 +16,11 @@ this.DoOperation = function(){
 		uwm.operation("ContinueWorkflow", {user:oUser}, 0, this.ruleName);
 	}
 	*/
-	var oSession = uwm.login(sName, sPass, oOrg);
+	var oSession = uwm.login(sName, sPass, oOrg,{opener:this.getProperties().opener});
 	if(oSession && oSession != null){
 		if(typeof oSession == "object"){
 			this.log("Logged in!");
-			uwm.operation("ContinueWorkflow", {session:oSession}, 0, this.ruleName);
+			uwm.operation("ContinueWorkflow", {opener:this.getProperties().opener,session:oSession}, 0, this.ruleName);
 		}
 		else{
 			this.log("Pending Async Login Request ...");

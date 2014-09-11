@@ -1,37 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template Title = "Designer">
 
+	<!-- 
+	
+	Designer is a hodge-podge of the 'Rocket' style templates, which are modular, and a large chunk of legacy code I haven't refactored yet.
+	The save/update code is a straight-up copy from the newer style
+	 -->
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-style src ="Styles/tabs.css" id ="Tabs" />
 	<import-style src ="Styles/Designer.css" id ="designer" />
 	<import-style src ="Styles/GridStyle.css" id ="grid" />
-	<!--
-	<div class = "field">
-		<div class = "field_label">To:</div>
-		<div class = "field_input">
-			<input type = "text" style = "width: 290px !important;" class = "input_text" rid = "email_to" />
-			<input type = "button" onclick = "${this}.SendEmail()" value = "Send" style = "width:65px;background: url(/AccountManagerExample/Media/Icons/email.gif) #CFCFCF left center no-repeat;padding-left: 20px;" />
-		</div>
-	</div>
-	<div class = "field">
-		<div class = "field_label">Fr:</div>
-		<div class = "field_input"><input type = "text" style = "width: 290px !important;" class = "input_text" rid = "email_from" /></div>
-	</div>
-	<div class = "field">
-		<div class = "field_label">Subject:</div>
-		<div class = "field_input"><input type = "text" style = "width: 290px !important;" class = "input_text" rid = "email_subject" /></div>
-	</div>
-	-->
 	<div style = "clear:both;">
 		<div rid = "designer_tab" onclick = "${this}.ShowTab(1)" class = "tab">Design</div>
 		<div rid = "source_tab" onclick = "${this}.ShowTab(2)" class = "tab">Source</div>
 		<div rid = "preview_tab" onclick = "${this}.ShowTab(3)" class = "tab">Preview</div>
 	</div>
 	<div style = "display:none;" rid = "source_container">
-		<!--
-		<div style = "clear:both;background-color:#CFCFCF;">
-			Modify the source of the email below.
-		</div>
-		-->
 		<textarea rid = "preview_source" style = "width:95%;border:1px solid #909090;font:8pt Courier;"></textarea>
 	</div>
 	<div rid = "preview_container" style = "display:none;">
@@ -42,8 +26,9 @@
 	<div class = "style_bar">
 		<select rid = "template" onchange = "${this}.LoadDesignerTemplate()">
 			<option value = "0">TEMPLATE</option>
-		<option value = "/AccountManagerExample/Templates/DesignerContentTemplate.xml">Demo Template</option>
-
+			<option value = "blank">Blank Template</option>
+		<option value = "/Templates/DesignerContentTemplate.xml">Demo Template</option>
+		<option value = "/Templates/DesignerContentTemplate2.xml">Demo Template 2</option>
 		</select>
 		<select rid = "block" onchange = "${this}.ExecBlock()">
 			<option value = "0">BLOCK</option>
@@ -87,35 +72,43 @@
 		</select>
 		</div>
 		<div class = "buttons_bar" rid = "buttons-bar">
-		<input type="button" class = "designer_button" button-action = "Bold" style = "background-image: url(/AccountManagerExample/Media/Icons/bold.gif);" />
-		<input type="button" class = "designer_button" button-action = "Italic" style = "background-image: url(/AccountManagerExample/Media/Icons/italic.gif);" />
-		<input type="button" class = "designer_button" button-action = "Underline" style = "background-image: url(/AccountManagerExample/Media/Icons/underline.gif);" />
+		<input type="button" class = "designer_button" button-action = "Save" style = "background-image: url(/Media/Icons/save_ico.gif);" />
+		<input type = "text" placeholder = "${property.defaultPath}" rid = "path" style = "margin-top: 6px;float:left; width: 100px !important;" class = "rocket-text rocket-text-short" />
+		<input type = "hidden" rid = "id" bind = "${bean.rocketType}" />
+		<input type = "hidden" rid = "mimeType" bind = "${bean.rocketType}" />
+		<input type = "text" rid = "name" placeholder = "Untitled" bind = "${bean.rocketType}" style = "margin-top: 6px;float:left; width: 100px !important;" class = "rocket-text" />
+		<div type="button" class = "designer_button_spacer"></div>
+		<input type="button" class = "designer_button" button-action = "Bold" style = "background-image: url(/Media/Icons/bold.gif);" />
+		<input type="button" class = "designer_button" button-action = "Italic" style = "background-image: url(/Media/Icons/italic.gif);" />
+		<input type="button" class = "designer_button" button-action = "Underline" style = "background-image: url(/Media/Icons/underline.gif);" />
 		
-		<div type="button" class = "button_spacer"></div>
+		<div type="button" class = "designer_button_spacer"></div>
 		
-		<input type="button" class = "designer_button" button-action = "JustifyLeft" style = "background-image: url(/AccountManagerExample/Media/Icons/left_just.gif);" />
-		<input type="button" class = "designer_button" button-action = "JustifyCenter" style = "background-image: url(/AccountManagerExample/Media/Icons/centre.gif);" />
-		<input type="button" class = "designer_button" button-action = "JustifyRight" style = "background-image: url(/AccountManagerExample/Media/Icons/right_just.gif);" />
+		<input type="button" class = "designer_button" button-action = "JustifyLeft" style = "background-image: url(/Media/Icons/left_just.gif);" />
+		<input type="button" class = "designer_button" button-action = "JustifyCenter" style = "background-image: url(/Media/Icons/centre.gif);" />
+		<input type="button" class = "designer_button" button-action = "JustifyRight" style = "background-image: url(/Media/Icons/right_just.gif);" />
 		
-		<div type="button" class = "button_spacer"></div>
+		<div type="button" class = "designer_button_spacer"></div>
 		
-		<input type="button" class = "designer_button" button-action = "InsertUnorderedList" style = "background-image: url(/AccountManagerExample/Media/Icons/list.gif);" />
-		<input type="button" class = "designer_button" button-action = "InsertOrderedList" style = "background-image: url(/AccountManagerExample/Media/Icons/numbered_list.gif);" />
+		<input type="button" class = "designer_button" button-action = "InsertUnorderedList" style = "background-image: url(/Media/Icons/list.gif);" />
+		<input type="button" class = "designer_button" button-action = "InsertOrderedList" style = "background-image: url(/Media/Icons/numbered_list.gif);" />
 		
-		<div type="button" class = "button_spacer"></div>
+		<div type="button" class = "designer_button_spacer"></div>
 		
-		<input type="button" class = "designer_button" button-action = "Indent" style = "background-image: url(/AccountManagerExample/Media/Icons/indent.gif);" />
-		<input type="button" class = "designer_button" button-action = "Outdent" style = "background-image: url(/AccountManagerExample/Media/Icons/outdent.gif);" />
+		<input type="button" class = "designer_button" button-action = "Indent" style = "background-image: url(/Media/Icons/indent.gif);" />
+		<input type="button" class = "designer_button" button-action = "Outdent" style = "background-image: url(/Media/Icons/outdent.gif);" />
 		
-		<div type="button" class = "button_spacer"></div>
+		<div type="button" class = "designer_button_spacer"></div>
 		
-		<input type="button" class = "designer_button" button-action = "InsertHorizontalRule" style = "background-image: url(/AccountManagerExample/Media/Icons/hr.gif);" />
-		<input type="button" class = "designer_button" button-action = "CreateLink" style = "background-image: url(/AccountManagerExample/Media/Icons/hyperlink.gif);" />
+		<input type="button" class = "designer_button" button-action = "InsertHorizontalRule" style = "background-image: url(/Media/Icons/hr.gif);" />
+		<input type="button" class = "designer_button" button-action = "CreateLink" style = "background-image: url(/Media/Icons/hyperlink.gif);" />
+		<input type="button" class = "designer_button" button-action = "ImageLink" style = "background-image: url(/Media/Icons/blankdoc2_ico.gif);" />
 		<div style = "clear:both;"></div>	
 	</div>
 	
 	<iframe rid = "designer" frameborder = "0" style = "border:0px solid #000000;"></iframe>
 	</div>
+	<div rid = "status" style = "display:none;clear:both;"></div>
 <!--
 	<div class = "buttons_bar_container">
 		<div rid = "buttons-bar" style = "margin-left:auto;margin-right:auto;width:100px;">
@@ -125,30 +118,33 @@
 -->
 	<embedded-script>
 		<![CDATA[
+		/// Note to self: a bind error will show up in the log if an element declares a binding, but a backing bean wasn't set
+		/// It shows up in this template because it's a hodge-podge of older and newer styles
+		///
 		template_init : function(){
 			//this.createHandler("create_control",0,0,1);
 			// Show the designer first!
 			//
 			//
+			this.scopeHandler("picker_loaded", 0, 0, 1);
+			/*Hemi.include("bbscript","/Scripts/")*/
 			
-			
-			if(Hemi.text.trim(this.GetFormValue("email_from")) == ""){
-				//this.getTemplateObjectByName("email_from").value = g_merchant_email;
-			}
-			if(Hemi.text.trim(this.GetFormValue("email_subject")) == ""){
-				//this.getTemplateObjectByName("email_subject").value = this.getObjects().current_item.item_name;
-			}
 			this.local_handle_resize = this.resizers;
 			this.local_handle_minimize = this.local_minimize;
 			
 			this.getProperties().proxied = 0;
 			
 			this.getProperties().keep_buffers = 0;
-
+			if(!this.setStatus){
+				this.GetElementByRID("status").style.display = "block";
+				this.setStatus = this._setStatus;
+			}
 			this.setStatus("Setting up designer ...");
 			setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').setup_designer()",50);
 		},
-		
+		_setStatus : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+		},
 		local_minimize : function(){
 			// fix for latest FF 1.5
 			//
@@ -157,22 +153,8 @@
 		
 		template_destroy : function(){
 			var d = this.get_frame("designer"), h = 0;
-			if(this.getProperties().keep_buffers){
-				try{
-					if(d){
-						h = this.RefreshSource();
-					}
-					this.getProperties().designer_html = h;
-					}
-					catch(e){
-						
-						this.setStatus("Error enabling designer: " + (e.message ? e.message : e.description));
-					}
-			}
-			else{
-				this.getProperties().designer_html = 0;
-				this.getProperties().control_buffer = 0;
-			}
+			this.getProperties().designer_html = 0;
+			this.getProperties().control_buffer = 0;
 			this.getProperties().showing_tab = 0;
 			this.local_handle_focus = 0;
 			this.local_handle_blur = 0;
@@ -188,10 +170,15 @@
 		
 		LoadDesignerTemplate : function(){
 			this.setStatus("Loading template ...");
-			
+			Hemi.log("Load designer template");
 			var sTemplate = this.GetFormValue("template");
 			if(!sTemplate || !sTemplate.match(/\.xml/g)){
-				this.setStatus("Invalid template selection");
+				if(sTemplate == "blank"){
+					this.WriteContent("<html><body><h1>Title</h1><h2>Sub Title</h2><div>[ body ]</div></body></html>","designer");
+				}
+				else{
+					this.setStatus("Invalid template selection");
+				}
 				return;
 			}
 			/*
@@ -210,12 +197,9 @@
 			var sHtml = Hemi.xml.serialize(oX);
 			// Konqueror / Safari fix; Serialize document and strip off processing instruction
 			sHtml = sHtml.replace(/<\?xml (.[^<]*)>/gi,"");
-			/*
-			sHtml = sHtml.replace(/%EASY_LINK_NAME%/gi,this.getObjects().current_item.item_name);
-			sHtml = sHtml.replace(/%EASY_LINK_DESCRIPTION%/gi,this.getObjects().current_item.item_description);
-			sHtml = sHtml.replace(/%EASY_LINK_PRICE%/gi,this.getObjects().current_item.item_price);
-			sHtml = sHtml.replace(/%EMAIL_CONTENTS%/gi,this.getProperties().control_buffer);
-			*/
+			/// TODO: Swap tokens as needed, such as MediaLink
+			///
+			
 			this.WriteContent("<html>" + sHtml + "</html>","designer");
 			this.setStatus("");
 		},
@@ -341,7 +325,20 @@
 			// if(d.createTextRange) r = d.createTextRange();
 			// if(r) r.select();
 			switch(o.getAttribute("button-action")){
+				case "ImageLink":
+					if(this.getProperties().linkNode){
+						//Hemi.log("Link HTML: " + this.getProperties().linkNode);
+						//d.document.execCommand("innerHTML",false,this.getProperties().linkHtml);
+						this.insertNodeAtCaret(this.getProperties().linkNode);
+						this.getProperties().linkNode = 0;
+					}
+					else{
+						this.chooseData("pickData");
+					}
+					break;
 				case "CreateLink":
+					//this.chooseData("pickData");
+					//break;
 				case "Indent":
 				case "Outdent":
 				case "InsertHorizontalRule":
@@ -355,11 +352,229 @@
 				case "Bold":
 					d.document.execCommand(s, false, opt);
 					break;
+				case "Save":
+					this.saveType();
+					break;
 			}
 			d.focus();
 		},
+		_handle_picker_loaded: function (v) {
+		    v.resizeTo(450, 450);
 
-	
+			v.GetComponentByRID("typelist").GetWideSelect().getContainer().style.height = "340px";
+        },
+        /// Based on Tim's answer at http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
+        ///
+		insertNodeAtCaret : function(oNode) {
+		    var sel, range;
+		    var d = this.get_frame("designer");
+		    if (d.getSelection) {
+		        sel = d.getSelection();
+		        if (sel.getRangeAt && sel.rangeCount) {
+		            range = sel.getRangeAt(0);
+		            range.deleteContents();
+		
+		            // Range.createContextualFragment() would be useful here but is
+		            // only relatively recently standardized and is not supported in
+		            // some browsers (IE9, for one)
+		            range.insertNode(oNode);
+		        }
+		    }
+		},
+		pickData : function(s,o,i,w){
+		
+			var d = this.get_frame("designer");
+			this.getProperties().lastPickerPath = w.getPath();
+			this.getFocus();
+			d.focus();
+			var oG = o.group;
+			var w = 250;
+			var h = 250;
+			if(o.group.path == null || o.group.path.length == 0){
+				oG = accountManager.getGroupById(o.group.id);
+			}
+			
+			var oA = d.document.createElement("a");
+			var oI = d.document.createElement("img");
+			oA.appendChild(oI);
+			var sThumbUrl = "/AccountManager/Thumbnail/Public/Data" + oG.path + "/" + o.name + "/" + w + "x" + h;
+			
+			
+			var sUrl = "/AccountManager/Media/Public/Data" + oG.path + "/" + o.name;
+			var sIco = 0;
+			if(!o.mimeType.match(/^image/)){
+				/*
+				w = 128;
+				h = 128;
+				sIco = "/Media/Icons/Crystal/128x128/Crystal_Clear_mimetype_misc.png";
+				*/
+				oI.setAttribute("src","/Media/Icons/Crystal/128x128/Crystal_Clear_mimetype_misc.png");
+				oI.setAttribute("border","0");
+				oI.setAttribute("width","128");
+				oI.setAttribute("height","128");
+				oI.setAttribute("title",o.name);
+				
+			}
+			else{
+				oI.setAttribute("src",sThumbUrl);
+				//sIco = "/AccountManager/Thumbnail/Public/Data" + oG.path + "/" + o.name + "/" + w + "x" + h;
+				/// null the dimensions because the end ratio isn't known yet
+				//w = 0;
+				//h = 0;
+			}
+
+			oA.setAttribute("href",sUrl);
+			oA.setAttribute("target","blank");
+			oA.setAttribute("title",o.name);
+			//d.document.body.appendChild(oA);
+
+			//var sHtml = "<a href =\"" + sUrl + "\" title = \"" + o.name + "\" target = \"blank\"><img src = \"" + sIco + "\" " + (w && h ? " width=\"" + w + "\" height = \"" + h + "\"" : "") + " border = \"0\" title =\"" + o.name + "\" /></a>";
+			//this.getProperties().linkHtml = sHtml;
+			this.getProperties().linkNode = oA;
+			/*
+			var sThumb = "/" + w + "x" + h;
+			var sUrl = "/AccountManager/Thumbnail/Public/Data" + oG.path + "/" + o.name;
+			var sHtml = "<a href =\"" + sUrl + "\" title = \"" + o.name + "\" target = \"blank\"><img src = \"" + sUrl + sThumb + "\" border = \"0\" title =\"" + o.name + "\" /></a>";
+			d.document.execCommand("innerHTML",false,sHtml);
+			*/
+		},
+		chooseData : function(sFN){
+			var sPath = (this.getProperties().lastPickerPath ? this.getProperties().lastPickerPath : "~/GalleryHome");
+			var oProps = {openerId:this.getObjectId(),defaultPath:sPath,listType:"Data",picker:1,pickFunction:sFN,listId:0};
+			var oW = Hemi.app.createWindow("ManageList", "/AccountManagerExample/Forms/ListDatas.xml", "DataPicker", 0, 0, oProps, this._prehandle_picker_loaded);
+            if (oW) {
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		},
+		
+		/// Copy from BaseFields.xml
+		///
+		getPath : function(){
+			var o = this.GetElementByRID("path"), s;
+			if(!(s = o.value).length){
+				s = o.placeholder;
+				if(!s) s = "~/" + this.getProperties().typeName + "s";
+			}
+			return s;
+		},
+		/// Copy from BaseFields.xml
+		///
+		saveType : function(){
+			this.synchronizeForm();
+			var o = this.getBean("rocketType");
+			this.GetElementByRID("path").className = "rocket-text";
+			this.GetElementByRID("name").className = "rocket-text";
+			this.setStatus("");
+			if(!this.ValidateForPattern("name","not-empty")){
+				this.GetElementByRID("name").className = "rocket-text rocket-text-error";
+				this.setStatus("Name cannot be empty");
+				return;
+			}
+			var sPath = this.getPath();
+			var oGroup = accountManager.getCreatePath(sPath);
+			if(!oGroup || oGroup == null){
+				this.GetElementByRID("path").className = "rocket-text rocket-text-error";
+				this.setStatus("Invalid group");
+				return;
+			}
+
+			/// TODO: Don't use the different bean class for the AM group object
+			///
+			o.group = accountManager.getCleanGroup(oGroup);
+
+			
+			if(this.prepareSave && !this.prepareSave(o)){
+				Hemi.logError("Prepare save failed for type " + this.getProperties().typeName);
+				return;
+			}
+			
+			var sAct = "add", bAct = 0;
+			if(o.id > 0) sAct = "update";
+			var sMeth= sAct + this.getProperties().typeName;
+			var oApi = window[uwm.getApi(this.getProperties().typeName)];
+			if(sAct.match(/^add$/) && this.addType){
+				Hemi.log("Designer Save Type 1: " + sMeth);
+				bAct = this.addType(o);
+			}
+			else{
+				Hemi.log("Designer Save Type 2: " + sMeth);
+				if(!oApi[sMeth]){
+					this.setStatus("Invalid API: " + sMeth);
+					return;
+				}
+				
+				bAct = oApi[sMeth](o);
+			}
+			
+			if(bAct){
+				if(bAct != -1) this.postProcess();
+				else this.setStatus("Processing ...");
+			}
+			else{
+				this.setStatus("Failed to " + sAct);
+			}
+		
+		},
+		/// Copy from BaseFields.xml
+		///
+		prepareSave : function(o){
+			/// For updating, if a detailed binary object is being saved, don't allow to save here - only allow through the uploader
+			/// therefore, save as detailsOnly
+			///
+			Hemi.log("Designer Prepare Save ...");
+			//"preview_source"
+			var iTab = this.getProperties().showing_tab;
+			if(iTab != 3){
+				this.ShowTab(3);
+			}
+						
+			o.mimeType = "text/plain";
+			var sBBCode = bbConverter.convertNodes(this.get_frame("preview_frame").document.body.childNodes);
+			
+			if(iTab != 3) this.ShowTab(iTab);
+			
+			o.dataBytesStore = uwm.base64Encode(sBBCode);
+			//Hemi.log("Designer Prepare Save Data: " + o.dataBytesStore);
+			return 1;
+		},
+		/// Modified from DataFields.xml
+		///
+		addType : function(o){
+			Hemi.log("Add rich text type: " + o.name + ":" + o.mimeType);
+
+			var v = "";
+			if(o.mimeType && o.mimeType.match(/^text/)){
+				v = this.GetElementByRID("textData").value;
+				/// note - an old design artifact is the add operations want the atomic values, not the object, so because prep save converts, this decodes for the old api style to re-encode
+				/// to fix - all of the add operations need to be updated
+				///
+				return accountManager.addData(o.name, o.description, o.mimeType, uwm.base64Decode(o.dataBytesStore), o.group);
+			}
+			return 0;
+		},
+		/// Copy from BaseFields.xml
+		///
+		postProcess : function(){
+			var o = this.getBean("rocketType");
+			Hemi.log("Post process " + o.name);
+			var oApi = window[uwm.getApi(this.getProperties().typeName)];
+			var n = oApi["get" + this.getProperties().typeName](o.name,o.group);
+			if(n != null){
+				this.clearBean("rocketType");
+				this.setBean(n,"rocketType");
+			}
+			this.synchronizeForm(1);
+			///if(this.getProperties().picker){
+				var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
+				if(oOpener && oOpener.refreshList) oOpener.refreshList();
+				///if(oOpener["refresh" + this.getProperties().typeName + "sList"]) oOpener["refresh" + this.getProperties().typeName + "sList"]();
+				if(this.Close) this.Close();
+			///}
+			///this.loadTemplate("/AccountManagerExample/Forms/BaseTemplate.xml");
+		},
 		setup_designer : function(){
 				try{
 					var d = this.get_frame("designer");
@@ -388,20 +603,26 @@
 				
 				PrepDesigner : function(){
 					var d = this.get_frame("designer");
+					var o = this.getBean("rocketType");
 					if(!d || !d.document){
 						setTimeout("Hemi.registry.ObjectRegistry.getObject('" + this.getObjectId() + "').PrepDesigner()",50);
 						this.setStatus("Deferring Preparation ...");
 						return;
 					}
+					var sCSS = "<link rel=\"stylesheet\" href=\"/Style/uwm.css\" type=\"text/css\" title = \"uwm\" /><link rel=\"stylesheet\" href=\"/Style/rocket.css\" type=\"text/css\" />";
+ 					if(o && o.dataBytesStore){
+ 						///alert("Org: " + uwm.base64Decode(o.dataBytesStore));
 
-					if(this.getProperties().designer_html){
+						this.WriteContent("<html><head>" + sCSS + "</head><body>" + bbConverter.import(uwm.base64Decode(o.dataBytesStore)) + "</body></html>","designer");
+					}
+					else if(this.getProperties().designer_html){
 						this.WriteContent(this.getProperties().designer_html,"designer");
 					}
 					else if(this.getProperties().control_buffer){
 						this.WriteContent("<html><body>" + this.getProperties().control_buffer + "</body></html>","designer");
 					}
 					else{
-						this.WriteContent("<html><body><div>[ message body ]</div></body></html>","designer");
+						this.WriteContent("<html><head>" + sCSS + "<body><h1>Title</h1><h2>Sub Title</h2><div>[ body ]</div></body></html>","designer");
 					}
 					this.setStatus("");
 		},
@@ -424,7 +645,9 @@
 
 		},
 		enable_designer : function(b){
+		
 			try{
+			
 				var d = this.get_frame("designer");
 				if(d){
 					d.document.designMode = "on";
@@ -445,9 +668,9 @@
 				var d = this.get_frame("designer");
 				//document.title = "disable " + (new Date()).getTime();
 				if(d){
-					this.getProperties().keep_buffers = 1;				
+					//this.getProperties().keep_buffers = 1;				
 					// var h = d.document.body.innerHTML;
-					this.loadTemplate(g_application_path + "Templates/DesignerProxy.xml");
+					//this.loadTemplate(g_application_path + "Templates/DesignerProxy.xml");
 				}
 			}
 			catch(e){
@@ -481,49 +704,7 @@
 		},
 		resize_preview_source : function(){
 			this.ResizeFrame("preview_source",10,0);
-		},
-		SendEmail : function(){
-			var sSub = Hemi.text.trim(this.GetFormValue("email_subject"));
-			//var sEmail = Hemi.text.trim(this.GetFormValue("email_to"));
-			var sFromEmail = Hemi.text.trim(this.GetFormValue("email_from"));
-			var sMsg = Hemi.text.trim(this.RefreshSource());
-			
-			try{
-				Assert(sSub.length > 0,"Invalid subject");
-				//Assert(sEmail.length > 0 && sEmail.match(/^([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)$/),"Invalid receiver email");
-				Assert(sFromEmail.length > 0 && sFromEmail.match(/^([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)$/),"Invalid sender email");
-				Assert(sMsg.length > 0,"Invalid message");
-			}
-			catch(e){
-				this.setStatus("Error sending email: " + (typeof e== "string" ? e : e.message ? e.message : e.description));
-				return;
-			}
-			
-			var oX = GetNewRequest();
-			AddParameter(oX, "Subject",sSub,1);
-			//AddParameter(oX, "Email",sEmail,1);
-			AddParameter(oX, "FromEmail",sFromEmail,1);
-			AddParameter(oX, "Message",sMsg,1);
-			
-			var oR = Hemi.xml.postXml(g_application_root + "/Products/beta/EasyLink/EasyLinkManager.aspx?is-xml=1&action=send-email",oX);
-			
-			if(oR == null){
-				this.setStatus("Unable to send email");
-				return;
-			}
-			else if(oR.getElementsByTagName("Invalid-Arguments").length > 0){
-				this.setStatus("Invalid email input.");
-			}
-			else if(oR.getElementsByTagName("Failed").length > 0){
-				this.setStatus("Unable to deliver email.");
-			}
-			else if(oR.getElementsByTagName("Duplicate").length > 0){
-				this.setStatus("That email was already sent.");
-			}
-			else{
-				this.setStatus("Email was sent.");
-			}
-	}
+		}
 		
 
 	]]>

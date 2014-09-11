@@ -1,4 +1,21 @@
 <html-fragment>
+	<div class = "rocket-column-2" rid = "urlContainer" style = "display:none;">
+		<p>
+			URL:
+		</p>
+		<p>
+			<input type = "text" rid = "urlText" class = "rocket-text" style = "width:150px !important;" />
+			<input type = "button" class = "rocket-button" value = "..." onclick = "window.open(${this}.GetElementByRID('urlText').value)" />
+		</p>
+	</div>
+	<div class = "rocket-column-2" rid = "shareContainer" style = "display:none;">
+		<p>
+			Sharing:
+		</p>
+		<p>
+			<input type = "button" class = "rocket-button" value = "Configure Authorization" onclick = "${this}.openShare()" />
+		</p>
+	</div>
 	<div class = "rocket-column-2">
 		<p>
 			Description:
@@ -22,9 +39,10 @@
 	<div rid = "detailsOnlyContainer" class = "rocket-column-2">
 		<p>Details:</p>
 		<p>
-			<input type = "button" value = "Load" onclick = "${this}.loadDetailData()" />
-			<input type = "button" value = "Clear" onclick = "${this}.clearDetailData()" />
-			<input type = "button" value = "View" style = "display:none;" rid = "viewBtn" onclick = "${this}.viewData()" />
+			<input type = "button" value = "Load" rid = "loadBtn" onclick = "${this}.loadDetailData()" />
+			<input type = "button" value = "Clear" rid = "clearBtn" onclick = "${this}.clearDetailData()" />
+			<input type = "button" value = "View" rid = "viewBtn" onclick = "${this}.viewData()" />
+			<input type = "button" value = "Design" rid = "designBtn" onclick = "${this}.designData()" />
 		</p>
 	</div>
 	<div rid = "textContainer" class = "rocket-column-2">
@@ -81,20 +99,63 @@
 		},
 		embedded_destroy : function(){
 			if(this.getProperties().requestFrame){
-				Hemi.message.service.subscribe("frame_announcement",this._prehandle_frame_announcement);
-				Hemi.message.service.subscribe("frame_response",this._prehandle_frame_response);
+				Hemi.message.service.unsubscribe("frame_announcement",this._prehandle_frame_announcement);
+				Hemi.message.service.unsubscribe("frame_response",this._prehandle_frame_response);
+			}
+		},
+			openShare : function(){
+				var o = this.getBean("rocketType");
+				var oProps = {viewType:o};
+				var oW = Hemi.app.createWindow('Sharing','/AccountManagerExample/Forms/Sharing.xml','Sharing-' + o.id,0,0,oProps);
+				if(oW){
+					oW.setCanMinimize(0);
+					oW.setCanMaximize(0);
+			    	oW.resizeTo(450, 400);
+			    	oW.setHideOnClose(0);
+			    	Hemi.app.getWindowManager().CenterWindow(oW);
+				}
+			},
+		updateURL : function(){
+			var o = this.getBean("rocketType");
+			var b = "none";
+			if(o.id){
+				var g = o.group;
+				if(g.path == null) g = accountManager.getGroupById(g.id);
+				var sUrl =
+					location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "")
+					+ "/AccountManager/Media/" + accountManager.getOrganizationDotPath(o.organization) + "/Data" + g.path + "/" + o.name
+				;
+				/*
+				var oC = this.GetElementByRID("urlLabel");
+				Hemi.xml.removeChildren(oC);
+				var oA = document.createElement("a");
+				oA.setAttribute("target","_blank");
+				oA.setAttribute("href",sUrl);
+				oA.appendChild(document.createTextNode(o.group.path + "/" + o.name));
+				oC.appendChild(oA);
+				*/
+				this.GetElementByRID("urlText").value = sUrl;
+				b = "block";
 			}
 		},
 		displayData : function(){
 			var o = this.getBean("rocketType");
-			
+			this.GetElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
 			if(o.id && o.detailsOnly) return;
 			
 			this.GetElementByRID("textData").value = "";
-			if(o.mimeType && o.mimeType.match(/^text/) && o.dataBytesStore){
-				this.GetElementByRID("textData").value = uwm.base64Decode(o.dataBytesStore);
+			if(o.mimeType){
+				if(!o.mimeType.match(/^text\/plain$/gi) && !o.mimeType.match(/^application\/xml$/gi)){
+					var oSel = this.GetElementByRID("mimeType");
+					oSel.options[oSel.options.length] = new Option(o.mimeType,o.mimeType);
+					oSel.value = o.mimeType;
+				}
+				if(o.mimeType.match(/^text/) && o.dataBytesStore){
+					this.GetElementByRID("textData").value = uwm.base64Decode(o.dataBytesStore);
+				}
 			}
 		},
+		isBinary : function(){ var v = this.GetElementByRID("mimeType").value; return (v.match(/^binary$/) || v.match(/^image\//gi)); },
 		addType : function(o){
 			Hemi.log("Add data type: " + o.name + ":" + o.mimeType);
 
@@ -103,7 +164,7 @@
 				v = this.GetElementByRID("textData").value;
 				return accountManager.addData(o.name, o.description, o.mimeType, v, o.group);
 			}
-			else if(o.mimeType.match(/^binary$/)){
+			else if(this.isBinary()){
 				var oF = this.get_frame("mediaUploadFrame");
 				oF.document.forms["mediaForm"].elements["id"].value = "0";
 				oF.document.forms["mediaForm"].elements["name"].value = o.name;
@@ -132,6 +193,24 @@
 			this.changeDataType();
 			this.displayData();
 		},
+		designData : function(){
+			var o = this.getBean("rocketType");
+			//if(!o.id) return;
+			if(o.detailsOnly){
+				this.loadDetailData();
+				o = this.getBean("rocketType");
+			}
+			var oProps = {openerId:this.getObjectId(),picker:0,viewType:o};
+			var oW = Hemi.app.createWindow("Design " + o.name, "/AccountManagerExample/Forms/Design.xml", "DesView-" + o.id, 0, 0, oProps);
+            if (oW) {
+            	oW.resizeTo(600, 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when rd
+            	//
+            	oW.setHideOnClose(0);
+            	this.Close();
+            }
+		},
 		viewData : function(){
 			var o = this.getBean("rocketType");
 			if(!o.id) return;
@@ -152,12 +231,15 @@
 		changeDataType : function(){
 			var o = this.getBean("rocketType");
 			var oSel = this.GetElementByRID("mimeType");
-			var bBin = oSel.value == "binary";
+			var bBin = this.isBinary();
 			var bDet = (o.id && o.detailsOnly);
-			this.GetElementByRID("detailsOnlyContainer").style.display = (bDet ? "block" : "none");
-			this.GetElementByRID("binaryContainer").style.display = (bDet ? "none" : (bBin ? "block" : "none"));
-			this.GetElementByRID("textContainer").style.display = (bDet ? "none" : (bBin ? "none" : "block"));
-			this.GetElementByRID("viewBtn").style.display = (bBin && o.mimeType.match(/^image/) ? "inline" : "none");
+			//this.GetElementByRID("detailsOnlyContainer").style.display = (bDet ? "block" : "none");
+			this.GetElementByRID("loadBtn").disabled = (bDet && (!bBin || !o.mimeType.match(/^image/)) ? false : true);
+			this.GetElementByRID("clearBtn").disabled = (!bDet ? true : false);
+			this.GetElementByRID("binaryContainer").style.display = (!bDet && bBin ? "block" : "none");
+			this.GetElementByRID("textContainer").style.display = (!bDet && !bBin ? "block" : "none");
+			this.GetElementByRID("viewBtn").disabled = (bBin && o.mimeType.match(/^image/) ? false : true);
+			this.GetElementByRID("designBtn").disabled = (o.mimeType.match(/^text/) ? false : true);
 			if(bBin) this.initFrame();
 		},
 		initFrame : function(){
@@ -173,11 +255,11 @@
 			var oF = this.get_frame("mediaUploadFrame");
 			if(!oF || !oF.document){
 				Hemi.logDebug("Waiting to setup frame");
-				setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').setupFrame()",50);
+				this.getProperties().timeout = setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').setupFrame()",50);
 			}
 			else{
 				this.GetElementByRID("mediaUploadFrame").style.display = "block";
-				oF.document.location.href = g_application_path + "Forms/MediaUpload.html";
+				oF.document.location.href = "/AccountManagerExample/Forms/MediaUpload.html";
 				this.probeFrame();
 			}
 		},
@@ -201,6 +283,10 @@
 			if(v && v.id == this.getObjectId()){
 				this.setupFrame();			
 				if(v && v.status){
+					if(this.getProperties().timeout){
+						window.clearTimeout(this.getProperties().timeout);
+						this.getProperties().timeout = 0;
+					}
 					this.postProcess();
 				}
 				
@@ -212,7 +298,7 @@
 		probeFrame : function(){
 			var oF = this.get_frame("mediaUploadFrame");
 			if(!oF || !oF.document || !oF.mediaFrameMark){
-				setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').probeFrame()",50);
+				this.getProperties().timeout = setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').probeFrame()",50);
 			}
 			else{
 				oF.setResponseId(this.getObjectId());
@@ -220,9 +306,19 @@
 		},
 		prepareSave : function(o){
 			///this.GetElementByRID("endTime").className = "rocket-text";
-			o.dataBytesStore = "";
-			if(o.mimeType && o.mimeType.match(/^text/)){
-				o.dataBytesStore = uwm.base64Encode(this.GetElementByRID("textData").value);
+			///o.dataBytesStore = "";
+			/// For updating, if a detailed binary object is being saved, don't allow to save here - only allow through the uploader
+			/// therefore, save as detailsOnly
+			///
+			var bBin = this.isBinary();
+			if(o.mimeType){
+				if(o.id && bBin){
+					o.dataBytesStore = "";
+					o.detailsOnly = true;
+				}
+				if(o.mimeType.match(/^text/)){
+					o.dataBytesStore = uwm.base64Encode(this.GetElementByRID("textData").value);
+				}
 			}
 			return 1;
 		}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<p>Design Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().designMode = 1;
+			this.loadTemplate("/AccountManagerExample/Forms/Data.xml");
+		}
+	]]></embedded-script>
+</Template>

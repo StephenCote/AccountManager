@@ -77,6 +77,8 @@ body{
 	top:2px;
 	width:300px;
 	left:80px;
+	height: 26px;
+	padding: 0em;
 }
 .uwm-controls
 {
@@ -356,6 +358,15 @@ ul.uwm-menu li.uwm-email
 }
 ul.uwm-menu li.uwm-projects{
 	background-image: url(../Media/Icons/Crystal/48x48/48px-Crystal_Clear_app_package_settings.png);
+}
+
+.uwm-inline-buttons img{
+	width: 24px;
+	height: 24px;
+	border: 1px dotted #505050;
+}
+.uwm-inline-buttons img:hover{
+	border: 1px outset #CFCFCF;
 }
 
 /* Need to Refactor Names for Legacy Styles */
