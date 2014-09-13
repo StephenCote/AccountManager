@@ -163,6 +163,16 @@
 				if(oGroup){
 					o.group = accountManager.getCleanGroup(oGroup);
 				}
+				o.description = "";
+				o.suffix = "";
+				o.prefix = "";
+				o.title = "";
+				o.alias = "";
+				o.firstName = "";
+				o.lastName = "";
+				o.middleName = "";
+				o.gender = "unknown";
+
 				return uwmServices.getService("Person").add(o);
 			},
 			populatePerson : function(o){

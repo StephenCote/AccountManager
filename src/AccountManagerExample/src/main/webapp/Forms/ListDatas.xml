@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerExample/Forms/GridType.xml" id = "GridType" />
+	<embedded-script>
+		<![CDATA[
+		// Requires TemplateTools to be included
+		//
+		template_init : function(){
+			//this.initList("Note");
+			this.getProperties().iconView = 1;
+			this.initGrid("Data",(this.getProperties().defaultPath ? this.getProperties().defaultPath : "~/Data"));
+		},
+		decorateListItemName : function(o){
+			var _p = this.getProperties();
+			if(!_p.iconView) return o.name;
+			var w = (_p.iconWidth ? _p.iconWidth : 48);
+			var h = (_p.iconHeight ? _p.iconHeight : 48);
+			var oL = document.createElement("div");
+			var oP = document.createElement("p");
+			oP.setAttribute("style","text-indent:0px !important;");
+			var oP2 = document.createElement("p");
+			var oI = document.createElement("img");
+			oI.setAttribute("class","alignright");
+			var sIco = "/Media/Icons/Crystal/48x48/48px-Crystal_Clear_action_filenew.png";
+			if(o.mimeType.match(/^image/)){
+				var oG = o.group;
+				if(o.group.path == null || o.group.path.length == 0){
+					oG = accountManager.getGroupById(o.group.id);
+				}
+			
+				sIco = "/AccountManager/Thumbnail/Public/Data" + oG.path + "/" + o.name + "/" + w + "x" + h
+			}
+			oI.setAttribute("src",sIco);
+			oP.appendChild(oI);
+			oP.appendChild(document.createTextNode(o.name));
+			oP.appendChild(document.createElement("br"));
+			if(o.description != null) oP.appendChild(document.createTextNode(o.description));
+			oP.appendChild(document.createElement("br"));
+			oP.appendChild(document.createTextNode(o.createdDate.toString()));
+			oL.appendChild(oP);
+			oP2.setAttribute("class","clearalign");
+			oL.appendChild(oP2);
+			return oL;
+						
+		},
+		template_destroy : function(){
+			
+		},
+
+		handle_list_click : function(v){
+			///this.setStatus("Clicked: " + v.name);
+		}
+		]]>
+	</embedded-script>
+</Template>
