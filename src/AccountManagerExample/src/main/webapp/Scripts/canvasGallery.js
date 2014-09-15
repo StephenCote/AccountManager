@@ -164,6 +164,7 @@
 					
 					//if(oPanel.getObjects().menu) this.paintMenu(oPanel, oCanvas, oShape, oPanel.getObjects().menu);
 				}
+
 			},
 			handleDropShape : function(oSrc, oTarg){
 				
@@ -376,7 +377,7 @@
 				     {action: "openShare",label: "Sharing",icon : "Crystal_Clear_app_Login_Manager.png"},
 				     {action: "openCache",label: "Cache",icon : "Crystal_Clear_app_database.png"},
 				     {action: "openLog",label: "Log",icon : "Crystal_Clear_app_kexi.png"},
-				     {action: "openDebug",label: "Debug",icon : g_application_path + "Media/Icons/Hemi_Logo_128x128.png"}
+				     {action: "openDebug",label: "Debug",icon : "/AccountManagerExample/Media/Icons/Hemi_Logo_128x128.png"}
 					]
 				});
 				v.panel("commands",{
@@ -575,6 +576,7 @@
 				}
 				this.logDebug("Create group: " + s + " " + (b ? true : false));
 			},
+			/*
 			createStory : function(sName){
 	
 				var b = accountManager.addTask(sName, "", "UNKNOWN", 0,(new Date()),(new Date()),0,0, 0, 0, 0, 0, 0, 0, 0, this.getCurrentViewPanel("nav").getObjects().currentDirectory);
@@ -583,6 +585,7 @@
 				}
 				this.logDebug("Create story: " + sName + " " + (b ? true : false));
 			},
+			*/
 			newImage : function(){
 				var oP = this.getCurrentViewPanel("nav");
 				openWindow(oP, "Data", 0, showDataForm);
@@ -645,7 +648,7 @@
 				return;
 			}
 			var oObj = o;
-			accountManager["delete" + ot](o,{
+			window[uwm.getApi(ot)]["delete" + ot](o,{
 				hemiSvcCfg:1,
 				async:1,
 				handler:function(s, v){
@@ -1289,9 +1292,9 @@
 		}
 		function getObjectById(oPanel, sType, sId, oShape){
 			var ot = getObjectType(oPanel),f;
-			f = accountManager["get" + ot + "ById"];
+			f = window[uwm.getApi(ot)]["get" + ot + "ById"];
 			if(!f){
-				ctl.logError("Invalid reference type to retrieve object: '" + ot + "'");
+				ctl.logError("Invalid reference type '" + sType + "' to retrieve object: '" + ot + "'");
 				return 0;
 			}
 			return f(sId);
@@ -1337,8 +1340,8 @@
 						if(_s.basePath){
 							_o.baseDir = accountManager.getCreatePath(_s.basePath);
 						}
-						_s.iconLargeBase = g_application_path + "Media/Icons/Crystal/128x128/";
-						_s.iconSmallBase = g_application_path + "Media/Icons/Crystal/48x48/";
+						_s.iconLargeBase = "/AccountManagerExample/Media/Icons/Crystal/128x128/";
+						_s.iconSmallBase = "/AccountManagerExample/Media/Icons/Crystal/48x48/";
 					},
 					getCanvas : function(){
 						return this.getObjects().controller.getCanvas();
