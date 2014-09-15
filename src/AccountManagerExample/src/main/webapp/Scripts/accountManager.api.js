@@ -52,6 +52,15 @@
 				a.values = x;
 				return a;
 			},
+			removeAttribute : function(o, n){
+				if(!o.attributes || o.attributes == null) return 0;
+				for(var i = 0; i < o.attributes.length; i++){
+					if(o.attributes[i].name == n){
+						o.attributes.splice(i,1);
+						break;
+					}
+				}
+			},
 
 				
 			
