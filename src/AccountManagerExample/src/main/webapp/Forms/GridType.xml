@@ -289,17 +289,22 @@
 			var b = 0;
 			if(!uwm.rule("IsLoggedIn")){
 				this.setStatus("Not Authenticated with id " + uwm.getSession().sessionId);
+				return b;
 			}
+			else if(this.provideDelete){
+				b = this.provideDelete(o);
+			},
 			else{
 				var oApi = window[uwm.getApi(this.getProperties().typeName)];
 				b = oApi["delete" + this.getProperties().typeName](o);
-				if(b){
-					this.setStatus("Deleted object #" + o.id);
-				}	
-				else{
-					this.setStatus("Unable to delete object #" + o.id);
-				}
 			}
+			if(b){
+				this.setStatus("Deleted object #" + o.id);
+			}	
+			else{
+				this.setStatus("Unable to delete object #" + o.id);
+			}
+
 			return b;
 		
 		},
