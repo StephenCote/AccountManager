@@ -5,11 +5,18 @@
 		embedded_init : function(){
 			this.scopeHandler("manager_loaded", 0, 0, 1);
 			this.scopeHandler("picker_loaded", 0, 0, 1);
+			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_session_refresh");
 		},
 		embedded_destroy : function(){
 			this._prehandle_manager_loaded = 0;
 			this._prehandle_picker_loaded = 0;
+			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_session_refresh");
 		},
+
+		handle_session_refresh : function(s,v){
+			if(this.refreshSession) this.refreshSession(s,v,uwm.rule("IsLoggedIn"));
+		},
+
 		_handle_manager_loaded: function (v) {
 			///
         },

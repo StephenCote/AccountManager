@@ -269,9 +269,10 @@
 					if(v && v.json && v.json.session){
 						window.uwm.user = v.json;
 						window.uwm.session = v.json.session;
+						uwm.clearCache();
 						var oSess = Hemi.registry.service.getObject("session");
 						if(oSess) oSess.Refresh(window.uwm.session);
-
+						if(uwm.altFlushSession) uwm.altFlushSession();
 					}
 					vParms.user = v.json;
 					uwm.operation("ContinueWorkflow", vParms, 0, "Authenticate");
@@ -284,14 +285,19 @@
 		logout : function(){
 			if(uwm.rule("IsLoggedIn")){
 				window.uwm.session = window.uwmServices.getService("User").safeLogout(Hemi.guid());
+				uwm.clearCache();
 				var oSess = Hemi.registry.service.getObject("session");
 				if(oSess) oSess.Refresh(window.uwm.session);
 				Hemi.log("Flush any session or cache references in related services");
-				window.uwmServiceCache.clearCache();
+				if(uwm.altFlushSession) uwm.altFlushSession();
 				//rocket.flushSession();
 				return 1;
 			}
 			return 0;
+		},
+		clearCache : function(){
+			window.uwmServiceCache.clearCache();
+			Hemi.xml.clearCache();
 		},
 		register : function(u, p, e, o){
 			var userSvc = window.uwmServices.getService("User");
