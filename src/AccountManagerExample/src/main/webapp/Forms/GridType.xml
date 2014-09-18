@@ -293,7 +293,7 @@
 			}
 			else if(this.provideDelete){
 				b = this.provideDelete(o);
-			},
+			}
 			else{
 				var oApi = window[uwm.getApi(this.getProperties().typeName)];
 				b = oApi["delete" + this.getProperties().typeName](o);
