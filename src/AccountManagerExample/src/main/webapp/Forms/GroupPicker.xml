@@ -19,7 +19,7 @@
 		var o = this.getBean("rocketType");
 		if(!this.getProperties().hideGroup){
 			var oP;
-			if(o.GroupId > 0) oP = accountManager["get" +  this.getProperties().typeName + "ById"](o.GroupId);
+			if(o.GroupId > 0) oP = window[uwm.getApi(this.getProperties().typeName)]["get" +  this.getProperties().typeName + "ById"](o.GroupId);
 			this.pickGroup(this.getProperties().typeName,oP);
 		}
 		else{
@@ -33,7 +33,7 @@
 		openGroup : function(){
 			var o = this.getBean("rocketType"),oP;
 			if(o && o.GroupId && this.openItem){
-				oP = accountManager["get" +  this.getProperties().typeName + "ById"](o.GroupId)
+				oP = window[uwm.getApi(this.getProperties().typeName)]["get" +  this.getProperties().typeName + "ById"](o.GroupId)
 				this.openItem(oP,this.getProperties().typeName);
 			}
 		},

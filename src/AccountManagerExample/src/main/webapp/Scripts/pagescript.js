@@ -24,6 +24,22 @@
 			for(var i = 0; i < aTypes.length;i++) uwm.apiTypeHash[aTypes[i]] = sApi;
 			return 1;
 		},
+		packServiceList : function(){
+			var aBuff = [];
+			for(var i = 0; i < uwmServices.getServices().length;i++){
+			var oSvc = uwmServices.getServices()[i];
+			aBuff.push("uwmServices.addService(\n");
+			aBuff.push("\t\"" + oSvc.name + "\",\n");
+			aBuff.push("\t\"" + oSvc.uri + "\",\n");
+			aBuff.push("\t" + (oSvc.schema ? JSON.stringify(oSvc.schema) : true) + ",\n");
+			aBuff.push("\t" + (oSvc.jsonSchema ? JSON.stringify(oSvc.jsonSchema) : false) + "\n");
+			/// Note: Local cache directive needs to be set individually
+			aBuff.push("\t,enableRecommendedCache\n");
+			aBuff.push(");\n\n");
+			}
+			return aBuff.join("");
+		},
+
 		handlers : {
 			load : [],
 			unload : []

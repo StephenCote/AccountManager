@@ -16,7 +16,7 @@
 		var o = this.getBean("rocketType");
 		if(!this.getProperties().hideParent){
 			var oP;
-			if(o.parentId > 0) oP = accountManager["get" +  this.getProperties().typeName + "ById"](o.parentId);
+			if(o.parentId > 0) oP = window[uwm.getApi(this.getProperties().typeName)]["get" +  this.getProperties().typeName + "ById"](o.parentId);
 			this.pickParent(this.getProperties().typeName,oP);
 		}
 		else{
@@ -30,7 +30,7 @@
 		openParent : function(){
 			var o = this.getBean("rocketType"),oP;
 			if(o && o.parentId && this.openItem){
-				oP = accountManager["get" +  this.getProperties().typeName + "ById"](o.parentId)
+				oP = window[uwm.getApi(this.getProperties().typeName)]["get" +  this.getProperties().typeName + "ById"](o.parentId)
 				this.openItem(oP,this.getProperties().typeName);
 			}
 		},
