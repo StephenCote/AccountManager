@@ -1150,6 +1150,10 @@
 				checkRaster(oPanel);
 				//ctl.log("Paint Object: " + sAct + " " + sLbl + " " + sRef + " "  + bText + ":" + bHover + ":" + bDrag);
 			};
+			img.onerror = function(){
+				oPanel.getProperties().rasterCount++;
+				checkRaster(oPanel);
+			};
 			img.src = sIco;
 		}
 		
