@@ -129,6 +129,8 @@
 				return uwmServices.getService("Account").count(sPath);
 			},
 			listAccounts : function(sPath, iStartIndex, iRecordCount){
+				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				return accountManager.serviceListInGroup(uwmServices.getService("Account"),sPath, iStartIndex, iRecordCount);
 			},
 			addAccount : function(sName, sType, sStatus, oGroup){
@@ -163,6 +165,8 @@
 				return uwmServices.getService("Person").count(sPath);
 			},
 			listPersons : function(sPath, iStartIndex, iRecordCount){
+				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				return accountManager.serviceListInGroup(uwmServices.getService("Person"),sPath, iStartIndex, iRecordCount);
 			},
 			addPerson : function(sName, oGroup){
@@ -206,6 +210,8 @@
 				return uwmServices.getService("Address").count(sPath);
 			},
 			listAddresss : function(sPath, iStartIndex, iRecordCount){
+				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				return accountManager.serviceListInGroup(uwmServices.getService("Address"),sPath, iStartIndex, iRecordCount);
 			},
 			addAddress : function(sName, sLocType, oGroup){
@@ -236,6 +242,8 @@
 				return uwmServices.getService("Contact").count(sPath);
 			},
 			listContacts : function(sPath, iStartIndex, iRecordCount){
+				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				return accountManager.serviceListInGroup(uwmServices.getService("Contact"),sPath, iStartIndex, iRecordCount);
 			},
 			addContact : function(sName, sType, sLocType, oGroup){
@@ -270,6 +278,8 @@
 			listUsers : function(oOrg, iStartIndex, iRecordCount){
 				/// param difference when funneled through GridType.xml
 				if(typeof oOrg == "string") oOrg = 0;
+				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				return accountManager.serviceListInOrganization(uwmServices.getService("User"),oOrg, iStartIndex, iRecordCount);
 			},
 			addUser : function(sName, sPassword, sEmail, oOrg){
@@ -348,8 +358,8 @@
 			listRoles : function(oOrg, oParent, sType,iStartIndex, iRecordCount){
 				// param difference when funneled through GridType.xml
 				if(typeof oOrg == "string") oOrg = 0;
-				if(!iStartIndex) iStartIndex = 0;
-				if(!iRecordCount) iRecordCount = 0;
+				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				if(!sType) sType = "UNKNOWN";
 				return uwmServices.getService("Role").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
 				//if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Role"),oOrg, iStartIndex, iRecordCount);
@@ -404,8 +414,8 @@
 			listPermissions : function(oOrg, oParent, sType, iStartIndex, iRecordCount){
 				// param difference when funneled through GridType.xml
 				if(typeof oOrg == "string" || !oOrg) oOrg = uwm.getUser().organization;
-				if(!iStartIndex) iStartIndex = 0;
-				if(!iRecordCount) iRecordCount = 0;
+				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				if(!sType) sType = "UNKNOWN";
 				return uwmServices.getService("Permission").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
 				//if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Permission"),oOrg, iStartIndex, iRecordCount);
@@ -454,6 +464,8 @@
 			return uwmServices.getService("Group").authorizeUser(oOrg.id, iUserId, iRoleId, bView, bEdit, bDel, bCreate);
 		},
 		listGroups : function(sPath, iStartIndex, iRecordCount){
+			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 			///return accountManager.serviceListInGroup(uwmServices.getService("Group"),sPath, iStartIndex, iRecordCount);
 			return uwmServices.getService("Group").listInDataGroup(sPath, iStartIndex, iRecordCount);
 			/*
@@ -514,6 +526,8 @@
 			return uwmServices.getService("Data").count(sPath);
 		},
 		listDatas : function(sPath, iStartIndex, iRecordCount){
+			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 			return accountManager.serviceListInGroup(uwmServices.getService("Data"),sPath, iStartIndex, iRecordCount);
 		},
 		deleteData : function(oRec, vCfg){
@@ -577,20 +591,20 @@
 		
 		},
 		serviceListInGroup : function(oSvc, sPath, iStartIndex, iRecordCount){
-			if(!iStartIndex) iStartIndex = 0;
-			if(!iRecordCount) iRecordCount = 0;
+			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 			return oSvc.listInGroup(sPath, iStartIndex, iRecordCount);		
 		},
 		serviceListInOrganization : function(oSvc, oOrg, iStartIndex, iRecordCount){
 			if(!oOrg) oOrg = uwm.getUser().organization;
-			if(!iStartIndex) iStartIndex = 0;
-			if(!iRecordCount) iRecordCount = 0;
+			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 			return oSvc.listInOrganization(oOrg.id, iStartIndex, iRecordCount);		
 		},
 		serviceListInParent : function(oSvc, oOrg, oPar, iStartIndex, iRecordCount){
 			if(!oOrg) oOrg = uwm.getUser().organization;
-			if(!iStartIndex) iStartIndex = 0;
-			if(!iRecordCount) iRecordCount = 0;
+			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 			return oSvc.listInParent(oOrg.id, oPar.id, iStartIndex, iRecordCount);		
 		}
 	}

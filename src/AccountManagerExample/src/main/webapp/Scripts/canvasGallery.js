@@ -865,7 +865,7 @@
 			var aSub = accountManager["list" + sObjType + "s"](_no.currentDirectory.path,_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
 			
 			_o.currentList = [];
-			ctl.logDebug("Painting " + aSub.length + " items of " + _s.totalCount + " for " + _no.currentDirectory.path + " from " + _s.startIndex + " to " + _s.suggestedCount);
+			///ctl.logDebug("Painting " + aSub.length + " items of " + _s.totalCount + " for " + _no.currentDirectory.path + " from " + _s.startIndex + " to " + _s.suggestedCount);
 			for(var i = 0; aSub && i < aSub.length;i++){
 				if(sType == 'Group' && aSub[i].name.match(/^\.thumbnail$/gi)) continue;
 				_o.currentList.push(aSub[i]);
