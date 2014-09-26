@@ -19,6 +19,7 @@ html
 {
 		overflow:auto;
 		height:100%;
+		min-height:100%;
 		background-color: #ffffff;
 }
 body{
@@ -80,6 +81,7 @@ body{
 	height: 26px;
 	padding: 0em;
 }
+
 .uwm-controls
 {
     position:absolute;
@@ -359,15 +361,73 @@ ul.uwm-menu li.uwm-email
 ul.uwm-menu li.uwm-projects{
 	background-image: url(../Media/Icons/Crystal/48x48/48px-Crystal_Clear_app_package_settings.png);
 }
-
 .uwm-inline-buttons img{
 	width: 24px;
 	height: 24px;
-	border: 1px dotted #505050;
+	border: 1px dotted transparent;
 }
 .uwm-inline-buttons img:hover{
 	border: 1px outset #CFCFCF;
 }
+input.uwm-inline-button{
+	width: 24px;
+	height: 24px;
+	border: 1px dotted transparent;
+	background-color:transparent;
+    background-repeat:no-repeat;
+	
+}
+input.uwm-inline-button:hover{
+	border: 1px outset #CFCFCF;
+}
+input.uwm-inline-button-cancel
+{
+    background-image: url(../Media/Icons/Crystal/24x24/Crystal_Clear_action_button_cancel.png);
+}
+input.uwm-inline-button-info
+{
+    background-image: url(../Media/Icons/Crystal/24x24/Crystal_Clear_action_info.png);
+}
+input.uwm-inline-button-app-database
+{
+    background-image: url(../Media/Icons/Crystal/24x24/48px-Crystal_Clear_app_database.png);
+}
+input.uwm-inline-button-bookmark-silver
+{
+    background-image: url(../Media/Icons/Crystal/24x24/Crystal_Clear_action_bookmark_Silver.png);
+}
+input.uwm-inline-button-bookmark
+{
+    background-image: url(../Media/Icons/Crystal/24x24/Crystal_Clear_action_bookmark.png);
+}
+input.uwm-inline-button-clean
+{
+    background-image: url(../Media/Icons/Crystal/24x24/Crystal_Clear_app_clean.png);
+}
+input.uwm-inline-button-logout
+{
+    background-image: url(../Media/Icons/Crystal/24x24/Crystal_Clear_app_logout.png);
+}
+input.uwm-inline-button-clock
+{
+    background-image: url(../Media/Icons/Crystal/24x24/Crystal_Clear_app_xclock.png);
+}
+input.uwm-inline-button-trash-empty
+{
+    background-image: url(../Media/Icons/Crystal/24x24/Crystal_Clear_filesystem_trashcan_empty.png);
+}
+input.uwm-inline-button-restart
+{
+    background-image: url(../Media/Icons/Crystal/24x24/Quick_restart.png);
+}
+input.uwm-inline-button-broken
+{
+    background-image: url(../Media/Icons/Crystal/24x24/Crystal_Clear_filesystem_file_broken.png);
+}
+
+
+
+
 
 /* Need to Refactor Names for Legacy Styles */
 p.poetry-line{

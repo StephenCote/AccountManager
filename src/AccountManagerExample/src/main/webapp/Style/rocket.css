@@ -60,6 +60,7 @@ textarea.rocket-text-short
 	color: #000000;
 	background-color: #FFFFFF;
 	width: 100%;
+	margin: 0em;
 }
 .rocket-select
 {
@@ -87,5 +88,5 @@ textarea.rocket-text-short
 	border-color: #FF0000 !important;
 }
 input.rocket-text-short{
-	width: 50px !important;
+	width: 75px !important;
 }

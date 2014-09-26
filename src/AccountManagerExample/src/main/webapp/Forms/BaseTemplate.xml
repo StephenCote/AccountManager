@@ -31,6 +31,9 @@
             	oW.setHideOnClose(0);
             }
 		},
+		local_handle_close : function(v){
+			if(this.handle_close) return this.handle_close(v);
+		},
 		resizeForm : function(){
 			if(this.resizeTo && this.getBody){
 				if(this.getBody().scrollHeight > this.getBody().offsetHeight){
