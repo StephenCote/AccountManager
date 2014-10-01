@@ -42,6 +42,7 @@ public class PermissionFactory extends NameIdFactory {
 		this.hasParentId = true;
 		this.hasOwnerId = true;
 		this.hasName = true;
+		this.hasUrn = true;
 		this.tableNames.add("permissions");
 		this.factoryType = FactoryEnumType.PERMISSION;
 	}

@@ -24,6 +24,7 @@ public class NameIdGroupFactory extends NameIdFactory{
 		this.scopeToOrganization = true;
 		this.hasParentId = false;
 		this.hasOwnerId = true;
+		this.hasUrn = true;
 	}
 	
 	@Override
@@ -34,16 +35,6 @@ public class NameIdGroupFactory extends NameIdFactory{
 		}
 		///logger.info("CKN: " + t.getParentId() + (t.getGroup() == null ? "NULL GROUP" : t.getGroup().getId()));
 		return t.getName() + "-" + t.getParentId() + "-" + (t.getGroup() == null ? "ORPHAN" : t.getGroup().getId());
-	}
-	
-	public int getCount(DirectoryGroupType group) throws FactoryException
-	{
-		List<QueryField> fields = new ArrayList<QueryField>();
-		fields.add(QueryFields.getFieldGroup(group.getId()));
-		if(this.hasParentId){
-			fields.add(QueryFields.getFieldParent(0));
-		}
-		return getCountByField(this.getDataTables().get(0), fields.toArray(new QueryField[0]), group.getOrganization().getId());
 	}
 	
 	public <T> T getByName(String name, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
@@ -69,7 +60,15 @@ public class NameIdGroupFactory extends NameIdFactory{
 		return out_data;
 	}
 	
-
+	public int getCount(DirectoryGroupType group) throws FactoryException
+	{
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldGroup(group.getId()));
+		if(this.hasParentId){
+			fields.add(QueryFields.getFieldParent(0));
+		}
+		return getCountByField(this.getDataTables().get(0), fields.toArray(new QueryField[0]), group.getOrganization().getId());
+	}
 
 	public <T> List<T>  getListByGroup(DirectoryGroupType group, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{

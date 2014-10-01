@@ -12,8 +12,11 @@ import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.AuthorizationPolicyType;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PolicyDefinitionType;
 import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyResponseEnumType;
@@ -22,6 +25,8 @@ import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.SessionStatusEnumType;
 import org.cote.accountmanager.util.ServiceUtil;
 
 public class PolicyServiceImpl  {
@@ -78,6 +83,44 @@ public class PolicyServiceImpl  {
 		}
 		logger.info("Policy evaluation response: " + policyResponse.getResponse());
 		return policyResponse;
+	}
+	public static AuthorizationPolicyType getPolicy(HttpServletRequest request){
+		AuthorizationPolicyType pol = new AuthorizationPolicyType();
+		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "Self Authorization Policy",AuditEnumType.SESSION,request.getSession(true).getId());
+		UserType user = ServiceUtil.getUserFromSession(request);
+		if(user != null){
+			AuditService.sourceAudit(audit,AuditEnumType.USER,user.getName() + " (#" + user.getId() + ") in Org " + user.getOrganization().getName() + " (#" + user.getOrganization().getId() + ")");
+			pol.setAuthenticated(user.getSessionStatus() == SessionStatusEnumType.AUTHENTICATED);
+			try{
+				pol.setAccountAdministrator(AuthorizationService.isAccountAdministratorInOrganization(user, user.getOrganization()));
+				pol.setDataAdministrator(AuthorizationService.isDataAdministratorInOrganization(user, user.getOrganization()));
+				pol.setAccountReader(AuthorizationService.isAccountReaderInOrganization(user, user.getOrganization()));
+				pol.setRoleReader(AuthorizationService.isRoleReaderInOrganization(user, user.getOrganization()));
+				pol.getRoles().addAll(EffectiveAuthorizationService.getEffectiveRolesForUser(user));
+				pol.setAuthenticationId(request.getSession(true).getId());
+				pol.setFactoryType(FactoryEnumType.USER);
+				setAuthorizationPolicyFields(pol,user);
+				AuditService.permitResult(audit, "Returning authorization information for authenticated user");
+			}
+			catch(FactoryException e){
+				AuditService.denyResult(audit, "Error: " + e.getMessage());
+				e.printStackTrace();
+				
+			} catch (ArgumentException e) {
+				AuditService.denyResult(audit, "Error: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		else{
+			AuditService.permitResult(audit, "Returning authorization information for anonymous user");
+		}
+		
+		return pol;
+	}
+	private static void setAuthorizationPolicyFields(AuthorizationPolicyType pol,NameIdType type){
+		pol.setContextId(type.getId());
+		pol.setContextName(type.getName());
+		pol.setContextType(type.getNameType());
 	}
 	public static PolicyDefinitionType getPolicyDefinition(long id,HttpServletRequest request){
 		PolicyDefinitionType def = null;

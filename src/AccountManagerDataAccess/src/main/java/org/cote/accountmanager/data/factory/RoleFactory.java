@@ -43,6 +43,7 @@ public class RoleFactory extends NameIdFactory {
 		this.hasParentId = true;
 		this.hasOwnerId = true;
 		this.hasName = true;
+		this.hasUrn = true;
 		this.tableNames.add("roles");
 		factoryType = FactoryEnumType.ROLE;
 	}
@@ -511,10 +512,9 @@ public class RoleFactory extends NameIdFactory {
 
 	}
 	
-	public List<BaseRoleType> getRoleListByIds(int[] Role_ids, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<BaseRoleType> getRoleListByIds(long[] Role_ids, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		StringBuffer buff = new StringBuffer();
-		int deleted = 0;
 		List<BaseRoleType> out_list = new ArrayList<BaseRoleType>();
 		for (int i = 0; i < Role_ids.length; i++)
 		{

@@ -33,7 +33,7 @@ public class TestPerson extends BaseDataAccessTest{
 		try {
 			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
 			person = getCreatePerson(new_name,pDir);
-			assertNotNull("Contact information was not allotted",person.getContact());
+			assertNotNull("Contact information was not allotted",person.getContactInformation());
 
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
@@ -206,10 +206,10 @@ public class TestPerson extends BaseDataAccessTest{
 			for(int i = 0; i < 20;i++){
 				PersonType p = getCreatePerson("SearchPerson-" + (i + 1),pDir);
 				/ *
-				if(p.getContact().getFirstName() == null){
-					p.getContact().setFirstName("SearchPerson-" + (i + 1) + "First");
-					p.getContact().setLastName("SearchPerson-" + (i + 1) + "Last");
-					Factories.getContactInformationFactory().updateContactInformation(p.getContact());
+				if(p.getContactInformation().getFirstName() == null){
+					p.getContactInformation().setFirstName("SearchPerson-" + (i + 1) + "First");
+					p.getContactInformation().setLastName("SearchPerson-" + (i + 1) + "Last");
+					Factories.getContactInformationFactory().updateContactInformation(p.getContactInformation());
 				}
 				* /
 			}
@@ -303,22 +303,22 @@ public class TestPerson extends BaseDataAccessTest{
 	private void addContactValues(PersonType person, String name){
 		boolean bUp = false;
 		try{
-			if(person.getContact().getAddresses().size() == 0){
+			if(person.getContactInformation().getAddresses().size() == 0){
 				AddressType homeAddr = getCreateAddress(name,person.getGroup());
 				setDemoAddressValues(homeAddr);
 				Factories.getAddressFactory().updateAddress(homeAddr);
-				person.getContact().getAddresses().add(homeAddr);
+				person.getContactInformation().getAddresses().add(homeAddr);
 				bUp = true;
 			}
-			if(person.getContact().getContacts().size() == 0){
+			if(person.getContactInformation().getContacts().size() == 0){
 				ContactType homeEmail = getCreateContact(name,person.getGroup());
 				setHomeEmailValues(homeEmail);
 				Factories.getContactFactory().updateContact(homeEmail);
-				person.getContact().getContacts().add(homeEmail);
+				person.getContactInformation().getContacts().add(homeEmail);
 				bUp = true;
 			}
 			if(bUp){
-				Factories.getContactInformationFactory().updateContactInformation(person.getContact());
+				Factories.getContactInformationFactory().updateContactInformation(person.getContactInformation());
 			}
 		}
 		catch(FactoryException fe){

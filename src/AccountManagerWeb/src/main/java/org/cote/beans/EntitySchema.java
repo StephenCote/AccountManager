@@ -3,7 +3,9 @@ package org.cote.beans;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.AttributeType;
+import org.cote.accountmanager.objects.AuthorizationPolicyType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -45,6 +47,7 @@ public class EntitySchema {
 	private ContactInformationType contactInformationType = null;
 	private PersonType personType = null;
 	private ContactType contactType = null;
+	private AddressType addressType = null;
 	private OrganizationType organizationType = null;
 	private AttributeType attributeType = null;
 	
@@ -59,9 +62,11 @@ public class EntitySchema {
 	private OperationType operationType = null;
 	private RuleType ruleType = null;
 	private BasePermissionType basePermissionType = null;
-	
+	private AuthorizationPolicyType authorizationPolicyType = null;
 	private AccountType accountType = null;
 	public EntitySchema(){
+		authorizationPolicyType = new AuthorizationPolicyType();
+		addressType = new AddressType();
 		basePermissionType = new BasePermissionType();
 		policyDefinitionType = new PolicyDefinitionType();
 		policyRequestType = new PolicyRequestType();
@@ -92,6 +97,32 @@ public class EntitySchema {
 		contactInformationType = new ContactInformationType();
 		accountType = new AccountType();
 	}
+
+	
+
+	public AuthorizationPolicyType getAuthorizationPolicyType() {
+		return authorizationPolicyType;
+	}
+
+
+
+	public void setAuthorizationPolicyType(
+			AuthorizationPolicyType authorizationPolicyType) {
+		this.authorizationPolicyType = authorizationPolicyType;
+	}
+
+
+
+	public AddressType getAddressType() {
+		return addressType;
+	}
+
+
+
+	public void setAddressType(AddressType addressType) {
+		this.addressType = addressType;
+	}
+
 
 
 	public BasePermissionType getBasePermissionType() {

@@ -103,6 +103,10 @@ public class QueryFields {
 	{
 		return getStringField("ruletype", type.toString());
 	}
+	public static QueryField getFieldUrn(NameIdType obj)
+	{
+		return getFieldUrn(obj.getUrn());
+	}
 	public static QueryField getFieldUrn(String urn)
 	{
 		return getStringField("urn", urn);

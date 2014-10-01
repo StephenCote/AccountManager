@@ -51,6 +51,7 @@ public class DataFactory extends NameIdFactory {
 		this.scopeToOrganization = true;
 		this.hasParentId = false;
 		this.hasOwnerId = true;
+		this.hasUrn = true;
 		this.tableNames.add("data");
 		factoryType = FactoryEnumType.DATA;
 	}

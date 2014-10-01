@@ -58,7 +58,7 @@ public class PolicyEvaluator {
 			logger.error("Organization not found for path " + prt.getOrganizationPath());
 			return null;
 		}
-		PolicyType pol = Factories.getPolicyFactory().getByUrn(prt.getUrn(), org);
+		PolicyType pol = Factories.getPolicyFactory().getByUrn(prt.getUrn());
 		if(pol == null){
 			logger.error("Policy not found for urn " + prt.getUrn() + " in org " + prt.getOrganizationPath());
 			return null;
@@ -68,9 +68,15 @@ public class PolicyEvaluator {
 
 	}
 	public static PolicyResponseType evaluatePolicyRequest(PolicyRequestType prt) throws FactoryException, ArgumentException{
+		PolicyResponseType prr = new PolicyResponseType();
+		if(prt.getUrn() == null){
+			logger.error("Policy Request Urn is null");
+			prr.setResponse(PolicyResponseEnumType.INVALID_ARGUMENT);
+		}
+		
 		logger.info("Evaluating Policy Request " + prt.getUrn() + " in Organization " + prt.getOrganizationPath());
 		PolicyType pol = getPolicyFromRequest(prt);
-		PolicyResponseType prr = new PolicyResponseType();
+		
 		prr.setUrn(prt.getUrn());
 		if(pol == null){
 			prr.setResponse(PolicyResponseEnumType.INVALID_ARGUMENT);
@@ -243,7 +249,7 @@ public class PolicyEvaluator {
 		NameIdType p = FactUtil.factoryRead(fact, matchFact);
 		NameIdType g = FactUtil.factoryRead(matchFact, matchFact);
 		if(p == null || g == null){
-			logger.error("The " + (g == null ? "match ":"") + "fact reference was null");
+			logger.error("The " + (g == null ? "match ":"") + "fact reference " + (g == null ? matchFact.getUrn() : fact.getUrn()) + " was null");
 			return OperationResponseEnumType.ERROR;
 		}
 		if(matchFact.getFactType() == FactEnumType.PERMISSION){

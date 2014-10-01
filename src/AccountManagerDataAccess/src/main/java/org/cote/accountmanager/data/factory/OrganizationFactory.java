@@ -21,6 +21,7 @@ import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.security.OrganizationSecurity;
+import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -36,6 +37,7 @@ public class OrganizationFactory extends NameIdFactory {
 	public OrganizationFactory(){
 		super();
 		this.scopeToOrganization = false;
+		this.hasUrn = true;
 		this.tableNames.add("organizations");
 	}
 	
@@ -48,6 +50,9 @@ public class OrganizationFactory extends NameIdFactory {
 	protected String getSelectTemplate(DataTable table, ProcessingInstructionType instruction){
 		return table.getSelectFullTemplate();
 	}
+	
+
+	
 	public void initialize(Connection connection) throws FactoryException{
 		super.initialize(connection);
 		
@@ -172,6 +177,7 @@ public class OrganizationFactory extends NameIdFactory {
 		OrganizationType new_org = getOrganizationByName(orgName, parentId);
 		if(new_org == null){
 			new_org = new OrganizationType();
+			new_org.setNameType(NameEnumType.ORGANIZATION);
 			new_org.setOrganizationType(orgType);
 			new_org.setParentId(parentId);
 			new_org.setName(orgName);

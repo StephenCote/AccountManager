@@ -75,7 +75,7 @@ public class TestBulkPerson extends BaseDataAccessTest{
 
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
 			
-			new_person.setContact(cit);
+			new_person.setContactInformation(cit);
 			
 			AddressType addr = Factories.getAddressFactory().newAddress(testUser,pDir);
 			addr.setName(new_person.getName());
@@ -119,10 +119,10 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			Factories.getPersonFactory().populate(check);
 			assertNotNull("Failed person check",check);
 			assertTrue("Person is still cached with bulk id",check.getId() > 0);
-			assertNotNull("Failed contact check",check.getContact());
-			assertTrue("Contact is still cached with bulk id",check.getContact().getId() > 0);
-			assertTrue("Failed contact value check",check.getContact().getContacts().size() > 0);
-			assertTrue("Failed address value check",check.getContact().getAddresses().size() > 0);
+			assertNotNull("Failed contact check",check.getContactInformation());
+			assertTrue("Contact is still cached with bulk id",check.getContactInformation().getId() > 0);
+			assertTrue("Failed contact value check",check.getContactInformation().getContacts().size() > 0);
+			assertTrue("Failed address value check",check.getContactInformation().getAddresses().size() > 0);
 			
 			
 			success = true;

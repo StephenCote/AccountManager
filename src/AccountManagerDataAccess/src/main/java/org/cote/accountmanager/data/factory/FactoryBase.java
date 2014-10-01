@@ -520,7 +520,7 @@ public abstract class FactoryBase {
 		selectString = selectString.replaceAll("#PAGE#", pageField);
 		
 		String sqlQuery = pagePrefix + selectString + " WHERE " + queryClause
-			+ (scopeToOrganization ? (queryClause.length() == 0 ? " " : " AND ") + "organizationid=" + organization_id : "")
+			+ (scopeToOrganization && organization_id > 0L ? (queryClause.length() == 0 ? " " : " AND ") + "organizationid=" + organization_id : "")
 			+ (instruction != null && instruction.getGroupClause() != null ? " GROUP BY " + instruction.getGroupClause() : "")
 			+ (instruction != null && instruction.getHavingClause() != null ? " HAVING " + instruction.getHavingClause() : "")
 			+ pageSuffix

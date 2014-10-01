@@ -21,7 +21,6 @@ public class RuleUtil {
 		boolean out_bool = false;
 		
 		if(chkData != null && compData != null && intPattern.matcher(chkData).matches() && intPattern.matcher(compData).matches()){
-			logger.info("Comparing as long " + chkData + " is " + comparator + " " + compData);
 			long lChk = Long.parseLong(chkData);
 			long lComp = Long.parseLong(compData);
 			switch(comparator){
@@ -49,9 +48,10 @@ public class RuleUtil {
 					break;
 
 			}
+			logger.info("Comparing as long " + chkData + " is " + comparator + " " + compData + " == " + out_bool);
 		}
 		else{
-			logger.info("Comparing as string " + chkData + " is " + comparator + " " + compData);
+
 			switch(comparator){
 				case LIKE:
 					String likePat = "^" + compData.replaceAll("%", ".*") + "$";
@@ -73,6 +73,7 @@ public class RuleUtil {
 					break;
 
 			}
+			logger.info("Comparing as string " + chkData + " is " + comparator + " " + compData + " == " + out_bool);
 		}
 		return out_bool;
 	}

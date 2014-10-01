@@ -15,6 +15,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BucketGroupType;
@@ -34,6 +35,7 @@ public class GroupFactory  extends NameIdFactory {
 	public GroupFactory(){
 		super();
 		this.scopeToOrganization = true;
+		this.hasUrn = true;
 		this.tableNames.add("groups");
 		factoryType = FactoryEnumType.GROUP;
 	}
@@ -432,8 +434,10 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	public void populate(BaseGroupType group) throws FactoryException, ArgumentException
 	{
-		if (!isValid(group) || group.getPopulated()) return;
-        if (group.getGroupType() == GroupEnumType.DATA)
+		boolean valid = isValid(group);
+		if (group.getPopulated()) return;
+		
+        if (valid && group.getGroupType() == GroupEnumType.DATA)
         {
             DirectoryGroupType dirGroup = (DirectoryGroupType)group;
             //populateSubDirectories(dirGroup);
@@ -441,10 +445,10 @@ public class GroupFactory  extends NameIdFactory {
             {
                 dirGroup.setParentGroup(getDirectoryById(group.getParentId(), group.getOrganization()));
             }
-            dirGroup.setPath(getPath(dirGroup,false));
         }
+        group.setPath(getPath(group,false));
         group.setPopulated(true);
-        updateToCache(group);
+        if(valid) updateToCache(group);
 	}
 	public void populateSubDirectories(DirectoryGroupType group) throws FactoryException, ArgumentException
 	{
@@ -671,19 +675,19 @@ public class GroupFactory  extends NameIdFactory {
 
 		return ret;
 	}
-	public String getPath(DirectoryGroupType leaf_group) throws FactoryException, ArgumentException
+	public String getPath(BaseGroupType leaf_group) throws FactoryException, ArgumentException
 	{
 		return getPath(leaf_group, true);
 	}
-	protected String getPath(DirectoryGroupType leaf_group, boolean populate) throws FactoryException, ArgumentException
+	protected String getPath(BaseGroupType leaf_group, boolean populate) throws FactoryException, ArgumentException
 	{
 		if(leaf_group == null) return null;
-		List<DirectoryGroupType> group_list = new ArrayList<DirectoryGroupType>();
+		List<BaseGroupType> group_list = new ArrayList<BaseGroupType>();
 		group_list.add(leaf_group);
 		if(populate) populate(leaf_group);
 		while (leaf_group.getParentId() != null && leaf_group.getParentId() > 0)
 		{
-			DirectoryGroupType parentGroup = getById(leaf_group.getParentId(),leaf_group.getOrganization());
+			BaseGroupType parentGroup = getById(leaf_group.getParentId(),leaf_group.getOrganization());
 			group_list.add(parentGroup);
 			leaf_group = parentGroup;
 			populate(leaf_group);
@@ -692,7 +696,7 @@ public class GroupFactory  extends NameIdFactory {
 		StringBuffer buff = new StringBuffer();
 		for (int i = 0; i < group_list.size(); i++)
 		{
-			DirectoryGroupType group = group_list.get(i);
+			BaseGroupType group = group_list.get(i);
 			if (group.getName().equals("Root") && group.getParentId() == 0) continue;
 			buff.append("/" + group.getName());
 		}

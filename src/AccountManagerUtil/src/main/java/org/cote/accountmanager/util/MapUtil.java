@@ -14,8 +14,8 @@ public class MapUtil {
 	public static void shallowCloneNameIdDirectoryType(NameIdType src, NameIdType targ){
 		targ.setName(src.getName());
 		targ.setParentId(src.getParentId());
-		if(src.getNameType() == null) targ.setNameType(NameEnumType.APPLICATION);
-		else targ.setNameType(src.getNameType());
+		//if(src.getNameType() == null) targ.setNameType(NameEnumType.APPLICATION);
+		if(src.getNameType() != NameEnumType.UNKNOWN) targ.setNameType(src.getNameType());
 		if(targ.getOrganization() == null) targ.setOrganization(src.getOrganization());
 	}
 }

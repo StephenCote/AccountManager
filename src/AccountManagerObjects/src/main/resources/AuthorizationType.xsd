@@ -5,6 +5,8 @@
 	xmlns:Q1="http://www.cote.org/accountmanager/objects/types">
 	<include schemaLocation="AttributeType.xsd"></include>
 	<include schemaLocation="GroupType.xsd"></include>
+	<include schemaLocation="RoleType.xsd"></include>
+	<include schemaLocation="PermissionType.xsd"></include>
 	<import schemaLocation="Types.xsd"
 		namespace="http://www.cote.org/accountmanager/objects/types">
 	</import>
@@ -182,12 +184,10 @@
 
 	<complexType name="BaseAuthorizationType">
 		<complexContent>
-			<extension base="tns:NameIdDirectoryGroupType">
+			<extension base="tns:LogicalNameIdType">
 				<sequence>
 					<element name="description" type="string"></element>
 				</sequence>
-				<attribute name="urn" type="string"></attribute>
-				<attribute name="logicalOrder" type="int" default="0"></attribute>
 				<attribute name="score" type="int" default="0"></attribute>
 			</extension>
 		</complexContent>
@@ -280,6 +280,7 @@
 			<element name="parameters" type="tns:FactType" minOccurs="0"
 				maxOccurs="unbounded">
 			</element>
+			<element name="organizationPath" type="string"></element>
 		</sequence>
 		<attribute name="urn" type="string"></attribute>
 		<attribute name="expires" type="dateTime"></attribute>
@@ -333,4 +334,44 @@
     		<enumeration value="ERROR"></enumeration>
     	</restriction>
     </simpleType>
+
+    <complexType name="LogicalNameIdType">
+    	<complexContent>
+    		<extension base="tns:NameIdDirectoryGroupType">
+    			<attribute name="logicalOrder" type="int" default="0"></attribute>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="AuthorizationPolicyType">
+    			<sequence>
+    				<element name="roles" type="tns:BaseRoleType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    				<element name="permissions"
+    					type="tns:BasePermissionType" minOccurs="0"
+    					maxOccurs="unbounded">
+    				</element>
+    				<element name="members" type="tns:NameIdType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    			</sequence>
+    			<attribute name="contextType" type="Q1:NameEnumType"></attribute>
+    			<attribute name="factoryType"
+    				type="Q1:FactoryEnumType">
+    			</attribute>
+    			<attribute name="contextId" type="long" default="0"></attribute>
+    			<attribute name="contextName" type="string"></attribute>
+    			<attribute name="memberType" type="Q1:NameEnumType"></attribute>
+    			<attribute name="systemAdministrator" type="boolean" default="false"></attribute>
+    			<attribute name="accountAdministrator" type="boolean" default="false"></attribute>
+    			<attribute name="dataAdministrator" type="boolean" default="false"></attribute>
+    			<attribute name="contextUrn" type="string"></attribute>
+    			<attribute name="roleReader" type="boolean" default="false"></attribute>
+    			<attribute name="accountReader" type="boolean" default="false"></attribute>
+    			<attribute name="groupReader" type="boolean" default="false"></attribute>
+				<attribute name="authenticated" type="boolean" default="false"></attribute>
+				<attribute name="authenticationId" type="string"></attribute>
+    </complexType>
+
 </schema>

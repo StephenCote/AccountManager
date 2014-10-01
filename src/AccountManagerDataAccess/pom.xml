@@ -50,8 +50,11 @@
 					<excludes>
 						<!-- 
 						
-						<exclude>**/TestPolicyService.java</exclude>
+						<exclude>**/TestContactInformationFactory.java</exclude>
 						-->
+						<exclude>**/TestUrnUtil.java</exclude>
+						<exclude>**/TestPolicyService.java</exclude>
+						
 						<exclude>**/TestPermissions.java</exclude>
 						<exclude>**/TestRoleService.java</exclude>
 						<exclude>**/TestDataFactory.java</exclude>
@@ -97,7 +100,7 @@
 						
 						<exclude>**/TestDataAccess.java</exclude>
 						<exclude>**/TestUserFactory.java</exclude>
-						<exclude>**/TestContactInformationFactory.java</exclude>
+						
 						<exclude>**/TestGroupFactory.java</exclude>
 						<exclude>**/TestOrganizationFactory.java</exclude>
 						

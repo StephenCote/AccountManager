@@ -25,7 +25,7 @@ public class PersonService {
 	public static final Logger logger = Logger.getLogger(PersonService.class.getName());
 	
 	public static ContactType getPreferredEmailContact(PersonType person){
-		return ContactService.getPreferredEmailContact(person.getContact());
+		return ContactService.getPreferredEmailContact(person.getContactInformation());
 	}
 	
 	
@@ -69,7 +69,7 @@ public class PersonService {
 			cit.setOwnerId(newUser.getId());
 			
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
-			newPerson.setContact(cit);
+			newPerson.setContactInformation(cit);
 			if(email != null){
 				ContactType ct = Factories.getContactFactory().newContact(newUser, cDir);
 				ct.setName(newPerson.getName() + " Registration Email");

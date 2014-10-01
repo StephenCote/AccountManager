@@ -39,6 +39,7 @@ public class AccountFactory extends NameIdGroupFactory {
 		this.hasParentId = true;
 		this.hasOwnerId = true;
 		this.hasName = true;
+		this.hasUrn = true;
 		this.tableNames.add("accounts");
 		this.factoryType = FactoryEnumType.ACCOUNT;
 		
@@ -55,6 +56,7 @@ public class AccountFactory extends NameIdGroupFactory {
 	{
 		if(account.getPopulated() == true || account.getDatabaseRecord() == false) return;
 		account.setContactInformation(Factories.getContactInformationFactory().getContactInformationForAccount(account));
+		if(account.getContactInformation() != null) Factories.getContactInformationFactory().populate(account.getContactInformation());
 		account.setStatistics(Factories.getStatisticsFactory().getStatistics(account));
 		account.setPopulated(true);
 		updateAccountToCache(account);
@@ -68,7 +70,20 @@ public class AccountFactory extends NameIdGroupFactory {
 	}
 	public boolean updateAccount(AccountType account) throws FactoryException{
 		removeAccountFromCache(account);
-		return update(account);
+		boolean b = update(account);
+		/// 2014/09/10
+		/// Contact information is updated along with the parent object because it's a foreign-keyed object that is not otherwise easily referenced
+		///
+		if(account.getContactInformation() != null){
+			try {
+				b = Factories.getContactInformationFactory().updateContactInformation(account.getContactInformation());
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+				b = false;
+			}
+		}
+		return b;
 	}
 	protected void updateAccountToCache(AccountType account) throws ArgumentException{
 		String key_name = getCacheKeyName(account);

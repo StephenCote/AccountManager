@@ -212,6 +212,11 @@ public class BaseService{
 				new_per.setPrefix(v11bean.getPrefix());
 				new_per.setSuffix(v11bean.getSuffix());
 				new_per.setTitle(v11bean.getTitle());
+				
+				new_per.getAccounts().addAll(v11bean.getAccounts());
+				new_per.getDependents().addAll(v11bean.getDependents());
+				new_per.getPartners().addAll(v11bean.getPartners());
+				new_per.getUsers().addAll(v11bean.getUsers());
 				out_bool = Factories.getPersonFactory().addPerson(new_per);
 				break;
 			case ADDRESS:
@@ -229,6 +234,7 @@ public class BaseService{
 				new_addr.setRegion(v12bean.getRegion());
 				new_addr.setState(v12bean.getState());
 				out_bool = Factories.getAddressFactory().addAddress(new_addr);
+				break;
 			case ROLE:
 				BaseRoleType rlbean = (BaseRoleType)in_obj;
 				BaseRoleType parentRole = null;

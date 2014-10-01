@@ -19,7 +19,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.data.util.AuthorizationTypeComparator;
+import org.cote.accountmanager.data.util.LogicalTypeComparator;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
@@ -49,6 +49,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 		super();
 		this.tableNames.add("function");
 		this.hasObjectId = true;
+		this.hasUrn = true;
 		factoryType = FactoryEnumType.FUNCTION;
 	}
 	
@@ -61,7 +62,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 	public void populate(FunctionType func) throws FactoryException,ArgumentException{
 		if(func.getPopulated()) return;
 		func.getFacts().addAll(Factories.getFunctionParticipationFactory().getFunctionFactsFromParticipation(func));
-		Collections.sort(func.getFacts(),new AuthorizationTypeComparator());
+		Collections.sort(func.getFacts(),new LogicalTypeComparator());
 		func.setPopulated(true);
 		updateToCache(func);
 	}
@@ -89,7 +90,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 			row.setCellValue("groupid", obj.getGroup().getId());
 			row.setCellValue("description", obj.getDescription());
 			row.setCellValue("score", obj.getScore());
-			row.setCellValue("urn", obj.getUrn());
+			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("sourceurn", obj.getSourceUrn());
 			row.setCellValue("sourceurl", obj.getSourceUrl());
@@ -126,7 +127,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 		new_obj.setNameType(NameEnumType.FUNCTION);
 		super.read(rset, new_obj);
 		new_obj.setFunctionType(FunctionEnumType.valueOf(rset.getString("functiontype")));
-		new_obj.setUrn(rset.getString("urn"));
+		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setScore(rset.getInt("score"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setSourceUrn(rset.getString("sourceurn"));
@@ -168,7 +169,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		FunctionType use_map = (FunctionType)map;
-		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
 		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldSourceUrn(use_map.getSourceUrn()));
 		fields.add(QueryFields.getFieldSourceUrl(use_map.getSourceUrl()));

@@ -49,6 +49,7 @@ public class OperationFactory extends NameIdGroupFactory {
 		super();
 		this.tableNames.add("operation");
 		this.hasObjectId = true;
+		this.hasUrn = true;
 		factoryType = FactoryEnumType.OPERATION;
 	}
 	
@@ -93,7 +94,7 @@ public class OperationFactory extends NameIdGroupFactory {
 			row.setCellValue("operationtype", obj.getOperationType().toString());
 			row.setCellValue("groupid", obj.getGroup().getId());
 			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("urn", obj.getUrn());
+			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("score", obj.getScore());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("operation", obj.getOperation());
@@ -116,7 +117,7 @@ public class OperationFactory extends NameIdGroupFactory {
 		new_obj.setNameType(NameEnumType.OPERATION);
 		super.read(rset, new_obj);
 		new_obj.setOperationType(OperationEnumType.valueOf(rset.getString("operationtype")));
-		new_obj.setUrn(rset.getString("urn"));
+		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setScore(rset.getInt("score"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setOperation(rset.getString("operation"));
@@ -135,7 +136,7 @@ public class OperationFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		OperationType use_map = (OperationType)map;
-		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
 		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldOperation(use_map.getOperation()));
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));

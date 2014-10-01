@@ -8,10 +8,14 @@ import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.ContactInformationFactory;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.AccountEnumType;
+import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,30 +25,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-public class TestContactInformationFactory{
-	public static final Logger logger = Logger.getLogger(TestContactInformationFactory.class.getName());
+public class TestContactInformationFactory extends BaseDataAccessTest{
+	//public static final Logger logger = Logger.getLogger(TestContactInformationFactory.class.getName());
 	private static long testRefId = 0;
 	
 	
-	@Before
-	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName("org.postgresql.Driver");
-		cf.setUserName("devuser");
-		cf.setUserPassword("password");
-		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
-		logger.info("Setup");
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
 	
 	private UserType getUserTypeMock(){
 		OrganizationFactory of = Factories.getOrganizationFactory();
@@ -54,6 +39,77 @@ public class TestContactInformationFactory{
 		type.setName("example");
 		type.setOrganization(Factories.getDevelopmentOrganization());
 		return type;
+	}
+	
+	@Test
+	public void testAccountContactInfo(){
+		AccountType acct = null;
+		String testAcctName = "Test Account 1";
+		try {
+			Factories.getUserFactory().populate(testUser);
+			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(testUser, "Accounts", testUser.getHomeDirectory(), testUser.getOrganization());
+			DirectoryGroupType adir = Factories.getGroupFactory().getCreateDirectory(testUser, "Addresses", testUser.getHomeDirectory(), testUser.getOrganization());
+			acct = Factories.getAccountFactory().getAccountByName(testAcctName, dir);
+			if(acct != null){
+				Factories.getAccountFactory().deleteAccount(acct);
+				acct = null;
+			}
+			if(acct == null){
+				acct = Factories.getAccountFactory().newAccount(testUser, testAcctName, AccountEnumType.NORMAL,AccountStatusEnumType.NORMAL,dir);
+				if(Factories.getAccountFactory().addAccount(acct,true)){
+					logger.info("Clearing address factory cache to break the foreign key link");
+					Factories.getAccountFactory().clearCache();
+					acct = Factories.getAccountFactory().getAccountByName(testAcctName, dir);
+				}
+				else{
+					acct = null;
+				}
+			}
+			assertNotNull("Account is null",acct);
+			logger.info("Testing account #" + acct.getId() + " in group #" + dir.getId());
+			assertNull("ContactInformation is not null",acct.getContactInformation());
+			Factories.getAccountFactory().populate(acct);
+			assertNotNull("ContactInformation is null",acct.getContactInformation());
+			
+			logger.info("Zero out cinfo references");
+			acct.getContactInformation().getAddresses().clear();
+			acct.getContactInformation().getContacts().clear();
+			Factories.getAccountFactory().updateAccount(acct);
+			//Factories.clearCaches();
+			
+			AddressType addr = Factories.getAddressFactory().getByName("Test Address 1", adir);
+			if(addr == null){
+				addr = Factories.getAddressFactory().newAddress(testUser, adir);
+				addr.setName("Test Address 1");
+				if(Factories.getAddressFactory().addAddress(addr)){
+					//Factories.clearCaches();
+					addr = Factories.getAddressFactory().getByName("Test Address 1", adir);
+				}
+				else{
+					addr = null;
+				}
+			}
+			assertNotNull("Address is null", addr);
+			
+			acct.getContactInformation().getAddresses().add(addr);
+			Factories.getAccountFactory().updateAccount(acct);
+			long acctId = acct.getId();
+			//Factories.clearCaches();
+			acct = Factories.getAccountFactory().getAccountByName(testAcctName, dir);
+			logger.info("Have Cache Id: " + Factories.getAccountFactory().haveCacheId(acctId));
+			assertNotNull("Account is null",acct);
+			Factories.getAccountFactory().populate(acct);
+			assertTrue("Missing contact address",acct.getContactInformation().getAddresses().size() > 0);
+			
+			
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Test

@@ -47,6 +47,7 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 		super();
 		this.tableNames.add("functionfact");
 		this.hasObjectId = true;
+		this.hasUrn = false;
 		factoryType = FactoryEnumType.FUNCTIONFACT;
 	}
 	
@@ -90,7 +91,7 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 
 			row.setCellValue("groupid", obj.getGroup().getId());
 			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("urn", obj.getUrn());
+			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("functionurn", obj.getFunctionUrn());
 			row.setCellValue("facturn", obj.getFactUrn());
@@ -113,7 +114,7 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 		new_obj.setNameType(NameEnumType.FUNCTIONFACT);
 		super.read(rset, new_obj);
 
-		new_obj.setUrn(rset.getString("urn"));
+		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setFunctionUrn(rset.getString("functionurn"));
 		new_obj.setFactUrn(rset.getString("facturn"));
 		new_obj.setDescription(rset.getString("description"));
@@ -131,7 +132,7 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		FunctionFactType use_map = (FunctionFactType)map;
-		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
 		fields.add(QueryFields.getFieldFunctionUrn(use_map.getFunctionUrn()));
 		fields.add(QueryFields.getFieldFactUrn(use_map.getFactUrn()));
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));

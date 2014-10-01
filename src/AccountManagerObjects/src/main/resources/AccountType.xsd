@@ -16,9 +16,6 @@
 					<element name="contactInformation"
 						type="tns:ContactInformationType">
 					</element>
-					<element name="cipherKey" type="byte" minOccurs="0"
-						maxOccurs="4096">
-					</element>
 					<element name="statistics" type="tns:StatisticsType"></element>
 				</sequence>
 				<attribute name="accountType"

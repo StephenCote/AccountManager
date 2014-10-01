@@ -11,6 +11,8 @@ import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PolicyDefinitionType;
+import org.cote.accountmanager.objects.PolicyRequestEnumType;
+import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -19,6 +21,55 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 public class PolicyDefinitionUtil {
 	public static final Logger logger = Logger.getLogger(PolicyDefinitionUtil.class.getName());
 	
+	public static PolicyRequestType generatePolicyRequest(PolicyDefinitionType pdt){
+		PolicyRequestType prt = new PolicyRequestType();
+		prt.setRequestType(PolicyRequestEnumType.DECIDE);
+		prt.setOrganizationPath(pdt.getOrganizationPath());
+		prt.setUrn(pdt.getUrn());
+		for(int i = 0; i < pdt.getParameters().size();i++){
+			FactType parm = pdt.getParameters().get(i);
+			FactType fact = new FactType();
+			fact.setFactoryType(parm.getFactoryType());
+			fact.setUrn(parm.getUrn());
+			fact.setName(parm.getName());
+			fact.setFactType(parm.getFactType());
+			fact.setFactData(parm.getFactData());
+			//fact.setGroup(parm.getGroup());
+			//fact.s
+			fact.setNameType(parm.getNameType());
+			fact.setObjectId(parm.getObjectId());
+			fact.setLogicalOrder(parm.getLogicalOrder());
+			fact.setParameter(parm.getParameter());
+			fact.setSourceDataType(parm.getSourceDataType());
+			fact.setSourceType(parm.getSourceType());
+			fact.setSourceUrl(parm.getSourceUrl());
+			fact.setSourceUrn(parm.getSourceUrn());
+			prt.getFacts().add(fact);
+		}
+		return prt;
+	/*	
+	
+		createPolicyRequest : function(d, s){
+		if(!d){
+			Hemi.logError("Missing policy definition");
+			return;
+		}
+		var r = new org.cote.beans.policyRequestType();
+		r.urn = d.urn;
+		r.requestType = (s ? s : "DECIDE");
+		r.organizationPath = accountManager.getOrganizationPath();
+		r.facts = [];
+		if(d.parameters && d.parameters.length){
+			for(var i = 0; i < d.parameters.length;i++){
+				var f = new org.cote.beans.factType();
+				for(var v in d.parameters[i]) f[v] = d.parameters[i][v];
+				r.facts.push(f);
+			}
+		}
+		return r;
+	*/
+	
+	}
 	public static PolicyDefinitionType generatePolicyDefinition(PolicyType pol) throws FactoryException, ArgumentException{
 		PolicyDefinitionType pdt = new PolicyDefinitionType();
 		pdt.setCreated(pol.getCreated());
@@ -27,6 +78,7 @@ public class PolicyDefinitionUtil {
 		pdt.setExpires(pol.getExpires());
 		pdt.setModified(pol.getModified());
 		pdt.setUrn(pol.getUrn());
+		pdt.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(pol.getOrganization()));
 		copyParameters(pdt,pol);
 		return pdt;
 	}

@@ -41,6 +41,7 @@ public class ContactInformationFactory extends NameIdFactory {
 		this.scopeToOrganization = true;
 		this.hasParentId = false;
 		this.hasName = false;
+		this.hasUrn = false;
 		this.tableNames.add("contactinformation");
 		this.factoryType = FactoryEnumType.CONTACTINFORMATION;
 	}

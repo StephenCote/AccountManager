@@ -27,6 +27,8 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.util.UrnUtil;
+import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
@@ -52,6 +54,7 @@ public abstract class NameIdFactory extends FactoryBase {
 	protected boolean hasParentId = true;
 	protected boolean hasName = true;
 	protected boolean hasObjectId = false;
+	protected boolean hasUrn = false;
 	
 	public NameIdFactory(){
 		super();
@@ -140,6 +143,7 @@ public abstract class NameIdFactory extends FactoryBase {
 		}		
 		return (updated > 0);
 	}
+
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		
 	}
@@ -149,6 +153,14 @@ public abstract class NameIdFactory extends FactoryBase {
 			if(hasName) fields.add(QueryFields.getFieldName(map));
 			if(hasOwnerId) fields.add(QueryFields.getFieldOwner(map));
 			if(hasParentId) fields.add(QueryFields.getFieldParent(map));
+			if(hasUrn){
+				map.setUrn(UrnUtil.getUrn(map));
+				if(map.getUrn() == null){
+					logger.error("Urn value is null for object " + map.getNameType().toString() + " " + map.getName());
+				}
+				fields.add(QueryFields.getFieldUrn(map));
+			}
+				//fields.add(QueryFields.getFieldUrn(map));
 			if(scopeToOrganization) fields.add(QueryFields.getFieldOrganization(map));
 	}
 	public DataRow prepareAdd(NameIdType obj, String tableName) throws FactoryException{
@@ -157,6 +169,16 @@ public abstract class NameIdFactory extends FactoryBase {
 		/// If the factory specifies the object should have an object id, then auto generate it if it doesn't exist
 		///
 		if(hasObjectId && obj.getObjectId() == null) obj.setObjectId(UUID.randomUUID().toString());
+		
+		/// If the factory specifies the object should have an urn, then auto generate it if it doesn't exist
+		///
+		if(hasUrn){
+			obj.setUrn(UrnUtil.getUrn(obj));
+			if(obj.getUrn() == null){
+				throw new FactoryException("Urn value is null for object " + obj.getNameType().toString() + " " + obj.getName());
+			}
+		}
+		
 		if(bulkMode && obj.getId() < 0){
 			throw new FactoryException("Object id is invalid for bulk mode insert: " + obj.getId());
 		}
@@ -165,6 +187,7 @@ public abstract class NameIdFactory extends FactoryBase {
 			if(bulkMode && obj.getId() > 0) row.setCellValue("id", obj.getId());
 			if(hasObjectId) row.setCellValue("objectid", obj.getObjectId());
 			if(hasName) row.setCellValue("name", obj.getName());
+			if(hasUrn) row.setCellValue("urn", obj.getUrn());
 			if(hasParentId) row.setCellValue("parentid",obj.getParentId());
 			if(hasOwnerId) row.setCellValue("ownerid",obj.getOwnerId());
 			if (scopeToOrganization) row.setCellValue("organizationid", obj.getOrganization().getId());
@@ -280,6 +303,7 @@ public abstract class NameIdFactory extends FactoryBase {
 		if(obj.getNameType() == null) obj.setNameType(NameEnumType.UNKNOWN);
 		if(hasObjectId) obj.setObjectId(rset.getString("objectid"));
 		if(hasName) obj.setName(rset.getString("name"));
+		if(hasUrn) obj.setUrn(rset.getString("urn"));
 		if(hasOwnerId) obj.setOwnerId(rset.getLong("ownerid"));
 		else obj.setOwnerId(0L);
 		if(hasParentId) obj.setParentId(rset.getLong("parentid"));
@@ -414,44 +438,34 @@ public abstract class NameIdFactory extends FactoryBase {
 		}
 		return convertList(out_list);
 	}
-	/*
-
-	protected List<Map.NameId> GetByField(Db.FieldMatch[] Fields, Db.DbProcessingInstruction instruction, long organization_id)
-	//protected List<Map.NameId> GetByField(String field_name, DbType field_type, object field_value, String match_name, DbType match_type, object match_value, long organization_id)
-	{
-		List<Map.NameId> out_list = new List<Core.Tools.AccountManager.Map.NameId>();
-
-
-			command.CommandText = sql_query;
-
-
-			reader = command.ExecuteReader();
-
-			while (reader.Read())
-			{
-				Map.NameId map = Read(reader, instruction);
-				out_list.Add(map);
+	
+	public <T> T getByUrn(String urn){
+		logger.debug("Reading object by urn " + urn);
+		T obj = readCache(urn);
+		if(obj != null){
+			return obj;
+		}
+		try {
+			//OrganizationType organization = UrnUtil.getOrganization(urn);
+			//List<T> objs = convertList(getByField(new QueryField[]{QueryFields.getFieldUrn(urn)},organization.getId()));
+			List<T> objs = convertList(getByField(new QueryField[]{QueryFields.getFieldUrn(urn)},0L));
+			if(objs.size() >= 1){
+				obj = objs.get(0);
+				addToCache((NameIdType)obj, getUrnCacheKey(obj));
+				addToCache((NameIdType)obj);
 			}
-
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
-		catch (Exception e)
-		{
-			Core.ApplicationContext.GetInstance().LogError(e.Message);
-			Core.ApplicationContext.GetInstance().LogError(e.StackTrace);
-			Core.ApplicationContext.GetInstance().LogError(sql_query);
-		}
-		finally
-		{
-			if (reader != null) reader.Close();
-			if (command != null) command.Dispose();
-			Core.Database.DatabaseEngine.GetInstance().ConnectionPool.CloseConnection(connection);
-		}
-
-		return out_list;
+		return obj;
 	}
-*/
-
-
+	
 	public void expireCache(){
 		cacheExpires = 0;
 	}
@@ -518,6 +532,9 @@ public abstract class NameIdFactory extends FactoryBase {
 			return (T)typeMap.get(typeIdMap.get(id));
 		}
 		return null;
+	}
+	public <T> String getUrnCacheKey(T obj){
+		return ((NameIdType)obj).getUrn();
 	}
 	public <T> String getCacheKeyName(T obj){
 		return ((NameIdType)obj).getName();

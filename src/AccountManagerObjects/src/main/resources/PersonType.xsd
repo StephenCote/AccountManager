@@ -30,7 +30,7 @@
 					<element name="accounts" type="tns:AccountType"
 						minOccurs="0" maxOccurs="unbounded">
 					</element>
-					<element name="contact"
+					<element name="contactInformation"
 						type="tns:ContactInformationType">
 					</element>
 					<element name="partners" type="tns:PersonType"

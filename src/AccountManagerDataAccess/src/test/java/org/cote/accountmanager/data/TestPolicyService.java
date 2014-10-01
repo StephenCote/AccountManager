@@ -29,6 +29,7 @@ import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.PolicyDefinitionType;
 import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyResponseEnumType;
 import org.cote.accountmanager.objects.PolicyResponseType;
@@ -131,7 +132,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 				
 				fact = Factories.getFactFactory().newFact(user, dir);
 				fact.setName(name);
-				fact.setUrn(urn);
+				//fact.setUrn(urn);
 				fact.setFactType(FactEnumType.STATIC);
 				fact.setFactData(value);
 				if(Factories.getFactFactory().addFact(fact)){
@@ -159,7 +160,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 				ffact.setFactUrn(fact.getUrn());
 				ffact.setFunctionUrn(func.getUrn());
 				ffact.setName(name);
-				ffact.setUrn(name);
+				//ffact.setUrn(name);
 				ffact.setLogicalOrder(order);
 				if(Factories.getFunctionFactFactory().addFunctionFact(ffact)){
 					ffact = Factories.getFunctionFactFactory().getByName(name,dir);
@@ -184,7 +185,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 			if(func == null){
 				func = Factories.getFunctionFactory().newFunction(testUser, dir);
 				func.setName(name);
-				func.setUrn(name);
+				//func.setUrn(name);
 				func.setFunctionType(FunctionEnumType.JAVASCRIPT);
 				func.setSourceUrl(sourceUrl);
 				func.setSourceUrn(sourceUrn);
@@ -214,7 +215,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 				policy = Factories.getPolicyFactory().newPolicy(testUser, dir);
 				policy.setCondition(ConditionEnumType.ALL);
 				policy.setName(name);
-				policy.setUrn(name);
+				//policy.setUrn(name);
 
 				if(Factories.getPolicyFactory().addPolicy(policy)){
 					policy = Factories.getPolicyFactory().getByName(name, dir);
@@ -239,7 +240,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 			if(pattern == null){
 				pattern = Factories.getPatternFactory().newPattern(testUser, dir);
 				pattern.setName(name);
-				pattern.setUrn(name);
+				//pattern.setUrn(name);
 				pattern.setPatternType(PatternEnumType.UNKNOWN);
 				pattern.setComparator(ComparatorEnumType.EQUALS);
 				pattern.setFactUrn(factUrn);
@@ -267,7 +268,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 			if(rule == null){
 				rule = Factories.getRuleFactory().newRule(testUser, dir);
 				rule.setName(name);
-				rule.setUrn(name);
+				//rule.setUrn(name);
 				rule.setRuleType(RuleEnumType.PERMIT);
 				
 				if(Factories.getRuleFactory().addRule(rule)){
@@ -317,7 +318,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 				logger.info("Creating test rule");
 				rule = Factories.getRuleFactory().newRule(testUser, rdir);
 				rule.setName(rname);
-				rule.setUrn(rname);
+				//rule.setUrn(rname);
 				rule.setRuleType(RuleEnumType.PERMIT);
 				rule.setCondition(ConditionEnumType.ALL);
 				
@@ -330,10 +331,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 				if(pat == null){
 					pat = Factories.getPatternFactory().newPattern(testUser, pdir);
 					pat.setName(pname);
-					pat.setUrn(pname);
+					//pat.setUrn(pname);
 					pat.setPatternType(PatternEnumType.AUTHORIZATION);
-					pat.setFactUrn(pfname);
-					pat.setMatchUrn(pmname);
+					//pat.setFactUrn(pfname);
+					//pat.setMatchUrn(pmname);
 					pat.setComparator(ComparatorEnumType.EQUALS);
 					pat.setLogicalOrder(1);
 					FactType srcFact = Factories.getFactFactory().getByName(pfname, fdir);
@@ -344,7 +345,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 					if(srcFact == null){
 						srcFact = Factories.getFactFactory().newFact(testUser, fdir);
 						srcFact.setName(pfname);
-						srcFact.setUrn(pfname);
+						//srcFact.setUrn(pfname);
 						srcFact.setFactType(FactEnumType.PARAMETER);
 						srcFact.setFactoryType(FactoryEnumType.PERSON);
 						Factories.getFactFactory().addFact(srcFact);
@@ -357,7 +358,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 					if(mFact == null){
 						mFact = Factories.getFactFactory().newFact(testUser, fdir);
 						mFact.setName(pmname);
-						mFact.setUrn(pmname);
+						// mFact.setUrn(pmname);
 						
 						mFact.setFactType(FactEnumType.ROLE);
 						mFact.setFactoryType(FactoryEnumType.ROLE);
@@ -373,7 +374,8 @@ public class TestPolicyService extends BaseDataAccessTest{
 						*/
 						Factories.getFactFactory().addFact(mFact);
 					}
-					
+					pat.setMatchUrn(mFact.getUrn());
+					pat.setFactUrn(srcFact.getUrn());
 					if(Factories.getPatternFactory().addPattern(pat)){
 						pat = Factories.getPatternFactory().getByName(pname, pdir);
 						rule.getPatterns().add(pat);
@@ -424,7 +426,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 				logger.info("Creating test rule");
 				rule = Factories.getRuleFactory().newRule(testUser, rdir);
 				rule.setName(rname);
-				rule.setUrn(rname);
+				//rule.setUrn(rname);
 				rule.setRuleType(RuleEnumType.PERMIT);
 				rule.setCondition(ConditionEnumType.ANY);
 				
@@ -436,7 +438,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 				if(op == null){
 					op = Factories.getOperationFactory().newOperation(testUser, odir);
 					op.setName(oname);
-					op.setUrn(oname);
+					//op.setUrn(oname);
 					op.setOperationType(OperationEnumType.INTERNAL);
 					op.setOperation("org.cote.accountmanager.data.operation.ComparePersonLinkAttributeOperation");
 					Factories.getOperationFactory().addOperation(op);
@@ -451,11 +453,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 				if(pat == null){
 					pat = Factories.getPatternFactory().newPattern(testUser, pdir);
 					pat.setName(pname);
-					pat.setUrn(pname);
+					//pat.setUrn(pname);
 					pat.setPatternType(PatternEnumType.OPERATION);
 					pat.setOperationUrn(oname);
-					pat.setFactUrn(pfname);
-					pat.setMatchUrn(pmname);
+					//pat.setFactUrn(pfname);
+					//pat.setMatchUrn(pmname);
 					pat.setComparator(ComparatorEnumType.EQUALS);
 					pat.setLogicalOrder(1);
 					FactType srcFact = Factories.getFactFactory().getByName(pfname, fdir);
@@ -466,7 +468,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 					if(srcFact == null){
 						srcFact = Factories.getFactFactory().newFact(testUser, fdir);
 						srcFact.setName(pfname);
-						srcFact.setUrn(pfname);
+						//srcFact.setUrn(pfname);
 						srcFact.setFactType(FactEnumType.PARAMETER);
 						srcFact.setFactoryType(FactoryEnumType.PERSON);
 						Factories.getFactFactory().addFact(srcFact);
@@ -479,14 +481,15 @@ public class TestPolicyService extends BaseDataAccessTest{
 					if(mFact == null){
 						mFact = Factories.getFactFactory().newFact(testUser, fdir);
 						mFact.setName(pmname);
-						mFact.setUrn(pmname);
+						//mFact.setUrn(pmname);
 						mFact.setFactType(FactEnumType.ATTRIBUTE);
 						mFact.setFactoryType(FactoryEnumType.PERSON);
 						mFact.setSourceUrn("code");
 						mFact.setFactData("11");
 						Factories.getFactFactory().addFact(mFact);
 					}
-					
+					pat.setMatchUrn(mFact.getUrn());
+					pat.setFactUrn(srcFact.getUrn());
 					if(Factories.getPatternFactory().addPattern(pat)){
 						pat = Factories.getPatternFactory().getByName(pname, pdir);
 						rule.getPatterns().add(pat);
@@ -502,11 +505,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 				if(pat2 == null){
 					pat2 = Factories.getPatternFactory().newPattern(testUser, pdir);
 					pat2.setName(pname2);
-					pat2.setUrn(pname2);
+					//pat2.setUrn(pname2);
 					pat2.setPatternType(PatternEnumType.OPERATION);
 					pat2.setOperationUrn(oname);
-					pat2.setFactUrn(pfname);
-					pat2.setMatchUrn(pmname2);
+					//pat2.setFactUrn(pfname);
+					//pat2.setMatchUrn(pmname2);
 					pat2.setComparator(ComparatorEnumType.EQUALS);
 					pat2.setLogicalOrder(2);
 					FactType srcFact = Factories.getFactFactory().getByName(pfname, fdir);
@@ -518,14 +521,15 @@ public class TestPolicyService extends BaseDataAccessTest{
 					if(mFact == null){
 						mFact = Factories.getFactFactory().newFact(testUser, fdir);
 						mFact.setName(pmname2);
-						mFact.setUrn(pmname2);
+						//mFact.setUrn(pmname2);
 						mFact.setFactType(FactEnumType.ATTRIBUTE);
 						mFact.setFactoryType(FactoryEnumType.ACCOUNT);
 						mFact.setSourceUrn("code");
 						mFact.setFactData("11");
 						Factories.getFactFactory().addFact(mFact);
 					}
-					
+					pat2.setMatchUrn(mFact.getUrn());
+					pat2.setFactUrn(srcFact.getUrn());
 					if(Factories.getPatternFactory().addPattern(pat2)){
 						pat2 = Factories.getPatternFactory().getByName(pname2, pdir);
 						rule.getPatterns().add(pat2);
@@ -587,7 +591,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 				logger.info("Creating test rule");
 				rule = Factories.getRuleFactory().newRule(testUser, rdir);
 				rule.setName(rname);
-				rule.setUrn(rname);
+				//rule.setUrn(rname);
 				rule.setRuleType(RuleEnumType.PERMIT);
 				
 				PatternType pat = Factories.getPatternFactory().getByName(pname,pdir);
@@ -599,12 +603,12 @@ public class TestPolicyService extends BaseDataAccessTest{
 				if(pat == null){
 					pat = Factories.getPatternFactory().newPattern(testUser, pdir);
 					pat.setName(pname);
-					pat.setUrn(pname);
+					//pat.setUrn(pname);
 					pat.setPatternType(PatternEnumType.OPERATION);
 					pat.setLogicalOrder(1);
 					pat.setOperationUrn(oname);
-					pat.setFactUrn(pfname);
-					pat.setMatchUrn(pmname);
+					//pat.setFactUrn(pfname);
+					//pat.setMatchUrn(pmname);
 					pat.setComparator(ComparatorEnumType.EQUALS);
 					//pat.setMatchUrn("true");
 					
@@ -616,7 +620,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 					if(srcFact == null){
 						srcFact = Factories.getFactFactory().newFact(testUser, fdir);
 						srcFact.setName(pfname);
-						srcFact.setUrn(pfname);
+						//srcFact.setUrn(pfname);
 						srcFact.setFactType(FactEnumType.PARAMETER);
 						srcFact.setFactoryType(FactoryEnumType.USER);
 						Factories.getFactFactory().addFact(srcFact);
@@ -629,7 +633,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 					if(mFact == null){
 						mFact = Factories.getFactFactory().newFact(testUser, fdir);
 						mFact.setName(pmname);
-						mFact.setUrn(pmname);
+						//mFact.setUrn(pmname);
 						mFact.setFactType(FactEnumType.FACTORY);
 						//mFact.setSourceUrl(oname);
 						mFact.setFactoryType(FactoryEnumType.USER);
@@ -644,13 +648,13 @@ public class TestPolicyService extends BaseDataAccessTest{
 					if(op == null){
 						op = Factories.getOperationFactory().newOperation(testUser, odir);
 						op.setName(oname);
-						op.setUrn(oname);
+						//op.setUrn(oname);
 						op.setOperationType(OperationEnumType.INTERNAL);
 						op.setOperation("org.cote.accountmanager.data.operation.LookupUserOperation");
 						Factories.getOperationFactory().addOperation(op);
 					}
-					
-					
+					pat.setMatchUrn(mFact.getUrn());
+					pat.setFactUrn(srcFact.getUrn());
 					PatternType pat2 = Factories.getPatternFactory().getByName(pname2,pdir);
 					if(pat2 != null){
 						Factories.getPatternFactory().deletePattern(pat2);
@@ -661,11 +665,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 						pat2 = Factories.getPatternFactory().newPattern(testUser, pdir);
 						pat2.setLogicalOrder(2);
 						pat2.setName(pname2);
-						pat2.setUrn(pname2);
+						//pat2.setUrn(pname2);
 						pat2.setPatternType(PatternEnumType.OPERATION);
 						pat2.setOperationUrn(oname2);
-						pat2.setFactUrn(pfname2);
-						pat2.setMatchUrn(pmname2);
+						//pat2.setFactUrn(pfname2);
+						//pat2.setMatchUrn(pmname2);
 						pat2.setComparator(ComparatorEnumType.GREATER_THAN_OR_EQUALS);
 
 						FactType srcFact2 = Factories.getFactFactory().getByName(pfname2, fdir);
@@ -676,7 +680,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 						if(srcFact2 == null){
 							srcFact2 = Factories.getFactFactory().newFact(testUser, fdir);
 							srcFact2.setName(pfname2);
-							srcFact2.setUrn(pfname2);
+							//srcFact2.setUrn(pfname2);
 							srcFact2.setFactType(FactEnumType.PARAMETER);
 							srcFact2.setFactoryType(FactoryEnumType.DATA);
 
@@ -690,7 +694,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 						if(mFact2 == null){
 							mFact2 = Factories.getFactFactory().newFact(testUser, fdir);
 							mFact2.setName(pmname2);
-							mFact2.setUrn(pmname2);
+							//mFact2.setUrn(pmname2);
 							mFact2.setFactType(FactEnumType.ATTRIBUTE);
 							//mFact2.setSourceUrl(oname2);
 							mFact2.setSourceUrn("level");
@@ -699,6 +703,9 @@ public class TestPolicyService extends BaseDataAccessTest{
 							//mFact.setFactoryType(FactoryEnumType.USER);
 							Factories.getFactFactory().addFact(mFact2);
 						}
+						pat2.setMatchUrn(mFact2.getUrn());
+						pat2.setFactUrn(srcFact2.getUrn());
+						
 						OperationType op2 = Factories.getOperationFactory().getByName(oname2, odir);
 						if(op2 != null){
 							Factories.getOperationFactory().deleteOperation(op2);
@@ -707,7 +714,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 						if(op2 == null){
 							op2 = Factories.getOperationFactory().newOperation(testUser, odir);
 							op2.setName(oname2);
-							op2.setUrn(oname2);
+							//op2.setUrn(oname2);
 							op2.setOperationType(OperationEnumType.INTERNAL);
 							op2.setOperation("org.cote.accountmanager.data.operation.CompareAttributeOperation");
 							Factories.getOperationFactory().addOperation(op2);
@@ -747,6 +754,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 		PolicyType pol = getTestPersonAuthorizationPolicy();
 
 		assertNotNull("Policy is null",pol);
+		assertNotNull("Policy urn is null",pol.getUrn());
 		
 		PersonType person = null;
 		AccountType account = null;
@@ -806,20 +814,19 @@ public class TestPolicyService extends BaseDataAccessTest{
 				Factories.getPersonFactory().updatePerson(person);
 			}
 			
-			PolicyRequestType prt = new PolicyRequestType();
-			prt.setUrn(pol.getUrn());
+			//PolicyRequestType prt = new PolicyRequestType();
+			PolicyDefinitionType pdt = PolicyDefinitionUtil.generatePolicyDefinition(pol);
+			PolicyRequestType prt = PolicyDefinitionUtil.generatePolicyRequest(pdt);
+			//prt.setUrn(pol.getUrn());
 			prt.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(pol.getOrganization()));
-			
-			FactType userFact = new FactType();
-			userFact.setUrn("urn:am.fact.parameter.person");
-			userFact.setFactType(FactEnumType.PARAMETER);
-			userFact.setFactoryType(FactoryEnumType.PERSON);
-			//userFact.setFactData("RocketQAUser2");
+			assertTrue("Expected more than one parameters",prt.getFacts().size() > 0);
+			assertNotNull("Fact urn is null",prt.getFacts().get(0).getUrn());
+			logger.info("Parameter Count: " + prt.getFacts().size());
+			FactType userFact = prt.getFacts().get(0);
 			Factories.getGroupFactory().populate(pdir);
 			userFact.setSourceUrl(pdir.getPath());
 			userFact.setSourceUrn("Policy Test Person");
-			
-			prt.getFacts().add(userFact);
+			//prt.getFacts().add(userFact);
 			
 			PolicyResponseType prr = PolicyEvaluator.evaluatePolicyRequest(prt);
 			logger.info("Policy Evaluation for " + prr.getUrn() + " = " + prr.getResponse().toString());
@@ -966,7 +973,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 				if(pol == null){
 					pol = Factories.getPolicyFactory().newPolicy(testUser, podir);
 					pol.setName(pname);
-					pol.setUrn(pname);
+					//pol.setUrn(pname);
 					pol.setEnabled(true);
 					pol.setCondition(ConditionEnumType.ALL);
 					idRule = getCreatePersonAuthorizationRule(testUser, rdir, pdir,fdir,odir);
@@ -1023,7 +1030,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 					pol = Factories.getPolicyFactory().newPolicy(testUser, podir);
 					pol.setCondition(ConditionEnumType.ALL);
 					pol.setName(pname);
-					pol.setUrn(pname);
+					//pol.setUrn(pname);
 					pol.setEnabled(true);
 					idRule = getCreatePersonAccountRule(testUser, rdir, pdir,fdir,odir);
 					if(idRule != null){
@@ -1079,7 +1086,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 					pol = Factories.getPolicyFactory().newPolicy(testUser, podir);
 					pol.setCondition(ConditionEnumType.ALL);
 					pol.setName(pname);
-					pol.setUrn(pname);
+					//pol.setUrn(pname);
 					pol.setEnabled(true);
 					idRule = getCreateIdentityRule(testUser, rdir, pdir,fdir,odir);
 					if(idRule != null){

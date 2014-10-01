@@ -48,6 +48,7 @@ public class FactFactory extends NameIdGroupFactory {
 		super();
 		this.tableNames.add("fact");
 		this.hasObjectId = true;
+		this.hasUrn = true;
 		factoryType = FactoryEnumType.FACT;
 	}
 	
@@ -96,7 +97,7 @@ public class FactFactory extends NameIdGroupFactory {
 			row.setCellValue("groupid", obj.getGroup().getId());
 			row.setCellValue("factdata", obj.getFactData());
 			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("urn", obj.getUrn());
+			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("score", obj.getScore());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("sourceurn", obj.getSourceUrn());
@@ -123,7 +124,7 @@ public class FactFactory extends NameIdGroupFactory {
 		super.read(rset, new_obj);
 		new_obj.setFactType(FactEnumType.valueOf(rset.getString("facttype")));
 		new_obj.setFactoryType(FactoryEnumType.valueOf(rset.getString("factorytype")));
-		new_obj.setUrn(rset.getString("urn"));
+		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setScore(rset.getInt("score"));
 		new_obj.setFactData(rset.getString("factdata"));
 		new_obj.setDescription(rset.getString("description"));
@@ -146,7 +147,7 @@ public class FactFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		FactType use_map = (FactType)map;
-		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
 		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldFactData(use_map.getFactData()));
 		fields.add(QueryFields.getFieldSourceUrn(use_map.getSourceUrn()));
@@ -195,35 +196,7 @@ public class FactFactory extends NameIdGroupFactory {
 		///
 		return deleteFactsByIds(ids, group.getOrganization());
 	}
-	public String getUrnCacheKey(FactType fact){
-		return getUrnCacheKey(fact.getUrn(),fact.getOrganization());
-	}
-	public String getUrnCacheKey(String urn, OrganizationType org){
-		return urn + "-" + org.getId();
-	}
-	public FactType getByUrn(String urn, OrganizationType organization){
-		FactType fact = readCache(getUrnCacheKey(urn, organization));
-		if(fact != null){
-			return fact;
-		}
-		try {
-			List<FactType> facts = getFacts(new QueryField[]{QueryFields.getFieldUrn(urn)},organization);
-			if(facts.size() >= 1){
-				fact = facts.get(0);
-				addToCache(fact, getUrnCacheKey(fact));
-				addToCache(fact);
-			}
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
-		return fact;
-	}
+
 	
 	public List<FactType> getFacts(QueryField[] matches, OrganizationType organization) throws FactoryException, ArgumentException
 	{

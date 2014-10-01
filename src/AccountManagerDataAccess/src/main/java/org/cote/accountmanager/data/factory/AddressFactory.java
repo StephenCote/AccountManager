@@ -47,6 +47,7 @@ public class AddressFactory extends NameIdGroupFactory {
 	public AddressFactory(){
 		super();
 		this.hasParentId=false;
+		this.hasUrn = true;
 		this.tableNames.add("addresses");
 		factoryType = FactoryEnumType.ADDRESS;
 	}

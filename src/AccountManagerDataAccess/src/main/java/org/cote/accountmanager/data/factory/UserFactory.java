@@ -48,6 +48,7 @@ public class UserFactory extends NameIdFactory {
 		this.hasParentId = false;
 		this.hasOwnerId = false;
 		this.hasName = true;
+		this.hasUrn = true;
 		this.tableNames.add("users");
 		this.factoryType = FactoryEnumType.USER;
 	}
@@ -67,7 +68,21 @@ public class UserFactory extends NameIdFactory {
 	}
 	public boolean updateUser(UserType user) throws FactoryException{
 		removeUserFromCache(user);
-		return update(user);
+		boolean b =  update(user);
+		
+		/// 2014/09/10
+		/// Contact information is updated along with the parent object because it's a foreign-keyed object that is not otherwise easily referenced
+		///
+		if(user.getContactInformation() != null){
+			try {
+				b = Factories.getContactInformationFactory().updateContactInformation(user.getContactInformation());
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+				b = false;
+			}
+		}
+		return b;
 	}
 	@Override
 	public <T> String getCacheKeyName(T obj){

@@ -50,6 +50,7 @@ public class PatternFactory extends NameIdGroupFactory {
 		super();
 		this.tableNames.add("pattern");
 		this.hasObjectId = true;
+		this.hasUrn = true;
 		factoryType = FactoryEnumType.PATTERN;
 	}
 	
@@ -71,8 +72,8 @@ public class PatternFactory extends NameIdGroupFactory {
 		pattern.setFact(null);
 		pattern.setMatch(null);
 		pattern.setOperation(null);
-		if(pattern.getFactUrn() != null) pattern.setFact(Factories.getFactFactory().getByUrn(pattern.getFactUrn(), pattern.getOrganization()));
-		if(pattern.getMatchUrn() != null) pattern.setMatch(Factories.getFactFactory().getByUrn(pattern.getMatchUrn(), pattern.getOrganization()));
+		if(pattern.getFactUrn() != null) pattern.setFact((FactType)Factories.getFactFactory().getByUrn(pattern.getFactUrn()));
+		if(pattern.getMatchUrn() != null) pattern.setMatch((FactType)Factories.getFactFactory().getByUrn(pattern.getMatchUrn()));
 		if(pattern.getOperationUrn() != null) pattern.setOperation(Factories.getOperationFactory().getByUrn(pattern.getOperationUrn(), pattern.getOrganization()));
 		pattern.setPopulated(true);
 		updateToCache(pattern);
@@ -101,7 +102,7 @@ public class PatternFactory extends NameIdGroupFactory {
 			row.setCellValue("patterntype", obj.getPatternType().toString());
 			row.setCellValue("groupid", obj.getGroup().getId());
 			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("urn", obj.getUrn());
+			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("score", obj.getScore());
 			row.setCellValue("facturn", obj.getFactUrn());
 			row.setCellValue("operationurn", obj.getOperationUrn());
@@ -127,7 +128,7 @@ public class PatternFactory extends NameIdGroupFactory {
 		new_obj.setNameType(NameEnumType.PATTERN);
 		super.read(rset, new_obj);
 		new_obj.setPatternType(PatternEnumType.valueOf(rset.getString("patterntype")));
-		new_obj.setUrn(rset.getString("urn"));
+		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setScore(rset.getInt("score"));
 		new_obj.setFactUrn(rset.getString("facturn"));
 		new_obj.setOperationUrn(rset.getString("operationurn"));
@@ -148,7 +149,7 @@ public class PatternFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		PatternType use_map = (PatternType)map;
-		fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
+		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
 		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldFactUrn(use_map.getFactUrn()));
 		fields.add(QueryFields.getFieldMatchUrn(use_map.getMatchUrn()));

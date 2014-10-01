@@ -49,6 +49,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	public PersonFactory(){
 		super();
 		this.hasParentId=true;
+		this.hasUrn = true;
 		this.tableNames.add("persons");
 		factoryType = FactoryEnumType.PERSON;
 	}
@@ -72,7 +73,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		person.getNotes().addAll(Factories.getPersonParticipationFactory().getDatasFromParticipation(person));
 		person.getAccounts().addAll(Factories.getPersonParticipationFactory().getAccountsFromParticipation(person));
 		person.getUsers().addAll(Factories.getPersonParticipationFactory().getUsersFromParticipation(person));
-		if(person.getContact() != null) Factories.getContactInformationFactory().populate(person.getContact());
+		if(person.getContactInformation() != null) Factories.getContactInformationFactory().populate(person.getContactInformation());
 		person.setPopulated(true);
 		
 		updateToCache(person);
@@ -121,7 +122,10 @@ public class PersonFactory extends NameIdGroupFactory {
 			row.setCellValue("prefix",obj.getPrefix());
 			row.setCellValue("suffix",obj.getSuffix());
 			row.setCellValue("title",obj.getTitle());
-			row.setCellValue("contactinformationid", (obj.getContact() != null ? obj.getContact().getId() : 0));
+			
+			/// TODO: Deprecate contactinformationid field
+			///
+			row.setCellValue("contactinformationid", (obj.getContactInformation() != null ? obj.getContactInformation().getId() : 0));
 			
 			row.setCellValue("groupid", obj.getGroup().getId());
 			
@@ -129,31 +133,35 @@ public class PersonFactory extends NameIdGroupFactory {
 				PersonType cobj = (bulkMode ? obj : (PersonType)getByName(obj.getName(), obj.getGroup()));
 				if(cobj == null) throw new FactoryException("Failed to retrieve new user cobject");
 				if(bulkMode){
-					if(cobj.getContact() == null){
+					if(cobj.getContactInformation() == null){
 						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(cobj);
 						cinfo.setOwnerId(cobj.getOwnerId());
-						cobj.setContact(cinfo);
-						BulkFactories.getBulkContactInformationFactory().addContactInformation(cobj.getContact());
+						cobj.setContactInformation(cinfo);
+						BulkFactories.getBulkContactInformationFactory().addContactInformation(cobj.getContactInformation());
 						BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATION);
 					}
 
 				}
 				else{
-					if(cobj.getContact() == null){
+					if(cobj.getContactInformation() == null){
 						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(cobj);
 						cinfo.setOwnerId(cobj.getOwnerId());
 						logger.debug("Adding cinfo for person in org " + cobj.getOrganization().getId());
-						cobj.setContact(cinfo);
+						cobj.setContactInformation(cinfo);
 					}
 					
 					/// 2013/09/05 - ContactInformation relationship is inverted from the original User<->ContactInformation 
 					/// And trying to keep the foreign key on the person means it winds up with two references: Contact Id on the Person, and Person Id on the Contact
 					/// At the moment it's being automatically added/created when the person is created
 					///
-					if(Factories.getContactInformationFactory().addContactInformation(cobj.getContact()) == false) throw new FactoryException("Failed to assign contact information for user #" + cobj.getId());
-					cobj.setContact(Factories.getContactInformationFactory().getContactInformationForPerson(cobj));
-					if(cobj.getContact() == null) throw new FactoryException("Failed to retrieve contact information for user #" + cobj.getId());
+					if(Factories.getContactInformationFactory().addContactInformation(cobj.getContactInformation()) == false) throw new FactoryException("Failed to assign contact information for user #" + cobj.getId());
+					cobj.setContactInformation(Factories.getContactInformationFactory().getContactInformationForPerson(cobj));
+					if(cobj.getContactInformation() == null) throw new FactoryException("Failed to retrieve contact information for user #" + cobj.getId());
 					if(updatePerson(cobj) == false) throw new FactoryException("Failed to update person cobject");
+					
+					/// TODO: Deprecate the contactinformationid field, which makes this unnecessary
+					///
+
 				}
 				
 				BaseParticipantType part = null;
@@ -208,8 +216,9 @@ public class PersonFactory extends NameIdGroupFactory {
 		long group_id = rset.getLong("groupid");
 		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
 		
-		long contact_id = rset.getLong("contactinformationid");
-		if(contact_id > 0) new_obj.setContact((ContactInformationType)Factories.getContactInformationFactory().getById(contact_id, new_obj.getOrganization()));
+		//long contact_id = rset.getLong("contactinformationid");
+		//if(contact_id > 0) new_obj.setContactInformation((ContactInformationType)Factories.getContactInformationFactory().getById(contact_id, new_obj.getOrganization()));
+		new_obj.setContactInformation(Factories.getContactInformationFactory().getContactInformationForPerson(new_obj));
 		
 		new_obj.setBirthDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("birthdate")));
 		new_obj.setDescription(rset.getString("description"));
@@ -310,8 +319,12 @@ public class PersonFactory extends NameIdGroupFactory {
 					}
 				}
 				Factories.getPersonParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganization());
-				out_bool = true;
-				
+
+				/// 2014/09/10
+				/// Contact information is updated along with the parent object because it's a foreign-keyed object that is not otherwise easily referenced
+				///
+				out_bool = Factories.getContactInformationFactory().updateContactInformation(data.getContactInformation());
+			
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
@@ -323,7 +336,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		PersonType use_map = (PersonType)map;
-		fields.add(QueryFields.getFieldContactInformationId(use_map.getContact()));
+		fields.add(QueryFields.getFieldContactInformationId(use_map.getContactInformation()));
 		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
 		fields.add(QueryFields.getFieldBirthDate(use_map.getBirthDate()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));

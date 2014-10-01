@@ -36,6 +36,7 @@ public class TagFactory extends NameIdFactory {
 		this.hasParentId = false;
 		this.hasOwnerId = true;
 		this.hasName = true;
+		this.hasUrn = true;
 		this.tableNames.add("tags");
 		factoryType = FactoryEnumType.TAG;
 	}

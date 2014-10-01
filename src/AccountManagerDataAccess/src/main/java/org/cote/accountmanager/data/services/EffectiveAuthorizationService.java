@@ -1,3 +1,9 @@
+/// 2014/09/15 - in progress - creating generic cache mechanism
+/// The newer style is slightly more generic, though it probably would work better if the factories register their own types
+/// The code is currently commented out while it's being worked on
+/// These changes will greatly extend data-level authorization coverage to any configured participation table without having to add a bunch of boilerplate in this class
+///
+
 package org.cote.accountmanager.data.services;
 
 import java.sql.Connection;
@@ -14,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
@@ -31,6 +38,7 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonGroupType;
@@ -94,6 +102,22 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 public class EffectiveAuthorizationService {
 	
 	public static final Logger logger = Logger.getLogger(EffectiveAuthorizationService.class.getName());
+
+	/// 2014/09/14 - in progress - creating generic cache mechanism
+	
+	/// rebuildType == id :: object relationship by type
+	///
+	//private static Map<NameEnumType,Map<Long,NameIdType>> rebuildType = new HashMap<NameEnumType,Map<Long,NameIdType>>();
+
+	/// typeTypeMap == Type to type1 id to map of type2 id to permit/denied bit
+	///
+	//private static Map<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>> typeTypeMap = new HashMap<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>>();
+	
+	/// This big ugly construct is used to hash the previous cache hashes against the object types for quick look-up and to avoid code duplication
+	///
+	private static Map<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>> actorMap = new HashMap<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>>();
+	
+	
 	private static Map<Long,UserType> rebuildUsers = new HashMap<Long,UserType>();
 	private static Map<Long,AccountType> rebuildAccounts = new HashMap<Long,AccountType>();
 	private static Map<Long,PersonType> rebuildPersons = new HashMap<Long,PersonType>();
@@ -129,10 +153,19 @@ public class EffectiveAuthorizationService {
 	private static Map<Long,DataType> rebuildData = new HashMap<Long,DataType>();
 	
 	private static Object lockObject = new Object();
-	
-	/// This big ugly construct is used to hash the previous cache hashes against the object types for quick look-up and to avoid code duplication
-	///
-	private static Map<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>> actorMap = new HashMap<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>>();
+	/*
+	private static Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>> getActorMap(NameEnumType type){
+		return actorMap.get(type);
+	}
+	private static void addActorMap(NameEnumType actor, NameEnumType object){
+		if(actorMap.containsKey(actor) == false) actorMap.put(actor, new HashMap<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>());
+		if(typeTypeMap.containsKey(actor) == false) typeTypeMap.put(actor, new HashMap<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>());
+		if(typeTypeMap.get(actor).containsKey(object) == false) typeTypeMap.get(actor).put(object, new HashMap<Long,Map<Long,Map<Long,Boolean>>>());
+		if(actorMap.get(actor).containsKey(object) == false) actorMap.get(actor).put(object, typeTypeMap.get(actor).get(object));
+		if(rebuildType.containsKey(actor) == false) rebuildType.put(actor, new HashMap<Long,NameIdType>());
+		if(rebuildType.containsKey(object) == false) rebuildType.put(object, new HashMap<Long,NameIdType>());
+	}
+	*/
 	static{
 		actorMap.put(NameEnumType.PERSON, new HashMap<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>());
 		actorMap.put(NameEnumType.USER, new HashMap<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>());
@@ -850,6 +883,83 @@ public class EffectiveAuthorizationService {
 			}
 		}
 		return out_bool;
+		
+	}
+	public static List<BaseRoleType> getEffectiveRolesForUser(UserType user) throws ArgumentException, FactoryException
+	{
+		return getEffectiveRoles(user);
+	}
+	
+	public static List<BaseRoleType> getEffectiveRolesForPerson(PersonType person) throws ArgumentException, FactoryException
+	{
+		return getEffectiveRoles(person);
+	}
+
+	public static List<BaseRoleType> getEffectiveRolesForAccount(AccountType account) throws ArgumentException, FactoryException
+	{
+		return getEffectiveRoles(account);
+	}
+	
+	private static List<BaseRoleType> getEffectiveRoles(NameIdType actor) throws ArgumentException, FactoryException
+	{
+		List<BaseRoleType> roles = new ArrayList<BaseRoleType>();
+		String prefix = null;
+		boolean linkPerson = false;
+		if(actor.getNameType() == NameEnumType.USER) prefix = "user";
+		else if(actor.getNameType() == NameEnumType.ACCOUNT) prefix = "account";
+		else if(actor.getNameType() == NameEnumType.PERSON){
+			prefix = "person";
+			linkPerson = true;
+		}
+		else throw new ArgumentException("Unexpected actor type " + actor.getNameType());
+		
+		Connection conn = ConnectionFactory.getInstance().getConnection();
+		CONNECTION_TYPE connType = DBFactory.getConnectionType(conn);
+		String token = DBFactory.getParamToken(connType);
+		try{
+			String sql = "SELECT distinct effectiveroleid FROM " + prefix + "rolecache WHERE " + prefix + "id = " + token + " and organizationid = " + token;
+			if(linkPerson){
+				sql += " UNION ALL "
+					+ " SELECT distinct effectiveroleid FROM userrolecache URC "
+					+ " inner join personparticipation PU on URC.userid = PU.participantid AND PU.participanttype = 'USER' AND PU.participationid = " + token + " AND URC.organizationid = " + token
+					+ " UNION ALL "
+					+ " SELECT distinct effectiverole FROM accountrolecache ARC "
+					+ " inner join personparticipation PU2 on ARC.accountid = PU2.participantid AND PU2.participanttype = 'ACCOUNT' AND PU2.participationid = " + token + " AND ARC.organizationid = " + token;
+			}
+			PreparedStatement stat = conn.prepareStatement(sql);
+			logger.debug(sql);
+	
+			stat.setLong(1, actor.getId());
+			stat.setLong(2, actor.getOrganization().getId());
+			if(linkPerson){
+				stat.setLong(3, actor.getId());
+				stat.setLong(4, actor.getOrganization().getId());
+				stat.setLong(5, actor.getId());
+				stat.setLong(6, actor.getOrganization().getId());
+			}
+			ResultSet rset = stat.executeQuery();
+			List<Long> ids = new ArrayList<Long>();
+			while(rset.next()){
+				ids.add(rset.getLong(1));
+			}
+			rset.close();
+			stat.close();
+			roles = Factories.getRoleFactory().getListByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])), actor.getOrganization());
+		}
+		catch(SQLException sqe){
+			logger.error(sqe.getMessage());
+			sqe.printStackTrace();
+		}
+		finally{
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		return roles;
 		
 	}
 	public static boolean hasPendingEntries(){

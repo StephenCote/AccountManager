@@ -16,6 +16,7 @@ import javax.ws.rs.core.UriInfo;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.AuthorizationPolicyType;
 import org.cote.accountmanager.objects.PolicyDefinitionType;
 import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyResponseType;
@@ -77,6 +78,18 @@ public class PolicyService{
 		return PolicyServiceImpl.getPolicyDefinition(id, request);
 	}
 
+	@GET @Path("/contextPolicy/{type:[\\S]+]}/{id: [0-9]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public AuthorizationPolicyType contextPolicy(@PathParam("type") String type,@PathParam("id") long id,@Context HttpServletRequest request){
+		//return PolicyServiceImpl.getPolicyDefinition(id, request);
+		return null;
+	}
+
+	@GET @Path("/policy") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public AuthorizationPolicyType contextPolicy(@Context HttpServletRequest request){
+		return PolicyServiceImpl.getPolicy(request);
+	}
+
+	
 	
 	@GET @Path("/list") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public List<PolicyType> list(@Context HttpServletRequest request){

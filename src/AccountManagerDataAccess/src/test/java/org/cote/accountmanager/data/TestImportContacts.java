@@ -193,7 +193,7 @@ public class TestImportContacts extends BaseDataAccessTest{
 
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION,cit);
 			
-			new_person.setContact(cit);
+			new_person.setContactInformation(cit);
 			
 			AddressType addr = Factories.getAddressFactory().newAddress(testUser, pDir);
 			addr.setName(firstName + " " + lastName + " Address");

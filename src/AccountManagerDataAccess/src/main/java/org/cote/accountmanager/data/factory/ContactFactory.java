@@ -48,7 +48,9 @@ public class ContactFactory extends NameIdGroupFactory {
 	public ContactFactory(){
 		super();
 		this.hasParentId=false;
+		this.hasUrn = true;
 		this.tableNames.add("contacts");
+		
 		factoryType = FactoryEnumType.CONTACT;
 	}
 	
