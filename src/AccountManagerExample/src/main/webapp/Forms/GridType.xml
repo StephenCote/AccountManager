@@ -265,6 +265,8 @@
 					Hemi.log("Not populated.  Fetching a populated version.");
 					if(o.nameType.match(/^group$/gi)) o = accountManager.getGroupById(o.id);
 					else if(o.nameType.match(/^role$/gi)) o = oApi["get" + this.getProperties().typeName](o.name,o.roleType,_o.parentRef);
+					else if(this.provideItem) o = this.provideItem(this.getProperties().typeName,o);
+					else if(o.id)  o = oApi["get" + this.getProperties().typeName + "ById"](o.id);
 					else o = oApi["get" + this.getProperties().typeName](o.name,o.group);
 					if(!o.populated) alert("still not populated");
 				}

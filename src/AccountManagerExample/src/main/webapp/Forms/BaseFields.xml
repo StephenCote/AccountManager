@@ -129,6 +129,7 @@
 			var o = this.getBean("rocketType"),n;
 			var oApi = window[uwm.getApi(this.getProperties().typeName)];
 			if(o.nameType && o.nameType.match(/^group$/gi)) n = accountManager.getGroup(this.getPath() + "/" + o.name);
+			else if(this.provideItem) n = this.provideItem(this.getProperties().typeName,o);
 			else n = oApi["get" + this.getProperties().typeName](o.name,o.group);
 			if(n != null){
 				this.clearBean("rocketType");

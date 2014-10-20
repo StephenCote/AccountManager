@@ -73,10 +73,14 @@
 				if(o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
 					Hemi.log("Not pulling own blob data for " + o.name + " unless specifically requested.");
 				}
+				else if(this.provideItem){
+					o = this.provideItem(typeName, o);
+				}
 				else{
 					Hemi.log("Not populated.  Fetching a populated version.");
 					var oApi = window[uwm.getApi(typeName)];
-					o = oApi["get" + typeName](o.name,o.group);
+					if(o.id) o = oApi["get" + typeName + "ById"](o.id);
+					else o = oApi["get" + typeName](o.name,o.group);
 					if(!o.populated) alert("still not populated");
 				}
 			}
