@@ -1309,7 +1309,7 @@
 			var o = getObjectById(oPanel,sType, sId, oShape), _o = galleryView.getCurrentView().panel("content").getObjects();
 			var oProps = {openerId:oPanel.getObjectId(),picker:0,viewType:o};
 			if(_o.viewWindow && !_o.viewWindow.getIsClosed()) _o.viewWindow.Close();
-			var sType = o.nameType.substring(1,o.nameType.length).toLowerCase() ;
+			var sType = o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() ;
 			var oW = Hemi.app.createWindow(o.name, uwm.getApiTypeView(sType) + "/Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps);
 		    if (oW) {
 		    	oW.resizeTo(450, 400);

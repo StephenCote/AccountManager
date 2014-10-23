@@ -15,7 +15,10 @@
 		},
 		getApiTypeView : function(sType){
 			var sApi = uwm.apiTypeHash[sType];
-			if(!sApi) return "/ERROR";
+			if(!sApi){
+				Hemi.logError("Invalid type for '" + sType + "'");
+				return "/ERROR";
+			}
 			return uwm.apiTypes[sApi].viewBase;
 		},
 		addApiTypes : function(sApi,aTypes){
