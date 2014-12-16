@@ -484,23 +484,26 @@ public class BaseService{
 	private static <T> T getById(AuditEnumType type, long id, OrganizationType org) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
 		T out_obj = factory.getById(id, org);
-		if(out_obj != null){
-			populate(type, out_obj);
-			delink(type, out_obj);
-			if(enableExtendedAttributes){
-				Factories.getAttributeFactory().populateAttributes((NameIdType)out_obj);
-			}
+		
+		if(out_obj == null) return null;
+		
+		populate(type, out_obj);
+		delink(type, out_obj);
+		if(enableExtendedAttributes){
+			Factories.getAttributeFactory().populateAttributes((NameIdType)out_obj);
 		}
+		
 		switch(type){
 			case DATA:
 				DataType d = (DataType)out_obj;
-				if(d.getCompressed()){
+				if(d.getCompressed() || d.getPointer()){
 					/// Make a copy of the object so as to operate on the copy and not a cached copy from the factory
 					///
 					d = BeanUtil.getBean(DataType.class, d);
 					try {
 						byte[] data = DataUtil.getValue(d);
 						d.setCompressed(false);
+						d.setPointer(false);
 						d.setDataBytesStore(data);
 						d.setReadDataBytes(false);
 						out_obj = (T)d;
@@ -583,11 +586,12 @@ public class BaseService{
 					return out_obj;
 				}
 				DataType d = (DataType)out_obj;
-				if(d.getCompressed()){
+				if(d.getCompressed() || d.getPointer()){
 					d = BeanUtil.getBean(DataType.class, d);
 					try {
 						byte[] data = DataUtil.getValue(d);
 						d.setCompressed(false);
+						d.setPointer(false);
 						d.setDataBytesStore(data);
 						d.setReadDataBytes(false);
 						out_obj = (T)d;

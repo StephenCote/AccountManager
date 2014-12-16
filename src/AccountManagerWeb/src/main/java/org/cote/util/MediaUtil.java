@@ -13,6 +13,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.DataType;
@@ -181,7 +182,7 @@ public class MediaUtil {
 			e.printStackTrace();
 		}
 		if(dir == null){
-			AuditService.denyResult(audit, "Path is invalid: '" + objPath + "'");
+			AuditService.denyResult(audit, "Path '" + objPath + "' is invalid for " + (user == null ? "null user":user.getName()) + " in organization " + org.getName());
 			response.sendError(404);
 			return;
 		}
@@ -336,9 +337,9 @@ public class MediaUtil {
 				if(data.getMimeType() != null && data.getMimeType().startsWith("image/") && restrictSize){
 					logger.info("Redirecting to restricted image path");
 					Factories.getGroupFactory().populate(group);
-					
-					AuditService.pendResult(audit, "Redirecting user " + user.getName() + " to " + request.getServletContext().getContextPath() + "/Thumbnail" + Factories.getOrganizationFactory().getOrganizationPath(org) + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight + " with restricted dimensions");
-					response.sendRedirect(request.getServletContext().getContextPath() + "/Thumbnail" + Factories.getOrganizationFactory().getOrganizationPath(org) + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight);
+					String dotPath = UrnUtil.getDotOrganizationPath(org);
+					AuditService.pendResult(audit, "Redirecting user " + user.getName() + " to " + request.getServletContext().getContextPath() + "/Thumbnail/" + dotPath + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight + " with restricted dimensions");
+					response.sendRedirect(request.getServletContext().getContextPath() + "/Thumbnail/" + dotPath + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight);
 					return;
 				}
 			}

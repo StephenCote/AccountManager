@@ -158,7 +158,7 @@ public class UrnUtil {
 		return path.substring(1,path.length()).replace('/', '.');
 	}
 
-	private static String getDotOrganizationPath(OrganizationType org) throws FactoryException, ArgumentException{
+	public static String getDotOrganizationPath(OrganizationType org) throws FactoryException, ArgumentException{
 		String path = Factories.getOrganizationFactory().getOrganizationPath(org);
 		if(path == null || path.length() < 2){
 			throw new ArgumentException("Unexpected organization path: " + path);

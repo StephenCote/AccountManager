@@ -8,11 +8,13 @@ CREATE TABLE organizations (
 	OrganizationType varchar(16) not null,
 	ParentId bigint not null default 0,
 	ReferenceId bigint not null default 0,
+	Urn text not null,
 	LogicalId bigint not null default 0,
 	primary key(Id)
 	);
 CREATE UNIQUE INDEX organizations_Id ON organizations(Id);
 CREATE UNIQUE INDEX IdxorganizationsName on organizations(Name,ParentId);
+CREATE UNIQUE INDEX idxorganizations_urn on organizations(Urn);
 
 DROP TABLE IF EXISTS attribute CASCADE;
 CREATE TABLE attribute (
@@ -69,13 +71,15 @@ CREATE TABLE groups (
 	ParentId bigint not null default 0,
 	ReferenceId bigint not null default 0,
 	OrganizationId bigint not null default 0,
+	Urn text not null,
 	primary key(Id)
 	);
 
 CREATE UNIQUE INDEX groups_group_id ON groups(Id);
+CREATE UNIQUE INDEX idxgroups_urn on groups(Urn);
+
 CREATE INDEX groups_group_name ON groups(Name,OrganizationId);
 CREATE UNIQUE INDEX IdxgroupsNameParent on groups(Name,ParentId,OrganizationId);
-
 
 
 DROP TABLE IF EXISTS groupparticipation CASCADE;
@@ -145,9 +149,11 @@ create table data (
 	DataBlob bytea,
 	DataString varchar(255),
 	OrganizationId bigint not null default 0,
+	Urn text not null,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX data_id ON data(Id);
+CREATE UNIQUE INDEX idxdata_urn on data(Urn);
 CREATE INDEX data_Name ON data(Name);
 CREATE UNIQUE INDEX IdxdataNameGroup on data(Name,GroupId,OrganizationId);
 CREATE UNIQUE INDEX IdxdataIdGroup on data(Id,GroupId,OrganizationId);
@@ -204,9 +210,11 @@ create table accounts (
 	Name varchar(511) not null,
 	AccountStatus varchar(16) not null,
 	AccountType varchar(16) not null,
+	Urn not null,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX accounts_acct_id ON accounts(Id);
+CREATE UNIQUE INDEX idxaccounts_urn on accounts(Urn);
 CREATE INDEX accounts_org_id ON accounts(OrganizationId);
 CREATE UNIQUE INDEX IdxaccountsName on accounts(Name,ParentId,GroupId,OrganizationId);
 
@@ -234,9 +242,11 @@ create table users (
 	Password varchar(128),
 	UserStatus varchar(16) not null,
 	UserType varchar(16) not null,
+	Urn text not null,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX users_acct_id ON users(Id);
+CREATE UNIQUE INDEX users_urn ON users(Urn);
 CREATE INDEX users_org_id ON users(OrganizationId);
 CREATE UNIQUE INDEX IdxusersName on users(Name,AccountId,OrganizationId);
 
@@ -289,9 +299,11 @@ create table addresses (
 	Country varchar(255),
 	OwnerId bigint not null,
 	OrganizationId bigint not null default 0,
+	Urn text not null,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX addresses_acct_id ON addresses(Id);
+CREATE UNIQUE INDEX idxaddresses_urn on addresses(Urn);
 CREATE UNIQUE INDEX addresses_reftype ON addresses(Name,LocationType,GroupId,OrganizationId);
 
 DROP TABLE IF EXISTS contacts CASCADE;
@@ -308,13 +320,12 @@ create table contacts (
 	ContactValue varchar(255),
 	OwnerId bigint not null,
 	OrganizationId bigint not null default 0,
+	Urn text not null,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX contacts_acct_id ON contacts(Id);
+CREATE UNIQUE INDEX idxcontacts_urn on contacts(Urn);
 CREATE UNIQUE INDEX contacts_reftype ON contacts(Name,ContactType,LocationType,GroupId,OrganizationId);
-
-
-
 
 DROP TABLE IF EXISTS contactinformation CASCADE;
 DROP SEQUENCE IF EXISTS contactinformation_id_seq;
@@ -325,7 +336,7 @@ create table contactinformation (
 	Description varchar(255),
 	ContactInformationType varchar(16) not null,
 	OwnerId bigint not null,
-	      OrganizationId bigint not null default 0,
+	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX contactinformation_acct_id ON contactinformation(Id);
@@ -374,10 +385,11 @@ create table persons (
 	Alias varchar(64),
 	BirthDate timestamp not null,
 	Gender varchar(16) default 'UNKNOWN',
-
+	Urn text not null,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX persons_person_id ON persons(Id);
+CREATE UNIQUE INDEX idxpersons_urn on persons(Urn);
 CREATE INDEX persons_group_id ON persons(groupId);
 CREATE INDEX persons_parent_id ON persons(ParentId);
 CREATE UNIQUE INDEX persons_name ON persons(Name,ParentId,GroupId,OrganizationId);
@@ -427,9 +439,11 @@ create table roles (
 	ParentId bigint not null default 0,
 	ReferenceId bigint not null default 0,
 	OrganizationId bigint not null default 0,
+	Urn text not null,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX roles_role_id ON roles(Id);
+CREATE UNIQUE INDEX idxroles_urn ON roles(Urn);
 CREATE INDEX roles_parent_id ON roles(ParentId);
 CREATE UNIQUE INDEX roles_name ON roles(Name,ParentId,RoleType,OrganizationId);
 
@@ -481,9 +495,11 @@ create table permissions (
 	ParentId bigint not null default 0,
 	ReferenceId bigint not null default 0,
 	OrganizationId bigint not null default 0,
+	Urn text not null,
 	primary key(Id)
 	);
 CREATE UNIQUE INDEX permissions_permission_id ON permissions(Id);
+CREATE UNIQUE INDEX idxpermissions_urn ON permissions(Urn);
 CREATE UNIQUE INDEX IdxpermissionsName on permissions(Name,PermissionType,ParentId,OrganizationId);
 
 
@@ -496,9 +512,11 @@ CREATE TABLE tags (
 	TagType varchar(16) not null,
 	Name varchar(255) not null,
 	OrganizationId bigint not null default 0,
+	Urn text not null,
 	primary key(Id)
 	);
 CREATE UNIQUE INDEX tags_id ON tags(Id);
+CREATE UNIQUE INDEX idxtags_urn on tags(Urn);
 CREATE UNIQUE INDEX IdxtagsName on tags(Name,TagType,OrganizationId);
 
 DROP TABLE IF EXISTS tagparticipation CASCADE;
@@ -582,10 +600,10 @@ CREATE TABLE audit (
 	AuditTargetType varchar(32) not null,
 	AuditActionType varchar(32) not null,
 	AuditResultType varchar(32) not null,
-	AuditSourceData varchar(255),
-	AuditTargetData varchar(255),
-	AuditResultData varchar(255),
-	AuditActionSource varchar(255)
+	AuditSourceData text,
+	AuditTargetData text,
+	AuditResultData text,
+	AuditActionSource text
 );
 CREATE UNIQUE INDEX audit_id ON audit(Id);
 CREATE INDEX audit_source ON audit(AuditSourceType,AuditSourceData);
@@ -604,10 +622,10 @@ create table fact (
 	Description varchar(255),
 	LogicalOrder int not null default 0,
 	Score int not null default 0,
-	Urn varchar(255) not null,
+	Urn text not null,
 	FactType varchar(64) not null,
 	SourceType varchar(255),
-	SourceUrn varchar(255),
+	SourceUrn text,
 	SourceUrl varchar(2047),
 	SourceDataType varchar(64),
 	FactData varchar(255),
@@ -619,7 +637,7 @@ create table fact (
 );
 CREATE UNIQUE INDEX fact_id ON fact(Id);
 CREATE UNIQUE INDEX IdxfactNameGroup on fact(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxfactUrnGroup on fact(Urn,OrganizationId);
+CREATE UNIQUE INDEX IdxfactUrnGroup on fact(Urn);
 CREATE INDEX IdxfactIdGroup on fact(Id,OrganizationId);
 
 
@@ -632,9 +650,9 @@ create table functionfact (
 	Name varchar(255) not null,
 	Description varchar(255),
 	LogicalOrder int not null default 0,
-	Urn varchar(255) not null,
-	FunctionUrn varchar(255),
-	FactUrn varchar(255),
+	Urn text not null,
+	FunctionUrn text,
+	FactUrn text,
 	GroupId bigint not null,
 	ObjectId varchar(64),
 	OrganizationId bigint not null default 0,
@@ -642,7 +660,7 @@ create table functionfact (
 );
 CREATE UNIQUE INDEX functionfact_id ON functionfact(Id);
 CREATE UNIQUE INDEX IdxfunctionfactNameGroup on functionfact(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxfunctionfactUrnGroup on functionfact(Urn,OrganizationId);
+CREATE UNIQUE INDEX IdxfunctionfactUrnGroup on functionfact(Urn);
 CREATE INDEX IdxfunctionfactIdGroup on functionfact(Id,OrganizationId);
 
 DROP TABLE IF EXISTS function CASCADE;
@@ -655,9 +673,9 @@ create table function (
 	Description varchar(255),
 	LogicalOrder int not null default 0,
 	Score int not null default 0,
-	Urn varchar(255) not null,
+	Urn text not null,
 	FunctionType varchar(64) not null,
-	SourceUrn varchar(255),
+	SourceUrn text,
 	SourceUrl varchar(2047),
 	GroupId bigint not null,
 	ObjectId varchar(64),
@@ -666,7 +684,7 @@ create table function (
 );
 CREATE UNIQUE INDEX function_id ON function(Id);
 CREATE UNIQUE INDEX IdxfunctionNameGroup on function(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxfunctionUrnGroup on function(Urn,OrganizationId);
+CREATE UNIQUE INDEX IdxfunctionUrnGroup on function(Urn);
 CREATE INDEX IdxfunctionIdGroup on function(Id,OrganizationId);
 
 DROP TABLE IF EXISTS functionparticipation CASCADE;
@@ -698,7 +716,7 @@ create table operation (
 	Description varchar(255),
 	LogicalOrder int not null default 0,
 	Score int not null default 0,
-	Urn varchar(255) not null,
+	Urn text not null,
 	OperationType varchar(64) not null,
 	Operation varchar(2047),
 	GroupId bigint not null,
@@ -708,7 +726,7 @@ create table operation (
 );
 CREATE UNIQUE INDEX operation_id ON operation(Id);
 CREATE UNIQUE INDEX IdxoperationNameGroup on operation(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxoperationUrnGroup on operation(Urn,OrganizationId);
+CREATE UNIQUE INDEX IdxoperationUrnGroup on operation(Urn);
 CREATE INDEX IdxoperationIdGroup on operation(Id,OrganizationId);
 
 DROP TABLE IF EXISTS pattern CASCADE;
@@ -721,12 +739,12 @@ create table pattern (
 	Description varchar(255),
 	LogicalOrder int not null default 0,
 	Score int not null default 0,
-	Urn varchar(255) not null,
-	FactUrn varchar(255),
+	Urn text not null,
+	FactUrn text,
 	Comparator varchar(32),
 	PatternType varchar(64) not null,
-	MatchUrn varchar(255),
-	OperationUrn varchar(255),
+	MatchUrn text,
+	OperationUrn text,
 	GroupId bigint not null,
 	ObjectId varchar(64),
 	OrganizationId bigint not null default 0,
@@ -734,7 +752,7 @@ create table pattern (
 );
 CREATE UNIQUE INDEX pattern_id ON pattern(Id);
 CREATE UNIQUE INDEX IdxpatternNameGroup on pattern(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxpatternUrnGroup on pattern(Urn,OrganizationId);
+CREATE UNIQUE INDEX IdxpatternUrnGroup on pattern(Urn);
 CREATE INDEX IdxpatternIdGroup on pattern(Id,OrganizationId);
 
 DROP TABLE IF EXISTS policy CASCADE;
@@ -748,7 +766,7 @@ create table policy (
 	LogicalOrder int not null default 0,
 	Score int not null default 0,
 	Enabled boolean not null default false,
-	Urn varchar(255) not null,
+	Urn text not null,
 	CreatedDate timestamp not null,
 	ModifiedDate timestamp not null,
 	ExpirationDate timestamp not null,
@@ -761,7 +779,7 @@ create table policy (
 );
 CREATE UNIQUE INDEX policy_id ON policy(Id);
 CREATE UNIQUE INDEX IdxpolicyNameGroup on policy(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxpolicyUrnGroup on policy(Urn,OrganizationId);
+CREATE UNIQUE INDEX IdxpolicyUrnGroup on policy(Urn);
 CREATE INDEX IdxpolicyIdGroup on policy(Id,OrganizationId);
 
 DROP TABLE IF EXISTS policyparticipation CASCADE;
@@ -793,7 +811,7 @@ create table rule (
 	Description varchar(255),
 	LogicalOrder int not null default 0,
 	Score int not null default 0,
-	Urn varchar(255) not null,
+	Urn text not null,
 	RuleType varchar(64) not null,
 	Condition varchar(64) not null,
 	GroupId bigint not null,
@@ -803,7 +821,7 @@ create table rule (
 );
 CREATE UNIQUE INDEX rule_id ON rule(Id);
 CREATE UNIQUE INDEX IdxruleNameGroup on rule(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxruleUrnGroup on rule(Urn,OrganizationId);
+CREATE UNIQUE INDEX IdxruleUrnGroup on rule(Urn);
 CREATE INDEX IdxruleIdGroup on rule(Id,OrganizationId);
 
 DROP TABLE IF EXISTS ruleparticipation CASCADE;
@@ -958,7 +976,7 @@ select distinct U.id as accountid,D.id as dataid, D.name as DataName, D.ownerid 
 CREATE OR REPLACE FUNCTION roles_from_leaf(root_id BIGINT,organizationid BIGINT) 
         RETURNS TABLE (leafid BIGINT,roleid BIGINT, parentid BIGINT, organizationid BIGINT)
         AS $$
-	WITH RECURSIVE role_tree(leafed,roleid, parentid, organizationid) AS (
+	WITH RECURSIVE role_tree(leafid,roleid, parentid, organizationid) AS (
 	   SELECT $1 as leafid, R.id as roleid, R.parentid, R.organizationid
 	      FROM roles R WHERE R.id = $1 AND R.organizationid = $2
 	   UNION ALL
@@ -973,7 +991,7 @@ CREATE OR REPLACE FUNCTION roles_from_leaf(root_id BIGINT,organizationid BIGINT)
 CREATE OR REPLACE FUNCTION roles_from_leaf(IN root_id bigint)
 	RETURNS TABLE(leafid bigint, roleid bigint, parentid bigint, organizationid bigint)
 	AS $$
-	WITH RECURSIVE role_tree(leafed,roleid, parentid, organizationid) AS (
+	WITH RECURSIVE role_tree(leafid,roleid, parentid, organizationid) AS (
 	   SELECT $1 as leafid, R.id as roleid, R.parentid, R.organizationid
 	      FROM roles R WHERE R.id = $1
 	   UNION ALL
@@ -989,7 +1007,7 @@ CREATE OR REPLACE FUNCTION roles_from_leaf(IN root_id bigint)
 CREATE OR REPLACE FUNCTION leveled_roles_from_leaf(IN root_id bigint)
 	RETURNS TABLE(level bigint,leafid bigint, roleid bigint, parentid bigint, organizationid bigint)
 	AS $$
-	WITH RECURSIVE role_tree(level,leafed,roleid, parentid, organizationid) AS (
+	WITH RECURSIVE role_tree(level,leafid,roleid, parentid, organizationid) AS (
 	   SELECT CAST(1 AS bigint) as level,$1 as leafid, R.id as roleid, R.parentid, R.organizationid
 	      FROM roles R WHERE R.id = $1
 	   UNION ALL
@@ -1004,7 +1022,7 @@ CREATE OR REPLACE FUNCTION leveled_roles_from_leaf(IN root_id bigint)
 CREATE OR REPLACE FUNCTION leveled_roles_from_leaf(root_id BIGINT,organizationid BIGINT) 
         RETURNS TABLE (level bigint,leafid BIGINT,roleid BIGINT, parentid BIGINT, organizationid BIGINT)
         AS $$
-	WITH RECURSIVE role_tree(level,leafed,roleid, parentid, organizationid) AS (
+	WITH RECURSIVE role_tree(level,leafid,roleid, parentid, organizationid) AS (
 	   SELECT CAST(1 as bigint) as level,$1 as leafid, R.id as roleid, R.parentid, R.organizationid
 	      FROM roles R WHERE R.id = $1 AND R.organizationid = $2
 	   UNION ALL
@@ -1021,7 +1039,7 @@ CREATE OR REPLACE FUNCTION leveled_roles_from_leaf(root_id BIGINT,organizationid
 CREATE OR REPLACE FUNCTION roles_to_leaf(root_id BIGINT,organizationid BIGINT) 
         RETURNS TABLE (leafid BIGINT,roleid BIGINT, parentid BIGINT, organizationid BIGINT)
         AS $$
-	WITH RECURSIVE role_tree(leafed,roleid, parentid, organizationid) AS (
+	WITH RECURSIVE role_tree(leafid,roleid, parentid, organizationid) AS (
 	   SELECT $1 as leafid, R.id as roleid, R.parentid, R.organizationid
 	      FROM roles R WHERE R.id = $1 AND R.organizationid = $2
 	   UNION ALL
@@ -1573,6 +1591,46 @@ from Persons P
 inner join personparticipation PT on PT.participationId = P.id AND PT.participantType = 'ACCOUNT'
 inner join accounts U on U.id = PT.participantId
 ;
+
+create or replace view groupEntitlements as
+select
+G.id as groupId,G.urn as groupUrn,R.id as roleId, R.urn as roleUrn,
+A.id as accountId,A.urn as accountUrn,
+CASE WHEN P3.id > 0 THEN P3.id ELSE P2.id END as personId,P2.urn as personUrn,
+GR.referenceId,GR.referenceType,
+P.id as permissionId,P.urn as permissionUrn,GR.organizationId 
+FROM groupRights GR
+JOIN permissions P ON P.id = GR.affectId
+JOIN groups G on G.id = GR.groupId
+LEFT JOIN accounts A ON A.id = GR.referenceId AND GR.referenceType = 'ACCOUNT'
+LEFT JOIN personparticipation P3 ON P3.participantId = GR.referenceId AND GR.referenceType = 'ACCOUNT' AND P3.participantType = 'ACCOUNT'
+LEFT JOIN persons P2 ON (P2.id = GR.referenceId AND GR.referenceType = 'PERSON') OR (P2.id = P3.participationId AND GR.referenceType = 'ACCOUNT')
+LEFT JOIN effectiveGroupAccountRoleRights eGAR ON eGAR.groupId = GR.groupId AND eGAR.accountId = GR.referenceId AND GR.referenceType = 'ACCOUNT' AND eGAR.affectId = P.id
+LEFT JOIN effectiveGroupPersonRoleRights eGPR ON eGPR.groupId = GR.groupId AND eGPR.personId = GR.referenceId AND GR.referenceType = 'PERSON' AND eGPR.affectId = P.id
+LEFT JOIN roles R ON (GR.referenceType = 'PERSON' AND eGPR.roleId = R.id) OR (GR.referenceType = 'ACCOUNT' AND eGAR.roleId = R.id)
+;
+
+DROP TABLE IF EXISTS groupEntitlementsCache CASCADE;
+CREATE TABLE groupEntitlementsCache (
+	GroupUrn text not null,
+	PermissionUrn text not null,
+	PersonUrn text,
+	AccountUrn text
+);
+CREATE UNIQUE INDEX groupentitlementscache_idx ON groupEntitlementsCache(GroupUrn,PermissionUrn,PersonUrn,AccountUrn);
+CREATE INDEX groupentitlementscache_groupurn ON groupEntitlementsCache(GroupUrn);
+CREATE INDEX groupentitlementscache_permissionurn ON groupEntitlementsCache(PermissionUrn);
+CREATE INDEX groupentitlementscache_personurn ON groupEntitlementsCache(PersonUrn);
+CREATE INDEX groupentitlementscache_accounturn ON groupEntitlementsCache(AccountUrn);
+
+CREATE OR REPLACE FUNCTION cache_group_entitlements() 
+        RETURNS BOOLEAN
+        AS $$
+	truncate groupEntitlementsCache;
+	insert into groupEntitlementsCache (GroupUrn,PermissionUrn,PersonUrn,AccountUrn) select distinct GroupUrn,PermissionUrn,PersonUrn,AccountUrn from groupEntitlements;
+
+	SELECT true;
+        $$ LANGUAGE 'sql';
 
 -- delete from roles where id in (select id from orphanRoles);
 -- delete from groups where id in (select id from orphanGroups);

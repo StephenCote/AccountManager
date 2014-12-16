@@ -50,8 +50,9 @@
 					<excludes>
 						<!-- 
 						
-						<exclude>**/TestContactInformationFactory.java</exclude>
+						<exclude>**/TestSoD.java</exclude>
 						-->
+						<exclude>**/TestContactInformationFactory.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>
 						<exclude>**/TestPolicyService.java</exclude>
 						

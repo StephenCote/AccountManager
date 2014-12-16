@@ -166,11 +166,12 @@ public class DataUtil {
 		if (!d.getBlob())
 		{
 			byte[] ret = new byte[0];
-			if (d.getShortData() == null)
+			if (d.getShortData() != null)
 			{
 				if (d.getPointer())
 				{
-					throw new DataException("IO Read not implemented");
+					//throw new DataException("IO Read not implemented");
+					ret = FileUtil.getFile(d.getShortData());
 					///ret = Core.Util.IO.FileUtil.GetFileBytes(d.short_data);
 				}
 				else
@@ -225,7 +226,8 @@ public class DataUtil {
 		{
 			if (d.getPointer() && d.getVaulted() == false)
 			{
-				throw new DataException("Pointer derference not implemented");
+				return FileUtil.getFile(new String(d.getDataBytesStore()));
+				//throw new DataException("Pointer derference not implemented");
 				//return Core.Util.IO.FileUtil.GetFileBytes(Core.Util.Lang.LangUtil.ByteArrayToString(d.data_bytes_store));
 			}
 			return d.getDataBytesStore();

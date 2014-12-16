@@ -58,6 +58,8 @@ public class ConsoleMain {
 		options.addOption("username", true, "AccountManager user name");
 		options.addOption("password",true,"AccountManager password");
 		options.addOption("importData",true,"Local path or file");
+		options.addOption("pointer",false,"Load data objects as filesystem pointers");
+		options.addOption("batchSize",true,"Maximum data batch size");
 		
 		options.addOption("name",true,"Variable name");
 		options.addOption("addUser",false,"Add a new user");
@@ -192,7 +194,8 @@ public class ConsoleMain {
 	}
 	public static void processAction(UserType user, CommandLine cmd){
 		if(cmd.hasOption("importData") && cmd.hasOption("path")){
-			DataAction.importDataPath(user, cmd.getOptionValue("importData"), cmd.getOptionValue("path"));
+			if(cmd.hasOption("batchSize")) DataAction.setMaximumLoad(Integer.parseInt(cmd.getOptionValue("batchSize")));
+			DataAction.importDataPath(user, cmd.getOptionValue("importData"), cmd.getOptionValue("path"), cmd.hasOption("pointer"));
 		}
 		if(cmd.hasOption("migrateData") && cmd.hasOption("ownerId")){
 			DataAction.migrateData(user,Long.parseLong(cmd.getOptionValue("ownerId")));

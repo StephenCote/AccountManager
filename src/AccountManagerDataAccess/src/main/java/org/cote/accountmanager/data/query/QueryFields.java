@@ -203,6 +203,10 @@ public class QueryFields {
 	{
 		return getStringField("mimetype", val);
 	}
+	public static QueryField getFieldEnabled(boolean enabled)
+	{
+		return getBooleanField("enabled", enabled);
+	}
 
 	public static QueryField getFieldGroup(long id)
 	{

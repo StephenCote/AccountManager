@@ -488,6 +488,20 @@ public abstract class NameIdFactory extends FactoryBase {
 	public boolean haveCacheId(long id){
 		return typeIdMap.containsKey(id);
 	}
+	public void removeBranchFromCache(NameIdType obj){
+		removeFromCache(obj);
+		if(!hasParentId || obj.getParentId() == 0L) return;
+		try {
+			NameIdType parent = getById(obj.getParentId(),obj.getOrganization());
+			if(parent != null) removeBranchFromCache(parent);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public void removeFromCache(NameIdType obj){
 		removeFromCache(obj, getCacheKeyName(obj));
 	}

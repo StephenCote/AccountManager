@@ -29,6 +29,8 @@ import org.cote.accountmanager.util.ZipUtil;
 
 public class DataAction {
 	public static final Logger logger = Logger.getLogger(DataAction.class.getName());
+	private static int maxLoad = 50;
+	public static void setMaximumLoad(int i){ maxLoad = i;}
 	private static Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s])",Pattern.MULTILINE);
 	public static void migrateData(UserType user, long sourceOwnerId){
 		try {
@@ -118,7 +120,7 @@ public class DataAction {
 		}
 		
 	}
-	public static void importDataPath(UserType user, String localPath, String targetPath){
+	public static void importDataPath(UserType user, String localPath, String targetPath, boolean isPointer){
 		try{
 			DirectoryGroupType dir = Factories.getGroupFactory().getCreatePath(user, targetPath, user.getOrganization());
 			File f = new File(localPath);
@@ -129,10 +131,10 @@ public class DataAction {
 				System.out.println("Directory " + targetPath + " not found");
 			}
 			if(f.isDirectory() == false){
-				importFile(user, dir, f);
+				importFile(user, dir, f, isPointer);
 			}
 			else{
-				importDirectory(user,dir, f);
+				importDirectory(user,dir, f, isPointer);
 			}
 		}
 		catch(FactoryException fe){
@@ -149,9 +151,9 @@ public class DataAction {
 		}
 		
 	}
-	private static void importBulkFiles(UserType user, DirectoryGroupType dir, List<File> bulkFiles) throws ArgumentException, FactoryException, DataAccessException, DataException{
+	private static void importBulkFiles(UserType user, DirectoryGroupType dir, List<File> bulkFiles, boolean isPointer) throws ArgumentException, FactoryException, DataAccessException, DataException{
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
-		int maxLoad = 50;
+
 		for(int i = 0; i < bulkFiles.size();i++){
 			if(i > 0 && (i % maxLoad) == 0){
 				BulkFactories.getBulkFactory().write(sessionId);
@@ -159,17 +161,17 @@ public class DataAction {
 				///Factories.clearCaches();
 				sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			}
-			importFile(user, dir, bulkFiles.get(i),sessionId);
+			importFile(user, dir, bulkFiles.get(i),sessionId,isPointer);
 		}
 		BulkFactories.getBulkFactory().write(sessionId);
 		BulkFactories.getBulkFactory().close(sessionId);
 		//Factories.clearCaches();
 	}
-	private static void importFile(UserType user, DirectoryGroupType dir, File f) throws ArgumentException, DataException, FactoryException{
-		importFile(user, dir, f, null);
+	private static void importFile(UserType user, DirectoryGroupType dir, File f, boolean isPointer) throws ArgumentException, DataException, FactoryException{
+		importFile(user, dir, f, null, isPointer);
 	}
 	
-	private static void importFile(UserType user, DirectoryGroupType dir, File f, String bulkSession) throws ArgumentException, DataException, FactoryException{
+	private static void importFile(UserType user, DirectoryGroupType dir, File f, String bulkSession, boolean isPointer) throws ArgumentException, DataException, FactoryException{
 		DataType data = Factories.getDataFactory().newData(user, dir);
 		if(f.getName().startsWith(".")){
 			logger.info("Skipping possible system name: " + f.getName());
@@ -180,7 +182,13 @@ public class DataAction {
 		if(fName.indexOf(".") > -1) data.setMimeType(MimeUtil.getType(fName.substring(fName.lastIndexOf("."), fName.length())));
 		if(data.getMimeType() == null) data.setMimeType("application/unknown");
 		data.setName(fName);
-		DataUtil.setValue(data, StreamUtil.fileHandleToBytes(f));
+		data.setPointer(isPointer);
+		if(isPointer == false){
+			DataUtil.setValue(data, StreamUtil.fileHandleToBytes(f));
+		}
+		else{
+			DataUtil.setValue(data, f.getAbsolutePath().getBytes());
+		}
 		if(bulkSession == null){
 			if(Factories.getDataFactory().addData(data)){
 				logger.info("Added " + fName + " to " + dir.getName());
@@ -195,7 +203,7 @@ public class DataAction {
 		}
 	}
 	
-	private static void importDirectory(UserType user, DirectoryGroupType dir, File f) throws FactoryException, ArgumentException, DataException, DataAccessException{
+	private static void importDirectory(UserType user, DirectoryGroupType dir, File f, boolean isPointer) throws FactoryException, ArgumentException, DataException, DataAccessException{
 		if(f.getName().startsWith(".")){
 			logger.info("Skipping possible system name: " + f.getName());
 			return;
@@ -212,14 +220,14 @@ public class DataAction {
 		logger.info("Importing Directory " + f.getName());
 		for(int i = 0; i < fs.length; i++){
 			if(fs[i].isDirectory()){
-				importDirectory(user, tdir, fs[i]);
+				importDirectory(user, tdir, fs[i],isPointer);
 			}
 			else{
 				bulkList.add(fs[i]);
 				//importFile(user, tdir, fs[i]);
 			}
 		}
-		importBulkFiles(user, tdir, bulkList);
+		importBulkFiles(user, tdir, bulkList,isPointer);
 		
 	}
 }

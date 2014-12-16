@@ -40,12 +40,16 @@ public class NameIdGroupFactory extends NameIdFactory{
 	public <T> T getByName(String name, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
 		return getByName(name, 0, parentGroup);
 	}
-	public <T> T getByName(String name, int parentId, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
+	public <T> T getByName(String name, long parentId, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
 		String key_name = name + "-" + parentId + "-" + parentGroup.getId();
 		T out_data = readCache(key_name);
 		if (out_data != null) return out_data;
-
-		List<NameIdType> obj_list = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldGroup(parentGroup.getId()) }, parentGroup.getOrganization().getId());
+		List<QueryField> fields = new ArrayList<QueryField>();
+		if(hasParentId) fields.add(QueryFields.getFieldParent(parentId));
+		fields.add(QueryFields.getFieldName(name));
+		fields.add(QueryFields.getFieldGroup(parentGroup.getId()));
+		
+		List<NameIdType> obj_list = getByField(fields.toArray(new QueryField[0]), parentGroup.getOrganization().getId());
 
 		if (obj_list.size() > 0)
 		{

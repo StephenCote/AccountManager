@@ -1,5 +1,6 @@
 package org.cote.accountmanager.data.policy;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.cote.accountmanager.data.operation.IOperation;
 import org.cote.accountmanager.data.operation.OperationUtil;
 import org.cote.accountmanager.data.rule.RuleUtil;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.data.sod.SoDPolicyUtil;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -150,11 +152,19 @@ public class PolicyEvaluator {
 			PatternType pat = patterns.get(i);
 			Factories.getPatternFactory().populate(pat);
 			boolean bPat = evaluatePattern(pat,facts,prr);
+			
 			if(
+				/// 2014/12/08 - moving deny check to the bottom of the method because it should be the inverse of the rule return
+				/// and not tied to the pattern result
+				///
+				/*
 				(rule.getRuleType() == RuleEnumType.PERMIT && bPat)
 				||
 				(rule.getRuleType() == RuleEnumType.DENY && !bPat)
+				*/
+				bPat
 			){
+			
 				/// Success Condition
 				/// If the compare operation is any, then break here
 				pass++;
@@ -169,6 +179,7 @@ public class PolicyEvaluator {
 				
 			}
 		}
+		logger.info("Rule Result: " + rule.getCondition().toString() + " " + pass + ":" + size);
 		boolean success = (
 				(rule.getCondition() == ConditionEnumType.ANY && pass > 0)
 				||
@@ -176,7 +187,16 @@ public class PolicyEvaluator {
 				||
 				(rule.getCondition() == ConditionEnumType.NONE && pass == 0)
 			);
-		if(success) prr.setScore(prr.getScore() + rule.getScore());
+		
+		if(rule.getRuleType() == RuleEnumType.DENY){
+			logger.info("Inverting rule success for DENY condition");
+			success = (success == false);
+		}
+		
+
+		if(success){
+			prr.setScore(prr.getScore() + rule.getScore());
+		}
 		return success;
 	}
 	public static boolean evaluatePattern(PatternType pattern, List<FactType> facts,PolicyResponseType prr) throws ArgumentException, NumberFormatException, FactoryException{
@@ -204,6 +224,11 @@ public class PolicyEvaluator {
 		/// Operation - fork processing over to a custom-defined class or function
 		///
 		prr.getPatternChain().add(pattern.getUrn());
+		/// this allows parameters to be passed in through a patttern bucket
+		///
+		if(pattern.getPatternType() == PatternEnumType.PARAMETER){
+			opr = OperationResponseEnumType.SUCCEEDED;
+		}
 		if(pattern.getPatternType() == PatternEnumType.OPERATION){
 			opr = evaluateOperation(pattern, pfact,mfact,pattern.getOperationUrn());
 		}
@@ -213,6 +238,9 @@ public class PolicyEvaluator {
 		}
 		else if(pattern.getPatternType() == PatternEnumType.AUTHORIZATION){
 			opr = evaluateAuthorization(pattern, pfact, mfact);
+		}
+		else if(pattern.getPatternType() == PatternEnumType.SEPARATION_OF_DUTY){
+			opr = evaluateSoD(pattern, pfact, mfact);
 		}
 		else if(mfact.getFactType() == FactEnumType.OPERATION){
 			opr = evaluateOperation(pattern, pfact,mfact,mfact.getSourceUrl());
@@ -239,7 +267,36 @@ public class PolicyEvaluator {
 		else out_response = OperationResponseEnumType.FAILED;
 		return out_response;
 	}
-	
+	public static OperationResponseEnumType evaluateSoD(PatternType pattern, FactType fact, FactType matchFact) throws ArgumentException{
+		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
+		PersonType person = null;
+		AccountType account = null;
+		NameIdType p = FactUtil.factoryRead(fact, matchFact);
+		NameIdType g = FactUtil.factoryRead(matchFact, matchFact);
+		if(p == null || g == null){
+			logger.error("The " + (g == null ? "match ":"") + "fact reference " + (g == null ? matchFact.getUrn() : fact.getUrn()) + " was null");
+			return OperationResponseEnumType.ERROR;
+		}
+
+		if(p.getNameType() != NameEnumType.ACCOUNT && p.getNameType() != NameEnumType.PERSON){
+			logger.error("Source fact of account or person is expected");
+			return OperationResponseEnumType.ERROR;
+		}
+		if(g.getNameType() != NameEnumType.GROUP){
+			logger.error("Match fact of group is expected");
+			return OperationResponseEnumType.ERROR;			
+		}
+		List<String> perms = new ArrayList<String>();
+		if(p.getNameType() == NameEnumType.ACCOUNT){
+			perms = SoDPolicyUtil.getActivityPermissionsForAccount(g.getUrn(), p.getUrn());
+		}
+		if(p.getNameType() == NameEnumType.PERSON){
+			perms = SoDPolicyUtil.getActivityPermissionsForPerson(g.getUrn(), p.getUrn());
+		}
+		if(perms.size() > 0) out_response = OperationResponseEnumType.SUCCEEDED;
+		else out_response = OperationResponseEnumType.FAILED;
+		return out_response;
+	}	
 	public static OperationResponseEnumType evaluateAuthorization(PatternType pattern, FactType fact, FactType matchFact) throws ArgumentException, NumberFormatException, FactoryException{
 		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
 		if(fact.getFactoryType() == FactoryEnumType.UNKNOWN || matchFact.getFactoryType() == FactoryEnumType.UNKNOWN){

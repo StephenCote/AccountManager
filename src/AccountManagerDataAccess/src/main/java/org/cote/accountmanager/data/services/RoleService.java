@@ -247,8 +247,10 @@ public class RoleService {
 			AccountParticipantType ap = Factories.getRoleParticipationFactory().newAccountRoleParticipation(role, account);
 			if (Factories.getRoleParticipationFactory().addParticipant(ap))
 			{
+				EffectiveAuthorizationService.pendAccountUpdate(account);
 				return true;
 			}
+			
 		}
 		return false;
 	}
@@ -256,6 +258,7 @@ public class RoleService {
 	{
 		if (Factories.getRoleParticipationFactory().deleteAccountRoleParticipants(role, account))
 		{
+			EffectiveAuthorizationService.pendAccountUpdate(account);
 			return true;
 		}
 		return false;
@@ -268,6 +271,7 @@ public class RoleService {
 			PersonParticipantType ap = Factories.getRoleParticipationFactory().newPersonRoleParticipation(role, person);
 			if (Factories.getRoleParticipationFactory().addParticipant(ap))
 			{
+				EffectiveAuthorizationService.pendPersonUpdate(person);
 				return true;
 			}
 		}
@@ -277,6 +281,7 @@ public class RoleService {
 	{
 		if (Factories.getRoleParticipationFactory().deletePersonRoleParticipants(role, person))
 		{
+			EffectiveAuthorizationService.pendPersonUpdate(person);
 			return true;
 		}
 		return false;

@@ -213,6 +213,8 @@ public class PolicyFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
 		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldEnabled(use_map.getEnabled()));
+
 	}
 	public int deletePoliciesByUser(UserType user) throws FactoryException
 	{

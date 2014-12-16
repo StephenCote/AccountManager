@@ -139,10 +139,12 @@
 	<simpleType name="PatternEnumType">
 		<restriction base="string">
 			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="PARAMETER"></enumeration>
 			<enumeration value="FUNCTION"></enumeration>
 			<enumeration value="OPERATION"></enumeration>
 			<enumeration value="EXPRESSION"></enumeration>
 			<enumeration value="AUTHORIZATION"></enumeration>
+			<enumeration value="SEPARATION_OF_DUTY"></enumeration>
 		</restriction>
 	</simpleType>
 
