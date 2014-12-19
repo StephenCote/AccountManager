@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template>
 
-	<p>Role Base</p>
+	<p>Permission Base</p>
 	<embedded-script><![CDATA[
 		template_init : function(){
-			this.getProperties().typeName = "Role";
+			this.getProperties().typeName = "Permission";
 			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
 			this.getProperties().populate = 0;
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.beans.baseRoleType();
+					o = new org.cote.beans.basePermissionType();
 					o.id = 0;
 					o.name = "";
 					o.parentId = (this.getProperties().parentRef ? this.getProperties().parentRef.id : 0);
-					o.nameType = "ROLE";
-					o.roleType = "USER";
+					o.nameType = "PERMISSION";
+					o.permissionType = "USER";
 					o.organization = uwm.getUser().organization;
 
 				}
 				else if(o.parentId > 0){
-					this.getProperties().defaultPath = accountManager.getRolePath(o.parentId);
+					this.getProperties().defaultPath = accountManager.getPermissionPath(o.parentId);
 				}
 				delete this.getProperties().parentRef;
 				delete this.getProperties().viewType;

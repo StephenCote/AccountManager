@@ -1058,7 +1058,7 @@
 			//ctl.log("Paint item " + o.name + " in " + g.path);
 			
 			var sIcoSrc = _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"] + _s.itemIcon;
-			if(o.mimeType && o.mimeType.match(/^image/gi)){
+			if(!b && o.mimeType && o.mimeType.match(/^image/gi)){
 				sIcoSrc = _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"] + _s.itemIconImg;
 				if(g.id == _no.currentDirectory.id) g = _no.currentDirectory;
 				else if(g && !g.populated) g = accountManager.getGroupById(g.id);
@@ -1123,15 +1123,21 @@
 			paintPanelObject(p, 0, a, i, sIcoSrc, 0,-1,"CTL",a.action,slotX,p.top() + 1, 0, 1,0);
 		}
 		
-		function paintPanelObject(oPanel,oObj,oAct,iIndex,sIco, sLbl, iRefId, sRef,sAct,iX, iY, bText, bHover,bDrag){
+		function paintPanelObject(oPanel,oObj,oAct,iIndex,sIco, sLbl, iRefId, sRef,sAct,iX, iY, bText, bHover,bDrag,bRepaint){
 			var _s = oPanel.getProperties();
 			var img = new Image();
 			var oG = ctl.getCanvas();
 			var idx = iIndex;
-			_s.currentCount++;
+			if(!bRepaint) _s.currentCount++;
 			//ctl.log("Pre-Paint Object: " + sAct + " " + sLbl + " " + sRef + " "  + bText + ":" + bHover + ":" + bDrag);
 			img.onload = function(){
-	
+				if(img.width == 0 || img.heigth == 0){
+					if(!bRepaint){
+						sIco = oPanel.getObjects().view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"];
+						paintPanelObject(oPanel, oObj, oAct, iIndex, sIco, sLbl, iRefId, sRef, sAct, iX, iY, bText, bHover, bDrag, 1);
+					}
+					return;
+				}
 				var oShape = oG.Image(img, iX, iY);
 				oShape.action = sAct;
 				oShape.panelId = oPanel.getObjectId();
@@ -1151,6 +1157,11 @@
 				//ctl.log("Paint Object: " + sAct + " " + sLbl + " " + sRef + " "  + bText + ":" + bHover + ":" + bDrag);
 			};
 			img.onerror = function(){
+				if(!bRepaint){
+					sIco = oPanel.getObjects().view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"];
+					paintPanelObject(oPanel, oObj, oAct, iIndex, sIco, sLbl, iRefId, sRef, sAct, iX, iY, bText, bHover, bDrag, 1);
+					return;
+				}
 				oPanel.getProperties().rasterCount++;
 				checkRaster(oPanel);
 			};

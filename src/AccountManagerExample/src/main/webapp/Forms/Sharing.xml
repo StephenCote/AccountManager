@@ -15,7 +15,7 @@
 	</div>
 	<div class = "rocket-column-2">
 		<p>
-			With:
+			For:
 		</p>
 		<p>
 			<select rid = "shareWith">
@@ -28,7 +28,7 @@
 	</div>
 	<div class = "rocket-column-2">
 		<p>
-			Permissions:
+			To:
 		</p>
 		<p>
 			<input type = "checkbox" rid = "chkRead" /> : Read

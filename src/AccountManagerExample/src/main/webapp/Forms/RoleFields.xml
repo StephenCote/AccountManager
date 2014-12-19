@@ -6,9 +6,10 @@
 			Type:
 		</p>
 		<p>
-			<select rid = "roleType" disabled = "true" bind = "${bean.rocketType}">
+			<select rid = "roleType" bind = "${bean.rocketType}">
 				<option>ACCOUNT</option>
-				<option selected = "true">USER</option>
+				<option selected = "true">PERSON</option>
+				<option>USER</option>
 			</select>
 		</p>
 	</div>
@@ -30,6 +31,7 @@
 	
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
+			this.GetElementByRID("pathCont").style.display = "none";
 			this.GetComponentByRID("rolesList").setLoadHandler(this.scopeHandler("configRolesList",0,1,1));
 		},
 		
@@ -57,7 +59,7 @@
 			var oL = this.getRolesList();
 			oL.clearItems();
 			var o = this.getBean("rocketType");
-			if(!o || o == null) return;
+			if(!o || o == null || o.id <= 0) return;
 			var aL = accountManager.listRoles(o.organization,o);
 			for(var i = 0; i < aL.length;i++){
 				oL.addItem(aL[i].name + " " + aL[i].roleType,aL[i]);
@@ -72,20 +74,7 @@
 		addType : function(o){
 			Hemi.log("Add role type: " + o.name + ":" + o.roleType);
 
-			var v = "";
-			if(o.mimeType && o.mimeType.match(/^text/)){
-				v = this.GetElementByRID("textData").value;
-				return accountManager.addData(o.name, o.description, o.mimeType, v, o.group);
-			}
-			else if(o.mimeType.match(/^binary$/)){
-				var oF = this.get_frame("mediaUploadFrame");
-				oF.document.forms["mediaForm"].elements["id"].value = "0";
-				oF.document.forms["mediaForm"].elements["name"].value = o.name;
-				oF.document.forms["mediaForm"].elements["description"].value = o.description;
-				oF.document.forms["mediaForm"].elements["groupId"].value = o.group.id;
-				oF.document.forms["mediaForm"].submit();
-				return -1;
-			}
+			return accountManager.addRole(o.name, o.roleType, o.parentId, o.organization);
 		},
 		
 		prepareSave : function(o){

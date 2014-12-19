@@ -60,30 +60,36 @@
 			if(_s.manualPick){
 				this.GetElementByRID("control_bar").style.display = "block";
 			}
-			if(!bNotAGroup){
-				this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : "~/" + sTypeName + "s");
-				this.scopeHandler("input_keypress",0,0,1);
-				this.GetElementByRID("path").onkeypress = this._prehandle_input_keypress;
-				
+			if(vParent){
+				_o.parentRef = vParent;
 			}
-			else{
-				this.GetElementByRID("path").style.display = "none";
-				 _s.noGroup = 1;
-			}
+			
 			if(bShowSearch){
 				this.GetElementByRID("filter").style.display = "";
 				this.GetElementByRID("button_search").style.display = "";
 			}
-			if(vParent){
-				_o.parentRef = vParent;
-			}
+	
 			if(!sViewTypeName) sViewTypeName = sTypeName;
 			_s.typeName = sTypeName;
 			_s.viewTypeName = sViewTypeName;
 			_s.start_record = 0;
 			_s.record_count = 10;
+
+			if(bNotAGroup) _s.noGroup = 1;
+			if(!_s.noGroup || vParent){
+				var s = this.getParentPath();
+				this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : (s ? s : "~/" + sTypeName + "s"));
+				this.scopeHandler("input_keypress",0,0,1);
+				this.GetElementByRID("path").onkeypress = this._prehandle_input_keypress;	
+			}
+			else{
+				this.GetElementByRID("path").style.display = "none";
+			}
+			
 			this.GetComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
 			if(this.setTitle) this.setTitle(sViewTypeName);
+			
+			
 			
 			
 		},
@@ -124,12 +130,23 @@
 		getList : function(){
 			return this.GetComponentByRID("typelist").GetWideSelect();
 		},
+		getParentPath : function(){
+			var s,vParent = this.getObjects().parentRef;
+			if(vParent && (vParent.nameType.match(/^ROLE$/) || vParent.nameType.match(/^PERMISSION$/))){
+				var oApi = window[uwm.getApi(this.getProperties().typeName)];
+				s = oApi["get" + this.getProperties().viewTypeName + "Path"](vParent.id);
+			}
+			return s; 
+		},
 		getPath : function(){
-			if(this.getProperties().noGroup) return 0;
+			if(this.getProperties().noGroup && !this.getObjects().parentRef) return 0;
 			var o = this.GetElementByRID("path"), s;
 			if(!(s = o.value).length){
 				s = o.placeholder;
-				if(!s) s = "~/" + this.getProperties().typeName + "s";
+				if(!s){
+					s = this.getParentPath();
+					if(!s) s = "~/" + this.getProperties().typeName + "s";
+				}
 			}
 			return s;
 		},
@@ -277,7 +294,7 @@
 			this.openWindow(this.getProperties().viewTypeName);
 		},
 		openWindow : function(sType,oType,v, p){
-			var oProps = {defaultPath:(p ? p : this.getPath()),openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:this.getList().getObjectId()};
+			var oProps = {parentRef:this.getObjects().parentRef,defaultPath:(p ? p : this.getPath()),openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:this.getList().getObjectId()};
 			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + (v ? v : sType) + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
             if (oW) {
             	oW.resizeTo((v ? 600 : 450), 400);
@@ -378,7 +395,7 @@
 					var count = 0;
 					var sFilt = this.GetElementByRID("filter").value;
 					if(this.provideCount) count = this.provideCount(sPath, sFilt);
-					else if(sPath) count = oApi["count" + this.getProperties().typeName + "s"](sPath);
+					else if(sPath && !_s.noGroup) count = oApi["count" + this.getProperties().typeName + "s"](sPath);
 					else count = oApi["count" + this.getProperties().typeName + "s"](uwm.getUser().organization,_o.parentRef); 
 					if(count != null) this.setTotalCount(count);
 				}
@@ -392,7 +409,7 @@
 				else if(sPath) aList = oApi["list" + tname + "s"](sPath,this.getProperties().start_record,this.getProperties().record_count);
 				else{
 				
-					if(tname != "Role") aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,this.getProperties().start_record,this.getProperties().record_count);
+					if(tname != "Role" && tname != "Permission") aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,this.getProperties().start_record,this.getProperties().record_count);
 					else aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,"UNKNOWN",this.getProperties().start_record,this.getProperties().record_count);
 				}
 				if(_s.start_record == 0 && _s.typeName.match(/^group$/gi) && _s.viewType){

@@ -8,6 +8,8 @@
 	window.accountManager = {
 
 			organization_paths : {},
+			permission_paths : {},
+			role_paths : {},
 
 			setPermission : function(oObj, oActor, oPerm, bEnable){
 				if(!oObj) return 0;
@@ -61,9 +63,22 @@
 					}
 				}
 			},
-
-				
-			
+			/*
+			getPermissionPath : function(o){
+				if(!o) return null;
+				if(accountManager.permission_paths[o.id]) return accountManager.permission_paths[o.id];
+				var aB = [];
+				var oOrg = o;
+				// Don't count Global org, which is id = 1
+				while(oOrg && oOrg.id > 1){
+					aB.push(oOrg.name);
+					oOrg = accountManager.getPermissionById(oOrg.parentId);
+				}
+				sOrgPath = "/" + aB.reverse().join("/");
+				accountManager.permission_paths[o.id] = sOrgPath;
+				return accountManager.permission_paths[o.id];
+			},
+			*/
 			getPublicUser : function(){
 				return uwmServices.getService("User").getPublicUser();
 			},
@@ -371,7 +386,8 @@
 				o.name = sName;
 				o.roleType = sType;
 				o.organization = oOrg;
-				if(oPar) o.parentId = oPar.id;
+				if(typeof oPar == "object" && oPar != null) o.parentId = oPar.id;
+				else if(typeof oPar == "number") o.parentId = oPar;
 				else o.parentId = 0;
 
 				return uwmServices.getService("Role").add(o);
@@ -384,6 +400,9 @@
 			},
 			getRoleById : function(iId){
 				return uwmServices.getService("Role").readById(iId);
+			},
+			getRolePath : function(iId){
+				return uwmServices.getService("Role").getPath((typeof iId == "object" ? iId.id : iId));
 			},
 			getRole : function(sName, sType, oParent, oOrg){
 				if(!oOrg) oOrg = uwm.getUser().organization;
@@ -427,7 +446,8 @@
 				o.name = sName;
 				o.permissionType = sType;
 				o.organization = oOrg;
-				if(oPar) o.parentId = oPar.id;
+				if(typeof oPar == "object" && oPar != null) o.parentId = oPar.id;
+				else if(typeof oPar == "number") o.parentId = oPar;
 				else o.parentId = 0;
 
 				return uwmServices.getService("Permission").add(o);
@@ -441,17 +461,24 @@
 			getPermissionById : function(iId){
 				return uwmServices.getService("Permission").readById(iId);
 			},
+			getPermissionPath : function(iId){
+				return uwmServices.getService("Permission").getPath((typeof iId == "object" ? iId.id : iId));
+			},
 			getPermission : function(sName, sType, oParent, oOrg){
 				if(!oOrg) oOrg = uwm.getUser().organization;
 				if(!sType) sType = "UNKNOWN";
 				return uwmServices.getService("Permission").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
 			},
-			
+			listSystemPermissions : function(oOrg){
+				if(!oOrg) oOrg = uwm.getUser().organization;
+				return uwmServices.getService("Permission").listSystemPermissions(oOrg.id);
+			},
 			/// Note: requesting the user's own permission dynamically allocates a permission that the user owns.
 			/// Similar to roles, this is because Roles and Permissions scope to the parent and not to a groupid.
 			/// This is a temporary setup in the PermissionService
 			///
 			getUserPermission : function(sType){
+				if(!sType) sType = "ACCOUNT";
 				return uwmServices.getService("Permission").getUserPermission(sType);
 			},
 			
