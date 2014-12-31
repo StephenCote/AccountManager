@@ -57,18 +57,18 @@ public class FactFactory extends NameIdGroupFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	
-	public void populate(FactType cycle) throws FactoryException,ArgumentException{
-		if(cycle.getPopulated()) return;
-		/*
-		cycle.getArtifacts().addAll(Factories.getFactParticipationFactory().getArtifactsFromParticipation(cycle));
-		cycle.getDependencies().addAll(Factories.getFactParticipationFactory().getDependenciesFromParticipation(cycle));
-		cycle.getCases().addAll(Factories.getFactParticipationFactory().getCasesFromParticipation(cycle));
-		cycle.getRequirements().addAll(Factories.getFactParticipationFactory().getRequirementsFromParticipation(cycle));
-		cycle.getFacts().addAll(Factories.getFactParticipationFactory().getFactsFromParticipation(cycle));
-		*/
-		cycle.setPopulated(true);
-		updateToCache(cycle);
+	@Override
+	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
+	{
+		
+	}
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		FactType fact = (FactType)obj;
+		if(fact.getPopulated()) return;
+		fact.setPopulated(true);
+		updateToCache(fact);
 	}
 	
 	
@@ -122,6 +122,7 @@ public class FactFactory extends NameIdGroupFactory {
 		FactType new_obj = new FactType();
 		new_obj.setNameType(NameEnumType.FACT);
 		super.read(rset, new_obj);
+		readGroup(rset, new_obj);
 		new_obj.setFactType(FactEnumType.valueOf(rset.getString("facttype")));
 		new_obj.setFactoryType(FactoryEnumType.valueOf(rset.getString("factorytype")));
 		//new_obj.setUrn(rset.getString("urn"));
@@ -133,8 +134,6 @@ public class FactFactory extends NameIdGroupFactory {
 		new_obj.setSourceType(rset.getString("sourcetype"));
 		new_obj.setSourceDataType(SqlDataEnumType.valueOf(rset.getString("sourcedatatype")));
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		long group_id = rset.getLong("groupid");
-		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
 		return new_obj;
 	}
 	public boolean updateFact(FactType data) throws FactoryException, DataAccessException

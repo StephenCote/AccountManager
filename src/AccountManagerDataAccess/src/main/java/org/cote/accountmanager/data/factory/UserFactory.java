@@ -52,22 +52,19 @@ public class UserFactory extends NameIdFactory {
 		this.tableNames.add("users");
 		this.factoryType = FactoryEnumType.USER;
 	}
-	public void populate(UserType user) throws FactoryException, ArgumentException
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
+		UserType user = (UserType)obj;
 		if(user.getPopulated() == true || user.getDatabaseRecord() == false) return;
 		user.setContactInformation(Factories.getContactInformationFactory().getContactInformationForUser(user));
 		user.setHomeDirectory(Factories.getGroupFactory().getUserDirectory(user));
 		user.setStatistics(Factories.getStatisticsFactory().getStatistics(user));
 		user.setPopulated(true);
-		updateUserToCache(user);
-		// System.out.println("User Org: " + user.getOrganization().getName());
-		// System.out.println("Populate: Id: " + user.getId());
-		// System.out.println("Populate: Home Dir: " + (user.getHomeDirectory() != null));
-		// System.out.println("Get Home Dir: " + (Factories.getGroupFactory().getUserDirectory(user) != null));
+		updateToCache(user);
 		return;
 	}
 	public boolean updateUser(UserType user) throws FactoryException{
-		removeUserFromCache(user);
+		removeFromCache(user);
 		boolean b =  update(user);
 		
 		/// 2014/09/10
@@ -89,17 +86,14 @@ public class UserFactory extends NameIdFactory {
 		UserType t = (UserType)obj;
 		return t.getName() + "-" + t.getAccountId() + "-" + t.getOrganization().getId();
 	}
+
 	public void updateUserToCache(UserType user) throws ArgumentException{
-		String key_name = getCacheKeyName(user);
-		//System.out.println("Update user to cache: " + key_name);
-		if(this.haveCacheId(user.getId())) removeUserFromCache(user);
-		addToCache(user, key_name);
+		updateToCache(user);
 	}
 	public void removeUserFromCache(UserType user){
-		String key_name = getCacheKeyName(user);
-		//System.out.println("Remove user from cache: " + key_name);
-		removeFromCache(user, key_name);
+		removeFromCache(user);
 	}
+	
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase("userid")){
 			table.setRestrictUpdateColumn("userid", true);
@@ -178,7 +172,7 @@ public class UserFactory extends NameIdFactory {
 	}
 	public UserType getUserByName(String name, OrganizationType organization) throws FactoryException, ArgumentException
 	{
-		String key_name = name + "-" + organization.getId();
+		String key_name = name + "-0-" + organization.getId();
 		UserType out_user = (UserType)readCache(key_name);
 		if(out_user != null)
 			return out_user;

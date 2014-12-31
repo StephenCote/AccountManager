@@ -116,18 +116,4 @@ public class SoDPolicyUtil {
 		}
 		return perms;
 	}
-	public static boolean rebuildCache(){
-		boolean out_bool = false;
-		Connection connection = ConnectionFactory.getInstance().getConnection();
-		try {
-			Statement stat = connection.createStatement();
-			stat.executeQuery("SELECT * FROM cache_group_entitlements();");
-			out_bool = true;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return out_bool;
-	}
 }

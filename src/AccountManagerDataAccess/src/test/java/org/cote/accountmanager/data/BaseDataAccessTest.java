@@ -15,6 +15,7 @@ import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.services.ServiceUtil;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
@@ -22,6 +23,8 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.AccountEnumType;
+import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
@@ -116,8 +119,9 @@ public class BaseDataAccessTest{
 		}
 		return data;
 	}
-	
-	public DataType getData(UserType user, String data_name){
+
+
+	protected DataType getData(UserType user, String data_name){
 		
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
 

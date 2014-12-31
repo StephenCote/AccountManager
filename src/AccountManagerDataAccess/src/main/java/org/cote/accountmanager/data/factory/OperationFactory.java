@@ -28,7 +28,6 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
-
 import org.cote.accountmanager.objects.OperationEnumType;
 import org.cote.accountmanager.objects.OperationEnumType;
 import org.cote.accountmanager.objects.OperationType;
@@ -58,18 +57,18 @@ public class OperationFactory extends NameIdGroupFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	
-	public void populate(OperationType cycle) throws FactoryException,ArgumentException{
-		if(cycle.getPopulated()) return;
-		/*
-		cycle.getArtifacts().addAll(Factories.getOperationParticipationFactory().getArtifactsFromParticipation(cycle));
-		cycle.getDependencies().addAll(Factories.getOperationParticipationFactory().getDependenciesFromParticipation(cycle));
-		cycle.getCases().addAll(Factories.getOperationParticipationFactory().getCasesFromParticipation(cycle));
-		cycle.getRequirements().addAll(Factories.getOperationParticipationFactory().getRequirementsFromParticipation(cycle));
-		cycle.getOperations().addAll(Factories.getOperationParticipationFactory().getOperationsFromParticipation(cycle));
-		*/
-		cycle.setPopulated(true);
-		updateToCache(cycle);
+	@Override
+	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
+	{
+		
+	}
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		OperationType oper = (OperationType)obj;
+		if(oper.getPopulated()) return;
+		oper.setPopulated(true);
+		updateToCache(oper);
 	}
 	
 	
@@ -116,14 +115,13 @@ public class OperationFactory extends NameIdGroupFactory {
 		OperationType new_obj = new OperationType();
 		new_obj.setNameType(NameEnumType.OPERATION);
 		super.read(rset, new_obj);
+		readGroup(rset, new_obj);
 		new_obj.setOperationType(OperationEnumType.valueOf(rset.getString("operationtype")));
 		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setScore(rset.getInt("score"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setOperation(rset.getString("operation"));
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		long group_id = rset.getLong("groupid");
-		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
 		return new_obj;
 	}
 	public boolean updateOperation(OperationType data) throws FactoryException, DataAccessException

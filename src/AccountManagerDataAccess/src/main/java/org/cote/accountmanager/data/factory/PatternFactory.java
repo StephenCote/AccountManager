@@ -59,16 +59,16 @@ public class PatternFactory extends NameIdGroupFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	
-	public void populate(PatternType pattern) throws FactoryException,ArgumentException{
+	@Override
+	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
+	{
+		
+	}
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		PatternType pattern = (PatternType)obj;
 		if(pattern.getPopulated()) return;
-		/*
-		pattern.getArtifacts().addAll(Factories.getPatternParticipationFactory().getArtifactsFromParticipation(pattern));
-		pattern.getDependencies().addAll(Factories.getPatternParticipationFactory().getDependenciesFromParticipation(pattern));
-		pattern.getCases().addAll(Factories.getPatternParticipationFactory().getCasesFromParticipation(pattern));
-		pattern.getRequirements().addAll(Factories.getPatternParticipationFactory().getRequirementsFromParticipation(pattern));
-		pattern.getPatterns().addAll(Factories.getPatternParticipationFactory().getPatternsFromParticipation(pattern));
-		*/
 		pattern.setFact(null);
 		pattern.setMatch(null);
 		pattern.setOperation(null);
@@ -127,6 +127,7 @@ public class PatternFactory extends NameIdGroupFactory {
 		PatternType new_obj = new PatternType();
 		new_obj.setNameType(NameEnumType.PATTERN);
 		super.read(rset, new_obj);
+		readGroup(rset, new_obj);
 		new_obj.setPatternType(PatternEnumType.valueOf(rset.getString("patterntype")));
 		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setScore(rset.getInt("score"));
@@ -136,8 +137,6 @@ public class PatternFactory extends NameIdGroupFactory {
 		new_obj.setComparator(ComparatorEnumType.valueOf(rset.getString("comparator")));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		long group_id = rset.getLong("groupid");
-		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
 		return new_obj;
 	}
 	public boolean updatePattern(PatternType data) throws FactoryException, DataAccessException

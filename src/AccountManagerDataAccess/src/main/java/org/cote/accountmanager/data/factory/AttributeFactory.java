@@ -22,6 +22,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
@@ -118,11 +119,7 @@ public class AttributeFactory extends NameIdFactory{
 		return updateAttributes(new NameIdType[]{obj});
 	}
 	public boolean updateAttributes(NameIdType[] obj){
-		/// Todo: Add bulk support for delete
-		///
-		for(int i = 0; i < obj.length;i++){
-			deleteAttributes(obj[0],true);
-		}
+		deleteAttributesForObjects(obj);
 		addAttributes(obj);
 		return true;
 	}
@@ -274,6 +271,24 @@ public class AttributeFactory extends NameIdFactory{
 		}
 		return out_bool;
 	}
+	public <T> boolean deleteAttributesForObjects(T[] objects){
+		long[] ids = new long[objects.length];
+		if(ids.length == 0) return true;
+		NameEnumType ntype = NameEnumType.UNKNOWN;
+		NameIdType nobj = null;
+		long organization_id = 0L;
+
+		for(int i = 0; i < ids.length;i++){
+			nobj = (NameIdType)objects[i];
+			if(i==0){
+				ntype = nobj.getNameType();
+				organization_id = nobj.getOrganization().getId();
+			}
+			ids[i] = nobj.getId();
+		}
+		return (deleteByReferenceId(ids, ntype, organization_id) > 0);
+	}	
+
 	public boolean deleteAttribute(AttributeType attribute){
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldReferenceId(attribute.getReferenceId()));
@@ -289,23 +304,45 @@ public class AttributeFactory extends NameIdFactory{
 		}
 		return out_bool;
 	}
-	/*
-	@Override
-	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
+	protected int deleteByReferenceId(long[] ids, NameEnumType nType, long organization_id)
 	{
-		AttributeType new_attr = new AttributeType();
-		new_attr.setDataType(SqlDataEnumType.valueOf(rset.getString("datatype")));
-		new_attr.setReferenceType(NameEnumType.valueOf(rset.getString("referencetype")));
-		new_attr.setOrganizationId(rset.getLong("organizationid"));
-		new_attr.setReferenceId(rset.get)
-		new_account.setDatabaseRecord(true);
-		new_account.setNameType(NameEnumType.ACCOUNT);
-		new_account.setAccountId(rset.getString("accountid"));
-		new_account.setReferenceId(rset.getLong("referenceid"));
-		new_account.setAccountStatus(AccountStatusEnumType.valueOf(rset.getString("accountstatus")));
-		new_account.setAccountType(AccountEnumType.valueOf(rset.getString("accounttype")));
-		return super.read(rset, new_account);
+		if (ids.length == 0) return 0;
+		
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		DataTable table = this.dataTables.get(0);
+
+		int deleted_records = 0;
+		try {
+			String sql = "DELETE FROM " + table.getName() + " WHERE referencetype = ? AND referenceid = ?";
+			PreparedStatement statement = connection.prepareStatement(sql);
+			for (int i = 0; i < ids.length; i++)
+			{
+				statement.setString(1, nType.toString());
+				statement.setLong(2, ids[i]);
+				statement.addBatch();
+				if((i > 0 || ids.length ==1 ) && ((i % 250 == 0) || i == ids.length - 1)){
+					int[] del = statement.executeBatch();
+					for(int d = 0; d < del.length; d++) deleted_records += del[d];
+				}
+			}
+			statement.close();
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return deleted_records;
 	}
-	*/
+	
 	
 }

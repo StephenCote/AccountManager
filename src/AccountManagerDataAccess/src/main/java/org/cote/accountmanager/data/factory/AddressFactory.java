@@ -14,7 +14,6 @@ import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
@@ -63,11 +62,14 @@ public class AddressFactory extends NameIdGroupFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	public void populate(AddressType person) throws FactoryException,ArgumentException{
-		if(person.getPopulated() == true) return;
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		AddressType addr = (AddressType)obj;
+		if(addr.getPopulated() == true) return;
 
-		person.setPopulated(true);
-		updateToCache(person);
+		addr.setPopulated(true);
+		updateToCache(addr);
 	}
 	public AddressType newAddress(UserType user, AddressType parentAddress) throws ArgumentException
 	{
@@ -127,9 +129,7 @@ public class AddressFactory extends NameIdGroupFactory {
 		AddressType new_obj = new AddressType();
 		new_obj.setNameType(NameEnumType.ADDRESS);
 		super.read(rset, new_obj);
-
-		long group_id = rset.getLong("groupid");
-		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
+		readGroup(rset, new_obj);
 		new_obj.setPreferred(rset.getBoolean("preferred"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setAddressLine1(rset.getString("addressline1"));

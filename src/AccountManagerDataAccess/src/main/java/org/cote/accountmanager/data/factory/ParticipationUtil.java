@@ -19,6 +19,8 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 
+/// TODO : Remove this class - it's now dead code with EffectiveAuthorizationService
+///
 public class ParticipationUtil {
 	public static final Logger logger = Logger.getLogger(ParticipationUtil.class.getName());
 	/*

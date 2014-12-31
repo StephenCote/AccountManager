@@ -183,6 +183,7 @@ public class SessionSecurity {
 		user.setSession(session);
 		Factories.getUserFactory().populate(user);
 		Factories.getUserFactory().updateUserToCache(user);
+
 		/// }
 
 

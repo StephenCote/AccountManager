@@ -17,5 +17,6 @@ public class MapUtil {
 		//if(src.getNameType() == null) targ.setNameType(NameEnumType.APPLICATION);
 		if(src.getNameType() != NameEnumType.UNKNOWN) targ.setNameType(src.getNameType());
 		if(targ.getOrganization() == null) targ.setOrganization(src.getOrganization());
+		if(targ.getUrn() != null) targ.setUrn(src.getUrn());
 	}
 }

@@ -589,7 +589,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(person, data, permissions)){
-			logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
+			//logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
 			return getCacheValue(person,data,permissions);
 
 		}
@@ -606,7 +606,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(person, role, permissions)){
-			logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			//logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
 			return getCacheValue(person,role,permissions);
 
 		}
@@ -622,7 +622,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(person, group, permissions)){
-			logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
+			//logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
 			return getCacheValue(person,group,permissions);
 
 		}
@@ -639,7 +639,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(account, data, permissions)){
-			logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
+			//logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
 			return getCacheValue(account,data,permissions);
 
 		}
@@ -656,7 +656,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(account, role, permissions)){
-			logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			//logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
 			return getCacheValue(account,role,permissions);
 
 		}
@@ -672,7 +672,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(account, group, permissions)){
-			logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
+			//logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
 			return getCacheValue(account,group,permissions);
 
 		}
@@ -688,7 +688,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(user, data, permissions)){
-			logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
+			//logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
 			return getCacheValue(user,data,permissions);
 
 		}
@@ -705,7 +705,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(user, role, permissions)){
-			logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			//logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
 			return getCacheValue(user,role,permissions);
 
 		}
@@ -721,7 +721,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(user, group, permissions)){
-			logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
+			//logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
 			return getCacheValue(user,group,permissions);
 
 		}
@@ -738,7 +738,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(actor, data, permissions)){
-			logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
+			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
 			return getCacheValue(actor,data,permissions);
 
 		}
@@ -755,7 +755,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(actor, role, permissions)){
-			logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
 			return getCacheValue(actor,role,permissions);
 
 		}
@@ -771,7 +771,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(actor, group, permissions)){
-			logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
+			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
 			return getCacheValue(actor,group,permissions);
 
 		}
@@ -810,7 +810,7 @@ public class EffectiveAuthorizationService {
 		{
 		if(affect_type != AffectEnumType.UNKNOWN) throw new ArgumentException("AffectType is not supported for checking role participation (at the moment)");
 		if(hasCache(actor,role)){
-			logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
 			return getCacheValue(actor,role);
 		}
 		String prefix = null;
@@ -1272,5 +1272,23 @@ public class EffectiveAuthorizationService {
 		
 		return out_bool;
 	}
+	public static boolean rebuildEntitlementsCache(){
+		boolean out_bool = false;
+		
+		long start = System.currentTimeMillis();
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		try {
+			Statement stat = connection.createStatement();
+			stat.executeQuery("SELECT * FROM cache_group_entitlements();");
+			stat.executeQuery("SELECT * FROM cache_data_entitlements();");
+			out_bool = true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		logger.info("Rebuilt Entitlements Cache in " + (System.currentTimeMillis() - start) + "ms");
+		return out_bool;
+	}
+
 	
 }

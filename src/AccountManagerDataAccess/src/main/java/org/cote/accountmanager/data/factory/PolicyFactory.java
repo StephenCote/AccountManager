@@ -73,16 +73,16 @@ public class PolicyFactory extends NameIdGroupFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	
-	public void populate(PolicyType policy) throws FactoryException,ArgumentException{
+	@Override
+	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
+	{
+		
+	}
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		PolicyType policy = (PolicyType)obj;
 		if(policy.getPopulated()) return;
-		/*
-		policy.getArtifacts().addAll(Factories.getPolicyParticipationFactory().getArtifactsFromParticipation(policy));
-		policy.getDependencies().addAll(Factories.getPolicyParticipationFactory().getDependenciesFromParticipation(policy));
-		policy.getCases().addAll(Factories.getPolicyParticipationFactory().getCasesFromParticipation(policy));
-		policy.getRequirements().addAll(Factories.getPolicyParticipationFactory().getRequirementsFromParticipation(policy));
-		policy.getPolicys().addAll(Factories.getPolicyParticipationFactory().getPolicysFromParticipation(policy));
-		*/
 		policy.getRules().addAll(Factories.getPolicyParticipationFactory().getRulesFromParticipation(policy));
 		Collections.sort(policy.getRules(),new LogicalTypeComparator());
 		policy.setPopulated(true);
@@ -160,6 +160,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 		PolicyType new_obj = new PolicyType();
 		new_obj.setNameType(NameEnumType.POLICY);
 		super.read(rset, new_obj);
+		readGroup(rset, new_obj);
 		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setScore(rset.getInt("score"));
 		new_obj.setDescription(rset.getString("description"));
@@ -170,8 +171,6 @@ public class PolicyFactory extends NameIdGroupFactory {
 		new_obj.setModified(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
 		new_obj.setExpires(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
 		new_obj.setCondition(ConditionEnumType.fromValue(rset.getString("condition")));
-		long group_id = rset.getLong("groupid");
-		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
 		return new_obj;
 	}
 	public boolean updatePolicy(PolicyType data) throws FactoryException, DataAccessException

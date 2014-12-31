@@ -19,6 +19,7 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -40,12 +41,12 @@ public class PermissionService{
 	public PermissionService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 	}
-	/*
+	
 	@GET @Path("/count/{group:[~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public int count(@PathParam("group") String group,@Context HttpServletRequest request){
-		return PermissionServiceImpl.count(group, request);
+	public int count(@PathParam("organizationId") long organizationId,@Context HttpServletRequest request){
+		return PermissionServiceImpl.count(organizationId, request);
 	}
-	*/
+	
 	@GET @Path("/countInParent/{organizationId:[\\d]+}/{parentId:[\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public int countInParent(@PathParam("organizationId") long organizationId,@PathParam("parentId") long parentId,@Context HttpServletRequest request){
 		return PermissionServiceImpl.countInParent(organizationId, parentId,request);
@@ -86,6 +87,25 @@ public class PermissionService{
 	public BasePermissionType readByParentId(@PathParam("name") String name,@PathParam("type") String type, @PathParam("orgId") long orgId,@PathParam("parentId") long parentId,@Context HttpServletRequest request){
 
 		return PermissionServiceImpl.readByParent(orgId, parentId, name, type, request);
+	}
+	
+	@GET @Path("/getPath/{id: [0-9]+}") @Produces(MediaType.TEXT_PLAIN) @Consumes(MediaType.TEXT_PLAIN)
+	public String getPath(@PathParam("id") long id,@Context HttpServletRequest request){
+		String path = null;
+		BasePermissionType permission = PermissionServiceImpl.readById(id, request);
+	
+			try {
+				if(permission != null) path = Factories.getPermissionFactory().getPermissionPath(permission);
+			} catch (FactoryException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+				e.printStackTrace();
+			} catch (ArgumentException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+				e.printStackTrace();
+			}
+		return path;
 	}
 
 	/*
@@ -171,6 +191,39 @@ public class PermissionService{
 	public boolean setPermissionOnDataForRole(@PathParam("did") long dataId, @PathParam("rid") long roleId, @PathParam("pid") long permissionId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		return PermissionServiceImpl.setPermission(user, AuditEnumType.DATA, dataId, AuditEnumType.ROLE, roleId, permissionId, enable);
+	}
+	@GET @Path("/listSystemPermissions/{oid : [0-9]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public List<BasePermissionType> setPermissionOnDataForRole(@PathParam("oid") long organizationId, @Context HttpServletRequest request){
+		List<BasePermissionType> permissions = new ArrayList<BasePermissionType>();
+		
+		try {
+			OrganizationType organization = Factories.getOrganizationFactory().getOrganizationById(organizationId);
+			if(organization == null){
+				logger.error("Invalid organization");
+				return permissions;
+			}
+			permissions.add(AuthorizationService.getCreateDataPermission(organization));
+			permissions.add(AuthorizationService.getCreateGroupPermission(organization));
+			permissions.add(AuthorizationService.getCreateRolePermission(organization));
+			permissions.add(AuthorizationService.getDeleteDataPermission(organization));
+			permissions.add(AuthorizationService.getDeleteGroupPermission(organization));
+			permissions.add(AuthorizationService.getDeleteRolePermission(organization));
+			permissions.add(AuthorizationService.getEditDataPermission(organization));
+			permissions.add(AuthorizationService.getEditGroupPermission(organization));
+			permissions.add(AuthorizationService.getEditRolePermission(organization));
+			permissions.add(AuthorizationService.getViewDataPermission(organization));
+			permissions.add(AuthorizationService.getViewGroupPermission(organization));
+			permissions.add(AuthorizationService.getViewRolePermission(organization));
+			
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return permissions;
 	}
 	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean flushCache(@Context HttpServletRequest request){

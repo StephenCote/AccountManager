@@ -14,7 +14,6 @@ import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
@@ -65,11 +64,15 @@ public class ContactFactory extends NameIdGroupFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	public void populate(ContactType person) throws FactoryException,ArgumentException{
-		if(person.getPopulated() == true) return;
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		ContactType contact = (ContactType)obj;
 
-		person.setPopulated(true);
-		updateToCache(person);
+		if(contact.getPopulated() == true) return;
+		contact.setPopulated(true);
+		updateToCache(contact);
+		
 	}
 	public ContactType newContact(UserType user, ContactType parentContact) throws ArgumentException
 	{
@@ -126,9 +129,7 @@ public class ContactFactory extends NameIdGroupFactory {
 		ContactType new_obj = new ContactType();
 		new_obj.setNameType(NameEnumType.CONTACT);
 		super.read(rset, new_obj);
-
-		long group_id = rset.getLong("groupid");
-		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
+		readGroup(rset, new_obj);
 		new_obj.setPreferred(rset.getBoolean("preferred"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setLocationType(LocationEnumType.valueOf(rset.getString("locationtype")));

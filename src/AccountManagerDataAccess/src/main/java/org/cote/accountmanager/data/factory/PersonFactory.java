@@ -17,7 +17,6 @@ import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
@@ -65,7 +64,15 @@ public class PersonFactory extends NameIdGroupFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	public void populate(PersonType person) throws FactoryException,ArgumentException{
+	@Override
+	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
+	{
+		
+	}
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		PersonType person = (PersonType)obj;
 		if(person.getPopulated() == true) return;
 		person.getPartners().addAll(Factories.getPersonParticipationFactory().getPartnersFromParticipation(person));
 		//logger.info("Populated " + person.getPartners().size() + " partners");
@@ -212,12 +219,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		PersonType new_obj = new PersonType();
 		new_obj.setNameType(NameEnumType.PERSON);
 		super.read(rset, new_obj);
-
-		long group_id = rset.getLong("groupid");
-		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
-		
-		//long contact_id = rset.getLong("contactinformationid");
-		//if(contact_id > 0) new_obj.setContactInformation((ContactInformationType)Factories.getContactInformationFactory().getById(contact_id, new_obj.getOrganization()));
+		readGroup(rset, new_obj);
 		new_obj.setContactInformation(Factories.getContactInformationFactory().getContactInformationForPerson(new_obj));
 		
 		new_obj.setBirthDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("birthdate")));
@@ -421,8 +423,8 @@ public class PersonFactory extends NameIdGroupFactory {
 		}
 		return person;
 	}
-	
-	public List<PersonType> searchPersons(String searchValue, int startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException{
+	@Override
+	public <T> List<T> search(String searchValue, int startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException{
 	
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){

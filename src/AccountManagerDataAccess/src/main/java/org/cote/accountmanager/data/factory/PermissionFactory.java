@@ -151,6 +151,7 @@ public class PermissionFactory extends NameIdFactory {
 		if(per.getParentId() > 1L){
 			path = getPermissionPath((BasePermissionType)getPermissionById(per.getParentId(),per.getOrganization()));
 		}
+		if(per.getParentId() == 0L && per.getName().equals("Root")) return "";
 		path = path + "/" + per.getName();
 		return path;
 	}

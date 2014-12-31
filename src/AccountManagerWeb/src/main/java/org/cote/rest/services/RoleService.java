@@ -104,7 +104,7 @@ public class RoleService{
 		return RoleServiceImpl.authorizeUser(organizationId, userId, roleId, view, edit, delete, create, request);
 	}
 	@GET @Path("/count/{organizationId:[\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public int count(@PathParam("organizationId") long organizationId,@PathParam("parentId") long parentId,@Context HttpServletRequest request){
+	public int count(@PathParam("organizationId") long organizationId,@Context HttpServletRequest request){
 		return RoleServiceImpl.count(organizationId,request);
 	}	
 	@GET @Path("/countInParent/{organizationId:[\\d]+}/{parentId:[\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
@@ -151,6 +151,22 @@ public class RoleService{
 	@GET @Path("/readById/{id: [0-9]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public BaseRoleType readById(@PathParam("id") long id,@Context HttpServletRequest request){
 		return RoleServiceImpl.readById(id, request);
+	}
+	@GET @Path("/getPath/{id: [0-9]+}") @Produces(MediaType.TEXT_PLAIN) @Consumes(MediaType.TEXT_PLAIN)
+	public String getPath(@PathParam("id") long id,@Context HttpServletRequest request){
+		String path = null;
+		BaseRoleType role = RoleServiceImpl.readById(id, request);
+	
+			try {
+				if(role != null) path = Factories.getRoleFactory().getRolePath(role);
+			} catch (FactoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return path;
 	}
 
 	@GET @Path("/listGroups/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)

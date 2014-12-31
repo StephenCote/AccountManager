@@ -335,7 +335,11 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	{
 		T out_participant = null;
 		if (participation == null || participant == null || participation.getId().compareTo(0L)==0 || participant.getId().compareTo(0L)==0 || participant_type == ParticipantEnumType.UNKNOWN){
-				throw new ArgumentException("getParticipant: Invalid parameters.  " + (participation == null ? " Null Participation." : "") + (participant == null ? " Null participant." : "") + (participant_type == ParticipantEnumType.UNKNOWN ? " UNKNOWN Participant Type":""));
+				throw new ArgumentException("getParticipant: Invalid parameters.  "
+					+ (participation == null ? " Null Participation." : "") + (participant == null ? " Null participant." : "") + (participant_type == ParticipantEnumType.UNKNOWN ? " UNKNOWN Participant Type":"")
+					+ (participation.getId().compareTo(0L)==0 ? " Participation id is 0." : "")
+					+ (participant.getId().compareTo(0L)==0 ? " Participant id is 0." : "")
+				);
 		}
 
 		String key_name = participation.getId() + "-" + this.participationType + "-" + participant.getId() + "-" + participant_type + "-" + (permission != null ? permission.getId() : "0") + "-" + affect_type + "-" + participation.getOrganization().getId();

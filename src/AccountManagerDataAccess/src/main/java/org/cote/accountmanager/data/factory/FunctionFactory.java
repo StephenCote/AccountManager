@@ -58,8 +58,15 @@ public class FunctionFactory extends NameIdGroupFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	
-	public void populate(FunctionType func) throws FactoryException,ArgumentException{
+	@Override
+	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
+	{
+		
+	}
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		FunctionType func = (FunctionType)obj;
 		if(func.getPopulated()) return;
 		func.getFacts().addAll(Factories.getFunctionParticipationFactory().getFunctionFactsFromParticipation(func));
 		Collections.sort(func.getFacts(),new LogicalTypeComparator());
@@ -126,6 +133,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 		FunctionType new_obj = new FunctionType();
 		new_obj.setNameType(NameEnumType.FUNCTION);
 		super.read(rset, new_obj);
+		readGroup(rset, new_obj);
 		new_obj.setFunctionType(FunctionEnumType.valueOf(rset.getString("functiontype")));
 		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setScore(rset.getInt("score"));
@@ -133,8 +141,6 @@ public class FunctionFactory extends NameIdGroupFactory {
 		new_obj.setSourceUrn(rset.getString("sourceurn"));
 		new_obj.setSourceUrl(rset.getString("sourceurl"));
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		long group_id = rset.getLong("groupid");
-		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
 		return new_obj;
 	}
 	public boolean updateFunction(FunctionType data) throws FactoryException, DataAccessException

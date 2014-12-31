@@ -863,12 +863,18 @@ public class AuthorizationService {
     ///
 	public static boolean switchGroup(UserType admin, NameIdType map, BaseGroupType group, BasePermissionType permission, boolean enable) throws FactoryException, ArgumentException, DataAccessException
 	{
-		if (!canChangeGroup(admin, group)) return false;
+		if (!canChangeGroup(admin, group)){
+			logger.error("User " + admin.getName() + " is not authorized to change group " + group.getName());
+			return false;
+		}
 		BaseParticipantType bp = getGroupPermissionParticipant(map, group, permission);
 		boolean out_boolean = false;
 		if (enable)
 		{
-			if (bp != null) return true;
+			if (bp != null){
+				logger.debug("Participation for " + map.getName() + " and " + group.getName() + " with " + permission.getName() + " already exists");
+				return true;
+			}
 			ParticipantEnumType part_type = ParticipantEnumType.valueOf(map.getNameType().toString());
 			//logger.debug("Part Type " + part_type);
 			bp = Factories.getGroupParticipationFactory().newParticipant(group, map, part_type, permission, AffectEnumType.GRANT_PERMISSION);
@@ -880,6 +886,9 @@ public class AuthorizationService {
 			else out_boolean = Factories.getGroupParticipationFactory().deleteParticipant(bp);
 		}
 		//if(out_boolean && map.getNameType() == NameEnumType.USER) EffectiveAuthorizationService.pendUserUpdate((UserType)map);
+		if(out_boolean){
+			EffectiveAuthorizationService.pendGroupUpdate(group);
+		}
 		return out_boolean;
 	}
 	public static boolean setPermission(UserType admin, BaseRoleType role, BaseGroupType group, BasePermissionType permission, boolean enable) throws FactoryException, DataAccessException, ArgumentException
@@ -888,12 +897,20 @@ public class AuthorizationService {
 	}
 	public static boolean switchGroup(UserType admin, BaseRoleType role, BaseGroupType group, BasePermissionType permission, boolean enable) throws FactoryException, DataAccessException, ArgumentException
 	{
-		if (!canChangeGroup(admin, group)) return false;
+		if (!canChangeGroup(admin, group)){
+			logger.error("User " + admin.getName() + " is not authorized to change group " + group.getName());
+			return false;
+		}
+
 		BaseParticipantType bp = getGroupPermissionParticipant(role, group, permission);
 		boolean out_boolean = false;
 		if (enable)
 		{
-			if (bp != null) return true;
+			if (bp != null){
+				logger.debug("Participation for " + role.getName() + " and " + group.getName() + " with " + permission.getName() + " already exists");
+				return true;
+			}
+
 			bp = Factories.getGroupParticipationFactory().newRoleGroupParticipation(group, role, permission, AffectEnumType.GRANT_PERMISSION);
 			out_boolean = Factories.getGroupParticipationFactory().addParticipant(bp);
 		}

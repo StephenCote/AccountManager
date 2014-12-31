@@ -37,7 +37,7 @@ public class StatisticsFactory extends NameIdFactory {
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("groups")){
+		if(table.getName().equalsIgnoreCase("statistics")){
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}

@@ -253,6 +253,7 @@
 		},
 		designItem : function(o){
 			/// Data
+			var oApi = window[uwm.getApi(this.getProperties().typeName)];
 			if(o.nameType == "DATA" && o.mimeType && o.mimeType.match(/^text/)){
 				this.openItem(o,"Design");
 			}
@@ -270,6 +271,15 @@
 				this.refreshList();
 				//this.openItem(o,"ListGroups",1);
 			}
+			else if(o.nameType == "ROLE" || o.nameType == "PERMISSION"){
+				this.getObjects().parentRef = o;
+				this.GetElementByRID("path").value = this.getParentPath();
+				this.getProperties().start_record = 0;
+				//this.getProperties().viewType = o;
+				this.refreshList();
+				//this.openItem(o,"ListGroups",1);
+			}
+
 		},
 		openItem : function(o,v,b){
 			var _s = this.getProperties();
@@ -281,7 +291,7 @@
 				else if(!o.nameType.match(/^data$/gi) || o.detailsOnly){
 					Hemi.log("Not populated.  Fetching a populated version.");
 					if(o.nameType.match(/^group$/gi)) o = accountManager.getGroupById(o.id);
-					else if(o.nameType.match(/^role$/gi)) o = oApi["get" + this.getProperties().typeName](o.name,o.roleType,_o.parentRef);
+					else if(o.nameType.match(/^(role|permission)$/gi)) o = oApi["get" + this.getProperties().typeName](o.name,o[(o.nameType.match(/^role$/gi) ? "role" : "permission") + "Type"],_o.parentRef);
 					else if(this.provideItem) o = this.provideItem(this.getProperties().typeName,o);
 					else if(o.id)  o = oApi["get" + this.getProperties().typeName + "ById"](o.id);
 					else o = oApi["get" + this.getProperties().typeName](o.name,o.group);
@@ -412,8 +422,10 @@
 					if(tname != "Role" && tname != "Permission") aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,this.getProperties().start_record,this.getProperties().record_count);
 					else aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,"UNKNOWN",this.getProperties().start_record,this.getProperties().record_count);
 				}
-				if(_s.start_record == 0 && _s.typeName.match(/^group$/gi) && _s.viewType){
-					var oP = accountManager.getGroupById(_s.viewType.parentId);
+				
+				if(_s.start_record == 0 && (_s.typeName.match(/^(group|permission|role)$/gi)) && (_s.viewType || _o.parentRef)){
+					var oP = oApi["get" + _s.viewTypeName + "ById"]((_s.viewType ? _s.viewType.parentId : _o.parentRef.parentId));
+					/// alert('check .. ' + _s.start_record + "/" + _s.typeName + "/" + _s.viewType + "/" + _o.parentRef + "/" + oP);
 					if(oP != null){
 						var sn = (this.decorateListItemName ? this.decorateListItemName(oP) : "..");
 						oL.addItem(sn, oP);

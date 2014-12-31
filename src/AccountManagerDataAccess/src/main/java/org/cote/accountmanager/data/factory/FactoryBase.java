@@ -350,7 +350,7 @@ public abstract class FactoryBase {
 
 		int deleted_records = 0;
 		try {
-			String sql = "DELETE FROM " + table.getName() + " WHERE id = ?";
+			String sql = "DELETE FROM " + table.getName() + " WHERE " + field_name + " = ?";
 			PreparedStatement statement = connection.prepareStatement(sql);
 			for (int i = 0; i < list.length; i++)
 			{

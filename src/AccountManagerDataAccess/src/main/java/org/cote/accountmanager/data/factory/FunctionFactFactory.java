@@ -56,18 +56,18 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	
-	public void populate(FunctionFactType cycle) throws FactoryException,ArgumentException{
-		if(cycle.getPopulated()) return;
-		/*
-		cycle.getArtifacts().addAll(Factories.getFunctionFactParticipationFactory().getArtifactsFromParticipation(cycle));
-		cycle.getDependencies().addAll(Factories.getFunctionFactParticipationFactory().getDependenciesFromParticipation(cycle));
-		cycle.getCases().addAll(Factories.getFunctionFactParticipationFactory().getCasesFromParticipation(cycle));
-		cycle.getRequirements().addAll(Factories.getFunctionFactParticipationFactory().getRequirementsFromParticipation(cycle));
-		cycle.getFunctionFunctionFacts().addAll(Factories.getFunctionFactParticipationFactory().getFunctionFunctionFactsFromParticipation(cycle));
-		*/
-		cycle.setPopulated(true);
-		updateToCache(cycle);
+	@Override
+	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
+	{
+		
+	}
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		FunctionFactType fact = (FunctionFactType)obj;
+		if(fact.getPopulated()) return;
+		fact.setPopulated(true);
+		updateToCache(fact);
 	}
 	
 	
@@ -113,14 +113,13 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 		FunctionFactType new_obj = new FunctionFactType();
 		new_obj.setNameType(NameEnumType.FUNCTIONFACT);
 		super.read(rset, new_obj);
+		readGroup(rset, new_obj);
 
 		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setFunctionUrn(rset.getString("functionurn"));
 		new_obj.setFactUrn(rset.getString("facturn"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		long group_id = rset.getLong("groupid");
-		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
 		return new_obj;
 	}
 	public boolean updateFunctionFact(FunctionFactType data) throws FactoryException, DataAccessException

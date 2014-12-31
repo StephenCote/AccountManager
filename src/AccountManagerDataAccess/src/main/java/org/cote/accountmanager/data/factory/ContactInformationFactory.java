@@ -51,13 +51,15 @@ public class ContactInformationFactory extends NameIdFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	public void populate(ContactInformationType obj) throws FactoryException,ArgumentException{
-		if(obj.getPopulated() == true || obj.getId().equals(0L)) return;
-		obj.getContacts().addAll(Factories.getContactInformationParticipationFactory().getContactsFromParticipation(obj));
-		obj.getAddresses().addAll(Factories.getContactInformationParticipationFactory().getAddressesFromParticipation(obj));
-		obj.setPopulated(true);
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		ContactInformationType cinfo = (ContactInformationType)obj;
+		if(cinfo.getPopulated() == true || cinfo.getId().equals(0L)) return;
+		cinfo.getContacts().addAll(Factories.getContactInformationParticipationFactory().getContactsFromParticipation(cinfo));
+		cinfo.getAddresses().addAll(Factories.getContactInformationParticipationFactory().getAddressesFromParticipation(cinfo));
+		cinfo.setPopulated(true);
 		
-		updateToCache(obj);
+		updateToCache(cinfo);
 	}
 	@Override
 	public <T> String getCacheKeyName(T obj){

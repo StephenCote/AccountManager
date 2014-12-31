@@ -52,8 +52,10 @@ public class AccountFactory extends NameIdGroupFactory {
 
 	}
 	
-	public void populate(AccountType account) throws FactoryException, ArgumentException
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
+		AccountType account = (AccountType)obj;
 		if(account.getPopulated() == true || account.getDatabaseRecord() == false) return;
 		account.setContactInformation(Factories.getContactInformationFactory().getContactInformationForAccount(account));
 		if(account.getContactInformation() != null) Factories.getContactInformationFactory().populate(account.getContactInformation());
@@ -86,15 +88,10 @@ public class AccountFactory extends NameIdGroupFactory {
 		return b;
 	}
 	protected void updateAccountToCache(AccountType account) throws ArgumentException{
-		String key_name = getCacheKeyName(account);
-		System.out.println("Update account to cache: " + key_name);
-		if(this.haveCacheId(account.getId())) removeAccountFromCache(account);
-		addToCache(account, key_name);
+		updateToCache(account);
 	}
 	protected void removeAccountFromCache(AccountType account){
-		String key_name = getCacheKeyName(account);
-		System.out.println("Remove account from cache: " + key_name);
-		removeFromCache(account, key_name);
+		removeFromCache(account);
 	}
 	public int deleteAccountsInGroup(DirectoryGroupType group)  throws FactoryException
 	{
@@ -268,11 +265,8 @@ public class AccountFactory extends NameIdGroupFactory {
 	{
 		AccountType new_account = new AccountType();
 		new_account.setNameType(NameEnumType.ACCOUNT);
-		
 		super.read(rset, new_account);
-		
-		long group_id = rset.getLong("groupid");
-		new_account.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_account.getOrganization()));
+		readGroup(rset, new_account);
 		new_account.setDatabaseRecord(true);
 		new_account.setAccountId(rset.getString("accountid"));
 		new_account.setReferenceId(rset.getLong("referenceid"));

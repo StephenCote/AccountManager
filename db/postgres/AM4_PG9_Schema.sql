@@ -988,6 +988,8 @@ CREATE OR REPLACE FUNCTION roles_from_leaf(root_id BIGINT,organizationid BIGINT)
         $$ LANGUAGE 'sql';
 
 -- this is actually coded reverse of what ‘from-leaf’ might imply - it looks DOWN from root_id
+-- I reused this logic below for rolling up groups given a branch
+---
 CREATE OR REPLACE FUNCTION roles_from_leaf(IN root_id bigint)
 	RETURNS TABLE(leafid bigint, roleid bigint, parentid bigint, organizationid bigint)
 	AS $$
@@ -1002,6 +1004,19 @@ CREATE OR REPLACE FUNCTION roles_from_leaf(IN root_id bigint)
 	select * from role_tree;
 	$$ LANGUAGE 'sql';
 
+CREATE OR REPLACE FUNCTION groups_from_branch(IN root_id bigint)
+	RETURNS TABLE(branchid bigint, groupid bigint, parentid bigint, organizationid bigint)
+	AS $$
+	WITH RECURSIVE group_tree(branchid,groupid, parentid, organizationid) AS (
+	   SELECT $1 as branchid, R.id as groupid, R.parentid, R.organizationid
+	      FROM groups R WHERE R.id = $1
+	   UNION ALL
+	   SELECT $1 as branchid, P.id, P.parentid, P.organizationid
+	      FROM group_tree RT, groups P
+	      WHERE RT.groupid = P.parentid
+	)
+	select * from group_tree;
+	$$ LANGUAGE 'sql';
 
 -- similar function, but counting up the levels for use with hierarchical displays
 CREATE OR REPLACE FUNCTION leveled_roles_from_leaf(IN root_id bigint)
@@ -1497,6 +1512,14 @@ or
 organizationid not in (select id from organizations)
 ;
 
+create or replace view orphanPermissions as
+select id, name, parentId from permissions R1
+where (parentid not in (select id from Permissions G1)
+and R1.parentid > 0)
+or
+organizationid not in (select id from organizations)
+;
+
 create or replace view orphanContactInformation as
 select id,contactinformationtype,organizationid from contactinformation RP1
 where (contactinformationtype = 'USER' and referenceid not in (select id from Users U1))
@@ -1517,6 +1540,7 @@ CREATE OR REPLACE FUNCTION cleanup_orphans()
 	delete from accounts where id in (select id from orphanAccounts);
 	delete from groups where id in (select id from orphanGroups);
 	delete from roles where id in (select id from orphanRoles);
+	delete from permissions where id in (select id from orphanPermissions);
 
 	delete from dataparticipation where id in (select id from orphanDataParticipations);
 	delete from roleparticipation where id in (select id from orphanRoleParticipations);
@@ -1615,7 +1639,8 @@ CREATE TABLE groupEntitlementsCache (
 	GroupUrn text not null,
 	PermissionUrn text not null,
 	PersonUrn text,
-	AccountUrn text
+	AccountUrn text,
+	OrganizationId bigint not null default 0
 );
 CREATE UNIQUE INDEX groupentitlementscache_idx ON groupEntitlementsCache(GroupUrn,PermissionUrn,PersonUrn,AccountUrn);
 CREATE INDEX groupentitlementscache_groupurn ON groupEntitlementsCache(GroupUrn);
@@ -1627,10 +1652,53 @@ CREATE OR REPLACE FUNCTION cache_group_entitlements()
         RETURNS BOOLEAN
         AS $$
 	truncate groupEntitlementsCache;
-	insert into groupEntitlementsCache (GroupUrn,PermissionUrn,PersonUrn,AccountUrn) select distinct GroupUrn,PermissionUrn,PersonUrn,AccountUrn from groupEntitlements;
+	insert into groupEntitlementsCache (GroupUrn,PermissionUrn,PersonUrn,AccountUrn,OrganizationId) select distinct GroupUrn,PermissionUrn,PersonUrn,AccountUrn,OrganizationId from groupEntitlements;
 
 	SELECT true;
         $$ LANGUAGE 'sql';
+
+create or replace view dataEntitlements as
+select
+G.id as dataId,G.urn as dataUrn,R.id as roleId, R.urn as roleUrn,
+A.id as accountId,A.urn as accountUrn,
+CASE WHEN P3.id > 0 THEN P3.id ELSE P2.id END as personId,P2.urn as personUrn,
+GR.referenceId,GR.referenceType,
+P.id as permissionId,P.urn as permissionUrn,GR.organizationId 
+FROM dataRights GR
+JOIN permissions P ON P.id = GR.affectId
+JOIN data G on G.id = GR.dataId
+LEFT JOIN accounts A ON A.id = GR.referenceId AND GR.referenceType = 'ACCOUNT'
+LEFT JOIN personparticipation P3 ON P3.participantId = GR.referenceId AND GR.referenceType = 'ACCOUNT' AND P3.participantType = 'ACCOUNT'
+LEFT JOIN persons P2 ON (P2.id = GR.referenceId AND GR.referenceType = 'PERSON') OR (P2.id = P3.participationId AND GR.referenceType = 'ACCOUNT')
+LEFT JOIN effectiveDataAccountRoleRights eGAR ON eGAR.dataId = GR.dataId AND eGAR.accountId = GR.referenceId AND GR.referenceType = 'ACCOUNT' AND eGAR.affectId = P.id
+LEFT JOIN effectiveDataPersonRoleRights eGPR ON eGPR.dataId = GR.dataId AND eGPR.personId = GR.referenceId AND GR.referenceType = 'PERSON' AND eGPR.affectId = P.id
+LEFT JOIN roles R ON (GR.referenceType = 'PERSON' AND eGPR.roleId = R.id) OR (GR.referenceType = 'ACCOUNT' AND eGAR.roleId = R.id)
+;
+
+select * from dataEntitlements;
+
+DROP TABLE IF EXISTS dataEntitlementsCache CASCADE;
+CREATE TABLE dataEntitlementsCache (
+	DataUrn text not null,
+	PermissionUrn text not null,
+	PersonUrn text,
+	AccountUrn text,
+	OrganizationId bigint not null default 0
+);
+CREATE UNIQUE INDEX dataentitlementscache_idx ON dataEntitlementsCache(DataUrn,PermissionUrn,PersonUrn,AccountUrn);
+CREATE INDEX dataentitlementscache_groupurn ON dataEntitlementsCache(DataUrn);
+CREATE INDEX dataentitlementscache_permissionurn ON dataEntitlementsCache(PermissionUrn);
+CREATE INDEX dataentitlementscache_personurn ON dataEntitlementsCache(PersonUrn);
+CREATE INDEX dataentitlementscache_accounturn ON dataEntitlementsCache(AccountUrn);
+
+CREATE OR REPLACE FUNCTION cache_data_entitlements() 
+        RETURNS BOOLEAN
+        AS $$
+	truncate dataEntitlementsCache;
+	insert into dataEntitlementsCache (DataUrn,PermissionUrn,PersonUrn,AccountUrn,OrganizationId) select distinct DataUrn,PermissionUrn,PersonUrn,AccountUrn,OrganizationId from dataEntitlements;
+	SELECT true;
+        $$ LANGUAGE 'sql';
+
 
 -- delete from roles where id in (select id from orphanRoles);
 -- delete from groups where id in (select id from orphanGroups);

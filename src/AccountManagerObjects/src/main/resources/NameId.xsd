@@ -30,6 +30,8 @@
 			default="false">
 		</attribute>
 		<attribute name="urn" type="string"></attribute>
+		<attribute name="organizationId" type="long" default="0"></attribute>
+		<attribute name="groupId" type="long" default="0"></attribute>
 	</complexType>
 
 	<complexType name="OrganizationType">

@@ -61,16 +61,16 @@ public class RuleFactory extends NameIdGroupFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	
-	public void populate(RuleType rule) throws FactoryException,ArgumentException{
+	@Override
+	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
+	{
+		
+	}
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		RuleType rule = (RuleType)obj;
 		if(rule.getPopulated()) return;
-		/*
-		rule.getArtifacts().addAll(Factories.getRuleParticipationFactory().getArtifactsFromParticipation(rule));
-		rule.getDependencies().addAll(Factories.getRuleParticipationFactory().getDependenciesFromParticipation(rule));
-		rule.getCases().addAll(Factories.getRuleParticipationFactory().getCasesFromParticipation(rule));
-		rule.getRequirements().addAll(Factories.getRuleParticipationFactory().getRequirementsFromParticipation(rule));
-		rule.getRules().addAll(Factories.getRuleParticipationFactory().getRulesFromParticipation(rule));
-		*/
 		rule.getPatterns().addAll(Factories.getRuleParticipationFactory().getPatternsFromParticipation(rule));
 		Collections.sort(rule.getPatterns(),new LogicalTypeComparator());
 		rule.setPopulated(true);
@@ -136,14 +136,13 @@ public class RuleFactory extends NameIdGroupFactory {
 		RuleType new_obj = new RuleType();
 		new_obj.setNameType(NameEnumType.RULE);
 		super.read(rset, new_obj);
+		readGroup(rset, new_obj);
 		new_obj.setRuleType(RuleEnumType.valueOf(rset.getString("ruletype")));
 		new_obj.setCondition(ConditionEnumType.valueOf(rset.getString("condition")));
 		//new_obj.setUrn(rset.getString("urn"));
 		new_obj.setScore(rset.getInt("score"));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		long group_id = rset.getLong("groupid");
-		new_obj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_obj.getOrganization()));
 		return new_obj;
 	}
 	public boolean updateRule(RuleType data) throws FactoryException, DataAccessException

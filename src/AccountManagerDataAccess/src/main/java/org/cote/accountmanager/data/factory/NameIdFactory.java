@@ -25,6 +25,7 @@ import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.io.BulkInsertMeta;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.util.UrnUtil;
@@ -56,6 +57,16 @@ public abstract class NameIdFactory extends FactoryBase {
 	protected boolean hasObjectId = false;
 	protected boolean hasUrn = false;
 	
+	protected boolean aggressiveKeyFlush = true;
+	
+	/// 2014/12/26
+	/// bit indicating to use the urn from the database
+	/// this will be disabled because when tree structures are moved,
+	/// it would require a reevalutation for everything below that branch
+	/// At the moment, the NameIdGroupFactory read operation for group needs to be refactored so the urn can be successfully rebuilt while the object is being reconstituted,
+	/// without having to make changes to every factory
+	protected boolean usePersistedUrn = true;
+	
 	public NameIdFactory(){
 		super();
 		typeNameIdMap = Collections.synchronizedMap(new HashMap<Long,String>());
@@ -71,7 +82,19 @@ public abstract class NameIdFactory extends FactoryBase {
 		throw new FactoryException("Method must be overriden.  Yes, this could be abstract, but not every factory needs it.");
 	}
 		
-	
+	public <T> void populate(T object) throws FactoryException,ArgumentException{
+		logger.warn("Method must be overriden.  Yes, this could be abstract, but not every factory needs it.");
+		NameIdType obj = (NameIdType)object;
+		if(obj.getPopulated() == true) return;
+		obj.setPopulated(true);
+		updateToCache(obj);
+	}
+	public <T> void depopulate(T object) throws FactoryException,ArgumentException{
+		logger.warn("Method must be overriden.  Yes, this could be abstract, but not every factory needs it.");
+		NameIdType obj = (NameIdType)object;
+		obj.setPopulated(false);
+		updateToCache(obj);
+	}	
 	public void mapBulkIds(NameIdType map){
 		long tmpId = 0;
 		if(hasOwnerId && map.getOwnerId() < 0L){
@@ -97,6 +120,10 @@ public abstract class NameIdFactory extends FactoryBase {
 	
 	public boolean update(NameIdType map, ProcessingInstructionType instruction) throws FactoryException
 	{
+		if(this.bulkMode == true){
+			///logger.info("Deferring update to bulk operation");
+			return true;
+		}
 		DataTable table = dataTables.get(0);
 		if(instruction == null) instruction = new ProcessingInstructionType();
 		boolean out_bool = false;
@@ -127,6 +154,94 @@ public abstract class NameIdFactory extends FactoryBase {
 			PreparedStatement statement = connection.prepareStatement(sql);
 			DBFactory.setStatementParameters(updateFields.toArray(new QueryField[0]), statement);
 			updated = statement.executeUpdate();
+		}
+		catch(SQLException sqe){
+			logger.error(sqe.getMessage());
+			sqe.printStackTrace();
+		}
+		finally{
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}		
+		return (updated > 0);
+	}
+	public <T> boolean updateBulk(List<T> map) throws FactoryException
+	{
+		return updateBulk(map, null);
+	}
+	public <T> boolean updateBulk(List<T> map, ProcessingInstructionType instruction) throws FactoryException
+	{
+		if(this.bulkMode == false) throw new FactoryException("Factory is not configured for bulk operation");
+		DataTable table = dataTables.get(0);
+		if(instruction == null) instruction = new ProcessingInstructionType();
+		if(map.size() == 0){
+			return false;
+		}
+		boolean out_bool = false;
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
+		
+		List<QueryField> queryFields = new ArrayList<QueryField>();
+		List<QueryField> updateFields = new ArrayList<QueryField>();
+		
+		int maxBatchSize = 250;
+		int batch = 0;
+		int updated = 0;
+		try{
+			boolean lastCommit = connection.getAutoCommit();
+			connection.setAutoCommit(false);
+
+			queryFields.add(QueryFields.getFieldId((NameIdType)map.get(0)));
+			if(scopeToOrganization){
+				queryFields.add(QueryFields.getFieldOrganization((NameIdType)map.get(0)));
+			}
+
+			setNameIdFields(updateFields, (NameIdType)map.get(0));
+			setFactoryFields(updateFields, (NameIdType)map.get(0), instruction);
+			String sql = null;
+			PreparedStatement statement = null;
+			for(int i = 0; i < map.size(); i++){
+				
+				queryFields.clear();
+				updateFields.clear();
+				queryFields.add(QueryFields.getFieldId((NameIdType)map.get(i)));
+				if(scopeToOrganization){
+					queryFields.add(QueryFields.getFieldOrganization((NameIdType)map.get(i)));
+				}
+				setNameIdFields(updateFields, (NameIdType)map.get(i));
+				setFactoryFields(updateFields, (NameIdType)map.get(i), instruction);
+				if(i == 0){
+					sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(queryFields.toArray(new QueryField[0]), token);
+					statement = connection.prepareStatement(sql);
+				}
+				updateFields.addAll(queryFields);
+				DBFactory.setStatementParameters(updateFields.toArray(new QueryField[0]), statement);
+				statement.addBatch();
+				updated++;
+				if(batch++ >= maxBatchSize){
+					logger.debug("Execute bulk update batch: " + batch);
+					statement.executeBatch();
+					statement.clearBatch();
+					batch=0;
+				}
+				
+
+				
+			}
+			if(batch > 0){
+				logger.debug("Execute last bulk update batch: " + batch);
+				statement.executeBatch();
+				statement.clearBatch();
+				batch=0;
+			}
+			connection.commit();
+			connection.setAutoCommit(lastCommit);
+			
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
@@ -300,17 +415,21 @@ public abstract class NameIdFactory extends FactoryBase {
 	protected NameIdType read(ResultSet rset, NameIdType obj) throws SQLException, FactoryException, ArgumentException
 	{
 		obj.setId(rset.getLong("id"));
+		//logger.info("Reading object " + obj.getId());
 		if(obj.getNameType() == null) obj.setNameType(NameEnumType.UNKNOWN);
 		if(hasObjectId) obj.setObjectId(rset.getString("objectid"));
 		if(hasName) obj.setName(rset.getString("name"));
-		if(hasUrn) obj.setUrn(rset.getString("urn"));
 		if(hasOwnerId) obj.setOwnerId(rset.getLong("ownerid"));
 		else obj.setOwnerId(0L);
 		if(hasParentId) obj.setParentId(rset.getLong("parentid"));
 		else obj.setParentId(0L);
 		if(scopeToOrganization){
-			OrganizationType org = Factories.getOrganizationFactory().getOrganizationById(rset.getLong("organizationid"));
-			obj.setOrganization(org);
+			long org_id = rset.getLong("organizationid");
+			obj.setOrganizationId(org_id);
+			obj.setOrganization(Factories.getOrganizationFactory().getOrganizationById(org_id));
+		}
+		if(hasUrn && usePersistedUrn == true){
+			obj.setUrn(rset.getString("urn"));
 		}
 
 		return obj;
@@ -321,10 +440,23 @@ public abstract class NameIdFactory extends FactoryBase {
 	}
 	
 	public List<QueryField> buildSearchQuery(String searchValue, OrganizationType organization) throws FactoryException{
-		throw new FactoryException("Abstract implementation");
+		searchValue = searchValue.replaceAll("\\*","%");
+		
+		List<QueryField> filters = new ArrayList<QueryField>();
+		QueryField search_filters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
+		search_filters.setComparator(ComparatorEnumType.GROUP_OR);
+		QueryField name_filter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
+		name_filter.setComparator(ComparatorEnumType.LIKE);
+		search_filters.getFields().add(name_filter);
+		QueryField description_filter = new QueryField(SqlDataEnumType.VARCHAR,"description",searchValue);
+		description_filter.setComparator(ComparatorEnumType.LIKE);
+		search_filters.getFields().add(description_filter);
+		filters.add(search_filters);
+		return filters;
 	}
 	
 	public <T> List<T> search(QueryField[] fields, ProcessingInstructionType pi, OrganizationType organization) throws FactoryException, ArgumentException{
+
 		return getList(fields, pi, organization);
 	}
 	protected <T> List<T> searchByIdInView(String viewName, QueryField[] filters, ProcessingInstructionType instruction, OrganizationType organization){
@@ -505,9 +637,16 @@ public abstract class NameIdFactory extends FactoryBase {
 	public void removeFromCache(NameIdType obj){
 		removeFromCache(obj, getCacheKeyName(obj));
 	}
+
+	
 	public void removeFromCache(NameIdType obj, String key_name){
 		synchronized(typeMap){
-			if(key_name == null){
+			
+			if(key_name != null) typeNameMap.remove(key_name);
+			
+
+			//if(key_name == null || typeNameMap.containsKey(key_name) == false){
+			if(aggressiveKeyFlush == true){
 				//logger.info("Remove null key");
 				Iterator<String> keys = typeNameMap.keySet().iterator();
 				while(keys.hasNext()){
@@ -518,10 +657,12 @@ public abstract class NameIdFactory extends FactoryBase {
 					}
 				}
 			}
+			
 			//logger.debug("Remove from cache: " + key_name + ":" + typeNameMap.containsKey(key_name) + " and " + typeIdMap.containsKey(obj.getId()));
-			if(typeNameMap.containsKey(key_name) && typeIdMap.containsKey(obj.getId())){
+			//if(typeNameMap.containsKey(key_name) && typeIdMap.containsKey(obj.getId())){
+			if(typeIdMap.containsKey(obj.getId())){
 				int indexId = typeIdMap.get(obj.getId());
-				typeNameMap.remove(key_name);
+				//typeNameMap.remove(key_name);
 				typeMap.set(indexId, null);
 				typeIdMap.remove(obj.getId());
 				typeNameIdMap.remove(obj.getId());
@@ -530,9 +671,9 @@ public abstract class NameIdFactory extends FactoryBase {
 	}
 	public <T> T readCache(String name){
 		checkCacheExpires();
-		//logger.debug("Check cache for key '" + name + "'");
+		logger.debug("Check cache for key '" + name + "'");
 		if(typeNameMap.containsKey(name)){
-			//logger.debug("Found cache for key '" + name + "'");
+			logger.debug("Found cache for key '" + name + "'");
 			return (T)typeMap.get(typeNameMap.get(name));
 		}
 		return null;
@@ -553,27 +694,44 @@ public abstract class NameIdFactory extends FactoryBase {
 	public <T> String getCacheKeyName(T obj){
 		return ((NameIdType)obj).getName();
 	}
-	protected void updateToCache(NameIdType obj) throws ArgumentException{
-		String key_name = getCacheKeyName(obj);
-		//logger.info("Update to cache: " + key_name);
-		if(this.haveCacheId(obj.getId())) removeFromCache(obj);
-		addToCache(obj, key_name);
+	protected boolean updateToCache(NameIdType obj) throws ArgumentException{
+		return updateToCache(obj, getCacheKeyName(obj));
+	}
+	protected boolean updateToCache(NameIdType obj,String key_name) throws ArgumentException{
+		if(this.haveCacheId(obj.getId())) removeFromCache(obj,key_name);
+		return addToCache(obj, key_name);
 	}
 
 	public boolean addToCache(NameIdType map) throws ArgumentException{
-		return addToCache(map, map.getName());
+		//return addToCache(map, map.getName());
+		return addToCache(map,getCacheKeyName(map));
 	}
 	public synchronized boolean addToCache(NameIdType map, String key_name) throws ArgumentException{
-		if(map == null) return false;
 		if(key_name == null) throw new ArgumentException("Key name is null");
+		if(map == null){
+			logger.error("Map with key '" + key_name + "' is null");
+			return false;
+		}
 		//checkCacheExpires();
-		//logger.debug("Add to cache: " + (map == null ? "NULL" : map.getNameType() + " " + map.getName()) + " AT " + key_name);
+		logger.debug("Add to cache: " + (map == null ? "NULL" : map.getNameType() + " " + map.getName()) + " AT " + key_name);
 		//synchronized(typeMap){
 			int length = typeMap.size();
 			if(typeNameMap.containsKey(key_name) || typeIdMap.containsKey(map.getId())){
+				//logger.warn("Map " + map.getNameType().toString() + " with id '" + map.getId() + "' and key '" + key_name + "' already exists in organization " + map.getOrganization().getId() + ". This is a known issue with the UserType cache key.");
+				/*
+				if(typeIdMap.containsKey(map.getId())){
+					int mark = typeIdMap.get(map.getId());
+					logger.warn("Conflict map " + typeMap.get(mark).getNameType().toString() + " " + typeMap.get(mark).getId() + " " + typeMap.get(mark).getName() + " " + typeMap.get(mark).getOrganization().getId());
+				}
+				if(typeNameMap.containsKey(map.getId())){
+					int mark = typeNameMap.get(map.getId());
+					logger.warn("Conflict map " + typeMap.get(mark).getNameType().toString() + " " + typeMap.get(mark).getId() + " " + typeMap.get(mark).getName() + " " + typeMap.get(mark).getOrganization().getId());
+				}
+				*/
+				//throw new ArgumentException("Object already cached");
 				return false;
 			}
-			//logger.debug("Cached " + map.getNameType() + " " + map.getName() + " (#" + map.getId() + ") with key '" + key_name + "'");
+			logger.debug("Cached " + map.getNameType() + " " + map.getName() + " (#" + map.getId() + ") with key '" + key_name + "'");
 			typeMap.add(map);
 			typeNameMap.put(key_name, length);
 			typeIdMap.put(map.getId(), length);
@@ -594,5 +752,5 @@ public abstract class NameIdFactory extends FactoryBase {
 	{
 		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(parent.getId())}, parent.getOrganization().getId());
 	}
-
+	
 }

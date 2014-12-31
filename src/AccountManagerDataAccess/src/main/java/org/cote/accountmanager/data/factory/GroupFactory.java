@@ -432,8 +432,9 @@ public class GroupFactory  extends NameIdFactory {
 		fields.add(QueryFields.getFieldGroupType(use_group.getGroupType().toString()));
 		fields.add(QueryFields.getFieldReferenceId(use_group.getReferenceId()));
 	}
-	public void populate(BaseGroupType group) throws FactoryException, ArgumentException
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
+		BaseGroupType group = (BaseGroupType)obj;
 		boolean valid = isValid(group);
 		if (group.getPopulated()) return;
 		

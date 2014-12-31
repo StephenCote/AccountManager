@@ -58,6 +58,9 @@ public class PermissionServiceImpl  {
 	public static BasePermissionType readById(long id,HttpServletRequest request){
 		return BaseService.readById(AuditEnumType.PERMISSION, id, request);
 	}
+	public static int count(long orgId, HttpServletRequest request){
+		return BaseService.countByOrganization(AuditEnumType.PERMISSION, orgId, request);
+	}
 	public static int countInParent(long orgId, long parentId, HttpServletRequest request){
 		OrganizationType org = null;
 		BasePermissionType permission = null;
