@@ -72,7 +72,7 @@ public abstract class NameIdFactory extends FactoryBase {
 		typeNameIdMap = Collections.synchronizedMap(new HashMap<Long,String>());
 		typeNameMap = Collections.synchronizedMap(new HashMap<String,Integer>());
 		typeIdMap = Collections.synchronizedMap(new HashMap<Long,Integer>());
-		typeMap = new ArrayList<NameIdType>();
+		typeMap = Collections.synchronizedList(new ArrayList<NameIdType>());
 		
 		/// Invoke clear cache to set the expiration
 		clearCache();
@@ -648,12 +648,14 @@ public abstract class NameIdFactory extends FactoryBase {
 			//if(key_name == null || typeNameMap.containsKey(key_name) == false){
 			if(aggressiveKeyFlush == true){
 				//logger.info("Remove null key");
-				Iterator<String> keys = typeNameMap.keySet().iterator();
-				while(keys.hasNext()){
-					String key = keys.next();
-					if(typeMap.contains(typeNameMap.get(key)) && typeMap.get(typeNameMap.get(key)).getId() == obj.getId()){
-						key_name = key;
-						break;
+				synchronized(typeNameMap){
+					Iterator<String> keys = typeNameMap.keySet().iterator();
+					while(keys.hasNext()){
+						String key = keys.next();
+						if(typeMap.contains(typeNameMap.get(key)) && typeMap.get(typeNameMap.get(key)).getId() == obj.getId()){
+							key_name = key;
+							break;
+						}
 					}
 				}
 			}
