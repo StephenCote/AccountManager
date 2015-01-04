@@ -411,13 +411,18 @@
 				//if(!oParent) return uwmServices.getService("Role").readByOrganizationId(oOrg.id, sName);
 				//return uwmServices.getService("Role").readByParentId(oOrg.id, oParent.id, sName);
 			},
-			
+			getRootRole : function(sType,oOrg){
+				if(!oOrg) oOrg = uwm.getUser().organization;
+				if(!sType) sType = "UNKNOWN";
+				return uwmServices.getService("Role").getRootRole(oOrg.id,sType);
+			},
 			/// Note: requesting the user's own role dynamically allocates the role, and also will add the user to the role and user reader role
 			/// This is a temporary setup in the RoleService
 			///
-			getUserRole : function(sType){
+			getUserRole : function(sType, oOrg){
+				if(!oOrg) oOrg = uwm.getUser().organization;
 				if(!sType) sType = "ACCOUNT";
-				return uwmServices.getService("Role").getUserRole(sType);
+				return uwmServices.getService("Role").getUserRole(oOrg.id,sType);
 			},
 			
 			clearPermissionCache : function(){
