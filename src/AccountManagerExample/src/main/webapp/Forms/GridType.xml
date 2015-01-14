@@ -12,7 +12,7 @@
 		<input type="button" style ="display:none;" rid = "button_save" class = "designer_button save_button" button-action = "Save" />
 		<input type="button" rid = "button_delete" class = "designer_button delete_button" button-action = "Delete"  />
 		<div class = "designer_button_spacer"></div>
-		<input type = "text" rid = "path" style = "margin-top: 5px; width: 75px !important; float: left;" placeholder = "~/Path" class = "rocket-text" />
+		<input type = "text" rid = "path" style = "margin-top: 5px; width: 100px !important; float: left;" placeholder = "~/Path" class = "rocket-text" />
 		<input class = "rocket-text rocket-text-pick" style = "display:none;margin-top: 5px; width: 75px !important; float: left;" type = "text" rid = "filter" value = "" />
 		<input class = "rocket-button" type = "button" rid = "button_search" style = "display:none;margin-top: 5px; float: left;" value = "..." onclick = "${this}._search()" />
 		<div class = "designer_button_spacer"></div>
@@ -99,6 +99,8 @@
 				var iH = this.getContainer().parentNode.parentNode.offsetHeight - this.GetElementByRID("typelist").offsetTop;
 				this.getList().getContainer().style.height = iH + "px";
 			}
+			var iW = this.getContainer().parentNode.parentNode.offsetWidth - 200;
+			//this.GetElementByRID("path").style.width = iW + "px";
 		},
 		embedded_init : function(){
 		

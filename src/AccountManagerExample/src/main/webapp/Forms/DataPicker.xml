@@ -1,9 +1,10 @@
 <html-fragment>
+
 	<div class = "rocket-column-2">
-		<p rid = "dataPickerTitle">
-			Data:
-		</p>
 		<p>
+			<span rid = "dataPickerToggle"></span> <span rid = "dataPickerTitle">Data</span>:
+		</p>
+		<p rid = "dataPickerContent">
 			<div component = "wideselect" rid = "dataList">
 			</div>
 			<br />
@@ -16,6 +17,7 @@
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
+			this.toggleField("dataPickerToggle","dataPickerContent");
 			if(!this.getProperties().dataListProp) this.getProperties().dataListProp = "data";
 			//this.GetComponentByRID("dataList").setLoadHandler(this.scopeHandler("configDataList",0,1,1));
 		},

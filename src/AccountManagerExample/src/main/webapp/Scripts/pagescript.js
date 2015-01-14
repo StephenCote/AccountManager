@@ -1,6 +1,7 @@
 (function () {
 	
 	window.uwm = {
+		pathProvider : 0,
 		apiTypes : {},
 		apiTypeHash : {},
 		addApi : function(sApi, sViewBase){
@@ -9,6 +10,10 @@
 				viewBase : sViewBase,
 				types : []
 			};
+		},
+		getPathForType : function(sType, sDef){
+			if(uwm.pathProvider) return uwm.pathProvider(sType);
+			return sDef;
 		},
 		getApi : function(sType){
 			return uwm.apiTypeHash[sType];
