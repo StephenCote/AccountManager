@@ -220,6 +220,43 @@
 			getPersonById : function(iId){
 				return uwmServices.getService("Person").readById(iId);
 			},
+			
+			countTags : function(sPath){
+				return uwmServices.getService("Tag").count(sPath);
+			},
+			listTags : function(sPath, iStartIndex, iRecordCount){
+				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
+				return accountManager.serviceListInGroup(uwmServices.getService("Tag"),sPath, iStartIndex, iRecordCount);
+			},
+			addTag : function(sName, sType, oGroup){
+				var o = new org.cote.beans.personType();
+				o.name = sName;
+				o.tagType = sType;
+				if(oGroup){
+					o.group = accountManager.getCleanGroup(oGroup);
+				}
+				o.description = "";
+				return uwmServices.getService("Tag").add(o);
+			},
+			populateTag : function(o){
+				return uwmServices.getService("Tag").populate(o);
+			},
+
+			deleteTag : function(oRec){
+				return uwmServices.getService("Tag").delete(oRec);
+			},
+			updateTag : function(oRec){
+				return uwmServices.getService("Tag").update(oRec);
+			},
+			getTag : function(sName, oGroup){
+				if(oGroup) return uwmServices.getService("Tag").readByGroupId(oGroup.id,sName);
+				return uwmServices.getService("Tag").read(sName);
+			},
+			getTagById : function(iId){
+				return uwmServices.getService("Tag").readById(iId);
+			},
+			
 
 			countAddresss : function(sPath){
 				return uwmServices.getService("Address").count(sPath);

@@ -85,7 +85,13 @@ if(!window.uwmServices){
 			false,
 			enableRecommendedCache
 		);
-
+		uwmServices.addService(
+				"Tag",
+				"/AccountManager/rest/tag/smd",
+				true,
+				false,
+				enableRecommendedCache
+			);
 		uwmServices.addService(
 			"Person",
 			"/AccountManager/rest/person/smd",
