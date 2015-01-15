@@ -77,7 +77,6 @@ CREATE TABLE groups (
 
 CREATE UNIQUE INDEX groups_group_id ON groups(Id);
 CREATE UNIQUE INDEX idxgroups_urn on groups(Urn);
-
 CREATE INDEX groups_group_name ON groups(Name,OrganizationId);
 CREATE UNIQUE INDEX IdxgroupsNameParent on groups(Name,ParentId,OrganizationId);
 
@@ -511,13 +510,14 @@ CREATE TABLE tags (
 	OwnerId bigint not null,
 	TagType varchar(16) not null,
 	Name varchar(255) not null,
+	GroupId bigint not null default 0,
 	OrganizationId bigint not null default 0,
 	Urn text not null,
 	primary key(Id)
 	);
 CREATE UNIQUE INDEX tags_id ON tags(Id);
 CREATE UNIQUE INDEX idxtags_urn on tags(Urn);
-CREATE UNIQUE INDEX IdxtagsName on tags(Name,TagType,OrganizationId);
+CREATE UNIQUE INDEX IdxtagsName on tags(Name,TagType,GroupId,OrganizationId);
 
 DROP TABLE IF EXISTS tagparticipation CASCADE;
 DROP SEQUENCE IF EXISTS tagparticipation_id_seq;
