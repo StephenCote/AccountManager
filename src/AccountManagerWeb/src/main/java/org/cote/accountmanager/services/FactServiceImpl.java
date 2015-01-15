@@ -38,7 +38,7 @@ public class FactServiceImpl  {
 		return BaseService.readById(AuditEnumType.FACT, id, request);
 	}
 	
-	public static List<FactType> getGroupList(UserType user, String path, int startRecord, int recordCount){
+	public static List<FactType> getGroupList(UserType user, String path, long startRecord, int recordCount){
 		return BaseService.getGroupList(AuditEnumType.FACT, user, path, startRecord, recordCount);
 	}
 	public static int count(String groupId, HttpServletRequest request){

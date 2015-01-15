@@ -10,7 +10,7 @@
 	<include schemaLocation="NameId.xsd"></include>
 	<complexType name="BaseTagType">
 		<complexContent>
-			<extension base="tns:NameIdType">
+			<extension base="tns:NameIdDirectoryGroupType">
 				<attribute name="tagType" type="Q2:TagEnumType">
 				</attribute>
 			</extension>
@@ -37,6 +37,12 @@
 	</complexType>
 
 	<complexType name="PersonTagType">
+		<complexContent>
+			<extension base="tns:BaseTagType"></extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="GroupTagType">
 		<complexContent>
 			<extension base="tns:BaseTagType"></extension>
 		</complexContent>

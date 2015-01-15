@@ -59,6 +59,8 @@ public class ConsoleMain {
 		options.addOption("password",true,"AccountManager password");
 		options.addOption("importData",true,"Local path or file");
 		options.addOption("pointer",false,"Load data objects as filesystem pointers");
+		options.addOption("tag",false,"Apply the supplied tags");
+		options.addOption("file",true,"File reference");
 		options.addOption("batchSize",true,"Maximum data batch size");
 		
 		options.addOption("name",true,"Variable name");
@@ -199,6 +201,9 @@ public class ConsoleMain {
 		}
 		if(cmd.hasOption("migrateData") && cmd.hasOption("ownerId")){
 			DataAction.migrateData(user,Long.parseLong(cmd.getOptionValue("ownerId")));
+		}
+		if(cmd.hasOption("tag") && cmd.hasOption("file")){
+			DataAction.tagData(user, cmd.getOptionValue("file"));
 		}
 		/*
 		if(cmd.hasOption("importProject") && cmd.hasOption("projectName") && cmd.hasOption("lifecycleName")){

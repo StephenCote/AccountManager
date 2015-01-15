@@ -8,14 +8,10 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-			this.initGrid("Account",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Account","~/Accounts")));
-
+			this.initGrid("Tag",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Tag","~/Tags")),0,0,1);
 		},
+		
 		template_destroy : function(){
-			
-		},
-
-		handle_list_click : function(v){
 			
 		}
 		]]>

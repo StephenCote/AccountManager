@@ -254,11 +254,11 @@ public class PermissionFactory extends NameIdFactory {
 		return super.read(rset, new_per);
 	}
 
-	public <T> List<T>  getPermissionList(PermissionEnumType type, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getPermissionList(PermissionEnumType type, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getPermissionList(null, type, startRecord, recordCount, organization);
 	}	
-	public <T> List<T>  getPermissionList(BasePermissionType parent, PermissionEnumType type, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getPermissionList(BasePermissionType parent, PermissionEnumType type, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		if(type != PermissionEnumType.UNKNOWN) fields.add(QueryFields.getFieldPermissionType(type));
@@ -268,7 +268,7 @@ public class PermissionFactory extends NameIdFactory {
 
 		return getPermissionList(fields.toArray(new QueryField[0]), instruction, startRecord, recordCount, organization);
 	}
-	public <T> List<T>  getPermissionList(QueryField[] fields, ProcessingInstructionType instruction,int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getPermissionList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///

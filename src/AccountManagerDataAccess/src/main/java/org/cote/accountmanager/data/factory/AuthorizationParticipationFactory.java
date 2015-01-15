@@ -90,7 +90,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 	{
 		return convertList( getParticipations(new NameIdType[]{cycle}, ParticipantEnumType.PATTERN));
 	}
-	public List<PatternType> getPatternsFromParticipations(PatternParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<PatternType> getPatternsFromParticipations(PatternParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getPatternFactory().getPatternList(new QueryField[]{ field }, startRecord, recordCount, organization);
@@ -114,7 +114,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 	{
 		return convertList( getParticipations(new NameIdType[]{cycle}, ParticipantEnumType.RULE));
 	}
-	public List<RuleType> getRulesFromParticipations(RuleParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<RuleType> getRulesFromParticipations(RuleParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getRuleFactory().getRuleList(new QueryField[]{ field }, startRecord, recordCount, organization);
@@ -139,7 +139,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 	{
 		return convertList( getParticipations(new NameIdType[]{cycle}, ParticipantEnumType.FACT));
 	}
-	public List<FactType> getFactsFromParticipations(FactParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<FactType> getFactsFromParticipations(FactParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getFactFactory().getFactList(new QueryField[]{ field }, startRecord, recordCount, organization);
@@ -164,7 +164,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 	{
 		return convertList( getParticipations(new NameIdType[]{cycle}, ParticipantEnumType.FUNCTIONFACT));
 	}
-	public List<FunctionFactType> getFunctionFactsFromParticipations(FunctionFactParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<FunctionFactType> getFunctionFactsFromParticipations(FunctionFactParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getFunctionFactFactory().getFunctionFactList(new QueryField[]{ field }, startRecord, recordCount, organization);

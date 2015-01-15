@@ -116,14 +116,14 @@ public class PermissionService{
 
 	}
 	@GET @Path("/listInGroup/{path : [~%\\s0-9a-zA-Z\\/]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public List<BasePermissionType> listInGroup(@PathParam("path") String path,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
+	public List<BasePermissionType> listInGroup(@PathParam("path") String path,@PathParam("startIndex") long startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		return PermissionServiceImpl.getGroupList(user, path, startIndex, recordCount );
 
 	}
 	*/
 	@GET @Path("/listInParent/{orgId : [\\d]+}/{parentId : [\\d]+}/{type : [~%\\s0-9a-zA-Z\\/]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public List<BasePermissionType> listInParent(@PathParam("type") String type, @PathParam("orgId") long orgId,@PathParam("parentId") long parentId,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
+	public List<BasePermissionType> listInParent(@PathParam("type") String type, @PathParam("orgId") long orgId,@PathParam("parentId") long parentId,@PathParam("startIndex") long startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		BasePermissionType parent = null;
 		OrganizationType org = null;

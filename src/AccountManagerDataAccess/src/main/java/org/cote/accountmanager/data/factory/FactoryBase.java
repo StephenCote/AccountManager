@@ -47,6 +47,7 @@ public abstract class FactoryBase {
 	private boolean initialized = false;
 	private int addCounter = 0;
 	protected boolean bulkMode = false;
+	private int batchSize = 250;
 	
 	/// PostGres sequence name
 	///
@@ -79,6 +80,13 @@ public abstract class FactoryBase {
 	
 
 	
+
+	public int getBatchSize() {
+		return batchSize;
+	}
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
 	protected boolean insertRow(DataRow row){
 		boolean out_bool = false;
 
@@ -112,7 +120,7 @@ public abstract class FactoryBase {
 			/// addCounter = 0;
 			synchronized(table){
 				//logger.info("Writing bulk spool");
-				if(BulkInsertUtil.insertBulk(table) == false){
+				if(BulkInsertUtil.insertBulk(table,batchSize) == false){
 					logger.error("Error writing bulk spool.  NOTE: The bulk data set with the error will be cleared from memory.");
 				}
 				table.getRows().clear();

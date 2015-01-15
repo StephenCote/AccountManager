@@ -461,17 +461,17 @@ public class RoleFactory extends NameIdFactory {
 		return super.read(rset, role);
 	}
 	
-	public List<BaseRoleType>  getRoleList(int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		//return getRoleList(new QueryField[] { QueryFields.getFieldParent(0)  }, startRecord, recordCount, organization);
 		return getRoleList(RoleEnumType.UNKNOWN, null, startRecord, recordCount, organization);
 	}
-	public List<BaseRoleType>  getRoleList(BaseRoleType parentRole, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(BaseRoleType parentRole, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		//return getRoleList(new QueryField[] { QueryFields.getFieldParent(parentRole.getId()) }, startRecord, recordCount, organization);
 		return getRoleList(RoleEnumType.UNKNOWN, parentRole, startRecord, recordCount, organization);
 	}
-	public List<BaseRoleType>  getRoleList(RoleEnumType type, BaseRoleType parent, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(RoleEnumType type, BaseRoleType parent, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		if(type != RoleEnumType.UNKNOWN) fields.add(QueryFields.getFieldRoleType(type));
@@ -479,18 +479,18 @@ public class RoleFactory extends NameIdFactory {
 		return getRoleList(fields.toArray(new QueryField[0]), startRecord, recordCount, organization);
 	}
 	/*
-	public List<BaseRoleType>  getRoleList(ProcessingInstructionType instruction, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(ProcessingInstructionType instruction, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getRoleList(new QueryField[] { QueryFields.getFieldParent(0)  }, instruction, startRecord, recordCount,organization);
 	}
 	*/
-	public List<BaseRoleType>  getRoleList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
 		return getRoleList(fields, instruction, startRecord,recordCount,organization);
 	}
-	public List<BaseRoleType>  getRoleList(QueryField[] fields, ProcessingInstructionType instruction,int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///

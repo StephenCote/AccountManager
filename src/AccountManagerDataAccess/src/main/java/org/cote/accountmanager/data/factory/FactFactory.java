@@ -203,7 +203,7 @@ public class FactFactory extends NameIdGroupFactory {
 		return convertList(lst);
 
 	}
-	public List<FactType>  getFactList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<FactType>  getFactList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
 	{
 		return getPaginatedList(fields, startRecord, recordCount, organization);
 	}

@@ -3,7 +3,7 @@
 	/// The following script classifies Type to API assignment, used for discovery when multiple service APIs are intermixed in the same common View code
 	///
 	uwm.addApi("accountManager", "/AccountManagerExample");
-	uwm.addApiTypes("accountManager", ["Account","Address","Contact","Group","Person","User","Data","Role","Permission"]);
+	uwm.addApiTypes("accountManager", ["Account","Address","Contact","Group","Person","User","Data","Role","Permission","Tag"]);
 	
 	window.accountManager = {
 

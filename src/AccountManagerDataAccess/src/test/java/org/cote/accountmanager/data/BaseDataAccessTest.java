@@ -151,15 +151,17 @@ public class BaseDataAccessTest{
 		return data;
 	}
 	
-	public DataTagType getTag(String tag_name){
+	public DataTagType getTag(UserType user, String tag_name){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
 		DataTagType tag = null;
+		
 		try {
-			tag = Factories.getTagFactory().getDataTagByName(tag_name, Factories.getDevelopmentOrganization());
+			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(user,"tags", user.getHomeDirectory(), user.getOrganization());
+			tag = Factories.getTagFactory().getDataTagByName(tag_name, dir);
 			if(tag == null){
-				tag = Factories.getTagFactory().newDataTag(tag_name, Factories.getDevelopmentOrganization());
+				tag = Factories.getTagFactory().newDataTag(user,tag_name, dir);
 				Factories.getTagFactory().addTag(tag);
-				tag = Factories.getTagFactory().getDataTagByName(tag_name, Factories.getDevelopmentOrganization());
+				tag = Factories.getTagFactory().getDataTagByName(tag_name, dir);
 			}
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block

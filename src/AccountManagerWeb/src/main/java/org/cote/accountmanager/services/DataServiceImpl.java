@@ -179,7 +179,7 @@ public class DataServiceImpl  {
 		return BaseService.countByGroup(AuditEnumType.DATA, group, request);
 	}
 	
-	public static List<DataType> getGroupList(UserType user, ProcessingInstructionType instruction, boolean detailsOnly,String path, int startRecord, int recordCount){
+	public static List<DataType> getGroupList(UserType user, ProcessingInstructionType instruction, boolean detailsOnly,String path, long startRecord, int recordCount){
 		///return BaseService.getGroupList(AuditEnumType.DATA, user, path, startRecord, recordCount);
 		
 
@@ -220,7 +220,7 @@ public class DataServiceImpl  {
 		return out_obj;
 		
 	}
-	public static  List<DataType> getListByGroup(DirectoryGroupType group,ProcessingInstructionType instruction, boolean detailsOnly, int startRecord, int recordCount) throws ArgumentException, FactoryException {
+	public static  List<DataType> getListByGroup(DirectoryGroupType group,ProcessingInstructionType instruction, boolean detailsOnly, long startRecord, int recordCount) throws ArgumentException, FactoryException {
 
 		List<DataType> out_obj = Factories.getDataFactory().getDataListByGroup(group, instruction,detailsOnly,startRecord, recordCount, group.getOrganization());
 		for(int i = 0; i < out_obj.size();i++){

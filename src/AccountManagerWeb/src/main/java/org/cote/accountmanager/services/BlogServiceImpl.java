@@ -58,7 +58,7 @@ public class BlogServiceImpl{
 		return data;
 	}
 	
-	public static List<DataType> list(long orgId, String userName,boolean detailsOnly,int startIndex,int recordCount){
+	public static List<DataType> list(long orgId, String userName,boolean detailsOnly,long startIndex,int recordCount){
 		List<DataType> data = new ArrayList<DataType>();
 		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, userName, AuditEnumType.USER, "/Home/" + userName + "/" + blogPath);

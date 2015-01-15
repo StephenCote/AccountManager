@@ -11,6 +11,7 @@ import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -51,7 +52,7 @@ public class UrnUtil {
 					key = object.getName(); 
 					break;
 				case ORGANIZATION:
-					urn = urnPrefix + urnSeparator + object.getNameType().toString().toLowerCase() + urnSeparator + getDotOrganizationPath((OrganizationType)object);
+					urn = urnPrefix + urnSeparator + object.getNameType().toString() + urnSeparator + getDotOrganizationPath((OrganizationType)object);
 					break;
 				case PERMISSION:
 					key = getEncodedPermissionPath((BasePermissionType)object);
@@ -97,6 +98,10 @@ public class UrnUtil {
 				case RULE:
 					NameIdDirectoryGroupType gobj = (NameIdDirectoryGroupType)object;
 					key = getEncodedGroupPath(gobj.getGroup()) + urnSeparator + gobj.getName();
+					break;
+				case TAG:
+					BaseTagType tobj = (BaseTagType)object;
+					key = getEncodedGroupPath(tobj.getGroup()) + urnSeparator + tobj.getTagType().toString() + urnSeparator + tobj.getName();
 					break;
 				case DATA:
 					key = getEncodedGroupPath(((DataType)object).getGroup()) + urnSeparator + BinaryUtil.toBase64Str(object.getName());

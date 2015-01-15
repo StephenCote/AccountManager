@@ -52,7 +52,7 @@ public class NameIdGroupFactory extends NameIdFactory{
 		return t.getName() + "-" + t.getParentId() + "-" + (t.getGroup() == null ? "ORPHAN" : t.getGroup().getId());
 	}
 	
-	public <T> List<T> search(String searchValue, int startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException, ArgumentException{
+	public <T> List<T> search(String searchValue, long startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException, ArgumentException{
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){
 			instruction = new ProcessingInstructionType();
@@ -104,7 +104,7 @@ public class NameIdGroupFactory extends NameIdFactory{
 		return getCountByField(this.getDataTables().get(0), fields.toArray(new QueryField[0]), group.getOrganization().getId());
 	}
 
-	public <T> List<T>  getListByGroup(DirectoryGroupType group, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getListByGroup(DirectoryGroupType group, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldGroup(group.getId()));

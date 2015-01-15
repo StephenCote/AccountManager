@@ -93,7 +93,7 @@ public class MessageFactory extends SpoolFactory {
 		return Factories.getGroupFactory().getCreateUserDirectory(user, ".messages");
 	}
 
-	public List<MessageSpoolType> getMessagesAfterDate(SpoolNameEnumType queue, XMLGregorianCalendar startDate, int startIndex, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<MessageSpoolType> getMessagesAfterDate(SpoolNameEnumType queue, XMLGregorianCalendar startDate, long startIndex, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		QueryField dateField = QueryFields.getFieldSpoolCreated(startDate);
 		dateField.setComparator(ComparatorEnumType.GREATER_THAN_OR_EQUALS);
@@ -115,7 +115,7 @@ public class MessageFactory extends SpoolFactory {
 	{
 		return getMessages(queue, 1, organization);
 	}
-	public List<MessageSpoolType> getMessages(SpoolNameEnumType queue, int startIndex, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<MessageSpoolType> getMessages(SpoolNameEnumType queue, long startIndex, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		return getMessages(new QueryField[] { QueryFields.getFieldSpoolBucketName(queue), QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.MESSAGE_QUEUE) },startIndex,organization);
 	}
@@ -127,7 +127,7 @@ public class MessageFactory extends SpoolFactory {
 	{
 		return getMessages(new QueryField[]{QueryFields.getFieldSpoolBucketName(queue),QueryFields.getFieldGroup(group.getId()),QueryFields.getFieldSpoolOwner(user.getId())}, 0, user.getOrganization());
 	}
-	public List<MessageSpoolType> getMessages(QueryField[] fields, int startIndex, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<MessageSpoolType> getMessages(QueryField[] fields, long startIndex, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = getPagingInstruction(startIndex);
 		List<BaseSpoolType> messages = getByField(fields, instruction, organization.getId());

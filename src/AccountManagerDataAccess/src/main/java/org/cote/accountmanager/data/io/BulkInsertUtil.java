@@ -134,12 +134,13 @@ public class BulkInsertUtil {
 	
 	/// Transactional insert across 1 or more tables of 1 or more rows
 	
-	public static boolean insertBulk(DataTable table){
+	public static boolean insertBulk(DataTable table, int maxBatchSize){
 		boolean out_bool = false;
 		if(table.getRows().size() == 0){
 			//logger.info("Pending rows to insert are empty");
 			return true;
 		}
+		//long startInsert = System.currentTimeMillis();
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		DataRow firstRow = (DataRow)table.getRows().get(0);
 		//logger.info("Insert bulk rows: " + table.getRows().size());
@@ -147,7 +148,7 @@ public class BulkInsertUtil {
 		
 		/// TODO - something is amiss with th
 		
-		int maxBatchSize = 250;
+		//int maxBatchSize = 250;
 		int batch = 0;
 		int rLen = 0;
 		BulkInsertMeta insStatement = null;
@@ -222,6 +223,7 @@ public class BulkInsertUtil {
 				e.printStackTrace();
 			}
 		}
+		//logger.info("Bulk Write Time: " + (System.currentTimeMillis() - startInsert));
 		return out_bool;
 	}
 }

@@ -34,7 +34,7 @@ public class OperationServiceImpl  {
 		return BaseService.readById(AuditEnumType.OPERATION, id, request);
 	}
 	
-	public static List<OperationType> getGroupList(UserType user, String path, int startRecord, int recordCount){
+	public static List<OperationType> getGroupList(UserType user, String path, long startRecord, int recordCount){
 		return BaseService.getGroupList(AuditEnumType.OPERATION, user, path, startRecord, recordCount);
 	}
 	public static int count(String groupId, HttpServletRequest request){

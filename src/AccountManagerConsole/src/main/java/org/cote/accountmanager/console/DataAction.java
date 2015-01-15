@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -16,13 +18,22 @@ import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.objects.DataParticipantType;
+import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
+import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.DataUtil;
+import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.MimeUtil;
 import org.cote.accountmanager.util.StreamUtil;
 import org.cote.accountmanager.util.ZipUtil;
@@ -32,6 +43,117 @@ public class DataAction {
 	private static int maxLoad = 50;
 	public static void setMaximumLoad(int i){ maxLoad = i;}
 	private static Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s])",Pattern.MULTILINE);
+	
+	public static void tagData(UserType user, String tagFile){
+		Map<String,Map<String,List<String>>> tagMap = new HashMap<String,Map<String,List<String>>>();
+		Factories.getTagParticipationFactory().setBatchSize(1000);
+		Factories.getTagParticipationFactory().setAggressiveKeyFlush(false);
+
+		try{
+			Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s])",Pattern.MULTILINE);
+			OrganizationType org = user.getOrganization();
+			Factories.getUserFactory().populate(user);
+			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org);
+			String[] dataFile = FileUtil.getFileAsString(tagFile).split("\n");
+			logger.info("Reading " + dataFile.length + " lines");
+			String match = "TODO";
+			String replace = "TODO";
+			
+			Map<String,DataTagType> dataTags = new HashMap<String,DataTagType>();
+			
+			DataTagType nTag = null;
+			long startMap = System.currentTimeMillis();
+			
+			for(int i = 0; i < dataFile.length;i++){
+				String[] pairs = dataFile[i].split("\t");
+				if(pairs.length != 4) logger.warn("Unexpected length");
+				String tagName = pairs[2];
+				String path = pairs[3].replace(match,replace).trim();
+				String name = limitNames.matcher(pairs[1]).replaceAll("0");
+				if(tagMap.containsKey(tagName) == false){
+					tagMap.put(tagName, new HashMap<String,List<String>>());
+				}
+				if(tagMap.get(tagName).containsKey(path)==false){
+					tagMap.get(tagName).put(path, new ArrayList<String>());
+				}
+				tagMap.get(tagName).get(path).add(name);
+
+			}
+			logger.info("Time to build map: " + (System.currentTimeMillis() - startMap));
+			startMap = System.currentTimeMillis();
+			String[] tags = tagMap.keySet().toArray(new String[0]);
+			for(int i = 0; i < tags.length;i++){
+				long startTag = System.currentTimeMillis();
+				String sessionId = BulkFactories.getBulkFactory().newBulkSession();
+				if(dataTags.containsKey(tags[i])==false){
+					DataTagType tag = Factories.getTagFactory().newDataTag(user,tags[i],tagDir);
+					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TAG, tag);
+					dataTags.put(tags[i], tag);
+					nTag = tag;
+				}
+				else nTag = dataTags.get(tags[i]);
+				String[] paths = tagMap.get(tags[i]).keySet().toArray(new String[0]);
+				//logger.info("Tag Path Size = " + paths.length);
+				for(int g = 0; g < paths.length; g++){
+					long startLookup = System.currentTimeMillis();
+					DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,paths[g], org);
+					//logger.info("Group Lookup: " + (System.currentTimeMillis() - startLookup));
+					if(dir == null){
+						logger.warn("Failed to find path '" + paths[g] + "'");
+						continue;
+					}
+					
+					StringBuffer names = new StringBuffer();
+					List<String> dNames = tagMap.get(tags[i]).get(paths[g]);
+					//logger.info("Tag Data Size = " + dNames.size());
+					for(int n = 0; n < dNames.size();n++){
+						if(n > 0) names.append(",");
+						names.append("'" + dNames.get(n) + "'");
+					}
+					List<QueryField> fields = new ArrayList<QueryField>();
+					QueryField nameField = new QueryField(SqlDataEnumType.VARCHAR,"name",names.toString());
+					nameField.setComparator(ComparatorEnumType.IN);
+					fields.add(nameField);
+					fields.add(QueryFields.getFieldGroup(dir.getId()));
+					
+					startLookup = System.currentTimeMillis();
+					List<DataType> data = Factories.getDataFactory().getDataList(fields.toArray(new QueryField[0]), null,true,dir.getOrganization());
+					//logger.info("Data Lookup: " + (System.currentTimeMillis() - startLookup));
+					
+					if(data.size() == 0){
+						logger.warn("Empty data size for: " + names.toString() + " in group id " + dir.getId());
+					}
+					startLookup = System.currentTimeMillis();
+					for(int d = 0; d < data.size(); d++){
+						DataParticipantType dpt = Factories.getTagParticipationFactory().newDataTagParticipation(nTag, data.get(d));
+						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TAGPARTICIPATION, dpt);
+					}
+					//logger.info("Bulk Queue: " + (System.currentTimeMillis() - startLookup));
+	
+				}
+				//logger.info("Prepare Write: " + (System.currentTimeMillis() - startTag)); 
+				BulkFactories.getBulkFactory().write(sessionId);
+				
+				if(true) break;
+			}
+			
+			logger.info("Time to import: " + (System.currentTimeMillis() - startMap));
+				
+			}
+			catch(FactoryException e){
+				logger.error(e.getMessage());
+			} catch (ArgumentException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+			}
+			
+	}
+	
+	/// One-off method
+	///
 	public static void migrateData(UserType user, long sourceOwnerId){
 		try {
 		    Class.forName("com.mysql.jdbc.Driver");
@@ -39,6 +161,7 @@ public class DataAction {
 		    throw new RuntimeException("Cannot find the driver in the classpath!", e);
 		}	
 		
+		/// Obviously not used any more - this was the mysql db for the .NET implementation
 		String url = "jdbc:mysql://192.168.1.120:3306/coredb";
 		String username = "coreuser";
 		String password = "Password1";

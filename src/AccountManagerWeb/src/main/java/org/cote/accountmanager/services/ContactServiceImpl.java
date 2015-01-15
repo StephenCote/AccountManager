@@ -34,7 +34,7 @@ public class ContactServiceImpl  {
 		return BaseService.readById(AuditEnumType.CONTACT, id, request);
 	}
 	
-	public static List<ContactType> getGroupList(UserType user, String path, int startRecord, int recordCount){
+	public static List<ContactType> getGroupList(UserType user, String path, long startRecord, int recordCount){
 		return BaseService.getGroupList(AuditEnumType.CONTACT, user, path, startRecord, recordCount);
 	}
 	public static int count(String groupId, HttpServletRequest request){

@@ -125,7 +125,7 @@ public class PermissionServiceImpl  {
 		return per;
 	}
 	
-	public static List<BasePermissionType> getListInParent(UserType user, String type, BasePermissionType parentPermission, int startRecord, int recordCount){
+	public static List<BasePermissionType> getListInParent(UserType user, String type, BasePermissionType parentPermission, long startRecord, int recordCount){
 		///return BaseService.getGroupList(AuditEnumType.PERMISSION, user, path, startRecord, recordCount);
 		
 
@@ -162,7 +162,7 @@ public class PermissionServiceImpl  {
 		return out_obj;
 		
 	}
-	private static List<BasePermissionType> getList(String type, BasePermissionType parentPermission, int startRecord, int recordCount, OrganizationType organization) throws ArgumentException, FactoryException {
+	private static List<BasePermissionType> getList(String type, BasePermissionType parentPermission, long startRecord, int recordCount, OrganizationType organization) throws ArgumentException, FactoryException {
 
 		PermissionEnumType ptype = PermissionEnumType.fromValue(type);
 		return Factories.getPermissionFactory().getPermissionList(parentPermission,ptype,startRecord, recordCount, organization);

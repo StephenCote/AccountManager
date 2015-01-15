@@ -230,7 +230,7 @@ public class ArticleUtil {
 		if(subPath.length > 1) name = subPath[1].trim();
 		List<DataType> articleData = new ArrayList<DataType>();
 		
-		int startIndex = 0;
+		long startIndex = 0;
 		int recordCount = MAX_RECORD_COUNT;
 		int totalCount = 0;
 		StringBuffer navBuff = new StringBuffer();

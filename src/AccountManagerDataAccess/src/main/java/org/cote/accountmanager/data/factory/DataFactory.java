@@ -406,25 +406,25 @@ public class DataFactory extends NameIdFactory {
 		return deleteDataByIds(ids, group.getOrganization());
 	}
 	
-	public List<DataType>  getDataListByGroup(DirectoryGroupType group, boolean detailsOnly, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<DataType>  getDataListByGroup(DirectoryGroupType group, boolean detailsOnly, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getDataList(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, detailsOnly, startRecord, recordCount, organization);
 	}
-	public List<DataType>  getDataListByGroup(DirectoryGroupType group, ProcessingInstructionType instruction, boolean detailsOnly, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<DataType>  getDataListByGroup(DirectoryGroupType group, ProcessingInstructionType instruction, boolean detailsOnly, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getDataList(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, instruction, detailsOnly, startRecord, recordCount,organization);
 	}
-	public List<DataType>  getDataList(QueryField[] fields, boolean detailsOnly, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<DataType>  getDataList(QueryField[] fields, boolean detailsOnly, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
 		return getDataList(fields, instruction, detailsOnly, startRecord,recordCount,organization);
 	}
-	public List<DataType>  getDataList(QueryField[] fields, ProcessingInstructionType instruction,boolean detailsOnly, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<DataType>  getDataList(QueryField[] fields, ProcessingInstructionType instruction,boolean detailsOnly, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///
-		if (instruction != null && startRecord >= 0 && recordCount > 0 && instruction.getPaginate() == false)
+		if (instruction != null && startRecord >= 0L && recordCount > 0 && instruction.getPaginate() == false)
 		{
 			instruction.setPaginate(true);
 			instruction.setStartIndex(startRecord);

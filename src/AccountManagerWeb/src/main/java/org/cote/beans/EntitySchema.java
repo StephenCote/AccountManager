@@ -9,8 +9,10 @@ import org.cote.accountmanager.objects.AuthorizationPolicyType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.DataTagSearchRequest;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
@@ -64,7 +66,11 @@ public class EntitySchema {
 	private BasePermissionType basePermissionType = null;
 	private AuthorizationPolicyType authorizationPolicyType = null;
 	private AccountType accountType = null;
+	private BaseTagType tagType = null;
+	private DataTagSearchRequest dataTagSearchRequest = null;
 	public EntitySchema(){
+		dataTagSearchRequest = new DataTagSearchRequest();
+		tagType = new BaseTagType();
 		authorizationPolicyType = new AuthorizationPolicyType();
 		addressType = new AddressType();
 		basePermissionType = new BasePermissionType();
@@ -99,6 +105,30 @@ public class EntitySchema {
 	}
 
 	
+
+	public DataTagSearchRequest getDataTagSearchRequest() {
+		return dataTagSearchRequest;
+	}
+
+
+
+	public void setDataTagSearchRequest(DataTagSearchRequest dataTagSearchRequest) {
+		this.dataTagSearchRequest = dataTagSearchRequest;
+	}
+
+
+
+	public BaseTagType getTagType() {
+		return tagType;
+	}
+
+
+
+	public void setTagType(BaseTagType tagType) {
+		this.tagType = tagType;
+	}
+
+
 
 	public AuthorizationPolicyType getAuthorizationPolicyType() {
 		return authorizationPolicyType;

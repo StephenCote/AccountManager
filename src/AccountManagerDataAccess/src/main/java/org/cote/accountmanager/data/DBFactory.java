@@ -64,7 +64,7 @@ public class DBFactory {
 				|| fields[i].getComparator() == ComparatorEnumType.LIKE
 
 			){
-				//System.out.println(fields[i].getDataType() + ":" + fields[i].getValue());
+				//logger.debug(fields[i].getDataType() + ":" + fields[i].getValue());
 				setStatementParameter(statement, fields[i].getDataType(), fields[i].getValue(), paramMarker++);
 			}
 		}
@@ -143,7 +143,7 @@ public class DBFactory {
 	
 	public static boolean isInstructionReadyForPagination(ProcessingInstructionType instruction)
 	{
-		return (instruction != null && instruction.getPaginate() && instruction.getOrderClause() != null && instruction.getStartIndex() >= 0 && instruction.getRecordCount() > 0);
+		return (instruction != null && instruction.getPaginate() && instruction.getOrderClause() != null && instruction.getStartIndex().compareTo(0L) >= 0 && instruction.getRecordCount() > 0);
 	}
 	public static String getPaginationPrefix(ProcessingInstructionType instruction, CONNECTION_TYPE connectionType)
 	{
@@ -196,7 +196,7 @@ public class DBFactory {
 		}
 		return out_suffix;
 	}
-	public static int getAdjustedStartRecord(int startRecord, CONNECTION_TYPE connectionType)
+	public static long getAdjustedStartRecord(long startRecord, CONNECTION_TYPE connectionType)
 	{
 		if (connectionType == CONNECTION_TYPE.SQL) return (startRecord + 1);
 		return startRecord;

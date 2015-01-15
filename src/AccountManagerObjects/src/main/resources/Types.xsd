@@ -166,6 +166,7 @@
     		<enumeration value="DATA"></enumeration>
     		<enumeration value="USER"></enumeration>
     		<enumeration value="PERSON"></enumeration>
+    		<enumeration value="GROUP"></enumeration>
     	</restriction>
     </simpleType>
 

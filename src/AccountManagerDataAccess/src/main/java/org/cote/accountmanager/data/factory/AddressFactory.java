@@ -210,7 +210,7 @@ public class AddressFactory extends NameIdGroupFactory {
 
 	}
 */
-	public List<AddressType>  getAddressList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<AddressType>  getAddressList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
 	{
 		return getPaginatedList(fields, startRecord, recordCount, organization);
 	}
@@ -220,7 +220,7 @@ public class AddressFactory extends NameIdGroupFactory {
 	}
 	
 	
-	public List<AddressType> searchAddresss(String searchValue, int startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException{
+	public List<AddressType> searchAddresss(String searchValue, long startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException{
 	
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){

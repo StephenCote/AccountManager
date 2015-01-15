@@ -213,11 +213,11 @@ public class SpoolFactory extends FactoryBase {
 	}
 
 	
-	public ProcessingInstructionType getPagingInstruction(int startIndex)
+	public ProcessingInstructionType getPagingInstruction(long startIndex)
 	{
 		return getPagingInstruction(startIndex, defaultPageSize);
 	}
-	public ProcessingInstructionType getPagingInstruction(int startIndex, int recordCount)
+	public ProcessingInstructionType getPagingInstruction(long startIndex, int recordCount)
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 

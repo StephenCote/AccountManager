@@ -113,7 +113,7 @@ public class GroupServiceImpl  {
 		}
 		return bean;
 	}
-	public static List<BaseGroupType> listInGroup(GroupEnumType groupType, String path, int startIndex, int recordCount, HttpServletRequest request){
+	public static List<BaseGroupType> listInGroup(GroupEnumType groupType, String path, long startIndex, int recordCount, HttpServletRequest request){
 		BaseGroupType dir = findGroup(groupType, path, request);
 		List<BaseGroupType> dirs = new ArrayList<BaseGroupType>();
 		if(dir == null) return dirs;

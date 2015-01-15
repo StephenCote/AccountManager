@@ -34,7 +34,7 @@ public class AccountServiceImpl  {
 		return BaseService.readById(AuditEnumType.ACCOUNT, id, request);
 	}
 	
-	public static List<AccountType> getGroupList(UserType user, String path, int startRecord, int recordCount){
+	public static List<AccountType> getGroupList(UserType user, String path, long startRecord, int recordCount){
 		return BaseService.getGroupList(AuditEnumType.ACCOUNT, user, path, startRecord, recordCount);
 	}
 	public static int count(String groupId, HttpServletRequest request){

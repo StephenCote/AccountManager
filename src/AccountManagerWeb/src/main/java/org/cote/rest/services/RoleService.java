@@ -126,10 +126,18 @@ public class RoleService{
 		return RoleServiceImpl.update(bean, request);
 	}
 	
-	@GET @Path("/getUserRole/{type : [~%\\s0-9a-zA-Z\\/]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public BaseRoleType read(@PathParam("type") String type,@Context HttpServletRequest request){
+	@GET @Path("/getRootRole/{organizationId:[\\d]+}/{type : [~%\\s0-9a-zA-Z\\/]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public BaseRoleType getRootRole(@PathParam("organizationId") long organizationId,@PathParam("type") String type,@Context HttpServletRequest request){
+		
 		UserType user = ServiceUtil.getUserFromSession(request);
-		return RoleServiceImpl.getUserRole(user,type,request);
+		return RoleServiceImpl.getRootRole(organizationId,user,type,request);
+
+		//return RoleServiceImpl.getUserRole(ServiceUtil.getOrganizationFromRequest(request),request);
+	}
+	@GET @Path("/getUserRole/{organizationId:[\\d]+}/{type : [~%\\s0-9a-zA-Z\\/]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public BaseRoleType getUserRole(@PathParam("organizationId") long organizationId,@PathParam("type") String type,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return RoleServiceImpl.getUserRole(organizationId,user,type,request);
 
 		//return RoleServiceImpl.getUserRole(ServiceUtil.getOrganizationFromRequest(request),request);
 	}
@@ -242,7 +250,7 @@ public class RoleService{
 	}
 	*/
 	@GET @Path("/listInParent/{orgId : [\\d]+}/{parentId : [\\d]+}/{type: [%\\sa-zA-Z_0-9\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public List<BaseRoleType> listInParent(@PathParam("orgId") long orgId,@PathParam("parentId") long parentId,@PathParam("type") String type, @PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
+	public List<BaseRoleType> listInParent(@PathParam("orgId") long orgId,@PathParam("parentId") long parentId,@PathParam("type") String type, @PathParam("startIndex") long startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		BaseRoleType parent = null;
 		OrganizationType org = null;
@@ -267,7 +275,7 @@ public class RoleService{
 	}
 	/*
 	@GET @Path("/listInOrganization/{orgId : [\\d]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public List<BaseRoleType> listInOrganization(@PathParam("orgId") long orgId,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
+	public List<BaseRoleType> listInOrganization(@PathParam("orgId") long orgId,@PathParam("startIndex") long startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		BaseRoleType parent = null;
 		OrganizationType org = null;

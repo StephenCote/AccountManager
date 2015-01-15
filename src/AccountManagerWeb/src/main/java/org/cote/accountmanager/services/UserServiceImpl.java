@@ -55,7 +55,7 @@ public class UserServiceImpl  {
 		return BaseService.countByOrganization(AuditEnumType.USER, orgId, request);
 	}
 	
-	public static List<UserType> getList(UserType user, OrganizationType organization, int startRecord, int recordCount){
+	public static List<UserType> getList(UserType user, OrganizationType organization, long startRecord, int recordCount){
 		///return BaseService.getGroupList(AuditEnumType.USER, user, path, startRecord, recordCount);
 		
 
@@ -98,7 +98,7 @@ public class UserServiceImpl  {
 		return out_obj;
 		
 	}
-	private static List<UserType> getList(int startRecord, int recordCount, OrganizationType organization) throws ArgumentException, FactoryException {
+	private static List<UserType> getList(long startRecord, int recordCount, OrganizationType organization) throws ArgumentException, FactoryException {
 
 		return Factories.getUserFactory().getUserList(startRecord, recordCount, organization);
 		

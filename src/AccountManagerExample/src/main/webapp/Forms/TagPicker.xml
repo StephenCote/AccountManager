@@ -1,0 +1,81 @@
+<html-fragment>
+	<div class = "rocket-column-2" rid = "tagPicker" style = "display:none;">
+		<p rid = "tagPickerTitle">
+			<span rid = "tagPickerToggle"></span> <span rid="tagPickerLabel">Tags</span>:
+		</p>
+		<p rid = "tagPickerContent">
+			<div component = "wideselect" rid = "tagsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addTag()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeTag()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openTag()" />
+		</p>
+	</div>
+
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.GetElementByRID("tagPicker").style.display = "block";
+			this.toggleField("tagPickerToggle","tagPickerContent");
+			if(!this.getProperties().tagListProp) this.getProperties().tagListProp = "tags";
+		},
+		prepareSaveTagPicker : function(o){
+			this.prepareSaveTagsList(o);
+		},
+		setTagPickerLabel : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("tagPickerLabel"),s);
+		},
+		initTagPicker : function(){
+			var _s = this.getProperties(),  o = this.getBean("rocketType");
+			_s.enableTagInformation = (o != null ? 1 : 0);
+			
+			if(_s.enableTagInformation){
+				//this.getProperties().tagListProp = "tags";
+				this.GetComponentByRID("tagsList").setLoadHandler(this.scopeHandler("configTagsList",0,1,1));
+			}
+		},
+
+		openTag : function(){
+			var oI = this.getTagsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Tag");
+		},
+		addTag : function(){
+			this.manageList("Tag", this.getTagsList().getObjectId());
+		},
+		removeTag : function(){
+			var oI = this.getTagsList().getActiveItem();
+			if(oI) this.getTagsList().clearItem(oI.index);
+		},
+
+		configTagsList : function(s,v){
+			var oL = this.getTagsList(),_s = this.getProperties();
+			if(!_s.enableTagInformation) return;
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshTags();
+		},
+		refreshTags : function(){
+			var oL = this.getTagsList(), aP = this.getProperties().tagListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getTagsList : function(){
+			return this.GetComponentByRID("tagsList").GetWideSelect();
+		},
+		prepareSaveTagsList : function(o){
+			var _s = this.getProperties(), aP;
+			if(!_s.enableTagInformation) return;
+			aP = this.getProperties().tagListProp;
+			o[aP] = [];
+			var aTags = this.getTagsList().getItems();
+			for(var i = 0; i < aTags.length;i++) o[aP].push(aTags[i].data);
+		}
+		
+		
+		
+	]]></embedded-script>
+</html-fragment>

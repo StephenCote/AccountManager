@@ -34,7 +34,7 @@ public class PatternServiceImpl  {
 		return BaseService.readById(AuditEnumType.PATTERN, id, request);
 	}
 	
-	public static List<PatternType> getGroupList(UserType user, String path, int startRecord, int recordCount){
+	public static List<PatternType> getGroupList(UserType user, String path, long startRecord, int recordCount){
 		return BaseService.getGroupList(AuditEnumType.PATTERN, user, path, startRecord, recordCount);
 	}
 	public static int count(String groupId, HttpServletRequest request){

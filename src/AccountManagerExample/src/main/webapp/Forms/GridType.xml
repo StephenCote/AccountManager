@@ -253,11 +253,27 @@
 					break;
 			}
 		},
+		openDataData : function(a){
+			if(a.detailsOnly) a = accountManager.getDataById(a.id);
+			var vData = {media_name:a.name,media_id:a.id,maxWidth:500,maxHeight:500,media_url:"data:" + a.mimeType + ";base64," + a.dataBytesStore};
+			var oW = Hemi.app.createWindow("View " + a.name, "/AccountManagerExample/Forms/ImageViewer.xml", "View-" + a.id, 0, 0, vData);
+            if (oW) {
+            	oW.resizeTo(450, 300);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            } 
+	
+		},
 		designItem : function(o){
 			/// Data
 			var oApi = window[uwm.getApi(this.getProperties().typeName)];
 			if(o.nameType == "DATA" && o.mimeType && o.mimeType.match(/^text/)){
 				this.openItem(o,"Design");
+			}
+			else if(o.nameType == "DATA" && o.mimeType && o.mimeType.match(/^image/)){
+				this.openDataData(o);
 			}
 			else if(o.nameType == "FORM" && !o.isTemplate){
 				//if(!o.populated) o = rocket.getFormById(o.id);

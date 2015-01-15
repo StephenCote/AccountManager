@@ -396,7 +396,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		return getPersonList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganization());
 
 	}
-	public List<PersonType>  getPersonList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<PersonType>  getPersonList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
 	{
 		return getPaginatedList(fields, startRecord, recordCount, organization);
 	}
@@ -424,7 +424,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		return person;
 	}
 	@Override
-	public <T> List<T> search(String searchValue, int startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException{
+	public <T> List<T> search(String searchValue, long startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException{
 	
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){

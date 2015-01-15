@@ -34,7 +34,7 @@ public class FunctionServiceImpl  {
 		return BaseService.readById(AuditEnumType.FUNCTION, id, request);
 	}
 	
-	public static List<FunctionType> getGroupList(UserType user, String path, int startRecord, int recordCount){
+	public static List<FunctionType> getGroupList(UserType user, String path, long startRecord, int recordCount){
 		return BaseService.getGroupList(AuditEnumType.FUNCTION, user, path, startRecord, recordCount);
 	}
 	public static int count(String groupId, HttpServletRequest request){

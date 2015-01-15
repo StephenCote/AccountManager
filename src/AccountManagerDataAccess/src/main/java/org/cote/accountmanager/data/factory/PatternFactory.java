@@ -201,7 +201,7 @@ public class PatternFactory extends NameIdGroupFactory {
 
 	}
 	
-	public List<PatternType>  getPatternList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<PatternType>  getPatternList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
 	{
 		return getPaginatedList(fields, startRecord, recordCount, organization);
 	}

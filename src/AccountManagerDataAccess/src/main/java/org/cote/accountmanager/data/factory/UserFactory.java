@@ -269,21 +269,21 @@ public class UserFactory extends NameIdFactory {
 		new_user.setUserType(UserEnumType.valueOf(rset.getString("usertype")));
 		return super.read(rset, new_user);
 	}
-	public List<UserType>  getUserList(int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserType>  getUserList(long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getUserList(new QueryField[] {  }, startRecord, recordCount, organization);
 	}
-	public List<UserType>  getUserList(ProcessingInstructionType instruction, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserType>  getUserList(ProcessingInstructionType instruction, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getUserList(new QueryField[] {  }, instruction, startRecord, recordCount,organization);
 	}
-	public List<UserType>  getUserList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserType>  getUserList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
 		return getUserList(fields, instruction, startRecord,recordCount,organization);
 	}
-	public List<UserType>  getUserList(QueryField[] fields, ProcessingInstructionType instruction,int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserType>  getUserList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///
@@ -326,7 +326,7 @@ public class UserFactory extends NameIdFactory {
 		return out_list;
 	}
 
-	public List<UserType> searchUsers(String searchValue, int startRecord, int recordCount, OrganizationType org) throws FactoryException{
+	public List<UserType> searchUsers(String searchValue, long startRecord, int recordCount, OrganizationType org) throws FactoryException{
 		
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){

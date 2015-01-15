@@ -718,22 +718,22 @@ public class GroupFactory  extends NameIdFactory {
 	}
 
 	/*
-	public List<UserGroupType>  getUserGroupListByParent(BaseGroupType parent, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserGroupType>  getUserGroupListByParent(BaseGroupType parent, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getUserGroupList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(GroupEnumType.USER) }, startRecord, recordCount, organization);
 	}
 	
-	public List<UserGroupType>  getUserGroupListByParent(BaseGroupType parent, ProcessingInstructionType instruction, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserGroupType>  getUserGroupListByParent(BaseGroupType parent, ProcessingInstructionType instruction, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getUserGroupList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(GroupEnumType.USER) }, instruction, startRecord, recordCount,organization);
 	}
-	public List<UserGroupType>  getUserGroupList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserGroupType>  getUserGroupList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
 		return getUserGroupList(fields, instruction, startRecord,recordCount,organization);
 	}
-	public List<UserGroupType>  getUserGroupList(QueryField[] fields, ProcessingInstructionType instruction,int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserGroupType>  getUserGroupList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///
@@ -760,22 +760,22 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	
 
-	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(groupType) }, startRecord, recordCount, organization);
 	}
 	
-	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, ProcessingInstructionType instruction, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, ProcessingInstructionType instruction, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		return getList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(groupType) }, instruction, startRecord, recordCount,organization);
 	}
-	public <T> List<T>  getList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
 		return getList(fields, instruction, startRecord,recordCount,organization);
 	}
-	public <T> List<T>  getList(QueryField[] fields, ProcessingInstructionType instruction,int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///

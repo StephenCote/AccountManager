@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects">
+	<include schemaLocation="DataType.xsd"></include>
+	<include schemaLocation="SqlStatement.xsd"></include>
+	<include schemaLocation="NameId.xsd"></include>
+	<include schemaLocation="TagType.xsd"></include>
+
+	<complexType name="DataTagSearchRequest">
+		<complexContent>
+			<extension base="tns:BaseSearchRequestType">
+				<sequence>
+					<element name="tags" type="tns:BaseTagType" minOccurs="0" maxOccurs="unbounded"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="BaseSearchRequestType">
+		<attribute name="startRecord" type="long" default="0"></attribute>
+		<attribute name="recordCount" type="int" default="0"></attribute>
+		<attribute name="paginate" type="boolean"></attribute>
+	</complexType>
+</schema>

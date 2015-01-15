@@ -56,12 +56,12 @@ public class BlogService{
 	}
 
 	@GET @Path("/list/{organizationId:[\\d]+}/{user : [@\\.~%\\s0-9a-z_A-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public List<DataType> list(@PathParam("organizationId") long orgId, @PathParam("user") String userName,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
+	public List<DataType> list(@PathParam("organizationId") long orgId, @PathParam("user") String userName,@PathParam("startIndex") long startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		return BlogServiceImpl.list(orgId, userName, true, startIndex,recordCount);
 	}
 	
 	@GET @Path("/listFull/{organizationId:[\\d]+}/{user : [@\\.~%\\s0-9a-z_A-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public List<DataType> listFull(@PathParam("organizationId") long orgId, @PathParam("user") String userName,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
+	public List<DataType> listFull(@PathParam("organizationId") long orgId, @PathParam("user") String userName,@PathParam("startIndex") long startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		return BlogServiceImpl.list(orgId, userName, false, startIndex,recordCount);
 	}
 	

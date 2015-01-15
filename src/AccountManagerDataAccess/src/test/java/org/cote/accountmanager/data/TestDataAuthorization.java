@@ -14,7 +14,7 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.data.services.AuthorizationService;
-import org.cote.accountmanager.data.services.DataService;
+
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.FactoryService;
 import org.cote.accountmanager.data.services.GroupService;
@@ -299,65 +299,6 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		}
 		assertFalse("Error occurred", error);
 	}
-	@Test
-	public void testDataTags(){
-		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
-		UserType user1 = getUser("testuser1","password1");
-		UserType user2 = getUser("testuser2","password1");
-		DataType data1 = getData(user1, "testdata1");
-		DataType data2 = getData(user1, "testdata2");
-		DataType data3 = getData(user2, "testdata3");
-		DataTagType tag1 = getTag("tag1");
-		DataTagType tag2 = getTag("tag2");
-		try {
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user1, tag1, data1, true));
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user1, tag1, data2, true));
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user2, tag1, data3, true));
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user1, tag2, data1, true));
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user2, tag2, data3, true));
-			
-			List<DataParticipantType> parts = Factories.getTagParticipationFactory().convertList(Factories.getTagParticipationFactory().getParticipations(new DataTagType[]{tag1}, ParticipantEnumType.DATA));
-			assertTrue("Unexpected count", parts.size() == 3);
-			logger.info("Parts = " + parts.size());
-			List<DataType> data_list = DataService.getDataForTag(tag1, Factories.getDevelopmentOrganization());
-			assertTrue("Unexpected count", data_list.size() == 3);
-			logger.info("Data for parts = " + data_list.size());
-			
-			parts = Factories.getTagParticipationFactory().convertList(Factories.getTagParticipationFactory().getParticipations(new DataTagType[]{tag2}, ParticipantEnumType.DATA));
-			assertTrue("Unexpected count", parts.size() == 2);
-			logger.info("Parts = " + parts.size());
-			data_list = DataService.getDataForTag(tag2, Factories.getDevelopmentOrganization());
-			assertTrue("Unexpected count", data_list.size() == 2);
-			logger.info("Data for parts = " + data_list.size());
-
-			parts = Factories.getTagParticipationFactory().convertList(Factories.getTagParticipationFactory().getTagParticipations(new DataTagType[]{tag1,tag2}, ParticipantEnumType.DATA));
-			logger.info("Parts = " + parts.size());
-			logger.info("Perf Note/Bug: getTagParticipations returns N instances of participant ids instead of just 1.  This doesn't affect the result, but does add duplicate entries to the query.");
-			//assertTrue("Unexpected count", parts.size() == 4);
-
-			data_list = DataService.getDataForTags(new DataTagType[]{tag1,tag2}, Factories.getDevelopmentOrganization());
-			logger.info("Data for parts = " + data_list.size());
-			assertTrue("Unexpected count", data_list.size() == 2);
-
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user2, tag2, data3, false));
-			data_list = DataService.getDataForTags(new DataTagType[]{tag1,tag2}, Factories.getDevelopmentOrganization());
-			logger.info("Data for parts = " + data_list.size());
-			assertTrue("Unexpected count", data_list.size() == 1);	
-			
-
-			
-			//Factories.getTagParticipationFactory().GetDataFromParticipations(list, detailsOnly, startRecord, recordCount, organization)
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
+	
 	
 }

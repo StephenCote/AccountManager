@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -58,6 +60,7 @@ public abstract class NameIdFactory extends FactoryBase {
 	protected boolean hasUrn = false;
 	
 	protected boolean aggressiveKeyFlush = true;
+	protected boolean useThreadSafeCollections = true;
 	
 	/// 2014/12/26
 	/// bit indicating to use the urn from the database
@@ -69,15 +72,39 @@ public abstract class NameIdFactory extends FactoryBase {
 	
 	public NameIdFactory(){
 		super();
-		typeNameIdMap = Collections.synchronizedMap(new HashMap<Long,String>());
-		typeNameMap = Collections.synchronizedMap(new HashMap<String,Integer>());
-		typeIdMap = Collections.synchronizedMap(new HashMap<Long,Integer>());
-		typeMap = Collections.synchronizedList(new ArrayList<NameIdType>());
-		
+		setUseThreadSafeCollections(true);
+	}
+	
+	public boolean isUseThreadSafeCollections() {
+		return useThreadSafeCollections;
+	}
+
+	public boolean isAggressiveKeyFlush() {
+		return aggressiveKeyFlush;
+	}
+
+	public void setAggressiveKeyFlush(boolean aggressiveKeyFlush) {
+		this.aggressiveKeyFlush = aggressiveKeyFlush;
+	}
+
+	public void setUseThreadSafeCollections(boolean useThreadSafeCollections) {
+		this.useThreadSafeCollections = useThreadSafeCollections;
+		if(useThreadSafeCollections){
+			typeNameIdMap = Collections.synchronizedMap(new HashMap<Long,String>());
+			typeNameMap = Collections.synchronizedMap(new HashMap<String,Integer>());
+			typeIdMap = Collections.synchronizedMap(new HashMap<Long,Integer>());
+			typeMap = Collections.synchronizedList(new ArrayList<NameIdType>());
+		}
+		else{
+			typeNameIdMap = new HashMap<Long,String>();
+			typeNameMap = new HashMap<String,Integer>();
+			typeIdMap = new HashMap<Long,Integer>();
+			typeMap = new ArrayList<NameIdType>();
+		}
 		/// Invoke clear cache to set the expiration
 		clearCache();
 	}
-	
+
 	public <T> T clone(T source) throws FactoryException{
 		throw new FactoryException("Method must be overriden.  Yes, this could be abstract, but not every factory needs it.");
 	}
@@ -387,6 +414,7 @@ public abstract class NameIdFactory extends FactoryBase {
 				//logger.info("Read object: " + (obj == null ? "NULL" : obj.getName()));
 				out_list.add(obj);
 			}
+			//logger.info("Out size = " + out_list.size());
 			rset.close();
 			
 		} catch (SQLException e) {
@@ -528,14 +556,14 @@ public abstract class NameIdFactory extends FactoryBase {
 		instruction.setOrderClause("name ASC");
 		return getList(fields, instruction, organization);
 	}
-	public <T> List<T>  getPaginatedList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getPaginatedList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
 		instruction.setPaginate(false);
 		return getPaginatedList(fields, instruction, startRecord, recordCount, organization);
 	}
-	public <T> List<T>  getPaginatedList(QueryField[] fields, ProcessingInstructionType instruction, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getPaginatedList(QueryField[] fields, ProcessingInstructionType instruction, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		if (instruction != null && startRecord >= 0 && recordCount > 0 && instruction.getPaginate() == false)
 		{
@@ -644,20 +672,33 @@ public abstract class NameIdFactory extends FactoryBase {
 			
 			if(key_name != null) typeNameMap.remove(key_name);
 			
-
-			//if(key_name == null || typeNameMap.containsKey(key_name) == false){
+			/// 2015/01/12
+			/// Aggressive flush is an expensive process
+			/// It's useful for mixed bulk updates, such as adds + modifies
+			///	A dirty condition happens when a new object with no parent, or a bulk parent id is added.  Once the parentid is assigned, the old key continues to exist and the cache gets corrupted.
+			/// But it's also slower.  By default it's enabled for use in a Web setting where there are multiple concurent threads and dirty data
+			/// But should be disabled for the fastest possible bulk operations - the bulk operations add and remove objects to the factory cache
+			/// so this can greatly slow down large operations.
+			///
+			/// 2015/01/13 - Why not just make a list of keys per object id and not loop through the whole array?
+			
 			if(aggressiveKeyFlush == true){
-				//logger.info("Remove null key");
-				synchronized(typeNameMap){
-					Iterator<String> keys = typeNameMap.keySet().iterator();
-					while(keys.hasNext()){
-						String key = keys.next();
-						if(typeMap.contains(typeNameMap.get(key)) && typeMap.get(typeNameMap.get(key)).getId() == obj.getId()){
-							key_name = key;
-							break;
-						}
+				//Iterator<String> keys = typeNameMap.keySet().iterator();
+				
+				NameIdType objC = null;
+				//while(keys.hasNext()){
+				
+				for (Entry<String,Integer> entry : typeNameMap.entrySet()) {
+					String key = entry.getKey();
+					Integer index = entry.getValue();
+					
+					if((objC = typeMap.get(index)) != null && objC.getId() == obj.getId()){
+						key_name = key;
+						break;
 					}
+					
 				}
+				
 			}
 			
 			//logger.debug("Remove from cache: " + key_name + ":" + typeNameMap.containsKey(key_name) + " and " + typeIdMap.containsKey(obj.getId()));

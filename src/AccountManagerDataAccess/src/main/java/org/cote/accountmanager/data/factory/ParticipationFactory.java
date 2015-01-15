@@ -258,7 +258,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		return Factories.getAccountFactory().getList(new QueryField[]{ field }, organization);
 	}
 */
-	public List<DataType> getDataListFromParticipations(DataParticipantType[] list, boolean detailsOnly, int startRecord, int recordCount, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<DataType> getDataListFromParticipations(DataParticipantType[] list, boolean detailsOnly, long startRecord, int recordCount, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getDataFactory().getDataList(new QueryField[]{ field }, detailsOnly, startRecord, recordCount, organization);

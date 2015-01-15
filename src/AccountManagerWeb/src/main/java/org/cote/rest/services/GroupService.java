@@ -312,12 +312,12 @@ public class GroupService {
 	/// Legacy code
 	/// Change this to CD, and then make dir use CD to obtain the parent.
 	@GET @Path("/listInDataGroup/{path : [@\\.~%\\s0-9a-z_A-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}")  @Produces(MediaType.APPLICATION_JSON)
-	public List<BaseGroupType> listInDataGroup(@PathParam("path") String path,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
+	public List<BaseGroupType> listInDataGroup(@PathParam("path") String path,@PathParam("startIndex") long startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		return GroupServiceImpl.listInGroup(GroupEnumType.DATA, path, startIndex, recordCount, request);
 
 	}
 	@GET @Path("/listInUserGroup/{path : [@\\.~%\\s0-9a-z_A-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}")  @Produces(MediaType.APPLICATION_JSON)
-	public List<BaseGroupType> listInUserGroup(@PathParam("path") String path,@PathParam("startIndex") int startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
+	public List<BaseGroupType> listInUserGroup(@PathParam("path") String path,@PathParam("startIndex") long startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		return GroupServiceImpl.listInGroup(GroupEnumType.USER, path, startIndex, recordCount, request);
 
 	}	

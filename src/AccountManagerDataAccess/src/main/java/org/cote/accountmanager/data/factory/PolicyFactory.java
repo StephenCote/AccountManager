@@ -261,7 +261,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 
 	}
 	
-	public List<PolicyType>  getPolicyList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<PolicyType>  getPolicyList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
 	{
 		return getPaginatedList(fields, startRecord, recordCount, organization);
 	}

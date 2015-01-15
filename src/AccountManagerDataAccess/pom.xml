@@ -22,8 +22,11 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
+        <meminitial>512m</meminitial>
+        <maxmem>2048m</maxmem>
 					<source>1.6</source>
 					<target>1.6</target>
+					<fork>true</fork>
 				</configuration>
 			</plugin>
       	<plugin>
@@ -41,8 +44,8 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>false</skipTests>
-
+  					<skipTests>true</skipTests>
+ 					<argLine>-Xms512m -Xmx2048m</argLine>  
 
   					<includes>
 						<include>**/Test*.java</include>
@@ -50,8 +53,12 @@
 					<excludes>
 						<!-- 
 						
-						<exclude>**/TestBulkUpdate.java</exclude>
+						<exclude>**/TestDataTags.java</exclude>
 						-->
+						
+						<exclude>**/TestCachePerformance.java</exclude>
+						
+						<exclude>**/TestBulkUpdate.java</exclude>
 						<exclude>**/TestSoD.java</exclude>
 						<exclude>**/TestContactInformationFactory.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>

@@ -1,0 +1,33 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Type:
+		</p>
+		<p>
+			<select rid = "tagType" bind = "${bean.rocketType}">
+    		<option>UNKNOWN</option>
+    		<option>ACCOUNT</option>
+    		<option>DATA</option>
+    		<option>GROUP</option>
+    		<option>PERSON</option>
+			<option>USER</option>
+			</select>
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.GetElementByRID("pathCont").style.display = "none";
+		},
+		addType : function(o){
+			Hemi.log("Add tag type: " + o.name );
+			var b = false;
+			o.group = tagManager.getCleanGroup(o.group);
+			return uwmServices.getService("Tag").add(o);
+		},
+		prepareSave : function(o){
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

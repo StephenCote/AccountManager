@@ -173,11 +173,11 @@ public class AuditFactory extends FactoryBase {
 		return out_list;
 	}
 	
-	public ProcessingInstructionType getPagingInstruction(int startIndex)
+	public ProcessingInstructionType getPagingInstruction(long startIndex)
 	{
 		return getPagingInstruction(startIndex, defaultPageSize);
 	}
-	public ProcessingInstructionType getPagingInstruction(int startIndex, int recordCount)
+	public ProcessingInstructionType getPagingInstruction(long startIndex, int recordCount)
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 

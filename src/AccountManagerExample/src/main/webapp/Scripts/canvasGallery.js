@@ -371,6 +371,7 @@
 					thumbHeight:128,
 					thumbScroll:0,
 					actions:[
+					 {action: "tagSearch",label:"Tag Search",icon:"Crystal_Clear_app_kfind.png"},
 			         {action: "newGroup",label: "New Group",icon : "Crystal_Clear_action_filenew.png"},
 			         {action: "dndUpload",label:"Drag/Drop Upload",icon:"Crystal_Clear_action_2uparrow.png"},
 				     {action: "newImage",label: "New Image",icon : "Crystal_Clear_mimetype_image.png"},
@@ -527,7 +528,28 @@
 			    	Hemi.app.getWindowManager().CenterWindow(oW);
 				}
 			},
-
+			tagSearch: function(){
+				var oProps = {altSearch:1,openerId:this.getObjectId(),searchHandler:"doTagSearch"};
+				var oW = Hemi.app.createWindow('Tag Search','/AccountManagerExample/Forms/TagSearch.xml','TagSearch',0,0,oProps);
+				if(!oW) return;
+				oW.resizeTo(450,400);
+				oW.setHideOnClose(0);
+				Hemi.app.getWindowManager().CenterWindow(oW);
+			},
+			doTagSearch : function(aT){
+				var oP = this.getCurrentViewPanel("content"),oP2 = this.getCurrentViewPanel("nav");
+				oP.getObjects().searchTags = aT;
+				oP.getProperties().showTagSearch = 1;
+				oP.getProperties().tagSearchCount = 0;
+				
+				oP2.getProperties().startIndex = 0;
+				oP2.getProperties().totalCount = 0;
+				oP2.getProperties().currentCount = 0;
+				if(galleryView.isShowingControlPanel()){
+					galleryView.controlPanel();
+				}
+				this.getCurrentView().panel("content").repaint();
+			},
 			openDebug : function(){
 				var oW = Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler');
 				if(!oW) return;
@@ -860,9 +882,23 @@
 				paintVerticalSlottedItem(o,_no.currentDirectory,"cd",0,iter++);
 			}
 			var sObjType = (_s.objectType ? _s.objectType : sType);
-	
-			_s.totalCount = accountManager["count" + sObjType + "s"](_no.currentDirectory.path);
-			var aSub = accountManager["list" + sObjType + "s"](_no.currentDirectory.path,_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
+			var aSub = [];
+			var oCP;
+			if(sType == 'Object' && (oCP = o.getObjects().view.panel("content")).getProperties().showTagSearch){
+				var oR = new org.cote.beans.dataTagSearchRequest();
+				oR.tags = oCP.getObjects().searchTags;
+				oR.startRecord = _s.startIndex;
+				oR.recordCount = _s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0);
+				oR.paginate = true;
+
+				if(!oCP.getProperties().tagSearchCount) oCP.getProperties().tagSearchCount = uwmServices.getService("Tag").countTags(oR);
+				_s.totalCount = oCP.getProperties().tagSearchCount;
+				aSub =  uwmServices.getService("Tag").listByTags(oR);
+			}
+			else{
+				_s.totalCount = accountManager["count" + sObjType + "s"](_no.currentDirectory.path);
+				aSub = accountManager["list" + sObjType + "s"](_no.currentDirectory.path,_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
+			}
 			
 			_o.currentList = [];
 			///ctl.logDebug("Painting " + aSub.length + " items of " + _s.totalCount + " for " + _no.currentDirectory.path + " from " + _s.startIndex + " to " + _s.suggestedCount);
@@ -901,6 +937,9 @@
 			_o.currentDirectory = o;
 			ctl.log("Changing directory to " + o.path);
 
+			galleryView.getCurrentViewPanel("content").getProperties().showTagSearch = 0;
+			delete galleryView.getObjects().searchTags;
+			
 			if(galleryView.isShowingControlPanel()){
 				galleryView.controlPanel();
 			}
@@ -1050,7 +1089,7 @@
 			if(!b) _s.visible = 1;
 		}
 		
-		function paintItem(p,o,i){
+		function paintItem(p,o,i,b){
 			if(!o) return;
 			
 			var _s = p.getProperties(),_o=p.getObjects(),oP, g = (o.nameType == 'GROUP' ? o : o.group), _no = p.getObjects().view.panel("nav").getObjects();

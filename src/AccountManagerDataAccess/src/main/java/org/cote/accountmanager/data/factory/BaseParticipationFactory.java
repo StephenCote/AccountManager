@@ -56,7 +56,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 	public DataParticipantType newDataParticipation(NameIdType cycle, DataType sched) throws ArgumentException,FactoryException {
 		return newParticipation(cycle, sched, AuthorizationService.getViewObjectPermission(cycle.getOrganization()),AffectEnumType.GRANT_PERMISSION,ParticipantEnumType.DATA);
 	}
-	public List<DataType> getDataFromParticipations(DataParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<DataType> getDataFromParticipations(DataParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getDataFactory().getDataList(new QueryField[]{ field }, true, startRecord, recordCount, organization);
@@ -164,7 +164,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 		}
 		return items;
 	}
-	public List<ContactType> getContactsFromParticipations(ContactParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<ContactType> getContactsFromParticipations(ContactParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getContactFactory().getContactList(new QueryField[]{ field }, startRecord, recordCount, organization);
@@ -262,7 +262,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 			}
 			return items;
 		}
-		public List<AddressType> getAddressesFromParticipations(AddressParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+		public List<AddressType> getAddressesFromParticipations(AddressParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
 		{
 			QueryField field = QueryFields.getFieldParticipantIds(list);
 			return Factories.getAddressFactory().getAddressList(new QueryField[]{ field }, startRecord, recordCount, organization);

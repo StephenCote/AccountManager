@@ -30,6 +30,7 @@ import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DataType;
@@ -89,6 +90,15 @@ public class BaseService{
 		boolean out_bool = false;
 		
 		switch(type){
+			case TAG:
+				BaseTagType vtbean = (BaseTagType)in_obj;
+				BaseTagType new_tag = Factories.getTagFactory().newTag(user,vtbean.getName(),vtbean.getTagType(),vtbean.getGroup());
+				/// Note: Older style TagType factory still being migrated, so specify the ownerid here in order to allow for contact information to be created
+				///
+				new_tag.setOwnerId(user.getId());
+				MapUtil.shallowCloneNameIdDirectoryType(vtbean, new_tag);
+				out_bool = Factories.getTagFactory().addTag(new_tag);
+				break;
 			case ACCOUNT:
 				AccountType v1bean = (AccountType)in_obj;
 				AccountType new_acct = Factories.getAccountFactory().newAccount(user,v1bean.getName(),v1bean.getAccountType(), v1bean.getAccountStatus(), v1bean.getGroup());
@@ -295,6 +305,10 @@ public class BaseService{
 			case ACCOUNT:
 				out_bool = Factories.getAccountFactory().updateAccount((AccountType)in_obj);
 				break;
+			case TAG:
+				out_bool = Factories.getTagFactory().updateTag((BaseTagType)in_obj);
+				break;
+
 			case PERSON:
 				out_bool = Factories.getPersonFactory().updatePerson((PersonType)in_obj);
 				break;
@@ -365,6 +379,10 @@ public class BaseService{
 			case ACCOUNT:
 				out_bool = Factories.getAccountFactory().deleteAccount((AccountType)in_obj);
 				break;
+			case TAG:
+				out_bool = Factories.getTagFactory().deleteTag((BaseTagType)in_obj);
+				break;
+
 			case PERSON:
 				out_bool = Factories.getPersonFactory().deletePerson((PersonType)in_obj);
 				break;
@@ -427,6 +445,10 @@ public class BaseService{
 			case PERMISSION:
 				out_obj = (T)Factories.getPermissionFactory();
 				break;
+			case TAG:
+				out_obj = (T)Factories.getTagFactory();
+				break;
+
 			case ACCOUNT:
 				out_obj = (T)Factories.getAccountFactory();
 				break;
@@ -544,6 +566,7 @@ public class BaseService{
 	private static boolean isDirectoryType(AuditEnumType type){
 		boolean out_bool = false;
 		switch(type){
+			case TAG:
 			case ACCOUNT:
 			case PERSON:
 			case ADDRESS:
@@ -566,6 +589,7 @@ public class BaseService{
 		
 		T out_obj = null;
 		switch(type){
+			case TAG:
 			case ACCOUNT:
 			case PERSON:
 			case ADDRESS:
@@ -636,6 +660,7 @@ public class BaseService{
 	private static <T> void delink(AuditEnumType type, T obj){
 		DirectoryGroupType dir = null;
 		switch(type){
+			case TAG:
 			case ACCOUNT:
 			case PERSON:
 			case ADDRESS:
@@ -662,6 +687,9 @@ public class BaseService{
 	private static <T> void populate(AuditEnumType type,T object){
 		try{
 		switch(type){
+			case TAG:
+				/// nothing to populate
+				break;
 			case ACCOUNT:
 				Factories.getAccountFactory().populate((AccountType)object);
 				break;
@@ -723,6 +751,7 @@ public class BaseService{
 	public static boolean canViewType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
+			case TAG:
 			case ACCOUNT:
 			case PERSON:
 			case ADDRESS:
@@ -764,6 +793,7 @@ public class BaseService{
 	public static boolean canCreateType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
+			case TAG:
 			case ACCOUNT:
 			case PERSON:
 			case ADDRESS:
@@ -814,6 +844,7 @@ public class BaseService{
 	public static boolean canChangeType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
+			case TAG:
 			case ACCOUNT:
 			case PERSON:
 			case ADDRESS:
@@ -872,6 +903,7 @@ public class BaseService{
 	public static boolean canDeleteType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(type){
+			case TAG:
 			case ACCOUNT:
 			case PERSON:
 			case ADDRESS:
@@ -1561,7 +1593,7 @@ public class BaseService{
 		return factory.getCountInParent(parent);
 	}
 	
-	private static <T> List<T> getListByGroup(AuditEnumType type, DirectoryGroupType group,int startRecord, int recordCount) throws ArgumentException, FactoryException {
+	private static <T> List<T> getListByGroup(AuditEnumType type, DirectoryGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
 		NameIdGroupFactory factory = getFactory(type);
 		List<T> out_obj = factory.getListByGroup(group, startRecord, recordCount, group.getOrganization());
 		for(int i = 0; i < out_obj.size();i++){
@@ -1572,7 +1604,7 @@ public class BaseService{
 		}
 		return out_obj;			
 	}
-	public static <T> List<T> getGroupList(AuditEnumType type, UserType user, String path, int startRecord, int recordCount){
+	public static <T> List<T> getGroupList(AuditEnumType type, UserType user, String path, long startRecord, int recordCount){
 		List<T> out_obj = new ArrayList<T>();
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,(user == null ? "Null" : user.getName()));

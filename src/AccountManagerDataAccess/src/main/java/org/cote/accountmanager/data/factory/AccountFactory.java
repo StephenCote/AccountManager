@@ -46,7 +46,7 @@ public class AccountFactory extends NameIdGroupFactory {
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("accountid")){
+		if(table.getName().equalsIgnoreCase("accounts")){
 			table.setRestrictUpdateColumn("accountid", true);
 		}
 
@@ -302,7 +302,7 @@ public class AccountFactory extends NameIdGroupFactory {
 		return getAccountList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganization());
 
 	}
-	public List<AccountType>  getAccountList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<AccountType>  getAccountList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
 	{
 		return getPaginatedList(fields, startRecord, recordCount, organization);
 	}

@@ -201,7 +201,7 @@ public class ContactFactory extends NameIdGroupFactory {
 
 	}
 */
-	public List<ContactType>  getContactList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<ContactType>  getContactList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
 	{
 		return getPaginatedList(fields, startRecord, recordCount, organization);
 	}
@@ -211,7 +211,7 @@ public class ContactFactory extends NameIdGroupFactory {
 	}
 	
 	
-	public List<ContactType> searchContacts(String searchValue, int startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException{
+	public List<ContactType> searchContacts(String searchValue, long startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException{
 	
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){

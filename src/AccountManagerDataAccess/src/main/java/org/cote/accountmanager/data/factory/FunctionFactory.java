@@ -228,7 +228,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 
 	}
 	
-	public List<FunctionType>  getFunctionList(QueryField[] fields, int startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<FunctionType>  getFunctionList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
 	{
 		return getPaginatedList(fields, startRecord, recordCount, organization);
 	}

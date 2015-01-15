@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
@@ -147,6 +148,7 @@ public class BulkFactory {
 		synchronized(session){
 			eLen = session.getBulkEntries().size();
 			logger.info("Writing Bulk Session " + sessionId + " with " + (eLen - offset) + " objects");
+			long startPass = System.currentTimeMillis();
 			for(int i = offset; i < eLen; i++){
 				BulkEntryType entry = session.getBulkEntries().get(i);
 				if(entry.getPersisted()){
@@ -154,7 +156,10 @@ public class BulkFactory {
 					continue;
 				}
 				if(factoryIds.containsKey(entry.getFactoryType())==false){
+					long startFact = System.currentTimeMillis();
+					logger.info("Retrieving factory ids for " + entry.getFactoryType().toString());
 					factoryIds.put(entry.getFactoryType(), getFactoryIds(sessionId,entry.getFactoryType()));
+					logger.info("Retrieved factory ids in " + (System.currentTimeMillis() - startFact) + "ms");
 				}
 				List<Long> ids = factoryIds.get(entry.getFactoryType());
 				long id = ids.remove(ids.size()-1);
@@ -179,7 +184,8 @@ public class BulkFactory {
 				//writeObject(session, entry);
 				//eLen = session.getBulkEntries().size();
 			}
-
+			logger.info("Pass #1 in " + (System.currentTimeMillis() - startPass) + "ms");
+			startPass = System.currentTimeMillis();
 			/// 2013/06/26 - Second pass, map ids
 			///
 			for(int i = offset; i < eLen;i++){
@@ -193,6 +199,8 @@ public class BulkFactory {
 				}
 				mapObjectIds(entry);
 			}
+			//logger.info("Pass #2 in " + (System.currentTimeMillis() - startPass) + "ms");
+			//startPass = System.currentTimeMillis();
 
 			/// 2013/06/26 - Third pass, write objects into the bulk table queues
 			/// 2014/08/15 - Add attribute dump
@@ -213,8 +221,14 @@ public class BulkFactory {
 				writeObject(session, entry);
 				/// 2014/01/11  - need to update attributes, but in one bulk pass
 			}
+			//logger.info("Pass #3 in " + (System.currentTimeMillis() - startPass) + "ms");
+			//startPass = System.currentTimeMillis();
+
 			logger.info("Writing " + totalAttrs + " attributes for " + attrDump.size() + " objects");
 			Factories.getAttributeFactory().addAttributes(attrDump.toArray(new NameIdType[0]));
+			
+			//logger.info("Pass #4 in " + (System.currentTimeMillis() - startPass) + "ms");
+			//startPass = System.currentTimeMillis();
 
 			synchronized(dirtyWrite){
 				Iterator<FactoryEnumType> keys = factoryIds.keySet().iterator();
@@ -236,17 +250,20 @@ public class BulkFactory {
 					}
 				}
 			}
-			
+			//logger.info("Pass #5 in " + (System.currentTimeMillis() - startPass) + "ms");
+			//startPass = System.currentTimeMillis();
+
 			/// 2013/09/14 - Don't clear the dirtyWrite queue - it should be cleaned up in the previous pass
 			///dirtyWrite.clear();
 
 			/// 2014/12/23 - Add bulk update hook
 			if(updateCache.containsKey(sessionId)){
-				Iterator<FactoryEnumType> keys = updateCache.get(sessionId).keySet().iterator();
+				//Iterator<FactoryEnumType> keys = updateCache.get(sessionId).keySet().iterator();
 				int count = 0;
-				while(keys.hasNext()){
-					FactoryEnumType factoryType = keys.next();
-					List<NameIdType> objs = updateCache.get(sessionId).get(factoryType);
+				//while(keys.hasNext()){
+				for (Entry<FactoryEnumType,List<NameIdType>> entry : updateCache.get(sessionId).entrySet()) {
+					FactoryEnumType factoryType = entry.getKey();
+					List<NameIdType> objs = entry.getValue();
 					logger.info("Processing modification cache for " + factoryType.toString());
 					
 					updateSpool(factoryType,objs);
@@ -262,6 +279,9 @@ public class BulkFactory {
 			else{
 				logger.info("Modification cache is empty");
 			}
+			//logger.info("Pass #6 in " + (System.currentTimeMillis() - startPass) + "ms");
+			//startPass = System.currentTimeMillis();
+
 		}
 		synchronized(globalLock){
 			if(globalSessionId != null && globalSessionId.equals(sessionId) == false){

@@ -349,23 +349,23 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		return items;
 	}
-	public List<PersonType> getPersonsFromParticipations(PersonParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<PersonType> getPersonsFromParticipations(PersonParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getPersonFactory().getPersonList(new QueryField[]{ field }, startRecord, recordCount, organization);
 	}
 
-	public List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getAccountFactory().getAccountList(new QueryField[]{ field }, startRecord, recordCount, organization);
 	}
-	public List<UserType> getUsersFromParticipations(UserParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<UserType> getUsersFromParticipations(UserParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getUserFactory().getUserList(new QueryField[]{ field }, startRecord, recordCount, organization);
 	}
-	public List<DataType> getDatasFromParticipations(DataParticipantType[] list, int startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<DataType> getDatasFromParticipations(DataParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getDataFactory().getDataList(new QueryField[]{ field }, true,startRecord, recordCount, organization);

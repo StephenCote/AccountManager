@@ -34,7 +34,7 @@ public class AddressServiceImpl  {
 		return BaseService.readById(AuditEnumType.ADDRESS, id, request);
 	}
 	
-	public static List<AddressType> getGroupList(UserType user, String path, int startRecord, int recordCount){
+	public static List<AddressType> getGroupList(UserType user, String path, long startRecord, int recordCount){
 		return BaseService.getGroupList(AuditEnumType.ADDRESS, user, path, startRecord, recordCount);
 	}
 	public static int count(String groupId, HttpServletRequest request){

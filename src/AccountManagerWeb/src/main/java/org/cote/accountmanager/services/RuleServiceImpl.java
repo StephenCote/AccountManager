@@ -34,7 +34,7 @@ public class RuleServiceImpl  {
 		return BaseService.readById(AuditEnumType.RULE, id, request);
 	}
 	
-	public static List<RuleType> getGroupList(UserType user, String path, int startRecord, int recordCount){
+	public static List<RuleType> getGroupList(UserType user, String path, long startRecord, int recordCount){
 		return BaseService.getGroupList(AuditEnumType.RULE, user, path, startRecord, recordCount);
 	}
 	public static int count(String groupId, HttpServletRequest request){
