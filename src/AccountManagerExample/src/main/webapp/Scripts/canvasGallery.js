@@ -28,6 +28,7 @@
 				getCanvas().setTemporaryContextConfig(getCanvas().getConfigByName("NoShadow"));
 				getCanvas().setContextConfig(getCanvas().getConfigByName("NoShadow"));
 			},
+
 			handle_canvas_click : function(oCanvas, e)
 			{
 				//this.log("Consider Click - " + oCanvas.getObjects().MouseClickShape);
@@ -303,6 +304,7 @@
 		window.galleryView = Hemi.newObject("GalleryView","1.0",true,true,{
 			object_destroy : function(){
 				this.getCanvasController().destroy();
+				Hemi.event.removeEventListener(window,"keydown",this._prehandle_keydown);
 				Hemi.event.removeEventListener(window,"hashchange",this._prehandle_hash_change);
 				Hemi.event.removeEventListener(window,"resize",this._prehandle_window_resize);
 				Hemi.event.removeEventListener(window,"hashchange",this._prehandle_window_resize);
@@ -319,7 +321,8 @@
 				Hemi.event.addScopeBuffer(this);
 				this.scopeHandler("window_resize",0,0,1);
 				this.scopeHandler("hash_change",0,0,1);
-				
+				this.scopeHandler("keydown",0,0,1);
+								
 				instrumentVC(this);
 				var v = this.view("gallery",{scaleHeight:1,scaleWidth:1,basePath:"~/"});
 				v.panel("nav",{
@@ -429,8 +432,54 @@
 				Hemi.event.addEventListener(window,"resize",this._prehandle_window_resize);
 				Hemi.event.addEventListener(window,"hashchange",this._prehandle_window_resize);
 				Hemi.event.addEventListener(window,"orientationchange",this._prehandle_window_resize);
+				Hemi.event.addEventListener(window,"keydown",this._prehandle_keydown);
 				
 			}, // end object create
+			_handle_keydown : function(e){
+				e = Hemi.event.getEvent(e);
+				var bN = 0,bA = 0,bC = 0;
+				
+				switch(e.keyCode){
+					case 39:
+						bN = 1;
+						bA = 1;
+						//next(this.getCurrentViewPanel("content"),1);
+						break;
+					case 37:
+					
+						bN = 1;
+						bA = 0;
+						//back(this.getCurrentViewPanel("content"),1);
+						break;
+					case 27:
+						closeImage();
+						bC = 1;
+						break;
+					default:
+						Hemi.log("Unhandled key code: " + e.keyCode);
+						break;
+				}
+				
+				if(!bN || bC){
+					return 0;
+				}
+				
+				var oPanel = galleryView.views()[0].panel("matte");
+
+				/// there should only be 2 shapes on the matte
+				///
+				if(oPanel.getObjects().shapes.length != 2){
+					Hemi.logError("Unexpected matte shape array");
+					return 0;
+				};
+				var oShape = galleryView.getCanvas().getShapeById(oPanel.getObjects().shapes[0]);
+				if(!oShape){
+					Hemi.logError("Matte shape not found");
+					return 0;
+				}
+				gestureMatteImage(oPanel, oShape.referenceType, oShape.referenceId, oShape,bN,bA);
+				
+			},
 			_handle_hash_change : function(){
 				this.log("New Hash: " + location.hash);
 				//this.switchView("gallery",["nav","content","commands"]);
@@ -685,8 +734,9 @@
 			});
 			
 		}
-		
-		function gestureMatteImage(oMattePanel, sType, sId, oMatte){
+		/// TODO: key-based advance overloaded with the gesture. This should be broken up 
+		/// 
+		function gestureMatteImage(oMattePanel, sType, sId, oMatte, bKeyAdvance, bNext){
 			if(!oMatte) return;
 			var _s = oMattePanel.getProperties(),
 				_p = oMattePanel.getObjects(), 
@@ -712,7 +762,7 @@
 			iTI = oMatte.referenceIndex;
 			
 			//_s.iconStartIndex >= _s.totalIconCount
-			if(iML <= vM.left){
+			if((bKeyAdvance && !bNext) || (!bKeyAdvance && iML <= vM.left)){
 	
 				if((iTI-1) < 0 && _cs.startIndex > 0){
 					//_s.showImage = 0;
@@ -729,7 +779,7 @@
 				ctl.logDebug("Gesture Left " + bP + " to " + iTI);
 			}
 			/// Right Pane
-			else if(iML >= (oMattePanel.width() - vM.right)){
+			else if( (bKeyAdvance && bNext) || (!bKeyAdvance && iML >= (oMattePanel.width() - vM.right))){
 				
 				if((iTI+1) >= _cp.currentList.length && (iTI+1) < _cs.totalCount){
 					//_s.showImage = 0;
@@ -890,7 +940,7 @@
 				oR.startRecord = _s.startIndex;
 				oR.recordCount = _s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0);
 				oR.paginate = true;
-
+				oR.populateGroup = true;
 				if(!oCP.getProperties().tagSearchCount) oCP.getProperties().tagSearchCount = uwmServices.getService("Tag").countTags(oR);
 				_s.totalCount = oCP.getProperties().tagSearchCount;
 				aSub =  uwmServices.getService("Tag").listByTags(oR);

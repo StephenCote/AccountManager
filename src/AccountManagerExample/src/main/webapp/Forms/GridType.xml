@@ -46,6 +46,7 @@
 		DrawIOGridItem
 		DrawIOGridHeader
 		DrawIOGridFooter
+		provideRefresh
 		provideList
 		provideCount
 		search
@@ -387,6 +388,8 @@
 
 		refreshList : function(bSkipCountReset){
 			var sPath, _s = this.getProperties(), _o = this.getObjects();
+			if(this.provideRefresh) this.provideRefresh(bSkipCountReset);
+			
 			if(!_s.noGroup) sPath = this.getPath();
 			var oApi = window[uwm.getApi(this.getProperties().typeName)];
 			var oL = this.getList();
