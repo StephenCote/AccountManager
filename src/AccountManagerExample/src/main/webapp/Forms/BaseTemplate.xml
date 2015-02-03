@@ -4,12 +4,14 @@
 	<embedded-script><![CDATA[
 		embedded_init : function(){
 			this.scopeHandler("manager_loaded", 0, 0, 1);
+			this.scopeHandler("profiler_loaded", 0, 0, 1);
 			this.scopeHandler("picker_loaded", 0, 0, 1);
 			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_session_refresh");
 		},
 		embedded_destroy : function(){
 			this._prehandle_manager_loaded = 0;
 			this._prehandle_picker_loaded = 0;
+			this._prehandle_profiler_loaded = 0;
 			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_session_refresh");
 		},
 
@@ -19,6 +21,33 @@
 
 		_handle_manager_loaded: function (v) {
 			///
+        },
+        sendToDebug : function(){
+        	Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler',0,0,0,this._prehandle_profiler_loaded);
+        },
+        _handle_profiler_loaded : function(oW){
+        	if(typeof oW.ShowTab == "function" && typeof ActiveSource == "object"){
+				oW.ShowTab("Active Source");
+				var oSource = oW.GetElementByRID("oSource");
+				var oEval = oW.GetElementByRID("oEval");
+				var sCont = "";
+				ActiveObjects.valContainer = 0;
+				ActiveObjects.valReference = 0;
+				ActiveObjects.valBridge = 0;
+				ActiveObjects.valComponent = 0;
+				var oBean = this.getBean("rocketType");
+				oEval.value = "ActiveObjects.val";
+				ActiveObjects.val = (oBean ? oBean : this);
+
+				if(oBean){
+					oW.Reflect();
+				}
+				else{
+					oSource.value = 
+						"Active Template"
+					;
+				}
+			}        	
         },
 		manageList : function(sType, sListId, sFN){
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:1,pickFunction:sFN,listId:sListId};

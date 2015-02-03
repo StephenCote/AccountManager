@@ -224,6 +224,10 @@
 			countTags : function(sPath){
 				return uwmServices.getService("Tag").count(sPath);
 			},
+			listTagsFor : function(oObj){
+				return uwmServices.getService("Tag").listTagsFor(oObj.nameType,oObj.id);
+			},
+
 			listTags : function(sPath, iStartIndex, iRecordCount){
 				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
 				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;

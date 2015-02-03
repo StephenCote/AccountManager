@@ -28,6 +28,15 @@
 	
 	<import-xml src = "${property.viewBase}/Forms/${property.typeName}Fields.xml" id = "${property.typeName}Fields" />
 	<import-xml src = "/AccountManagerExample/Forms/AttributePicker.xml" id = "AttributePicker" />
+	<div rid = "debugCont" style = "display:none;clear:both;" class = "rocket-column-2">
+		<p rid = "lblDebug">
+			Debug:
+		</p>
+		<p>
+			<input rid = "btnDebug" type = "button" class = "rocket-button" value = "Debug" onclick = "${this}.sendToDebug()" />
+		</p>
+	</div>
+
 	<div style = "clear:both;" class = "rocket-column-2">
 		<p rid = "lblSave">
 			Save:
@@ -41,6 +50,7 @@
 		template_init : function(){
 			var o = this.getBean("rocketType"), _s = this.getProperties();
 			if(!this.setStatus) this.setStatus = this._setStatus;
+			this.GetElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
 			this.setStatus("");
 			if(typeof _s.populate == "undefined") _s.populate = 1;
 			this.GetElementByRID("name").focus();
@@ -130,6 +140,7 @@
 			var oApi = window[uwm.getApi(this.getProperties().typeName)];
 			if(o.nameType && o.nameType.match(/^group$/gi)) n = accountManager.getGroup(this.getPath() + "/" + o.name);
 			else if(this.provideItem) n = this.provideItem(this.getProperties().typeName,o);
+			else if(o.id) n = oApi["get" + this.getProperties().typeName + "ById"](o.id);
 			else n = oApi["get" + this.getProperties().typeName](o.name,o.group);
 			if(n != null){
 				this.clearBean("rocketType");

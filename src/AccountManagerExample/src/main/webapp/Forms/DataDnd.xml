@@ -12,6 +12,7 @@
 <embedded-script><![CDATA[
 		template_init : function(){
 			this.setStatus("");
+			this.getObjects().files = [];
 			if(this.setCanResize){
 				this.setCanResize(0);
 				this.setCanMinimize(0);
@@ -36,13 +37,16 @@
 			}
 		},
 		updateWaitingCount : function(){
-			var _p = this.getProperties();
+			var _p = this.getProperties(),op;
+			
 			_p.currentCount++;
         	this.setStatus("Read " + _p.currentCount + " of " + _p.waitingCount);
 			if(_p.waitingCount == _p.currentCount){
+				op = Hemi.registry.service.getObject(_p.openerId);
 				var o = this.GetElementByRID("droptarget");
 				o.style.borderColor = "#505050";
-				this.setStatus("Finished");	
+				this.setStatus("Finished");
+				if(op && op.local_handle_dnd_form) op.local_handle_dnd_form(this,this.getObjects().files);	
 			}
 		    
 
@@ -55,6 +59,7 @@
 				return;
 			}
 			var ctl = this;
+			this.getObjects().files = [];
 			var _p = this.getProperties();
 			_p.waitingCount = aF.length;
 			_p.currentCount = 0;
@@ -65,6 +70,7 @@
 		    	var formData = new FormData();
 		    	formData.append("groupId",oGroup.id);
 		    	formData.append("name",aF[i].name);
+		    	this.getObjects().files.push(aF[i].name);
 		    	formData.append("dataFile",aF[i]);
 		    	
 		        var xhr = new XMLHttpRequest();
@@ -82,7 +88,7 @@
 			var o = this.GetElementByRID("path"), s;
 			if(!(s = o.value).length){
 				s = o.placeholder;
-				if(!s) s = "~/Datas";
+				if(!s) s = uwm.getPathForType("Data","~/Data");
 			}
 			return s;
 		}

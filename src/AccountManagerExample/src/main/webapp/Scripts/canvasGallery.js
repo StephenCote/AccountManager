@@ -437,13 +437,16 @@
 			}, // end object create
 			_handle_keydown : function(e){
 				e = Hemi.event.getEvent(e);
-				var bN = 0,bA = 0,bC = 0;
+				var bN = 0,bA = 0,bC = 0,bU = 0;
 				
 				switch(e.keyCode){
 					case 39:
 						bN = 1;
 						bA = 1;
 						//next(this.getCurrentViewPanel("content"),1);
+						break;
+					case 38:
+						bU = 1;
 						break;
 					case 37:
 					
@@ -455,29 +458,58 @@
 						closeImage();
 						bC = 1;
 						break;
+					case 84:
+						this.getProperties().tagMode = (!this.getProperties().tagMode);
+						break;
 					default:
 						Hemi.log("Unhandled key code: " + e.keyCode);
 						break;
 				}
 				
-				if(!bN || bC){
+				if((!bN && !bU) || bC){
+					Hemi.log("Unhandled combination");
 					return 0;
 				}
 				
-				var oPanel = galleryView.views()[0].panel("matte");
+				var oPanel = galleryView.views()[0].panel("matte"),oShape;
 
 				/// there should only be 2 shapes on the matte
 				///
-				if(oPanel.getObjects().shapes.length != 2){
+				if(oPanel.getObjects().shapes.length == 2 && (oShape = galleryView.getCanvas().getShapeById(oPanel.getObjects().shapes[0]))){
+					/*
 					Hemi.logError("Unexpected matte shape array");
 					return 0;
 				};
-				var oShape = galleryView.getCanvas().getShapeById(oPanel.getObjects().shapes[0]);
-				if(!oShape){
-					Hemi.logError("Matte shape not found");
-					return 0;
+				*/
+					/*
+					var oShape = galleryView.getCanvas().getShapeById(oPanel.getObjects().shapes[0]);
+					if(!oShape){
+						Hemi.logError("Matte shape not found");
+						return 0;
+					}
+					*/
+					gestureMatteImage(oPanel, oShape.referenceType, oShape.referenceId, oShape,bN,bA);
 				}
-				gestureMatteImage(oPanel, oShape.referenceType, oShape.referenceId, oShape,bN,bA);
+				else{
+					if(bN){
+						if(e.shiftKey){
+							if(bA) this.navNext();
+							else this.navBack();
+
+						}
+						else{
+							if(bA) this.itemNext();
+							else this.itemBack();
+						}
+					}
+					else if(bU){
+						this.log("cdup");
+						this.cdup(this.views()[0].panel("nav"),0,this.views()[0].panel("nav").getObjects().currentDirectory.parentId,0);
+					}
+					else{
+						this.log("otherwise");
+					}
+				}
 				
 			},
 			_handle_hash_change : function(){
@@ -890,6 +922,13 @@
 				mP.getShapes().push(oR.id);
 				
 				ctl.getCanvas().Rasterize();
+				
+				if(galleryView.getProperties().tagMode){
+					var aT = accountManager.listTagsFor(o);
+					for(var i = 0; i < aT.length;i++){
+						oG.Text(aT[i].name, 5, 5 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
+					}
+				}
 			}
 			
 			img.src = "data:" + o.mimeType + ";base64," + o.dataBytesStore;

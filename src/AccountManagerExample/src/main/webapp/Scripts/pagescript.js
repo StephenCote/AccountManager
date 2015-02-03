@@ -1,6 +1,7 @@
 (function () {
 	
 	window.uwm = {
+		debugMode : 1,
 		pathProvider : 0,
 		apiTypes : {},
 		apiTypeHash : {},
