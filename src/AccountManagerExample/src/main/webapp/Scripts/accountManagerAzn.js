@@ -200,7 +200,8 @@ window.azn = Hemi.newObject("AZN","1.0",true,true,{
 				var g = accountManager.getCreatePath(factPath);
 				_o.fact = accountManagerRule.getFact(s,g);
 				if(_o.fact == null){
-					if(accountManagerRule.addFact(s,getUrn(g,s),"STATIC",g)){
+
+					if(accountManagerRule.addFact(s,"STATIC","UNKNOWN","UNKNOWN","UNKNOWN",null,null,null,g)){
 						_o.fact = accountManagerRule.getFact(s,g);
 					}
 				}

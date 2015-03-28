@@ -1,33 +1,23 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template>
 
-	<p>Person Base</p>
+	<p>Fact Base</p>
 	<embedded-script><![CDATA[
 		template_init : function(){
-			this.getProperties().typeName = "Person";
+			this.getProperties().typeName = "Fact";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName,"~/Facts");
 			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
-			if(!this.getProperties().defaultPath) this.getProperties().defaultPath = "~/Persons";
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.beans.personType();
+					o = new org.cote.beans.factType();
 					o.name = "";
-					o.description = "";
-					o.suffix = "";
-					o.prefix = "";
-					o.title = "";
-					o.alias = "";
-					o.firstName = "";
-					o.lastName = "";
-					o.middleName = "";
+					o.sourceUrl = "";
+					o.sourceUrn = "";
+					o.sourceDataType = "UNKNOWN";
+					o.factType = "UNKNOWN";
+					o.factoryType = "UNKNOWN";
 					o.id = 0;
-					o.gender = "unknown";
-					o.birthDate = new Date();
-					o.users = [];
-					o.accounts = [];
-					o.partners = [];
-					o.dependents = [];
-					o.notes = [];
 				}
 				else if(o.group && o.group.path){
 					this.getProperties().defaultPath = o.group.path;

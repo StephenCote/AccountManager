@@ -1,4 +1,7 @@
 (function () {
+	uwm.addApi("accountManagerRule", "/AccountManagerExample");
+	uwm.addApiTypes("accountManagerRule", ["Policy","Rule","Pattern","Fact","Operation","Function"]);
+	
 	window.accountManagerRule = {
 		define : function(o){
 			return uwmServices.getService("Policy").define(typeof o == "number" ? o : o.id);
@@ -39,6 +42,9 @@
 			if(oGroup) return uwmServices.getService("Policy").readByGroupId(oGroup.id,sName);
 			return uwmServices.getService("Policy").read(sName);
 		},
+		getPolicyById : function(iId){
+			return uwmServices.getService("Policy").readById(iId);
+		},
 		countRules : function(sPath){
 			return uwmServices.getService("Rule").count(sPath);
 		},
@@ -72,7 +78,9 @@
 			if(oGroup) return uwmServices.getService("Rule").readByGroupId(oGroup.id,sName);
 			return uwmServices.getService("Rule").read(sName);
 		},
-
+		getRuleById : function(iId){
+			return uwmServices.getService("Rule").readById(iId);
+		},
 		countPatterns : function(sPath){
 			return uwmServices.getService("Pattern").count(sPath);
 		},
@@ -105,23 +113,26 @@
 			if(oGroup) return uwmServices.getService("Pattern").readByGroupId(oGroup.id,sName);
 			return uwmServices.getService("Pattern").read(sName);
 		},
+		getPatternById : function(iId){
+			return uwmServices.getService("Pattern").readById(iId);
+		},
 		countFacts : function(sPath){
 			return uwmServices.getService("Fact").count(sPath);
 		},
 		listFacts : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Fact"),sPath, iStartIndex, iRecordCount);
 		},
-		addFact : function(sName, sUrn, sType, oGroup){
+		addFact : function(sName, sType, sFType, sDType, sSUrn, sSUrl,sFData, oGroup){
 			var o = new org.cote.beans.factType();
 			
 			o.name = sName;
-			o.urn = sUrn;
-			o.sourceDataType = "UNKNOWN";
-			o.factoryType = "UNKNOWN";
-			o.factType = (sType ? sType : "STATIC");
-			o.sourceUrn = null;
-			o.sourceUrl = null;
-			o.factData = null;
+
+			o.sourceDataType = sDType;
+			o.factoryType = sFType;
+			o.factType = sType;
+			o.sourceUrn = sSUrn;
+			o.sourceUrl = sSUrl;
+			o.factData = sFData;
 			o.factReference = null;
 
 			if(oGroup){
@@ -138,6 +149,9 @@
 		getFact : function(sName, oGroup){
 			if(oGroup) return uwmServices.getService("Fact").readByGroupId(oGroup.id,sName);
 			return uwmServices.getService("Fact").read(sName);
+		},
+		getFactById : function(iId){
+			return uwmServices.getService("Fact").readById(iId);
 		},
 		countOperations : function(sPath){
 			return uwmServices.getService("Operation").count(sPath);
@@ -164,6 +178,39 @@
 		getOperation : function(sName, oGroup){
 			if(oGroup) return uwmServices.getService("Operation").readByGroupId(oGroup.id,sName);
 			return uwmServices.getService("Operation").read(sName);
+		},
+		getOperationById : function(iId){
+			return uwmServices.getService("Operation").readById(iId);
+		},
+		countFunctions : function(sPath){
+			return uwmServices.getService("Function").count(sPath);
+		},
+		listFunctions : function(sPath, iStartIndex, iRecordCount){
+			return accountManager.serviceListInGroup(uwmServices.getService("Function"),sPath, iStartIndex, iRecordCount);
+		},
+		addFunction : function(sName, sType, iVal, oGroup){
+			var o = new org.cote.beans.operationType();
+			o.name = sName;
+			o.currencyType = sType;
+			o.value = iVal;
+			if(oGroup){
+				o.group = accountManager.getCleanGroup(oGroup);
+			}
+			return uwmServices.getService("Function").add(o);
+		},
+		deleteFunction : function(oRec){
+			return uwmServices.getService("Function").delete(oRec);
+		},
+		updateFunction : function(oRec){
+			return uwmServices.getService("Function").update(oRec);
+		},
+		getFunction : function(sName, oGroup){
+			if(oGroup) return uwmServices.getService("Function").readByGroupId(oGroup.id,sName);
+			return uwmServices.getService("Function").read(sName);
+		},
+		getFunctionById : function(iId){
+			return uwmServices.getService("Function").readById(iId);
 		}
+
 	};
 }());

@@ -37,7 +37,7 @@
 	
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
-			//this.GetElementByRID("pathCont").style.display = "none";
+			this.GetElementByRID("pathCont").style.display = "none";
 			this.GetComponentByRID("permissionsList").setLoadHandler(this.scopeHandler("configPermissionsList",0,1,1));
 		},
 		

@@ -12,6 +12,10 @@
 				types : []
 			};
 		},
+		getDefaultParentForType : function(sType, vDef){
+			if(uwm.defaultParentProvider) return uwm.defaultParentProvider(sType,vDef);
+			return vDef;
+		},
 		getPathForType : function(sType, sDef){
 			if(uwm.pathProvider) return uwm.pathProvider(sType);
 			return sDef;

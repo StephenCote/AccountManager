@@ -8,7 +8,7 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-			this.initGrid("Permission",0,0,1,1,accountManager.getUserPermission());
+			this.initGrid("Permission",0,0,1,1,uwm.getDefaultParentForType("Permission",accountManager.getUserPermission()));
 
 		},
 		template_destroy : function(){

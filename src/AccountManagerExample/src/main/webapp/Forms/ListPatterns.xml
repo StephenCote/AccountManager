@@ -8,15 +8,8 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-			this.initGrid("Person",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Person","~/Persons")));
+			this.initGrid("Pattern",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Pattern","~/Patterns")));
 
-		},
-		template_destroy : function(){
-			
-		},
-
-		handle_list_click : function(v){
-			
 		}
 		]]>
 	</embedded-script>
