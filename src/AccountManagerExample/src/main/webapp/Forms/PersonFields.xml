@@ -93,7 +93,7 @@
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			this.GetElementByRID("pathCont").style.display = "none";
+			//this.GetElementByRID("pathCont").style.display = "none";
 			this.initAccountPicker();
 			this.initContactInformation();
 			this.getProperties().personListProp = "dependents";

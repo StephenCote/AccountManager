@@ -1,0 +1,121 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Type:
+		</p>
+		<p>
+		<select rid = "patternType" bind = "${bean.rocketType}">
+			<option>UNKNOWN</option>
+			<option>PARAMETER</option>
+			<option>FUNCTION</option>
+			<option>OPERATION</option>
+			<option>EXPRESSION</option>
+			<option>AUTHORIZATION</option>
+			<option>SEPARATION_OF_DUTY</option>
+			</select>
+    	</p>
+	</div>
+		<div class = "rocket-column-2">
+		<p>
+			Fact:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "fact" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseFact()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickFact('Fact')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openFact()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Comparator:
+		</p>
+		<p>
+		<select rid = "comparator" bind = "${bean.rocketType}">
+    		<option>UNKNOWN</option>
+    		<option>EQUALS</option>
+    		<option>NOT_EQUALS</option>
+    		<option>BETWEEN</option>
+    		<option>LESS_THAN</option>
+    		<option>LESS_THAN_OR_EQUALS</option>
+    		<option>GREATER_THAN</option>
+    		<option>GREATER_THAN_OR_EQUALS</option>
+    		<option>NOT_IN</option>
+    		<option>IN</option>
+    		<option>NOT_NULL</option>
+    		<option>IS_NULL</option>
+    		<option>IS_NULL_EQUALS</option>
+    		<option>IS_NULL_NOT_EQUALS</option>
+    		<option>LIKE</option>
+    		<option>GROUP_AND</option>
+    		<option>GROUP_OR</option>
+    		</select>
+    				</p>
+	</div>
+		<div class = "rocket-column-2">
+		<p>
+			Match:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "match" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseMatch()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickMatch('Match')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openMatch()" />
+		</p>
+	</div>
+	
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		if(!this.getProperties().factProp) this.getProperties().factProp = "fact";
+		if(!this.getProperties().matchProp) this.getProperties().matchProp = "match";
+		var o = this.getBean("rocketType");
+		this.pickFact('Fact',o.fact);
+		this.pickMatch('Match',o.match);
+	},
+	chooseFact : function(){
+		this.manageList("Fact", this.getObjectId(),"pickFact");
+	},
+
+	openFact : function(){
+		var o = this.getBean("rocketType"), aP = this.getProperties().factProp;
+		if(o && o[aP] && this.openItem) this.openItem(o[aP],"Fact");
+	},
+	pickFact : function(s, v){
+		var o = this.getBean("rocketType");
+		o[this.getProperties().factProp] = v;
+		this.GetElementByRID("fact").value = (v ? v.name : "");
+	},
+chooseMatch : function(){
+		this.manageList("Fact", this.getObjectId(),"pickMatch");
+	},
+
+		openMatch : function(){
+			var o = this.getBean("rocketType"), aP = this.getProperties().matchProp;
+			if(o && o[aP] && this.openItem) this.openItem(o[aP],"Fact");
+		},
+	pickMatch : function(s, v){
+		var o = this.getBean("rocketType");
+		o[this.getProperties().matchProp] = v;
+		this.GetElementByRID("match").value = (v ? v.name : "");
+	},
+	addType : function(o){
+			Hemi.log("Add pattern type: " + o.name + ":" + o.patternType);
+			return accountManagerRule.addPattern(o.name, o.description,o.patternType, o.comparator, (o.fact ? o.fact.urn : 0), (o.match ? o.match.urn : 0), o.group);
+		},
+		prepareSave : function(o){
+			o.matchUrn = (o.match ? o.match.urn : 0);
+			o.factUrn = (o.fact ? o.fact.urn : 0);
+			return 1;
+		}
+	]]></embedded-script>
+	</html-fragment>
+    		
+    		

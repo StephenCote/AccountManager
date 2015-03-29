@@ -91,7 +91,7 @@ window.azn = Hemi.newObject("AZN","1.0",true,true,{
 				var g = accountManager.getCreatePath(rulePath);
 				_o.rule = accountManagerRule.getRule(s,g);
 				if(_o.rule == null){
-					if(accountManagerRule.addRule(s,getUrn(g,s),"PERMIT",g)){
+					if(accountManagerRule.addRule(s,"","PERMIT","UNKNOWN",0,0,g)){
 						_o.rule = accountManagerRule.getRule(s,g);
 					}
 				}
@@ -147,7 +147,7 @@ window.azn = Hemi.newObject("AZN","1.0",true,true,{
 				var g = accountManager.getCreatePath(patternPath);
 				_o.pattern = accountManagerRule.getPattern(s,g);
 				if(_o.pattern == null){
-					if(accountManagerRule.addPattern(s,getUrn(g,s),"EXPRESSION","EQUALS",g)){
+					if(accountManagerRule.addPattern(s,0,"EXPRESSION","EQUALS",0,0,g)){
 						_o.pattern = accountManagerRule.getPattern(s,g);
 					}
 				}
@@ -201,7 +201,7 @@ window.azn = Hemi.newObject("AZN","1.0",true,true,{
 				_o.fact = accountManagerRule.getFact(s,g);
 				if(_o.fact == null){
 
-					if(accountManagerRule.addFact(s,"STATIC","UNKNOWN","UNKNOWN","UNKNOWN",null,null,null,g)){
+					if(accountManagerRule.addFact(s,"","STATIC","UNKNOWN","UNKNOWN","UNKNOWN",null,null,null,g)){
 						_o.fact = accountManagerRule.getFact(s,g);
 					}
 				}

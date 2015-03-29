@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template>
 
-	<p>Fact Base</p>
+	<p>Pattern Base</p>
 	<embedded-script><![CDATA[
 		template_init : function(){
-			this.getProperties().typeName = "Fact";
-			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName,"~/Facts");
+			this.getProperties().typeName = "Pattern";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName,"~/Patterns");
 			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.beans.factType();
+					o = new org.cote.beans.patternType();
 					o.name = "";
 					o.description = "";
-					o.sourceUrl = "";
-					o.sourceUrn = "";
-					o.sourceDataType = "UNKNOWN";
-					o.factType = "UNKNOWN";
-					o.factoryType = "UNKNOWN";
+					o.matchUrn = "";
+					o.factUrn = "";
+					o.operationUrn = "";
+					o.comparator = "EQUALS";
+					o.patternType = "EXPRESSION";
+
 					o.id = 0;
 				}
 				else if(o.group && o.group.path){

@@ -51,14 +51,16 @@
 		listRules : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Rule"),sPath, iStartIndex, iRecordCount);
 		},
-		addRule : function(sName, sUrn, sType, oGroup){
+		addRule : function(sName, sDesc,sType, sCond, aP, aR, oGroup){
 			var o = new org.cote.beans.ruleType();
 			
 			o.name = sName;
-			o.urn = sUrn;
+			o.description = sDesc;
 			o.ruleType = sType;
-			o.condition = "ALL";
-
+			o.condition =sCond;
+			if(aP) o.patterns = aP;
+			if(aR) o.rules = aR;
+			
 			if(oGroup){
 				o.group = accountManager.getCleanGroup(oGroup);
 			}
@@ -87,11 +89,13 @@
 		listPatterns : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Pattern"),sPath, iStartIndex, iRecordCount);
 		},
-		addPattern : function(sName, sUrn, sType, sComp, oGroup){
+		addPattern : function(sName, sDesc, sType, sComp, sFact, sMatch,oGroup){
 			var o = new org.cote.beans.patternType();
 			
 			o.name = sName;
-			o.urn = sUrn;
+			o.description = sDesc;
+			if(sFact) o.factUrn = sFact;
+			if(sMatch) o.matchUrn = sMatch;
 			o.patternType = (sType ? sType : "EXPRESSION");
 			o.comparator = (sComp ? sComp : "EQUALS");
 			if(oGroup){
@@ -122,11 +126,11 @@
 		listFacts : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Fact"),sPath, iStartIndex, iRecordCount);
 		},
-		addFact : function(sName, sType, sFType, sDType, sSUrn, sSUrl,sFData, oGroup){
+		addFact : function(sName, sDesc,sType, sFType, sDType, sSUrn, sSUrl,sFData, oGroup){
 			var o = new org.cote.beans.factType();
 			
 			o.name = sName;
-
+			o.description = sDesc;
 			o.sourceDataType = sDType;
 			o.factoryType = sFType;
 			o.factType = sType;

@@ -114,8 +114,15 @@
 			e = Hemi.event.getEvent(e);
 			if(e.keyCode == 13) this.refreshList();
 		},
-		cancelPickItem : function(){
+		closeToFocus : function(){
+			var o;
 			if(this.Close) this.Close();
+			if(this.getProperties().openerId && (o = Hemi.registry.service.getObject(this.getProperties().openerId)) && o.getFocus){
+				o.getFocus();
+			}
+		},
+		cancelPickItem : function(){
+			if(this.Close) this.closeToFocus();
 		},
 		
 		_search : function(){
@@ -164,7 +171,7 @@
 				return;
 			}
 			this._handle_typelistclick("manualpick",o);
-			if(!b && this.Close) this.Close();
+			if(!b && this.Close) this.closeToFocus();
 		},
 
 		_handle_typelistclick : function(s, v){
@@ -184,7 +191,7 @@
 					if(oL && v && v.data) oL.addItem(v.data.name, v.data);
 					else if(this.getProperties().pickFunction && oOpener[this.getProperties().pickFunction]) oOpener[this.getProperties().pickFunction](this.getProperties().formType,v.data, this.getProperties().sourceId,this);
 				}
-				if(this.Close && s != "manualpick") this.Close();
+				if(this.Close && s != "manualpick") this.closeToFocus();
 			}
 		},
 		

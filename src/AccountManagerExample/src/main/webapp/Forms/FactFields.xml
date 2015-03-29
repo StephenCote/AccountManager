@@ -1,4 +1,12 @@
 <html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
 	<div rid = "gridCont" style = "display: none;" class = "rocket-column-2">
 		<p>
 			Is Parameter:
@@ -118,7 +126,7 @@
 	<embedded-script><![CDATA[
 		addType : function(o){
 			Hemi.log("Add fact type: " + o.name + ":" + o.factType);
-			return accountManagerRule.addFact(o.name, o.factType, o.factoryType, o.sourceDataType, o.sourceUrn, o.sourceUrl,o.factData, o.group);
+			return accountManagerRule.addFact(o.name, o.description,o.factType, o.factoryType, o.sourceDataType, o.sourceUrn, o.sourceUrl,o.factData, o.group);
 		},
 		findType : function(){
 			var sFType = this.GetElementByRID("factoryType").value;
