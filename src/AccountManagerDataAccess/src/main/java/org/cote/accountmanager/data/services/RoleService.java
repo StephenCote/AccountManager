@@ -19,6 +19,7 @@ import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserParticipantType;
+import org.cote.accountmanager.objects.UserPermissionType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
@@ -306,6 +307,14 @@ public class RoleService {
 		{
 			return getUserRole("RoleReaders", null,org);
 		}
+		public static UserRoleType getPermissionReaderUserRole(UserType role_owner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateUserRole(role_owner, "PermissionReaders", null);
+		}
+		public static UserRoleType getPermissionReaderUserRole(OrganizationType org) throws FactoryException, ArgumentException
+		{
+			return getUserRole("PermissionReaders", null,org);
+		}
 		public static UserRoleType getGroupReaderUserRole(UserType role_owner) throws DataAccessException, FactoryException, ArgumentException
 		{
 			return getCreateUserRole(role_owner, "GroupReaders", null);
@@ -346,6 +355,14 @@ public class RoleService {
 		public static AccountRoleType getRoleReaderAccountRole(OrganizationType org) throws FactoryException, ArgumentException
 		{
 			return getAccountRole("RoleReaders", null,org);
+		}
+		public static AccountRoleType getPermissionReaderAccountRole(UserType role_owner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateAccountRole(role_owner, "PermissionReaders", null);
+		}
+		public static AccountRoleType getPermissionReaderAccountRole(OrganizationType org) throws FactoryException, ArgumentException
+		{
+			return getAccountRole("PermissionReaders", null,org);
 		}
 		public static AccountRoleType getGroupReaderAccountRole(UserType role_owner) throws DataAccessException, FactoryException, ArgumentException
 		{

@@ -119,7 +119,7 @@ public class UrnUtil {
 				urn = urnPrefix + urnSeparator + object.getNameType().toString()
 					 + urnSeparator + getDotOrganizationPath(object.getOrganization())
 					 + urnSeparator + key;
-				urn = urn.toLowerCase().replaceAll("[^A-Za-z0-9\\.\\:]+","");
+				urn = getNormalizedString(urn);
 			}
 		}
 		catch(FactoryException fe){
@@ -129,6 +129,9 @@ public class UrnUtil {
 			logger.error(e.getMessage());
 		}
 		return urn;
+	}
+	public static String getNormalizedString(String in){
+		return in.toLowerCase().replaceAll("[^A-Za-z0-9\\.\\:]+","");
 	}
 	private static String getDotGroupPath(BaseGroupType group) throws FactoryException, ArgumentException{
 		Factories.getGroupFactory().populate(group);

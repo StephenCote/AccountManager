@@ -198,10 +198,10 @@ public class SessionSecurity {
 		}
 		stats.setAccessedDate(CalendarUtil.getXmlGregorianCalendar(Calendar.getInstance().getTime()));
 		if(Factories.getStatisticsFactory().updateStatistics(stats) == false){
-			throw new FactoryException("Error updating statistics");
+			throw new FactoryException("Error updating statistics for " + session.getSessionId() + " in organization id " + session.getOrganizationId());
 		}
 		if(Factories.getSessionFactory().update(session) == false){
-			throw new FactoryException("Error updating session");
+			throw new FactoryException("Error updating session " + session.getSessionId() + " in organization id " + session.getOrganizationId());
 		}
 		
 		return user;

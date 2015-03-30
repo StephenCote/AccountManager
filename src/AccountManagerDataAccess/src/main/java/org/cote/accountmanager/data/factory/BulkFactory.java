@@ -666,7 +666,7 @@ public class BulkFactory {
 				throw new FactoryException("Unhandled factory type: " + entry.getFactoryType());
 		}
 	}
-	protected long getMappedId(long temporaryId){
+	public long getMappedId(long temporaryId){
 		long out_id = 0;
 		if(idMap.containsKey(temporaryId)) out_id = idMap.get(temporaryId);
 		return out_id;

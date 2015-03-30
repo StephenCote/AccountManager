@@ -567,8 +567,8 @@ public class RoleFactory extends NameIdFactory {
 				continue;
 			}
 			if(user != null) per = getCreateRole(user, seg, type, (T)parent, org);
-			else per = getRoleByName(seg, (BaseRoleType)parent, org);
-			if(per == null) throw new ArgumentException("Failed to find role '" + seg + "' in " + (parent == null ? "Null Parent":parent.getName()));
+			else per = getRoleByName(seg, (BaseRoleType)parent, type, org);
+			if(per == null) throw new ArgumentException("Failed to find role '" + seg + "' in " + (parent == null ? "Null Parent":parent.getName()) + " from path " + pathBase);
 			parent = (BaseRoleType)per;
 		}
 		return per;

@@ -6,7 +6,8 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 public class MapUtil {
 
 	public static void shallowCloneAznType(BaseAuthorizationType src, BaseAuthorizationType targ){
-		targ.setUrn(src.getUrn());
+		//targ.setUrn(src.getUrn());
+		targ.setScore(src.getScore());
 		targ.setDescription(src.getDescription());
 		targ.setLogicalOrder(src.getLogicalOrder());
 		shallowCloneNameIdDirectoryType(src, targ);

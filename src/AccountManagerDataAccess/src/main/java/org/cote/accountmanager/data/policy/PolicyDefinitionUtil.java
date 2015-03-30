@@ -72,11 +72,11 @@ public class PolicyDefinitionUtil {
 	}
 	public static PolicyDefinitionType generatePolicyDefinition(PolicyType pol) throws FactoryException, ArgumentException{
 		PolicyDefinitionType pdt = new PolicyDefinitionType();
-		pdt.setCreated(pol.getCreated());
+		pdt.setCreatedDate(pol.getCreatedDate());
 		pdt.setDecisionAge(pol.getDecisionAge());
 		pdt.setEnabled(pol.getEnabled());
-		pdt.setExpires(pol.getExpires());
-		pdt.setModified(pol.getModified());
+		pdt.setExpiresDate(pol.getExpiresDate());
+		pdt.setModifiedDate(pol.getModifiedDate());
 		pdt.setUrn(pol.getUrn());
 		pdt.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(pol.getOrganization()));
 		copyParameters(pdt,pol);
@@ -142,8 +142,8 @@ public class PolicyDefinitionUtil {
 		buff.append("\nPOLICY " + pol.getName()+ "\n");
 		buff.append("\turn\t" + pol.getUrn()+ "\n");
 		buff.append("\tenabled\t" + pol.getEnabled()+ "\n");
-		buff.append("\tcreated\t" + pol.getCreated().toString()+ "\n");
-		buff.append("\texpires\t" + pol.getExpires().toString()+ "\n");
+		buff.append("\tcreated\t" + pol.getCreatedDate().toString()+ "\n");
+		buff.append("\texpires\t" + pol.getExpiresDate().toString()+ "\n");
 		List<RuleType> rules = pol.getRules();
 		for(int i = 0; i < rules.size();i++){
 			RuleType rule = rules.get(i);

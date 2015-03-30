@@ -209,12 +209,14 @@ public class FactoryDefaults {
 		UserRoleType user_users_role = RoleService.getAccountUsersRole(admin_user);
 		
 		RoleService.getAccountUsersReaderAccountRole(admin_user);
+		RoleService.getPermissionReaderAccountRole(admin_user);
 		RoleService.getRoleReaderAccountRole(admin_user);
 		RoleService.getDataReaderAccountRole(admin_user);
 		RoleService.getGroupReaderAccountRole(admin_user);
 		RoleService.getObjectReaderAccountRole(admin_user);
 		RoleService.getAccountUsersReaderUserRole(admin_user);
 		RoleService.getRoleReaderUserRole(admin_user);
+		RoleService.getPermissionReaderUserRole(admin_user);
 		RoleService.getDataReaderUserRole(admin_user);
 		RoleService.getGroupReaderUserRole(admin_user);
 		RoleService.getObjectReaderUserRole(admin_user);

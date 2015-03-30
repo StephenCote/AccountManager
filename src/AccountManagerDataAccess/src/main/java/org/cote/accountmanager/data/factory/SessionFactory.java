@@ -277,9 +277,9 @@ public class SessionFactory extends FactoryBase {
 
 	public boolean update(UserSessionType map) throws FactoryException
 	{
-		return update(map, null);
+		return update(map, null, false);
 	}
-	public boolean update(UserSessionType map, ProcessingInstructionType instruction) throws FactoryException
+	public boolean update(UserSessionType map, ProcessingInstructionType instruction, boolean recover) throws FactoryException
 	{
 		DataTable table = getDataTable("session");
 		boolean out_bool = false;
@@ -318,7 +318,12 @@ public class SessionFactory extends FactoryBase {
 				e.printStackTrace();
 			}
 		}
-
+		if(recover == false && updated <= 0){
+			logger.error("Session Error Detected.  Attempting to Recover "  + map.getSessionId() + " in organization id " + map.getOrganizationId());
+			Factories.getSessionFactory().clearSession(map.getSessionId());
+			///return update(map, instruction, true);
+			return addSession(map);
+		}
 		return (updated > 0);
 	}
 	public void setFactoryFields(List<QueryField> fields, UserSessionType map, ProcessingInstructionType instruction){

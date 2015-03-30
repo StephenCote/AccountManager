@@ -566,6 +566,10 @@ public class AuthorizationService {
 		{
 			return true;
 		}
+		if(RoleService.getIsUserInEffectiveRole(RoleService.getPermissionReaderUserRole(user.getOrganization()), user)){
+			logger.info("TODO: Need to clarify CRUD entitlements for permissions.  Presently, permitting change operations for PermissionReader participation.");
+			return true;
+		}
 		logger.warn("TODO: Permission level authorization pending");
 		return false;
 		//return EffectiveAuthorizationService.getRoleAuthorization(user,role, new BasePermissionType[] { getEditRolePermission(role.getOrganization())} );

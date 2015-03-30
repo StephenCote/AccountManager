@@ -495,7 +495,7 @@ public abstract class NameIdFactory extends FactoryBase {
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String sqlQuery = assembleQueryString("SELECT " + idCol + " FROM " + viewName, filters, connectionType, instruction, organization.getId());
-		logger.debug("Query=" + sqlQuery);
+		//logger.debug("Query=" + sqlQuery);
 		List<Long> ids = new ArrayList<Long>();
 		List<T> objs = new ArrayList<T>();
 		
@@ -600,7 +600,7 @@ public abstract class NameIdFactory extends FactoryBase {
 	}
 	
 	public <T> T getByUrn(String urn){
-		logger.debug("Reading object by urn " + urn);
+		//logger.debug("Reading object by urn " + urn);
 		T obj = readCache(urn);
 		if(obj != null){
 			return obj;
@@ -714,9 +714,9 @@ public abstract class NameIdFactory extends FactoryBase {
 	}
 	public <T> T readCache(String name){
 		checkCacheExpires();
-		logger.debug("Check cache for key '" + name + "'");
+		//logger.debug("Check cache for key '" + name + "'");
 		if(typeNameMap.containsKey(name)){
-			logger.debug("Found cache for key '" + name + "'");
+			//logger.debug("Found cache for key '" + name + "'");
 			return (T)typeMap.get(typeNameMap.get(name));
 		}
 		return null;
@@ -756,7 +756,7 @@ public abstract class NameIdFactory extends FactoryBase {
 			return false;
 		}
 		//checkCacheExpires();
-		logger.debug("Add to cache: " + (map == null ? "NULL" : map.getNameType() + " " + map.getName()) + " AT " + key_name);
+		//logger.debug("Add to cache: " + (map == null ? "NULL" : map.getNameType() + " " + map.getName()) + " AT " + key_name);
 		//synchronized(typeMap){
 			int length = typeMap.size();
 			if(typeNameMap.containsKey(key_name) || typeIdMap.containsKey(map.getId())){
@@ -774,7 +774,7 @@ public abstract class NameIdFactory extends FactoryBase {
 				//throw new ArgumentException("Object already cached");
 				return false;
 			}
-			logger.debug("Cached " + map.getNameType() + " " + map.getName() + " (#" + map.getId() + ") with key '" + key_name + "'");
+			//logger.debug("Cached " + map.getNameType() + " " + map.getName() + " (#" + map.getId() + ") with key '" + key_name + "'");
 			typeMap.add(map);
 			typeNameMap.put(key_name, length);
 			typeIdMap.put(map.getId(), length);
@@ -784,7 +784,7 @@ public abstract class NameIdFactory extends FactoryBase {
 	}
 	protected boolean isValid(NameIdType map)
 	{
-		if (map == null || map.getId() <= 0 || map.getOrganization() == null) return false;
+		if (map == null || map.getId() <= 0L || map.getOrganization() == null) return false;
 		return true;
 	}
 	public int getCount(long organization_id) throws FactoryException

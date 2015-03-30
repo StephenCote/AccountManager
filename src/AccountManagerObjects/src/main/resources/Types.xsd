@@ -227,7 +227,7 @@
     		<enumeration value="FORM"></enumeration>
     		<enumeration value="FORMELEMENT"></enumeration>
     		<enumeration value="VALIDATIONRULE"></enumeration>
-    		
+    		<enumeration value="GOAL"></enumeration>
     		<enumeration value="FUNCTION"></enumeration>
     		<enumeration value="POLICY"></enumeration>
     		<enumeration value="RULE"></enumeration>
@@ -519,6 +519,7 @@
     		<enumeration value="FORMELEMENTPARTICIPATION"></enumeration>
     		<enumeration value="FORMPARTICIPATION"></enumeration>
     		<enumeration value="GOAL"></enumeration>
+    		<enumeration value="GOALPARTICIPATION"></enumeration>
     		<enumeration value="LIFECYCLE"></enumeration>
     		<enumeration value="LIFECYCLEPARTICIPATION"></enumeration>
     		<enumeration value="METHODOLOGY"></enumeration>

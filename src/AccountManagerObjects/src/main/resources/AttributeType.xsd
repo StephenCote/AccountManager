@@ -15,4 +15,5 @@
     	<attribute name="referenceId" type="long"></attribute>
     	<attribute name="organizationId" type="long"></attribute>
     </complexType>
+    	
 </schema>

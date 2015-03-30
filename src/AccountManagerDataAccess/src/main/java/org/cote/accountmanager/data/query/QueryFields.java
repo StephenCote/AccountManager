@@ -267,6 +267,11 @@ public class QueryFields {
 	{
 		return getTimestampField("createddate", val);
 	}
+	public static QueryField getFieldStartDate(XMLGregorianCalendar val)
+	{
+		return getTimestampField("startdate", val);
+	}
+
 	public static QueryField getFieldModifiedDate(XMLGregorianCalendar val)
 	{
 		return getTimestampField("modifieddate", val);
@@ -360,6 +365,10 @@ public class QueryFields {
 	}
 	public static QueryField getFieldLogicalOrder(int order){
 		return getIntField("logicalorder", order);
+	}
+	public static QueryField getFieldDecisionAge(long age)
+	{
+		return getBigIntField("decisionage",age);
 	}
 
 	public static QueryField getFieldReferenceId(OrganizationType map)

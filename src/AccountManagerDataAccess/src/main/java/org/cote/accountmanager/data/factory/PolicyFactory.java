@@ -101,10 +101,10 @@ public class PolicyFactory extends NameIdGroupFactory {
 		obj.setCondition(ConditionEnumType.UNKNOWN);
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(new Date());
-		obj.setCreated(dtFactory.newXMLGregorianCalendar(cal));
-		obj.setModified(dtFactory.newXMLGregorianCalendar(cal));
+		obj.setCreatedDate(dtFactory.newXMLGregorianCalendar(cal));
+		obj.setModifiedDate(dtFactory.newXMLGregorianCalendar(cal));
 		cal.add(GregorianCalendar.YEAR, 1);
-		obj.setExpires(dtFactory.newXMLGregorianCalendar(cal));
+		obj.setExpiresDate(dtFactory.newXMLGregorianCalendar(cal));
 
 		return obj;
 	}
@@ -121,9 +121,9 @@ public class PolicyFactory extends NameIdGroupFactory {
 			
 			row.setCellValue("score", obj.getScore());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
-			row.setCellValue("createddate", obj.getCreated());
-			row.setCellValue("modifieddate", obj.getModified());
-			row.setCellValue("expirationdate", obj.getExpires());
+			row.setCellValue("createddate", obj.getCreatedDate());
+			row.setCellValue("modifieddate", obj.getModifiedDate());
+			row.setCellValue("expirationdate", obj.getExpiresDate());
 			row.setCellValue("decisionage", obj.getDecisionAge());
 			row.setCellValue("enabled", obj.getEnabled());
 			row.setCellValue("condition", obj.getCondition().toString());
@@ -167,9 +167,9 @@ public class PolicyFactory extends NameIdGroupFactory {
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
 		new_obj.setEnabled(rset.getBoolean("enabled"));
 		new_obj.setDecisionAge(rset.getLong("decisionage"));
-		new_obj.setCreated(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		new_obj.setModified(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		new_obj.setExpires(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		new_obj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		new_obj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
+		new_obj.setExpiresDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
 		new_obj.setCondition(ConditionEnumType.fromValue(rset.getString("condition")));
 		return new_obj;
 	}
@@ -177,6 +177,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 	{
 		removeFromCache(data);
 		removeFromCache(data,getUrnCacheKey(data));
+		data.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(new Date()));
 		boolean out_bool = false;
 		if(update(data, null)){
 			try{
@@ -213,6 +214,10 @@ public class PolicyFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
 		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
 		fields.add(QueryFields.getFieldEnabled(use_map.getEnabled()));
+		//fields.add(QueryFields.getFieldCreatedDate(use_map.getCreated()));
+		fields.add(QueryFields.getFieldModifiedDate(use_map.getModifiedDate()));
+		fields.add(QueryFields.getFieldExpirationDate(use_map.getExpiresDate()));
+		fields.add(QueryFields.getFieldDecisionAge(use_map.getDecisionAge()));
 
 	}
 	public int deletePoliciesByUser(UserType user) throws FactoryException

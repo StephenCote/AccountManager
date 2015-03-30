@@ -163,7 +163,7 @@ public class TagFactory extends NameIdGroupFactory {
 	}
 	public <T> List<T> listTags(DirectoryGroupType group, TagEnumType type, QueryField match, long startRecord, int recordCount,OrganizationType org) throws FactoryException, ArgumentException{
 		List<QueryField> fields = new ArrayList<QueryField>();
-		fields.add(QueryFields.getFieldGroup(group.getId()));
+		if(group != null) fields.add(QueryFields.getFieldGroup(group.getId()));
 		if(type != TagEnumType.UNKNOWN) fields.add(QueryFields.getFieldTagType(type));
 		if(match != null) fields.add(match);
 		return getPaginatedList(fields.toArray(new QueryField[0]),startRecord,recordCount,org);
@@ -253,6 +253,7 @@ public class TagFactory extends NameIdGroupFactory {
 		instruction.setStartIndex(startRecord);
 		instruction.setRecordCount(recordCount);
 		List<DataParticipantType> parts = Factories.getTagParticipationFactory().getTagParticipations(tags, instruction,ParticipantEnumType.DATA);
+		if(parts.size() == 0) return new ArrayList<DataType>();
 		/// Don't apply pagination to the secondary query because it's already been paginated from the parts list
 		///
 		return Factories.getTagParticipationFactory().getDataListFromParticipations(parts.toArray(new DataParticipantType[0]), true, 0, 0, organization);
