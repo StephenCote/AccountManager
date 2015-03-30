@@ -29,7 +29,8 @@ window.azn = Hemi.newObject("AZN","1.0",true,true,{
 				var g = accountManager.getCreatePath(policyPath);
 				_o.policy = accountManagerRule.getPolicy(s,g);
 				if(_o.policy == null){
-					if(accountManagerRule.addPolicy(s,getUrn(g,s),g)){
+
+					if(accountManagerRule.addPolicy(s,true,"","ALL",10,new Date(),new Date(),new Date(),[],g)){
 						_o.policy = accountManagerRule.getPolicy(s,g);
 						if(!_o.policy.populated) _o.policy = accountManagerRule.populate(_o.policy);
 					}

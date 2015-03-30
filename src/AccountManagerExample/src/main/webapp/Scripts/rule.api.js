@@ -12,17 +12,18 @@
 		listPolicys : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Policy"),sPath, iStartIndex, iRecordCount);
 		},
-		addPolicy : function(sName, sUrn, oGroup){
+		addPolicy : function(sName, bE, sD, sC, iA, dC, dM, dE, aR,oGroup){
 			var o = new org.cote.beans.policyType();
-			o.enabled = true;
-			o.decisionAge = 10;
-			
+			o.enabled = bE;
+			o.description = sD;
+			o.decisionAge = iA;
+			o.condition = sC;
 			o.name = sName;
-			o.urn = sUrn;
-			o.created = new Date();
-			o.modified = new Date();
-			o.expires = new Date();
-			o.rules = [];
+
+			o.createdDate = dC;
+			o.modifiedDate = dM;
+			o.expiresDate = dE;
+			o.rules = aR;
 			if(oGroup){
 				o.group = accountManager.getCleanGroup(oGroup);
 			}

@@ -7,7 +7,7 @@
 			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
-	<div rid = "gridCont" style = "display: none;" class = "rocket-column-2">
+	<div class = "rocket-column-2">
 		<p>
 			Is Parameter:
 		</p>
@@ -63,6 +63,7 @@
 			</select>
 		</p>
 	</div>
+	
 <div class = "rocket-column-2">
 		<p>
 			Source Type:
@@ -122,7 +123,14 @@
 			<input type = "button" class = "rocket-button" value = "..." onclick = "${this}.findType()" />
 		</p>
 	</div>
-	
+		<div class = "rocket-column-2">
+		<p>
+			Data:
+		</p>
+		<p>
+			<input type = "text" rid = "factData" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
 	<embedded-script><![CDATA[
 		addType : function(o){
 			Hemi.log("Add fact type: " + o.name + ":" + o.factType);

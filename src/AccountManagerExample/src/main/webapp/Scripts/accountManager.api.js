@@ -10,7 +10,15 @@
 			organization_paths : {},
 			permission_paths : {},
 			role_paths : {},
-
+			setRole : function(oObj, oRole, bSet){
+				if(!oObj || !oRole) return;
+				if(!oObj.nameType.match(/^PERSON|USER|ACCOUNT$/)){
+					Hemi.logError("Unsupported object type: " + oObj.nameType);
+					return 0;
+				}
+				var sObj= oObj.nameType.substring(0,1) + oObj.nameType.substring(1,oObj.nameType.length).toLowerCase();
+				return uwmServices.getService("Role")["setRoleFor" + sObj](oObj.id, oRole.id, (bSet ? true : false));
+			},
 			setPermission : function(oObj, oActor, oPerm, bEnable){
 				if(!oObj) return 0;
 				if(!oObj.nameType.match(/^GROUP|DATA|ROLE$/)){
