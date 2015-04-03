@@ -12,6 +12,8 @@
 				if(!o){
 					o = new org.cote.beans.patternType();
 					o.name = "";
+					o.score = 0;
+					o.logicalOrder = 0;
 					o.description = "";
 					o.matchUrn = "";
 					o.factUrn = "";

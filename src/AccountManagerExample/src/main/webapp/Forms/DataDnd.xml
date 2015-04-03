@@ -30,6 +30,7 @@
 			   	e.preventDefault();
 			   	ctl.readFiles(e.dataTransfer.files);
 			};
+			if(op && op.getProperties().dndShowForm) op[op.getProperties().dndShowForm](this);
 		},
 		_handle_change_directory : function(s,v){
 			if(v && v.getCurrentGroup){
@@ -46,7 +47,7 @@
 				var o = this.GetElementByRID("droptarget");
 				o.style.borderColor = "#505050";
 				this.setStatus("Finished");
-				if(op && op.local_handle_dnd_form) op.local_handle_dnd_form(this,this.getObjects().files);	
+				if(op && op.getProperties().dndHandler) op[op.getProperties().dndHandler](this,this.getObjects().files);	
 			}
 		    
 

@@ -8,7 +8,7 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-			this.initGrid("Role",0,0,1,1,uwm.getDefaultParentForType("Role",accountManager.getUserRole()));
+			this.initGrid("Role",0,0,1,0,uwm.getDefaultParentForType("Role",accountManager.getUserRole("USER")));
 
 		},
 		template_destroy : function(){

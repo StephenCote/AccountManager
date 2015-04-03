@@ -8,7 +8,7 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-			this.initGrid("Group",(this.getProperties().defaultPath ? this.getProperties().defaultPath : "~"));
+			this.initGrid("Group",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Group","~/")));
 			if(this.getProperties().viewType && this.setTitle) this.setTitle(this.getProperties().viewType.name);
 		},
 		template_destroy : function(){

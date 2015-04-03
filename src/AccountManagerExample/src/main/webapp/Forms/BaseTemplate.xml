@@ -5,12 +5,14 @@
 		embedded_init : function(){
 			this.scopeHandler("manager_loaded", 0, 0, 1);
 			this.scopeHandler("profiler_loaded", 0, 0, 1);
+			this.scopeHandler("fact_loaded", 0, 0, 1);
 			this.scopeHandler("picker_loaded", 0, 0, 1);
 			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_session_refresh");
 		},
 		embedded_destroy : function(){
 			this._prehandle_manager_loaded = 0;
 			this._prehandle_picker_loaded = 0;
+			this._prehandle_fact_loaded = 0;
 			this._prehandle_profiler_loaded = 0;
 			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_session_refresh");
 		},
@@ -22,7 +24,17 @@
 		_handle_manager_loaded: function (v) {
 			///
         },
-        sendToDebug : function(){
+        sendToFact : function(){
+        	this.openWindow("Fact",0,this._prehandle_fact_loaded);
+        	//this.openItem(this.getBean("rocketType"), this.getProperties().typeName, this.getProperties().viewTypeName,this._prehandle_fact_loaded);
+        },
+        _handle_fact_loaded : function(oW){
+        	var oBean = this.getBean("rocketType");
+        	if(oW.importType) oW.importType(oBean);
+        	//else Hemi.logError("Object does not define importType function");
+        },
+        sendToDebug : function(o){
+        	this.getObjects().debugObject = o; 
         	Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler',0,0,0,this._prehandle_profiler_loaded);
         },
         _handle_profiler_loaded : function(oW){
@@ -35,7 +47,8 @@
 				ActiveObjects.valReference = 0;
 				ActiveObjects.valBridge = 0;
 				ActiveObjects.valComponent = 0;
-				var oBean = this.getBean("rocketType");
+				var oBean = (this.getObjects().debugObject ? this.getObjects().debugObject : this.getBean("rocketType"));
+				delete this.getObjects().debugObject;
 				oEval.value = "ActiveObjects.val";
 				ActiveObjects.val = (oBean ? oBean : this);
 
@@ -47,7 +60,8 @@
 						"Active Template"
 					;
 				}
-			}        	
+			}
+			      	
         },
 		manageList : function(sType, sListId, sFN){
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:1,pickFunction:sFN,listId:sListId};
@@ -94,7 +108,7 @@
 			}
 			//this.resizeForm();
 		},
-		openItem : function(o,typeName,viewTypeName){
+		openItem : function(o,typeName,viewTypeName, fHandler){
 			var _s = this.getProperties();
 			if(!typeName) typeName = _s.typeName;
 			if(!viewTypeName) viewTypeName = typeName;
@@ -113,11 +127,11 @@
 					if(!o.populated) alert("still not populated");
 				}
 			}
-			this.openWindow(viewTypeName, o);
+			this.openWindow(viewTypeName, o, fHandler);
 		},
-		openWindow : function(sType,oType){
+		openWindow : function(sType,oType, fHandler){
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:0};
-			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
+			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
             if (oW) {
             	oW.resizeTo(450, 400);
             	Hemi.app.getWindowManager().CenterWindow(oW);

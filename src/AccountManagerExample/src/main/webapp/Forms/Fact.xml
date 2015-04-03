@@ -15,7 +15,10 @@
 					o.description = "";
 					o.sourceUrl = "";
 					o.sourceUrn = "";
-					o.sourceDataType = "UNKNOWN";
+					o.sourceDataType = "VARCHAR";
+					o.factData = "";
+					o.sourceType = "";
+					o.score = 0;
 					o.factType = "UNKNOWN";
 					o.factoryType = "UNKNOWN";
 					o.id = 0;

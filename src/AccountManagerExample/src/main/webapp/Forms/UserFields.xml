@@ -20,7 +20,7 @@
 			Password:
 		</p>
 		<p>
-			<input rid = "password" type = "text" class = "rocket-text" />
+			<input rid = "password" type = "password" class = "rocket-text" />
 		</p>
 	</div>
 	<div class = "rocket-column-2">
@@ -28,7 +28,7 @@
 			Confirm Password:
 		</p>
 		<p>
-			<input rid = "confPassword" type = "text" class = "rocket-text" />
+			<input rid = "confPassword" type = "password" class = "rocket-text" />
 		</p>
 	</div>
 

@@ -1,0 +1,38 @@
+<html-fragment>
+	<div rid = "dndPickerCont" style = "display:none;" class = "rocket-column-2">
+		<p rid = "dndPickerTitle">
+			<span rid = "dndPickerToggle"></span> Import:
+		</p>
+		<p rid = "dndPickerContent">
+			<input type = "button" value = "Import" class = "rocket-button" onclick = "${this}.showDndUploadForm()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			var o = this.getBean("rocketType"),b;
+			b = (o.id && o.id > 0 ? 1 : 0);
+			this.GetElementByRID("dndPickerCont").style.display = (b ? "block" : "none");
+			if(b){
+				this.toggleField("dndPickerToggle","dndPickerContent");
+				this.scopeHandler("dnd_form_loaded", 0, 0, 1);
+			}
+			
+		},
+		embedded_destroy : function(){
+			delete this._prehandle_dnd_form_loaded;
+		},
+		showDndUploadForm : function(){
+			var vProps = {openerId:this.getObjectId()};
+			Hemi.app.createWindow("DataDnD", "/AccountManagerExample/Forms/DataDnd.xml", "DataDnD", 0, 0, vProps, this._prehandle_dnd_form_loaded);
+		},
+		_handle_dnd_form_loaded : function(oW){
+			var sPath = (this.getProperties().dndDataPath ? this.getProperties().dndDataPath : uwm.getPathForType("Data","~/Data")); 
+			oW.setHideOnClose(0);
+			oW.setTitle("Drag-n-Drop");
+			oW.resizeTo(290,350);
+			oW.GetElementByRID("path").value = sPath;
+		},
+		
+		
+	]]></embedded-script>
+</html-fragment>

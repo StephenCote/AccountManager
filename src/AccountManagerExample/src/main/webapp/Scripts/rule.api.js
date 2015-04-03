@@ -12,10 +12,12 @@
 		listPolicys : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Policy"),sPath, iStartIndex, iRecordCount);
 		},
-		addPolicy : function(sName, bE, sD, sC, iA, dC, dM, dE, aR,oGroup){
+		addPolicy : function(sName, bE, sD, iS, iO, sC, iA, dC, dM, dE, aR,oGroup){
 			var o = new org.cote.beans.policyType();
 			o.enabled = bE;
 			o.description = sD;
+			o.score = iS;
+			o.logicalOrder = iO;
 			o.decisionAge = iA;
 			o.condition = sC;
 			o.name = sName;
@@ -52,11 +54,13 @@
 		listRules : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Rule"),sPath, iStartIndex, iRecordCount);
 		},
-		addRule : function(sName, sDesc,sType, sCond, aP, aR, oGroup){
+		addRule : function(sName, sDesc,iS, iO, sType, sCond, aP, aR, oGroup){
 			var o = new org.cote.beans.ruleType();
 			
 			o.name = sName;
 			o.description = sDesc;
+			o.score = iS;
+			o.logicalOrder = iO;
 			o.ruleType = sType;
 			o.condition =sCond;
 			if(aP) o.patterns = aP;
@@ -90,11 +94,13 @@
 		listPatterns : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Pattern"),sPath, iStartIndex, iRecordCount);
 		},
-		addPattern : function(sName, sDesc, sType, sComp, sFact, sMatch,oGroup){
+		addPattern : function(sName, sDesc, iS, iO, sType, sComp, sFact, sMatch,oGroup){
 			var o = new org.cote.beans.patternType();
 			
 			o.name = sName;
 			o.description = sDesc;
+			o.score = iS;
+			o.logicalOrder = iO;
 			if(sFact) o.factUrn = sFact;
 			if(sMatch) o.matchUrn = sMatch;
 			o.patternType = (sType ? sType : "EXPRESSION");
@@ -127,12 +133,14 @@
 		listFacts : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Fact"),sPath, iStartIndex, iRecordCount);
 		},
-		addFact : function(sName, sDesc,sType, sFType, sDType, sSUrn, sSUrl,sFData, oGroup){
+		addFact : function(sName, sDesc,iS, sType, sFType, sDType, sData,sSUrn, sSUrl,sFData, oGroup){
 			var o = new org.cote.beans.factType();
 			
 			o.name = sName;
 			o.description = sDesc;
 			o.sourceDataType = sDType;
+			o.sourceType = sData;
+			o.score = iS;
 			o.factoryType = sFType;
 			o.factType = sType;
 			o.sourceUrn = sSUrn;

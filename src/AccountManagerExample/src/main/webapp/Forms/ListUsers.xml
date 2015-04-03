@@ -8,7 +8,7 @@
 		//
 		template_init : function(){
 
-			this.initGrid("User");
+			this.initGrid("User",0,0,1);
 			//this.GetElementByRID("path").style.display = "none";
 		},
 		template_destroy : function(){

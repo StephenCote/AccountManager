@@ -5,8 +5,8 @@
 	<embedded-script><![CDATA[
 		template_init : function(){
 			this.getProperties().typeName = "Address";
+			if(!this.getProperties().defaultPath) this.getProperties().defaultPath = "~/Addresses";
 			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
-			this.getProperties().defaultPath = "~/Addresses";
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){

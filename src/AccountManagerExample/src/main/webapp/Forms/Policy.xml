@@ -12,6 +12,8 @@
 				if(!o){
 					o = new org.cote.beans.policyType();
 					o.name = "";
+					o.logicalOrder = 0;
+					o.score = 0;
 					o.expiresDate = new Date();
 					o.modifiedDate = new Date();
 					o.createdDate = new Date();

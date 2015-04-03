@@ -9,6 +9,22 @@
 	</div>
 	<div class = "rocket-column-2">
 		<p>
+			Logical Order:
+		</p>
+		<p>
+			<input type = "text"  rid = "logicalOrder" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Score:
+		</p>
+		<p>
+			<input type = "text"  rid = "score" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
 			Type:
 		</p>
 		<p>
@@ -108,7 +124,7 @@ chooseMatch : function(){
 	},
 	addType : function(o){
 			Hemi.log("Add pattern type: " + o.name + ":" + o.patternType);
-			return accountManagerRule.addPattern(o.name, o.description,o.patternType, o.comparator, (o.fact ? o.fact.urn : 0), (o.match ? o.match.urn : 0), o.group);
+			return accountManagerRule.addPattern(o.name, o.description,o.score,o.logicalOrder,o.patternType, o.comparator, (o.fact ? o.fact.urn : 0), (o.match ? o.match.urn : 0), o.group);
 		},
 		prepareSave : function(o){
 			o.matchUrn = (o.match ? o.match.urn : 0);

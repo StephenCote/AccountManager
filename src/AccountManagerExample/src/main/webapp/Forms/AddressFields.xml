@@ -33,7 +33,7 @@
 	</div>
 	<div class = "rocket-column-2">
 		<p>
-			:
+			Address:
 		</p>
 		<p>
 			<input type = "text" rid = "addressLine2" bind = "${bean.rocketType}" class = "rocket-text" />
@@ -87,7 +87,6 @@
 		},
 		addType : function(o){
 			Hemi.log("Add address type: " + o.name );
-			var b = false;
 			o.group = accountManager.getCleanGroup(o.group);
 			return uwmServices.getService("Address").add(o);
 		},

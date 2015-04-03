@@ -20,11 +20,12 @@
 		</p>
 	</div>
 	
-		<div class = "rocket-column-2">
-		<p>
-			Child Permissions:
+	<div class = "rocket-column-2" rid = "permissionPicker" style = "display:none;">
+		<p rid = "permissionPickerTitle">
+			<span rid = "permissionPickerToggle"></span> <span rid="permissionPickerLabel">Permissions</span>:
 		</p>
-		<p>
+		<p rid = "permissionPickerContent">
+
 			<div component = "wideselect" rid = "permissionsList">
 			</div>
 
@@ -37,6 +38,9 @@
 	
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
+			this.GetElementByRID("permissionPicker").style.display = "block";
+			this.toggleField("permissionPickerToggle","permissionPickerContent");
+
 			this.GetElementByRID("pathCont").style.display = "none";
 			this.GetComponentByRID("permissionsList").setLoadHandler(this.scopeHandler("configPermissionsList",0,1,1));
 		},

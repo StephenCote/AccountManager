@@ -43,6 +43,8 @@
 		</p>
 		<p>
 			<input rid = "btnSave" type = "button" class = "rocket-button" value = "Save" onclick = "${this}.saveType()" />
+			<input rid = "btnFact" type = "button" class = "rocket-button" value = "Fact" onclick = "${this}.sendToFact()" />
+			<input rid = "btnClose" type = "button" class = "rocket-button" value = "Close" onclick = "${this}.Close()" />
 		</p>
 	</div>
 	<p style = "clear:both;"><span rid = "status"></span></p>
@@ -56,6 +58,7 @@
 			this.GetElementByRID("name").focus();
 			if(!_s.viewTypeName) _s.viewTypeName = _s.typeName;
 			if(this.setTitle) this.setTitle(_s.viewTypeName + " - " + (o.id ? o.name : "New"));
+			if(!o.id || !o.nameType.match(/^(group|role|permission|person|account|user|data|function|operation)$/gi)) this.GetElementByRID("btnFact").style.display = "none";
 			if(this.resizeTo && this.getBody){
 				if(this.getBody().scrollHeight > this.getBody().offsetHeight){
 					var iH = this.getBody().scrollHeight + 50;

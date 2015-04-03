@@ -14,11 +14,12 @@
 		</p>
 	</div>
 	
-		<div class = "rocket-column-2">
-		<p>
-			Child Roles:
+	
+	<div class = "rocket-column-2" rid = "rolePicker" style = "display:none;">
+		<p rid = "rolePickerTitle">
+			<span rid = "rolePickerToggle"></span> <span rid="rolePickerLabel">Roles</span>:
 		</p>
-		<p>
+		<p rid = "rolePickerContent">
 			<div component = "wideselect" rid = "rolesList">
 			</div>
 
@@ -31,6 +32,9 @@
 	
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
+			this.GetElementByRID("rolePicker").style.display = "block";
+			this.toggleField("rolePickerToggle","rolePickerContent");
+
 			this.GetElementByRID("pathCont").style.display = "none";
 			this.GetComponentByRID("rolesList").setLoadHandler(this.scopeHandler("configRolesList",0,1,1));
 		},

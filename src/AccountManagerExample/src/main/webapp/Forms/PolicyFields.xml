@@ -10,6 +10,22 @@
 	</div>
 	<div class = "rocket-column-2">
 		<p>
+			Logical Order:
+		</p>
+		<p>
+			<input type = "text"  rid = "logicalOrder" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Score:
+		</p>
+		<p>
+			<input type = "text"  rid = "score" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
 			Enabled:
 		</p>
 		<p>
@@ -75,14 +91,27 @@
 			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openRule()" />
 		</p>
 	</div>
+	<div rid = "defineCont" style = "display:none;clear:both;" class = "rocket-column-2">
+		<p rid = "lblDebug">
+			Define:
+		</p>
+		<p>
+			<input rid = "btnDefine" type = "button" class = "rocket-button" value = "Define" onclick = "${this}.definePolicy()" />
+		</p>
+	</div>
+
 <embedded-script><![CDATA[
 	embedded_init : function(){
 		var o = this.getBean("rocketType");
 			this.GetElementByRID("rulePicker").style.display = "block";
+			this.GetElementByRID("defineCont").style.display = (o.id ? "block" : "none");
 			this.toggleField("rulePickerToggle","rulePickerContent");
 			if(!this.getProperties().ruleListProp) this.getProperties().ruleListProp = "rules";
 			
 			this.initRulePicker();
+	},
+	definePolicy : function(){
+		this.sendToDebug(accountManagerRule.define(this.getBean("rocketType")));
 	},
 setRulePickerLabel : function(s){
 			Hemi.xml.setInnerXHTML(this.GetElementByRID("rulePickerLabel"),s);
@@ -131,7 +160,7 @@ setRulePickerLabel : function(s){
 		},
 	addType : function(o){
 			Hemi.log("Add policy type: " + o.name);
-			return accountManagerRule.addPolicy(o.name, o.enabled, o.description, o.condition, o.decisionAge, o.createdDate, o.modifiedDate, o.expiresDate, o.rules, o.group);
+			return accountManagerRule.addPolicy(o.name, o.enabled, o.description, o.score,o.logicalOrder,o.condition, o.decisionAge, o.createdDate, o.modifiedDate, o.expiresDate, o.rules, o.group);
 			//return accountManagerRule.addPolicy(o.name, o.description,o.ruleType, o.condition, (o.fact ? o.fact.urn : 0), (o.match ? o.match.urn : 0), o.group);
 		},
 		prepareSave : function(o){

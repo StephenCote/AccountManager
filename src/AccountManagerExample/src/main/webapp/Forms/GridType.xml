@@ -317,7 +317,7 @@
 				else if(!o.nameType.match(/^data$/gi) || o.detailsOnly){
 					Hemi.log("Not populated.  Fetching a populated version.");
 					if(o.nameType.match(/^group$/gi)) o = accountManager.getGroupById(o.id);
-					else if(o.nameType.match(/^(role|permission)$/gi)) o = oApi["get" + this.getProperties().typeName](o.name,o[(o.nameType.match(/^role$/gi) ? "role" : "permission") + "Type"],_o.parentRef);
+					else if(o.nameType.match(/^(role|permission)$/gi)) o = oApi["get" + this.getProperties().typeName + "ById"](o.id);
 					else if(this.provideItem) o = this.provideItem(this.getProperties().typeName,o);
 					else if(o.id)  o = oApi["get" + this.getProperties().typeName + "ById"](o.id);
 					else o = oApi["get" + this.getProperties().typeName](o.name,o.group);
