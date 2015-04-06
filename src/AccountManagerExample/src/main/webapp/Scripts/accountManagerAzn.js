@@ -26,7 +26,7 @@ window.azn = Hemi.newObject("AZN","1.0",true,true,{
 			object_create : function(){
 				var _o = this.getObjects();
 				Hemi.object.addObjectAccessor(this,"rule");
-				var g = accountManager.getCreatePath(policyPath);
+				var g = accountManager.getCreatePath(uwm.getPathForType("Policy"), policyPath);
 				_o.policy = accountManagerRule.getPolicy(s,g);
 				if(_o.policy == null){
 
@@ -89,7 +89,7 @@ window.azn = Hemi.newObject("AZN","1.0",true,true,{
 		v = Hemi.newObject("Rule " + s,"1.0",true,true,{
 			object_create : function(){
 				var _o = this.getObjects();
-				var g = accountManager.getCreatePath(rulePath);
+				var g = accountManager.getCreatePath(uwm.getPathForType("Rule"), rulePath);
 				_o.rule = accountManagerRule.getRule(s,g);
 				if(_o.rule == null){
 					if(accountManagerRule.addRule(s,"",0,0,"PERMIT","UNKNOWN",0,0,g)){
@@ -145,7 +145,7 @@ window.azn = Hemi.newObject("AZN","1.0",true,true,{
 		v = Hemi.newObject("Pattern " + s,"1.0",true,true,{
 			object_create : function(){
 				var _o = this.getObjects();
-				var g = accountManager.getCreatePath(patternPath);
+				var g = accountManager.getCreatePath(uwm.getPathForType("Pattern"), patternPath);
 				_o.pattern = accountManagerRule.getPattern(s,g);
 				if(_o.pattern == null){
 					if(accountManagerRule.addPattern(s,0,0,0,"EXPRESSION","EQUALS",0,0,g)){
