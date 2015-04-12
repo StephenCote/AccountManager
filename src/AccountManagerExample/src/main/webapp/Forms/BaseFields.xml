@@ -69,8 +69,11 @@
 			}
 			this.initAttributePicker();
 		},
+		template_destroy : function(){
+			Hemi.message.service.unsubscribe(this, "oncommunitychange", "refreshCommunity");
+		},
 		refreshCommunity : function(s, v){
-			this.GetElementByRID("path").placeholder = uwm.getPathForType(this.getProperties().typeName,"~/" + this.getProperties().typeName + "s");
+			//this.GetElementByRID("path").placeholder = uwm.getPathForType(this.getProperties().typeName,"~/" + this.getProperties().typeName + "s");
 		},
 		embedded_init : function(){
 

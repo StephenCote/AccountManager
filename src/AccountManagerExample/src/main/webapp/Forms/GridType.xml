@@ -54,6 +54,7 @@
 	<embedded-script>
 		<![CDATA[
 		initGrid : function(sTypeName, sDefPath, sViewTypeName, bNotAGroup, bNoPopulate,vParent,bManualPick,bShowSearch){
+
 			var _s = this.getProperties();
 			var _o = this.getObjects();
 			_s.populate = (bNoPopulate ? 0 : 1);
@@ -108,6 +109,7 @@
 		},
 		embedded_destroy : function(){
 			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_list_session_refresh");
+			Hemi.message.service.unsubscribe(this, "oncommunitychange", "refreshCommunity");
 			this._prehandle_input_keypress = null;
 		},
 		_handle_input_keypress : function(e){
@@ -135,6 +137,7 @@
 			this.getList().setResultHandler( this.scopeHandler("typelistclick",0,0,1));
 			this.refreshList();
 			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_list_session_refresh");
+			Hemi.message.service.subscribe(this, "oncommunitychange", "refreshCommunity");
 		},
 				
 		getList : function(){
@@ -159,6 +162,12 @@
 				}
 			}
 			return s;
+		},
+		refreshCommunity : function(s, v){
+			var sPath = uwm.getPathForType(this.getProperties().typeName,"~/" + this.getProperties().typeName + "s");
+			this.GetElementByRID("path").placeholder = sPath;
+			this.GetElementByRID("path").value = sPath;
+			this.refreshList();
 		},
 		handle_list_session_refresh : function(s, v){
 			this.refreshList();
