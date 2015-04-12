@@ -52,6 +52,7 @@
 		template_init : function(){
 			var o = this.getBean("rocketType"), _s = this.getProperties();
 			if(!this.setStatus) this.setStatus = this._setStatus;
+			Hemi.message.service.subscribe(this, "oncommunitychange", "refreshCommunity");
 			this.GetElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
 			this.setStatus("");
 			if(typeof _s.populate == "undefined") _s.populate = 1;
@@ -67,6 +68,9 @@
 				}
 			}
 			this.initAttributePicker();
+		},
+		refreshCommunity : function(s, v){
+			this.GetElementByRID("path").placeholder = uwm.getPathForType(this.getProperties().typeName,"~/" + this.getProperties().typeName + "s");
 		},
 		embedded_init : function(){
 
