@@ -118,7 +118,7 @@ public class DataServiceImpl  {
 				AuditService.denyResult(audit, "Feedback group is null");
 				return out_bool;
 			}
-
+			
 			DataType feedback = Factories.getDataFactory().newData(user, feedbackGroup);
 			DataUtil.setValue(feedback, DataUtil.getValue(bean));
 			feedback.setMimeType("text/plain");

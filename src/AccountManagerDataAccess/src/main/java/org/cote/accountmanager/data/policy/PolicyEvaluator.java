@@ -310,7 +310,10 @@ public class PolicyEvaluator {
 			return OperationResponseEnumType.ERROR;
 		}
 		if(matchFact.getFactType() == FactEnumType.PERMISSION){
-			BasePermissionType perm = Factories.getPermissionFactory().getPermissionById(Long.parseLong(matchFact.getFactData()), matchFact.getOrganization());
+			
+			BasePermissionType perm = null;
+			if(FactUtil.idPattern.matcher(matchFact.getFactData()).matches()) perm = Factories.getPermissionFactory().getPermissionById(Long.parseLong(matchFact.getFactData()), matchFact.getOrganization());
+			else perm = Factories.getPermissionFactory().getByUrn(matchFact.getFactData());
 			if(perm == null){
 				logger.error("Permission reference does not exist");
 				return OperationResponseEnumType.ERROR;

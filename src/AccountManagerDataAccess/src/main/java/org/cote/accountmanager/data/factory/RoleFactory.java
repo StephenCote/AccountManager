@@ -47,6 +47,16 @@ public class RoleFactory extends NameIdFactory {
 		this.tableNames.add("roles");
 		factoryType = FactoryEnumType.ROLE;
 	}
+	
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		BaseRoleType role = (BaseRoleType)obj;
+		if(role.getPopulated()) return;
+		role.setPopulated(true);
+		updateToCache(role);
+	}
+	
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		BaseRoleType role = (BaseRoleType)obj;

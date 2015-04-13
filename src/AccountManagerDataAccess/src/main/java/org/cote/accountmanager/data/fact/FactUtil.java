@@ -28,7 +28,7 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 
 public class FactUtil {
 	public static final Logger logger = Logger.getLogger(FactUtil.class.getName());
-	private static final Pattern idPattern = Pattern.compile("^\\d+$");
+	public static final Pattern idPattern = Pattern.compile("^\\d+$");
 	
 	public static void setFactReference(FactType sourceFact, FactType matchFact){
 		if(sourceFact.getFactReference() != null) return;
@@ -109,19 +109,12 @@ public class FactUtil {
 		return dir;
 	}
 	private static BasePermissionType getPermissionFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException, DataAccessException{
-		if(sourceFact.getSourceUrl() == null){
-			logger.error("Source URL is null");
-			return null;
-		}
+		
 		BasePermissionType permission = (BasePermissionType)Factories.getPermissionFactory().findPermission(PermissionEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganization());
 		if(permission == null) throw new ArgumentException("Invalid permission path " + sourceFact.getSourceUrl());
 		return permission;
 	}
 	private static BaseRoleType getRoleFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException, DataAccessException{
-		if(sourceFact.getSourceUrl() == null){
-			logger.error("Source URL is null");
-			return null;
-		}
 		BaseRoleType role = (BaseRoleType)Factories.getRoleFactory().findRole(RoleEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganization());
 		if(role == null) throw new ArgumentException("Invalid role path " + sourceFact.getSourceUrl());
 		return role;
@@ -162,29 +155,53 @@ public class FactUtil {
 					case CONTACT:
 					case PERSON:
 					case ADDRESS:
-						dir =  getDirectoryFromFact(sourceFact,referenceFact);
-						
-						out_obj = (T)((NameIdGroupFactory)fact).getByName(sourceFact.getSourceUrn(), dir);
-						logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (out_obj == null ? "Null":"Found"));
+						if((sourceFact.getSourceUrl() == null || sourceFact.getSourceUrl().length() == 0) && sourceFact.getSourceUrn() != null){
+							out_obj = (T)((NameIdGroupFactory)fact).getByUrn(sourceFact.getSourceUrn());
+						}
+						else{
+							dir =  getDirectoryFromFact(sourceFact,referenceFact);
+							out_obj = (T)((NameIdGroupFactory)fact).getByName(sourceFact.getSourceUrn(), dir);
+							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (out_obj == null ? "Null":"Found"));
+						}
 						break;
 					/// Data is a predecessor to the NameIdGroupFactory type, but it doesn't inherity from that base class
 					case DATA:
-						out_obj = (T)((DataFactory)fact).getDataByName(sourceFact.getSourceUrn(), getDirectoryFromFact(sourceFact,referenceFact));
+						if((sourceFact.getSourceUrl() == null || sourceFact.getSourceUrl().length() == 0) && sourceFact.getSourceUrn() != null){
+							out_obj = (T)((DataFactory)fact).getByUrn(sourceFact.getSourceUrn());
+						}
+						else{
+							out_obj = (T)((DataFactory)fact).getDataByName(sourceFact.getSourceUrn(), getDirectoryFromFact(sourceFact,referenceFact));
+						}
 						break;
 					case GROUP:
-						dir =  getDirectoryFromFact(sourceFact,referenceFact);
-						out_obj = (T)((GroupFactory)fact).getDirectoryByName(sourceFact.getSourceUrn(), dir,referenceFact.getOrganization());
-						logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (out_obj == null ? "Null":"Found"));
+						if((sourceFact.getSourceUrl() == null || sourceFact.getSourceUrl().length() == 0) && sourceFact.getSourceUrn() != null){
+							out_obj = (T)((GroupFactory)fact).getByUrn(sourceFact.getSourceUrn());
+						}
+						else{
+							dir =  getDirectoryFromFact(sourceFact,referenceFact);
+							out_obj = (T)((GroupFactory)fact).getDirectoryByName(sourceFact.getSourceUrn(), dir,referenceFact.getOrganization());
+							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (out_obj == null ? "Null":"Found"));
+						}
 						break;
 					case ROLE:
-						BaseRoleType parent = getRoleFromFact(sourceFact, referenceFact);
-						out_obj = (T)((RoleFactory)fact).getRoleByName(sourceFact.getSourceUrn(), parent, RoleEnumType.fromValue(sourceFact.getSourceType()), referenceFact.getOrganization());
-						logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (parent != null ? sourceFact.getSourceUrl() : "Null Role") + " - Result is " + (out_obj == null ? "Null":"Found"));
+						if((sourceFact.getSourceUrl() == null || sourceFact.getSourceUrl().length() == 0) && sourceFact.getSourceUrn() != null){
+							out_obj = (T)((RoleFactory)fact).getByUrn(sourceFact.getSourceUrn());
+						}
+						else{
+							BaseRoleType parent = getRoleFromFact(sourceFact, referenceFact);
+							out_obj = (T)((RoleFactory)fact).getRoleByName(sourceFact.getSourceUrn(), parent, RoleEnumType.fromValue(sourceFact.getSourceType()), referenceFact.getOrganization());
+							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (parent != null ? sourceFact.getSourceUrl() : "Null Role") + " - Result is " + (out_obj == null ? "Null":"Found"));
+						}
 						break;
 					case PERMISSION:
-						BasePermissionType perparent = getPermissionFromFact(sourceFact, referenceFact);
-						out_obj = (T)((PermissionFactory)fact).getPermissionByName(sourceFact.getSourceUrn(),PermissionEnumType.fromValue(sourceFact.getSourceType()), perparent, referenceFact.getOrganization());
-						logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (perparent != null ? sourceFact.getSourceUrl() : "Null Permission") + " - Result is " + (out_obj == null ? "Null":"Found"));
+						if((sourceFact.getSourceUrl() == null || sourceFact.getSourceUrl().length() == 0) && sourceFact.getSourceUrn() != null){
+							out_obj = (T)((PermissionFactory)fact).getByUrn(sourceFact.getSourceUrn());
+						}
+						else{
+							BasePermissionType perparent = getPermissionFromFact(sourceFact, referenceFact);
+							out_obj = (T)((PermissionFactory)fact).getPermissionByName(sourceFact.getSourceUrn(),PermissionEnumType.fromValue(sourceFact.getSourceType()), perparent, referenceFact.getOrganization());
+							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (perparent != null ? sourceFact.getSourceUrl() : "Null Permission") + " - Result is " + (out_obj == null ? "Null":"Found"));
+						}
 						break;
 
 					default:

@@ -19,19 +19,24 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataTagSearchRequest;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
+import org.cote.accountmanager.objects.types.TagEnumType;
 import org.cote.accountmanager.services.TagServiceImpl;
 import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.beans.SchemaBean;
 import org.cote.rest.schema.ServiceSchemaBuilder;
-
+import org.cote.accountmanager.services.BaseService;;
 
 @Path("/tag")
 public class TagService{
@@ -59,15 +64,62 @@ public class TagService{
 		}
 		return count;
 	}
-	
+	@GET @Path("/listTagsFor/{type:(USER|ACCOUNT|GROUP|PERSON|DATA)}/{id: [0-9]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public List<BaseTagType> listByTags(@PathParam("type") String tagType, @PathParam("id") long id,@Context HttpServletRequest request){
+		List<BaseTagType> tags = new ArrayList<BaseTagType>();
+		TagEnumType type = TagEnumType.valueOf(tagType);
+		NameIdType obj = BaseService.readById(AuditEnumType.valueOf(tagType), id, request);
+		/// let the base service log the reason it's null
+		if(obj == null) return tags;
+		try{
+			switch(type){
+				case ACCOUNT:
+					tags = Factories.getTagParticipationFactory().getAccountTags((AccountType)obj);
+					break;
+				case PERSON:
+					tags = Factories.getTagParticipationFactory().getPersonTags((PersonType)obj);
+					break;
+				case USER:
+					tags = Factories.getTagParticipationFactory().getUserTags((UserType)obj);
+					break;
+				case GROUP:
+					tags = Factories.getTagParticipationFactory().getGroupTags((BaseGroupType)obj);
+					break;
+				case DATA:
+					tags = Factories.getTagParticipationFactory().getDataTags((DataType)obj);
+					break;
+				default:
+					logger.error("Unsupported tag type: '" + tagType + "'");
+					break;
+
+			}
+
+		}
+		catch(ArgumentException e){
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+		}
+		return tags;
+	}
 	@POST @Path("/listByTags") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public List<DataType> listByTags(DataTagSearchRequest searchRequest,@Context HttpServletRequest request){
+
 		UserType user = ServiceUtil.getUserFromSession(request);
 		logger.warn("AuthZ Not Implemented Yet For listByTags");
 		logger.info("Searching for " + searchRequest.getRecordCount() + " data items starting at " + searchRequest.getStartRecord() + " having " + searchRequest.getTags().size() + " tags");
 		List<DataType> list = new ArrayList<DataType>();
 		try {
 			list = Factories.getTagFactory().getDataForTags(searchRequest.getTags().toArray(new BaseTagType[0]), searchRequest.getStartRecord(), searchRequest.getRecordCount(), user.getOrganization());
+			if(searchRequest.getPopulateGroup()){
+				logger.info("Pre-populating referenced groups");
+				for(int i = 0; i < list.size();i++){
+					Factories.getGroupFactory().populate(list.get(i).getGroup());
+				}
+			}
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -77,6 +129,7 @@ public class TagService{
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
+		
 		logger.info("Returning " + list.size() + " items");
 		return list;
 		

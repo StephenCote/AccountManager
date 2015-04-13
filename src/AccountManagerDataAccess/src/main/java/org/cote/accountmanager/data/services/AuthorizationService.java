@@ -876,7 +876,7 @@ public class AuthorizationService {
 		if (enable)
 		{
 			if (bp != null){
-				logger.debug("Participation for " + map.getName() + " and " + group.getName() + " with " + permission.getName() + " already exists");
+				logger.debug("Participation for " + map.getName() + " and " + group.getName() + " with " + permission.getName() + " already exists (" + Factories.getGroupParticipationFactory().getCacheKeyName(bp) + ")");
 				return true;
 			}
 			ParticipantEnumType part_type = ParticipantEnumType.valueOf(map.getNameType().toString());

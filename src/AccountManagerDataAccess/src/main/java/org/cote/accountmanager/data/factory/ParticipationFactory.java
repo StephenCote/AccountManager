@@ -68,6 +68,11 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		int count = deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source) }, source.getOrganization().getId());
 		return (count > 0);
 	}
+	public boolean deleteParticipationsByAffect(NameIdType source,BasePermissionType permission) throws FactoryException
+	{
+		int count = deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source),QueryFields.getFieldAffectId(permission) }, source.getOrganization().getId());
+		return (count > 0);
+	}
 	public boolean deleteParticipations(long[] ids, OrganizationType organization) throws FactoryException
 	{
 		return deleteParts(ids, "ParticipationId", null, organization);
@@ -146,7 +151,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	public boolean addParticipant(BaseParticipantType participant) throws FactoryException, DataAccessException
 	{
 		if (participant.getOrganization() == null || participant.getOrganization().getId() <= 0) throw new FactoryException("Cannot add participant to invalid organization");
-		if (participant.getParticipantId().compareTo(0L)==0 || participant.getParticipationId().compareTo(0L)==0 || participant.getOwnerId() <= 0)
+		if (participant.getParticipantId().compareTo(0L)==0 || participant.getParticipationId().compareTo(0L)==0 || participant.getOwnerId().compareTo(0L)==0)
 		{
 			logger.warn("Participant Id: " + participant.getParticipantId());
 			logger.warn("Participation Id: " + participant.getParticipationId());

@@ -209,7 +209,7 @@ create table accounts (
 	Name varchar(511) not null,
 	AccountStatus varchar(16) not null,
 	AccountType varchar(16) not null,
-	Urn not null,
+	Urn text not null,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX accounts_acct_id ON accounts(Id);
@@ -1675,8 +1675,6 @@ LEFT JOIN effectiveDataPersonRoleRights eGPR ON eGPR.dataId = GR.dataId AND eGPR
 LEFT JOIN roles R ON (GR.referenceType = 'PERSON' AND eGPR.roleId = R.id) OR (GR.referenceType = 'ACCOUNT' AND eGAR.roleId = R.id)
 ;
 
-select * from dataEntitlements;
-
 DROP TABLE IF EXISTS dataEntitlementsCache CASCADE;
 CREATE TABLE dataEntitlementsCache (
 	DataUrn text not null,
@@ -1700,11 +1698,32 @@ CREATE OR REPLACE FUNCTION cache_data_entitlements()
         $$ LANGUAGE 'sql';
 
 
--- delete from roles where id in (select id from orphanRoles);
--- delete from groups where id in (select id from orphanGroups);
--- delete from roleparticipation where id in (select id from orphanRoleParticipations);
--- delete from groupparticipation where id in (select id from orphanGroupParticipations);
--- delete from lifecycleparticipation where id in (select id from orphanLifecycleParticipations);
+
+create or replace view effectiveGroupRights as
+select roleid,affectid,affecttype,userid as referenceid,'USER' as referencetype,groupid,organizationid from effectiveGroupUserRoleRights
+union all
+select roleid,affectid,affecttype,accountid as referenceid,'ACCOUNT' as referencetype,groupid,organizationid from effectiveGroupAccountRoleRights
+union all
+select roleid,affectid,affecttype,personid as referenceid,'PERSON' as referencetype,groupid,organizationid  from effectiveGroupPersonRoleRights;
+;
+
+create or replace view effectiveRoleRights as
+select sourceroleid,affectid,affecttype,userid as referenceid,'USER' as referencetype,roleid,organizationid from effectiveRoleUserRoleRights
+union all
+select sourceroleid,affectid,affecttype,accountid as referenceid,'ACCOUNT' as referencetype,roleid,organizationid from effectiveRoleAccountRoleRights
+union all
+select sourceroleid,affectid,affecttype,personid as referenceid,'PERSON' as referencetype,roleid,organizationid  from effectiveRolePersonRoleRights;
+;
+
+create or replace view effectiveDataRights as
+select roleid,affectid,affecttype,userid as referenceid,'USER' as referencetype,dataid,organizationid from effectiveDataUserRoleRights
+union all
+select roleid,affectid,affecttype,accountid as referenceid,'ACCOUNT' as referencetype,dataid,organizationid from effectiveDataAccountRoleRights
+union all
+select roleid,affectid,affecttype,personid as referenceid,'PERSON' as referencetype,dataid,organizationid  from effectiveDataPersonRoleRights;
+;
+
+
 
 -- select ((EXTRACT(EPOCH FROM AuditResultDate)*1000) - (EXTRACT(EPOCH FROM AuditDate)) * 1000) as PerfInMS from Audit order by AuditResultDate DESC limit 100
 

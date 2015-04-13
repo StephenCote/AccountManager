@@ -36,12 +36,20 @@ public class MediaUtil {
 	private static int maximumImageWidth = -1;
 	private static int maximumImageHeight = -1;
 	private static boolean restrictImageSize = false;
+	private static boolean allowDataPointers = false;
 	private static boolean checkConfig = false;
+	private static boolean checkConfigDataPoint = false;
 	protected static boolean getRestrictImageSize(HttpServletRequest request){
 		if(checkConfig) return restrictImageSize;
 		restrictImageSize = getBoolParam(request,"image.restrict.size");
 		checkConfig = true;
 		return restrictImageSize;
+	}
+	protected static boolean isAllowDataPointers(HttpServletRequest request){
+		if(checkConfigDataPoint) return allowDataPointers;
+		checkConfigDataPoint = true;
+		allowDataPointers = getBoolParam(request,"data.pointers.enabled");
+		return allowDataPointers;
 	}
 	protected static int getMaximumImageWidth(HttpServletRequest request){ 
 		if(maximumImageWidth >= 0) return maximumImageWidth;
@@ -295,7 +303,13 @@ public class MediaUtil {
 								response.sendError(404);
 								return;
 							}
-							byte[] imageBytes = DataUtil.getValue(chkData);
+							byte[] imageBytes = new byte[0];
+							if(chkData.getPointer() && isAllowDataPointers(request) == false){
+								logger.error("Access to data pointer for thumbnail data is forbidden.");
+							}
+							else{
+								imageBytes = DataUtil.getValue(chkData);
+							}
 							byte[] thumbBytes = GraphicsUtil.createThumbnail(imageBytes, options.getThumbWidth(), options.getThumbHeight());
 							if(thumbBytes.length == 0 && imageBytes.length > 0){
 								logger.info("Thumbnail size exceeds source image dimensions.  Returning source bytearray.");
@@ -373,7 +387,12 @@ public class MediaUtil {
 		response.setContentType(data.getMimeType());
 		byte[] value = new byte[0];
 		try {
-			value = DataUtil.getValue(data);
+			if(data.getPointer() && isAllowDataPointers(request) == false){
+				logger.error("Access to data pointer data is forbidden.");
+			}
+			else{
+				value = DataUtil.getValue(data);
+			}
 		} catch (DataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

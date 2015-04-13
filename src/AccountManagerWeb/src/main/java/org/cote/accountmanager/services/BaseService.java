@@ -65,7 +65,23 @@ import org.cote.util.BeanUtil;
 public class BaseService{
 	public static final Logger logger = Logger.getLogger(BaseService.class.getName());
 	public static boolean enableExtendedAttributes = false;
-	
+	private static boolean allowDataPointers = false;
+	private static boolean checkConfigDataPoint = false;
+
+	protected static boolean isAllowDataPointers(HttpServletRequest request){
+		if(checkConfigDataPoint) return allowDataPointers;
+		checkConfigDataPoint = true;
+		allowDataPointers = getBoolParam(request,"data.pointers.enabled");
+		return allowDataPointers;
+	}
+	protected static boolean getBoolParam(HttpServletRequest request, String name){
+		boolean ret = false;
+		String iV = request.getServletContext().getInitParameter(name);
+		if(iV != null && iV.length() > 0){
+			ret = Boolean.parseBoolean(iV);
+		}
+		return ret;
+	}
 	public static String getDefaultGroupName(AuditEnumType type){
 		String out_path = "~";
 		switch(type){
@@ -191,8 +207,14 @@ public class BaseService{
 	
 				MapUtil.shallowCloneAznType(v9bean, new_po);
 				new_po.setDecisionAge(v9bean.getDecisionAge());
-				new_po.setExpires(v9bean.getExpires());
+				new_po.setExpiresDate(v9bean.getExpiresDate());
 				new_po.setEnabled(v9bean.getEnabled());
+				new_po.getRules().addAll(v9bean.getRules());
+				new_po.setCondition(v9bean.getCondition());
+				
+				//new_po.setCreated(v9bean.getCreated());
+				//new_po.setModified(v9bean.getModified());
+				//logger.info("PD: " + new_po.getCreatedDate() + " / " + new_po.getModifiedDate() + " / " + new_po.getExpiresDate());
 				out_bool = Factories.getPolicyFactory().addPolicy(new_po);
 				break;
 			case RULE:
@@ -202,7 +224,8 @@ public class BaseService{
 				MapUtil.shallowCloneAznType(v10bean, new_ru);
 				new_ru.setRuleType(v10bean.getRuleType());
 				new_ru.setCondition(v10bean.getCondition());
-	
+				new_ru.getRules().addAll(v10bean.getRules());
+				new_ru.getPatterns().addAll(v10bean.getPatterns());
 				out_bool = Factories.getRuleFactory().addRule(new_ru);
 				break;
 			case PERSON:
@@ -294,6 +317,10 @@ public class BaseService{
 				new_rec.setRating(rbean.getRating());
 
 				DataUtil.setValue(new_rec, DataUtil.getValue(rbean));
+				if(rbean.getPointer() == true){
+					logger.error("Creating data pointers from the web FE is forbidden regardless of configuration");
+					return false;
+				}
 				out_bool = Factories.getDataFactory().addData(new_rec);
 				break;				
 		}
@@ -693,6 +720,13 @@ public class BaseService{
 			case ACCOUNT:
 				Factories.getAccountFactory().populate((AccountType)object);
 				break;
+			case PERMISSION:
+				Factories.getPermissionFactory().populate((BasePermissionType)object);
+				break;
+			case ROLE:
+				Factories.getRoleFactory().populate((BaseRoleType)object);
+				break;
+
 			case PERSON:
 				Factories.getPersonFactory().populate((PersonType)object);
 				break;
@@ -1230,7 +1264,13 @@ public class BaseService{
 			}			
 			if(canViewType(type, user, dirType) == true){
 				out_obj = (T)dirType;
-				AuditService.permitResult(audit, "Read " + dirType.getName() + " (#" + dirType.getId() + ")");
+				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)out_obj).getPointer() && isAllowDataPointers(request) == false){
+					AuditService.denyResult(audit, "#" + id + " (" + type + ") is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
+					out_obj = null;
+				}
+				else{
+					AuditService.permitResult(audit, "Read " + dirType.getName() + " (#" + dirType.getId() + ")");
+				}
 			}
 			else{
 				AuditService.denyResult(audit,"User is not authorized to view object '" + dirType.getName() + "' #" + dirType.getId());
@@ -1314,7 +1354,13 @@ public class BaseService{
 				return null;
 			}
 			if(canViewType(type, user, (NameIdType)out_obj)){
-				AuditService.permitResult(audit, "Read " + name + " (#" + ((NameIdType)out_obj).getId() + ")");
+				if(((NameIdType)out_obj).getNameType().equals(NameEnumType.DATA) && ((DataType)out_obj).getPointer() && isAllowDataPointers(request) == false){
+					AuditService.denyResult(audit, name + " is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
+					out_obj = null;
+				}
+				else{
+					AuditService.permitResult(audit, "Read " + name + " (#" + ((NameIdType)out_obj).getId() + ")");
+				}
 
 			}
 			else{

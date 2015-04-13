@@ -217,6 +217,9 @@ public class UrnUtil {
 		return obj;
 		
 	}
+	public static boolean isUrn(String possibleUrn){
+		return factoryPattern.matcher(possibleUrn).find();
+	}
 	/*
 	private static <T> T getObject(Pattern pattern, String urn) throws FactoryException, ArgumentException { 
 		T obj = null;

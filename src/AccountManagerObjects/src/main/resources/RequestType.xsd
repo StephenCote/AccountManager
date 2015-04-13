@@ -21,6 +21,9 @@
 		<attribute name="startRecord" type="long" default="0"></attribute>
 		<attribute name="recordCount" type="int" default="0"></attribute>
 		<attribute name="paginate" type="boolean"></attribute>
-		<attribute name="populateGroup" type="boolean" default="false"></attribute>
+		<attribute name="populateGroup" type="boolean"
+			default="false">
+		</attribute>
+		<attribute name="organizationId" type="long"></attribute>
 	</complexType>
 </schema>

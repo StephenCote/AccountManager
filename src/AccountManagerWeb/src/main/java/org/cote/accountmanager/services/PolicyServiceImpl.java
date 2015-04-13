@@ -74,6 +74,15 @@ public class PolicyServiceImpl  {
 
 		try {
 			policyResponse = PolicyEvaluator.evaluatePolicyRequest(policyRequest);
+			if(policyResponse == null){
+				AuditService.denyResult(audit, "Response is null");
+			}
+			else if(policyResponse.getResponse() == PolicyResponseEnumType.PERMIT || policyResponse.getResponse() == PolicyResponseEnumType.AUTHENTICATED || policyResponse.getResponse() == PolicyResponseEnumType.PENDING || policyResponse.getResponse() == PolicyResponseEnumType.PENDING_OPERATION){
+				AuditService.permitResult(audit, "Permitting result with response " + policyResponse.getResponse().toString());
+			}
+			else{
+				AuditService.denyResult(audit, "Denying result with response " +  policyResponse.getResponse().toString());
+			}
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

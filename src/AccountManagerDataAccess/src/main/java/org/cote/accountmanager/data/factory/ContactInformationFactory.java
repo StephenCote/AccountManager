@@ -94,7 +94,7 @@ public class ContactInformationFactory extends NameIdFactory {
 			
 				Set<Long> set = new HashSet<Long>();
 				BaseParticipantType[] maps = Factories.getContactInformationParticipationFactory().getContactParticipations(cinfo).toArray(new BaseParticipantType[0]);
-				logger.info("Updating " + maps.length + " Contact References");
+				//logger.info("Updating " + maps.length + " Contact References");
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < cinfo.getContacts().size();i++){
@@ -109,7 +109,7 @@ public class ContactInformationFactory extends NameIdFactory {
 				
 				set.clear();
 				maps = Factories.getContactInformationParticipationFactory().getAddressParticipations(cinfo).toArray(new BaseParticipantType[0]);
-				logger.info("Updating " + maps.length + " Address References");
+				//logger.info("Updating " + maps.length + " Address References");
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < cinfo.getAddresses().size();i++){

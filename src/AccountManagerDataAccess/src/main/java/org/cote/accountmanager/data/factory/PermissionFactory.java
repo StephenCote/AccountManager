@@ -20,6 +20,7 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataPermissionType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ObjectPermissionType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -51,6 +52,15 @@ public class PermissionFactory extends NameIdFactory {
 		if(table.getName().equalsIgnoreCase("permissions")){
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
+	}
+	
+	@Override
+	public <T> void populate(T obj) throws FactoryException, ArgumentException
+	{
+		BasePermissionType perm = (BasePermissionType)obj;
+		if(perm.getPopulated()) return;
+		perm.setPopulated(true);
+		updateToCache(perm);
 	}
 	
 	@Override
@@ -99,12 +109,19 @@ public class PermissionFactory extends NameIdFactory {
 	
 	public <T> T getPermissionByName(String name, PermissionEnumType type, BasePermissionType parent, OrganizationType organization) throws FactoryException, ArgumentException
 	{
-		String key_name = name + "-" + type.toString() + "-" + (parent != null ? parent.getId() : "0") + "-" + organization.getId();
+		long parent_id = 0;
+		if (parent != null) parent_id = parent.getId();
+
+		String key_name = name + "-" + type.toString() + "-" + parent_id + "-" + organization.getId();
 		T out_perm = readCache(key_name);
 		if (out_perm != null) return out_perm;
 
 		//List<NameIdType> perms = getByName(name,organization.getId());
-		List<NameIdType> perms = getByField(new QueryField[] { QueryFields.getFieldName(name), QueryFields.getFieldParent(( parent != null ? parent.getId() : 0))},organization.getId());
+		List<QueryField> Fields = new ArrayList<QueryField>();
+		Fields.add(QueryFields.getFieldName(name));
+		Fields.add(QueryFields.getFieldParent(parent_id));
+		if (type != PermissionEnumType.UNKNOWN) Fields.add(QueryFields.getFieldPermissionType(type));
+		List<NameIdType> perms = getByField(Fields.toArray(new QueryField[0]),organization.getId());
 		if (perms.size() > 0)
 		{
 			addToCache(perms.get(0),key_name);
