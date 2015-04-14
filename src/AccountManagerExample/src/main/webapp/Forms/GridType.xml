@@ -265,7 +265,7 @@
 					if(this.deleteItem(oItem.data)){
 						this.DisableButton("button_delete");
 						this.DisableButton("button_open");
-						this.refreshList();
+						//this.refreshList();
 					}
 					break;
 			}
@@ -360,6 +360,26 @@
 			}
 			else{
 				var oApi = window[uwm.getApi(this.getProperties().typeName)];
+				var ctl = this;
+				oApi["delete" + this.getProperties().typeName](o,{
+					hemiSvcCfg:1,
+					async:1,
+					handler:function(s, v){
+						if(ctl.getReadyState() != 4) return;
+						if(typeof v.json == "boolean" && v.json){
+							//ctl.log("Deleted " + oObj.name);
+							Hemi.log("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
+							ctl.setStatus("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
+							ctl.refreshList();
+						}
+						else{
+							Hemi.logError("Unabe to delete " + ctl.getProperties().typeName + " object #" + o.id);
+							ctl.setStatus("Unable to delete " + ctl.getProperties().typeName + " object #" + o.id);
+						}
+					}
+				});
+			}
+			/*
 				b = oApi["delete" + this.getProperties().typeName](o);
 			}
 			if(b){
@@ -370,6 +390,7 @@
 			}
 
 			return b;
+			*/
 		
 		},
 		disableButtons : function(){

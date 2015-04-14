@@ -170,8 +170,8 @@
 				return uwmServices.getService("Account").populate(o);
 			},
 
-			deleteAccount : function(oRec){
-				return uwmServices.getService("Account").delete(oRec);
+			deleteAccount : function(oRec,vCfg){
+				return uwmServices.getService("Account").delete(oRec,vCfg);
 			},
 			updateAccount : function(oRec){
 				return uwmServices.getService("Account").update(oRec);
@@ -215,8 +215,8 @@
 				return uwmServices.getService("Person").populate(o);
 			},
 
-			deletePerson : function(oRec){
-				return uwmServices.getService("Person").delete(oRec);
+			deletePerson : function(oRec,vCfg){
+				return uwmServices.getService("Person").delete(oRec,vCfg);
 			},
 			updatePerson : function(oRec){
 				return uwmServices.getService("Person").update(oRec);
@@ -255,8 +255,8 @@
 				return uwmServices.getService("Tag").populate(o);
 			},
 
-			deleteTag : function(oRec){
-				return uwmServices.getService("Tag").delete(oRec);
+			deleteTag : function(oRec,vCfg){
+				return uwmServices.getService("Tag").delete(oRec,vCfg);
 			},
 			updateTag : function(oRec){
 				return uwmServices.getService("Tag").update(oRec);
@@ -291,8 +291,8 @@
 				return uwmServices.getService("Address").populate(o);
 			},
 
-			deleteAddress : function(oRec){
-				return uwmServices.getService("Address").delete(oRec);
+			deleteAddress : function(oRec,vCfg){
+				return uwmServices.getService("Address").delete(oRec,vCfg);
 			},
 			updateAddress : function(oRec){
 				return uwmServices.getService("Address").update(oRec);
@@ -324,8 +324,8 @@
 				return uwmServices.getService("Contact").populate(o);
 			},
 
-			deleteContact : function(oRec){
-				return uwmServices.getService("Contact").delete(oRec);
+			deleteContact : function(oRec,vCfg){
+				return uwmServices.getService("Contact").delete(oRec,vCfg);
 			},
 			updateContact : function(oRec){
 				return uwmServices.getService("Contact").update(oRec);
