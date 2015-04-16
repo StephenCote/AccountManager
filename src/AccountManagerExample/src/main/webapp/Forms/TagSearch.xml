@@ -36,7 +36,7 @@
 			var oP2 = document.createElement("p");
 			var oI = document.createElement("img");
 			oI.setAttribute("class","alignright");
-			var sIco = "/Media/Icons/Crystal/48x48/48px-Crystal_Clear_action_filenew.png";
+			var sIco = "/AccountManagerExample/Media/Icons/Crystal/48x48/48px-Crystal_Clear_action_filenew.png";
 			if(o.mimeType.match(/^image/)){
 				var oG = o.group;
 				if(o.group.path == null || o.group.path.length == 0){

@@ -408,7 +408,7 @@
 				h = 128;
 				sIco = "/Media/Icons/Crystal/128x128/Crystal_Clear_mimetype_misc.png";
 				*/
-				oI.setAttribute("src","/Media/Icons/Crystal/128x128/Crystal_Clear_mimetype_misc.png");
+				oI.setAttribute("src","/AccountManagerExample/Media/Icons/Crystal/128x128/Crystal_Clear_mimetype_misc.png");
 				oI.setAttribute("border","0");
 				oI.setAttribute("width","128");
 				oI.setAttribute("height","128");

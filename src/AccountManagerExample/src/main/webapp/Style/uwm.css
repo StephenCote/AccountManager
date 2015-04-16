@@ -80,6 +80,8 @@ body{
 	left:80px;
 	height: 26px;
 	padding: 0em;
+	color: white;
+  	text-shadow: #222 0px -1px 1px;
 }
 
 .uwm-controls
