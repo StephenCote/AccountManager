@@ -641,7 +641,7 @@
 			o.description = null;
 			return uwmServices.getService("Data").addFeedback(o);
 		},
-		addData : function(sName, sDesc, sType, vData, oGroup){
+		addData : function(sName, sDesc, sType, vData, oGroup, vCfg){
 			var o = new org.cote.beans.dataType();
 			o.name = sName;
 			o.description = sDesc;
@@ -652,7 +652,7 @@
 				//delete oGroup.javaClass;
 				o.group = accountManager.getCleanGroup(oGroup);
 			}
-			return uwmServices.getService("Data").add(o);
+			return uwmServices.getService("Data").add(o, vCfg);
 		},
 		
 		/// TODO: GroupService is choking on subDirectories due to type mismatch between 'bean' and 'type'

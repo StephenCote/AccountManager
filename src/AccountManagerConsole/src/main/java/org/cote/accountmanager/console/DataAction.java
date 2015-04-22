@@ -43,6 +43,7 @@ public class DataAction {
 	private static int maxLoad = 50;
 	public static void setMaximumLoad(int i){ maxLoad = i;}
 	private static Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s])",Pattern.MULTILINE);
+	private static Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/])",Pattern.MULTILINE);
 	
 	public static void tagData(UserType user, String tagFile){
 		Map<String,Map<String,List<String>>> tagMap = new HashMap<String,Map<String,List<String>>>();
@@ -50,14 +51,14 @@ public class DataAction {
 		Factories.getTagParticipationFactory().setAggressiveKeyFlush(false);
 
 		try{
-			Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s])",Pattern.MULTILINE);
+
 			OrganizationType org = user.getOrganization();
 			Factories.getUserFactory().populate(user);
 			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org);
 			String[] dataFile = FileUtil.getFileAsString(tagFile).split("\n");
 			logger.info("Reading " + dataFile.length + " lines");
-			String match = "TODO";
-			String replace = "TODO";
+			String match = "Root/Home/product_user/Media";
+			String replace = "/Home/TestUser1/GalleryHome/rd";
 			
 			Map<String,DataTagType> dataTags = new HashMap<String,DataTagType>();
 			
@@ -69,6 +70,7 @@ public class DataAction {
 				if(pairs.length != 4) logger.warn("Unexpected length");
 				String tagName = pairs[2];
 				String path = pairs[3].replace(match,replace).trim();
+				path = limitPath.matcher(path).replaceAll("");
 				String name = limitNames.matcher(pairs[1]).replaceAll("0");
 				if(tagMap.containsKey(tagName) == false){
 					tagMap.put(tagName, new HashMap<String,List<String>>());
@@ -134,7 +136,7 @@ public class DataAction {
 				//logger.info("Prepare Write: " + (System.currentTimeMillis() - startTag)); 
 				BulkFactories.getBulkFactory().write(sessionId);
 				
-				if(true) break;
+				//if(true) break;
 			}
 			
 			logger.info("Time to import: " + (System.currentTimeMillis() - startMap));

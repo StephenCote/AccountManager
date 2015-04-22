@@ -65,7 +65,8 @@ public class ConsoleMain {
 		
 		options.addOption("name",true,"Variable name");
 		options.addOption("addUser",false,"Add a new user");
-		options.addOption("addOrganization",false,"Add a new user");
+		options.addOption("addOrganization",false,"Add a new organization");
+		options.addOption("deleteOrganization",false,"Add a new organization");
 		options.addOption("migrateData",false,"Migrate data from a pre-configured target");
 		options.addOption("ownerId",true,"Migrate data from a pre-configured target");
 		
@@ -100,6 +101,9 @@ public class ConsoleMain {
 						logger.error("Failed to configure Account Manager");
 					}
 				}
+			}
+			else if(cmd.hasOption("deleteOrganization") && cmd.hasOption("organization") && cmd.hasOption("name") && cmd.hasOption("adminPassword")){
+				OrganizationCommand.deleteOrganization(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"));
 			}
 			else if(cmd.hasOption("addOrganization") && cmd.hasOption("password") && cmd.hasOption("organization") && cmd.hasOption("adminPassword") && cmd.hasOption("name")){
 				OrganizationCommand.addOrganization(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("password"));

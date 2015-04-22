@@ -46,7 +46,7 @@
 			else{
 				if(!this.getProperties().valueListProp) this.getProperties().valueListProp = "values";
 				a = _s.attributeType;
-				Hemi.xml.setInnerXHTML(this.GetElementByRID("objectLabel"),(a ? "New Object" : o.name + " (#" + o.id + ")"));
+				Hemi.xml.setInnerXHTML(this.GetElementByRID("objectLabel"),(!o ? "New Object" : o.name + " (#" + o.id + ")"));
 				this.GetElementByRID("name").value = (a ? a.name : ""); 
 				this.GetComponentByRID("valuesList").setLoadHandler(this.scopeHandler("configValuesList",0,1,1));
 			}

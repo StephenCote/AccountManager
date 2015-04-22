@@ -14,13 +14,45 @@ import org.cote.accountmanager.util.SecurityUtil;
 
 public class OrganizationCommand {
 	public static final Logger logger = Logger.getLogger(OrganizationCommand.class.getName());
+
+	public static boolean deleteOrganization(String parentPath, String name, String adminPassword){
+		boolean out_bool = false;
+		try{
+			String orgPath = parentPath + (parentPath.endsWith("/") ? "" : "/") + name;
+			OrganizationType org = Factories.getOrganizationFactory().findOrganization(orgPath);
+			if(org != null){
+				UserType adminUser = SessionSecurity.login("Admin", SecurityUtil.getSaltedDigest(adminPassword), org);
+				if(adminUser != null){
+					logger.warn("Deleting " + org.getName());
+					Factories.getOrganizationFactory().deleteOrganization(org);
+					SessionSecurity.logout(adminUser);
+				}
+				else{
+					logger.error("Failed to login as admin user.");
+				}
+			}
+			else{
+				logger.error("Organization '" +orgPath + "' doesn't exist");
+			}
+		}
+		
+		catch(ArgumentException ae){
+			logger.error(ae.getMessage());
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+		}
 	
+		return out_bool;
+	}
 	public static boolean addOrganization(String parentPath, String name, String parentAdminPassword, String newPassword){
 		boolean out_bool = false;
 		try{
 		OrganizationType org = Factories.getOrganizationFactory().findOrganization(parentPath);
 		if(org != null){
-			UserType adminUser = SessionSecurity.login("Admin", SecurityUtil.getSaltedDigest(parentAdminPassword), org);
+			OrganizationType uOrg = org;
+			if(uOrg.getName().equals("Global") && uOrg.getParentId().equals(0L)) uOrg = Factories.getSystemOrganization();
+			UserType adminUser = SessionSecurity.login("Admin", SecurityUtil.getSaltedDigest(parentAdminPassword), uOrg);
 			if(adminUser != null){
 				OrganizationType newOrg = Factories.getOrganizationFactory().addOrganization(name,OrganizationEnumType.PUBLIC,org);
 				if(newOrg != null && FactoryDefaults.setupOrganization(newOrg, SecurityUtil.getSaltedDigest(newPassword))){
