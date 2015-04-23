@@ -359,7 +359,7 @@
 			d.focus();
 		},
 		_handle_picker_loaded: function (v) {
-		    v.resizeTo(450, 450);
+		    v.resizeTo(475, 450);
 
 			v.GetComponentByRID("typelist").GetWideSelect().getContainer().style.height = "340px";
         },
