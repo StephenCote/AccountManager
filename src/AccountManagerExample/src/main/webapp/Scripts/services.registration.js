@@ -2,8 +2,8 @@
  * Define who is providing the service layer
  */
 if(!window.uwmServices){
-	window.uwmServices = Hemi.json.rpc.service;
-	window.uwmServiceCache = Hemi.json.rpc.cache.service;
+	window.uwmServices = uwmServices = Hemi.json.rpc.service;
+	window.uwmServiceCache = uwmServiceCache = Hemi.json.rpc.cache.service;
 }
 
 /*

@@ -90,7 +90,7 @@
 			var oW = Hemi.app.createWindow("Picker","/AccountManagerExample/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},this._prehandle_picker_loaded);
 			if(!oW) return;
 			oW.setHideOnClose(0);
-			oW.resizeTo(450,100);
+			oW.resizeTo(475,100);
 			oW.center();
 			oW.setIsModal(true);
 			oW.hideButtons();

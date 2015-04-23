@@ -12,7 +12,7 @@ function getUrn(o,s){
 	return "urn:am5." + o.path.replace(/^\/home\//gi,"").replace(/\//gi,".").toLowerCase() + "." + s.replace(/[^A-Za-z0-9]+/g,"").toLowerCase();
 }
 
-window.azn = Hemi.newObject("AZN","1.0",true,true,{
+window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 	object_create : function(){
 		Hemi.object.addObjectAccessor(this,"policy");
 		Hemi.object.addObjectAccessor(this,"rule");

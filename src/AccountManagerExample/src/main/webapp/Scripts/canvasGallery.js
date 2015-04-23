@@ -594,7 +594,7 @@
 				if(oW){
 					oW.setCanMinimize(0);
 					oW.setCanMaximize(0);
-			    	oW.resizeTo(450, 400);
+			    	oW.resizeTo(475, 400);
 			    	oW.setHideOnClose(0);
 			    	Hemi.app.getWindowManager().CenterWindow(oW);
 				}
@@ -604,7 +604,7 @@
 				if(oW){
 					oW.setCanMinimize(0);
 					oW.setCanMaximize(0);
-			    	oW.resizeTo(450, 400);
+			    	oW.resizeTo(475, 400);
 			    	oW.setHideOnClose(0);
 			    	Hemi.app.getWindowManager().CenterWindow(oW);
 				}
@@ -613,7 +613,7 @@
 				var oProps = {altSearch:1,openerId:this.getObjectId(),searchHandler:"doTagSearch"};
 				var oW = Hemi.app.createWindow('Tag Search','/AccountManagerExample/Forms/TagSearch.xml','TagSearch',0,0,oProps);
 				if(!oW) return;
-				oW.resizeTo(450,400);
+				oW.resizeTo(475,400);
 				oW.setHideOnClose(0);
 				Hemi.app.getWindowManager().CenterWindow(oW);
 			},
@@ -1451,7 +1451,7 @@
 			var sType = o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() ;
 			var oW = Hemi.app.createWindow(o.name, uwm.getApiTypeView(sType) + "/Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps);
 		    if (oW) {
-		    	oW.resizeTo(450, 400);
+		    	oW.resizeTo(475, 400);
 		    	Hemi.app.getWindowManager().CenterWindow(oW);
 		    	// Destroy the window when closed
 		    	//
@@ -1590,7 +1590,7 @@
 			var oW = Hemi.app.createWindow("Picker","/AccountManagerExample/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},HandlePickerLoaded);
 			if(!oW) return;
 			oW.setHideOnClose(0);
-			oW.resizeTo(450,100);
+			oW.resizeTo(475,100);
 			oW.center();
 			oW.setIsModal(true);
 			oW.hideButtons();
@@ -1602,7 +1602,7 @@
 			var oProps = {openerId:oPanel.getObjectId(),listType:sType,picker:0,viewType:oType};
 			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
 	        if (oW) {
-	        	oW.resizeTo(450, 400);
+	        	oW.resizeTo(475, 400);
 	        	Hemi.app.getWindowManager().CenterWindow(oW);
 	        	// Destroy the window when closed
 	        	//

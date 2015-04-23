@@ -1,6 +1,7 @@
+if (typeof window != "object") window = {};
 (function () {
 	
-	window.uwm = {
+	window.uwm = uwm = {
 		debugMode : 1,
 		pathProvider : 0,
 		apiTypes : {},

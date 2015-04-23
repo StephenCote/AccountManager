@@ -44,7 +44,7 @@
 			var oProps = {openerId:this.getObjectId(),viewType:this.getBean("rocketType"),attributeType:oA,listId:this.getAttributesList().getObjectId()};
 			var oW = Hemi.app.createWindow((oA ? oA.name : "New") + " Attribute", "/AccountManagerExample/Forms/Attribute.xml", "View-" + (oA ? oA.name + "-" + oA.referenceId : Hemi.guid()), 0, 0, oProps);
             if (oW) {
-            	oW.resizeTo(450, 400);
+            	oW.resizeTo(475, 400);
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	oW.setHideOnClose(0);
             }

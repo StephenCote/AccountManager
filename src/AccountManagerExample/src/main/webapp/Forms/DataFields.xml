@@ -110,7 +110,7 @@
 				if(oW){
 					oW.setCanMinimize(0);
 					oW.setCanMaximize(0);
-			    	oW.resizeTo(450, 400);
+			    	oW.resizeTo(475, 400);
 			    	oW.setHideOnClose(0);
 			    	Hemi.app.getWindowManager().CenterWindow(oW);
 				}
@@ -221,7 +221,7 @@
 			var vData = {media_name:o.name,media_id:o.id,maxWidth:500,maxHeight:500,media_url:"data:" + o.mimeType + ";base64," + o.dataBytesStore};
 			var oW = Hemi.app.createWindow("View " + o.name, "/AccountManagerExample/Forms/ImageViewer.xml", "View-" + o.id, 0, 0, vData);
             if (oW) {
-            	oW.resizeTo(450, 300);
+            	oW.resizeTo(475, 300);
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	// Destroy the window when closed
             	//

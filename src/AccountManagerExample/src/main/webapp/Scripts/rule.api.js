@@ -2,7 +2,7 @@
 	uwm.addApi("accountManagerRule", "/AccountManagerExample");
 	uwm.addApiTypes("accountManagerRule", ["Policy","Rule","Pattern","Fact","Operation","Function"]);
 	
-	window.accountManagerRule = {
+	window.accountManagerRule = accountManagerRule = {
 		define : function(o){
 			return uwmServices.getService("Policy").define(typeof o == "number" ? o : o.id);
 		},

@@ -67,7 +67,7 @@
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:1,pickFunction:sFN,listId:sListId};
 			var oW = Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, this._prehandle_manager_loaded);
             if (oW) {
-            	oW.resizeTo(450, 300);
+            	oW.resizeTo(475, 300);
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	// Destroy the window when closed
             	//
@@ -133,7 +133,7 @@
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:0};
 			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
             if (oW) {
-            	oW.resizeTo(450, 400);
+            	oW.resizeTo(475, 400);
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	// Destroy the window when closed
             	//

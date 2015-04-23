@@ -5,7 +5,7 @@
 	uwm.addApi("accountManager", "/AccountManagerExample");
 	uwm.addApiTypes("accountManager", ["Account","Address","Contact","Group","Person","User","Data","Role","Permission","Tag"]);
 	
-	window.accountManager = {
+	window.accountManager = accountManager = {
 
 			organization_paths : {},
 			permission_paths : {},

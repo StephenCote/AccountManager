@@ -275,7 +275,7 @@
 			var vData = {media_name:a.name,media_id:a.id,maxWidth:500,maxHeight:500,media_url:"data:" + a.mimeType + ";base64," + a.dataBytesStore};
 			var oW = Hemi.app.createWindow("View " + a.name, "/AccountManagerExample/Forms/ImageViewer.xml", "View-" + a.id, 0, 0, vData);
             if (oW) {
-            	oW.resizeTo(450, 300);
+            	oW.resizeTo(475, 300);
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	// Destroy the window when closed
             	//
@@ -342,7 +342,7 @@
 			var oProps = {parentRef:this.getObjects().parentRef,defaultPath:(p ? p : this.getPath()),openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:this.getList().getObjectId()};
 			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + (v ? v : sType) + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
             if (oW) {
-            	oW.resizeTo((v ? 600 : 450), 400);
+            	oW.resizeTo((v ? 600 : 475), 400);
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	// Destroy the window when closed
             	//

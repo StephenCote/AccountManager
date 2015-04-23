@@ -34,7 +34,7 @@
 			var vData = {media_name:a.name,media_id:a.id,maxWidth:500,maxHeight:500,media_url:"data:" + a.mimeType + ";base64," + a.dataBytesStore};
 			var oW = Hemi.app.createWindow("View " + a.name, "/AccountManagerExample/Forms/ImageViewer.xml", "View-" + a.id, 0, 0, vData);
             if (oW) {
-            	oW.resizeTo(450, 300);
+            	oW.resizeTo(475, 300);
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	// Destroy the window when closed
             	//
