@@ -8,7 +8,7 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-			this.initGrid("Contact","~/Contacts");
+			this.initGrid("Contact",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Contact","~/Contacts")));
 
 		},
 		template_destroy : function(){

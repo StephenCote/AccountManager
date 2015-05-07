@@ -301,7 +301,10 @@
 				if(oGroup) return uwmServices.getService("Address").readByGroupId(oGroup.id,sName);
 				return uwmServices.getService("Address").read(sName);
 			},
-			
+			getAddressById : function(iId){
+				return uwmServices.getService("Address").readById(iId);
+			},
+
 			countContacts : function(sPath){
 				return uwmServices.getService("Contact").count(sPath);
 			},
@@ -334,7 +337,9 @@
 				if(oGroup) return uwmServices.getService("Contact").readByGroupId(oGroup.id,sName);
 				return uwmServices.getService("Contact").read(sName);
 			},
-			
+			getContactById : function(iId){
+				return uwmServices.getService("Contact").readById(iId);
+			},
 			countUsers : function(oOrg){
 				if(!oOrg) oOrg = window.uwm.getUser().organization;
 				return uwmServices.getService("User").count(oOrg.id);
