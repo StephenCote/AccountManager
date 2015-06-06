@@ -20,7 +20,7 @@
 			}
 			;
 			Hemi.message.service.subscribe(this,"onchangedirectory", this.scopeHandler("change_directory",0,0,1),Hemi.registry.service.getObject(this.getProperties().openerId));
-			var o = this.GetElementByRID("droptarget");
+			var o = this.GetElementByRID("droptarget"),_s = this.getProperties(), op;
 			var ctl = this;
 			o.ondragover = function () { this.style.borderColor = "#00FF00";return false; };
 			o.ondragend = function () { this.style.borderColer = "#505050"; return false; };
@@ -30,7 +30,10 @@
 			   	e.preventDefault();
 			   	ctl.readFiles(e.dataTransfer.files);
 			};
-			if(op && op.getProperties().dndShowForm) op[op.getProperties().dndShowForm](this);
+			if(_s.openerId){
+				op = Hemi.registry.service.getObject(_s.openerId);
+				if(op && op.getProperties().dndShowForm) op[op.getProperties().dndShowForm](this);
+			}
 		},
 		_handle_change_directory : function(s,v){
 			if(v && v.getCurrentGroup){
@@ -54,7 +57,7 @@
 		},
 		readFiles : function(aF){
 			this.setStatus("Reading " + aF.length + " files into " + this.getPath());
-			var oGroup = accountManager.getGroup(this.getPath());
+			var oGroup = accountManager.getGroupByPath("DATA",this.getPath());
 			if(!oGroup || oGroup == null){-
 				this.setStatus(this.getPath() + " is not a valid group");
 				return;

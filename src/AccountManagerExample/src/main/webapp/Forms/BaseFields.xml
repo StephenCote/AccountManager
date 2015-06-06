@@ -50,7 +50,7 @@
 	<p style = "clear:both;"><span rid = "status"></span></p>
 	<embedded-script><![CDATA[
 		template_init : function(){
-			var o = this.getBean("rocketType"), _s = this.getProperties();
+			var o = this.getBean("rocketType"), _s = this.getProperties(), o;
 			if(!this.setStatus) this.setStatus = this._setStatus;
 			Hemi.message.service.subscribe(this, "oncommunitychange", "refreshCommunity");
 			this.GetElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
@@ -68,6 +68,13 @@
 				}
 			}
 			this.initAttributePicker();
+			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver){
+				//Hemi.log("CALL PARENT RESOLVE");
+				o.parentResolver(this);
+			}
+			else{
+				//Hemi.log("DON'T CALL PARENT because " + _s.openerId + " : " + (o ? (typeof o.parentResolver) : ""));
+			}
 		},
 		template_destroy : function(){
 			Hemi.message.service.unsubscribe(this, "oncommunitychange", "refreshCommunity");
@@ -78,6 +85,12 @@
 		embedded_init : function(){
 
 			
+		},
+		parentResolver : function(v){
+			Hemi.log("PARENT RESOLVE");
+			var _s = this.getProperties();
+			if(this.resolve) this.resolve(v);
+			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver) o.parentResolver(v);
 		},
 		saveType : function(){
 			this.synchronizeForm();
@@ -93,7 +106,7 @@
 			}
 			if(!o.nameType || (!o.nameType.match(/^GROUP$/) && !o.nameType.match(/^PERMISSION$/) && !o.nameType.match(/^ROLE$/))){
 				var sPath = this.getPath();
-				var oGroup = accountManager.getCreatePath(sPath);
+				var oGroup = accountManager.getCreatePath("DATA",sPath);
 				if(!oGroup || oGroup == null){
 					this.GetElementByRID("path").className = "rocket-text rocket-text-error";
 					this.setStatus("Invalid group");
@@ -148,7 +161,7 @@
 		postProcess : function(){
 			var o = this.getBean("rocketType"),n;
 			var oApi = window[uwm.getApi(this.getProperties().typeName)];
-			if(o.nameType && o.nameType.match(/^group$/gi)) n = accountManager.getGroup(this.getPath() + "/" + o.name);
+			if(o.nameType && o.nameType.match(/^group$/gi)) n = accountManager.getGroupByPath(o.groupType,this.getPath() + "/" + o.name);
 			else if(this.provideItem) n = this.provideItem(this.getProperties().typeName,o);
 			else if(o.id) n = oApi["get" + this.getProperties().typeName + "ById"](o.id);
 			else n = oApi["get" + this.getProperties().typeName](o.name,o.group);

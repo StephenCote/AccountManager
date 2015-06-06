@@ -13,10 +13,10 @@
 				if(!o){
 					o = new org.cote.beans.baseGroupType();
 					o.name = "";
-					var p = accountManager.getGroup(this.getProperties().defaultPath);
+					var p = accountManager.getGroupByPath("UNKNOWN",this.getProperties().defaultPath);
 					o.parentId = (p ? p.id : 0);
 					o.nameType = "GROUP";
-					o.groupType = "DATA";
+					o.groupType = (this.getProperties().defaultGroupType && this.getProperties().defaultGroupType != "UNKNOWN" ? this.getProperties().defaultGroupType : "DATA");
 				}
 				else if(o.path){
 					this.getProperties().defaultPath = o.path;

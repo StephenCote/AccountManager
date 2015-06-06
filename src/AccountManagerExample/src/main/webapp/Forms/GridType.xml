@@ -55,10 +55,10 @@
 		<![CDATA[
 		initGrid : function(sTypeName, sDefPath, sViewTypeName, bNotAGroup, bNoPopulate,vParent,bManualPick,bShowSearch){
 
-			var _s = this.getProperties();
-			var _o = this.getObjects();
+			var _s = this.getProperties(),_o = this.getObjects(),o;
+
 			_s.populate = (bNoPopulate ? 0 : 1);
-			_s.manualPick = (bManualPick ? 1 : 0);
+			if(!_s.manualPick) _s.manualPick = (bManualPick ? 1 : 0);
 			if(_s.manualPick){
 				this.GetElementByRID("control_bar").style.display = "block";
 			}
@@ -87,13 +87,24 @@
 			else{
 				this.GetElementByRID("path").style.display = "none";
 			}
-			
-			this.GetComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
 			if(this.setTitle) this.setTitle(sViewTypeName);
 			
+			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver){
+				//Hemi.log("CALL PARENT RESOLVE");
+				o.parentResolver(this); 
+			}
+			else{
+				///Hemi.log("DON'T CALL PARENT because " + _s.openerId + " : " + (o ? (typeof o.parentResolver) : ""));
+			}
 			
+			this.GetComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
 			
-			
+		},
+		parentResolver : function(v){
+			Hemi.log("PARENT RESOLVE");
+			var _s = this.getProperties();
+			if(this.resolve) this.resolve(v);
+			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver) o.parentResolver(v);
 		},
 		resizeList : function(){
 			if(this.getBody) this.ResizeFrame(this.getList().getContainer());
@@ -340,6 +351,7 @@
 		},
 		openWindow : function(sType,oType,v, p){
 			var oProps = {parentRef:this.getObjects().parentRef,defaultPath:(p ? p : this.getPath()),openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:this.getList().getObjectId()};
+			if(sType.match(/^group$/gi)) oProps.defaultGroupType = this.getProperties().listGroupType;
 			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + (v ? v : sType) + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
             if (oW) {
             	oW.resizeTo((v ? 600 : 475), 400);
@@ -428,27 +440,27 @@
 			if(this.provideRefresh) this.provideRefresh(bSkipCountReset);
 			
 			if(!_s.noGroup) sPath = this.getPath();
-			var oApi = window[uwm.getApi(this.getProperties().typeName)];
+			var oApi = window[uwm.getApi(_s.typeName)];
 			var oL = this.getList();
 			oL.clearItems();
 			this.setStatus("");
 			if(!bSkipCountReset) this.setTotalCount(0);
 			var vComp = {};
-			if(this.getProperties().picker){
-				var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
+			if(_s.picker){
+				var oOpener = Hemi.registry.service.getObject(_s.openerId);
 				var oL2 = 0;
-				if(this.getProperties().listId){
-					oL2 = Hemi.registry.service.getObject(this.getProperties().listId);
+				if(_s.listId){
+					oL2 = Hemi.registry.service.getObject(_s.listId);
 					if(!oL2.getObjectType().match(/wideselect/gi)) oL2 = 0;
 				}
 
 				if(oOpener.getList) oL2 = oOpener.getList();
-				else if(oOpener["get" + this.getProperties().typeName + "sList"]) oL2 = oOpener["get" + this.getProperties().typeName + "sList"]();
+				else if(oOpener["get" + _s.typeName + "sList"]) oL2 = oOpener["get" + _s.typeName + "sList"]();
 				if(oL2){
 					for(var i = 0; i < oL2.getItems().length;i++) vComp[oL2.getItems()[i].name]=1;
 				}
 			}
-			if(!this.getProperties().typeName){
+			if(!_s.typeName){
 				this.setStatus("Pending ...");
 				return;
 			}
@@ -463,22 +475,25 @@
 					var count = 0;
 					var sFilt = this.GetElementByRID("filter").value;
 					if(this.provideCount) count = this.provideCount(sPath, sFilt);
-					else if(sPath && !_s.noGroup) count = oApi["count" + this.getProperties().typeName + "s"](sPath);
-					else count = oApi["count" + this.getProperties().typeName + "s"](uwm.getUser().organization,_o.parentRef); 
+					else if(sPath && !_s.noGroup) count = oApi["count" + _s.typeName + "s"](sPath);
+					else count = oApi["count" + _s.typeName + "s"](uwm.getUser().organization,_o.parentRef); 
 					if(count != null) this.setTotalCount(count);
 				}
 				else{
-					this.setTotalCount(this.getProperties().total_count);
+					this.setTotalCount(_s.total_count);
 				}
 				var aList = [];
 				var sFilt = this.GetElementByRID("filter").value;
-				var tname = this.getProperties().typeName;
-				if(this.provideList) aList = this.provideList(sPath, sFilt, this.getProperties().start_record,this.getProperties().record_count);
-				else if(sPath) aList = oApi["list" + tname + "s"](sPath,this.getProperties().start_record,this.getProperties().record_count);
+				var tname = _s.typeName;
+				if(this.provideList) aList = this.provideList(sPath, sFilt, _s.start_record,_s.record_count);
+				else if(sPath){
+					if(!tname.match(/^(group)$/gi)) aList = oApi["list" + tname + "s"](sPath,_s.start_record,_s.record_count);
+					else aList = oApi["list" + tname + "s"](uwm.getUser().organization,accountManager.getGroupByPath(_s.listGroupType,sPath),_s.listGroupType,_s.start_record,_s.record_count);
+				}
 				else{
 				
-					if(tname != "Role" && tname != "Permission") aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,this.getProperties().start_record,this.getProperties().record_count);
-					else aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,"UNKNOWN",this.getProperties().start_record,this.getProperties().record_count);
+					if(!tname.match(/^(permission|role)$/gi)) aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,_s.start_record,_s.record_count);
+					else aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,"UNKNOWN",_s.start_record,_s.record_count);
 				}
 				
 				if(_s.start_record == 0 && (_s.typeName.match(/^(group|permission|role)$/gi)) && (_s.viewType || _o.parentRef)){

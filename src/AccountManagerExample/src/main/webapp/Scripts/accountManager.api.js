@@ -12,7 +12,7 @@
 			role_paths : {},
 			setRole : function(oObj, oRole, bSet){
 				if(!oObj || !oRole) return;
-				if(!oObj.nameType.match(/^PERSON|USER|ACCOUNT$/)){
+				if(!oObj.nameType.match(/^GROUP|PERSON|USER|ACCOUNT$/)){
 					Hemi.logError("Unsupported object type: " + oObj.nameType);
 					return 0;
 				}
@@ -25,13 +25,22 @@
 					Hemi.logError("Unsupported object type: " + oObj.nameType);
 					return 0;
 				}
-				if(!oActor.nameType.match(/^PERSON|USER|ACCOUNT|ROLE$/)){
+				if(!oActor.nameType.match(/^GROUP|PERSON|USER|ACCOUNT|ROLE$/)){
 					Hemi.logError("Unsupported actor type: " + oActor.nameType);
 					return 0;
 				}
 				var sObj= oObj.nameType.substring(0,1) + oObj.nameType.substring(1,oObj.nameType.length).toLowerCase();
 				var sAct= oActor.nameType.substring(0,1) + oActor.nameType.substring(1,oActor.nameType.length).toLowerCase();
 				return uwmServices.getService("Permission")["setPermissionOn" + sObj + "For" + sAct](oObj.id, oActor.id, oPerm.id,bEnable);
+			},
+			setGroup : function(oObj, oGroup, bSet){
+				if(!oObj || !oGroup) return;
+				if(!oObj.nameType.match(/^PERSON|USER|ACCOUNT$/)){
+					Hemi.logError("Unsupported object type: " + oObj.nameType);
+					return 0;
+				}
+				var sObj= oObj.nameType.substring(0,1) + oObj.nameType.substring(1,oObj.nameType.length).toLowerCase();
+				return uwmServices.getService("Group")["setGroupFor" + sObj](oObj.id, oGroup.id, (bSet ? true : false));
 			},
 			getAttribute : function(o,n){
 				var v = 0;
@@ -360,7 +369,7 @@
 				o.contactInformation.contacts = [];
 				
 				var ct = new org.cote.beans.contactType();
-				ct.group = accountManager.getGroup("/Contacts");
+				ct.group = accountManager.getGroupByPath("/Contacts");
 				ct.name = sName + " Registration Email";
 				ct.preferred = true;
 				ct.contactType = "EMAIL";
@@ -549,15 +558,43 @@
 			if(!oOrg) oOrg = uwm.getUser().organization;
 			return uwmServices.getService("Group").authorizeUser(oOrg.id, iUserId, iRoleId, bView, bEdit, bDel, bCreate);
 		},
+		listGroups : function(oOrg, oParent, sType,iStartIndex, iRecordCount){
+			if(!oOrg) oOrg = uwm.getUser().organization;
+			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
+			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
+			if(!sType) sType = "UNKNOWN";
+			return uwmServices.getService("Group").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
+		},
+		listGroupUsers : function(oGroup){
+			var oOrg, iGroupId = 0;
+			if(!oGroup) return null;
+			oOrg = oGroup.organization;
+			iGroupId = oGroup.id;
+			return uwmServices.getService("Group").listUsers(oOrg.id, iGroupId);
+		},
+		listGroupAccounts : function(oGroup){
+			var oOrg, iGroupId = 0;
+			if(!oGroup) return null;
+			oOrg = oGroup.organization;
+			iGroupId = oGroup.id;
+			return uwmServices.getService("Group").listAccounts(oOrg.id, iGroupId);
+		},
+		listGroupPersons : function(oGroup){
+			var oOrg, iGroupId = 0;
+			if(!oGroup) return null;
+			oOrg = oGroup.organization;
+			iGroupId = oGroup.id;
+			return uwmServices.getService("Group").listPersons(oOrg.id, iGroupId);
+		},
+
+		/*
 		listGroups : function(sPath, iStartIndex, iRecordCount){
 			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
 			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 			///return accountManager.serviceListInGroup(uwmServices.getService("Group"),sPath, iStartIndex, iRecordCount);
 			return uwmServices.getService("Group").listInDataGroup(sPath, iStartIndex, iRecordCount);
-			/*
-			return uwmServices.getService("Group").dir(sPath);
-			*/
 		},
+		*/
 		clearGroupCache : function(){
 			uwmServices.getService("Group").clearCache();
 			uwmServiceCache.clearServiceCache("Group");
@@ -565,21 +602,25 @@
 		countGroups : function(sPath){
 			return uwmServices.getService("Group").count(sPath);
 		},
-		getCreatePath : function(sPath){
-			return uwmServices.getService("Group").getCreatePath(sPath);
+		getCreatePath : function(sType,sPath){
+			return uwmServices.getService("Group").getCreatePath(sType,sPath);
 		},
 		getHome : function(){
 			return uwmServices.getService("Group").home();
 		},
 		deleteGroup : function(oRec, vCfg){
-			if(oRec.groupType.match(/^DATA$/)) return uwmServices.getService("Group").deleteDirectory(oRec, vCfg);
-			else return uwmServices.getService("Group").delete(oRec, vCfg);
+			return uwmServices.getService("Group")["delete" + (oRec.groupType == "DATA" ? "Directory" : "")](oRec, vCfg);
 		},
-		getGroup : function(sPath){
-			return uwmServices.getService("Group").cd(sPath);
+		getGroup : function(sName, sType, oParent, oOrg){
+			if(!oOrg) oOrg = uwm.getUser().organization;
+			if(!sType) sType = "UNKNOWN";
+			return uwmServices.getService("Group").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
+		},
+		getGroupByPath : function(sType,sPath){
+			return uwmServices.getService("Group").readByPath(sType,sPath);
 		},
 		getGroupById : function(iId){
-			return uwmServices.getService("Group").find(iId);
+			return uwmServices.getService("Group").readById(iId);
 		},
 		addGroup : function(sName, sType, iParentId, oOrg){
 			var o = new org.cote.beans.baseGroupType();
@@ -592,7 +633,7 @@
 			return uwmServices.getService("Group").add(o);
 		},
 		updateGroup : function(oGroup){
-			return uwmServices.getService("Group").update(oGroup);
+			return uwmServices.getService("Group")["update" + (oGroup.groupType == "DATA" ? "Directory" : "")](oGroup);
 		},
 		
 		authorizeDataRole : function(oOrg, iRoleId, iDataId, bView, bEdit, bDel, bCreate){
@@ -676,6 +717,8 @@
 			return n;
 		
 		},
+		/// There is currently a hard coded implication that the group is a DATA group
+		///
 		serviceListInGroup : function(oSvc, sPath, iStartIndex, iRecordCount){
 			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
 			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;

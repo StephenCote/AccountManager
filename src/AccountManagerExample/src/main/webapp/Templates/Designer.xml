@@ -474,7 +474,7 @@
 				return;
 			}
 			var sPath = this.getPath();
-			var oGroup = accountManager.getCreatePath(sPath);
+			var oGroup = accountManager.getCreatePath("DATA",sPath);
 			if(!oGroup || oGroup == null){
 				this.GetElementByRID("path").className = "rocket-text rocket-text-error";
 				this.setStatus("Invalid group");

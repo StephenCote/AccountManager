@@ -672,7 +672,7 @@
 			},
 			createGroup : function(s){
 				var d = this.getCurrentViewPanel("nav").getObjects().currentDirectory;
-				var b = accountManager.getCreatePath(d.path + "/" + s);
+				var b = accountManager.getCreatePath("DATA",d.path + "/" + s);
 				if(b){
 					window.uwmServiceCache.clearServiceCache("Group");
 					this.getCurrentViewPanel("nav").repaint();
@@ -955,7 +955,7 @@
 		
 		function refreshGroupType(o,sType,sPath, bSkipDraw){
 			var _o = o.getObjects(), _s = o.getProperties(), oM, _no = o.getObjects().view.panel("nav").getObjects(),iter = 0;
-			if(!_no.currentDirectory) _no.currentDirectory = accountManager.getCreatePath(sPath);
+			if(!_no.currentDirectory) _no.currentDirectory = accountManager.getCreatePath("DATA",sPath);
 			if(!_no.baseGroup) _no.baseGroup = _no.currentDirectory;
 
 			if(!bSkipDraw && sType == 'Group'){
@@ -986,7 +986,8 @@
 			}
 			else{
 				_s.totalCount = accountManager["count" + sObjType + "s"](_no.currentDirectory.path);
-				aSub = accountManager["list" + sObjType + "s"](_no.currentDirectory.path,_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
+				if(sType == 'Group') aSub = accountManager["list" + sObjType + "s"](0,_no.currentDirectory,"DATA",_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
+				else aSub = accountManager["list" + sObjType + "s"](_no.currentDirectory.path,_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
 			}
 			
 			_o.currentList = [];
@@ -1481,7 +1482,7 @@
 						if(!_s.scaleWidth) _s.scaleWidth = 1;
 						if(!_s.scaleHeight) _s.scaleHeight = 1;
 						if(_s.basePath){
-							_o.baseDir = accountManager.getCreatePath(_s.basePath);
+							_o.baseDir = accountManager.getCreatePath("DATA",_s.basePath);
 						}
 						_s.iconLargeBase = "/AccountManagerExample/Media/Icons/Crystal/128x128/";
 						_s.iconSmallBase = "/AccountManagerExample/Media/Icons/Crystal/48x48/";

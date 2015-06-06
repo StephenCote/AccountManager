@@ -128,7 +128,7 @@
 
 				if(this.GetElementByRID("chkSystemGroups").checked){
 					if(o.nameType == "GROUP" && !o.name.match(/^\.thumbnail$/)){
-						var oT = accountManager.getGroup(o.path + "/.thumbnail");
+						var oT = accountManager.getGroupByPath("DATA",o.path + "/.thumbnail");
 						if(oT) this.authorizeType(b,oT);
 					}
 				}

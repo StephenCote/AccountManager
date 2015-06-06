@@ -8,7 +8,10 @@
 		<p>
 			<select rid = "groupType" disabled = "true" bind = "${bean.rocketType}">
 				<option>ACCOUNT</option>
+				<option>BUCKET</option>
 				<option selected = "true">DATA</option>
+				<option>PERSON</option>
+				<option>USER</option>
 			</select>
 		</p>
 	</div>
@@ -17,20 +20,84 @@
 			Sharing:
 		</p>
 		<p>
-			<input type = "button" class = "rocket-button" value = "Configure Authorization" onclick = "${this}.openShare()" />
+			<input type = "button" class = "rocket-button" value = "Authorization" onclick = "${this}.openShare()" />
 		</p>
 	</div>
+	<div class = "rocket-column-2" rid = "memberPicker" style = "display:none;">
+		<p rid = "memberPickerTitle">
+			<span rid = "memberPickerToggle"></span> <span rid="memberPickerLabel">Members</span>:
+		</p>
+		<p rid = "memberPickerContent">
+
+			<div component = "wideselect" rid = "membersList">
+			</div>
+
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addChildMember()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeChildMember()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openChildMember()" />
+		</p>
+	</div>
+
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
 			var o = this.getBean("rocketType");
 			this.GetElementByRID("groupType").disabled = (o.id ? true : false);
 			this.GetElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
-			/*
-			
-			if(o){
-				this.GetElementByRID("path").value = o.path;
+			if(o.id && o.groupType.match(/^(person|account|user)$/gi)){
+				this.toggleField("memberPickerToggle","memberPickerContent");
+				this.GetElementByRID("memberPicker").style.display = "block";
+				this.GetComponentByRID("membersList").setLoadHandler(this.scopeHandler("configMembersList",0,1,1));
 			}
-			*/
+
+		},
+		
+		openChildMember : function(){
+			var oI = this.getMembersList().getActiveItem();
+			var sType = this.GetElementByRID("groupType").value;
+			sType = sType.substring(0,1) + sType.substring(1,sType.length).toLowerCase();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,sType);
+		},
+		addChildMember : function(){
+			var sType = this.GetElementByRID("groupType").value;
+			sType = sType.substring(0,1) + sType.substring(1,sType.length).toLowerCase();
+			this.manageList(sType, this.getObjectId(),"pickMember",this.getBean("rocketType").path,1);
+		},
+		pickMember : function(s, v){
+			if(v){
+				accountManager.setGroup(v,this.getBean("rocketType"),true);
+				this.getMembersList().addItem(v.name,v);
+			}
+		},
+		removeChildMember : function(){
+			var oI = this.getMembersList().getActiveItem();
+			if(oI){
+				if(oI.data) accountManager.setGroup(oI.data,this.getBean("rocketType"),false);
+				this.getMembersList().clearItem(oI.index);
+			}
+		},
+		configMembersList : function(s,v){
+			var o = this.getBean("rocketType");
+			var oL = this.getMembersList();
+			oL.getContainer().style.height = "100px";
+			oL.getContainer().style.width = "250px";
+			this.refreshMembers();
+		},
+		refreshMembers : function(a){
+			var sType = this.GetElementByRID("groupType").value;
+			sType = sType.substring(0,1) + sType.substring(1,sType.length).toLowerCase();
+		
+			var oL = this.getMembersList();
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || o == null || o.id <= 0) return;
+			var aL = accountManager["listGroup" + sType + "s"](o);
+			for(var i = 0; i < aL.length;i++){
+				oL.addItem(aL[i].name,aL[i]);
+			}
+		},
+		getMembersList : function(){
+			return this.GetComponentByRID("membersList").GetWideSelect();
 		},
 		openShare : function(){
 			var o = this.getBean("rocketType");

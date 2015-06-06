@@ -341,7 +341,7 @@ if (typeof window != "object") window = {};
 			ci.contacts = [];
 			ci.contacts.push(ct);
 
-			ct.group = accountManager.getGroup("/Contacts");
+			ct.group = accountManager.getGroupByPath("/Contacts");
 			ct.name = u + " Registration Email";
 			ct.preferred = true;
 			ct.contactType = "EMAIL";
