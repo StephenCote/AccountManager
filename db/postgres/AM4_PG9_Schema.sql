@@ -12,7 +12,7 @@ CREATE TABLE organizations (
 	LogicalId bigint not null default 0,
 	primary key(Id)
 	);
-CREATE UNIQUE INDEX organizations_Id ON organizations(Id);
+--CREATE UNIQUE INDEX organizations_Id ON organizations(Id);
 CREATE UNIQUE INDEX IdxorganizationsName on organizations(Name,ParentId);
 CREATE UNIQUE INDEX idxorganizations_urn on organizations(Urn);
 
@@ -28,7 +28,7 @@ CREATE TABLE attribute (
 
 	);
 CREATE INDEX idxattributerefid_Id ON attribute(ReferenceId,ReferenceType,OrganizationId);
-CREATE INDEX idxattributelookup ON attribute(ReferenceId,ReferenceType,Name);
+--CREATE INDEX idxattributelookup ON attribute(ReferenceId,ReferenceType,Name);
 CREATE UNIQUE INDEX Idxattributes on attribute(ReferenceId,ReferenceType,Name,ValueIndex,OrganizationId);
 
 DROP TABLE IF EXISTS asymmetrickeys CASCADE;
@@ -43,7 +43,7 @@ CREATE TABLE asymmetrickeys (
 	primary key(Id)
 );
 
-CREATE UNIQUE INDEX asymmetrickeys_Id on asymmetrickeys(Id);
+-- CREATE UNIQUE INDEX asymmetrickeys_Id on asymmetrickeys(Id);
 CREATE INDEX asymmetrickeys_OrgId ON asymmetrickeys(OrganizationId);
 
 DROP TABLE IF EXISTS symmetrickeys CASCADE;
@@ -57,7 +57,7 @@ CREATE TABLE symmetrickeys (
 	AsymmetricKeyId bigint not null default 0,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX symmetrickeys_Id on symmetrickeys(Id);
+-- CREATE UNIQUE INDEX symmetrickeys_Id on symmetrickeys(Id);
 CREATE INDEX symmetrickeys_OrgId ON symmetrickeys(OrganizationId);
 
 DROP TABLE IF EXISTS groups CASCADE;
@@ -75,7 +75,7 @@ CREATE TABLE groups (
 	primary key(Id)
 	);
 
-CREATE UNIQUE INDEX groups_group_id ON groups(Id);
+-- CREATE UNIQUE INDEX groups_group_id ON groups(Id);
 CREATE UNIQUE INDEX idxgroups_urn on groups(Urn);
 CREATE INDEX groups_group_name ON groups(Name,OrganizationId);
 CREATE UNIQUE INDEX IdxgroupsNameParent on groups(Name,ParentId,OrganizationId);
@@ -95,12 +95,12 @@ CREATE TABLE groupparticipation (
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 	);
-CREATE UNIQUE INDEX groupparticipation_id ON groupparticipation(Id);
+-- CREATE UNIQUE INDEX groupparticipation_id ON groupparticipation(Id);
 --CREATE INDEX groupparticipation_parttype ON groupparticipation(ParticipantId,ParticipantType,AffectId);
 CREATE INDEX groupparticipation_pid ON groupparticipation(ParticipationId);
 CREATE INDEX groupparticipant_pid ON groupparticipation(ParticipantId);
 CREATE INDEX groupptype_pid ON groupparticipation(ParticipantType);
-CREATE UNIQUE INDEX IdxgroupparticipationCbo on groupparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
+--CREATE UNIQUE INDEX IdxgroupparticipationCbo on groupparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
 
 
 DROP TABLE IF EXISTS grouprolecache CASCADE;
@@ -151,7 +151,7 @@ create table data (
 	Urn text not null,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX data_id ON data(Id);
+--CREATE UNIQUE INDEX data_id ON data(Id);
 CREATE UNIQUE INDEX idxdata_urn on data(Urn);
 CREATE INDEX data_Name ON data(Name);
 CREATE UNIQUE INDEX IdxdataNameGroup on data(Name,GroupId,OrganizationId);
@@ -171,12 +171,12 @@ CREATE TABLE dataparticipation (
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 	);
-CREATE UNIQUE INDEX dataparticipation_id ON dataparticipation(Id);
+--CREATE UNIQUE INDEX dataparticipation_id ON dataparticipation(Id);
 --CREATE INDEX dataparticipation_parttype ON dataparticipation(ParticipantId,ParticipantType,AffectId);
 CREATE INDEX dataptype_pid ON dataparticipation(ParticipantType);
 CREATE INDEX dataparticipation_pid ON dataparticipation(ParticipationId);
 CREATE INDEX dataparticipant_pid ON dataparticipation(ParticipantId);
-CREATE UNIQUE INDEX IdxdataparticipationCbo on dataparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
+-- CREATE UNIQUE INDEX IdxdataparticipationCbo on dataparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
 
 
 
@@ -212,7 +212,7 @@ create table accounts (
 	Urn text not null,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX accounts_acct_id ON accounts(Id);
+-- CREATE UNIQUE INDEX accounts_acct_id ON accounts(Id);
 CREATE UNIQUE INDEX idxaccounts_urn on accounts(Urn);
 CREATE INDEX accounts_org_id ON accounts(OrganizationId);
 CREATE UNIQUE INDEX IdxaccountsName on accounts(Name,ParentId,GroupId,OrganizationId);
@@ -244,7 +244,7 @@ create table users (
 	Urn text not null,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX users_acct_id ON users(Id);
+-- CREATE UNIQUE INDEX users_acct_id ON users(Id);
 CREATE UNIQUE INDEX users_urn ON users(Urn);
 CREATE INDEX users_org_id ON users(OrganizationId);
 CREATE UNIQUE INDEX IdxusersName on users(Name,AccountId,OrganizationId);
@@ -274,7 +274,7 @@ create table statistics (
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX statistics_acct_id ON statistics(Id);
+--CREATE UNIQUE INDEX statistics_acct_id ON statistics(Id);
 CREATE UNIQUE INDEX IdxstatisticsRefOrg on statistics(ReferenceId,StatisticsType,OrganizationId);
 
 
@@ -301,7 +301,7 @@ create table addresses (
 	Urn text not null,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX addresses_acct_id ON addresses(Id);
+--CREATE UNIQUE INDEX addresses_acct_id ON addresses(Id);
 CREATE UNIQUE INDEX idxaddresses_urn on addresses(Urn);
 CREATE UNIQUE INDEX addresses_reftype ON addresses(Name,LocationType,GroupId,OrganizationId);
 
@@ -322,7 +322,7 @@ create table contacts (
 	Urn text not null,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX contacts_acct_id ON contacts(Id);
+--CREATE UNIQUE INDEX contacts_acct_id ON contacts(Id);
 CREATE UNIQUE INDEX idxcontacts_urn on contacts(Urn);
 CREATE UNIQUE INDEX contacts_reftype ON contacts(Name,ContactType,LocationType,GroupId,OrganizationId);
 
@@ -338,7 +338,7 @@ create table contactinformation (
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX contactinformation_acct_id ON contactinformation(Id);
+--CREATE UNIQUE INDEX contactinformation_acct_id ON contactinformation(Id);
 CREATE UNIQUE INDEX contactinformation_reftype ON contactinformation(ReferenceId,ContactInformationType,OrganizationId);
 
 DROP TABLE IF EXISTS contactinformationparticipation CASCADE;
@@ -355,12 +355,12 @@ CREATE TABLE contactinformationparticipation (
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 	);
-CREATE UNIQUE INDEX contactinformationparticipation_id ON contactinformationparticipation(Id);
-CREATE INDEX contactinformationparticipation_parttype ON contactinformationparticipation(ParticipantId,ParticipantType,AffectId,AffectType);
+--CREATE UNIQUE INDEX contactinformationparticipation_id ON contactinformationparticipation(Id);
+-- CREATE INDEX contactinformationparticipation_parttype ON contactinformationparticipation(ParticipantId,ParticipantType,AffectId,AffectType);
 CREATE INDEX contactinformationparticipation_pid ON contactinformationparticipation(ParticipationId);
 CREATE INDEX contactinformationparticipant_pid ON contactinformationparticipation(ParticipantId);
 CREATE INDEX contactinformationptype_pid ON contactinformationparticipation(ParticipantType);
-CREATE UNIQUE INDEX IdxcontactinformationparticipationCbo on contactinformationparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
+-- CREATE UNIQUE INDEX IdxcontactinformationparticipationCbo on contactinformationparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
 
 
 DROP TABLE IF EXISTS persons CASCADE;
@@ -387,7 +387,7 @@ create table persons (
 	Urn text not null,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX persons_person_id ON persons(Id);
+--CREATE UNIQUE INDEX persons_person_id ON persons(Id);
 CREATE UNIQUE INDEX idxpersons_urn on persons(Urn);
 CREATE INDEX persons_group_id ON persons(groupId);
 CREATE INDEX persons_parent_id ON persons(ParentId);
@@ -418,13 +418,13 @@ CREATE TABLE personparticipation (
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 	);
-CREATE UNIQUE INDEX personparticipation_id ON personparticipation(Id);
-CREATE INDEX personparticipation_parttype ON personparticipation(ParticipantId,ParticipantType,AffectId,AffectType);
+--CREATE UNIQUE INDEX personparticipation_id ON personparticipation(Id);
+--CREATE INDEX personparticipation_parttype ON personparticipation(ParticipantId,ParticipantType,AffectId,AffectType);
 CREATE INDEX personparticipationtype_pid ON personparticipation(ParticipationId,ParticipantType);
 CREATE INDEX personparticipation_pid ON personparticipation(ParticipationId);
 CREATE INDEX personparticipant_pid ON personparticipation(ParticipantId);
 CREATE INDEX personptype_pid ON personparticipation(ParticipantType);
-CREATE UNIQUE INDEX IdxpersonparticipationCbo on personparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
+--CREATE UNIQUE INDEX IdxpersonparticipationCbo on personparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
 
 
 DROP TABLE IF EXISTS roles CASCADE;
@@ -441,7 +441,7 @@ create table roles (
 	Urn text not null,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX roles_role_id ON roles(Id);
+-- CREATE UNIQUE INDEX roles_role_id ON roles(Id);
 CREATE UNIQUE INDEX idxroles_urn ON roles(Urn);
 CREATE INDEX roles_parent_id ON roles(ParentId);
 CREATE UNIQUE INDEX roles_name ON roles(Name,ParentId,RoleType,OrganizationId);
@@ -460,12 +460,12 @@ CREATE TABLE roleparticipation (
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 	);
-CREATE UNIQUE INDEX roleparticipation_id ON roleparticipation(Id);
+-- CREATE UNIQUE INDEX roleparticipation_id ON roleparticipation(Id);
 CREATE INDEX roleparticipation_parttype ON roleparticipation(ParticipantId,ParticipantType,AffectId,AffectType);
 CREATE INDEX roleparticipation_pid ON roleparticipation(ParticipationId);
 CREATE INDEX roleparticipant_pid ON roleparticipation(ParticipantId);
 CREATE INDEX roleptype_pid ON roleparticipation(ParticipantType);
-CREATE UNIQUE INDEX IdxroleparticipationCbo on roleparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
+--CREATE UNIQUE INDEX IdxroleparticipationCbo on roleparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
 
 
 DROP TABLE IF EXISTS rolerolecache CASCADE;
@@ -497,8 +497,9 @@ create table permissions (
 	Urn text not null,
 	primary key(Id)
 	);
-CREATE UNIQUE INDEX permissions_permission_id ON permissions(Id);
+--CREATE UNIQUE INDEX permissions_permission_id ON permissions(Id);
 CREATE UNIQUE INDEX idxpermissions_urn ON permissions(Urn);
+CREATE INDEX idxpermissionsparent_id ON roles(ParentId);
 CREATE UNIQUE INDEX IdxpermissionsName on permissions(Name,PermissionType,ParentId,OrganizationId);
 
 
@@ -515,7 +516,7 @@ CREATE TABLE tags (
 	Urn text not null,
 	primary key(Id)
 	);
-CREATE UNIQUE INDEX tags_id ON tags(Id);
+--CREATE UNIQUE INDEX tags_id ON tags(Id);
 CREATE UNIQUE INDEX idxtags_urn on tags(Urn);
 CREATE UNIQUE INDEX IdxtagsName on tags(Name,TagType,GroupId,OrganizationId);
 
@@ -531,10 +532,10 @@ CREATE TABLE tagparticipation (
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 	);
-CREATE UNIQUE INDEX tagparticipation_id ON tagparticipation(Id);
+--CREATE UNIQUE INDEX tagparticipation_id ON tagparticipation(Id);
 CREATE INDEX tagparticipation_parttype ON tagparticipation(ParticipantId,ParticipantType);
 CREATE INDEX tagparticipation_pid ON tagparticipation(ParticipationId);
-CREATE UNIQUE INDEX IdxtagparticipationCbo on tagparticipation(ParticipationId,ParticipantId,ParticipantType,OrganizationId);
+--CREATE UNIQUE INDEX IdxtagparticipationCbo on tagparticipation(ParticipationId,ParticipantId,ParticipantType,OrganizationId);
 
 DROP TABLE IF EXISTS spool CASCADE;
 CREATE TABLE spool (
@@ -605,7 +606,7 @@ CREATE TABLE audit (
 	AuditResultData text,
 	AuditActionSource text
 );
-CREATE UNIQUE INDEX audit_id ON audit(Id);
+--CREATE UNIQUE INDEX audit_id ON audit(Id);
 CREATE INDEX audit_source ON audit(AuditSourceType,AuditSourceData);
 CREATE INDEX audit_target ON audit(AuditTargetType,AuditTargetData);
 CREATE INDEX audit_retention ON audit(AuditRetentionType);
@@ -846,7 +847,7 @@ CREATE UNIQUE INDEX IdxruleparticipationCbo on ruleparticipation(ParticipationId
 
 
 create or replace view rolePersonRights as
-select distinct U.id as personid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
+select U.id as personid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
 	P.name as permissionname,
         RP.affecttype,RP.affectid
 	from Roles R
@@ -859,7 +860,7 @@ select distinct U.id as personid,R.id as roleid, R.name as RoleName, R.ownerid a
 	 AND RP.affectid > 0;
 
 create or replace view groupPersonRights as
-select distinct U.id as personid,G.id as groupid, G.name as GroupName, G.ownerid as groupownerid,G.grouptype,G.parentId,G.organizationid,
+select  U.id as personid,G.id as groupid, G.name as GroupName, G.ownerid as groupownerid,G.grouptype,G.parentId,G.organizationid,
 	P.name as permissionname,
         GP.affecttype,GP.affectid
 	from groups G
@@ -873,7 +874,7 @@ select distinct U.id as personid,G.id as groupid, G.name as GroupName, G.ownerid
 ;
 
 create or replace view dataPersonRights as
-select distinct U.id as personid,D.id as dataid, D.name as DataName, D.ownerid as dataownerid,G.organizationid,
+select U.id as personid,D.id as dataid, D.name as DataName, D.ownerid as dataownerid,G.organizationid,
 	P.name as permissionname,
         DP.affecttype,DP.affectid
 	from Data D
@@ -888,7 +889,7 @@ select distinct U.id as personid,D.id as dataid, D.name as DataName, D.ownerid a
 
 
 create or replace view roleUserRights as
-select distinct U.id as userid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
+select U.id as userid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
 	P.name as permissionname,
         RP.affecttype,RP.affectid
 	from Roles R
@@ -901,7 +902,7 @@ select distinct U.id as userid,R.id as roleid, R.name as RoleName, R.ownerid as 
 	 AND RP.affectid > 0;
 
 create or replace view groupUserRights as
-select distinct U.id as userid,G.id as groupid, G.name as GroupName, G.ownerid as groupownerid,G.grouptype,G.parentId,G.organizationid,
+select U.id as userid,G.id as groupid, G.name as GroupName, G.ownerid as groupownerid,G.grouptype,G.parentId,G.organizationid,
 	P.name as permissionname,
         GP.affecttype,GP.affectid
 	from groups G
@@ -915,7 +916,7 @@ select distinct U.id as userid,G.id as groupid, G.name as GroupName, G.ownerid a
 ;
 
 create or replace view dataUserRights as
-select distinct U.id as userid,D.id as dataid, D.name as DataName, D.ownerid as dataownerid,G.organizationid,
+select U.id as userid,D.id as dataid, D.name as DataName, D.ownerid as dataownerid,G.organizationid,
 	P.name as permissionname,
         DP.affecttype,DP.affectid
 	from Data D
@@ -929,7 +930,7 @@ select distinct U.id as userid,D.id as dataid, D.name as DataName, D.ownerid as 
 	 AND DP.affectid > 0;
 
 create or replace view roleAccountRights as
-select distinct U.id as accountid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
+select U.id as accountid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
 	P.name as permissionname,
         RP.affecttype,RP.affectid
 	from Roles R
@@ -942,7 +943,7 @@ select distinct U.id as accountid,R.id as roleid, R.name as RoleName, R.ownerid 
 	 AND RP.affectid > 0;
 
 create or replace view groupAccountRights as
-select distinct U.id as accountid,G.id as groupid, G.name as GroupName, G.ownerid as groupownerid,G.grouptype,G.parentId,G.organizationid,
+select U.id as accountid,G.id as groupid, G.name as GroupName, G.ownerid as groupownerid,G.grouptype,G.parentId,G.organizationid,
 	P.name as permissionname,
         GP.affecttype,GP.affectid
 	from groups G
@@ -956,7 +957,7 @@ select distinct U.id as accountid,G.id as groupid, G.name as GroupName, G.owneri
 ;
 
 create or replace view dataAccountRights as
-select distinct U.id as accountid,D.id as dataid, D.name as DataName, D.ownerid as dataownerid,G.organizationid,
+select U.id as accountid,D.id as dataid, D.name as DataName, D.ownerid as dataownerid,G.organizationid,
 	P.name as permissionname,
         DP.affecttype,DP.affectid
 	from Data D
@@ -1098,7 +1099,7 @@ WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
 FROM roles R  WHERE roletype = 'PERSON'
 )
-select CASE WHEN RP.participanttype = 'PERSON' THEN U1.id WHEN RP.participanttype = 'GROUP' THEN U2.id ELSE -1 END as personid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
+select CASE WHEN RP.participanttype = 'PERSON' THEN U1.id WHEN RP.participanttype = 'GROUP' AND U2.id > 0 THEN U2.id ELSE -1 END as personid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
 JOIN roleparticipation RP ON RP.participationid = (R.ats).roleid
 LEFT JOIN persons U1 on U1.id = RP.participantid and RP.participanttype = 'PERSON'
 LEFT JOIN groupparticipation gp2 on gp2.participationid = RP.participantid and RP.participanttype = 'GROUP' and gp2.participanttype = 'PERSON'
@@ -1110,7 +1111,7 @@ WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
 FROM roles R  WHERE roletype = 'USER'
 )
-select CASE WHEN RP.participanttype = 'USER' THEN U1.id WHEN RP.participanttype = 'GROUP' THEN U2.id ELSE -1 END as userid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
+select CASE WHEN RP.participanttype = 'USER' THEN U1.id WHEN RP.participanttype = 'GROUP' AND U2.id > 0 THEN U2.id ELSE -1 END as userid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
 JOIN roleparticipation RP ON RP.participationid = (R.ats).roleid
 LEFT JOIN users U1 on U1.id = RP.participantid and RP.participanttype = 'USER'
 LEFT JOIN groupparticipation gp2 on gp2.participationid = RP.participantid and RP.participanttype = 'GROUP' and gp2.participanttype = 'USER'
@@ -1122,7 +1123,7 @@ WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
 FROM roles R  WHERE roletype = 'ACCOUNT'
 )
-select CASE WHEN RP.participanttype = 'ACCOUNT' THEN U1.id WHEN RP.participanttype = 'GROUP' THEN U2.id ELSE -1 END as accountid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
+select CASE WHEN RP.participanttype = 'ACCOUNT' THEN U1.id WHEN RP.participanttype = 'GROUP' AND U2.id > 0 THEN U2.id ELSE -1 END as accountid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
 JOIN roleparticipation RP ON RP.participationid = (R.ats).roleid
 LEFT JOIN accounts U1 on U1.id = RP.participantid and RP.participanttype = 'ACCOUNT'
 LEFT JOIN groupparticipation gp2 on gp2.participationid = RP.participantid and RP.participanttype = 'GROUP' and gp2.participanttype = 'ACCOUNT'
@@ -1134,7 +1135,7 @@ CREATE OR REPLACE FUNCTION cache_person_roles(person_id BIGINT[],organizationid 
         AS $$
 	DELETE FROM personrolecache where personid = ANY($1);
 	--AND organizationid = $2;
-	INSERT INTO personrolecache (personid,effectiveroleid,baseroleid,organizationid) select * from effectivepersonRoles where personid = ANY($1);
+	INSERT INTO personrolecache (personid,effectiveroleid,baseroleid,organizationid) select * from effectivepersonRoles where personid = ANY($1) AND personid > 0;
 	--and organizationid = $2;
 	SELECT true;
         $$ LANGUAGE 'sql';
@@ -1146,7 +1147,7 @@ CREATE OR REPLACE FUNCTION cache_all_person_roles(orgId BIGINT)
         DECLARE ids BIGINT[] = ARRAY(SELECT id FROM persons WHERE organizationid = $1);
         BEGIN
 	DELETE FROM personrolecache WHERE personid = ANY(ids);
-	INSERT INTO personrolecache (personid,effectiveroleid,baseroleid,organizationid) select * from effectivepersonRoles where personid = ANY(ids);
+	INSERT INTO personrolecache (personid,effectiveroleid,baseroleid,organizationid) select * from effectivepersonRoles where personid = ANY(ids) AND personid > 0;
 	RETURN true;
 	END
 
@@ -1157,7 +1158,7 @@ CREATE OR REPLACE FUNCTION cache_user_roles(user_id BIGINT[],organizationid BIGI
         AS $$
 	DELETE FROM userrolecache where userid = ANY($1);
 	--AND organizationid = $2;
-	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid = ANY($1);
+	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid = ANY($1) AND userid > 0;
 	--and organizationid = $2;
 	SELECT true;
         $$ LANGUAGE 'sql';
@@ -1169,7 +1170,7 @@ CREATE OR REPLACE FUNCTION cache_all_user_roles(orgId BIGINT)
         DECLARE ids BIGINT[] = ARRAY(SELECT id FROM users WHERE organizationid = $1);
         BEGIN
 	DELETE FROM userrolecache WHERE userid = ANY(ids);
-	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid = ANY(ids);
+	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid = ANY(ids) AND userid > 0;
 	RETURN true;
 	END
 
@@ -1181,7 +1182,7 @@ CREATE OR REPLACE FUNCTION cache_account_roles(account_id BIGINT[],organizationi
         AS $$
 	DELETE FROM accountrolecache where accountid = ANY($1);
 	--AND organizationid = $2;
-	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid = ANY($1);
+	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid = ANY($1) AND accountid > 0;
 	--and organizationid = $2;
 	SELECT true;
         $$ LANGUAGE 'sql';
@@ -1193,7 +1194,7 @@ CREATE OR REPLACE FUNCTION cache_all_account_roles(orgId BIGINT)
         DECLARE ids BIGINT[] = ARRAY(SELECT id FROM accounts WHERE organizationid = $1);
         BEGIN
 	DELETE FROM accountrolecache WHERE accountid = ANY(ids);
-	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid = ANY(ids);
+	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid = ANY(ids) AND accountid > 0;
 	RETURN true;
 	END
 
@@ -1328,11 +1329,11 @@ CREATE OR REPLACE FUNCTION cache_roles()
 	truncate groupRoleCache;
 	insert into grouprolecache (groupid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveGroupRoles;
 	truncate personRoleCache;
-	INSERT INTO personrolecache (personid,effectiveroleid,baseroleid,organizationid) select * from effectivePersonRoles;
+	INSERT INTO personrolecache (personid,effectiveroleid,baseroleid,organizationid) select * from effectivePersonRoles where personid > 0;
 	truncate userRoleCache;
-	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles;
+	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid > 0;
 	truncate accountRoleCache;
-	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveAccountRoles;
+	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveAccountRoles where accountid > 0;
 	SELECT true;
         $$ LANGUAGE 'sql';
 
@@ -1356,13 +1357,16 @@ create or replace view groupRights as
 	UNION ALL
 	select accountid as referenceid,'ACCOUNT',groupid,affecttype,affectid,organizationid
 	FROM effectiveGroupAccountRoleRights GRR
+	UNION ALL
+	select AGP.participantid as referenceid,'GROUP',AG.id as groupid,AGP.affecttype,AGP.affectid,AG.organizationid
+	FROM groups AG
+	inner join groupparticipation AGP on AGP.participantType = 'GROUP' AND AGP.participationId = AG.id
 --	Role rights are not included in this view since the role member privileges are also reflected
 --	UNION ALL
 --	select roleid as referenceid,'ROLE',groupid,affecttype,affectid,organizationid
 --	FROM effectiveGroupRoleRights GRR
 	) 
 	as AM;
-
 create or replace view dataRights as
 	select distinct referenceid,referencetype,dataid,affecttype,affectid,organizationid from (
 	select personid as referenceid,'PERSON' as referencetype,dataid,affecttype,affectid,organizationid
@@ -1382,6 +1386,11 @@ create or replace view dataRights as
 	UNION ALL
 	select accountid as referenceid,'ACCOUNT' as referencetype,dataid,affecttype,affectid,organizationid
 	FROM effectiveDataAccountRoleRights GRR	
+	UNION ALL
+	select AGP.participantid as referenceid,'GROUP' as referencetype,AGP.participationid as dataid,AGP.affecttype,AGP.affectid,AG.organizationid
+	FROM groups AG
+	inner join dataparticipation AGP on AGP.participantType = 'GROUP' AND AGP.participantId = AG.id
+
 ) as AM;
 
 create or replace view roleRights as
@@ -1512,6 +1521,22 @@ or
 organizationid not in (select id from organizations)
 ;
 
+create or replace view orphanContacts as
+select id, name, groupid from contacts R1
+where (groupid not in (select id from Groups G1)
+and R1.groupid > 0)
+or
+organizationid not in (select id from organizations)
+;
+
+create or replace view orphanAddresses as
+select id, name, groupid from addresses R1
+where (groupid not in (select id from Groups G1)
+and R1.groupid > 0)
+or
+organizationid not in (select id from organizations)
+;
+
 create or replace view orphanPermissions as
 select id, name, parentId from permissions R1
 where (parentid not in (select id from Permissions G1)
@@ -1529,7 +1554,6 @@ or
 organizationid not in (select id from organizations)
 ;
 
-
 CREATE OR REPLACE FUNCTION cleanup_orphans() 
         RETURNS BOOLEAN
         AS $$
@@ -1541,12 +1565,18 @@ CREATE OR REPLACE FUNCTION cleanup_orphans()
 	delete from groups where id in (select id from orphanGroups);
 	delete from roles where id in (select id from orphanRoles);
 	delete from permissions where id in (select id from orphanPermissions);
+	delete from contacts where id in (select id from orphanContacts);
+	delete from addresses where id in (select id from orphanAddresses);
+	delete from contactinformation where id in (select id from orphanContactInformation);
+	delete from contactinformationparticipation where id in (select id from orphanContactInformationParticipations);
 
 	delete from dataparticipation where id in (select id from orphanDataParticipations);
 	delete from roleparticipation where id in (select id from orphanRoleParticipations);
 	delete from groupparticipation where id in (select id from orphanGroupParticipations);
 	delete from personparticipation where id in (select id from orphanPersonParticipations);
 
+        delete from attribute where referencetype = 'GROUP' and referenceid not in (select id from groups);
+	delete from attribute where referencetype = 'PERMISSION' and referenceid not in (select id from permissions);
         delete from attribute where referencetype = 'PERSON' and referenceid not in (select id from persons);
 	delete from attribute where referencetype = 'USER' and referenceid not in (select id from users);
 	delete from attribute where referencetype = 'DATA' and referenceid not in (select id from data);
@@ -1616,10 +1646,13 @@ inner join personparticipation PT on PT.participationId = P.id AND PT.participan
 inner join accounts U on U.id = PT.participantId
 ;
 
+--- TODO: Is this missing the join against 'USER' groups?
+---
 create or replace view groupEntitlements as
 select
 G.id as groupId,G.urn as groupUrn,R.id as roleId, R.urn as roleUrn,
-A.id as accountId,A.urn as accountUrn,
+CASE WHEN A2.id > 0 THEN A2.id ELSE A.id END as accountId,
+CASE WHEN A2.id > 0 THEN A2.urn ELSE A.urn END as accountUrn,
 CASE WHEN P3.id > 0 THEN P3.id ELSE P2.id END as personId,P2.urn as personUrn,
 GR.referenceId,GR.referenceType,
 P.id as permissionId,P.urn as permissionUrn,GR.organizationId 
@@ -1632,6 +1665,8 @@ LEFT JOIN persons P2 ON (P2.id = GR.referenceId AND GR.referenceType = 'PERSON')
 LEFT JOIN effectiveGroupAccountRoleRights eGAR ON eGAR.groupId = GR.groupId AND eGAR.accountId = GR.referenceId AND GR.referenceType = 'ACCOUNT' AND eGAR.affectId = P.id
 LEFT JOIN effectiveGroupPersonRoleRights eGPR ON eGPR.groupId = GR.groupId AND eGPR.personId = GR.referenceId AND GR.referenceType = 'PERSON' AND eGPR.affectId = P.id
 LEFT JOIN roles R ON (GR.referenceType = 'PERSON' AND eGPR.roleId = R.id) OR (GR.referenceType = 'ACCOUNT' AND eGAR.roleId = R.id)
+LEFT JOIN groupparticipation aGP on aGP.participationid = GR.referenceid AND GR.referencetype = 'GROUP' AND aGP.participanttype = 'ACCOUNT'
+LEFT JOIN accounts A2 ON A2.id = aGP.participantid
 ;
 
 DROP TABLE IF EXISTS groupEntitlementsCache CASCADE;
@@ -1660,7 +1695,8 @@ CREATE OR REPLACE FUNCTION cache_group_entitlements()
 create or replace view dataEntitlements as
 select
 G.id as dataId,G.urn as dataUrn,R.id as roleId, R.urn as roleUrn,
-A.id as accountId,A.urn as accountUrn,
+CASE WHEN A2.id > 0 THEN A2.id ELSE A.id END as accountId,
+CASE WHEN A2.id > 0 THEN A2.urn ELSE A.urn END as accountUrn,
 CASE WHEN P3.id > 0 THEN P3.id ELSE P2.id END as personId,P2.urn as personUrn,
 GR.referenceId,GR.referenceType,
 P.id as permissionId,P.urn as permissionUrn,GR.organizationId 
@@ -1673,6 +1709,9 @@ LEFT JOIN persons P2 ON (P2.id = GR.referenceId AND GR.referenceType = 'PERSON')
 LEFT JOIN effectiveDataAccountRoleRights eGAR ON eGAR.dataId = GR.dataId AND eGAR.accountId = GR.referenceId AND GR.referenceType = 'ACCOUNT' AND eGAR.affectId = P.id
 LEFT JOIN effectiveDataPersonRoleRights eGPR ON eGPR.dataId = GR.dataId AND eGPR.personId = GR.referenceId AND GR.referenceType = 'PERSON' AND eGPR.affectId = P.id
 LEFT JOIN roles R ON (GR.referenceType = 'PERSON' AND eGPR.roleId = R.id) OR (GR.referenceType = 'ACCOUNT' AND eGAR.roleId = R.id)
+LEFT JOIN groupparticipation aGP on aGP.participationid = GR.referenceid AND GR.referencetype = 'GROUP' AND aGP.participanttype = 'ACCOUNT'
+LEFT JOIN accounts A2 ON A2.id = aGP.participantid
+
 ;
 
 DROP TABLE IF EXISTS dataEntitlementsCache CASCADE;
@@ -1723,6 +1762,17 @@ union all
 select roleid,affectid,affecttype,personid as referenceid,'PERSON' as referencetype,dataid,organizationid  from effectiveDataPersonRoleRights;
 ;
 
+create or replace view accountEntitlements as
+select 'GROUP' as referenceType, groupid as referenceid,roleid,roleurn,accountid,accounturn,permissionid,permissionurn,organizationid from groupEntitlements where referencetype = 'ACCOUNT' OR (referencetype = 'GROUP' AND accountid > 0)
+union all
+select 'DATA' as referenceType,dataid as referenceid,roleid,roleurn,accountid,accounturn,permissionid,permissionurn,organizationid from dataEntitlements where referencetype = 'ACCOUNT'
+;
+
+create or replace view personEntitlements as
+select 'GROUP' as referenceType, groupid as referenceid,roleid,roleurn,personid,personurn,permissionid,permissionurn,organizationid from groupEntitlements where referencetype = 'PERSON'
+union all
+select 'DATA' as referenceType,dataid as referenceid,roleid,roleurn,personid,personurn,permissionid,permissionurn,organizationid from dataEntitlements where referencetype = 'PERSON'
+;
 
 
 -- select ((EXTRACT(EPOCH FROM AuditResultDate)*1000) - (EXTRACT(EPOCH FROM AuditDate)) * 1000) as PerfInMS from Audit order by AuditResultDate DESC limit 100
