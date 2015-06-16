@@ -1,3 +1,26 @@
+/*******************************************************************************
+ * Copyright (C) 2002, 2015 Stephen Cote Enterprises, LLC. All rights reserved.
+ * Redistribution without modification is permitted provided the following conditions are met:
+ *
+ *    1. Redistribution may not deviate from the original distribution,
+ *        and must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials
+ *        provided with the distribution.
+ *    2. Products may be derived from this software.
+ *    3. Redistributions of any form whatsoever must retain the following acknowledgment:
+ *        "This product includes software developed by Stephen Cote Enterprises, LLC"
+ *
+ * THIS SOFTWARE IS PROVIDED BY STEPHEN COTE ENTERPRISES, LLC ``AS IS''
+ * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THIS PROJECT OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
 import java.sql.ResultSet;
@@ -66,6 +89,23 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	public boolean deleteParticipations(NameIdType source) throws FactoryException
 	{
 		int count = deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source) }, source.getOrganization().getId());
+		return (count > 0);
+	}
+	public boolean deleteParticipationsByAffects(NameIdType source, long[] permissions) throws FactoryException{
+		StringBuffer buff = new StringBuffer();
+		int count = 0;
+		for (int i = 0; i < permissions.length; i++)
+		{
+			if (buff.length() > 0) buff.append(",");
+			buff.append(permissions[i]);
+			if ((i > 0 || permissions.length == 1) && ((i % 250 == 0) || i == permissions.length - 1))
+			{
+				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "affectid", buff.toString());
+				match.setComparator(ComparatorEnumType.IN);
+				count += deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source),match }, source.getOrganization().getId());
+				buff.delete(0,  buff.length());
+			}
+		}
 		return (count > 0);
 	}
 	public boolean deleteParticipationsByAffect(NameIdType source,BasePermissionType permission) throws FactoryException
@@ -238,21 +278,25 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	}
 	protected <T> List<T> getGroupListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
 	{
+		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getGroupFactory().getList(new QueryField[]{ field }, organization);
 	}
 	protected <T> List<T> getUserListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
 	{
+		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getUserFactory().getList(new QueryField[]{ field }, organization);
 	}	
 	protected <T> List<T> getAccountListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
 	{
+		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getAccountFactory().getList(new QueryField[]{ field }, organization);
 	}
 	protected <T> List<T> getPersonListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
 	{
+		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getPersonFactory().getList(new QueryField[]{ field }, organization);
 	}

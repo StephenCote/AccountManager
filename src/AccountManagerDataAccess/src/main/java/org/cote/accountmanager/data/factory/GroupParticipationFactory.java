@@ -1,3 +1,26 @@
+/*******************************************************************************
+ * Copyright (C) 2002, 2015 Stephen Cote Enterprises, LLC. All rights reserved.
+ * Redistribution without modification is permitted provided the following conditions are met:
+ *
+ *    1. Redistribution may not deviate from the original distribution,
+ *        and must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials
+ *        provided with the distribution.
+ *    2. Products may be derived from this software.
+ *    3. Redistributions of any form whatsoever must retain the following acknowledgment:
+ *        "This product includes software developed by Stephen Cote Enterprises, LLC"
+ *
+ * THIS SOFTWARE IS PROVIDED BY STEPHEN COTE ENTERPRISES, LLC ``AS IS''
+ * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THIS PROJECT OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
 import java.util.ArrayList;
@@ -18,6 +41,7 @@ import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BucketGroupType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonGroupType;
 import org.cote.accountmanager.objects.PersonParticipantType;
@@ -201,6 +225,22 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		if (group.getGroupType() == GroupEnumType.USER || group.getGroupType() == GroupEnumType.ACCOUNT) throw new ArgumentException("Cannot create User/group participation with permission affecting an User group");
 		return (UserParticipantType)newParticipant(group, User, ParticipantEnumType.USER, permission, affect_type);
 	}
+	public GroupParticipantType newGroupGroupParticipation(
+			BaseGroupType group,
+			BaseGroupType memberGroup
+		) throws ArgumentException
+		{
+			return (GroupParticipantType)newParticipant(group, memberGroup, ParticipantEnumType.GROUP, null, AffectEnumType.AGGREGATE);
+		}
+		public GroupParticipantType newGroupGroupParticipation(
+			BaseGroupType group, 
+			BaseGroupType memberGroup,
+			BasePermissionType permission,
+			AffectEnumType affect_type
+			) throws ArgumentException
+		{
+			return (GroupParticipantType)newParticipant(group, memberGroup, ParticipantEnumType.GROUP, permission, affect_type);
+		}
 	public AccountParticipantType newAccountGroupParticipation(
 		BaseGroupType group,
 		AccountType account
@@ -474,12 +514,12 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	public List<AccountType> getAccountsInGroup(AccountGroupType group) throws FactoryException, ArgumentException
 	{
 		List<AccountParticipantType> ap = getAccountGroupParticipations(group);
-		return getAccountListFromParticipations(ap.toArray(new UserParticipantType[0]), group.getOrganization());
+		return getAccountListFromParticipations(ap.toArray(new AccountParticipantType[0]), group.getOrganization());
 	}
 	public List<PersonType> getPersonsInGroup(PersonGroupType group) throws FactoryException, ArgumentException
 	{
 		List<PersonParticipantType> ap = getPersonGroupParticipations(group);
-		return getPersonListFromParticipations(ap.toArray(new UserParticipantType[0]), group.getOrganization());
+		return getPersonListFromParticipations(ap.toArray(new PersonParticipantType[0]), group.getOrganization());
 	}
 
 	public List<UserType> getUsersInGroup(UserGroupType group) throws FactoryException, ArgumentException

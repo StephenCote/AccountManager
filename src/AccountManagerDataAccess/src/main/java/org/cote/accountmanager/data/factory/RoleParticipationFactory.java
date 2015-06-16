@@ -1,3 +1,26 @@
+/*******************************************************************************
+ * Copyright (C) 2002, 2015 Stephen Cote Enterprises, LLC. All rights reserved.
+ * Redistribution without modification is permitted provided the following conditions are met:
+ *
+ *    1. Redistribution may not deviate from the original distribution,
+ *        and must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials
+ *        provided with the distribution.
+ *    2. Products may be derived from this software.
+ *    3. Redistributions of any form whatsoever must retain the following acknowledgment:
+ *        "This product includes software developed by Stephen Cote Enterprises, LLC"
+ *
+ * THIS SOFTWARE IS PROVIDED BY STEPHEN COTE ENTERPRISES, LLC ``AS IS''
+ * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THIS PROJECT OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
 import java.util.ArrayList;
@@ -11,6 +34,7 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -257,7 +281,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new PersonParticipantType[0]));
 		return Factories.getRoleFactory().getPersonRoles(match, person.getOrganization());
 	}
-	public List<PersonType> getPersonsInRole(PersonRoleType role) throws FactoryException, ArgumentException
+	public List<PersonType> getPersonsInRole(BaseRoleType role) throws FactoryException, ArgumentException
 	{
 		List<PersonParticipantType> ap = getPersonRoleParticipations(role);
 		return getPersonListFromParticipations(ap.toArray(new PersonParticipantType[0]), role.getOrganization());
@@ -358,7 +382,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new AccountParticipantType[0]));
 		return Factories.getRoleFactory().getAccountRoles(match, account.getOrganization());
 	}
-	public List<AccountType> getAccountsInRole(AccountRoleType role) throws FactoryException, ArgumentException
+	public List<AccountType> getAccountsInRole(BaseRoleType role) throws FactoryException, ArgumentException
 	{
 		List<AccountParticipantType> ap = getAccountRoleParticipations(role);
 		return getAccountListFromParticipations(ap.toArray(new AccountParticipantType[0]), role.getOrganization());
@@ -415,11 +439,11 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	}
 	
 	/// Group
-	public boolean deleteGroupRoleParticipant(UserRoleType role, UserGroupType group)  throws ArgumentException, FactoryException
+	public boolean deleteGroupRoleParticipant(BaseRoleType role, BaseGroupType group)  throws ArgumentException, FactoryException
 	{
 		return deleteGroupRoleParticipant(role, group, null,AffectEnumType.UNKNOWN);
 	}
-	public boolean deleteGroupRoleParticipant(UserRoleType role, UserGroupType group, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deleteGroupRoleParticipant(BaseRoleType role, BaseGroupType group, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
 	{
 		GroupParticipantType dp = getGroupRoleParticipant(role, group, permission, affect_type);
 		if (dp == null) return true;
@@ -428,7 +452,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 
 		return deleteParticipant(dp);
 	}
-	public boolean deleteGroupRoleParticipants(UserRoleType role, UserGroupType account) throws FactoryException, ArgumentException
+	public boolean deleteGroupRoleParticipants(BaseRoleType role, BaseGroupType account) throws FactoryException, ArgumentException
 	{
 		List<GroupParticipantType> dp = getGroupRoleParticipants(role, account);
 		return deleteParticipants(dp.toArray(new GroupParticipantType[0]), account.getOrganization());
@@ -441,22 +465,22 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		return deleteParticipants(dp.toArray(new GroupParticipantType[0]), group.getOrganization());
 	}
 
-	public GroupParticipantType newGroupRoleParticipation(BaseRoleType role, UserGroupType group) throws ArgumentException
+	public GroupParticipantType newGroupRoleParticipation(BaseRoleType role, BaseGroupType group) throws ArgumentException
 	{
 		return newGroupRoleParticipation(role, group, null, AffectEnumType.UNKNOWN);
 	}
-	public GroupParticipantType newGroupRoleParticipation(BaseRoleType role, UserGroupType group,BasePermissionType permission,AffectEnumType affect_type) throws ArgumentException
+	public GroupParticipantType newGroupRoleParticipation(BaseRoleType role, BaseGroupType group,BasePermissionType permission,AffectEnumType affect_type) throws ArgumentException
 	{
 		return (GroupParticipantType)newParticipant(role, group, ParticipantEnumType.GROUP, permission, affect_type);
 	}
 
 
-	public List<UserGroupType> getGroupsInRole(UserRoleType role) throws FactoryException, ArgumentException
+	public List<UserGroupType> getGroupsInRole(BaseRoleType role) throws FactoryException, ArgumentException
 	{
 		List<GroupParticipantType> ap = getGroupRoleParticipations(role);
 		return getGroupListFromParticipations(ap.toArray(new GroupParticipantType[0]), role.getOrganization());
 	}
-	public List<GroupParticipantType> getGroupRoleParticipants(UserGroupType group) throws FactoryException, ArgumentException
+	public List<GroupParticipantType> getGroupRoleParticipants(BaseGroupType group) throws FactoryException, ArgumentException
 	{
 		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipantMatch(group,ParticipantEnumType.GROUP), group.getOrganization().getId());
 		return convertList(dtlist);
@@ -469,14 +493,14 @@ public class RoleParticipationFactory extends ParticipationFactory {
 
 	public List<GroupParticipantType> getGroupRoleParticipants(
 		BaseRoleType role, 
-		UserGroupType account
+		BaseGroupType account
 	)  throws FactoryException, ArgumentException
 	{
 		return getGroupRoleParticipants(role, account, null, AffectEnumType.UNKNOWN);
 	}
 	public List<GroupParticipantType> getGroupRoleParticipants(
 		BaseRoleType role,
-		UserGroupType account,
+		BaseGroupType account,
 		BasePermissionType permission,
 		AffectEnumType affect_type
 	)  throws FactoryException, ArgumentException
@@ -485,24 +509,24 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		return convertList(list);
 
 	}
-	public GroupParticipantType getGroupRoleParticipant(BaseRoleType role, UserGroupType account)  throws ArgumentException, FactoryException
+	public GroupParticipantType getGroupRoleParticipant(BaseRoleType role, BaseGroupType account)  throws ArgumentException, FactoryException
 	{
 		return getGroupRoleParticipant(role, account, null, AffectEnumType.UNKNOWN);
 	} 
 	public GroupParticipantType getGroupRoleParticipant(
 		BaseRoleType role,
-		UserGroupType account,
+		BaseGroupType account,
 		BasePermissionType permission,
 		AffectEnumType affect_type
 	)  throws ArgumentException, FactoryException
 	{
 		return getParticipant(role, account, ParticipantEnumType.GROUP, permission, affect_type);
 	}
-	public boolean getIsGroupInRole(BaseRoleType role, UserGroupType account)  throws ArgumentException, FactoryException
+	public boolean getIsGroupInRole(BaseRoleType role, BaseGroupType account)  throws ArgumentException, FactoryException
 	{
 		return (getGroupRoleParticipant(role, account) != null);
 	}
-	public boolean getIsGroupInRole(BaseRoleType role, UserGroupType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean getIsGroupInRole(BaseRoleType role, BaseGroupType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
 	{
 		return (getGroupRoleParticipant(role, account,permission, affect_type) != null);
 	}

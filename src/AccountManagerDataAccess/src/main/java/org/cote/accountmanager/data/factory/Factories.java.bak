@@ -1,0 +1,101 @@
+package org.cote.accountmanager.data.factory;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import org.cote.accountmanager.data.ConnectionFactory;
+import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.types.OrganizationEnumType;
+
+public class Factories {
+	
+	private static OrganizationType rootOrganization = null;
+	private static OrganizationType developmentOrganization = null;
+	private static OrganizationType systemOrganization = null;
+	private static OrganizationType publicOrganization = null;
+	
+	private static OrganizationFactory orgFactory = null;
+	private static GroupFactory groupFactory = null;
+	private static DataFactory dataFactory = null;
+	
+	
+	
+	public static OrganizationType getRootOrganization() {
+		return rootOrganization;
+	}
+
+	public static OrganizationType getDevelopmentOrganization() {
+		return developmentOrganization;
+	}
+
+	public static OrganizationType getSystemOrganization() {
+		return systemOrganization;
+	}
+
+	public static OrganizationType getPublicOrganization() {
+		return publicOrganization;
+	}
+
+	public static DataFactory getDataFactory(){
+		if(dataFactory == null){
+			dataFactory = new DataFactory();
+			initializeFactory(dataFactory);
+			
+		}
+		return dataFactory;
+	}	
+	
+	public static GroupFactory getGroupFactory(){
+		if(groupFactory == null){
+			groupFactory = new GroupFactory();
+			initializeFactory(groupFactory);
+
+		}
+		return groupFactory;
+	}
+	public static OrganizationFactory getOrganizationFactory(){
+		if(orgFactory == null){
+			orgFactory = new OrganizationFactory();
+			initializeFactory(orgFactory);
+			populate(orgFactory);
+
+		}
+		return orgFactory;
+	}
+	protected static void populate(OrganizationFactory orgFactory){
+		if(orgFactory.isInitialized()){
+			try{
+				rootOrganization = orgFactory.addOrganization("Global", OrganizationEnumType.ROOT, null);
+				systemOrganization = orgFactory.addOrganization("System", OrganizationEnumType.SYSTEM, rootOrganization);
+				publicOrganization = orgFactory.addOrganization("Public", OrganizationEnumType.PUBLIC, rootOrganization);
+				developmentOrganization = orgFactory.addOrganization("Development", OrganizationEnumType.DEVELOPMENT, rootOrganization);
+				
+			}
+			catch(FactoryException fe){
+				fe.printStackTrace();
+				System.out.println(fe.getMessage());
+				rootOrganization = null;
+				systemOrganization = null;
+				publicOrganization = null;
+				developmentOrganization = null;
+			}
+		}
+	}
+	protected static boolean initializeFactory(NameIdFactory factory){
+		boolean init = false;
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		try {
+			factory.initialize(connection);
+			init = true;
+			connection.close();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return init;
+	}
+}

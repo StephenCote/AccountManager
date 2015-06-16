@@ -1,3 +1,26 @@
+/*******************************************************************************
+ * Copyright (C) 2002, 2015 Stephen Cote Enterprises, LLC. All rights reserved.
+ * Redistribution without modification is permitted provided the following conditions are met:
+ *
+ *    1. Redistribution may not deviate from the original distribution,
+ *        and must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials
+ *        provided with the distribution.
+ *    2. Products may be derived from this software.
+ *    3. Redistributions of any form whatsoever must retain the following acknowledgment:
+ *        "This product includes software developed by Stephen Cote Enterprises, LLC"
+ *
+ * THIS SOFTWARE IS PROVIDED BY STEPHEN COTE ENTERPRISES, LLC ``AS IS''
+ * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THIS PROJECT OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
 import java.sql.Connection;
@@ -269,7 +292,12 @@ public class GroupFactory  extends NameIdFactory {
 		if (out_group != null) return (BaseGroupType)out_group;
 		//System.out.println("Fetching " + key_name);
 		QueryFields x = null;
-		List<NameIdType> groups = getByField(new QueryField[] { QueryFields.getFieldName(name), QueryFields.getFieldParent(( parent != null ? parent.getId() : 0)), QueryFields.getFieldGroupType(group_type) }, organization.getId());
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldName(name));
+		fields.add(QueryFields.getFieldParent(( parent != null ? parent.getId() : 0)));
+		if(group_type != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(group_type));
+		
+		List<NameIdType> groups = getByField(fields.toArray(new QueryField[0]), organization.getId());
 
 		if (groups.size() > 0)
 		{
@@ -444,7 +472,8 @@ public class GroupFactory  extends NameIdFactory {
             //populateSubDirectories(dirGroup);
             if (dirGroup.getParentId() > 0)
             {
-                dirGroup.setParentGroup(getDirectoryById(group.getParentId(), group.getOrganization()));
+            	BaseGroupType pgroup = getById(group.getParentId(), group.getOrganization());
+                dirGroup.setParentGroup((pgroup.getGroupType() == GroupEnumType.DATA ? (DirectoryGroupType)pgroup:null));
             }
         }
         group.setPath(getPath(group,false));
@@ -538,7 +567,8 @@ public class GroupFactory  extends NameIdFactory {
 		BaseGroupType nested_group = null;
 
 		String name = null;
-		if (groupType == GroupEnumType.DATA && (paths.length == 0 || path.equals("/")))
+		/// groupType == GroupEnumType.DATA && (
+		if (paths.length == 0 || path.equals("/"))
 		{
 			return getRootDirectory(organization);
 		}
@@ -703,6 +733,13 @@ public class GroupFactory  extends NameIdFactory {
 		}
 		return buff.toString();
 	}
+	public int getCount(BaseGroupType group) throws FactoryException
+	{
+		/// ,QueryFields.getFieldGroupType(GroupEnumType.DATA)
+		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId())}, group.getOrganization().getId());
+	}
+/*
+	
 	public int getCount(UserGroupType group) throws FactoryException
 	{
 		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.USER)}, group.getOrganization().getId());
@@ -716,7 +753,7 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.ACCOUNT)}, group.getOrganization().getId());
 	}
-
+*/
 	/*
 	public List<UserGroupType>  getUserGroupListByParent(BaseGroupType parent, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
@@ -754,20 +791,22 @@ public class GroupFactory  extends NameIdFactory {
 		return convertList(dataList);
 	}
 	*/
-	public int getCount(DirectoryGroupType group) throws FactoryException
-	{
-		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.DATA)}, group.getOrganization().getId());
-	}
 	
 
 	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
-		return getList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(groupType) }, startRecord, recordCount, organization);
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldParent(parent.getId()));
+		if(groupType != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(groupType));
+		return getList(fields.toArray(new QueryField[0]), startRecord, recordCount, organization);
 	}
 	
 	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, ProcessingInstructionType instruction, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{
-		return getList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(groupType) }, instruction, startRecord, recordCount,organization);
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldParent(parent.getId()));
+		if(groupType != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(groupType));
+		return getList(fields.toArray(new QueryField[0]), instruction, startRecord, recordCount,organization);
 	}
 	public <T> List<T>  getList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
 	{

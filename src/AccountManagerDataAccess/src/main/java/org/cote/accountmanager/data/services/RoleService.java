@@ -1,3 +1,26 @@
+/*******************************************************************************
+ * Copyright (C) 2002, 2015 Stephen Cote Enterprises, LLC. All rights reserved.
+ * Redistribution without modification is permitted provided the following conditions are met:
+ *
+ *    1. Redistribution may not deviate from the original distribution,
+ *        and must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials
+ *        provided with the distribution.
+ *    2. Products may be derived from this software.
+ *    3. Redistributions of any form whatsoever must retain the following acknowledgment:
+ *        "This product includes software developed by Stephen Cote Enterprises, LLC"
+ *
+ * THIS SOFTWARE IS PROVIDED BY STEPHEN COTE ENTERPRISES, LLC ``AS IS''
+ * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THIS PROJECT OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
 import org.apache.log4j.Logger;
@@ -28,7 +51,7 @@ public class RoleService {
 	public static final Logger logger = Logger.getLogger(RoleService.class.getName());
 
 	
-	public static boolean getIsGroupInRole(BaseRoleType role, UserGroupType group) throws ArgumentException, FactoryException{
+	public static boolean getIsGroupInRole(BaseRoleType role, BaseGroupType group) throws ArgumentException, FactoryException{
 		if(role == null){
 			logger.error("Role is null");
 			return false;
@@ -39,7 +62,7 @@ public class RoleService {
 		if(role.getId() < 0L ) return true;
 		return getIsGroupInRole(role, group, null, AffectEnumType.UNKNOWN);
 	}
-	public static boolean getIsGroupInRole(BaseRoleType role, UserGroupType group, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsGroupInRole(BaseRoleType role, BaseGroupType group, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
 	{
 		if(role == null){
 			logger.error("Role is null");
@@ -51,12 +74,12 @@ public class RoleService {
 		if(role.getId() < 0L ) return true;
 		return Factories.getRoleParticipationFactory().getIsGroupInRole(role, group,permission,affect_type);
 	}
-	public static boolean addGroupToRole(UserGroupType group, UserRoleType role) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean addGroupToRole(BaseGroupType group, BaseRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
 		return addGroupToRole(group, role, null, AffectEnumType.UNKNOWN);
 	}
 
-	public static boolean addGroupToRole(UserGroupType account, UserRoleType role, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean addGroupToRole(BaseGroupType account, BaseRoleType role, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, DataAccessException, FactoryException
 	{
 		/// accommodate bulk inserts with a negative id - skip the check for the getGroupInRole, which will return true for bulk jobs
 		///
@@ -71,7 +94,7 @@ public class RoleService {
 		}
 		return false;
 	}
-	public static boolean removeGroupFromRole(UserRoleType role, UserGroupType group) throws FactoryException, ArgumentException
+	public static boolean removeGroupFromRole(BaseRoleType role, BaseGroupType group) throws FactoryException, ArgumentException
 	{
 		if (Factories.getRoleParticipationFactory().deleteGroupRoleParticipants(role, group))
 		{
@@ -178,6 +201,29 @@ public class RoleService {
 	public static PersonRoleType getPersonRole(String role_name, PersonRoleType Parent, OrganizationType organization) throws FactoryException, ArgumentException{
 		return Factories.getRoleFactory().getPersonRoleByName(role_name, Parent, organization);
 	}
+	public static boolean getIsPersonInEffectiveRole(BaseRoleType role, PersonType user) throws ArgumentException, FactoryException{
+		if(role == null){
+			logger.error("Role is null");
+			return false;
+		}
+		/// accommodate bulk inserts with a negative id; don't check the DB for the negative value
+		///
+		
+		if(role.getId() < 0L ) return true;
+		return getIsPersonInEffectiveRole(role, user, null, AffectEnumType.UNKNOWN);
+	}
+	public static boolean getIsPersonInEffectiveRole(BaseRoleType role, PersonType user, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	{
+		if(role == null){
+			logger.error("Role is null");
+			return false;
+		}
+
+		/// accommodate bulk inserts with a negative id
+		///
+		if(role.getId() < 0L ) return true;
+		return EffectiveAuthorizationService.getIsPersonInEffectiveRole(role, user, permission, affect_type);
+	}
 	public static boolean getIsPersonInRole(BaseRoleType role, PersonType person) throws ArgumentException, FactoryException{
 		return getIsPersonInRole(role, person, null, AffectEnumType.UNKNOWN);
 	}
@@ -207,6 +253,29 @@ public class RoleService {
 
 	public static AccountRoleType getAccountRole(String role_name, AccountRoleType Parent, OrganizationType organization) throws FactoryException, ArgumentException{
 		return Factories.getRoleFactory().getAccountRoleByName(role_name, Parent, organization);
+	}
+	public static boolean getIsAccountInEffectiveRole(BaseRoleType role, AccountType user) throws ArgumentException, FactoryException{
+		if(role == null){
+			logger.error("Role is null");
+			return false;
+		}
+		/// accommodate bulk inserts with a negative id; don't check the DB for the negative value
+		///
+		
+		if(role.getId() < 0L ) return true;
+		return getIsAccountInEffectiveRole(role, user, null, AffectEnumType.UNKNOWN);
+	}
+	public static boolean getIsAccountInEffectiveRole(BaseRoleType role, AccountType user, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	{
+		if(role == null){
+			logger.error("Role is null");
+			return false;
+		}
+
+		/// accommodate bulk inserts with a negative id
+		///
+		if(role.getId() < 0L ) return true;
+		return EffectiveAuthorizationService.getIsAccountInEffectiveRole(role, user, permission, affect_type);
 	}
 	public static boolean getIsAccountInRole(BaseRoleType role, AccountType account) throws ArgumentException, FactoryException{
 		return getIsAccountInRole(role, account, null, AffectEnumType.UNKNOWN);

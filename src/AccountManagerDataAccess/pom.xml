@@ -52,10 +52,10 @@
 					</includes>
 					<excludes>
 						<!-- 
+						<exclude>**/TestBulkPerson.java</exclude>
 						
-						<exclude>**/TestDataTags.java</exclude>
 						-->
-						
+						<exclude>**/TestDataTags.java</exclude>
 						<exclude>**/TestCachePerformance.java</exclude>
 						
 						<exclude>**/TestBulkUpdate.java</exclude>
@@ -77,7 +77,7 @@
 						
 						<exclude>**/TestAuditFactory.java</exclude>
 						<exclude>**/TestImportContacts.java</exclude>
-						<exclude>**/TestBulkPerson.java</exclude>
+						
 						<exclude>**/TestUserRegistration.java</exclude>
 						
 						<exclude>**/TestBulkUser.java</exclude>	

@@ -21,22 +21,50 @@
  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
-package org.cote.accountmanager.data.factory.bulk;
+package org.cote.accountmanager.data.services;
 
-import org.cote.accountmanager.data.DataTable;
-import org.cote.accountmanager.data.factory.AddressFactory;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class BulkAddressFactory extends AddressFactory{
-	public BulkAddressFactory(){
-		super();
-		bulkMode = true;
-		sequenceName = "addresses_id_seq";
-	}
+import org.apache.log4j.Logger;
+import org.cote.accountmanager.data.ConnectionFactory;
+import org.cote.accountmanager.services.ThreadService;
+
+public class DatabaseMaintenance extends ThreadService {
 	
-	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("addresses")){
-			table.setBulkInsert(bulkMode);
+	public static final Logger logger = Logger.getLogger(DatabaseMaintenance.class.getName());
+	private int spoolFlushDelay = 300000;
+	
+	public DatabaseMaintenance(){
+		super();
+		this.setThreadDelay(spoolFlushDelay);
+	}
+	public void execute(){
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		long start_cleanup = System.currentTimeMillis();
+		try{
+			
+			String sql = "SELECT * FROM cleanup_orphans();";
+			PreparedStatement statement = connection.prepareStatement(sql);
+			ResultSet rset = statement.executeQuery();
+			rset.close();
+			statement.close();
 		}
+		catch(SQLException sqe){
+			logger.error(sqe.getMessage());
+			sqe.printStackTrace();
+		}
+		finally{
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		logger.info("Cleaned up orphan data in " + (System.currentTimeMillis() - start_cleanup));
 	}
 	
 }
