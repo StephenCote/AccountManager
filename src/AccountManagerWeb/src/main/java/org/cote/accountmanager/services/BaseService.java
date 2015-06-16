@@ -1,3 +1,26 @@
+/*******************************************************************************
+ * Copyright (C) 2002, 2015 Stephen Cote Enterprises, LLC. All rights reserved.
+ * Redistribution without modification is permitted provided the following conditions are met:
+ *
+ *    1. Redistribution may not deviate from the original distribution,
+ *        and must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials
+ *        provided with the distribution.
+ *    2. Products may be derived from this software.
+ *    3. Redistributions of any form whatsoever must retain the following acknowledgment:
+ *        "This product includes software developed by Stephen Cote Enterprises, LLC"
+ *
+ * THIS SOFTWARE IS PROVIDED BY STEPHEN COTE ENTERPRISES, LLC ``AS IS''
+ * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THIS PROJECT OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *******************************************************************************/
 /*
  * ContactInformation is currently commented out until the factory gets refactored
  */
@@ -570,6 +593,10 @@ public class BaseService{
 		
 		T out_obj = null;
 		switch(type){
+			case GROUP:
+				GroupEnumType grpType = GroupEnumType.fromValue(otype);
+				out_obj = (T)Factories.getGroupFactory().getGroupByName(name, grpType, (BaseGroupType)parent, parent.getOrganization());
+				break;
 			case ROLE:
 				RoleEnumType rolType = RoleEnumType.fromValue(otype);
 				out_obj = (T)Factories.getRoleFactory().getRoleByName(name, (BaseRoleType)parent, rolType, parent.getOrganization());
@@ -913,7 +940,7 @@ public class BaseService{
 				if(!out_bool) out_bool = AuthorizationService.isAccountAdministratorInMapOrganization(user, (UserType)obj);
 				break;
 			case GROUP:
-				DirectoryGroupType edir = Factories.getGroupFactory().getDirectoryById(obj.getId(), user.getOrganization());
+				BaseGroupType edir = Factories.getGroupFactory().getById(obj.getId(), user.getOrganization());
 				BaseGroupType opdir = Factories.getGroupFactory().getById(edir.getParentId(), user.getOrganization());
 				BaseGroupType pdir = Factories.getGroupFactory().getById(((BaseGroupType)obj).getParentId(), user.getOrganization());
 				if(opdir == null){
@@ -1475,7 +1502,7 @@ public class BaseService{
 	}
 	
 	public static int countByGroup(AuditEnumType type, String path, HttpServletRequest request){
-		DirectoryGroupType dir = null;
+		BaseGroupType dir = null;
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "count",AuditEnumType.SESSION, request.getSession(true).getId());
 		AuditService.targetAudit(audit, type, path);
@@ -1483,7 +1510,7 @@ public class BaseService{
 		if(user==null) return 0;
 
 		try{
-			dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,path, user.getOrganization());
+			dir = (BaseGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.UNKNOWN,path, user.getOrganization());
 			//dir = Factories.getGroupFactory().getById(groupId, user.getOrganization());
 		}
 		 catch (FactoryException e1) {
@@ -1501,7 +1528,7 @@ public class BaseService{
 		}
 		return count(audit,type, user, dir, request);
 	}
-	public static int count(AuditType audit,AuditEnumType type, UserType user, DirectoryGroupType dir, HttpServletRequest request){
+	public static int count(AuditType audit,AuditEnumType type, UserType user, BaseGroupType dir, HttpServletRequest request){
 		int out_count = 0;
 		try {
 			if(canViewType(AuditEnumType.GROUP, user, dir) == true){
@@ -1521,10 +1548,10 @@ public class BaseService{
 
 		return out_count;
 	}
-	private static int count(AuditEnumType type, DirectoryGroupType group) throws ArgumentException, FactoryException {
+	private static int count(AuditEnumType type, BaseGroupType group) throws ArgumentException, FactoryException {
 		
 		NameIdFactory factory = getFactory(type);
-		if(type == AuditEnumType.DATA) return ((DataFactory)factory).getCount(group);
+		if(type == AuditEnumType.DATA) return ((DataFactory)factory).getCount((DirectoryGroupType)group);
 		return ((NameIdGroupFactory)factory).getCount(group);		
 	}
 	
@@ -1639,7 +1666,7 @@ public class BaseService{
 		return factory.getCountInParent(parent);
 	}
 	
-	private static <T> List<T> getListByGroup(AuditEnumType type, DirectoryGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
+	private static <T> List<T> getListByGroup(AuditEnumType type, BaseGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
 		NameIdGroupFactory factory = getFactory(type);
 		List<T> out_obj = factory.getListByGroup(group, startRecord, recordCount, group.getOrganization());
 		for(int i = 0; i < out_obj.size();i++){
@@ -1662,7 +1689,7 @@ public class BaseService{
 		}
 		
 		try {
-			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, path, user.getOrganization());
+			BaseGroupType dir = (BaseGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.UNKNOWN, path, user.getOrganization());
 			if(dir == null){
 				AuditService.denyResult(audit, "Invalid path: '" + path + "'");
 				return out_obj;

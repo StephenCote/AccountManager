@@ -1,13 +1,31 @@
+/*******************************************************************************
+ * Copyright (C) 2002, 2015 Stephen Cote Enterprises, LLC. All rights reserved.
+ * Redistribution without modification is permitted provided the following conditions are met:
+ *
+ *    1. Redistribution may not deviate from the original distribution,
+ *        and must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials
+ *        provided with the distribution.
+ *    2. Products may be derived from this software.
+ *    3. Redistributions of any form whatsoever must retain the following acknowledgment:
+ *        "This product includes software developed by Stephen Cote Enterprises, LLC"
+ *
+ * THIS SOFTWARE IS PROVIDED BY STEPHEN COTE ENTERPRISES, LLC ``AS IS''
+ * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THIS PROJECT OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *******************************************************************************/
 package org.cote.rest.services;
 
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -25,35 +43,23 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
-import org.cote.accountmanager.data.services.AuthorizationService;
-import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.objects.AccountRoleType;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
-import org.cote.accountmanager.objects.BaseSpoolType;
-import org.cote.accountmanager.objects.ContactInformationType;
-import org.cote.accountmanager.objects.DataType;
-import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PersonRoleType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserRoleType;
-import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
-import org.cote.accountmanager.services.DataServiceImpl;
-import org.cote.accountmanager.services.PermissionServiceImpl;
 import org.cote.accountmanager.services.RoleServiceImpl;
-import org.cote.accountmanager.services.RoleServiceImpl;
-import org.cote.accountmanager.util.CalendarUtil;
-import org.cote.accountmanager.util.SecurityUtil;
 import org.cote.accountmanager.util.ServiceUtil;
-import org.cote.beans.MessageBean;
-import org.cote.beans.SessionBean;
 import org.cote.beans.SchemaBean;
 //import org.cote.beans.UserBean;
 import org.cote.rest.schema.ServiceSchemaBuilder;
-import org.cote.util.BeanUtil;
-import org.cote.util.RegistrationUtil;
 
 @Path("/role")
 public class RoleService{
@@ -64,7 +70,12 @@ public class RoleService{
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 
 	}
-	
+
+	@GET @Path("/setRoleForGroup/{peid : [0-9]+}/{rid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean setRoleForGroup(@PathParam("peid") long groupId, @PathParam("rid") long roleId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return RoleServiceImpl.setRole(user, roleId, AuditEnumType.GROUP, groupId, enable);
+	}	
 	@GET @Path("/setRoleForPerson/{peid : [0-9]+}/{rid : [0-9]+}/{enable:(true|false)}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean setRoleForPerson(@PathParam("peid") long personId, @PathParam("rid") long roleId, @PathParam("enable") boolean enable, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
@@ -196,6 +207,94 @@ public class RoleService{
 		}
 		
 		return RoleServiceImpl.getListOfGroups(user, targRole);
+	}
+	
+
+	@GET @Path("/listPersons/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public List<PersonType> listPersons(@PathParam("orgId") long orgId,@PathParam("recordId") long recordId,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		OrganizationType targOrg = null;
+		PersonRoleType targRole = null;
+		try {
+			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
+			targRole = Factories.getRoleFactory().getById(recordId, targOrg);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return RoleServiceImpl.getListOfPersons(user, targRole);
+	}
+	@GET @Path("/listForPerson/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public List<PersonRoleType> listForPerson(@PathParam("orgId") long orgId,@PathParam("recordId") long recordId,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		PersonType targPerson = null;
+		OrganizationType targOrg = null;
+		try {
+			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
+			if(targOrg != null) targPerson = Factories.getPersonFactory().getById(recordId, targOrg);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		if(targPerson == null){
+			logger.error("Null user specified for org id " + orgId + " and user id " + recordId);
+			return new ArrayList<PersonRoleType>();
+		}
+		return RoleServiceImpl.getListForPerson(user, targPerson);
+	}
+	@GET @Path("/listAccounts/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public List<AccountType> listAccounts(@PathParam("orgId") long orgId,@PathParam("recordId") long recordId,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		OrganizationType targOrg = null;
+		AccountRoleType targRole = null;
+		try {
+			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
+			targRole = Factories.getRoleFactory().getById(recordId, targOrg);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return RoleServiceImpl.getListOfAccounts(user, targRole);
+	}
+	@GET @Path("/listForAccount/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public List<AccountRoleType> listForAccount(@PathParam("orgId") long orgId,@PathParam("recordId") long recordId,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		AccountType targAccount = null;
+		OrganizationType targOrg = null;
+		try {
+			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
+			if(targOrg != null) targAccount = Factories.getAccountFactory().getById(recordId, targOrg);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		if(targAccount == null){
+			logger.error("Null user specified for org id " + orgId + " and user id " + recordId);
+			return new ArrayList<AccountRoleType>();
+		}
+		return RoleServiceImpl.getListForAccount(user, targAccount);
 	}
 	
 	@GET @Path("/listUsers/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
