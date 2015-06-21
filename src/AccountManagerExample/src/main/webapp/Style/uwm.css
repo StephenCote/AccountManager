@@ -106,6 +106,7 @@ body{
     width: 80%;
     overflow:auto;
 }
+
 .uwm-content .uwm-content-section,.uwm-footer .uwm-content-section
 {
     width: auto;
@@ -123,6 +124,12 @@ body{
 	background: -webkit-gradient(linear,left top, left bottom, from(#FFFFFF), to(#EFEFEF)) repeat scroll 0 0 transparent;
 
 }
+.uwm-content .uwm-content-section .uwm-content-metadata{
+	margin: .2em;
+	padding-left: .5em;
+	font-style:italic;
+	color: #505050;
+}
 .uwm-content .uwm-content-section h1
 {
     color: #505050;
@@ -130,6 +137,10 @@ body{
 
     padding-left: .2em;
     margin: .2em;
+}
+.uwm-content .uwm-content-section h1 .uwm-content-title-link{
+	text-decoration: none;
+	color: #0804a9;
 }
 .uwm-content .uwm-content-section h2
 {
