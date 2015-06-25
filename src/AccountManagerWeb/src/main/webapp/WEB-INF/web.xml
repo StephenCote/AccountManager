@@ -35,6 +35,12 @@
     <param-value>articleTemplate.xhtml</param-value>
   </context-param>
 
+  <context-param>
+    <description>Article Template</description>
+    <param-name>template.article.meta</param-name>
+    <param-value>articleMetaDataTemplate.xhtml</param-value>
+  </context-param>
+
 
   <context-param>
     <description>Restrict Image Size</description>
