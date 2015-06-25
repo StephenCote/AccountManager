@@ -49,7 +49,7 @@
 	</div>
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			this.GetElementByRID("pathCont").style.display = "none";
+			//this.GetElementByRID("pathCont").style.display = "none";
 		},
 		addType : function(o){
 			Hemi.log("Add contact type: " + o.name );

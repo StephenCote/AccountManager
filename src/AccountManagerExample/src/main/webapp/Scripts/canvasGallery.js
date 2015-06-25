@@ -426,7 +426,7 @@
 				//initializeVC(this);
 				var gc = ctl.getObjects().galleryContainer;
 				this.getCanvasController().getCanvasContainer().style.cssText = "position:absolute;top:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteTop(gc)) + "px;left:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteLeft(gc)) + "px;";
-				
+
 				this.switchView("gallery",["nav","content","commands"]);
 				Hemi.event.addEventListener(window,"hashchange",this._prehandle_hash_change);
 				Hemi.event.addEventListener(window,"resize",this._prehandle_window_resize);

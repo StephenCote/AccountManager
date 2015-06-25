@@ -104,7 +104,7 @@
 				this.setStatus("Name cannot be empty");
 				return;
 			}
-			if(!o.nameType || (!o.nameType.match(/^GROUP$/) && !o.nameType.match(/^PERMISSION$/) && !o.nameType.match(/^ROLE$/))){
+			if(!o.nameType || (!o.nameType.match(/^GROUP$/) && !o.nameType.match(/^PERMISSION$/) && !o.nameType.match(/^ROLE$/) && !o.nameType.match(/^USER$/))){
 				var sPath = this.getPath();
 				var oGroup = accountManager.getCreatePath("DATA",sPath);
 				if(!oGroup || oGroup == null){

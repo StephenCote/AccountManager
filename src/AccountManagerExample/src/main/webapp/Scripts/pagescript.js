@@ -272,6 +272,19 @@ if (typeof window != "object") window = {};
 			Hemi.log("Flush any session or cache references in related services");
 			return window.uwm.session;
 		},
+		profile : function(){
+			var sType = 'User';
+			var oType = uwm.getUser();
+			var oProps = {viewType:oType};
+			var oW = Hemi.app.createWindow(oType.name, uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + sType + "-" + oType.id , 0, 0, oProps, 0);
+            if (oW) {
+            	oW.resizeTo(475, 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		},
 		getUser : function(bRefresh){
 			if(!bRefresh && window.uwm.user) return window.uwm.user;
 			var userSvc = window.uwmServices.getService("User");
@@ -280,31 +293,25 @@ if (typeof window != "object") window = {};
 		},
 		login : function(u, p, o, v){
 			var userSvc = window.uwmServices.getService("User");
-			var user = new org.cote.beans.userType();
-			user.name = u;
-			user.password = p;
-			user.organization = o;
+			var authReq = new org.cote.beans.authenticationRequestType();
+			authReq.credentialType = "HASHED_PASSWORD";
+			authReq.credential = uwm.base64Encode(p);
+			authReq.subject = u;
+			authReq.organizationPath = accountManager.getOrganizationPath(o);
 			var vParms = (v ? v : {});
-			/*
-			window.uwm.user = userSvc.postLogin(user);
-			window.uwm.session = user.session;
-			//rocket.flushSession();
-			Hemi.log("Flush any session or cache references in related services");
-			return window.uwm.user;
-			*/
-			userSvc.postLogin(user,{
+			userSvc.authenticate(authReq,{
 				hemiSvcCfg:1,
 				async:1,
 				handler:function(s, v){
-					if(v && v.json && v.json.session){
-						window.uwm.user = v.json;
-						window.uwm.session = v.json.session;
+					if(v && v.json && v.json.response == "AUTHENTICATED"){
+						window.uwm.user = v.json.user;
+						window.uwm.session = v.json.user.session;
 						uwm.clearCache();
 						var oSess = Hemi.registry.service.getObject("session");
 						if(oSess) oSess.Refresh(window.uwm.session);
 						if(uwm.altFlushSession) uwm.altFlushSession();
 					}
-					vParms.user = v.json;
+					vParms.user = v.json.user;
 					uwm.operation("ContinueWorkflow", vParms, 0, "Authenticate");
 				}
 			});

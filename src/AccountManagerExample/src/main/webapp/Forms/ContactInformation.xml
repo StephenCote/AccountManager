@@ -61,7 +61,9 @@
 			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Address");
 		},
 		addAddress : function(){
-			this.manageList("Address", this.getAddressesList().getObjectId());
+			var o = this.getBean("rocketType"),sPath;
+			if(o.nameType && o.nameType.match(/^user$/gi)) sPath = "/Home/" + o.name + "/Addresses";
+			this.manageList("Address", this.getAddressesList().getObjectId(),0,sPath);
 		},
 		removeAddress : function(){
 			var oI = this.getAddressesList().getActiveItem();
@@ -100,7 +102,9 @@
 			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Contact");
 		},
 		addContact : function(){
-			this.manageList("Contact", this.getContactsList().getObjectId());
+			var o = this.getBean("rocketType"),sPath;
+			if(o.nameType && o.nameType.match(/^user$/gi)) sPath = "/Home/" + o.name + "/Contacts";
+			this.manageList("Contact", this.getContactsList().getObjectId(),0,sPath);
 		},
 		removeContact : function(){
 			var oI = this.getContactsList().getActiveItem();

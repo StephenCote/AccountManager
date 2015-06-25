@@ -322,11 +322,12 @@
 				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				return accountManager.serviceListInGroup(uwmServices.getService("Contact"),sPath, iStartIndex, iRecordCount);
 			},
-			addContact : function(sName, sType, sLocType, oGroup){
+			addContact : function(sName, sType, sLocType, sVal, oGroup){
 				var o = new org.cote.beans.contactType();
 				o.name = sName;
 				o.locationType = sLocType;
 				o.contactType = sType;
+				o.contactValue = sVal;
 				if(oGroup){
 					o.group = accountManager.getCleanGroup(oGroup);
 				}
@@ -360,28 +361,31 @@
 				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				return accountManager.serviceListInOrganization(uwmServices.getService("User"),oOrg, iStartIndex, iRecordCount);
 			},
-			addUser : function(sName, sPassword, sEmail, oOrg){
+			addUser : function(sName, oOrg){
 				if(!oOrg) oOrg = uwm.getUser().organization;
-				var o = new org.cote.beans.userType();
+				var o = new org.cote.beans.userType(),b = false;
 				o.name = sName;
-				o.password = sPassword;
-				o.contactInformation = new org.cote.beans.contactInformationType();
-				o.contactInformation.contacts = [];
-				
-				var ct = new org.cote.beans.contactType();
-				ct.group = accountManager.getGroupByPath("/Contacts");
-				ct.name = sName + " Registration Email";
-				ct.preferred = true;
-				ct.contactType = "EMAIL";
-				ct.locationType = "HOME";
-				ct.contactValue = sEmail;
-				
-				o.contactInformation.contacts.push(ct);
+
 				
 				//o.contactInformation.email = sEmail;
 				o.organization = oOrg;
 
 				return uwmServices.getService("User").add(o);
+				/*
+					o = uwmServices.getService("User").read(sName);
+					if(!o) return b;
+					
+					//o.contactInformation = new org.cote.beans.contactInformationType();
+					//o.contactInformation.contacts = [];
+					if(accountManager.addContact(sName + " Default Email", "EMAIL", "HOME", sEmail, accountManager.getGroupByPath("/Home/" + sName + "/Contacts"))){
+						if(!o.contactInformation.contacts) o.contactInformation.contacts = [];
+						o.contactInformation.contacts.push(accountManager.getContact(sName + " Default Email",accountManager.getGroupByPath("/Home/" + sName + "/Contacts")));
+						b = uwmServices.getService("User").update(o); 
+					}
+					
+				}
+				return b;
+				*/
 			},
 			deleteUser : function(oRec, vCfg){
 				return uwmServices.getService("User").delete(oRec,vCfg);

@@ -15,33 +15,40 @@
 			<input rid = "userStatus" type = "text" class = "rocket-text" disabled = "true" bind = "${bean.rocketType}" />
 		</p>
 	</div>
-	<div class = "rocket-column-2">
+	<div class = "rocket-column-2" rid = "credentialContainer" style = "display: none;">
 		<p>
-			Password:
+			Credential:
 		</p>
 		<p>
-			<input rid = "password" type = "password" class = "rocket-text" />
-		</p>
-	</div>
-	<div class = "rocket-column-2">
-		<p>
-			Confirm Password:
-		</p>
-		<p>
-			<input rid = "confPassword" type = "password" class = "rocket-text" />
+			<input type = "button" class = "rocket-button" value = "Reset Credential" onclick = "${this}.resetCredential()" />
 		</p>
 	</div>
-
+	<import-xml src = "/AccountManagerExample/Forms/ContactInformation.xml" id = "ContactInformation" />
+	
 	<embedded-script><![CDATA[
 		embedded_init : function(){
+			this.GetElementByRID("credentialContainer").style.display = (this.getBean("rocketType").id ? "block":"none");
 			this.GetElementByRID("pathCont").style.display = "none";
+			this.initContactInformation();
+		},
+		resetCredential : function(){
+			var o = this.getBean("rocketType");
+			var oProps = {openerId:this.getObjectId(),viewType:o};
+			var oW = Hemi.app.createWindow(o.name + " Credentials", "/AccountManagerExample/Forms/CredentialForm.xml", "Credential-" + o.id, 0, 0, oProps, 0);
+            if (oW) {
+            	oW.resizeTo(475, 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	oW.setHideOnClose(0);
+            }
+		
 		},
 		addType : function(o){
 			Hemi.log("Add user type: " + o.name );
-			return accountManager.addUser(o.name, o.password, o.email);
+			return accountManager.addUser(o.name);
 		},
 		prepareSave : function(o){
 			this.GetElementByRID("text").className = "rocket-text";
+			this.prepareSaveContactInformation(o);
 			return 1;
 		}
 	]]></embedded-script>
