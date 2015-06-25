@@ -14,6 +14,7 @@
 	<include schemaLocation="NameId.xsd"></include>
 
 	<include schemaLocation="ParticipantType.xsd"></include>
+	<include schemaLocation="AccountType.xsd"></include>
 	<complexType name="PolicyType">
 		<complexContent>
 			<extension base="tns:BaseAuthorizationType">
@@ -30,7 +31,9 @@
 				<attribute name="modifiedDate" type="dateTime"></attribute>
 
 				<attribute name="createdDate" type="dateTime"></attribute>
-				<attribute name="condition" type="tns:ConditionEnumType"></attribute>
+				<attribute name="condition"
+					type="tns:ConditionEnumType">
+				</attribute>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -254,7 +257,9 @@
 
 	<complexType name="PolicyRequestType">
 		<sequence>
-			<element name="facts" type="tns:FactType" minOccurs="0" maxOccurs="unbounded"></element>
+			<element name="facts" type="tns:FactType" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
 		</sequence>
 		<attribute name="urn" type="string"></attribute>
 		<attribute name="subject" type="string"></attribute>
@@ -269,7 +274,9 @@
 	<complexType name="PolicyResponseType">
 		<sequence>
 			<element name="message" type="string"></element>
-			<element name="patternChain" type="string" minOccurs="0" maxOccurs="unbounded"></element>
+			<element name="patternChain" type="string" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
 		</sequence>
 		<attribute name="response" type="tns:PolicyResponseEnumType"></attribute>
 		<attribute name="urn" type="string"></attribute>
@@ -291,89 +298,140 @@
 		<attribute name="modifiedDate" type="dateTime"></attribute>
 		<attribute name="createdDate" type="dateTime"></attribute>
 	</complexType>
-	
-
-    <simpleType name="CredentialEnumType">
-    	<restriction base="string">
-    		<enumeration value="UNKNOWN"></enumeration>
-    		<enumeration value="PASSWORD"></enumeration>
-    		<enumeration value="TOKEN"></enumeration>
-    		<enumeration value="SESSION"></enumeration>
-    	</restriction>
-    </simpleType>
 
 
-    <simpleType name="PolicyRequestEnumType">
-    	<restriction base="string">
-    		<enumeration value="UNKNOWN"></enumeration>
-    		<enumeration value="AUTHENTICATE"></enumeration>
-    		<enumeration value="DECIDE"></enumeration>
-    		<enumeration value="DEFINE"></enumeration>
-    		<enumeration value="SCORE"></enumeration>
-    	</restriction>
-    </simpleType>
+	<simpleType name="CredentialEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="LEGACY_PASSWORD"></enumeration>
+			<enumeration value="HASHED_PASSWORD"></enumeration>
+			<enumeration value="SALT"></enumeration>
+			<enumeration value="ENCRYPTED_PASSWORD"></enumeration>
+			<enumeration value="TOKEN"></enumeration>
+			<enumeration value="CERTIFICATE"></enumeration>
+			<enumeration value="SIGNATURE"></enumeration>
+			<enumeration value="SESSION"></enumeration>
+			<enumeration value="KEY"></enumeration>
+		</restriction>
+	</simpleType>
 
-    <simpleType name="PolicyResponseEnumType">
-    	<restriction base="string">
-    		<enumeration value="UNKNOWN"></enumeration>
-    		<enumeration value="AUTHENTICATED"></enumeration>
-    		<enumeration value="PERMIT"></enumeration>
-    		<enumeration value="DENY"></enumeration>
-    		<enumeration value="PENDING"></enumeration>
-    		<enumeration value="PENDING_OPERATION"></enumeration>
-    		<enumeration value="INVALID_ARGUMENT"></enumeration>
-    		<enumeration value="ERROR"></enumeration>
-    		<enumeration value="BANNED"></enumeration>
-    		<enumeration value="DISABLED"></enumeration>
-    	</restriction>
-    </simpleType>
 
-    <simpleType name="OperationResponseEnumType">
-    	<restriction base="string">
-    		<enumeration value="UNKNOWN"></enumeration>
-    		<enumeration value="SUCCEEDED"></enumeration>
-    		<enumeration value="FAILED"></enumeration>
-    		<enumeration value="ERROR"></enumeration>
-    	</restriction>
-    </simpleType>
+	<simpleType name="PolicyRequestEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="AUTHENTICATE"></enumeration>
+			<enumeration value="DECIDE"></enumeration>
+			<enumeration value="DEFINE"></enumeration>
+			<enumeration value="SCORE"></enumeration>
+		</restriction>
+	</simpleType>
 
-    <complexType name="LogicalNameIdType">
-    	<complexContent>
-    		<extension base="tns:NameIdDirectoryGroupType">
-    			<attribute name="logicalOrder" type="int" default="0"></attribute>
-    		</extension>
-    	</complexContent>
-    </complexType>
+	<simpleType name="PolicyResponseEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="AUTHENTICATED"></enumeration>
+			<enumeration value="PERMIT"></enumeration>
+			<enumeration value="DENY"></enumeration>
+			<enumeration value="PENDING"></enumeration>
+			<enumeration value="PENDING_OPERATION"></enumeration>
+			<enumeration value="INVALID_ARGUMENT"></enumeration>
+			<enumeration value="ERROR"></enumeration>
+			<enumeration value="BANNED"></enumeration>
+			<enumeration value="DISABLED"></enumeration>
+		</restriction>
+	</simpleType>
 
-    <complexType name="AuthorizationPolicyType">
-    			<sequence>
-    				<element name="roles" type="tns:BaseRoleType"
-    					minOccurs="0" maxOccurs="unbounded">
-    				</element>
-    				<element name="permissions"
-    					type="tns:BasePermissionType" minOccurs="0"
-    					maxOccurs="unbounded">
-    				</element>
-    				<element name="members" type="tns:NameIdType"
-    					minOccurs="0" maxOccurs="unbounded">
-    				</element>
-    			</sequence>
-    			<attribute name="contextType" type="Q1:NameEnumType"></attribute>
-    			<attribute name="factoryType"
-    				type="Q1:FactoryEnumType">
-    			</attribute>
-    			<attribute name="contextId" type="long" default="0"></attribute>
-    			<attribute name="contextName" type="string"></attribute>
-    			<attribute name="memberType" type="Q1:NameEnumType"></attribute>
-    			<attribute name="systemAdministrator" type="boolean" default="false"></attribute>
-    			<attribute name="accountAdministrator" type="boolean" default="false"></attribute>
-    			<attribute name="dataAdministrator" type="boolean" default="false"></attribute>
-    			<attribute name="contextUrn" type="string"></attribute>
-    			<attribute name="roleReader" type="boolean" default="false"></attribute>
-    			<attribute name="accountReader" type="boolean" default="false"></attribute>
-    			<attribute name="groupReader" type="boolean" default="false"></attribute>
-				<attribute name="authenticated" type="boolean" default="false"></attribute>
-				<attribute name="authenticationId" type="string"></attribute>
-    </complexType>
+	<simpleType name="OperationResponseEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="SUCCEEDED"></enumeration>
+			<enumeration value="FAILED"></enumeration>
+			<enumeration value="ERROR"></enumeration>
+		</restriction>
+	</simpleType>
 
+	<complexType name="LogicalNameIdType">
+		<complexContent>
+			<extension base="tns:NameIdDirectoryGroupType">
+				<attribute name="logicalOrder" type="int" default="0"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="AuthorizationPolicyType">
+		<sequence>
+			<element name="roles" type="tns:BaseRoleType" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
+			<element name="permissions" type="tns:BasePermissionType"
+				minOccurs="0" maxOccurs="unbounded">
+			</element>
+			<element name="members" type="tns:NameIdType" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
+		</sequence>
+		<attribute name="contextType" type="Q1:NameEnumType"></attribute>
+		<attribute name="factoryType" type="Q1:FactoryEnumType">
+		</attribute>
+		<attribute name="contextId" type="long" default="0"></attribute>
+		<attribute name="contextName" type="string"></attribute>
+		<attribute name="memberType" type="Q1:NameEnumType"></attribute>
+		<attribute name="systemAdministrator" type="boolean"
+			default="false">
+		</attribute>
+		<attribute name="accountAdministrator" type="boolean"
+			default="false">
+		</attribute>
+		<attribute name="dataAdministrator" type="boolean"
+			default="false">
+		</attribute>
+		<attribute name="contextUrn" type="string"></attribute>
+		<attribute name="roleReader" type="boolean" default="false"></attribute>
+		<attribute name="accountReader" type="boolean"
+			default="false">
+		</attribute>
+		<attribute name="groupReader" type="boolean" default="false"></attribute>
+		<attribute name="authenticated" type="boolean"
+			default="false">
+		</attribute>
+		<attribute name="authenticationId" type="string"></attribute>
+	</complexType>
+
+
+	<complexType name="AuthenticationRequestType">
+		<sequence>
+			<element name="credential" type="base64Binary" minOccurs="0"
+				maxOccurs="1">
+			</element>
+			<element name="checkCredential" type="base64Binary"></element>
+		</sequence>
+		<attribute name="subject" type="string"></attribute>
+		<attribute name="organizationPath" type="string"></attribute>
+		<attribute name="credentialType" type="tns:CredentialEnumType"
+			default="UNKNOWN">
+		</attribute>
+		<attribute name="checkCredentialType" type="tns:CredentialEnumType"></attribute>
+	</complexType>
+
+	<complexType name="AuthenticationResponseType">
+		<sequence>
+			<element name="message" type="string"></element>
+			<element name="user" type="tns:UserType"></element>
+		</sequence>
+		<attribute name="sessionId" type="string"></attribute>
+		<attribute name="response"
+			type="tns:AuthenticationResponseEnumType">
+		</attribute>
+		<attribute name="organizationPath" type="string"></attribute>
+		<attribute name="organizationId" type="long"></attribute>
+	</complexType>
+
+	<simpleType name="AuthenticationResponseEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="AUTHENTICATED"></enumeration>
+			<enumeration value="NOT_AUTHENTICATED"></enumeration>
+			<enumeration value="STEP_UP_REQUIRED"></enumeration>
+		</restriction>
+	</simpleType>
 </schema>

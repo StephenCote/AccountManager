@@ -48,7 +48,7 @@
 					</element>
 					<element name="statistics" type="tns:StatisticsType"></element>
 				</sequence>
-				<attribute name="password" type="string"></attribute>
+
 				<attribute name="sessionStatus"
 					type="Q1:SessionStatusEnumType" default="UNKNOWN">
 				</attribute>
