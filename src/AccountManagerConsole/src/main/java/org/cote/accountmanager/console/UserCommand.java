@@ -33,6 +33,7 @@ import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.PersonService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
@@ -50,11 +51,11 @@ public static final Logger logger = Logger.getLogger(UserCommand.class.getName()
 		try{
 		OrganizationType org = Factories.getOrganizationFactory().findOrganization(orgPath);
 		if(org != null){
-			UserType adminUser = SessionSecurity.login("Admin", SecurityUtil.getSaltedDigest(adminPassword), org);
+			UserType adminUser = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org);
 			if(adminUser != null){
 				AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, UserCommand.class.getName(), AuditEnumType.USER, "Admin");
 				AuditService.targetAudit(audit, AuditEnumType.USER, name);
-				out_bool = PersonService.createUserAsPerson(audit, name, SecurityUtil.getSaltedDigest(newPassword), email, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org);
+				out_bool = PersonService.createUserAsPerson(audit, name, newPassword, email, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org);
 				SessionSecurity.logout(adminUser);
 			}
 			else{

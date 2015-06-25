@@ -30,6 +30,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
@@ -38,14 +39,15 @@ import org.cote.accountmanager.util.SecurityUtil;
 public class OrganizationCommand {
 	public static final Logger logger = Logger.getLogger(OrganizationCommand.class.getName());
 
-	public static boolean deleteOrganization(String parentPath, String name, String adminPassword){
+	public static boolean deleteOrganization(String parentPath, String name, String adminPassword, boolean allowNoAuth){
 		boolean out_bool = false;
 		try{
 			String orgPath = parentPath + (parentPath.endsWith("/") ? "" : "/") + name;
 			OrganizationType org = Factories.getOrganizationFactory().findOrganization(orgPath);
 			if(org != null){
-				UserType adminUser = SessionSecurity.login("Admin", SecurityUtil.getSaltedDigest(adminPassword), org);
-				if(adminUser != null){
+				
+				UserType adminUser = (allowNoAuth ? null : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org));
+				if(allowNoAuth || adminUser != null){
 					logger.warn("Deleting " + org.getName());
 					Factories.getOrganizationFactory().deleteOrganization(org);
 					SessionSecurity.logout(adminUser);
@@ -68,19 +70,19 @@ public class OrganizationCommand {
 	
 		return out_bool;
 	}
-	public static boolean addOrganization(String parentPath, String name, String parentAdminPassword, String newPassword){
+	public static boolean addOrganization(String parentPath, String name, String parentAdminPassword, String newPassword,boolean allowNoAuth){
 		boolean out_bool = false;
 		try{
 		OrganizationType org = Factories.getOrganizationFactory().findOrganization(parentPath);
 		if(org != null){
 			OrganizationType uOrg = org;
 			if(uOrg.getName().equals("Global") && uOrg.getParentId().equals(0L)) uOrg = Factories.getSystemOrganization();
-			UserType adminUser = SessionSecurity.login("Admin", SecurityUtil.getSaltedDigest(parentAdminPassword), uOrg);
+			UserType adminUser = (allowNoAuth ? Factories.getUserFactory().getUserByName("Admin", uOrg) : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,parentAdminPassword, uOrg));
 			if(adminUser != null){
 				OrganizationType newOrg = Factories.getOrganizationFactory().addOrganization(name,OrganizationEnumType.PUBLIC,org);
-				if(newOrg != null && FactoryDefaults.setupOrganization(newOrg, SecurityUtil.getSaltedDigest(newPassword))){
+				if(newOrg != null && FactoryDefaults.setupOrganization(newOrg, newPassword)){
 					logger.info("Created organization " + name + " in " + org.getName());
-					UserType adminUser2 = SessionSecurity.login("Admin", SecurityUtil.getSaltedDigest(newPassword), newOrg);
+					UserType adminUser2 = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,newPassword, newOrg);
 					if(adminUser2 != null){
 						logger.info("Verified new administrator user");
 						SessionSecurity.logout(adminUser2);
