@@ -32,6 +32,9 @@ import org.cote.accountmanager.data.factory.bulk.BulkContactInformationParticipa
 import org.cote.accountmanager.data.factory.bulk.BulkDataFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkDataParticipationFactory;
 import org.cote.accountmanager.data.factory.BulkFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkAsymmetricKeyFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkControlFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkCredentialFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkFactFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkFunctionFactFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkFunctionFactory;
@@ -50,12 +53,17 @@ import org.cote.accountmanager.data.factory.bulk.BulkRoleParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkRuleFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkRuleParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkStatisticsFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkSymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkTagFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkTagParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkUserFactory;
 
 public class BulkFactories{
 	private static BulkFactory bulkFactory = null;
+	private static BulkAsymmetricKeyFactory bulkAsymmetricKeyFactory = null;
+	private static BulkSymmetricKeyFactory bulkSymmetricKeyFactory = null;
+	private static BulkControlFactory bulkControlFactory = null;
+	private static BulkCredentialFactory bulkCredentialFactory = null;
 	private static BulkAccountFactory bulkAccountFactory = null;
 	private static BulkPersonFactory bulkPersonFactory = null;
 	private static BulkContactFactory bulkContactFactory = null;
@@ -104,6 +112,34 @@ public class BulkFactories{
 			Factories.initializeFactory(bulkFunctionFactory);
 		}
 		return bulkFunctionFactory;
+	}
+	public static BulkCredentialFactory getBulkCredentialFactory() {
+		if(bulkCredentialFactory == null){
+			bulkCredentialFactory = new BulkCredentialFactory();
+			Factories.initializeFactory(bulkCredentialFactory);
+		}
+		return bulkCredentialFactory;
+	}
+	public static BulkAsymmetricKeyFactory getBulkAsymmetricKeyFactory() {
+		if(bulkAsymmetricKeyFactory == null){
+			bulkAsymmetricKeyFactory = new BulkAsymmetricKeyFactory();
+			Factories.initializeFactory(bulkAsymmetricKeyFactory);
+		}
+		return bulkAsymmetricKeyFactory;
+	}
+	public static BulkControlFactory getBulkControlFactory() {
+		if(bulkControlFactory == null){
+			bulkControlFactory = new BulkControlFactory();
+			Factories.initializeFactory(bulkControlFactory);
+		}
+		return bulkControlFactory;
+	}
+	public static BulkSymmetricKeyFactory getBulkSymmetricKeyFactory() {
+		if(bulkSymmetricKeyFactory == null){
+			bulkSymmetricKeyFactory = new BulkSymmetricKeyFactory();
+			Factories.initializeFactory(bulkSymmetricKeyFactory);
+		}
+		return bulkSymmetricKeyFactory;
 	}
 	public static BulkFunctionParticipationFactory getBulkFunctionParticipationFactory() {
 		if(bulkFunctionParticipationFactory == null){

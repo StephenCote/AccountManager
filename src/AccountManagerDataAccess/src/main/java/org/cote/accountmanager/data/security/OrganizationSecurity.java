@@ -41,22 +41,25 @@ import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.OrganizationType;
 
+/// TODO: 2015/06/23 - This entire class is being replaced by the KeyService and *KeyFactories.
+
 public class OrganizationSecurity {
-	
+	/// 2015/06/23
+	/// The whole key system is upgraded along with the new Credential and Control system in AM 5.1
+	/// This class is being deprecated
+	///
 	//// TODO: I don't like the general setup of organization-level key persistence since it pretty much makes it only good for a single set of organization-level ciphers and keys.
 	/// The general strategy for user-owned keys is to use DataType objects that are enciphered with the organization level keys
 	/// This is captured in the original .NET Vault implementation
 	/// The SessionSecurity implementation uses the spool to cache by-session cipher sets, but the implementation is still somewhat dirty on deciphering/validating
 	///
-	private static Map<Integer,SecurityBean> securityBeanMap = Collections.synchronizedMap(new HashMap<Integer,SecurityBean>());
-	public static void clearCache(){
-		securityBeanMap.clear();
-	}
-	
+
+	/*
 	/// 2013/09/14 - TODO: The first id lookup is unnecessary and should be a single query
 	///
 	public static SecurityBean getSecurityBean(OrganizationType organization)
 	{
+		return KeyService.get
 		SecurityBean out_bean = new SecurityBean();
 		if (securityBeanMap.containsKey(organization.getId())) return securityBeanMap.get(organization.getId());
 
@@ -255,7 +258,7 @@ public class OrganizationSecurity {
 		sf.generateSecretKey(securityBean);
 
 		
-		/* get DES Key and IV encrypted with RSA key */
+		/// get DES Key and IV encrypted with RSA key 
 		byte[] encrypted_des_key = securityBean.getEncryptedCipherKey();
 		byte[] encrypted_des_iv = securityBean.getEncryptedCipherIV();
 
@@ -266,10 +269,10 @@ public class OrganizationSecurity {
 
 		///DataTable symTable = DBFactory.getDataTable(connection, "symmetrickeys");
 
-		/* encipher org private DSA key with product des key */
+		/// encipher org private DSA key with product des key 
 		//byte[] enc_private_key = Default.SecurityManager.Encipher(private_key);
 
-		/* since the private key is encrypted with the product des key ,the des_key field is left out as it should be 0; alternately, it could be set to the record id of the des key used to encrypt the private key */
+		/// since the private key is encrypted with the product des key ,the des_key field is left out as it should be 0; alternately, it could be set to the record id of the des key used to encrypt the private key 
 		String sql = "INSERT INTO asymmetrickeys ("
 			+ "organizationid"
 			+ ",publickey"
@@ -333,5 +336,5 @@ public class OrganizationSecurity {
 		return ret;
 
 	}
-
+	*/
 }

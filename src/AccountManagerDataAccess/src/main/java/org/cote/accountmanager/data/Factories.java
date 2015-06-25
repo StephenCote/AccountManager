@@ -33,11 +33,14 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.AddressFactory;
+import org.cote.accountmanager.data.factory.AsymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.AttributeFactory;
 import org.cote.accountmanager.data.factory.AuditFactory;
 import org.cote.accountmanager.data.factory.ContactFactory;
 import org.cote.accountmanager.data.factory.ContactInformationFactory;
 import org.cote.accountmanager.data.factory.ContactInformationParticipationFactory;
+import org.cote.accountmanager.data.factory.ControlFactory;
+import org.cote.accountmanager.data.factory.CredentialFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.DataParticipationFactory;
 import org.cote.accountmanager.data.factory.FactFactory;
@@ -65,6 +68,7 @@ import org.cote.accountmanager.data.factory.SecurityTokenFactory;
 import org.cote.accountmanager.data.factory.SessionDataFactory;
 import org.cote.accountmanager.data.factory.SessionFactory;
 import org.cote.accountmanager.data.factory.StatisticsFactory;
+import org.cote.accountmanager.data.factory.SymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
@@ -89,6 +93,10 @@ public class Factories {
 	private static OrganizationType systemOrganization = null;
 	private static OrganizationType publicOrganization = null;
 	
+	private static AsymmetricKeyFactory asymmetricKeyFactory = null;
+	private static SymmetricKeyFactory symmetricKeyFactory = null;
+	private static CredentialFactory credentialFactory = null;
+	private static ControlFactory controlFactory = null;
 	private static FactFactory factFactory = null;
 	private static FunctionFactory functionFactory = null;
 	private static FunctionFactFactory functionFactFactory = null;
@@ -198,6 +206,34 @@ public class Factories {
 			initializeFactory(auditFactory);
 		}
 		return auditFactory;
+	}
+	public static AsymmetricKeyFactory getAsymmetricKeyFactory(){
+		if(asymmetricKeyFactory == null){
+			asymmetricKeyFactory = new AsymmetricKeyFactory();
+			initializeFactory(asymmetricKeyFactory);
+		}
+		return asymmetricKeyFactory;
+	}
+	public static SymmetricKeyFactory getSymmetricKeyFactory(){
+		if(symmetricKeyFactory == null){
+			symmetricKeyFactory = new SymmetricKeyFactory();
+			initializeFactory(symmetricKeyFactory);
+		}
+		return symmetricKeyFactory;
+	}
+	public static CredentialFactory getCredentialFactory(){
+		if(credentialFactory == null){
+			credentialFactory = new CredentialFactory();
+			initializeFactory(credentialFactory);
+		}
+		return credentialFactory;
+	}
+	public static ControlFactory getControlFactory(){
+		if(controlFactory == null){
+			controlFactory = new ControlFactory();
+			initializeFactory(controlFactory);
+		}
+		return controlFactory;
 	}
 	public static SessionDataFactory getSessionDataFactory(){
 		if(sessionDataFactory == null){
@@ -533,6 +569,10 @@ public class Factories {
 	}
 	
 	public static boolean clearCaches(){
+		getSymmetricKeyFactory().clearCache();
+		getAsymmetricKeyFactory().clearCache();
+		getControlFactory().clearCache();
+		getCredentialFactory().clearCache();
 		getFactFactory().clearCache();
 		getFunctionFactory().clearCache();
 		getFunctionFactFactory().clearCache();
@@ -568,6 +608,19 @@ public class Factories {
 	public static <T> T getBulkFactory(FactoryEnumType factoryType){
 		T fact = null;
 		switch(factoryType){
+			case SYMMETRICKEY:
+				fact = (T)BulkFactories.getBulkSymmetricKeyFactory();
+				break;
+			case ASYMMETRICKEY:
+				fact = (T)BulkFactories.getBulkAsymmetricKeyFactory();
+				break;
+			
+			case CREDENTIAL:
+				fact = (T)BulkFactories.getBulkCredentialFactory();
+				break;
+			case CONTROL:
+				fact = (T)BulkFactories.getBulkControlFactory();
+				break;
 			case FACT:
 				fact = (T)BulkFactories.getBulkFactFactory();
 				break;
@@ -661,6 +714,18 @@ public class Factories {
 	public static <T> T getFactory(FactoryEnumType factoryType){
 		T fact = null;
 		switch(factoryType){
+			case SYMMETRICKEY:
+				fact = (T)Factories.getSymmetricKeyFactory();
+				break;
+			case ASYMMETRICKEY:
+				fact = (T)Factories.getAsymmetricKeyFactory();
+				break;
+			case CREDENTIAL:
+				fact = (T)Factories.getCredentialFactory();
+				break;
+			case CONTROL:
+				fact = (T)Factories.getControlFactory();
+				break;
 			case FACT:
 				fact = (T)Factories.getFactFactory();
 				break;
