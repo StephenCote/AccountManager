@@ -24,6 +24,7 @@
 package org.cote.rest.services;
 
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -50,13 +51,19 @@ import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.AuthenticationRequestType;
+import org.cote.accountmanager.objects.AuthenticationResponseEnumType;
+import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -133,37 +140,49 @@ public class UserService{
 		}
 		return user;
 	}
-	@POST @Path("/postLogin") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public UserType postLogin(UserType inBean, @Context HttpServletRequest request, @Context HttpServletResponse response){
-		//UserType bean = null;
+	@POST @Path("/authenticate") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public AuthenticationResponseType authenticate(AuthenticationRequestType authRequest, @Context HttpServletRequest request, @Context HttpServletResponse response){
+		
 		String sessionId = request.getSession(true).getId();
-		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHENTICATE, "postLogin", AuditEnumType.SESSION, sessionId);
-		//logger.error(inBean.getName() + "/" + inBean.getPassword());
-		AuditService.targetAudit(audit, AuditEnumType.USER, inBean.getName());
-		if(inBean == null || inBean.getName() == null || inBean.getPassword() == null){
-			logger.error("Null name and/or password");
-			AuditService.denyResult(audit, "Invalid name or password");
-			return null;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHENTICATE, "authenticate", AuditEnumType.SESSION, sessionId);
+		AuthenticationResponseType authResponse = new AuthenticationResponseType();
+		authResponse.setSessionId(sessionId);
+		authResponse.setResponse(AuthenticationResponseEnumType.NOT_AUTHENTICATED);
+		AuditService.targetAudit(audit, AuditEnumType.USER, authRequest.getSubject());
+		if(authRequest == null || authRequest.getSubject() == null || authRequest.getCredential() == null || authRequest.getCredential().length == 0){
+			logger.error("Invalid authentication request");
+			AuditService.denyResult(audit, "Invalid authentication request");
+			authResponse.setMessage("Invalid arguments");
+			return authResponse;
 		}
-		if(inBean.getOrganization() == null) inBean.setOrganization(Factories.getPublicOrganization());
-		AuditService.targetAudit(audit, AuditEnumType.USER, inBean.getName() + " in " + inBean.getOrganization().getName());
+		if(authRequest.getOrganizationPath() == null) authRequest.setOrganizationPath("/Public");
+		AuditService.targetAudit(audit, AuditEnumType.USER, authRequest.getSubject() + " in " + authRequest.getOrganizationPath());
 		boolean requireSSL = Boolean.parseBoolean(request.getServletContext().getInitParameter("ssl.login.required"));
 		if(requireSSL && request.isSecure() == false){
 			AuditService.denyResult(audit, "Authentication requires a secure connection");
-			return null;
+			authResponse.setMessage("Secure connection required");
+			return authResponse;
+
 		}
-		String password_hash = SecurityUtil.getSaltedDigest(inBean.getPassword());
 		UserType user = null;
+
 		try{
-			//logger.error("Login: " + inBean.getName() + " / " + password_hash + " from " + inBean.getPassword());
-			user = SessionSecurity.login(sessionId, inBean.getName(), password_hash, inBean.getOrganization());
+			OrganizationType org = Factories.getOrganizationFactory().findOrganization(authRequest.getOrganizationPath());
+			if(org == null){
+				AuditService.denyResult(audit, "Invalid organization");
+				authResponse.setMessage("Authentication failed.");
+				return authResponse;
+			}
+			user = SessionSecurity.login(sessionId,authRequest.getSubject(), authRequest.getCredentialType(), new String(authRequest.getCredential(),"UTF-8"), org);
 			if(user != null){
-				Factories.getUserFactory().populate(user);
-				//bean = BeanUtil.getUserType(user);
+				//Factories.getUserFactory().populate(user);
+				authResponse.setResponse(AuthenticationResponseEnumType.AUTHENTICATED);
+				authResponse.setUser(user);
 				AuditService.permitResult(audit,"#" + user.getId());
 			}
 			else{
 				AuditService.denyResult(audit, "User not found");
+				authResponse.setMessage("Authentication failed.");
 			}
 		}
 		catch(FactoryException fe){
@@ -171,16 +190,21 @@ public class UserService{
 			fe.printStackTrace();
 			user = null;
 			AuditService.denyResult(audit, "Error: " + fe.getMessage());
+			authResponse.setMessage("An error occured.");
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 			user = null;
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			authResponse.setMessage("An error occured.");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		if(user != null) ServiceUtil.addCookie(response,"OrganizationId",Long.toString(user.getOrganization().getId()));
 		
-		return user;
+		return authResponse;
 	}
 	
 
@@ -255,110 +279,13 @@ public class UserService{
 	}
 	
 	
-	@GET @Path("/testConfirmRegistration/{id : [~%\\s0-9a-zA-Z\\/\\.\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public boolean testConfirmRegistration(@PathParam("id") String id,@Context HttpServletRequest request){
-
-		//String sessionId = request.getSession(true).getId();
-		SessionBean registrationSession = null;
-		
-		try {
-			registrationSession = BeanUtil.getSessionBean(Factories.getSessionFactory().getSession(id, Factories.getPublicOrganization()),id);
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
-		
-		if(registrationSession == null){
-			logger.error("Failed to find registration session id");
-			return false;
-		}
-		
-		String registrationId = registrationSession.getValue("registration-id");
-		if(registrationId == null){
-			logger.error("Failed to find registration id on session " + id);
-			return false;
-		}
-		
-		return RegistrationUtil.confirmUserRegistration(id, registrationId, request.getRemoteAddr(), request.getSession(true).getId());
-		
-	}
-	
-	@GET @Path("/testRegistration/{path : [~%\\s0-9a-zA-Z\\/]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public String testRegistration(@PathParam("path") String path,@Context HttpServletRequest request){
-
-		String sessionId = request.getSession(true).getId();
-		SessionBean ctxSession = null;
-		
-		boolean regEnabled = Boolean.parseBoolean(request.getServletContext().getInitParameter("test.registration.enabled"));
-		if(regEnabled == false){
-			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Registration", AuditEnumType.USER, "Random test registration");
-			AuditService.denyResult(audit, "Test Registration is disabled");
-			return null;
-		}
-
-		
-		OrganizationType org = null;
-		try {
-			org = Factories.getOrganizationFactory().findOrganization(path);
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
-		
-		if(org == null){
-			logger.error("Null organization");
-			return null;
-		}
-		
-		UserType testUser = new UserType();
-		testUser.setOrganization(org);
-		testUser.setName("TestRegistrationUser-" + UUID.randomUUID().toString());
-		testUser.setPassword(UUID.randomUUID().toString());
-		
-		ContactInformationType cit = new ContactInformationType();
-		ContactType email = new ContactType();
-		email.setContactType(ContactEnumType.EMAIL);
-		email.setLocationType(LocationEnumType.HOME);
-		email.setContactValue(UUID.randomUUID().toString() + "@nowhere.com");
-		email.setPreferred(true);
-		cit.getContacts().add(email);
-		testUser.setContactInformation(cit);
-	
-		UserSessionType session1 = RegistrationUtil.createUserRegistration(testUser, request.getRemoteAddr());
-		
-		if(session1 != null){
-			try{
-				ctxSession = BeanUtil.getSessionBean(SessionSecurity.getUserSession(sessionId, testUser.getOrganization()),sessionId);
-				ctxSession.setValue("registration-session-id", session1.getSessionId());
-				ctxSession.setValue("registration-organization-id", Long.toString(testUser.getOrganization().getId()));
-				Factories.getSessionFactory().updateData(ctxSession);
-			}
-			catch(FactoryException fe){
-				logger.error(fe.getMessage());
-				fe.printStackTrace();
-			}
-		}
-		else{
-			logger.error("Failed to create registration session");
-			return null;
-
-		}
-		return (session1 != null ? session1.getSessionId() : null);
-				///BeanUtil.getSessionBean(session1, (session1 == null ? null : session1.getSessionId()));
-	}
 	
 	@POST @Path("/postRegistration") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public SessionBean postRegistration(UserType user, @Context HttpServletRequest request){
 		//logger.error(request.getRemoteAddr());
 		String sessionId = request.getSession(true).getId();
 		SessionBean ctxSession = null;
-	
+
 		if(user.getOrganization() == null) user.setOrganization(Factories.getPublicOrganization());
 		
 		logger.error("Configuring registration for organization " + user.getOrganization().getName());
@@ -399,6 +326,7 @@ public class UserService{
 	
 	@POST @Path("/add") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean add(UserType bean,@Context HttpServletRequest request){
+		
 		return UserServiceImpl.add(bean, request);
 	}
 	
@@ -427,7 +355,6 @@ public class UserService{
 
 	}
 	@GET @Path("/listInOrganization/{orgId : [\\d]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	
 	public List<UserType> listInOrganization(@PathParam("orgId") long orgId,@PathParam("startIndex") long startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		OrganizationType org = null;
@@ -446,6 +373,51 @@ public class UserService{
 			return new ArrayList<UserType>();
 		}
 		return UserServiceImpl.getList(user, org, startIndex, recordCount );
+
+	}
+	
+	@POST @Path("/newPrimaryCredential") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean newPrimaryCredential(AuthenticationRequestType authReq,@Context HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "newPrimaryCredential", AuditEnumType.SESSION, request.getSession().getId());
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		boolean out_bool = false;
+		if(user == null) return out_bool;
+		CredentialType newCred = null;
+		try{
+			UserType updateUser = Factories.getUserFactory().getUserByName(authReq.getSubject(), user.getOrganization());
+			if(updateUser == null){
+				AuditService.denyResult(audit, "Target user " + authReq.getSubject() + " does not exist");
+				return out_bool;
+			}
+			/// If not account admin, then validate the current password
+			if(AuthorizationService.isAccountAdministratorInOrganization(user, user.getOrganization()) == false){
+				CredentialType currentCred = CredentialService.getPrimaryCredential(updateUser);
+				if(CredentialService.validatePasswordCredential(updateUser, currentCred, new String(authReq.getCheckCredential(),"UTF-8"))==false){
+					AuditService.denyResult(audit, "Failed to validate current credential");
+					return out_bool;
+				}
+			}
+			/// Create a new primary credential for target user
+			newCred = CredentialService.newCredential(authReq.getCredentialType(), null, updateUser, updateUser, authReq.getCredential(), true, true);
+		}
+		catch(FactoryException fe){
+			logger.error(fe.getMessage());
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(newCred != null){
+			AuditService.permitResult(audit, "Created a new primary credential");
+			out_bool = true;
+		}
+		else{
+			AuditService.denyResult(audit, "Failed to create new primary credential");
+		}
+		return out_bool;
 
 	}
 	

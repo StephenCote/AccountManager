@@ -47,6 +47,7 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.util.SecurityUtil;
@@ -171,7 +172,7 @@ public class AccountManagerLoginModule implements LoginModule {
         }
         
         OrganizationType orgType = null;
-        String password_hash = SecurityUtil.getSaltedDigest(password);
+       // String password_hash = SecurityUtil.getSaltedDigest(password);
         UserType user = null;
 
         try {
@@ -179,7 +180,7 @@ public class AccountManagerLoginModule implements LoginModule {
 	        if(orgType == null){
 	        	throw new LoginException("Organization is null for path: '" + orgPath);
 	        }
-			user = SessionSecurity.login(request.getSession(true).getId(),username, password_hash, orgType);
+			user = SessionSecurity.login(request.getSession(true).getId(),username, CredentialEnumType.HASHED_PASSWORD,password, orgType);
 
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block

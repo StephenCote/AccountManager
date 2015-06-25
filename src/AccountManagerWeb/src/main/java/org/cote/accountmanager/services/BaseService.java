@@ -325,9 +325,9 @@ public class BaseService{
 				
 			case USER:
 				UserType ubean = (UserType)in_obj;
-				UserType new_user = Factories.getUserFactory().newUser(ubean.getName(), SecurityUtil.getSaltedDigest(ubean.getPassword()), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, ubean.getOrganization());
-				new_user.setContactInformation(ubean.getContactInformation());
-				out_bool = Factories.getUserFactory().addUser(new_user);
+				UserType new_user = Factories.getUserFactory().newUser(ubean.getName(), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, ubean.getOrganization());
+				//new_user.setContactInformation(ubean.getContactInformation());
+				out_bool = Factories.getUserFactory().addUser(new_user,true);
 				break;
 			case DATA:
 				DataType rbean = (DataType)in_obj;
@@ -402,6 +402,7 @@ public class BaseService{
 				out_bool = Factories.getRoleFactory().updateRole((BaseRoleType)in_obj);
 				break;
 			case USER:
+				UserType tuser = (UserType)in_obj;
 				out_bool = Factories.getUserFactory().updateUser((UserType)in_obj);
 				break;
 			case DATA:
@@ -927,9 +928,14 @@ public class BaseService{
 	
 				break;
 			case DATA:
+				/*
 				out_bool = AuthorizationService.canChangeData(user, (DataType)obj);
-				/// If 
-				if(!out_bool) out_bool = AuthorizationService.canChangeGroup(user, ((DataType)obj).getGroup());
+				if(!out_bool)
+				*/
+				/// 2015/06/22 - Relaxing the direct data constraint for general group constraint
+				/// This is temporary to fix an issue where data can be pushed into groups a user doesn't own
+				/// 
+				out_bool = AuthorizationService.canChangeGroup(user, ((DataType)obj).getGroup());
 				break;
 			case USER:
 				// allow for user requesting self
@@ -1239,13 +1245,28 @@ public class BaseService{
 	
 	public static <T> boolean update(AuditEnumType type, T bean,HttpServletRequest request){
 		boolean out_bool = false;
+		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "update",AuditEnumType.SESSION, request.getSession(true).getId());
 		NameIdType dirBean = (NameIdType)bean;
 		AuditService.targetAudit(audit, type, (dirBean == null ? "null" : dirBean.getName()));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
+		
 		if(dirBean == null){
 			AuditService.denyResult(audit, "Null value");
+			return false;
+		}
+		/// 2015/06/22
+		/// Add in restriction to block ownership changes via an update
+		///
+		NameIdType matBean = readById(type,dirBean.getId(),request);
+		if(matBean == null){
+			AuditService.denyResult(audit, "Unable to read original object");
+			return false;
+		}
+
+		if(dirBean.getOwnerId().compareTo(matBean.getOwnerId()) != 0){
+			AuditService.denyResult(audit, "Chown operation is forbidden in an update operation");
 			return false;
 		}
 

@@ -69,7 +69,7 @@ public class CryptoService{
 		cBean.setCipherKey(bean.getCipherKey());
 		cBean.setCipherKeySpec(bean.getCipherKeySpec());
 		cBean.setCipherProvider(bean.getCipherProvider());
-		cBean.setSymetricCipherKeySpec(bean.getSymetricCipherKeySpec());
+		cBean.setSymmetricCipherKeySpec(bean.getSymmetricCipherKeySpec());
 		return cBean;
 	}
 

@@ -59,6 +59,7 @@ import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.services.BaseService;
 import org.cote.accountmanager.services.DataServiceImpl;
 import org.cote.accountmanager.util.AMCodeUtil;
+import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.GraphicsUtil;
 import org.cote.accountmanager.util.ServiceUtil;
@@ -66,9 +67,10 @@ import org.cote.accountmanager.util.StreamUtil;
 import org.cote.beans.MediaOptions;
 
 public class ArticleUtil {
-
+	public static Pattern headerLinkPattern = Pattern.compile("\\<h1(?:\\s*)\\>((.|\\n|\\r)*?)\\</h1(?:\\s*)\\>");
 	public static String articleTemplate = null;
 	public static String articleSectionTemplate = null;
+	public static String articleMetaDataTemplate = null;
 	public static String articleNavBackTemplate = null;
 	public static String articleNavForwardTemplate = null;
 	public static String getArticleTemplate(ServletContext context){
@@ -76,16 +78,25 @@ public class ArticleUtil {
 		articleTemplate = getResourceFromParam(context, "template.article");
 		return articleTemplate;
 	}
+	
 	public static String getArticleSectionTemplate(ServletContext context){
 		if(articleSectionTemplate != null) return articleSectionTemplate;
 		articleSectionTemplate = getResourceFromParam(context, "template.article.section");
 		return articleSectionTemplate;
 	}
+	
+	public static String getArticleMetaDataTemplate(ServletContext context){
+		if(articleMetaDataTemplate != null) return articleMetaDataTemplate;
+		articleMetaDataTemplate = getResourceFromParam(context, "template.article.meta");
+		return articleMetaDataTemplate;
+	}
+	
 	public static String getArticleNavBackTemplate(ServletContext context){
 		if(articleNavBackTemplate != null) return articleNavBackTemplate;
 		articleNavBackTemplate = getResourceFromParam(context, "template.article.navback");
 		return articleNavBackTemplate;
 	}
+	
 	public static String getArticleNavForwardTemplate(ServletContext context){
 		if(articleNavForwardTemplate != null) return articleNavForwardTemplate;
 		articleNavForwardTemplate = getResourceFromParam(context, "template.article.navforward");
@@ -104,10 +115,12 @@ public class ArticleUtil {
 		}
 		return out_str;
 	}
+	
 	public static String[] ARTICLE_ROLES = new String[]{
 		"BlogAuthor",
 		"ArticleAuthor"
 	};
+	
 	public static int MAX_RECORD_COUNT = 3;
 	/// Note: The patterns are different between the article and media utilities
 	/// The article patterns are simplified to reduce the URL length and make discovery simpler
@@ -260,7 +273,7 @@ public class ArticleUtil {
 		/// List Mode
 		String navBack = "";
 		String navForward = "";
-
+		boolean singleMode = false;
 		if(name == null || name.length() == 0){
 			String pageStr = request.getParameter("page");
 			int page = 0;
@@ -308,6 +321,7 @@ public class ArticleUtil {
 		}
 		/// Single mode
 		else{
+			singleMode = true;
 			DataType data = (DataType)BaseService.readByName(audit,AuditEnumType.DATA,user,dir,name,request);
 			if(data == null){
 				AuditService.denyResult(audit, "Null data returned for " + name);
@@ -336,16 +350,22 @@ public class ArticleUtil {
 		if(blogSubtitle == null) blogSubtitle = "";
 		
 		//template = template.replaceAll("%TITLE%", (name != null && name.length() > 0 ? name : blogTitle));
+		if(singleMode == false) template = template.replaceAll("%PAGETITLE%",blogTitle);
 		template = template.replaceAll("%TITLE%",blogTitle);
 		template = template.replaceAll("%SUBTITLE%", blogSubtitle);
 		template = template.replaceAll("%AUTHOR_USERNAME%",targUser.getName());
 		StringBuffer buff = new StringBuffer();
 
 		for(int i = 0; i < articleData.size();i++){
-			
 			String section = getArticleSectionTemplate(request.getServletContext());
+			String meta = getArticleMetaDataTemplate(request.getServletContext());
 			if(section == null || section.length() == 0){
 				AuditService.denyResult(audit, "Failed to load section template");
+				response.sendError(404);
+				return;
+			}
+			if(meta == null || meta.length() == 0){
+				AuditService.denyResult(audit, "Failed to load metadata template");
 				response.sendError(404);
 				return;
 			}
@@ -359,7 +379,23 @@ public class ArticleUtil {
 				if(contentDataStr.indexOf("[h1]") == -1) preface.append("[h1]" + data.getName() + "[/h1]");
 				if(contentDataStr.indexOf("[h2]") == -1 && data.getDescription() != null && data.getDescription().length() > 0) preface.append("[h2]" + data.getDescription() + "[/h2]");
 				String contentStr = AMCodeUtil.decodeAMCodeToHtml(preface.toString() + contentDataStr);
+				String linkUrl = "/AccountManager/Blog/" + targUser.getName() + "/" + data.getName();
+				Matcher headerM = headerLinkPattern.matcher(contentStr);
+				/// this is an error if it doesn't find because it was just added when missing
+				///
+				if(headerM.find()){
+					/// If single mode, change the page title to be that of the article
+					///
+					if(singleMode == true) template = template.replaceAll("%PAGETITLE%",headerM.group(1));
+					/// otherwise, add a link to the single instance
+					///
+					else contentStr = headerM.replaceFirst("<h1><a class = \"uwm-content-title-link\" href = \"" + linkUrl + "\">$1</a></h1>");
+				}
+				String metaStr = "Written by " + author + " on " + CalendarUtil.exportDateAsString(CalendarUtil.getDate(data.getCreatedDate()), "yyyy/MM/dd");
+				meta = meta.replace("%META%", metaStr);
+
 				section = section.replace("%CONTENT%", contentStr);
+				section = section.replace("%META%", meta);
 				buff.append(section + "\n");
 			} catch (DataException e) {
 				// TODO Auto-generated catch block
@@ -371,7 +407,8 @@ public class ArticleUtil {
 				e.printStackTrace();
 				
 			}
-		}
+
+		} /// end for
 		
 		template = template.replace("%NAVIGATION%",navBack + navForward);
 		template = template.replace("%CONTENT%", buff.toString());

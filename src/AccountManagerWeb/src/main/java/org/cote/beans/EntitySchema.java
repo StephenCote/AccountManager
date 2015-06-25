@@ -28,6 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.AttributeType;
+import org.cote.accountmanager.objects.AuthenticationRequestType;
+import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.AuthorizationPolicyType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -35,6 +37,7 @@ import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataTagSearchRequest;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -75,7 +78,9 @@ public class EntitySchema {
 	private AddressType addressType = null;
 	private OrganizationType organizationType = null;
 	private AttributeType attributeType = null;
-	
+	private CredentialType credentialType = null;
+	private AuthenticationRequestType authenticationRequestType = null;
+	private AuthenticationResponseType authenticationResponseType = null;
 	private PolicyDefinitionType policyDefinitionType = null;
 	private PolicyRequestType policyRequestType = null;
 	private PolicyResponseType policyResponseType = null;
@@ -92,6 +97,9 @@ public class EntitySchema {
 	private BaseTagType tagType = null;
 	private DataTagSearchRequest dataTagSearchRequest = null;
 	public EntitySchema(){
+		credentialType = new CredentialType();
+		authenticationRequestType = new AuthenticationRequestType();
+		authenticationResponseType = new AuthenticationResponseType();
 		dataTagSearchRequest = new DataTagSearchRequest();
 		tagType = new BaseTagType();
 		authorizationPolicyType = new AuthorizationPolicyType();
@@ -128,6 +136,44 @@ public class EntitySchema {
 	}
 
 	
+
+	public CredentialType getCredentialType() {
+		return credentialType;
+	}
+
+
+
+	public void setCredentialType(CredentialType credentialType) {
+		this.credentialType = credentialType;
+	}
+
+
+
+	public AuthenticationRequestType getAuthenticationRequestType() {
+		return authenticationRequestType;
+	}
+
+
+
+	public void setAuthenticationRequestType(
+			AuthenticationRequestType authenticationRequestType) {
+		this.authenticationRequestType = authenticationRequestType;
+	}
+
+
+
+	public AuthenticationResponseType getAuthenticationResponseType() {
+		return authenticationResponseType;
+	}
+
+
+
+	public void setAuthenticationResponseType(
+			AuthenticationResponseType authenticationResponseType) {
+		this.authenticationResponseType = authenticationResponseType;
+	}
+
+
 
 	public DataTagSearchRequest getDataTagSearchRequest() {
 		return dataTagSearchRequest;

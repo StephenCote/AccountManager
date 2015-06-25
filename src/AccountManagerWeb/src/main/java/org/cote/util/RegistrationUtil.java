@@ -112,7 +112,7 @@ public class RegistrationUtil {
 				return false;
 			}
 			String email = regSession.getValue("email");
-			out_bool = PersonService.createRegisteredUserAsPerson(audit, userName, SecurityUtil.getSaltedDigest(decPassword),email,regOrg);
+			out_bool = PersonService.createRegisteredUserAsPerson(audit, userName, decPassword,email,regOrg);
 			/*
 			UserType newUser = Factories.getUserFactory().newUser(userName,  SecurityUtil.getSaltedDigest(decPassword), UserEnumType.NORMAL, UserStatusEnumType.REGISTERED, regOrg);
 			if(Factories.getUserFactory().addUser(newUser, true)){
@@ -141,7 +141,6 @@ public class RegistrationUtil {
 		}
 		/// Regardless of the outcome, remove the request audit (to unlock the IP check), and the registration session
 		///
-		
 		try {
 			if(audits.length > 0) Factories.getAuditFactory().deleteAudit(audits[0]);
 			if(regSession != null) Factories.getSessionFactory().clearSession(regSession.getSessionId());
@@ -200,7 +199,7 @@ public class RegistrationUtil {
 			Factories.getSessionFactory().addSession(regSession);
 
 			//regSession = Factories.getSessionFactory().getSession(sessionId, Factories.getPublicOrganization());
-			String enc_password = OrganizationSecurityUtil.encipherString(user.getPassword(), user.getOrganization());
+			String enc_password = OrganizationSecurityUtil.encipherString(UUID.randomUUID().toString(), user.getOrganization());
 			//String enc_password = OrganizationSecurityUtil.encipherString(user.getPassword(), Factories.getPublicOrganization());
 			df.setValue(regSession, "remote-address", remoteAddr);
 			df.setValue(regSession, "registration-id", registrationId);
@@ -237,7 +236,7 @@ public class RegistrationUtil {
 			df.setValue(regSession, "password", null);
 			df.setValue(regSession, "userName", null);
 			regSession.getChangeSessionData().clear();
-			user.setPassword(null);
+
 			audit.setAuditSourceType(AuditEnumType.REGISTRATION);
 			AuditService.pendResult(audit, "Registration pending user acceptance");
 			System.out.println("Test: Audit target data = " + audit.getAuditTargetData());

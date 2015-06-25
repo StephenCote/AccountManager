@@ -26,6 +26,7 @@ package org.cote.util;
 import java.io.UnsupportedEncodingException;
 
 import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.util.BinaryUtil;
@@ -47,11 +48,12 @@ public class OrganizationSecurityUtil {
 		return out_str;
 	}
 	public static byte[] encipherBytes(byte[] inBytes, OrganizationType org){
-		SecurityBean secBean = OrganizationSecurity.getSecurityBean(org);
+		SecurityBean secBean = KeyService.getPrimarySymmetricKey(org);
 		return SecurityUtil.encipher(secBean, inBytes);
 	}
 	public static byte[] decipherBytes(byte[] inBytes, OrganizationType org){
-		SecurityBean secBean = OrganizationSecurity.getSecurityBean(org);
+		SecurityBean secBean = KeyService.getPrimarySymmetricKey(org); 
+				//OrganizationSecurity.getSecurityBean(org);
 		return SecurityUtil.decipher(secBean, inBytes);
 	}
 }
