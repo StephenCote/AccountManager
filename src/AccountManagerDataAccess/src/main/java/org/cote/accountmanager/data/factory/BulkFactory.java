@@ -53,6 +53,8 @@ import org.cote.accountmanager.objects.BulkEntryType;
 import org.cote.accountmanager.objects.BulkSessionType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.FunctionFactType;
@@ -344,6 +346,12 @@ public class BulkFactory {
 			
 			NameIdType object = objects.get(i);
 			switch(factoryType){
+				case CONTROL:
+					BulkFactories.getBulkControlFactory().updateControl((ControlType)object);
+					break;
+				case CREDENTIAL:
+					BulkFactories.getBulkCredentialFactory().updateCredential((CredentialType)object);
+					break;
 				case FACT:
 					BulkFactories.getBulkFactFactory().updateFact((FactType)object);
 					break;
