@@ -108,6 +108,8 @@
     <simpleType name="NameEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="SECURITY"></enumeration>
+    		<enumeration value="CREDENTIAL"></enumeration>
     		<enumeration value="ACCOUNT"></enumeration>
     		<enumeration value="ADDRESS"></enumeration>
     		<enumeration value="CONTACT"></enumeration>
@@ -349,6 +351,8 @@
     <simpleType name="AuditEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="CREDENTIAL"></enumeration>
+    		<enumeration value="CONTROL"></enumeration>
     		<enumeration value="ATTRIBUTE"></enumeration>
     		<enumeration value="PERSON"></enumeration>
     		<enumeration value="ADDRESS"></enumeration>
@@ -429,6 +433,8 @@
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
     		<enumeration value="PERMIT"></enumeration>
+    		<enumeration value="VALID"></enumeration>
+    		<enumeration value="INVALID"></enumeration>
     		<enumeration value="DENY"></enumeration>
     		<enumeration value="INFO"></enumeration>
     		<enumeration value="PENDING"></enumeration>
@@ -490,7 +496,11 @@
     <simpleType name="FactoryEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="SYMMETRICKEY"></enumeration>
+    		<enumeration value="ASYMMETRICKEY"></enumeration>
+    		<enumeration value="CONTROL"></enumeration>
     		<enumeration value="ACCOUNT"></enumeration>
+    		<enumeration value="CREDENTIAL"></enumeration>
     		<enumeration value="ADDRESS"></enumeration>
     		<enumeration value="CONTACT"></enumeration>
     		<enumeration value="DATA"></enumeration>

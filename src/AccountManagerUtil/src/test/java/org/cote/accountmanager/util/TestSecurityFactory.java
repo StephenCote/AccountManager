@@ -50,8 +50,8 @@ public class TestSecurityFactory {
 			kgen.init(128);
 
 			SecretKey secret_key = kgen.generateKey();
-			logger.info(bean.getSymetricCipherKeySpec());
-			Cipher cipher_key = Cipher.getInstance(bean.getSymetricCipherKeySpec());
+			logger.info(bean.getSymmetricCipherKeySpec());
+			Cipher cipher_key = Cipher.getInstance(bean.getSymmetricCipherKeySpec());
 			byte[] iv = {
 					64, 65, 66, 64, 65, 66, 78, 94,
 					64, 65, 66, 64, 65, 66, 78, 94
@@ -270,7 +270,7 @@ public class TestSecurityFactory {
 	public void testPassKey(){
 		SecurityBean bean = new SecurityBean();
 		//byte[] passphrase = SecurityUtil.getPassphraseBytes("the password");
-		byte[] salt = SecurityFactory.getSecurityFactory().getRandomSalt();
+		byte[] salt = SecurityUtil.getRandomSalt();
 		SecurityFactory.getSecurityFactory().setPassKey(bean, "The password", false);
 		String sourceText = "Example text";
 		logger.info("Enc Key = " + BinaryUtil.toBase64Str(bean.getCipherKey()));
@@ -334,7 +334,7 @@ public class TestSecurityFactory {
 		//byte[] passphrase = BinaryUtil.fromBase64("dGRwVmxOMnZaVTBVNHBoWQ==".getBytes());
 		///byte[] passphrase = SecurityUtil.getPassphraseBytes("the password");
 		String passphrase = "password password";
-		byte[] salt = SecurityFactory.getSecurityFactory().getRandomSalt();
+		byte[] salt = SecurityUtil.getRandomSalt();
 		logger.info("PASSPHRASE = " + new String(passphrase));
 		
 		SecurityFactory.getSecurityFactory().setPassKey(bean, passphrase, salt,false);

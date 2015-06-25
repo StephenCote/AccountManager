@@ -23,17 +23,12 @@
  *******************************************************************************/
 package org.cote.accountmanager.util;
 
-import java.math.BigInteger;
-import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Security;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.RSAPrivateKeySpec;
-import java.security.spec.RSAPublicKeySpec;
-import java.util.Arrays;
+import java.security.SecureRandom;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -43,25 +38,39 @@ import javax.crypto.SecretKey;
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.factory.SecurityFactory;
-import org.cote.accountmanager.objects.SecurityType;
-import org.w3c.dom.Document;
+
 
 public class SecurityUtil {
+
+	/// TODO: 2015/06/23 - Need to refactor salt references to use a CredentialType
+	///
+	private static int SALT_LENGTH = 16;
+	private static final SecureRandom random = new SecureRandom();
 	public static final Logger logger = Logger.getLogger(SecurityUtil.class.getName());
 	private static MessageDigest hash_algorithm = null;
+	
+	/// TODO: For CredentialType update, this will go away
+	///
 	private static String HASH_PROVIDER = "SHA-256";
+	
+	/// TODO: For CredentialType update, this will go away
+	///
 	private static String HASH_SALT = "aostnh234stnh;qk234;2354!@#$%10";
 	
-	/*
-	public static byte[] getPassphraseBytes(String passphrase){
-		String passphrase_tmp = getSaltedDigest(passphrase);
-		return Arrays.copyOf(getSaltedDigest(passphrase).getBytes(), 16);
+	public static byte[] getRandomSalt(){
+		byte[] salt = new byte [SALT_LENGTH];
+	    random.nextBytes (salt);
+	    return salt;
 	}
-	*/
+	
+
+	/// TODO: For CredentialType update, this will go away
+	///
 	public static String getSaltedDigest(String in_value)
 	{
 		if (in_value == null || in_value.length() == 0) return null;
 		return getDigestAsString(in_value + HASH_SALT);
+		
 	}
 	private static MessageDigest getMessageDigest(){
 		return getMessageDigest(false);
@@ -80,19 +89,37 @@ public class SecurityUtil {
 		return digest;
 	}
 
-	public static byte[] getDigest(byte[] in_bytes){
+	public static byte[] getDigest(byte[] in_bytes, byte[] salt){
 		MessageDigest digest = getMessageDigest();
-		
-
+		/// 2015/06/23 - Changed for CredentialType updated
+		///
+		digest.reset();
+		//if(salt.length > 0){
+			digest.update(salt);
+		//}
+		digest.digest(in_bytes);
+		digest.update(in_bytes,0,in_bytes.length);
+		return digest.digest();
+	}
+	public static byte[] getDigestOLDOLD(byte[] in_bytes, byte[] salt){
+		MessageDigest digest = getMessageDigest();
+		/*
+		 * TODO: For CredentialType update
+		digest.reset();
+		if(salt.length > 0){
+			digest.update(salt);
+		}
+		digest.digest(in_bytes);
+		*/
 		digest.update(in_bytes,0,in_bytes.length);
 		byte[] out_bytes = digest.digest();
 		return out_bytes;
 	}
 	public static String getDigestAsString(byte[] in_bytes){
-		return new String(BinaryUtil.toBase64(getDigest(in_bytes)));
+		return new String(BinaryUtil.toBase64(getDigestOLDOLD(in_bytes,new byte[0])));
 	}
 	public static String getDigestAsString(String in_str){
-		byte[] digest = getDigest(in_str.getBytes());
+		byte[] digest = getDigestOLDOLD(in_str.getBytes(),new byte[0]);
 		return new String(BinaryUtil.toBase64(digest));
 	}
 	public static SecurityBean getPasswordBean(String password, byte[] salt){
@@ -150,10 +177,11 @@ public class SecurityUtil {
 
 		byte[] ret = new byte[0];
 		if(key == null || data.length == 0){
+			logger.error("Invalid parameter - " + (key == null ? " Null key" : "Null data"));
 			return ret;
 		}
 		try{
-			Cipher cipher = Cipher.getInstance(bean.getAsymetricCipherKeySpec());
+			Cipher cipher = Cipher.getInstance(bean.getAsymmetricCipherKeySpec());
 			if(cipher == null){
 				logger.error("Null Cipher");
 				return ret;
@@ -164,6 +192,7 @@ public class SecurityUtil {
 			ret = cipher.doFinal(data);
 		}
 		catch(Exception e){
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -178,7 +207,7 @@ public class SecurityUtil {
 			return ret;
 		}
 		try{
-			Cipher cipher = Cipher.getInstance(bean.getAsymetricCipherKeySpec());
+			Cipher cipher = Cipher.getInstance(bean.getAsymmetricCipherKeySpec());
     	    cipher.init(Cipher.DECRYPT_MODE, key);
 			ret = cipher.doFinal(data);
 		}

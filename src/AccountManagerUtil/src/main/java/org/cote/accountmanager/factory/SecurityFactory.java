@@ -23,7 +23,6 @@
  *******************************************************************************/
 package org.cote.accountmanager.factory;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
@@ -36,21 +35,16 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAKeyGenParameterSpec;
-import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
@@ -59,8 +53,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.log4j.Logger;
-import org.bouncycastle.crypto.params.RSAKeyParameters;
-import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.SecurityUtil;
@@ -69,7 +61,7 @@ import org.w3c.dom.Document;
 
 public class SecurityFactory {
 	public static final Logger logger = Logger.getLogger(SecurityFactory.class.getName());
-	private static int SALT_LENGTH = 16;
+
 	private final byte[] defaultSalt = new byte[]{
 			110,41,-1,-64,-107,14,1,68,-127,-93,-110,-23,-73,-113,-98,-62
 	};
@@ -174,7 +166,7 @@ public class SecurityFactory {
 		buff.append("<RSAKeyValue>");
 		KeyFactory keyFactory;
 		try {
-			keyFactory = KeyFactory.getInstance(bean.getAsymetricCipherKeySpec());
+			keyFactory = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
 			RSAPublicKeySpec keySpec = keyFactory.getKeySpec(bean.getPublicKey(), RSAPublicKeySpec.class);
 			//RSAPrivateCrtKeySpec keySpec = keyFactory.getKeySpec(bean.getPrivateKey(), RSAPrivateCrtKeySpec.class);
 			buff.append("<Modulus>" + BinaryUtil.toBase64Str(keySpec.getModulus().toByteArray()) + "</Modulus>");
@@ -190,12 +182,9 @@ public class SecurityFactory {
 		buff.append("</RSAKeyValue>\r\n");
 		return buff.toString().getBytes();
 	}
-	public byte[] getRandomSalt(){
-		byte[] salt = new byte [SALT_LENGTH];
-	    SecureRandom rnd = new SecureRandom ();
-	    rnd.nextBytes (salt);
-	    return salt;
-	}
+
+	/// TODO: 2015/06/23 - Need to refactor to use a CredentialType
+	///
 	public void setPassKey(SecurityBean bean, String passKey, boolean encrypted_pass_key){
 	    //byte[] salt = getRandomSalt();
 		
@@ -214,7 +203,7 @@ public class SecurityFactory {
 			SecretKey tmp = factory.generateSecret(spec);
 			SecretKey secret = new SecretKeySpec(tmp.getEncoded(), bean.getCipherKeySpec());
 
-			Cipher cipher = Cipher.getInstance(bean.getSymetricCipherKeySpec());
+			Cipher cipher = Cipher.getInstance(bean.getSymmetricCipherKeySpec());
 			//cipher.init(Cipher.ENCRYPT_MODE, secret);
 			cipher.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(salt, 0, 16));
 			//IvParameterSpec ivSpec = new IvParameterSpec(cipher.doFinal(salt, 3, 16));
@@ -273,7 +262,7 @@ public class SecurityFactory {
 			dec_key = key;
 			dec_iv = iv;
 		}
-		bean.setSecretKey(new SecretKeySpec(dec_key, bean.getSymetricCipherKeySpec()));
+		bean.setSecretKey(new SecretKeySpec(dec_key, bean.getSymmetricCipherKeySpec()));
 		bean.setCipherIV(dec_iv);
 		bean.setCipherKey(dec_key);
 	}
@@ -281,7 +270,7 @@ public class SecurityFactory {
 	public void setPublicKey(SecurityBean bean, byte[] publicKey){
 		PublicKey pubKey = null;
 		try {
-			KeyFactory factory = KeyFactory.getInstance(bean.getAsymetricCipherKeySpec());
+			KeyFactory factory = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
     	   	X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKey);
 			pubKey = factory.generatePublic(x509KeySpec);
 		} catch (InvalidKeySpecException e) {
@@ -298,7 +287,7 @@ public class SecurityFactory {
 	public void setPrivateKey(SecurityBean bean, byte[] privateKey){
 		PrivateKey privKey = null;
 		try{
-	        KeyFactory k_fact = KeyFactory.getInstance(bean.getAsymetricCipherKeySpec());
+	        KeyFactory k_fact = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
 			PKCS8EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(privateKey);
 			privKey = k_fact.generatePrivate(privKeySpec);		
 		}
@@ -316,7 +305,7 @@ public class SecurityFactory {
 
 		PublicKey pubKey = null;
 		try {
-			KeyFactory factory = KeyFactory.getInstance(bean.getAsymetricCipherKeySpec());
+			KeyFactory factory = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
 			
 			RSAPublicKeySpec pubSpec = new RSAPublicKeySpec(modules, exponent);
 			pubKey = factory.generatePublic(pubSpec);
@@ -355,7 +344,7 @@ public class SecurityFactory {
 
 		PrivateKey priKey = null;
 		try {
-			KeyFactory factory = KeyFactory.getInstance(bean.getAsymetricCipherKeySpec());
+			KeyFactory factory = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
 			///Cipher cipher = Cipher.getInstance(ASYMETRIC_CIPHER_KEY_SPEC);
 			///String input = "test";
 
@@ -407,7 +396,7 @@ public class SecurityFactory {
 
 		Cipher cipher_key = null;
        try {
-		cipher_key = Cipher.getInstance(bean.getSymetricCipherKeySpec());
+		cipher_key = Cipher.getInstance(bean.getSymmetricCipherKeySpec());
 
 		int mode = Cipher.ENCRYPT_MODE;
 		if(decrypt) mode = Cipher.DECRYPT_MODE;
@@ -493,7 +482,7 @@ public class SecurityFactory {
 
 		boolean ret = false;
 		try{
-	        KeyPairGenerator key_gen = KeyPairGenerator.getInstance(bean.getAsymetricCipherKeySpec());
+	        KeyPairGenerator key_gen = KeyPairGenerator.getInstance(bean.getAsymmetricCipherKeySpec());
 	        key_gen.initialize(bean.getKeySize());
         	KeyPair key_pair = key_gen.generateKeyPair();
         	bean.setPublicKey(key_pair.getPublic());
