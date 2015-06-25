@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -38,15 +39,20 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
+import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
@@ -57,6 +63,12 @@ import org.cote.accountmanager.util.StreamUtil;
 
 public class ConsoleMain {
 	public static final Logger logger = Logger.getLogger(ConsoleMain.class.getName());
+	
+	/// This bit is provided to reset passwords without authenticating
+	/// This is to recover admin passwords lost to key rotations or, in this case
+	/// sweeping credential changes such as with the AM5.1 CredentialType system
+	///
+	public static boolean enableUnauthenticatedResets = true;
 	
 	public static void main(String[] args){
 		
@@ -85,7 +97,8 @@ public class ConsoleMain {
 		options.addOption("tag",false,"Apply the supplied tags");
 		options.addOption("file",true,"File reference");
 		options.addOption("batchSize",true,"Maximum data batch size");
-		
+		options.addOption("patch",false,"Patch the current system");
+		options.addOption("reset",false,"Bit indicating a reset operation");
 		options.addOption("name",true,"Variable name");
 		options.addOption("addUser",false,"Add a new user");
 		options.addOption("addOrganization",false,"Add a new organization");
@@ -111,7 +124,57 @@ public class ConsoleMain {
 			setupConnectionFactory(props);
 			
 			CommandLine cmd = parser.parse( options, args);
-			if(cmd.hasOption("setup") && cmd.hasOption("rootPassword") && cmd.hasOption("schema")){
+			if(cmd.hasOption("patch") && cmd.hasOption("organization")){
+				try {
+					OrganizationType org = Factories.getOrganizationFactory().findOrganization(cmd.getOptionValue("organization"));
+					if(org != null){
+						logger.info("Patching " + org.getName());
+						SecurityBean asymmKey = KeyService.getPrimaryAsymmetricKey(org);
+						if(asymmKey == null){
+							logger.info("Creating primary asymmetric key");
+							KeyService.newOrganizationAsymmetricKey(org, true);
+						}
+						else{
+							logger.info("Checked asymmetric key");
+						}
+						SecurityBean symmKey = KeyService.getPrimarySymmetricKey(org);
+						if(symmKey == null){
+							logger.info("Creating primary symmetric key");
+							KeyService.newOrganizationSymmetricKey(org, true);
+						}
+						else{
+							logger.info("Checked symmetric key");
+						}
+						List<UserType> users = Factories.getUserFactory().getUserList(0, 0, org);
+						logger.info("Checking " + users.size() + " users for valid credentials");
+						for(int i = 0; i < users.size();i++){
+							CredentialType cred = CredentialService.getPrimaryCredential(users.get(i));
+							if(cred == null){
+								if(users.get(i).getName().equals(Factories.getDocumentControlName())){
+									logger.info("Resetting Document Control credential");
+									CredentialService.newHashedPasswordCredential(users.get(i), users.get(i), UUID.randomUUID().toString(), true);
+								}
+								else{
+									logger.warn("Missing primary credential for " + users.get(i).getName() + " (#" + users.get(i).getId() + ")");
+								}
+							}
+						}
+
+					}
+					else{
+						logger.error("Organization does not exist");
+					}
+				} catch (FactoryException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.getMessage());
+					e.printStackTrace();
+				} catch (ArgumentException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			else if(cmd.hasOption("setup") && cmd.hasOption("rootPassword") && cmd.hasOption("schema")){
 				if(cmd.hasOption("confirm") == false){
 					logger.warn("Setting up Account Manager will completely replace the Account Manager schema.  Any data will be lost.  If you are sure, add the -confirm parameter and try again.");
 				}
@@ -126,28 +189,49 @@ public class ConsoleMain {
 				}
 			}
 			else if(cmd.hasOption("deleteOrganization") && cmd.hasOption("organization") && cmd.hasOption("name") && cmd.hasOption("adminPassword")){
-				OrganizationCommand.deleteOrganization(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"));
+				OrganizationCommand.deleteOrganization(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"),enableUnauthenticatedResets);
 			}
 			else if(cmd.hasOption("addOrganization") && cmd.hasOption("password") && cmd.hasOption("organization") && cmd.hasOption("adminPassword") && cmd.hasOption("name")){
-				OrganizationCommand.addOrganization(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("password"));
+				OrganizationCommand.addOrganization(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("password"),enableUnauthenticatedResets);
 			}
 			else if(cmd.hasOption("addUser") && cmd.hasOption("password") && cmd.hasOption("organization") && cmd.hasOption("adminPassword") && cmd.hasOption("name")){
 				UserCommand.addUser(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("password"), cmd.getOptionValue("email"));
 			}
-
 			else if(cmd.hasOption("organization") && cmd.hasOption("username") && cmd.hasOption("password")){
 				
 				try{
 					OrganizationType org = Factories.getOrganizationFactory().findOrganization(cmd.getOptionValue("organization"));
 					if(org != null){
-						String password_hash = SecurityUtil.getSaltedDigest(cmd.getOptionValue("password"));
-						UserType user = SessionSecurity.login(cmd.getOptionValue("username"), password_hash, org);
-						if(user != null){
-							processAction(user,cmd);
-							SessionSecurity.logout(user);
+						String password = cmd.getOptionValue("password");
+						if(cmd.hasOption("reset")){
+							if(enableUnauthenticatedResets == false){
+								logger.info("Unauthenticated password reset capability is disabled");
+							}
+							else{
+								UserType user = Factories.getUserFactory().getUserByName(cmd.getOptionValue("username"),org);
+								if(user != null){
+									if(password != null && password.length() > 5){
+										logger.info("Creating new primary credential");
+										CredentialType cred = CredentialService.newHashedPasswordCredential(user, user, password, true);
+									}
+									else{
+										logger.warn("Invalid password");
+									}
+								}
+								else{
+									logger.warn("User does not exist");
+								}
+							}
 						}
 						else{
-							logger.error("Invalid credentials for specified organization");
+							UserType user = SessionSecurity.login(cmd.getOptionValue("username"),CredentialEnumType.HASHED_PASSWORD, password, org);
+							if(user != null){
+								processAction(user,cmd);
+								SessionSecurity.logout(user);
+							}
+							else{
+								logger.error("Invalid credentials for specified organization");
+							}
 						}
 					}
 					else{
