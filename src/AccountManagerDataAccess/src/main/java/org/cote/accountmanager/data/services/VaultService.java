@@ -38,6 +38,7 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
@@ -84,6 +85,8 @@ import org.cote.accountmanager.util.ZipUtil;
 		
 		private byte[] dataCipher = new byte[0];
 		
+		/// TODO: For CredentialType update, this will go away
+		///
 		private static byte[] defaultSalt = new byte[]{
 			-124,-25,48,114,-70,-7,-26,31,18,10,40,44,64,-97,27,-39
 		};
@@ -153,6 +156,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			if(vaultPath == null || vaultPath.length() == 0) throw new ArgumentException("Invalid base path");
 
 			symmetric_keys = new HashMap<String, SecurityBean>();
+			logger.info("Initializing Vault Service In " + vaultPath);
 			if (FileUtil.makePath(vaultPath) == false)
 			{
 				throw new ArgumentException("Unable to create path to " + vaultPath);
@@ -214,7 +218,8 @@ import org.cote.accountmanager.util.ZipUtil;
 			byte[] config_bytes = FileUtil.getFile(vaultKeyPath);
 			if (config_bytes.length == 0) return false;
 
-			SecurityBean org_sm = OrganizationSecurity.getSecurityBean(organization);
+			SecurityBean org_sm = KeyService.getPrimarySymmetricKey(organization);
+					//OrganizationSecurity.getSecurityBean(organization);
 			
 			byte[] dec_config = SecurityUtil.decipher(org_sm,  config_bytes);
 			dec_config = SecurityUtil.decipher(dec_config, password,getSalt());
@@ -246,7 +251,8 @@ import org.cote.accountmanager.util.ZipUtil;
 						byte[] config_bytes = FileUtil.getFile(this.vaultKeyPath);
 						if (config_bytes.length == 0) return null;
 						//Core.Tools.Security.SecurityManager org_sm = (Core.Tools.Security.SecurityManager)product.SecurityManager;
-						SecurityBean org_sm = OrganizationSecurity.getSecurityBean(organization);
+						SecurityBean org_sm = KeyService.getPrimarySymmetricKey(organization); 
+								///OrganizationSecurity.getSecurityBean(organization);
 						byte[] dec_config = SecurityUtil.decipher(org_sm,config_bytes);
 						if (passwordProtected) dec_config = SecurityUtil.decipher(dec_config, password,getSalt());
 						if (dec_config.length == 0) return null;
@@ -360,7 +366,8 @@ import org.cote.accountmanager.util.ZipUtil;
 
 			// Encipher with product key
 			//
-			SecurityBean org_sm = OrganizationSecurity.getSecurityBean(organization);
+			SecurityBean org_sm = KeyService.getPrimarySymmetricKey(organization); 
+					//OrganizationSecurity.getSecurityBean(organization);
 			byte[] enc_private_key = SecurityUtil.encipher(org_sm,private_key_config);
 			FileUtil.emitFile(vaultKeyPath, enc_private_key);
 

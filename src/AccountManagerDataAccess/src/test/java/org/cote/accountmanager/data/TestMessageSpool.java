@@ -40,51 +40,16 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-public class TestMessageSpool{
+public class TestMessageSpool extends BaseDataAccessTest{
 	public static final Logger logger = Logger.getLogger(TestMessageSpool.class.getName());
-	private static String testUserName1 = "DebugMessageUser";
-	private UserType messageUser = null;
-	
-	@Before
-	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName("org.postgresql.Driver");
-		cf.setUserName("devuser");
-		cf.setUserPassword("password");
-		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
-		
-		try{
-			messageUser = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
-			if(messageUser == null){
-				UserType new_user = Factories.getUserFactory().newUser(testUserName1, SecurityUtil.getSaltedDigest("password1"), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
-				if(Factories.getUserFactory().addUser(new_user,  false)){
-					messageUser = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
-				}
-			}
-		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-		}
-		logger.info("Setup");
-	}
 
-	@After
-	public void tearDown() throws Exception {
-	}
-	
 	@Test
 	public void testInsertMessage(){
-		assertNotNull("User is null", messageUser);
+		assertNotNull("User is null", testUser);
 		MessageSpoolType message = null;
 		boolean add_message = false;
 		try{
-			message = Factories.getMessageFactory().newMessage(messageUser);
+			message = Factories.getMessageFactory().newMessage(testUser);
 			message.setName("testInsertMessage");
 			add_message = Factories.getMessageFactory().addMessage(message);
 		}
@@ -100,10 +65,10 @@ public class TestMessageSpool{
 	
 	@Test
 	public void testGetMessages(){
-		assertNotNull("User is null", messageUser);
+		assertNotNull("User is null", testUser);
 		List<MessageSpoolType> messages = new ArrayList<MessageSpoolType>();
 		try{
-			messages = Factories.getMessageFactory().getMessagesFromUserGroup(SpoolNameEnumType.GENERAL, messageUser);
+			messages = Factories.getMessageFactory().getMessagesFromUserGroup(SpoolNameEnumType.GENERAL, testUser);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -118,20 +83,20 @@ public class TestMessageSpool{
 	public void testGetMessagesAfterNow(){
 		Calendar now = Calendar.getInstance();
 		//now.add(Calendar.HOUR, 7);
-		assertNotNull("User is null", messageUser);
+		assertNotNull("User is null", testUser);
 		
 		MessageSpoolType message = null;
 		boolean add_message = false;
 		List<MessageSpoolType> messages = new ArrayList<MessageSpoolType>();
 		try{
-			message = Factories.getMessageFactory().newMessage(messageUser);
+			message = Factories.getMessageFactory().newMessage(testUser);
 			message.setName("testMessageByDate");
 			add_message = Factories.getMessageFactory().addMessage(message);
 			assertTrue(add_message);
 			XMLGregorianCalendar xCal = CalendarUtil.getXmlGregorianCalendar(now.getTime());
 			Date xCalCheck = CalendarUtil.getDate(xCal);
 			logger.info(xCal.toString() + " :: " + xCalCheck.toString());
-			messages = Factories.getMessageFactory().getMessagesAfterDate(SpoolNameEnumType.GENERAL, xCal, 0, messageUser.getOrganization());
+			messages = Factories.getMessageFactory().getMessagesAfterDate(SpoolNameEnumType.GENERAL, xCal, 0, testUser.getOrganization());
 			
 		}
 		catch(FactoryException fe){
@@ -146,10 +111,10 @@ public class TestMessageSpool{
 	
 	@Test
 	public void testUpdateMessage(){
-		assertNotNull("User is null", messageUser);
+		assertNotNull("User is null", testUser);
 		List<MessageSpoolType> messages = new ArrayList<MessageSpoolType>();
 		try{
-			messages = Factories.getMessageFactory().getMessagesFromUserGroup(SpoolNameEnumType.GENERAL, messageUser);
+			messages = Factories.getMessageFactory().getMessagesFromUserGroup(SpoolNameEnumType.GENERAL, testUser);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -173,10 +138,10 @@ public class TestMessageSpool{
 	
 	@Test
 	public void testDeleteMessages(){
-		assertNotNull("User is null", messageUser);
+		assertNotNull("User is null", testUser);
 		boolean deleted = false;
 		try{
-			deleted = Factories.getMessageFactory().deleteMessagesInGroup(SpoolNameEnumType.GENERAL, Factories.getMessageFactory().getUserMessagesGroup(messageUser));
+			deleted = Factories.getMessageFactory().deleteMessagesInGroup(SpoolNameEnumType.GENERAL, Factories.getMessageFactory().getUserMessagesGroup(testUser));
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());

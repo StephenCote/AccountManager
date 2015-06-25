@@ -90,7 +90,18 @@ public class AuditService {
 		audit.setAuditResultData(msg);
 		add(audit);
 	}
+	public static void validateResult(AuditType audit, String msg){
+		audit.setAuditResultType(ResponseEnumType.VALID);
+		audit.setAuditResultData(msg);
+		add(audit);
+	}
 	
+	public static void invalidateResult(AuditType audit, String msg){
+		audit.setAuditResultType(ResponseEnumType.INVALID);
+		audit.setAuditLevelType(LevelEnumType.WARNING);
+		audit.setAuditResultData(msg);
+		add(audit);
+	}
 	public static void permitResult(AuditType audit, String msg){
 			audit.setAuditResultType(ResponseEnumType.PERMIT);
 			audit.setAuditResultData(msg);

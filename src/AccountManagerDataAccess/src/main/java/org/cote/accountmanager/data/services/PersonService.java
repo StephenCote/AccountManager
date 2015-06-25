@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -31,9 +32,11 @@ import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonType;
@@ -80,9 +83,14 @@ public class PersonService {
 			/// I'm leaving it as-is for the moment.  If it's going to be any more robust, it may as well just be an LDAP,
 			/// And making an LDAP isn't the goal.
 			///
-			UserType newUser = Factories.getUserFactory().newUser(userName,  password, userType, userStatus, org);
+			UserType newUser = Factories.getUserFactory().newUser(userName,  userType, userStatus, org);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, newUser);
 			
+			/// 2015/06/23 - New Credential System
+			/// I intentionally left the credential operation decoupled from object creation
+			///
+			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,newUser, newUser, password.getBytes("UTF-8"), true,true);
+
 			PersonType newPerson = Factories.getPersonFactory().newPerson(newUser,pDir);
 			newPerson.setName(userName);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, newPerson);
@@ -126,6 +134,10 @@ public class PersonService {
 			logger.error("Error creating user " + userName + ": " + e.getMessage());
 			e.printStackTrace();
 
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
 		return out_bool;
 	}

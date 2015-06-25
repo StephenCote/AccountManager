@@ -43,6 +43,7 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -92,8 +93,8 @@ public class OrganizationFactory extends NameIdFactory {
 
 		if (deleted > 0)
 		{
-			OrganizationSecurity.deleteSecurityKeys(organization);
-			
+			//OrganizationSecurity.deleteSecurityKeys(organization);
+			KeyService.deleteKeys(organization);
 			Connection conn = ConnectionFactory.getInstance().getConnection();
 			CONNECTION_TYPE connection_type = DBFactory.getConnectionType(conn);
 			try {
@@ -221,7 +222,7 @@ public class OrganizationFactory extends NameIdFactory {
 				//System.out.println("Inserted row");
 				new_org = getOrganizationByName(new_org.getName(), new_org.getParentId());
 				//System.out.println("Got new org: " + (new_org == null ? "NULL" : new_org.getId()));
-				if(OrganizationSecurity.generateSecurityKeys(new_org) == false){
+				if(KeyService.newOrganizationAsymmetricKey(new_org, true) == null){
 					throw new FactoryException("Unable to generate organization security keys for " + new_org.getName() + "(#" + new_org.getId() + ")");
 				}
 				Factories.getGroupFactory().addDefaultGroups(new_org);

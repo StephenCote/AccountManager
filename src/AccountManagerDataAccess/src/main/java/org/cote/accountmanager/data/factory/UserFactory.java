@@ -62,7 +62,8 @@ import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 
 
-
+// 2015/06/23 - Refactored to strip passwords off the user object
+//
 public class UserFactory extends NameIdFactory {
 	
 	public UserFactory(){
@@ -88,6 +89,9 @@ public class UserFactory extends NameIdFactory {
 	}
 	public boolean updateUser(UserType user) throws FactoryException{
 		removeFromCache(user);
+		/// Refactor into external credential capability 
+		///
+		//if(user.getPassword() != null && user.getPassword().length() < 42) throw new FactoryException("Password hash is not strong enough.  Must be at least 42 characters");
 		boolean b =  update(user);
 		
 		/// 2014/09/10
@@ -103,6 +107,17 @@ public class UserFactory extends NameIdFactory {
 			}
 		}
 		return b;
+	}
+	@Override
+	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
+		UserType user = (UserType)map;
+		/*
+		if(user.getPassword() != null){
+			fields.add(QueryFields.getFieldPassword(user.getPassword()));
+			user.setPassword(null);
+		}
+		*/
+
 	}
 	@Override
 	public <T> String getCacheKeyName(T obj){
@@ -121,9 +136,11 @@ public class UserFactory extends NameIdFactory {
 		if(table.getName().equalsIgnoreCase("userid")){
 			table.setRestrictUpdateColumn("userid", true);
 		}
+		/*
 		if(table.getName().equalsIgnoreCase("password")){
 			table.setRestrictSelectColumn("password", true);
 		}
+		*/
 	}
 	public boolean deleteUser(UserType user) throws FactoryException, ArgumentException
 	{
@@ -153,17 +170,17 @@ public class UserFactory extends NameIdFactory {
 		}
 		return (deleted > 0);
 	}
-	public UserType newUserForAccount(String name, String hashed_password, AccountType account) throws FactoryException{
-		UserType user = newUser(name, hashed_password, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, account.getOrganization());
+	public UserType newUserForAccount(String name, AccountType account) throws FactoryException{
+		UserType user = newUser(name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, account.getOrganization());
 		user.setAccountId(account.getId());
 		return user;
 	}
-	public UserType newUserForAccount(String name, String hashed_password, AccountType account, UserEnumType type, UserStatusEnumType status) throws FactoryException{
-		UserType user = newUser(name, hashed_password, type, status, account.getOrganization());
+	public UserType newUserForAccount(String name, AccountType account, UserEnumType type, UserStatusEnumType status) throws FactoryException{
+		UserType user = newUser(name, type, status, account.getOrganization());
 		user.setAccountId(account.getId());
 		return user;
 	}
-	public UserType newUser(String name, String hashed_password, UserEnumType type, UserStatusEnumType status, OrganizationType organization)
+	public UserType newUser(String name, UserEnumType type, UserStatusEnumType status, OrganizationType organization)
 	{
 		UserType new_user = new UserType();
 		new_user.setNameType(NameEnumType.USER);
@@ -171,7 +188,6 @@ public class UserFactory extends NameIdFactory {
 		new_user.setUserType(type);
 		new_user.setOrganization(organization);
 		new_user.setName(name);
-		new_user.setPassword(hashed_password);
 		new_user.setUserId(UUID.randomUUID().toString());
 		return new_user;
 	}
@@ -215,7 +231,7 @@ public class UserFactory extends NameIdFactory {
 	public boolean addUser(UserType new_user, boolean allot_contact_info) throws FactoryException, ArgumentException
 	{
 		if (new_user.getOrganization() == null || new_user.getOrganization().getId() <= 0) throw new FactoryException("Cannot add user to invalid organization");
-		if(new_user.getPassword() == null || new_user.getPassword().length() < 42) throw new FactoryException("Password hash is not strong enough.  Must be at least 42 characters");;
+		//if(new_user.getPassword() == null || new_user.getPassword().length() < 42) throw new FactoryException("Password hash is not strong enough.  Must be at least 42 characters");;
 		if (!bulkMode && getUserNameExists(new_user.getName(), new_user.getOrganization()))
 		{
 			throw new FactoryException("User name " + new_user.getName() + " already exists");
@@ -224,14 +240,21 @@ public class UserFactory extends NameIdFactory {
 		try{
 			row.setCellValue("userstatus", new_user.getUserStatus().toString());
 			row.setCellValue("usertype", new_user.getUserType().toString());
-			row.setCellValue("password", new_user.getPassword());
+			//row.setCellValue("password", new_user.getPassword());
+			/// TODO: Need to refactor into external credential system
+			/// Once the new password data is read, destroy it so it isn't cached
+			///
+			//new_user.setPassword(null);
 			row.setCellValue("accountid", new_user.getAccountId());
 			row.setCellValue("userid",new_user.getUserId());
+
 			if (insertRow(row)){
+				
 				new_user = (bulkMode ? new_user : getUserByName(new_user.getName(), new_user.getOrganization()));
 				if(new_user == null) throw new FactoryException("Failed to retrieve new user object");
 				StatisticsType stats = Factories.getStatisticsFactory().newStatistics(new_user);
 				DirectoryGroupType home_dir = Factories.getGroupFactory().newDirectoryGroup(new_user, new_user.getName(), Factories.getGroupFactory().getHomeDirectory(new_user.getOrganization()), new_user.getOrganization());
+				String sessionId = null;
 				if(bulkMode){
 					
 					BulkFactories.getBulkFactory().setDirty(FactoryEnumType.STATISTICS);
@@ -240,13 +263,13 @@ public class UserFactory extends NameIdFactory {
 					BulkFactories.getBulkGroupFactory().addGroup(home_dir);
 					if(allot_contact_info){
 						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_user);
-						if(new_user.getId() > 0){
+						if(new_user.getId() > 0L){
 							BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATION);
 							BulkFactories.getBulkContactInformationFactory().addContactInformation(cinfo);
 						}
 						else{
 							if(this.factoryType == FactoryEnumType.UNKNOWN) throw new FactoryException("Invalid Factory Type for Bulk Identifiers");
-							String sessionId = BulkFactories.getBulkFactory().getSessionForBulkId(new_user.getId());
+							sessionId = BulkFactories.getBulkFactory().getSessionForBulkId(new_user.getId());
 							if(sessionId == null){
 								logger.error("Invalid bulk session id");
 								throw new FactoryException("Invalid bulk session id");
@@ -272,6 +295,10 @@ public class UserFactory extends NameIdFactory {
 					}
 					new_user.setStatistics(stats);
 				}
+				/// re-read home dir to get the right id / bulk id
+				///
+				home_dir = Factories.getGroupFactory().getDirectoryByName(new_user.getName(), Factories.getGroupFactory().getHomeDirectory(new_user.getOrganization()), new_user.getOrganization());
+				Factories.getGroupFactory().addDefaultUserGroups(new_user, home_dir, sessionId);
 				return true;
 			}
 		}

@@ -38,6 +38,9 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.ContactInformationType;
+import org.cote.accountmanager.objects.ControlActionEnumType;
+import org.cote.accountmanager.objects.ControlEnumType;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FunctionEnumType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -286,6 +289,10 @@ public class QueryFields {
 	{
 		return getStringField("hash", val);
 	}
+	public static QueryField getFieldHashProvider(String hash)
+	{
+		return getStringField("hashprovider",hash);
+	}
 	public static QueryField getFieldCreatedDate(XMLGregorianCalendar val)
 	{
 		return getTimestampField("createddate", val);
@@ -349,6 +356,7 @@ public class QueryFields {
 	{
 		return getFieldName(map.getName());
 	}
+
 	public static QueryField getFieldName(String name)
 	{
 		return getStringField("name",name);
@@ -667,9 +675,67 @@ public class QueryFields {
 	public static QueryField getFieldAuditTargetData(String audit_data){
 		return getStringField("audittargetdata",audit_data);
 	}
+	public static QueryField getFieldReferenceType(FactoryEnumType type){
+		return getStringField("referencetype",type.toString());
+	}
 	public static QueryField getFieldReferenceType(NameEnumType type){
 		return getStringField("referencetype",type.toString());
 	}
+	public static QueryField getFieldControlType(ControlEnumType type){
+		return getStringField("controltype",type.toString());
+	}
+	public static QueryField getFieldControlId(long id){
+		return getBigIntField("controlid",id);
+	}
+	public static QueryField getFieldControlAction(ControlActionEnumType type){
+		return getStringField("controlaction",type.toString());
+	}
+	public static QueryField getFieldGlobalKey(boolean b)
+	{
+		return getBooleanField("globalkey", b);
+	}
+	public static QueryField getFieldOrganizationKey(boolean b)
+	{
+		return getBooleanField("organizationkey", b);
+	}
+	public static QueryField getFieldPrimaryCredential(boolean b)
+	{
+		return getBooleanField("primarycredential", b);
+	}
+	public static QueryField getFieldPrimaryKey(boolean b)
+	{
+		return getBooleanField("primarykey", b);
+	}
+	public static QueryField getFieldPreviousKeyId(long b)
+	{
+		return getBigIntField("previouskeyid", b);
+	}
+	public static QueryField getFieldAsymmetricKeyId(long b)
+	{
+		return getBigIntField("asymmetrickeyid", b);
+	}
+	public static QueryField getFieldSymmetricKeyId(long b)
+	{
+		return getBigIntField("symmetrickeyid", b);
+	}
+	public static QueryField getFieldPreviousCredentialId(long id){
+		return getBigIntField("previouscredentialid",id);
+	}
+	public static QueryField getFieldNextCredentialId(long id){
+		return getBigIntField("nextcredentialid",id);
+	}
+	public static QueryField getFieldCredentialType(CredentialEnumType type){
+		return getStringField("credentialtype",type.toString());
+	}
+	public static QueryField getFieldCredential(byte[] val)
+	{
+		return getBytesField("credential", val);
+	}
+	public static QueryField getFieldSalt(byte[] val)
+	{
+		return getBytesField("salt", val);
+	}
+
 	public static QueryField getFieldReferenceType(SqlDataEnumType type){
 		return getStringField("datatype",type.toString());
 	}

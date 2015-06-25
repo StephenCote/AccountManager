@@ -15,6 +15,7 @@ import org.cote.accountmanager.data.services.PersonService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
@@ -113,7 +114,7 @@ public class TestUserRegistration{
 	@Test
 	public void TestRegisterNewUser(){
 		String userName = "TestUser-" + UUID.randomUUID().toString();
-		String password = SecurityUtil.getSaltedDigest("password");
+		String password = "password";
 		String email = UUID.randomUUID().toString() + "@nowhere.no";
 		AuditType audit = AuditService.beginAudit(ActionEnumType.REQUEST, "Register", AuditEnumType.USER, userName);
 		AuditService.targetAudit(audit, AuditEnumType.USER, userName);
@@ -122,7 +123,7 @@ public class TestUserRegistration{
 		
 		UserType user = null;
 		try {
-			user = SessionSecurity.login(UUID.randomUUID().toString(), userName, password, Factories.getDevelopmentOrganization());
+			user = SessionSecurity.login(UUID.randomUUID().toString(), userName, CredentialEnumType.HASHED_PASSWORD,password, Factories.getDevelopmentOrganization());
 			assertNotNull("Failed to login with new user", user);
 			
 			PersonType person = Factories.getPersonFactory().getPersonByUser(user);

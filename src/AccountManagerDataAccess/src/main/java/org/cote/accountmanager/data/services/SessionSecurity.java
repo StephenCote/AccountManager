@@ -33,6 +33,9 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.StatisticsType;
@@ -50,6 +53,12 @@ public class SessionSecurity {
 	//
 	private static int maxSessionTime = 6;
 	
+	// Enable legacy password lookup
+	//
+	private static boolean enableLegacyPasswordAuthentication = false;
+	public static void setEnableLegacyPasswordAuthentication(boolean b){
+		enableLegacyPasswordAuthentication = b;
+	}
 	public static boolean isAuthenticated(UserType user){
 		if(user == null) return false;
 		/// NOTE: Document Control is the user through with anonymous data requests may be proxied
@@ -140,66 +149,81 @@ public class SessionSecurity {
 
 		return out_bool;
 	}
-	public static UserType login(String user_name, String password_hash, OrganizationType organization) throws FactoryException, ArgumentException
+	/*
+	public static UserType legacyLogin(String user_name, String password_hash, OrganizationType organization) throws FactoryException, ArgumentException
 	{
-		return login(UUID.randomUUID().toString(), user_name, password_hash, organization);
+		return legacyLogin(UUID.randomUUID().toString(), user_name, password_hash, organization);
 	}
-	public static UserType login(String session_id, String user_name, String password_hash, OrganizationType organization) throws FactoryException, ArgumentException
-	{
-		if (session_id == null) throw new FactoryException("Session is null");
-		UserSessionType session = Factories.getSessionFactory().getCreateSession(session_id, organization);
-				//SecureAccessLayer.GetCreateSession(session_id);
-		return login(session, user_name, password_hash,organization);
-	}
-	public static UserType login(UserSessionType session, String user_name, String password_hash, OrganizationType organization) throws FactoryException, ArgumentException{
-		UserType user = null;
-		
-		if (session == null)
-		{
-			throw new FactoryException("New session was not allocated for account '" + user_name + "'");
-		}
-		if(user_name == null || password_hash == null || organization == null){
-			throw new ArgumentException("One or more arguments were null");
-		}
-		
-		/*
-		if (session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED)) user = Factories.getUserFactory().getUserBySession(session);
-		
-		
-	 	//2014/03/17 - Removed - this was causing a problem when logging out /in as the same user in the same session
-		logger.info("User: " + (user == null ? "Null User" : user.getName()));
-		logger.info("Password: " + (user == null ? "Null User" : user.getPassword()));
-		logger.info("Organization: " + (organization == null ? "Null Org" : organization.getName()));
-		if(user != null){
-			/// If a user logs in with an existing valid session
-			/// Then double check the user id from the session with the provided password hash
-			/// BUG: The original code tried to match password against the object, whose value is explicitly excluded in the Factory.
-			/// NOTE: Password isn't returned from user factory, so it can't be checked in code - it must be matched at the data level.
-			List<NameIdType> users = Factories.getUserFactory().getList(new QueryField[]{QueryFields.getFieldId(user), QueryFields.getFieldPassword(password_hash)}, organization);
-			if (users.size() == 0){
-				throw new FactoryException("Organization " + organization.getId() + " and user id " + user.getId() + " did not match for supplied password and session id " + session.getSessionId()+ ".");
-			}
-			user = (UserType)users.get(0);
-			/ *
-			else if (user.getPassword() == null || user.getPassword().equals(password_hash) == false || user.getName().equals(user_name) == false || user.getOrganization() == null || user.getOrganization().getId() != organization.getId())
-			{
-				throw new FactoryException("Invalid user, password, or organization.");
-			}
-			* /
-		}
-		/// user is null
+
+	public static UserType legacyLogin(String session_id, String user_name, String password_hash, OrganizationType organization) throws FactoryException, ArgumentException{
+		/// 2015/06/24 - Legacy password handling
+		/// The hashed password is put into a LegacyPassword CredentialType.
+		/// The validation will repeat the following query to make sure the hash matches the persisted record
 		///
-		else
-		{
-		*/
-			/// Slightly different query
-			///
-		List<NameIdType> users = Factories.getUserFactory().getList(new QueryField[]{QueryFields.getFieldName(user_name), QueryFields.getFieldPassword(password_hash)}, organization);
-		if (users.size() == 0){
-			throw new FactoryException("Failed to retrieve user");
+		return authenticateSession(session_id, user_name, CredentialEnumType.LEGACY_PASSWORD, password_hash, organization);
+	}
+	*/
+	/// 2015/06/24
+	/// New 'login' API to reflect change in approach
+	/// All existing login calls must be changed to use legacyLogin, or use the new method once the credentials are migrated
+	///
+	public static UserType login(String userName, CredentialEnumType credType, String suppliedCredential, OrganizationType organization) throws FactoryException, ArgumentException{
+		return authenticateSession(UUID.randomUUID().toString(), userName, credType, suppliedCredential, organization);
+	}
+	public static UserType login(String sessionId, String userName, CredentialEnumType credType, String suppliedCredential, OrganizationType organization) throws FactoryException, ArgumentException{
+		return authenticateSession(sessionId, userName, credType, suppliedCredential, organization);
+	}
+	/// 2015/06/24
+	/// Rebranded API to reflect change in approach and actual intent of authenticating against a session using a user and a credential
+	///
+	private static UserType authenticateSession(String sessionId, String userName, CredentialEnumType credType, String suppliedCredential, OrganizationType organization) throws FactoryException, ArgumentException{
+		UserType user = Factories.getUserFactory().getUserByName(userName, organization);
+		if(user == null){
+			throw new ArgumentException("User does not exits");
 		}
-		user = (UserType)users.get(0);
-		//}
+		CredentialType cred = null;
+		if(credType == CredentialEnumType.HASHED_PASSWORD) cred = CredentialService.getPrimaryCredential(user,credType,true);
+		else if(credType == CredentialEnumType.LEGACY_PASSWORD){
+			/// Legacy support means:
+			/// 1) Password is hashed using the old method
+			/// 2) Hashed password is supplied to this method as the value of suppliedCredential
+			/// 3) A CredentialType of LEGACY_PASSWORD will be created for CredentialService using suppliedCredential
+			/// 4) CredentialService validation will perform a database query for the user against the suppliedCredential value, replicating the current legacy process
+			/// 5) Once all passwords and APIs stop using the legacy method, this will go away
+			///
+			/// NOTE: LEGACY_PASSWORD CredentialType uses the supplied credential, so it's NOT TRUSTWORTHY
+			/// Only use the CredentialService validation method to verify it against the database record
+			///
+			if(enableLegacyPasswordAuthentication){
+				logger.warn("LEGACY CREDENTIAL SUPPORT BEING APPLIED FOR " + user.getName() + " (#" + user.getId() +")");
+				cred = CredentialService.newLegacyPasswordCredential(user, suppliedCredential,true);
+			}
+		}
+		if(cred == null){
+			throw new ArgumentException("AM5.1 credential does not exist");
+
+		}
+		return authenticateSession(sessionId, user, cred, suppliedCredential, organization);
+	}
+	/// 2015/06/24
+	/// Rebranded API to reflect change in approach and actual intent of authenticating against a session using a user and a credential
+	///
+	private static UserType authenticateSession(String sessionId, UserType user, CredentialType credential, String suppliedCredential, OrganizationType organization) throws FactoryException, ArgumentException{
+		UserSessionType session = Factories.getSessionFactory().getCreateSession(sessionId, organization);
+		if (session == null){
+			throw new FactoryException("New session was not allocated.");
+		}
+		if(user == null || credential == null){
+			throw new ArgumentException("User object or credential was null");
+		}
+		if(credential.getCredentialType() == CredentialEnumType.HASHED_PASSWORD || credential.getCredentialType() == CredentialEnumType.LEGACY_PASSWORD){
+			if(credential.getCredentialType() == CredentialEnumType.LEGACY_PASSWORD && enableLegacyPasswordAuthentication == false){
+				throw new ArgumentException("Legacy Password support is disabled, and a legacy password credential was supplied");
+			}
+			if(CredentialService.validatePasswordCredential(user, credential, suppliedCredential) == false){
+				throw new FactoryException("Failed to validate user");
+			}
+		}
 		
 		session.setUserId(user.getId());
 		session.setOrganizationId(user.getOrganization().getId());
@@ -207,11 +231,6 @@ public class SessionSecurity {
 		Factories.getUserFactory().populate(user);
 		Factories.getUserFactory().updateUserToCache(user);
 
-		/// }
-
-
-		//account.IsLoggedIn = true;
-		//account.Session.SetBool(KEY_LOGGED_IN,true);
 		session.setSessionStatus(SessionStatusEnumType.AUTHENTICATED);
 		StatisticsType stats = Factories.getStatisticsFactory().getStatistics(user);
 		if(stats == null){

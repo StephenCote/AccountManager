@@ -31,7 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestFactoryCache{
+public class TestFactoryCache extends BaseDataAccessTest{
 	
 	public static final Logger logger = Logger.getLogger(TestGroupFactory.class.getName());
 	private static String testDirGroupName = null;
@@ -41,41 +41,7 @@ public class TestFactoryCache{
 	private UserType sessionUser = null;
 	private static String sessionId = null;
 	
-	@Before
-	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName("org.postgresql.Driver");
-		cf.setUserName("devuser");
-		cf.setUserPassword("password");
-		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
-		
-		try{
-			sessionUser = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
-			if(sessionUser == null){
-				UserType new_user = Factories.getUserFactory().newUser(testUserName1, SecurityUtil.getSaltedDigest("password1"), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
-				if(Factories.getUserFactory().addUser(new_user,  false)){
-					sessionUser = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
-				}
-			}
-			Factories.getUserFactory().populate(sessionUser);
-			DirectoryGroupType dgt = Factories.getGroupFactory().getCreateUserDirectory(sessionUser, "CacheTest");
-			Factories.getGroupFactory().clearCache();
-
-		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-		}
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
+	
 	/*
 	@Test
 	public void TestDirectDirectoryGroupCache(){

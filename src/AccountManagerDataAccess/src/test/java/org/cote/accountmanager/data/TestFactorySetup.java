@@ -37,7 +37,7 @@ import org.junit.Test;
 public class TestFactorySetup {
 	public static final Logger logger = Logger.getLogger(TestFactorySetup.class.getName());
 
-	private static String testAdminPassword = SecurityUtil.getSaltedDigest("password1");
+	private static String testAdminPassword = "password1";
 	private static boolean tearDown = true;
 	
 	@Before

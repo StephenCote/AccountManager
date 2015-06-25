@@ -31,37 +31,18 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-public class TestUserFactory{
+public class TestUserFactory extends BaseDataAccessTest{
 	public static final Logger logger = Logger.getLogger(TestUserFactory.class.getName());
 	private static String testUserName1 = "Example-" + UUID.randomUUID().toString();
 	private static String testUserName2 = "Example-" + UUID.randomUUID().toString();
-	private static String testUserPassword = SecurityUtil.getSaltedDigest("password1");
+	private static String testUserPassword = "password1";
 	
-	@Before
-	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName("org.postgresql.Driver");
-		cf.setUserName("devuser");
-		cf.setUserPassword("password");
-		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
-		logger.info("Setup");
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
 	
 	@Test
 	public void testAddUser(){
 		OrganizationFactory of = Factories.getOrganizationFactory();
-		UserType user1 = Factories.getUserFactory().newUser(testUserName1, testUserPassword, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
-		UserType user2 = Factories.getUserFactory().newUser(testUserName2, testUserPassword, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
+		UserType user1 = Factories.getUserFactory().newUser(testUserName1, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
+		UserType user2 = Factories.getUserFactory().newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
 		boolean add = false;
 		boolean error = false;
 		logger.info(testUserPassword + ":" + testUserPassword.length());

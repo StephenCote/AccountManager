@@ -1,6 +1,6 @@
 package org.cote.accountmanager.data;
 
-import static org.junit.Assert.assertNotNull;
+
 import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
@@ -12,27 +12,28 @@ import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.ServiceUtil;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.DataException;
-import org.cote.accountmanager.objects.AccountType;
+
 import org.cote.accountmanager.objects.BasePermissionType;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.AccountEnumType;
-import org.cote.accountmanager.objects.types.AccountStatusEnumType;
+
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.DataUtil;
-import org.cote.accountmanager.util.SecurityUtil;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
+
 
 public class BaseDataAccessTest{
 	public static final Logger logger = Logger.getLogger(BaseDataAccessTest.class.getName());
@@ -60,30 +61,41 @@ public class BaseDataAccessTest{
 		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
 		sessionId = UUID.randomUUID().toString();
 		sessionId2 = UUID.randomUUID().toString();
-		
+
 		try{
-			testUser = SessionSecurity.login(sessionId, testUserName, SecurityUtil.getSaltedDigest("password1"), Factories.getDevelopmentOrganization());
+			testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		}
+		catch(ArgumentException fe){
+			logger.error(fe.getMessage());
+		}
 		if(testUser == null){
-			UserType new_user = Factories.getUserFactory().newUser(testUserName, SecurityUtil.getSaltedDigest("password1"), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
+			UserType new_user = Factories.getUserFactory().newUser(testUserName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
 			if(Factories.getUserFactory().addUser(new_user,  true)){
-				testUser = SessionSecurity.login(sessionId, testUserName, SecurityUtil.getSaltedDigest("password1"), Factories.getDevelopmentOrganization());
+				new_user = Factories.getUserFactory().getUserByName(testUserName, Factories.getDevelopmentOrganization());
+				CredentialService.newHashedPasswordCredential(new_user, new_user, "password1", true);
+				testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization());
 			}
 		}
 		
 		try{
-			testUser2 = SessionSecurity.login(sessionId2, testUserName2, SecurityUtil.getSaltedDigest("password1"), Factories.getDevelopmentOrganization());
+			testUser2 = SessionSecurity.login(sessionId2, testUserName2, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		}
+		catch(ArgumentException fe){
+			logger.error(fe.getMessage());
+		}
 		if(testUser2 == null){
-			UserType new_user = Factories.getUserFactory().newUser(testUserName2, SecurityUtil.getSaltedDigest("password1"), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
+			UserType new_user = Factories.getUserFactory().newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
 			if(Factories.getUserFactory().addUser(new_user,  true)){
-				testUser2 = SessionSecurity.login(sessionId2, testUserName2, SecurityUtil.getSaltedDigest("password1"), Factories.getDevelopmentOrganization());
+				new_user = Factories.getUserFactory().getUserByName(testUserName2, Factories.getDevelopmentOrganization());
+				CredentialService.newHashedPasswordCredential(new_user, new_user, "password1", true);
+
+				testUser2 = SessionSecurity.login(sessionId2, testUserName2, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization());
 			}
 		}
 		//logger.info("Setup session: " + sessionId);
@@ -207,9 +219,10 @@ public class BaseDataAccessTest{
 		try {
 			user = Factories.getUserFactory().getUserByName(user_name, Factories.getDevelopmentOrganization());
 			if(user == null){
-				user = Factories.getUserFactory().newUser(user_name, SecurityUtil.getSaltedDigest(password), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
+				user = Factories.getUserFactory().newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
 				Factories.getUserFactory().addUser(user);
 				user = Factories.getUserFactory().getUserByName(user_name, Factories.getDevelopmentOrganization());
+				CredentialService.newHashedPasswordCredential(user, user, password, true);
 			}
 			Factories.getUserFactory().populate(user);
 		} catch (FactoryException e) {

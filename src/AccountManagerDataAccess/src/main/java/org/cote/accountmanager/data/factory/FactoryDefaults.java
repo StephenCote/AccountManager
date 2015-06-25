@@ -23,15 +23,20 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
+import java.util.UUID;
+
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonRoleType;
@@ -90,7 +95,9 @@ public class FactoryDefaults {
 			"GroupCreate",
 			"GroupDelete"
 	};
-	private static String DocumentControlPassword = "documentcontrolpassword";
+	
+	/// Changing this to be a random string
+	/// private static String DocumentControlPassword = "$%##@austh@#$09au$gks'<>";
 	
 	public static boolean setupAccountManager(String root_password) throws ArgumentException, DataAccessException, FactoryException
 	{
@@ -98,7 +105,7 @@ public class FactoryDefaults {
 		
 		Factories.clearCaches();
 		
-		String root_hash = SecurityUtil.getSaltedDigest(root_password);
+		//String root_hash = SecurityUtil.getSaltedDigest(root_password);
 		
 		logger.info("Create default organizations");
 		
@@ -112,19 +119,26 @@ public class FactoryDefaults {
 			root_account = Factories.getAccountFactory().newAccount(null,"Root", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization()));
 			if (!Factories.getAccountFactory().addAccount(root_account)) throw new FactoryException("Unable to add root account");
 	
-			UserType root_user = Factories.getUserFactory().newUserForAccount("Root", root_hash, root_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+			UserType root_user = Factories.getUserFactory().newUserForAccount("Root", root_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 			if (!Factories.getUserFactory().addUser(root_user)) throw new FactoryException("Unable to add root user");
+			root_user = Factories.getUserFactory().getUserByName("Root", root_account.getOrganization());
+			if (root_user == null) throw new FactoryException("Failed to retrieve to add root user");
+			/// 2015/06/23 - New Credential System
+			/// I intentionally left the credential operation decoupled from object creation
+			///
+			CredentialType cred = CredentialService.newHashedPasswordCredential(root_user, root_user, root_password, true);
+			if(cred == null) throw new FactoryException("Failed to persist root credential");
 		}
-		setupOrganization(Factories.getDevelopmentOrganization(), root_hash);
-		setupOrganization(Factories.getSystemOrganization(), root_hash);
-		setupOrganization(Factories.getPublicOrganization(), root_hash);
+		setupOrganization(Factories.getDevelopmentOrganization(), root_password);
+		setupOrganization(Factories.getSystemOrganization(), root_password);
+		setupOrganization(Factories.getPublicOrganization(), root_password);
 		
 		logger.info("End Setup Account Manager");
 		
 		return true;
 	}
 
-	public static boolean setupOrganization(OrganizationType organization, String admin_password_hash) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean setupOrganization(OrganizationType organization, String admin_password) throws ArgumentException, DataAccessException, FactoryException
 	{
 
 		logger.info("Configure " + organization.getName() + " organization");
@@ -136,15 +150,26 @@ public class FactoryDefaults {
 		if (!Factories.getAccountFactory().addAccount(admin_account)) throw new FactoryException("Unable to add admin account");
 		admin_account = Factories.getAccountFactory().getAccountByName("Admin", agroup);
 
-		UserType admin_user = Factories.getUserFactory().newUserForAccount("Admin", admin_password_hash, admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		UserType admin_user = Factories.getUserFactory().newUserForAccount("Admin", admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (!Factories.getUserFactory().addUser(admin_user)) throw new FactoryException("Unable to add admin user");
 		admin_user = Factories.getUserFactory().getUserByName("Admin", organization);
-		
+		/// 2015/06/23 - New Credential System
+		/// I intentionally left the credential operation decoupled from object creation
+		///
+		CredentialType cred = CredentialService.newHashedPasswordCredential(admin_user, admin_user, admin_password, true);
+		if(cred == null) throw new FactoryException("Failed to persist credential");
+
 		// Create the document control user
 		//
-		UserType dc_user = Factories.getUserFactory().newUserForAccount("Document Control", SecurityUtil.getSaltedDigest(DocumentControlPassword), admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		UserType dc_user = Factories.getUserFactory().newUserForAccount("Document Control", admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (Factories.getUserFactory().addUser(dc_user) == false) return false;
 		dc_user = Factories.getUserFactory().getUserByName("Document Control", organization);
+
+		/// 2015/06/23 - New Credential System
+		/// I intentionally left the credential operation decoupled from object creation
+		///
+		cred = CredentialService.newHashedPasswordCredential(dc_user, dc_user, UUID.randomUUID().toString(), true);
+		if(cred == null) throw new FactoryException("Failed to persist credential");
 		
 		if(dc_user.getId() <= 0 || admin_user.getId() <= 0){
 			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
@@ -260,6 +285,9 @@ public class FactoryDefaults {
 		Factories.getRoleFactory().addDefaultRoles(organization);
 		
 		EffectiveAuthorizationService.rebuildPendingRoleCache();
+		
+		KeyService.newOrganizationAsymmetricKey(organization, true);
+		KeyService.newOrganizationSymmetricKey(organization, true);
 		
 		return true;
 	}

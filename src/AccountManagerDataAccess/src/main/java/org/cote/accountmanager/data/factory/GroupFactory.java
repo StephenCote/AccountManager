@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
@@ -86,6 +87,16 @@ public class GroupFactory  extends NameIdFactory {
 	protected void addDefaultGroups(OrganizationType organization)  throws FactoryException, ArgumentException
 	{
 		addDefaultDirectoryGroups(organization);
+	}
+	protected void addDefaultUserGroups(UserType user, DirectoryGroupType hDir, String sessionId) throws FactoryException, ArgumentException{
+
+		String[] dirNames = new String[]{"Data","Contacts","Addresses","Persons","Accounts"};
+		for(int i = 0; i < dirNames.length;i++){
+			DirectoryGroupType ddir = newDirectoryGroup(user,dirNames[i],hDir,user.getOrganization());
+			if(sessionId != null) BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, ddir);
+			else addGroup(ddir);
+		}
+		
 	}
 	protected void addDefaultDirectoryGroups(OrganizationType organization) throws FactoryException, ArgumentException
 	{

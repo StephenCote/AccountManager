@@ -3,18 +3,21 @@ package org.cote.accountmanager.data;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserGroupType;
@@ -118,8 +121,10 @@ public class TestImportContacts extends BaseDataAccessTest{
 					person = Factories.getPersonFactory().newPerson(testUser, dir);
 					person.setName(name);
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, person);
-					user = Factories.getUserFactory().newUser(name, SecurityUtil.getSaltedDigest("password"), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, testUser.getOrganization());
+					user = Factories.getUserFactory().newUser(name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, testUser.getOrganization());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
+					CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, "password".getBytes("UTF-8"), true, true);
+
 					person.getUsers().add(user);
 				}
 				else{
@@ -164,6 +169,9 @@ public class TestImportContacts extends BaseDataAccessTest{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

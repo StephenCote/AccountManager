@@ -5,9 +5,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
+import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
@@ -97,8 +99,10 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			
 			cit.getContacts().add(ct);
 			
-			UserType user = Factories.getUserFactory().newUser(new_person.getName(), SecurityUtil.getSaltedDigest("password"), UserEnumType.DEVELOPMENT, UserStatusEnumType.RESTRICTED, new_person.getOrganization());
+			UserType user = Factories.getUserFactory().newUser(new_person.getName(), UserEnumType.DEVELOPMENT, UserStatusEnumType.RESTRICTED, new_person.getOrganization());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
+			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId, user, user, "password1".getBytes("UTF-8"), true,true);
+
 			
 			//new_person.getUsers().add(user);
 			

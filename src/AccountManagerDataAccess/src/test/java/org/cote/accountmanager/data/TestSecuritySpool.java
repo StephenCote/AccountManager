@@ -43,53 +43,20 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-public class TestSecuritySpool{
+public class TestSecuritySpool extends BaseDataAccessTest {
 	public static final Logger logger = Logger.getLogger(TestSecuritySpool.class.getName());
-	private static String testUserName1 = "DebugSecurityUser";
-	private UserType securityUser = null;
+	
 	private static String referenceId = UUID.randomUUID().toString();
 	private static String referenceId2 = UUID.randomUUID().toString();
 	
-	@Before
-	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName("org.postgresql.Driver");
-		cf.setUserName("devuser");
-		cf.setUserPassword("password");
-		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
-		
-		try{
-			securityUser = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
-			if(securityUser == null){
-				UserType new_user = Factories.getUserFactory().newUser(testUserName1, SecurityUtil.getSaltedDigest("password1"), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
-				if(Factories.getUserFactory().addUser(new_user,  false)){
-					securityUser = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
-				}
-			}
-		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-		}
-		logger.info("Setup");
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
 	
 	@Test
 	public void testInsertToken(){
-		assertNotNull("User is null", securityUser);
+		assertNotNull("User is null", testUser);
 		SecuritySpoolType token = null;
 		boolean add_token = false;
 		try{
-			token = Factories.getSecurityTokenFactory().generateSecurityToken(referenceId, securityUser.getOrganization());
+			token = Factories.getSecurityTokenFactory().generateSecurityToken(referenceId, testUser.getOrganization());
 			add_token = (token != null);
 		}
 		catch(FactoryException fe){
@@ -102,11 +69,11 @@ public class TestSecuritySpool{
 	
 	@Test
 	public void testGetToken(){
-		assertNotNull("User is null", securityUser);
+		assertNotNull("User is null", testUser);
 		SecuritySpoolType token = null;
 		logger.info("Token: " + referenceId);
 		try{
-			token = Factories.getSecurityTokenFactory().getSecurityToken(referenceId, securityUser.getOrganization());
+			token = Factories.getSecurityTokenFactory().getSecurityToken(referenceId, testUser.getOrganization());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -119,10 +86,10 @@ public class TestSecuritySpool{
 	
 	@Test
 	public void testUpdateToken(){
-		assertNotNull("User is null", securityUser);
+		assertNotNull("User is null", testUser);
 		SecuritySpoolType token = null;
 		try{
-			token = Factories.getSecurityTokenFactory().getSecurityToken(referenceId, securityUser.getOrganization());
+			token = Factories.getSecurityTokenFactory().getSecurityToken(referenceId, testUser.getOrganization());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -144,10 +111,10 @@ public class TestSecuritySpool{
 	
 	@Test
 	public void testDeleteToken(){
-		assertNotNull("User is null", securityUser);
+		assertNotNull("User is null", testUser);
 		boolean deleted = false;
 		try{
-			deleted = Factories.getSecurityTokenFactory().deleteTokens(referenceId, securityUser.getOrganization());
+			deleted = Factories.getSecurityTokenFactory().deleteTokens(referenceId, testUser.getOrganization());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());

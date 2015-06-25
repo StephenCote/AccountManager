@@ -779,8 +779,11 @@ public class AuthorizationService {
 		}
 
         /// TODO: Note, this currently favors the parent permission oven the granular permission
-        ///
+        /// 2015/06/22 - temporarly included direct ownership of the parent directory
+		///
         return (
+        	isMapOwner(user,data.getGroup())
+        	||
     		EffectiveAuthorizationService.getGroupAuthorization(user,data.getGroup(), new BasePermissionType[] { getDeleteGroupPermission(data.getOrganization())} )
     		||
     		EffectiveAuthorizationService.getDataAuthorization(user,data, new BasePermissionType[] { getDeleteDataPermission(data.getOrganization())} )
@@ -829,8 +832,11 @@ public class AuthorizationService {
 
 
         /// TODO: Note, this currently favors the parent permission oven the granular permission
-        ///
+        /// 2015/06/22 - temporarly included direct ownership of the parent directory
+		///
         return (
+        	isMapOwner(user,data.getGroup())
+        	||
     		EffectiveAuthorizationService.getGroupAuthorization(user,data.getGroup(), new BasePermissionType[] { getEditGroupPermission(data.getOrganization())} )
     		||
     		EffectiveAuthorizationService.getDataAuthorization(user,data, new BasePermissionType[] { getEditDataPermission(data.getOrganization())} )

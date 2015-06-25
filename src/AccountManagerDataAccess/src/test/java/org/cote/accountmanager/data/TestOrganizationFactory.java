@@ -19,6 +19,7 @@ import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.objects.DataTableType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -157,10 +158,11 @@ public class TestOrganizationFactory{
 		assertNotNull("Org is null", new_org);
 		
 
-		SecurityBean bean = OrganizationSecurity.getSecurityBean(new_org);
+		SecurityBean bean = KeyService.getPrimaryAsymmetricKey(new_org); 
+				//OrganizationSecurity.getSecurityBean(new_org);
 		String test_data = "This is some test data.";
 		byte[] enc = SecurityUtil.encipher(bean, test_data.getBytes());
-		OrganizationSecurity.clearCache();
+
 		Factories.getOrganizationFactory().clearCache();
 		try{
 			new_org = Factories.getOrganizationFactory().getOrganizationByName(testOrgName, Factories.getDevelopmentOrganization().getId());
@@ -172,7 +174,8 @@ public class TestOrganizationFactory{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		bean = OrganizationSecurity.getSecurityBean(new_org);
+		bean = KeyService.getPrimaryAsymmetricKey(new_org);
+				//OrganizationSecurity.getSecurityBean(new_org);
 		byte[] dec = SecurityUtil.decipher(bean, enc);
 		logger.info("Decrypted: " + (new String(dec)));
 		logger.info("Bean: " + (bean == null ? "Null":"Retrieved"));

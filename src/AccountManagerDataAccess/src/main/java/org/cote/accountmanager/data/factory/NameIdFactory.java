@@ -384,6 +384,12 @@ public abstract class NameIdFactory extends FactoryBase {
 		if (!hasName) throw new FactoryException("Table " + dataTables.get(0).getName() + " Does not define a Name");
 		return getByField(QueryFields.getFieldName(name), organization_id);
 	}
+	protected List<NameIdType> getByObjectId(String id, long organization_id) throws FactoryException, ArgumentException
+	{
+		if (!hasObjectId) throw new FactoryException("Table " + dataTables.get(0).getName() + " Does not define a Name");
+		return getByField(QueryFields.getFieldObjectId(id), organization_id);
+	}
+
 	protected long getIdByName(String name, long organization_id) throws FactoryException
 	{
 		if (!hasName) throw new FactoryException("Table " + dataTables.get(0).getName() + " does not define a Name");

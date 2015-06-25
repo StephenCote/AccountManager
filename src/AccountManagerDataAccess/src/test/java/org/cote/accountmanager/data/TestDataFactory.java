@@ -24,6 +24,7 @@ import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataColumnType;
@@ -39,43 +40,13 @@ import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.SecurityUtil;
 
-public class TestDataFactory{
+public class TestDataFactory extends BaseDataAccessTest {
 	public static final Logger logger = Logger.getLogger(TestDataFactory.class.getName());
 	private static String testShortDataName = null;
 	private static String testLongDataName = null;
 	private static String testEncLongDataName = null;
-	private static String testUserName1 = "DebugDataUser";
-	private UserType dataUser = null;
-	@Before
-	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName("org.postgresql.Driver");
-		cf.setUserName("devuser");
-		cf.setUserPassword("password");
-		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
-		try{
-			dataUser = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
-			if(dataUser == null){
-				UserType new_user = Factories.getUserFactory().newUser(testUserName1, SecurityUtil.getSaltedDigest("password1"), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
-				if(Factories.getUserFactory().addUser(new_user,  false)){
-					dataUser = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
-				}
-			}
-		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-		}
-	}
 
-	@After
-	public void tearDown() throws Exception {
-	}
+
 	@Test
 	public void testArtifacts(){
 		OrganizationFactory of = Factories.getOrganizationFactory();
@@ -115,7 +86,7 @@ public class TestDataFactory{
 		try{
 			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
 			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
-			DataType new_data = df.newData(dataUser,  dir);
+			DataType new_data = df.newData(testUser,  dir);
 			logger.info("BEGIN DATATYPE");
 			logger.info(new_data.getName());
 			logger.info(new_data.getCreatedDate().toString());
@@ -153,7 +124,7 @@ public class TestDataFactory{
 			new_data = df.getDataByName(testShortDataName, dir);
 			if(new_data != null) df.deleteData(new_data);
 			*/
-			new_data = df.newData(dataUser, dir);
+			new_data = df.newData(testUser, dir);
 			new_data.setName(data_name);
 			new_data.setMimeType("text/plain");
 			DataUtil.setValueString(new_data, "This is the example text.");
@@ -188,7 +159,7 @@ public class TestDataFactory{
 		try{
 			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
 			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
-			new_data = df.newData(dataUser, dir);
+			new_data = df.newData(testUser, dir);
 			new_data.setName(data_name);
 			new_data.setMimeType("text/plain");
 			DataUtil.setValue(new_data, "This is the example text.".getBytes());
@@ -219,11 +190,11 @@ public class TestDataFactory{
 		DirectoryGroupType rootDir = null;
 		String data_name = "Example - " + System.currentTimeMillis();
 		testEncLongDataName = data_name;
-		SecurityBean bean = OrganizationSecurity.getSecurityBean(Factories.getDevelopmentOrganization());
+		SecurityBean bean = KeyService.getPrimarySymmetricKey(Factories.getDevelopmentOrganization());
 		try{
 			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
 			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
-			new_data = df.newData(dataUser, dir);
+			new_data = df.newData(testUser, dir);
 			DataUtil.setCipher(new_data, bean);
 			new_data.setEncipher(true);
 			new_data.setName(data_name);
