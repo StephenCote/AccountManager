@@ -37,14 +37,26 @@ CREATE SEQUENCE asymmetrickeys_id_seq;
 CREATE TABLE asymmetrickeys (
 	Id bigint not null default nextval('asymmetrickeys_id_seq'),
 	OrganizationId bigint not null default 0,
+	OrganizationKey boolean not null default false,
+	CipherProvider varchar(32) not null,
+	CipherKeySpec varchar(32) not null,
+	AsymmetricCipherKeySpec varchar(32) not null,
+	HashProvider varchar(32) not null,
+	SeedLength bigint not null default 0,
+	GlobalKey boolean not null default false,
+	PrimaryKey boolean not null default false,
+	PreviousKeyId bigint not null default 0,
 	PublicKey bytea,
 	PrivateKey bytea,
 	SymmetricKeyId bigint not null default 0,
+	OwnerId bigint not null default 0,
+	ObjectId varchar(64),
 	primary key(Id)
 );
 
--- CREATE UNIQUE INDEX asymmetrickeys_Id on asymmetrickeys(Id);
-CREATE INDEX asymmetrickeys_OrgId ON asymmetrickeys(OrganizationId);
+--CREATE UNIQUE INDEX asymmetrickeys_Id on asymmetrickeys(Id);
+CREATE INDEX asymmetrickeys_OwnId ON asymmetrickeys(OwnerId);
+CREATE UNIQUE INDEX asymmetrickeys_ObjId ON asymmetrickeys(ObjectId);
 
 DROP TABLE IF EXISTS symmetrickeys CASCADE;
 DROP SEQUENCE IF EXISTS symmetrickeys_id_seq;
@@ -52,13 +64,26 @@ CREATE SEQUENCE symmetrickeys_id_seq;
 CREATE TABLE symmetrickeys (
 	Id bigint not null default nextval('symmetrickeys_id_seq'),
 	OrganizationId bigint not null,
+	OrganizationKey boolean not null default false,
+	CipherProvider varchar(32) not null,
+	CipherKeySpec varchar(32) not null,
+	SymmetricCipherKeySpec varchar(32) not null,
+	HashProvider varchar(32) not null,
+	SeedLength bigint not null default 0,
+	GlobalKey boolean not null default false,
+	PrimaryKey boolean not null default false,
+	EncryptedKey boolean not null default false,
+	PreviousKeyId bigint not null default 0,
 	CipherKey bytea,
 	CipherIV bytea,
 	AsymmetricKeyId bigint not null default 0,
+	OwnerId bigint not null default 0,
+	ObjectId varchar(64),
 	primary key(Id)
 );
 -- CREATE UNIQUE INDEX symmetrickeys_Id on symmetrickeys(Id);
-CREATE INDEX symmetrickeys_OrgId ON symmetrickeys(OrganizationId);
+CREATE INDEX symmetrickeys_OrgId ON symmetrickeys(OwnerId);
+CREATE UNIQUE INDEX symmetrickeys_ObjId ON symmetrickeys(ObjectId);
 
 DROP TABLE IF EXISTS groups CASCADE;
 DROP SEQUENCE IF EXISTS groups_id_seq;
@@ -238,7 +263,7 @@ create table users (
 	AccountId bigint not null default 0,
 	UserId varchar(64) not null,
 	Name varchar(511) not null,
-	Password varchar(128),
+--	Password varchar(128),
 	UserStatus varchar(16) not null,
 	UserType varchar(16) not null,
 	Urn text not null,
@@ -844,7 +869,55 @@ CREATE INDEX ruleparticipation_parttype ON ruleparticipation(ParticipantId,Parti
 CREATE INDEX ruleparticipation_pid ON ruleparticipation(ParticipationId);
 CREATE UNIQUE INDEX IdxruleparticipationCbo on ruleparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
 
+DROP TABLE IF EXISTS credential CASCADE;
+DROP SEQUENCE IF EXISTS credential_id_seq;
+CREATE SEQUENCE credential_id_seq;
+create table credential (
+	Id bigint not null default nextval('credential_id_seq'),
+	VaultId varchar(64),
+	KeyId varchar(64),
+	IsVaulted boolean not null default false,
+	IsEnciphered boolean not null default false,
+	CreatedDate timestamp not null,
+	ModifiedDate timestamp not null,
+	ExpirationDate timestamp not null,
+	HashProvider varchar(32) not null,
+	Credential bytea,
+	Salt bytea,
+	ReferenceId bigint not null default 0,
+	ReferenceType varchar(64) not null default 0,
+	PrimaryCredential boolean not null default false,
+	PreviousCredentialId bigint not null default 0,
+	NextCredentialId bigint not null default 0,
+	OwnerId bigint not null default 0,
+	CredentialType varchar(32) not null,
+	ObjectId varchar(64),
+	OrganizationId bigint not null default 0,
+	primary key(Id)
+);
+CREATE INDEX IdxCredentialReference on credential(ReferenceId,ReferenceType);
+CREATE UNIQUE INDEX IdxCredentialObjId ON credential(ObjectId);
 
+DROP TABLE IF EXISTS control CASCADE;
+DROP SEQUENCE IF EXISTS control_id_seq;
+CREATE SEQUENCE control_id_seq;
+create table control (
+	Id bigint not null default nextval('control_id_seq'),
+	ControlType varchar(64) not null,
+	ControlAction varchar(32) not null,
+	CreatedDate timestamp not null,
+	ModifiedDate timestamp not null,
+	ExpirationDate timestamp not null,
+	ControlId bigint not null default 0,
+	ReferenceId bigint not null default 0,
+	ReferenceType varchar(64) not null default 0,
+	OwnerId bigint not null default 0,
+	ObjectId varchar(64),
+	OrganizationId bigint not null default 0,
+	primary key(Id)
+);
+CREATE UNIQUE INDEX IdxControlReference on control(ReferenceId,ReferenceType);
+CREATE UNIQUE INDEX IdxControlObjId ON control(ObjectId);
 
 create or replace view rolePersonRights as
 select U.id as personid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
