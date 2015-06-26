@@ -468,7 +468,6 @@ public class TestPolicyService extends BaseDataAccessTest{
 					if(srcFact == null){
 						srcFact = Factories.getFactFactory().newFact(testUser, fdir);
 						srcFact.setName(pfname);
-						//srcFact.setUrn(pfname);
 						srcFact.setFactType(FactEnumType.PARAMETER);
 						srcFact.setFactoryType(FactoryEnumType.PERSON);
 						Factories.getFactFactory().addFact(srcFact);
@@ -481,7 +480,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 					if(mFact == null){
 						mFact = Factories.getFactFactory().newFact(testUser, fdir);
 						mFact.setName(pmname);
-						//mFact.setUrn(pmname);
+
 						mFact.setFactType(FactEnumType.ATTRIBUTE);
 						mFact.setFactoryType(FactoryEnumType.PERSON);
 						mFact.setSourceUrn("code");

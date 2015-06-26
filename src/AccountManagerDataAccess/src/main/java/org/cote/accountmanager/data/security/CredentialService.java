@@ -158,6 +158,10 @@ public class CredentialService {
 		return out_bool;
 	}
 	public static CredentialType newHashedPasswordCredential(UserType owner, NameIdType targetObject, String password, boolean primary){
+		return newHashedPasswordCredential(null,owner,targetObject,password,primary);
+	}
+	public static CredentialType newHashedPasswordCredential(String bulkSessionId, UserType owner, NameIdType targetObject, String password, boolean primary){
+
 		byte[] pwdBytes = new byte[0];
 		try {
 			pwdBytes = password.getBytes("UTF-8");
@@ -167,6 +171,9 @@ public class CredentialService {
 		}
 		return newCredential(CredentialEnumType.HASHED_PASSWORD, null, owner, targetObject, pwdBytes, primary, true);
 	}
+	/// TODO: At the moment, a bulk credential requires a synchronous key insertion
+	///
+	///
 	public static CredentialType newCredential(CredentialEnumType credType, String bulkSessionId, UserType owner, NameIdType targetObject, byte[] credBytes, boolean primary, boolean encrypted){
 		CredentialType cred = null;
 		CredentialType lastPrimary = null;
@@ -190,7 +197,7 @@ public class CredentialService {
 				if(useCredBytes.length == 0) throw new FactoryException("Invalid hashed credential");
 			}
 			if(encrypted){
-				SecurityBean bean = KeyService.newPersonalAsymmetricKey(owner, false);
+				SecurityBean bean = KeyService.newPersonalAsymmetricKey(bulkSessionId,null,owner, false);
 				cred.setKeyId(bean.getObjectId());
 				//logger.info("Bean has bytes: " + (bean.getPublicKeyBytes() != null) + " / and key = " + (bean.getPublicKey() != null));
 				useCredBytes = SecurityUtil.encrypt(bean, useCredBytes);

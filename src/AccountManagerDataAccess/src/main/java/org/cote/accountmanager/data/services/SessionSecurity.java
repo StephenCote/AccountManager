@@ -179,7 +179,7 @@ public class SessionSecurity {
 	private static UserType authenticateSession(String sessionId, String userName, CredentialEnumType credType, String suppliedCredential, OrganizationType organization) throws FactoryException, ArgumentException{
 		UserType user = Factories.getUserFactory().getUserByName(userName, organization);
 		if(user == null){
-			throw new ArgumentException("User does not exits");
+			throw new ArgumentException("User does not exist");
 		}
 		CredentialType cred = null;
 		if(credType == CredentialEnumType.HASHED_PASSWORD) cred = CredentialService.getPrimaryCredential(user,credType,true);

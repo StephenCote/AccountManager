@@ -2,7 +2,13 @@ package org.cote.accountmanager.data.factory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
@@ -12,21 +18,21 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ControlActionEnumType;
 import org.cote.accountmanager.objects.ControlEnumType;
 import org.cote.accountmanager.objects.ControlType;
-import org.cote.accountmanager.objects.CredentialType;
-import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
-import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class ControlFactory extends NameIdFactory {
+	private DatatypeFactory dtFactory = null;
 	public ControlFactory(){
 		super();
 		this.hasOwnerId = true;
@@ -41,6 +47,13 @@ public class ControlFactory extends NameIdFactory {
 		this.tableNames.add("control");
 
 		factoryType = FactoryEnumType.CONTROL;
+		
+		try {
+			dtFactory = DatatypeFactory.newInstance();
+		} catch (DatatypeConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	@Override
 	public void mapBulkIds(NameIdType map){
@@ -72,17 +85,27 @@ public class ControlFactory extends NameIdFactory {
 	
 	public ControlType newControl(UserType owner, NameIdType targetObject) throws ArgumentException
 	{
-		if (owner == null || owner.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
-		if(targetObject.getId() == 0L || targetObject.getNameType() == NameEnumType.UNKNOWN) throw new ArgumentException("Invalid target object");
-		
+		if (owner == null || owner.getId().compareTo(0L)==0) throw new ArgumentException("Invalid owner");
+		if(targetObject.getNameType() == NameEnumType.UNKNOWN) throw new ArgumentException("Invalid target object");
+		/// It's ok if targetObject has no ID - this will be used to indicate its organization level
+		/// This is needed for create operations of a given type
+		///
+		/// targetObject.getId() == 0L || 
 		ControlType cred = new ControlType();
 		cred.setNameType(NameEnumType.CREDENTIAL);
 		cred.setControlType(ControlEnumType.UNKNOWN);
 		cred.setControlAction(ControlActionEnumType.UNKNOWN);
-		
+		cred.setOrganization(owner.getOrganization());
 		cred.setOwnerId(owner.getId());
 		cred.setReferenceType(FactoryEnumType.valueOf(targetObject.getNameType().toString()));
 		cred.setReferenceId(targetObject.getId());
+		
+	    GregorianCalendar cal = new GregorianCalendar();
+	    cal.setTime(new Date());
+		cred.setCreatedDate(dtFactory.newXMLGregorianCalendar(cal));
+		cred.setModifiedDate(dtFactory.newXMLGregorianCalendar(cal));
+		cal.add(GregorianCalendar.YEAR, 5);
+		cred.setExpiryDate(dtFactory.newXMLGregorianCalendar(cal));
 		
 		return cred;
 	}
@@ -146,14 +169,48 @@ public class ControlFactory extends NameIdFactory {
 		fields.add(QueryFields.getFieldControlType(use_map.getControlType()));
 		fields.add(QueryFields.getFieldControlAction(use_map.getControlAction()));
 	}
-	
+	public ControlType getControlByObjectId(String id, OrganizationType org) throws FactoryException, ArgumentException{
+		List<NameIdType> sec = getByObjectId(id, org.getId());
+		if(sec.size() > 0) return (ControlType)sec.get(0);
+		return null;
+	}
 	public boolean updateControl(ControlType data) throws FactoryException, DataAccessException
 	{	
 		removeFromCache(data);
 		return update(data, null);
 	}
 	
-	
+	public List<ControlType> getControlsForType(NameIdType obj,boolean includeGlobal,boolean onlyGlobal) throws FactoryException, ArgumentException{
+		List<QueryField> fields = new ArrayList<QueryField>();
+		// allow id of 0 for global control checks
+		// || obj.getId().compareTo(0L) == 0
+		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganization() == null) throw new ArgumentException("Invalid object reference");
+		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));
+		
+		QueryField reference_id_filters = new QueryField(SqlDataEnumType.NULL,"referenceid",null);
+		reference_id_filters.setComparator(ComparatorEnumType.GROUP_OR);
+		if(onlyGlobal == false) reference_id_filters.getFields().add(QueryFields.getFieldReferenceId(obj.getId()));
+		if(includeGlobal || onlyGlobal) reference_id_filters.getFields().add(QueryFields.getFieldReferenceId(0L));
+		
+		fields.add(reference_id_filters);
+		ProcessingInstructionType pi = new ProcessingInstructionType();
+		pi.setPaginate(true);
+		pi.setStartIndex(0L);
+		pi.setRecordCount(2);
+		
+		return getList(fields.toArray(new QueryField[0]), pi, obj.getOrganization());
+	}
+	public boolean deleteControlsForType(NameIdType obj) throws FactoryException, ArgumentException{
+		List<QueryField> fields = new ArrayList<QueryField>();
+		// allow id of 0 for global controls
+		// || obj.getId().compareTo(0L) == 0
+		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganization() == null) throw new ArgumentException("Invalid object reference");
+		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));
+		
+		fields.add(QueryFields.getFieldReferenceId(obj.getId()));
+
+		return (this.deleteByField(fields.toArray(new QueryField[0]), obj.getOrganizationId()) > 0);
+	}
 
 	
 }

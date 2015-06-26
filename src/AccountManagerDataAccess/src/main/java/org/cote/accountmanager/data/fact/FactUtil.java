@@ -30,6 +30,8 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.ControlFactory;
+import org.cote.accountmanager.data.factory.CredentialFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
@@ -172,7 +174,12 @@ public class FactUtil {
 					case USER:
 						out_obj = (T)((UserFactory)fact).getUserByName(sourceFact.getSourceUrn(), referenceFact.getOrganization());
 						break;
-						
+					case CREDENTIAL:
+						out_obj = (T)((CredentialFactory)fact).getCredentialByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganization());
+						break;
+					case CONTROL:
+						out_obj = (T)((ControlFactory)fact).getControlByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganization());
+						break;		
 					/// NameIdGroupFactory types
 					case ACCOUNT:
 					case CONTACT:

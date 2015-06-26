@@ -88,7 +88,7 @@ public class CredentialFactory extends NameIdFactory {
 
 	public CredentialType newCredential(UserType owner, NameIdType targetObject) throws ArgumentException
 	{
-		if (owner == null || owner.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (owner == null || owner.getId().compareTo(0L)==0) throw new ArgumentException("Invalid owner");
 		if(targetObject.getId() == 0L || targetObject.getNameType() == NameEnumType.UNKNOWN) throw new ArgumentException("Invalid target object");
 		
 		CredentialType cred = new CredentialType();

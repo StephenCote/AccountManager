@@ -88,12 +88,12 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		addDefaultDirectoryGroups(organization);
 	}
-	protected void addDefaultUserGroups(UserType user, DirectoryGroupType hDir, String sessionId) throws FactoryException, ArgumentException{
+	protected void addDefaultUserGroups(UserType user, DirectoryGroupType hDir, boolean isBulk, String sessionId) throws FactoryException, ArgumentException{
 
 		String[] dirNames = new String[]{"Data","Contacts","Addresses","Persons","Accounts"};
 		for(int i = 0; i < dirNames.length;i++){
 			DirectoryGroupType ddir = newDirectoryGroup(user,dirNames[i],hDir,user.getOrganization());
-			if(sessionId != null) BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, ddir);
+			if(isBulk) BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, ddir);
 			else addGroup(ddir);
 		}
 		

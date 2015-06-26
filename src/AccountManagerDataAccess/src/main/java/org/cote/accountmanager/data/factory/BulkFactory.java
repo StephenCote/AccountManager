@@ -65,6 +65,7 @@ import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
+import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.StatisticsType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -113,6 +114,9 @@ public class BulkFactory {
 		return out_sess;
 	}
 	*/
+	public String getGlobalSessionId(){
+		return globalSessionId;
+	}
 	public void setDirty(FactoryEnumType factoryType){
 		//logger.debug("Marking " + factoryType + " for a dirty write");
 		dirtyWrite.add(factoryType);
@@ -346,6 +350,12 @@ public class BulkFactory {
 			
 			NameIdType object = objects.get(i);
 			switch(factoryType){
+				case ASYMMETRICKEY:
+					BulkFactories.getBulkAsymmetricKeyFactory().updateAsymmetricKey((SecurityType)object);
+					break;
+				case SYMMETRICKEY:
+					BulkFactories.getBulkSymmetricKeyFactory().updateSymmetricKey((SecurityType)object);
+					break;
 				case CONTROL:
 					BulkFactories.getBulkControlFactory().updateControl((ControlType)object);
 					break;
@@ -418,6 +428,19 @@ public class BulkFactory {
 	}
 	protected void writeSpool(FactoryEnumType factoryType) throws FactoryException{
 		switch(factoryType){
+			case ASYMMETRICKEY:
+				BulkFactories.getBulkAsymmetricKeyFactory().writeSpool(BulkFactories.getBulkAsymmetricKeyFactory().getDataTables().get(0).getName());
+				break;
+			case SYMMETRICKEY:
+				BulkFactories.getBulkSymmetricKeyFactory().writeSpool(BulkFactories.getBulkSymmetricKeyFactory().getDataTables().get(0).getName());
+				break;
+			case CONTROL:
+				BulkFactories.getBulkControlFactory().writeSpool(BulkFactories.getBulkControlFactory().getDataTables().get(0).getName());
+				break;
+			case CREDENTIAL:
+				BulkFactories.getBulkCredentialFactory().writeSpool(BulkFactories.getBulkCredentialFactory().getDataTables().get(0).getName());
+
+				break;
 			case FACT:
 				BulkFactories.getBulkFactFactory().writeSpool(BulkFactories.getBulkFactFactory().getDataTables().get(0).getName());
 				break;
@@ -517,6 +540,18 @@ public class BulkFactory {
 		///
 		
 		switch(entry.getFactoryType()){
+			case ASYMMETRICKEY:
+				BulkFactories.getBulkAsymmetricKeyFactory().mapBulkIds(entry.getObject());
+				break;
+			case SYMMETRICKEY:
+				BulkFactories.getBulkSymmetricKeyFactory().mapBulkIds(entry.getObject());
+				break;
+			case CONTROL:
+				BulkFactories.getBulkControlFactory().mapBulkIds(entry.getObject());
+				break;
+			case CREDENTIAL:
+				BulkFactories.getBulkCredentialFactory().mapBulkIds(entry.getObject());
+				break;
 			case FACT:
 				BulkFactories.getBulkFactFactory().mapBulkIds(entry.getObject());
 				break;
@@ -579,6 +614,19 @@ public class BulkFactory {
 	protected void writePreparedObject(BulkSessionType session,BulkEntryType entry) throws FactoryException, ArgumentException, DataAccessException{
 		BaseParticipantType part = null;
 		switch(entry.getFactoryType()){
+			case ASYMMETRICKEY:
+				BulkFactories.getBulkAsymmetricKeyFactory().addAsymmetricKey((SecurityType)entry.getObject());
+				break;
+			case SYMMETRICKEY:
+				BulkFactories.getBulkSymmetricKeyFactory().addSymmetricKey((SecurityType)entry.getObject());
+				break;
+			case CONTROL:
+				BulkFactories.getBulkControlFactory().addControl((ControlType)entry.getObject());
+				break;
+			case CREDENTIAL:
+				BulkFactories.getBulkCredentialFactory().addCredential((CredentialType)entry.getObject());
+				break;
+
 			case FACT:
 				BulkFactories.getBulkFactFactory().addFact((FactType)entry.getObject());
 				break;
@@ -867,6 +915,11 @@ public class BulkFactory {
 		/// logger.debug("Creating Bulk Entry #" + bulkId + " for " + object.getNameType().toString() + " " + object.getName());
 		
 		object.setId(bulkId);
+		/// 2015/06/25 - Assign object id for factories with the bit set to true
+		/// This is otherwise done last minute, but thwarts foreign key references
+		/// primarily between credentials, controls, and keys
+		///
+		if(factory.hasObjectId) object.setObjectId(UUID.randomUUID().toString());
 		
 		BulkEntryType entry = new BulkEntryType();
 		entry.setFactoryType(factoryType);

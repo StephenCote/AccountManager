@@ -104,6 +104,7 @@ public class PolicyEvaluator {
 		
 		prr.setUrn(prt.getUrn());
 		if(pol == null){
+			logger.error("Policy Response Urn is null");
 			prr.setResponse(PolicyResponseEnumType.INVALID_ARGUMENT);
 			return prr;
 		}
@@ -117,6 +118,7 @@ public class PolicyEvaluator {
 		if(pol.getEnabled() == false){
 			prr.setResponse(PolicyResponseEnumType.DISABLED);
 			prr.setMessage("Policy is disabled");
+			logger.error("Policy is disabled");
 		}
 		else{
 			evaluatePolicy(pol,facts,prr);

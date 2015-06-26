@@ -8,7 +8,10 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.data.security.KeyService;
+import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -23,11 +26,14 @@ public class TestBulkUser extends BaseDataAccessTest{
 	@Test
 	public void TestBulkUser(){
 		boolean success = false;
+		String guid = UUID.randomUUID().toString();
 		try{
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
-			String guid = UUID.randomUUID().toString();
+			
 			UserType new_user = Factories.getUserFactory().newUser("BulkUser-" + guid, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, new_user);
+			//SecurityType asymKey = KeyService.newPersonalAsymmetricKey(sessionId,null,new_user,false);
+			//SecurityType symKey = KeyService.newPersonalSymmetricKey(sessionId,null,new_user,false);
 			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,new_user, new_user, "password1".getBytes("UTF-8"), true, true);
 
 			logger.info("Retrieving Bulk User");
@@ -58,6 +64,19 @@ public class TestBulkUser extends BaseDataAccessTest{
 			e.printStackTrace();
 		}
 		assertTrue("Success bit is false",success);
+		// Now try to authenticate as the new bulk loaded user
+		UserType chkUser = null;
+		try {
+			 chkUser = SessionSecurity.login("BulkUser-" + guid, CredentialEnumType.HASHED_PASSWORD, "password1", Factories.getDevelopmentOrganization());
+			 assertNotNull("Unable to authenticate as new user",chkUser);
+			 SessionSecurity.logout(chkUser);
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

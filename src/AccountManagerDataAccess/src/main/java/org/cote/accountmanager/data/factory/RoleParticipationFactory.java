@@ -177,6 +177,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public List<UserRoleType> getUserRoles(UserType account) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> list = getUserRoleParticipants(account);
+		if(list.size() == 0) return new ArrayList<UserRoleType>();
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new UserParticipantType[0]));
 		return Factories.getRoleFactory().getUserRoles(match, account.getOrganization());
 	}

@@ -44,7 +44,7 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>true</skipTests>
+  					<skipTests>false</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine>  
 
   					<includes>
@@ -52,9 +52,14 @@
 					</includes>
 					<excludes>
 						<!-- 
-						<exclude>**/TestBulkPerson.java</exclude>
+						<exclude>**/TestControlFactory.java</exclude>
 						
 						-->
+						<exclude>**/TestBulkPerson.java</exclude>
+						<exclude>**/TestBulkUser.java</exclude>
+						<exclude>**/TestCredentialFactory.java</exclude>
+						<exclude>**/TestVaultService.java</exclude>
+						
 						<exclude>**/TestDataTags.java</exclude>
 						<exclude>**/TestCachePerformance.java</exclude>
 						
@@ -69,7 +74,7 @@
 						<exclude>**/TestDataFactory.java</exclude>
 						
 						
-						<exclude>**/TestVaultService.java</exclude>
+						
 						<exclude>**/TestBulkAccount.java</exclude>
 					<exclude>**/TestDataAuthorization.java</exclude>	
 						<exclude>**/TestAttributes.java</exclude>
@@ -80,7 +85,7 @@
 						
 						<exclude>**/TestUserRegistration.java</exclude>
 						
-						<exclude>**/TestBulkUser.java</exclude>	
+							
 						
 						<exclude>**/TestPerson.java</exclude>
 						

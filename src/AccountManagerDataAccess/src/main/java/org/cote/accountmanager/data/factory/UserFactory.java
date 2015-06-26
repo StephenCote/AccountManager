@@ -260,10 +260,13 @@ public class UserFactory extends NameIdFactory {
 					BulkFactories.getBulkFactory().setDirty(FactoryEnumType.STATISTICS);
 					BulkFactories.getBulkStatisticsFactory().addStatistics(stats);
 					BulkFactories.getBulkFactory().setDirty(FactoryEnumType.GROUP);
-					BulkFactories.getBulkGroupFactory().addGroup(home_dir);
+					//BulkFactories.getBulkGroupFactory().addGroup(home_dir);
+
+					BulkFactories.getBulkFactory().createBulkEntry(null,FactoryEnumType.GROUP,home_dir);
 					if(allot_contact_info){
 						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_user);
 						if(new_user.getId() > 0L){
+							sessionId = BulkFactories.getBulkFactory().getGlobalSessionId();
 							BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATION);
 							BulkFactories.getBulkContactInformationFactory().addContactInformation(cinfo);
 						}
@@ -274,6 +277,7 @@ public class UserFactory extends NameIdFactory {
 								logger.error("Invalid bulk session id");
 								throw new FactoryException("Invalid bulk session id");
 							}
+							BulkFactories.getBulkGroupFactory().addGroup(home_dir);
 							logger.debug("Bulk id discovered.  User=" + new_user.getId() + ". Diverting to Bulk " + FactoryEnumType.CONTACTINFORMATION + " Operation");
 							BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cinfo);
 
@@ -298,7 +302,8 @@ public class UserFactory extends NameIdFactory {
 				/// re-read home dir to get the right id / bulk id
 				///
 				home_dir = Factories.getGroupFactory().getDirectoryByName(new_user.getName(), Factories.getGroupFactory().getHomeDirectory(new_user.getOrganization()), new_user.getOrganization());
-				Factories.getGroupFactory().addDefaultUserGroups(new_user, home_dir, sessionId);
+				if(home_dir == null) throw new FactoryException("Missing home directory");
+				Factories.getGroupFactory().addDefaultUserGroups(new_user, home_dir, true,sessionId);
 				return true;
 			}
 		}

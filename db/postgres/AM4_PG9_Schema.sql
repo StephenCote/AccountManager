@@ -916,7 +916,7 @@ create table control (
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
-CREATE UNIQUE INDEX IdxControlReference on control(ReferenceId,ReferenceType);
+CREATE UNIQUE INDEX IdxControlReference on control(ControlType,ControlAction,ReferenceId,ReferenceType);
 CREATE UNIQUE INDEX IdxControlObjId ON control(ObjectId);
 
 create or replace view rolePersonRights as
