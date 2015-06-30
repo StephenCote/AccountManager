@@ -172,11 +172,14 @@
 		listOperations : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Operation"),sPath, iStartIndex, iRecordCount);
 		},
-		addOperation : function(sName, sType, iVal, oGroup){
+
+		addOperation : function(sName, sDesc, iScore, sType, sOp, oGroup){
 			var o = new org.cote.beans.operationType();
 			o.name = sName;
-			o.currencyType = sType;
-			o.value = iVal;
+			o.description = sDesc;
+			o.operationType = sType;
+			o.score = iScore;
+			o.operation = sOp;
 			if(oGroup){
 				o.group = accountManager.getCleanGroup(oGroup);
 			}
@@ -201,11 +204,15 @@
 		listFunctions : function(sPath, iStartIndex, iRecordCount){
 			return accountManager.serviceListInGroup(uwmServices.getService("Function"),sPath, iStartIndex, iRecordCount);
 		},
-		addFunction : function(sName, sType, iVal, oGroup){
+		addFunction : function(sName, sDesc, sType, iLog, iSco, sUrl,sUrn, oGroup){
 			var o = new org.cote.beans.operationType();
 			o.name = sName;
-			o.currencyType = sType;
-			o.value = iVal;
+			o.description = sDesc;
+			o.functionType = sType;
+			o.logicalOrder = iLog;
+			o.score = iSco;
+			o.sourceUrl = sUrl;
+			o.sourceUrn = sUrn;
 			if(oGroup){
 				o.group = accountManager.getCleanGroup(oGroup);
 			}

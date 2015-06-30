@@ -1,0 +1,94 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Logical Order:
+		</p>
+		<p>
+			<input type = "text"  rid = "logicalOrder" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Score:
+		</p>
+		<p>
+			<input type = "text" rid = "score" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Function Type:
+		</p>
+		<p>
+			<select rid = "functionType" bind = "${bean.rocketType}">
+			<option>UNKNOWN</option>
+			<option>JAVA</option>
+			<option>JAVASCRIPT</option>
+			<option>REST</option>
+			</select>
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Source Url:
+		</p>
+		<p>
+			<input type = "text" rid = "sourceUrl" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Source Urn:
+		</p>
+		<p>
+			<input type = "text" rid = "sourceUrn" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+			<input type = "button" class = "rocket-button" value = "..." onclick = "${this}.findType(1)" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.getProperties().referByUrn = 1;
+		},
+		addType : function(o){
+			Hemi.log("Add function type: " + o.name + ":" + o.functionType);
+			
+			return accountManagerRule.addFunction(o.name, o.description,o.functionType,o.logicalOrder, o.score, o.sourceUrl, o.sourceUrn, o.group);
+		},
+		findType : function(){
+
+			this.manageList("Data",0,"pickType");
+		},
+		pickType : function(t, o){
+			this.importType(o,1);
+			
+		},
+
+		importType : function(oBean,bSkipName){
+			o = this.getBean("rocketType");
+			var _s = this.getProperties();
+			if(!oBean.id || !oBean.nameType.match(/^(data)$/gi)){
+				Hemi.logError("Unsupported function import type " + oBean.nameType + " #" + oBean.id);
+				return;
+			}
+			this.GetElementByRID("sourceUrl").value = "";
+			this.GetElementByRID("sourceUrn").value = oBean.urn;
+
+			
+		},
+		prepareSave : function(o){
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>
+	
