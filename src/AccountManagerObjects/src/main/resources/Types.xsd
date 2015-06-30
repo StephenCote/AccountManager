@@ -412,6 +412,7 @@
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
     		<enumeration value="ADD"></enumeration>
+    		<enumeration value="EXECUTE"></enumeration>
     		<enumeration value="DELETE"></enumeration>
     		<enumeration value="MODIFY"></enumeration>
     		<enumeration value="READ"></enumeration>
