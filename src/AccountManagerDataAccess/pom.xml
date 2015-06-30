@@ -44,7 +44,7 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>false</skipTests>
+  					<skipTests>true</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine>  
 
   					<includes>
@@ -52,9 +52,10 @@
 					</includes>
 					<excludes>
 						<!-- 
-						<exclude>**/TestControlFactory.java</exclude>
+						<exclude>**/TestFunctionFactory.java</exclude>
 						
 						-->
+						<exclude>**/TestControlFactory.java</exclude>
 						<exclude>**/TestBulkPerson.java</exclude>
 						<exclude>**/TestBulkUser.java</exclude>
 						<exclude>**/TestCredentialFactory.java</exclude>
@@ -180,5 +181,10 @@
 			<artifactId>postgresql</artifactId>
 			<version>9.0-801.jdbc4</version>
 		</dependency>
+<dependency>
+	<groupId>org.beanshell</groupId>
+	<artifactId>bsh</artifactId>
+	<version>2.0b5</version>
+</dependency>
 	</dependencies>
 </project>

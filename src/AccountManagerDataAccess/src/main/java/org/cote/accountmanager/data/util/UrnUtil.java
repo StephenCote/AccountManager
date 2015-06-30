@@ -127,6 +127,8 @@ public class UrnUtil {
 					key = getEncodedGroupPath(tobj.getGroup()) + urnSeparator + tobj.getTagType().toString() + urnSeparator + tobj.getName();
 					break;
 				case DATA:
+					/// 2015/06/29 - the data URN is intentionally encoded to accomodate mixed case names that are otherwise conflicting when cast to lower case.
+ 
 					key = getEncodedGroupPath(((DataType)object).getGroup()) + urnSeparator + BinaryUtil.toBase64Str(object.getName());
 					break;
 				case NOTE:

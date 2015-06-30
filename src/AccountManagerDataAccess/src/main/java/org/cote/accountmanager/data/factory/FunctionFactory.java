@@ -122,8 +122,14 @@ public class FunctionFactory extends NameIdGroupFactory {
 			row.setCellValue("score", obj.getScore());
 			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
-			row.setCellValue("sourceurn", obj.getSourceUrn());
-			row.setCellValue("sourceurl", obj.getSourceUrl());
+			if(obj.getFunctionData() != null){
+				row.setCellValue("sourceurn", obj.getFunctionData().getUrn());
+				//row.setCellValue("sourceurl", obj.getSourceUrl());				
+			}
+			else{
+				row.setCellValue("sourceurn", obj.getSourceUrn());
+				row.setCellValue("sourceurl", obj.getSourceUrl());
+			}
 			if (insertRow(row)){
 				FunctionType cobj = (bulkMode ? obj : (FunctionType)getByName(obj.getName(), obj.getGroup()));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
