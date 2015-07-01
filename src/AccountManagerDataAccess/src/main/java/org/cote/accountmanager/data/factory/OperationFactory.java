@@ -207,29 +207,7 @@ public class OperationFactory extends NameIdGroupFactory {
 	public String getUrnCacheKey(String urn, OrganizationType org){
 		return urn + "-" + org.getId();
 	}
-	public OperationType getByUrn(String urn, OrganizationType organization){
-		OperationType operation = readCache(getUrnCacheKey(urn, organization));
-		if(operation != null){
-			return operation;
-		}
-		try {
-			List<OperationType> operations = getOperations(new QueryField[]{QueryFields.getFieldUrn(urn)},organization);
-			if(operations.size() >= 1){
-				operation = operations.get(0);
-				addToCache(operation, getUrnCacheKey(operation));
-				addToCache(operation);
-			}
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
-		return operation;
-	}
+	
 	public List<OperationType> getOperations(QueryField[] matches, OrganizationType organization) throws FactoryException, ArgumentException
 	{
 		List<NameIdType> lst = getByField(matches, organization.getId());

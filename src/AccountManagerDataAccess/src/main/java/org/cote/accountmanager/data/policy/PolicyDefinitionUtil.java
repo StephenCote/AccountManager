@@ -212,7 +212,7 @@ public class PolicyDefinitionUtil {
 					if(mFact.getFactType() == FactEnumType.OPERATION){
 						buff.append("\t\t\t\tOPERATION\t" + (mFact.getSourceUrl() != null ? mFact.getSourceUrl() : "IS NULL")+ "\n");
 						if(mFact.getSourceUrl() != null){
-							OperationType op = Factories.getOperationFactory().getByUrn(mFact.getSourceUrl(), mFact.getOrganization());
+							OperationType op = Factories.getOperationFactory().getByUrn(mFact.getSourceUrl());
 							buff.append("\t\t\t\turn\t" + op.getUrn()+ "\n");
 							buff.append("\t\t\t\toperationType\t" + op.getOperationType()+ "\n");
 							buff.append("\t\t\t\toperation\t" + op.getOperation()+ "\n");

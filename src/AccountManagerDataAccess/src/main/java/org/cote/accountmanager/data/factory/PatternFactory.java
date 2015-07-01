@@ -52,6 +52,7 @@ import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
+import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternType;
@@ -97,7 +98,7 @@ public class PatternFactory extends NameIdGroupFactory {
 		pattern.setOperation(null);
 		if(pattern.getFactUrn() != null) pattern.setFact((FactType)Factories.getFactFactory().getByUrn(pattern.getFactUrn()));
 		if(pattern.getMatchUrn() != null) pattern.setMatch((FactType)Factories.getFactFactory().getByUrn(pattern.getMatchUrn()));
-		if(pattern.getOperationUrn() != null) pattern.setOperation(Factories.getOperationFactory().getByUrn(pattern.getOperationUrn(), pattern.getOrganization()));
+		if(pattern.getOperationUrn() != null) pattern.setOperation((OperationType)Factories.getOperationFactory().getByUrn(pattern.getOperationUrn()));
 		pattern.setPopulated(true);
 		updateToCache(pattern);
 	}

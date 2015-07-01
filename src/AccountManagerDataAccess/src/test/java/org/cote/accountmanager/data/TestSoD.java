@@ -108,7 +108,7 @@ public class TestSoD extends BaseDataAccessTest{
 	private BasePermissionType getSodPermission(UserType user, String name, BasePermissionType parent) throws FactoryException, ArgumentException, DataAccessException{
 		return Factories.getPermissionFactory().getCreatePermission(user, name, PermissionEnumType.ACCOUNT, getPermissionBase(user), user.getOrganization());
 	}
-
+/*
 	private PolicyType getCreatePolicy(UserType user, String name, DirectoryGroupType dir){
 
 		PolicyType policy = null;
@@ -133,7 +133,8 @@ public class TestSoD extends BaseDataAccessTest{
 		}
 		return policy;
 	}
-	private PatternType getCreatePattern(UserType user, String name, String factUrn, String matchUrn, DirectoryGroupType dir){
+	*/
+	private PatternType getCreateSoDPattern(UserType user, String name, String factUrn, String matchUrn, DirectoryGroupType dir){
 
 		PatternType pattern = null;
 
@@ -160,7 +161,7 @@ public class TestSoD extends BaseDataAccessTest{
 		}
 		return pattern;
 	}
-
+/*
 	private RuleType getCreateRule(UserType user, String name, DirectoryGroupType dir){
 
 		RuleType rule = null;
@@ -186,7 +187,7 @@ public class TestSoD extends BaseDataAccessTest{
 		}
 		return rule;
 	}
-	
+	*/
 	private FactType getCreateGroupFact(UserType user, String name, DirectoryGroupType dir, DirectoryGroupType fDir){
 		FactType fact = null;
 		try {
@@ -421,8 +422,8 @@ public class TestSoD extends BaseDataAccessTest{
 
 			sodPol1 = getCreatePolicy(testUser, "SoD Policy 1",Factories.getGroupFactory().getCreatePath(testUser, "~/Policies", testUser.getOrganization()));
 			sodRule1 = getCreateRule(testUser,"SoD Rule 1",Factories.getGroupFactory().getCreatePath(testUser, "~/Rules", testUser.getOrganization()));
-			sodPat2 =  getCreatePattern(testUser,"SoD Pattern 2",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganization()));
-			sodPat1 =  getCreatePattern(testUser,"SoD Pattern 1",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganization()));
+			sodPat2 =  getCreateSoDPattern(testUser,"SoD Pattern 2",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganization()));
+			sodPat1 =  getCreateSoDPattern(testUser,"SoD Pattern 1",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganization()));
 			
 			pFact = getCreateAccountParameterFact(testUser,"Account Parameter", Factories.getGroupFactory().getCreatePath(testUser, "~/Facts", testUser.getOrganization()));
 			fact1 = getCreateGroupFact(testUser,"Activity 1", Factories.getGroupFactory().getCreatePath(testUser, "~/Facts", testUser.getOrganization()),sodChildAct1);
@@ -431,13 +432,13 @@ public class TestSoD extends BaseDataAccessTest{
 			sodPat2.setMatchUrn(fact2.getUrn());
 			sodPat2.setLogicalOrder(2);
 			Factories.getPatternFactory().updatePattern(sodPat2);
-			sodPat2 =  getCreatePattern(testUser,"SoD Pattern 2",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganization()));
+			sodPat2 =  getCreateSoDPattern(testUser,"SoD Pattern 2",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganization()));
 			
 			sodPat1.setFactUrn(pFact.getUrn());
 			sodPat1.setMatchUrn(fact1.getUrn());
 			sodPat1.setLogicalOrder(1);
 			Factories.getPatternFactory().updatePattern(sodPat1);
-			sodPat1 =  getCreatePattern(testUser,"SoD Pattern 1",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganization()));
+			sodPat1 =  getCreateSoDPattern(testUser,"SoD Pattern 1",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganization()));
 			sodRule1.getPatterns().clear();
 			//sodRule1.getPatterns().add(sodPat0);
 			sodRule1.getPatterns().add(sodPat1);
