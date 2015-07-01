@@ -29,7 +29,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -64,7 +66,7 @@ public class BshService {
 	//private static ScriptEngine jsEngine = null;
 	//private static Map<String,CompiledScript> jsCompiled = new HashMap<String,CompiledScript>();
 
-	public static Object run(UserType user,FunctionType func) throws ArgumentException{
+	public static Object run(UserType user,Map<String,Object> params,FunctionType func) throws ArgumentException{
 		byte[] value = null;
 		if(func.getFunctionType() != FunctionEnumType.JAVA) throw new ArgumentException("FunctionType '" + func.getFunctionType().toString() + "' is not applicable");
 		DataType data = func.getFunctionData();
@@ -73,17 +75,11 @@ public class BshService {
 		}
 		if(data == null) throw new ArgumentException("Function '" + func.getName() + "' data is null");
 		else if(data.getDetailsOnly() == true) throw new ArgumentException("Function data is not properly loaded");
-		try {
-			
-			value = DataUtil.getValue(data);
-		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return run(user,value,false);
+
+		return run(user,params,data);
 	}
 	
-	public static Object run(UserType user,DataType data){
+	public static Object run(UserType user,Map<String,Object> params,DataType data){
 		byte[] value = null;
 		try {
 			value = DataUtil.getValue(data);
@@ -91,9 +87,9 @@ public class BshService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return run(user,value,false);
+		return runWithParams(user,params,value,false);
 	}
-	public static Object run(UserType user,String script,boolean parseOnly){
+	public static Object run(UserType user,Map<String,Object> params,String script,boolean parseOnly){
 		byte[]  bytes = new byte[0];
 		try {
 			bytes = script.getBytes("UTF-8");
@@ -101,18 +97,22 @@ public class BshService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return run(user,bytes,parseOnly);
+		return runWithParams(user,params,bytes,parseOnly);
 	}
-	public static Object run(UserType user,byte[] script,boolean parseOnly){
+	public static Object runWithParams(UserType contextUser,Map<String,Object> params,byte[] script,boolean parseOnly){
 		Object out_obj = null;
-		Interpreter intr = new Interpreter();
+		AuditType audit = null;
+		if(contextUser != null) audit = AuditService.beginAudit(ActionEnumType.EXECUTE, "BeanShell Script", AuditEnumType.USER, contextUser.getName() + "(#" + contextUser.getId() + ")");
+		else audit = AuditService.beginAudit(ActionEnumType.EXECUTE, "BeanShell Script", AuditEnumType.USER, "Anonymous user");
+		boolean bComp = false;
 		try {
-			Factories.getUserFactory().populate(user);
-			Factories.getAttributeFactory().populateAttributes(user);
-			AuditType audit = AuditService.beginAudit(ActionEnumType.EXECUTE, "BeanShell Script", AuditEnumType.USER, user.getName() + "(#" + user.getId() + ")");
-			AuditService.targetAudit(audit, AuditEnumType.DATA, "BeanShell Script");
-			DirectoryGroupType homeDir = Factories.getGroupFactory().getUserDirectory(user);
+			if(contextUser != null){
+				Factories.getUserFactory().populate(contextUser);
+				Factories.getAttributeFactory().populateAttributes(contextUser);
+			}
 
+			AuditService.targetAudit(audit, AuditEnumType.DATA, "BeanShell Script");
+			
 			byte[] header = getAM5Import();
 			byte[] mergeScript =ArrayUtils.addAll(header,script);
 			BufferedReader buff = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(mergeScript)));
@@ -127,13 +127,14 @@ public class BshService {
 				}
 			}
 			else{
-				intr.set("user",user);
-				intr.set("organization", user.getOrganization());
-				intr.set("home",homeDir);
+				Interpreter intr = getInterpreter(contextUser,params);
 				intr.set("audit",audit);
 				out_obj = intr.eval(buff);
+
 			}
 			buff.close();
+			bComp = true;
+			
 			
 		} catch (EvalError e) {
 			// TODO Auto-generated catch block
@@ -152,7 +153,43 @@ public class BshService {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
+		if(bComp) AuditService.permitResult(audit, "Completed execution");
+		else AuditService.denyResult(audit, "Failed to complete execution");
 		return out_obj;
+	}
+	
+	public static Interpreter getInterpreter(UserType contextUser,Map<String,Object> params){
+		Interpreter intr = new Interpreter();
+		try{
+			if(contextUser != null){
+				DirectoryGroupType homeDir = Factories.getGroupFactory().getUserDirectory(contextUser);
+				intr.set("user",contextUser);
+				intr.set("organization", contextUser.getOrganization());
+				intr.set("home",homeDir);
+			}
+			if(params != null){
+				Iterator<String> keys = params.keySet().iterator();
+				while(keys.hasNext()){
+					String key = keys.next();
+					//logger.info("Setting param '" + key + "'");
+					intr.set(key,params.get(key));
+				}
+			}
+		}
+		catch (EvalError e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return intr;
 	}
 	
 	private static byte[] getAM5Import(){

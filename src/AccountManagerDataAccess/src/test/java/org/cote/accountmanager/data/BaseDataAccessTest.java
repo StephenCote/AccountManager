@@ -16,21 +16,32 @@ import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.ServiceUtil;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.DataException;
-
 import org.cote.accountmanager.objects.BasePermissionType;
+import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.FactEnumType;
+import org.cote.accountmanager.objects.FactType;
+import org.cote.accountmanager.objects.FunctionEnumType;
+import org.cote.accountmanager.objects.FunctionType;
+import org.cote.accountmanager.objects.OperationEnumType;
+import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PatternEnumType;
+import org.cote.accountmanager.objects.PatternType;
+import org.cote.accountmanager.objects.PolicyType;
+import org.cote.accountmanager.objects.RuleEnumType;
+import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
-
+import org.cote.accountmanager.objects.types.ComparatorEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.DataUtil;
-
 import org.junit.After;
 import org.junit.Before;
 
@@ -261,5 +272,196 @@ public class BaseDataAccessTest{
 		
 		return per;
 	}
+	
+
+	public FactType getCreateStaticFact(UserType user,String name, String val, DirectoryGroupType fdir) throws ArgumentException, FactoryException{
+		FactType srcFact = Factories.getFactFactory().getByName(name, fdir);
+		if(srcFact != null) return srcFact;
+		srcFact = Factories.getFactFactory().newFact(user, fdir);
+		srcFact.setName(name);
+		srcFact.setFactType(FactEnumType.STATIC);
+		srcFact.setFactData(val);
+		Factories.getFactFactory().addFact(srcFact);
+		return srcFact;
+	}
+	public PatternType getCreatePattern(UserType user, String name, String factUrn, String matchUrn, DirectoryGroupType dir){
+
+		PatternType pattern = null;
+
+		try {
+			pattern = Factories.getPatternFactory().getByName(name, dir);
+			/*
+			if(pattern != null){
+				Factories.getPatternFactory().deletePattern(pattern);
+				pattern = null;
+			}
+			*/
+			if(pattern == null){
+				pattern = Factories.getPatternFactory().newPattern(testUser, dir);
+				pattern.setName(name);
+				pattern.setPatternType(PatternEnumType.EXPRESSION);
+				pattern.setComparator(ComparatorEnumType.EQUALS);
+
+				pattern.setFactUrn(factUrn);
+				pattern.setMatchUrn(matchUrn);
+				if(Factories.getPatternFactory().addPattern(pattern)){
+					pattern = Factories.getPatternFactory().getByName(name, dir);
+				}
+				else pattern = null;
+			}
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return pattern;
+	}
+	public RuleType getCreateRule(UserType user, String name, DirectoryGroupType dir){
+
+		RuleType rule = null;
+
+		try {
+			rule = Factories.getRuleFactory().getByName(name, dir);
+			if(rule != null){
+				Factories.getRuleFactory().deleteRule(rule);
+				rule = null;
+			}
+			if(rule == null){
+				rule = Factories.getRuleFactory().newRule(testUser, dir);
+				rule.setName(name);
+				rule.setRuleType(RuleEnumType.PERMIT);
+				rule.setCondition(ConditionEnumType.ALL);
+				if(Factories.getRuleFactory().addRule(rule)){
+					rule = Factories.getRuleFactory().getByName(name, dir);
+				}
+				else rule = null;
+			}
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return rule;
+	}
+	
+	public OperationType getCreateOperation(UserType user, String name, String className, DirectoryGroupType dir) throws FactoryException, ArgumentException{
+		OperationType op = Factories.getOperationFactory().getByName(name, dir);
+		/*
+		if(op2 != null){
+			Factories.getOperationFactory().deleteOperation(op2);
+			op2 = null;
+		}
+		*/
+		if(op == null){
+			op = Factories.getOperationFactory().newOperation(testUser, dir);
+			op.setName(name);
+			op.setOperationType(OperationEnumType.INTERNAL);
+			op.setOperation(className);
+			Factories.getOperationFactory().addOperation(op);
+			op = Factories.getOperationFactory().getByName(name, dir);
+		}
+		return op;
+	}
+	
+	public PolicyType getCreatePolicy(UserType user, String name, DirectoryGroupType dir){
+
+		PolicyType policy = null;
+
+		try {
+			policy = Factories.getPolicyFactory().getByName(name, dir);
+			if(policy != null){
+				Factories.getPolicyFactory().deletePolicy(policy);
+				policy = null;
+			}
+			if(policy == null){
+				policy = Factories.getPolicyFactory().newPolicy(testUser, dir);
+				policy.setCondition(ConditionEnumType.ALL);
+				policy.setName(name);
+
+				if(Factories.getPolicyFactory().addPolicy(policy)){
+					policy = Factories.getPolicyFactory().getByName(name, dir);
+				}
+				else policy = null;
+			}
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return policy;
+	}
+	
+	public FactType getCreateCredentialParamFact(UserType user,String name, DirectoryGroupType fdir) throws ArgumentException, FactoryException{
+		FactType srcFact = Factories.getFactFactory().getByName(name, fdir);
+		if(srcFact != null) return srcFact;
+		srcFact = Factories.getFactFactory().newFact(user, fdir);
+		srcFact.setName(name);
+		srcFact.setFactType(FactEnumType.PARAMETER);
+		srcFact.setFactoryType(FactoryEnumType.CREDENTIAL);
+		Factories.getFactFactory().addFact(srcFact);
+		return srcFact;
+	}
+	public static FunctionType getCreateFunction(UserType user, String name, DataType data, DirectoryGroupType dir){
+		FunctionType func = null;
+		try{
+			func = Factories.getFunctionFactory().getByName(name, dir);
+			if(func != null){
+				Factories.getFunctionFactory().deleteFunction(func);
+				func = null;
+			}
+			if(func == null){
+				func = Factories.getFunctionFactory().newFunction(user, dir);
+				func.setName(name);
+				func.setFunctionType(FunctionEnumType.JAVA);
+				func.setFunctionData(data);
+				Factories.getFunctionFactory().addFunction(func);
+				func = Factories.getFunctionFactory().getByName(name, dir);
+			}
+		}
+		catch(FactoryException e){
+			logger.error(e.getMessage());
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+		} 
+		return func;
+	}
+	public static DataType getCreateTextData(UserType user, String name, String script, DirectoryGroupType dir){
+		
+		DataType bsh = null;
+		try{
+			bsh = Factories.getDataFactory().getDataByName(name,false,dir);
+			DirectoryGroupType ddir = Factories.getGroupFactory().getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganization());
+			if(bsh != null){
+				Factories.getDataFactory().deleteData(bsh);
+				bsh = null;
+			}
+			if(bsh == null){
+				bsh = Factories.getDataFactory().newData(user, ddir);
+				bsh.setName(name);
+				bsh.setMimeType("text/plain");
+				DataUtil.setValueString(bsh,script);
+				Factories.getDataFactory().addData(bsh);
+				bsh = Factories.getDataFactory().getDataByName(name,false,ddir);
+			}
+		}
+		catch(FactoryException e){
+			logger.error(e.getMessage());
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+		}
+		return bsh;
+	}
+
 	
 }

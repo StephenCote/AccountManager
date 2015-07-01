@@ -26,7 +26,9 @@ package org.cote.accountmanager.data.policy;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -39,6 +41,7 @@ import org.cote.accountmanager.data.fact.FactUtil;
 import org.cote.accountmanager.data.operation.IOperation;
 import org.cote.accountmanager.data.operation.OperationUtil;
 import org.cote.accountmanager.data.rule.RuleUtil;
+import org.cote.accountmanager.data.services.BshService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.sod.SoDPolicyUtil;
 import org.cote.accountmanager.objects.AccountType;
@@ -49,6 +52,7 @@ import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
+import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.OperationType;
@@ -458,7 +462,7 @@ public class PolicyEvaluator {
 	public static OperationResponseEnumType evaluateOperation(PatternType pattern, FactType fact, FactType matchFact, String operation) throws ArgumentException{
 		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
 		logger.info("Evaluating operation: " + operation);
-		OperationType op = Factories.getOperationFactory().getByUrn(operation, pattern.getOrganization());
+		OperationType op = Factories.getOperationFactory().getByUrn(operation);
 		if(op == null){
 			throw new ArgumentException("Operation is null");
 		}
@@ -467,6 +471,25 @@ public class PolicyEvaluator {
 				IOperation oper = OperationUtil.getOperationInstance(op.getOperation());
 				if(oper == null) out_response = OperationResponseEnumType.ERROR;
 				else out_response = oper.operate(pattern, fact, matchFact);
+				break;
+			case FUNCTION:
+				FunctionType func = Factories.getFunctionFactory().getByUrn(op.getOperation());
+				if(func == null){
+					throw new ArgumentException("Operation Function '" + op.getOperation() + "' is null");
+				}
+				Map<String,Object> params = new HashMap<String,Object>();
+				params.put("pattern", pattern);
+				params.put("fact", fact);
+				params.put("match", matchFact);
+				Object resp = BshService.run(null, params, func);
+				if(resp == null){
+					logger.error("BeanShell did not return an OperationResponseEnumType value");
+					out_response = OperationResponseEnumType.ERROR;
+				}
+				else{
+					out_response = (OperationResponseEnumType)resp;
+				}
+				
 				break;
 			default:
 				logger.error("Unhandled operation type: " + op.getOperationType());
