@@ -315,10 +315,27 @@
     		<enumeration value="GENERAL"></enumeration>
     		<enumeration value="STATE"></enumeration>
     		<enumeration value="MESSAGE"></enumeration>
+    		<enumeration value="QUEUE"></enumeration>
     		<enumeration value="DATA"></enumeration>
     	</restriction>
     </simpleType>
-
+    <simpleType name="SpoolStatusEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ERROR"></enumeration>
+    		<enumeration value="QUEUEING"></enumeration>
+    		<enumeration value="QUEUED"></enumeration>
+    		<enumeration value="TRANSMITTING"></enumeration>
+    		<enumeration value="TRANSMITTED"></enumeration>
+    		<enumeration value="SPOOLING"></enumeration>
+    		<enumeration value="SPOOLED"></enumeration>
+    		<enumeration value="ACKNOWLEGED_RECEIPT"></enumeration>
+    		<enumeration value="RESPONDED"></enumeration>
+    		<enumeration value="PERSISTED"></enumeration>
+    		<enumeration value="REJECTED"></enumeration>
+    		<enumeration value="DELETED"></enumeration>
+    	</restriction>
+    </simpleType>
     <simpleType name="SecurityTokenQueueEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
@@ -497,6 +514,8 @@
     <simpleType name="FactoryEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="MESSAGE"></enumeration>
+    		<enumeration value="SECURITYTOKEN"></enumeration>
     		<enumeration value="SYMMETRICKEY"></enumeration>
     		<enumeration value="ASYMMETRICKEY"></enumeration>
     		<enumeration value="CONTROL"></enumeration>

@@ -28,11 +28,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
@@ -50,12 +53,15 @@ import org.cote.accountmanager.objects.MessageSpoolType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.types.SpoolBucketEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
+import org.cote.accountmanager.objects.types.SpoolStatusEnumType;
 import org.cote.accountmanager.objects.types.ValueEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
-public class SpoolFactory extends FactoryBase {
+public abstract class SpoolFactory extends FactoryBase {
 	private Map<String, String> typeNameIdMap = null;
 	private Map<String,Integer> typeNameMap = null;
 	private Map<String,Integer> typeIdMap = null;
@@ -79,24 +85,64 @@ public class SpoolFactory extends FactoryBase {
 			table.setRestrictUpdateColumn("spoolguid", true);
 		}
 	}
+	
+	public <T> T newSpoolEntry(SpoolBucketEnumType type) throws ArgumentException{
+		BaseSpoolType spoolItem = null;
+		switch(type){
+			case MESSAGE_QUEUE: spoolItem = new MessageSpoolType();break;
+			case SECURITY_TOKEN: spoolItem = new SecuritySpoolType();break;
+			default: throw new ArgumentException("Unsupported spool type: " + type.toString());
+		}
+		spoolItem.setSpoolBucketType(type);
+		spoolItem.setGuid(UUID.randomUUID().toString());
+		spoolItem.setOwnerId(0L);
+		spoolItem.setValueType(ValueEnumType.UNKNOWN);
+		spoolItem.setCreated(CalendarUtil.getXmlGregorianCalendar(Calendar.getInstance().getTime()));
+		spoolItem.setExpiration(spoolItem.getCreated());
+		spoolItem.setExpires(true);
+		spoolItem.setSpoolStatus(SpoolStatusEnumType.UNKNOWN);
+		spoolItem.setRecipientId(0L);
+		spoolItem.setRecipientType(FactoryEnumType.UNKNOWN);
+		spoolItem.setReferenceId(0L);
+		spoolItem.setReferenceType(FactoryEnumType.UNKNOWN);
+		spoolItem.setTransportId(0L);
+		spoolItem.setTransportType(FactoryEnumType.UNKNOWN);
+		spoolItem.setCredentialId(0L);
+		spoolItem.setCurrentLevel(0);
+		spoolItem.setEndLevel(0);
+		
+		return (T)spoolItem;
+	}
+	
 	public DataRow prepareAdd(BaseSpoolType obj, String tableName) throws FactoryException{
 		DataTable table = getDataTable(tableName);
 		if(table == null) throw new FactoryException("Table doesn't exist:" + tableName);
 		DataRow row = table.newRow();
 		try{
-			row.setCellValue("spoolguid", obj.getGuid());
+			row.setCellValue("guid", obj.getGuid());
+			row.setCellValue("parentguid", obj.getParentGuid());
 			row.setCellValue("spoolbucketname", obj.getSpoolBucketName().toString());
 			row.setCellValue("spoolbuckettype",obj.getSpoolBucketType().toString());
-			row.setCellValue("spoolcreated", obj.getCreated());
-			row.setCellValue("spoolexpiration", obj.getExpiration());
-			row.setCellValue("spoolexpires", obj.getExpires());
-			row.setCellValue("spoolname", obj.getName());
+			row.setCellValue("createddate", obj.getCreated());
+			row.setCellValue("expirationdate", obj.getExpiration());
+			row.setCellValue("expires", obj.getExpires());
+			row.setCellValue("name", obj.getName());
 			if(obj.getData() != null) row.setCellValue("spooldata", obj.getData());
-			row.setCellValue("spoolstatus", obj.getSpoolStatus());
-			row.setCellValue("spoolownerid", obj.getOwnerId());
+			row.setCellValue("spoolstatus", obj.getSpoolStatus().toString());
+			row.setCellValue("ownerid", obj.getOwnerId());
 			if(obj.getGroup() != null) row.setCellValue("groupid", obj.getGroup().getId());
 			if(scopeToOrganization) row.setCellValue("organizationid", obj.getOrganization().getId());
 			row.setCellValue("spoolvaluetype", obj.getValueType().toString());
+			row.setCellValue("credentialid", obj.getCredentialId());
+			row.setCellValue("referenceid", obj.getReferenceId());
+			row.setCellValue("referencetype", obj.getReferenceType().toString());
+			row.setCellValue("recipientid", obj.getRecipientId());
+			row.setCellValue("recipienttype", obj.getRecipientType().toString());
+			row.setCellValue("transportid", obj.getTransportId());
+			row.setCellValue("transporttype", obj.getTransportType().toString());
+			row.setCellValue("currentlevel", obj.getCurrentLevel());
+			row.setCellValue("endlevel", obj.getEndLevel());
+			row.setCellValue("classification", obj.getClassification());
 		}
 		catch(DataAccessException dae){
 			throw new FactoryException(dae.getMessage());
@@ -125,7 +171,7 @@ public class SpoolFactory extends FactoryBase {
 		DataTable table = this.dataTables.get(0);
 		String selectString = getSelectTemplate(table, instruction);
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, organization_id);
-		System.out.println(sqlQuery);
+		//System.out.println(sqlQuery);
 		try {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
@@ -159,20 +205,31 @@ public class SpoolFactory extends FactoryBase {
 
 	protected BaseSpoolType read(ResultSet rset, BaseSpoolType obj) throws SQLException, FactoryException, ArgumentException
 	{
-		obj.setGuid(rset.getString("spoolguid"));
-		obj.setOwnerId(rset.getLong("spoolownerid"));
+		obj.setGuid(rset.getString("guid"));
+		obj.setParentGuid(rset.getString("parentguid"));
+		obj.setOwnerId(rset.getLong("ownerid"));
 		obj.setOrganization(Factories.getOrganizationFactory().getOrganizationById(rset.getLong("organizationid")));
 		obj.setGroup(Factories.getGroupFactory().getDirectoryById(rset.getLong("groupid"), obj.getOrganization()));
 
 		obj.setSpoolBucketName(SpoolNameEnumType.valueOf(rset.getString("spoolbucketname")));
 		obj.setSpoolBucketType(SpoolBucketEnumType.valueOf(rset.getString("spoolbuckettype")));
 		obj.setValueType(ValueEnumType.valueOf(rset.getString("spoolvaluetype")));
-		obj.setName(rset.getString("spoolname"));
-		obj.setData(rset.getString("spooldata"));
-		obj.setCreated(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("spoolcreated")));
-		obj.setExpiration(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("spoolexpiration")));
-		obj.setExpires(rset.getBoolean("spoolexpires"));
-		obj.setSpoolStatus(rset.getInt("spoolstatus"));
+		obj.setSpoolStatus(SpoolStatusEnumType.valueOf(rset.getString("spoolstatus")));
+		obj.setName(rset.getString("name"));
+		obj.setData(rset.getBytes("spooldata"));
+		obj.setCreated(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		obj.setExpiration(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		obj.setExpires(rset.getBoolean("expires"));
+		obj.setReferenceId(rset.getLong("referenceid"));
+		obj.setReferenceType(FactoryEnumType.valueOf(rset.getString("referencetype")));
+		obj.setRecipientId(rset.getLong("recipientid"));
+		obj.setRecipientType(FactoryEnumType.valueOf(rset.getString("recipienttype")));
+		obj.setTransportId(rset.getLong("transportid"));
+		obj.setTransportType(FactoryEnumType.valueOf(rset.getString("transporttype")));
+		obj.setCredentialId(rset.getLong("credentialid"));
+		obj.setCurrentLevel(rset.getInt("currentlevel"));
+		obj.setEndLevel(rset.getInt("endlevel"));
+		obj.setClassification(rset.getString("classification"));
 		
 		return obj;
 	}
@@ -190,7 +247,7 @@ public class SpoolFactory extends FactoryBase {
 		List<QueryField> queryFields = new ArrayList<QueryField>();
 		List<QueryField> updateFields = new ArrayList<QueryField>();
 
-		queryFields.add(QueryFields.getFieldSpoolGuid(map));
+		queryFields.add(QueryFields.getFieldGuid(map.getGuid()));
 		queryFields.add(QueryFields.getFieldOrganization(map.getOrganization().getId()));
 		setNameIdFields(updateFields, map);
 		setFactoryFields(updateFields, map, instruction);
@@ -220,18 +277,29 @@ public class SpoolFactory extends FactoryBase {
 		return (updated > 0);
 	}
 	public void setFactoryFields(List<QueryField> fields, BaseSpoolType map, ProcessingInstructionType instruction){
+		fields.add(QueryFields.getFieldParentGuid(map.getParentGuid()));
 		fields.add(QueryFields.getFieldSpoolBucketName(map.getSpoolBucketName()));
 		fields.add(QueryFields.getFieldSpoolBucketType(map.getSpoolBucketType()));
 		fields.add(QueryFields.getFieldSpoolData(map.getData()));
 		fields.add(QueryFields.getFieldSpoolValueType(map.getValueType()));
-		fields.add(QueryFields.getFieldSpoolExpiration(map.getExpiration()));
-		fields.add(QueryFields.getFieldSpoolExpires(map.getExpires()));
+		fields.add(QueryFields.getFieldExpirationDate(map.getExpiration()));
+		fields.add(QueryFields.getFieldExpires(map.getExpires()));
 		fields.add(QueryFields.getFieldGroup((map.getGroup() != null ? map.getGroup().getId() : 0)));
 		fields.add(QueryFields.getFieldSpoolStatus(map.getSpoolStatus()));
+		fields.add(QueryFields.getFieldCredentialId(map.getCredentialId()));
+		fields.add(QueryFields.getFieldReferenceId(map.getReferenceId()));
+		fields.add(QueryFields.getFieldReferenceType(map.getReferenceType()));
+		fields.add(QueryFields.getFieldRecipientId(map.getRecipientId()));
+		fields.add(QueryFields.getFieldRecipientType(map.getRecipientType()));
+		fields.add(QueryFields.getFieldTransportId(map.getTransportId()));
+		fields.add(QueryFields.getFieldTransportType(map.getTransportType()));
+		fields.add(QueryFields.getFieldCurrentLevel(map.getCurrentLevel()));
+		fields.add(QueryFields.getFieldEndLevel(map.getEndLevel()));
+		fields.add(QueryFields.getFieldClassification(map.getClassification()));
 	}
 	private void setNameIdFields(List<QueryField> fields, BaseSpoolType map){
-			fields.add(QueryFields.getFieldSpoolName(map));
-			fields.add(QueryFields.getFieldSpoolOwner(map));
+			fields.add(QueryFields.getFieldName(map.getName()));
+			fields.add(QueryFields.getFieldOwner(map.getOwnerId()));
 			if(scopeToOrganization) fields.add(QueryFields.getFieldOrganization(map.getOrganization().getId()));
 	}
 
@@ -244,7 +312,7 @@ public class SpoolFactory extends FactoryBase {
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 
-		instruction.setOrderClause("spoolcreated ASC,spoolname ASC");
+		instruction.setOrderClause("createddate ASC,name ASC");
 		instruction.setPaginate(true);
 		instruction.setRecordCount(recordCount);
 		instruction.setStartIndex(startIndex);

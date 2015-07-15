@@ -95,6 +95,7 @@ public class ContactInformationFactory extends NameIdFactory {
 		return deleteContactInformationByReferenceIds(new long[]{map.getId()},map.getOrganization().getId());
 	}
 	public boolean deleteContactInformationByReferenceIds(long[] ids, long organizationId){
+		
 		int deleted = deleteByBigIntField("referenceid",ids,organizationId);
 		return (deleted > 0);
 	}

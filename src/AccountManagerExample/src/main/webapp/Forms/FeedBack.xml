@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template Title = "Send Feedback">
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+
+	<div class = "rocket-column-2">
+		<p>
+			Email:
+		</p>
+		<p>
+			<input placeholder = "optional" type = "text" class = "rocket-text" rid = "email" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Subject:
+		</p>
+		<p>
+			<input type = "text" class = "rocket-text" rid = "subject" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>Content:</p>
+		<p><textarea class = "rocket-text" rid = "content"></textarea></p>
+ 	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Send:
+		</p>
+		<p>
+			<input rid = "btnSend" type = "button" value = "Send" onclick = "${this}.send()" />
+		</p>
+	</div>
+	<p rid = "statusContainer" style = "display:none;"><span rid = "status">[ ... ]</span></p>
+	<embedded-script>
+		<![CDATA[
+		// Requires TemplateTools to be included
+		//
+		template_init : function(){
+			this.GetElementByRID("subject").focus();
+			if(!this.setStatus){
+				this.setStatus = this._setStatus;
+				this.GetElementByRID("statusContainer").style.display = "block";
+				this.setStatus(" ");
+			}
+		},
+
+		send : function(){
+			if(!this.validate()) return;
+			var sSubject = this.GetFormValue("subject");
+			var sContent = this.GetFormValue("content");
+			this.setStatus(" ");
+			this.GetElementByRID("btnSend").disabled = true;
+			if(accountManager.sendFeedback(sSubject, sContent)){
+				this.setStatus("Feedback submitted");
+			}
+			else{
+				this.setStatus("Unabled to submit feedback at this time.");
+			}
+		},
+
+		validate : function(){
+		
+			try{
+				this.Assert(this.ValidateForPattern("subject","not-empty"),"Subject is empty");
+				this.Assert(this.ValidateForPattern("content","not-empty"),"Content is empty");
+			}
+			catch(e){
+				this.setStatus((typeof e== "string" ? e : e.message ? e.message : e.description));
+				return 0;
+			}
+			return 1;
+		},
+		_setStatus : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+		}
+		]]>
+	</embedded-script>
+</Template>

@@ -57,6 +57,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.ContactInformationEnumType;
@@ -120,7 +121,15 @@ public class PersonFactory extends NameIdGroupFactory {
 	{
 		if (user == null || user.getId().equals(0L)) throw new ArgumentException("Invalid owner");
 		PersonType obj = new PersonType();
-
+		obj.setAlias("");
+		obj.setDescription("");
+		obj.setFirstName("");
+		obj.setGender("");
+		obj.setLastName("");
+		obj.setMiddleName("");
+		obj.setPrefix("");
+		obj.setSuffix("");
+		obj.setTitle("");
 		obj.setOrganization(group.getOrganization());
 		obj.setOwnerId(user.getId());
 		obj.setGroup(group);
@@ -541,6 +550,41 @@ public class PersonFactory extends NameIdGroupFactory {
 		//return search(fields, instruction, organization);
 		return persons;
 */
+	}
+	
+	public UserType getUserPerson(PersonType person){
+		UserType user = null;
+		try{
+			UserParticipantType[] parts = Factories.getPersonParticipationFactory().getUserParticipations(person).toArray(new UserParticipantType[0]);
+			if(parts.length > 0){
+				DirectoryGroupType pdir = Factories.getGroupFactory().getDirectoryByName("Persons",Factories.getGroupFactory().getRootDirectory(person.getOrganization()),person.getOrganization());
+				if(pdir == null){
+					logger.warn("Root Persons directory not found");
+					return null;
+				}
+				QueryField field = QueryFields.getFieldParticipantIds(parts);
+				QueryField group = QueryFields.getFieldGroup(pdir.getId());
+				List<UserType> users =  Factories.getUserFactory().getUserList(new QueryField[]{ field,group }, 0, 0, person.getOrganization());
+				if(users.size() == 1){
+					user = users.get(0);
+				}
+				else{
+					logger.warn("Found zero or more than one match for the user's person object");
+					
+				}
+				//items = getUsersFromParticipations(parts, 0, 0, participation.getOrganization());
+			}
+		}
+		catch(FactoryException fe){
+			logger.error(fe.getMessage());
+			fe.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+
+		return user;
 	}
 
 

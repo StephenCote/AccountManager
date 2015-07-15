@@ -90,7 +90,7 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	protected void addDefaultUserGroups(UserType user, DirectoryGroupType hDir, boolean isBulk, String sessionId) throws FactoryException, ArgumentException{
 
-		String[] dirNames = new String[]{"Data","Contacts","Addresses","Persons","Accounts"};
+		String[] dirNames = new String[]{"Roles","Data","Contacts","Addresses","Persons","Accounts"};
 		for(int i = 0; i < dirNames.length;i++){
 			DirectoryGroupType ddir = newDirectoryGroup(user,dirNames[i],hDir,user.getOrganization());
 			if(isBulk) BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, ddir);

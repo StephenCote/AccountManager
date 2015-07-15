@@ -129,6 +129,7 @@ public class MimeUtil {
 		types.put("csh","text/x-script.csh");
 		types.put("css","application/x-pointplus");
 		types.put("css","text/css");
+		types.put("csv","text/csv");
 		types.put("cxx","text/plain");
 		types.put("dcr","application/x-director");
 		types.put("deepv","application/x-deepv");
@@ -651,6 +652,7 @@ public class MimeUtil {
 		types.put("xlm","application/excel");
 		types.put("xlm","application/vnd.ms-excel");
 		types.put("xlm","application/x-excel");
+		types.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		types.put("xls","application/excel");
 		types.put("xls","application/vnd.ms-excel");
 		types.put("xls","application/x-excel");

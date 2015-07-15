@@ -21,7 +21,7 @@
 			Description:
 		</p>
 		<p>
-			<textarea rid = "description" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short"></textarea>
+			<input rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
 	<div class = "rocket-column-2" rid = "dataTypeContainer">
@@ -50,7 +50,7 @@
 			Data:
 		</p>
 		<p>
-			<textarea rid = "textData" class = "rocket-text rocket-text-long"></textarea>
+			<textarea rid = "textData" onfocus = "${this}.showTextFloat()" class = "rocket-text rocket-text-long"></textarea>
 		</p>
 	</div>
 	<div rid = "binaryContainer" class = "rocket-column-2">
@@ -88,13 +88,14 @@
 			<input type = "date" component = "calendar" rid = "expiryDate" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
-	
+	<textarea rid = "textDataFloat" style = "z-index:250;display:none;position:absolute;top:0px;left:0px;width:250px;height:250px;" onblur = "${this}.hideTextFloat()"></textarea>
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
 			var oSel = this.GetElementByRID("mimeType");
 			if(oSel.selectedIndex == -1) oSel.value = "binary";
 			this.changeDataType();
 			this.displayData();
+			//this.local_handle_resize = this.resizers;
 			
 		},
 		embedded_destroy : function(){
@@ -102,6 +103,25 @@
 				Hemi.message.service.unsubscribe("frame_announcement",this._prehandle_frame_announcement);
 				Hemi.message.service.unsubscribe("frame_response",this._prehandle_frame_response);
 			}
+		},
+		resizers : function(){
+			//this.ResizeFrame(this.GetElementByRID("textDataFloat"));
+			this.GetElementByRID("textDataFloat").style.height = (this.getContainer().clientHeight - (this.getObjects().title_bar.offsetHeight + this.getObjects().status_bar.offsetHeight)) + "px";
+			this.GetElementByRID("textDataFloat").style.width = "100%";
+		},
+		showTextFloat : function(){
+			this.GetElementByRID("textDataFloat").style.top = (this.getObjects().title_bar ? this.getObjects().title_bar.offsetHeight + "px" : "0px");
+			// (this.getBody ? this.getBody().offsetTop + "px" : "0px");
+			// 
+			this.GetElementByRID("textDataFloat").style.display = "block";
+			this.GetElementByRID("textDataFloat").value = this.GetElementByRID("textData").value;
+			this.GetElementByRID("textDataFloat").focus();
+			this.resizers();
+			
+		},
+		hideTextFloat : function(){
+			this.GetElementByRID("textDataFloat").style.display = "none";
+			this.GetElementByRID("textData").value = this.GetElementByRID("textDataFloat").value;
 		},
 			openShare : function(){
 				var o = this.getBean("rocketType");

@@ -11,11 +11,11 @@
 		<input type ="button" rid = "button_design" class ="designer_button design_button" button-action = "Design" />
 		<input type="button" style ="display:none;" rid = "button_save" class = "designer_button save_button" button-action = "Save" />
 		<input type="button" rid = "button_delete" class = "designer_button delete_button" button-action = "Delete"  />
-		<div class = "designer_button_spacer"></div>
+		<div rid = "button_spacer_1" class = "designer_button_spacer"></div>
 		<input type = "text" rid = "path" style = "margin-top: 5px; width: 100px !important; float: left;" placeholder = "~/Path" class = "rocket-text" />
 		<input class = "rocket-text rocket-text-pick" style = "display:none;margin-top: 5px; width: 75px !important; float: left;" type = "text" rid = "filter" value = "" />
 		<input class = "rocket-button" type = "button" rid = "button_search" style = "display:none;margin-top: 5px; float: left;" value = "..." onclick = "${this}._search()" />
-		<div class = "designer_button_spacer"></div>
+		<div rid = "button_spacer_2" class = "designer_button_spacer"></div>
 		<input type="button" rid = "button_move_first" disabled = "true" class = "designer_button" button-action = "MoveFirst" value = "&lt;&lt;" />
 		<input type="button" rid = "button_move_prev" disabled = "true" class = "designer_button" button-action = "MovePrev" value = "&lt;" />
 		<input type="button" rid = "button_move_next" disabled = "true" class = "designer_button" button-action = "MoveNext" value = "&gt;" />
@@ -40,7 +40,8 @@
 	Virtuals:
 		CreateNewItem
 		SaveSelectedItem
-		openListItem
+		provideOpenItem
+		provideSelectItem
 		DeleteSelectedItem
 		refreshList
 		DrawIOGridItem
@@ -197,7 +198,9 @@
 		_handle_typelistclick : function(s, v){
 			this.EnableButton("button_delete");
 			this.EnableButton("button_open");
+			/// TODO: deprecate handle_list_click for provideSelectItem
 			if(this.handle_list_click) this.handle_list_click(v);
+			if(this.provideSelectItem) this.provideSelectItem(v);
 			if(this.getProperties().picker && (!this.getProperties().manualPick || s == "manualpick")){
 				var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
 				if(this.getProperties().pickFunction && oOpener[this.getProperties().pickFunction]){
@@ -344,7 +347,8 @@
 					if(!o.populated) alert("still not populated");
 				}
 			}
-			this.openWindow(this.getProperties().viewTypeName, o, v, (b ? o.path : 0));
+			if(this.provideOpenItem) this.provideOpenItem(o);
+			else this.openWindow(this.getProperties().viewTypeName, o, v, (b ? o.path : 0));
 		},
 		createItem : function(){
 			this.openWindow(this.getProperties().viewTypeName);
@@ -445,6 +449,9 @@
 			oL.clearItems();
 			this.setStatus("");
 			if(!bSkipCountReset) this.setTotalCount(0);
+			else if(_s.typeName){
+				uwmServiceCache.clearServiceCache(_s.typeName);
+			}
 			var vComp = {};
 			if(_s.picker){
 				var oOpener = Hemi.registry.service.getObject(_s.openerId);

@@ -46,6 +46,7 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.FactoryService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
@@ -186,7 +187,7 @@ public class BaseService{
 			case FUNCTION:
 				FunctionType v5bean = (FunctionType)in_obj;
 				FunctionType new_fu = Factories.getFunctionFactory().newFunction(user, v5bean.getGroup());
-	
+				
 				MapUtil.shallowCloneAznType(v5bean, new_fu);
 				new_fu.setFunctionType(v5bean.getFunctionType());
 				new_fu.setFunctionData(v5bean.getFunctionData());
@@ -812,6 +813,7 @@ public class BaseService{
 	}
 	public static boolean canViewType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
+		if(AuthorizationService.isMapOwner(user, obj)) return true;
 		switch(type){
 			case TAG:
 			case ACCOUNT:
@@ -905,6 +907,7 @@ public class BaseService{
 	}
 	public static boolean canChangeType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
+		if(AuthorizationService.isMapOwner(user, obj)) return true;
 		switch(type){
 			case TAG:
 			case ACCOUNT:
@@ -969,6 +972,7 @@ public class BaseService{
 	}
 	public static boolean canDeleteType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
+		if(AuthorizationService.isMapOwner(user, obj)) return true;
 		switch(type){
 			case TAG:
 			case ACCOUNT:
@@ -1072,7 +1076,7 @@ public class BaseService{
 		BaseRoleType targetRole = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "authorizeRole", AuditEnumType.SESSION, request.getSession(true).getId());
 		NameIdType typeBean = (NameIdType)bucket;
-		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : typeBean.getName()));
+		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : UrnUtil.getUrn(typeBean)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
 
@@ -1111,7 +1115,7 @@ public class BaseService{
 		UserType targetUser = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "authorizeUser", AuditEnumType.SESSION, request.getSession(true).getId());
 		NameIdType typeBean = (NameIdType)bucket;
-		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : typeBean.getName()));
+		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : UrnUtil.getUrn(typeBean)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
 
@@ -1150,7 +1154,7 @@ public class BaseService{
 		boolean out_bool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.DELETE, "delete", AuditEnumType.SESSION, request.getSession(true).getId());
 		NameIdType typeBean = (NameIdType)bean;
-		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : typeBean.getName()));
+		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : UrnUtil.getUrn(typeBean)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
 
@@ -1186,7 +1190,7 @@ public class BaseService{
 		boolean out_bool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "add", AuditEnumType.SESSION, request.getSession(true).getId());
 		NameIdType dirBean = (NameIdType)bean;
-		AuditService.targetAudit(audit, addType, (dirBean == null ? "null" : dirBean.getName()));
+		AuditService.targetAudit(audit, addType, (dirBean == null ? "null" : UrnUtil.getUrn(dirBean)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
 
@@ -1248,7 +1252,7 @@ public class BaseService{
 		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "update",AuditEnumType.SESSION, request.getSession(true).getId());
 		NameIdType dirBean = (NameIdType)bean;
-		AuditService.targetAudit(audit, type, (dirBean == null ? "null" : dirBean.getName()));
+		AuditService.targetAudit(audit, type, (dirBean == null ? "null" : UrnUtil.getUrn(dirBean)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
 		
@@ -1309,7 +1313,8 @@ public class BaseService{
 			if(dirType == null){
 				AuditService.denyResult(audit, "#" + id + " (" + type + ") doesn't exist in organization " + user.getOrganization().getName());
 				return null;
-			}			
+			}		
+			AuditService.targetAudit(audit, type, ((NameIdType)dirType).getUrn());
 			if(canViewType(type, user, dirType) == true){
 				out_obj = (T)dirType;
 				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)out_obj).getPointer() && isAllowDataPointers(request) == false){
@@ -1401,6 +1406,7 @@ public class BaseService{
 				AuditService.denyResult(audit, "'" + name + "' doesn't exist");
 				return null;
 			}
+			AuditService.targetAudit(audit, type, ((NameIdType)out_obj).getUrn());
 			if(canViewType(type, user, (NameIdType)out_obj)){
 				if(((NameIdType)out_obj).getNameType().equals(NameEnumType.DATA) && ((DataType)out_obj).getPointer() && isAllowDataPointers(request) == false){
 					AuditService.denyResult(audit, name + " is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
@@ -1502,6 +1508,7 @@ public class BaseService{
 				AuditService.denyResult(audit, "'" + name + "' doesn't exist");
 				return null;
 			}
+			AuditService.targetAudit(audit, type, ((NameIdType)out_obj).getUrn());
 			if(canViewType(type, user, (NameIdType)out_obj)){
 				AuditService.permitResult(audit, "Read " + name + " (#" + ((NameIdType)out_obj).getId() + ")");
 			}
@@ -1601,7 +1608,7 @@ public class BaseService{
 		OrganizationType org = null;
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "countByParent",AuditEnumType.SESSION, request.getSession(true).getId());
-		AuditService.targetAudit(audit, type, parent.getName() + " #" + parent.getId());
+		AuditService.targetAudit(audit, type, UrnUtil.getUrn(parent));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return 0;
 

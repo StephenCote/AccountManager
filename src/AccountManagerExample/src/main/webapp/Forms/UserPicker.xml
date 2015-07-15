@@ -30,9 +30,8 @@
 			/// Have to put a little extra logic here because user information is optional for addresses
 			var _s = this.getProperties(),  o = this.getBean("rocketType");
 			_s.enableUserInformation = (o != null ? 1 : 0);
-			
 			if(_s.enableUserInformation){
-				//this.getProperties().userListProp = "users";
+				this.getProperties().userListProp = "users";
 				this.GetComponentByRID("usersList").setLoadHandler(this.scopeHandler("configUsersList",0,1,1));
 			}
 		},
@@ -60,7 +59,9 @@
 			var oL = this.getUsersList(), aP = this.getProperties().userListProp;
 			oL.clearItems();
 			var o = this.getBean("rocketType");
-			if(!o || !o || !o[aP]) return;
+			if(!o || !o[aP]){
+				return;
+			}
 			for(var i = 0; i < o[aP].length;i++){
 				oL.addItem(o[aP][i].name,o[aP][i]);
 			}

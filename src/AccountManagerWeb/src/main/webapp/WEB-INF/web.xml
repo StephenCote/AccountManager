@@ -17,6 +17,11 @@
     <param-name>registration.enabled</param-name>
     <param-value>true</param-value>
   </context-param>
+   <context-param>
+    <description>IP Limit Enabled</description>
+    <param-name>registration.ip.limit</param-name>
+    <param-value>false</param-value>
+  </context-param>
   <context-param>
     <description>Feedback User</description>
     <param-name>feedback.user</param-name>

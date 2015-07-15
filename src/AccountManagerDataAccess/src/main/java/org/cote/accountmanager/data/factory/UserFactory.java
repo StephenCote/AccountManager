@@ -303,7 +303,7 @@ public class UserFactory extends NameIdFactory {
 				///
 				home_dir = Factories.getGroupFactory().getDirectoryByName(new_user.getName(), Factories.getGroupFactory().getHomeDirectory(new_user.getOrganization()), new_user.getOrganization());
 				if(home_dir == null) throw new FactoryException("Missing home directory");
-				Factories.getGroupFactory().addDefaultUserGroups(new_user, home_dir, true,sessionId);
+				Factories.getGroupFactory().addDefaultUserGroups(new_user, home_dir, bulkMode,sessionId);
 				return true;
 			}
 		}

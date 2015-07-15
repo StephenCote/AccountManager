@@ -62,6 +62,9 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 			fe.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		assertTrue("token was not added", add_token);
 	}
@@ -98,7 +101,7 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 			e.printStackTrace();
 		}
 		assertNotNull("Expected one token", token);
-		token.setData("Example data");
+		token.setData("Example data".getBytes());
 		boolean updated = false;
 		try{
 			updated = Factories.getSecurityTokenFactory().update(token);

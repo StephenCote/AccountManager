@@ -165,7 +165,7 @@ public class PolicyServiceImpl  {
 				AuditService.denyResult(audit, "Invalid id: " + Long.toString(id));
 				return def;
 			}
-			AuditService.targetAudit(audit, AuditEnumType.POLICY, "Policy " + pol.getName() + " (#" + Long.toString(pol.getId()) + ")");
+			AuditService.targetAudit(audit, AuditEnumType.POLICY, pol.getUrn());
 			if(AuthorizationService.canViewGroup(user, pol.getGroup()) == false){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + pol.getGroup().getName() + " (#" + pol.getGroup().getId() + ")");
 				return def;

@@ -38,6 +38,7 @@ import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -69,7 +70,7 @@ public class DataServiceImpl  {
 	}
 	public static DataType getProfile(UserType user){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getProfile",AuditEnumType.SESSION,"Anonymous");
-		AuditService.targetAudit(audit, AuditEnumType.DATA, "Read profile information");
+		AuditService.targetAudit(audit, AuditEnumType.DATA, "{profile}");
 		return getProfile(user,audit);
 	}
 	protected static void addDefaultProfileAttributes(DataType data){
@@ -104,6 +105,7 @@ public class DataServiceImpl  {
 		}
 		
 		if(data != null){
+			AuditService.targetAudit(audit, AuditEnumType.DATA,UrnUtil.getUrn(data));
 			Factories.getAttributeFactory().populateAttributes(data);
 			AuditService.permitResult(audit,"Returning " + user.getName() + " profile data");
 		}
@@ -147,7 +149,7 @@ public class DataServiceImpl  {
 			feedback.setMimeType("text/plain");
 			UserType subUser = ServiceUtil.getUserFromSession(request);
 			String sDesc = "Feedback submitted by " + (subUser == null ? "anonymous user":subUser.getName()) + " on " + (new Date()).toString();
-			AuditService.targetAudit(audit, AuditEnumType.USER, (subUser == null ? "Anonymous" : subUser.getName()));
+			AuditService.targetAudit(audit, AuditEnumType.USER, (subUser == null ? "Anonymous" : subUser.getUrn()));
 			feedback.setDescription(sDesc);
 			feedback.setName("Feedback - " + UUID.randomUUID().toString());
 			if(Factories.getDataFactory().addData(feedback)){

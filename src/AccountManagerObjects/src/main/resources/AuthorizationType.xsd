@@ -404,13 +404,19 @@
 				maxOccurs="1">
 			</element>
 			<element name="checkCredential" type="base64Binary"></element>
+			<element name="tokens" type="string" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
 		</sequence>
 		<attribute name="subject" type="string"></attribute>
 		<attribute name="organizationPath" type="string"></attribute>
 		<attribute name="credentialType" type="tns:CredentialEnumType"
 			default="UNKNOWN">
 		</attribute>
-		<attribute name="checkCredentialType" type="tns:CredentialEnumType"></attribute>
+		<attribute name="checkCredentialType"
+			type="tns:CredentialEnumType">
+		</attribute>
+		<attribute name="subjectType" type="Q1:NameEnumType" default="UNKNOWN"></attribute>
 	</complexType>
 
 	<complexType name="AuthenticationResponseType">

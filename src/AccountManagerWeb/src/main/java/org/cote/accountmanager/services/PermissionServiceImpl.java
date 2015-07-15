@@ -126,7 +126,7 @@ public class PermissionServiceImpl  {
 	}
 	public static BasePermissionType readByParent(BasePermissionType parent, String name,String type, HttpServletRequest request){
 		BasePermissionType role = BaseService.readByNameInParent(AuditEnumType.PERMISSION, parent, name, type, request);
-		Factories.getAttributeFactory().populateAttributes(role);
+		if(role != null) Factories.getAttributeFactory().populateAttributes(role);
 		return role;
 	}
 	
@@ -155,7 +155,7 @@ public class PermissionServiceImpl  {
 		List<BasePermissionType> out_obj = new ArrayList<BasePermissionType>();
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All permissions",AuditEnumType.PERMISSION,(user == null ? "Null" : user.getName()));
-		AuditService.targetAudit(audit, AuditEnumType.PERMISSION, "All permissions");
+		AuditService.targetAudit(audit, AuditEnumType.PERMISSION, parentPermission.getUrn());
 		
 		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
@@ -209,7 +209,7 @@ public class PermissionServiceImpl  {
 				return false;
 			}
 			AuditService.sourceAudit(audit, AuditEnumType.PERMISSION, srcType.toString() + " " + src.getName() + " (#" + src.getId() + ")");
-			AuditService.targetAudit(audit, targType, targ.getName() + " (#" + targ.getId() + ")");
+			AuditService.targetAudit(audit, targType, targ.getUrn());
 			/// To set the permission on or off, the user must:
 			/// 1) be able to change src,
 			/// 2) be able to change targ,

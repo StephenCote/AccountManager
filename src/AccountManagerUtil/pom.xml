@@ -41,7 +41,7 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>false</skipTests>
+  					<skipTests>true</skipTests>
 
 
   					<includes>
@@ -50,11 +50,12 @@
 					<excludes>
 						<!--
 						
-						
-						<exclude>**/TestAMCode.java</exclude>
-						-->
-						<exclude>**/TestText.java</exclude>
 						<exclude>**/TestSecurityFactory.java</exclude>
+						
+						-->
+						<exclude>**/TestAMCode.java</exclude>
+						<exclude>**/TestText.java</exclude>
+						
 						<exclude>**/TestWTPAType.java</exclude>
 						<exclude>**/TestDataUtil.java</exclude>
 						<exclude>**/TestDataType.java</exclude>
@@ -107,12 +108,12 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
-			<version>1.3</version>
+			<version>1.9</version>
 		</dependency>
 			<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
-			<version>1.3</version>
+			<version>1.9</version>
 		</dependency>
 	<dependency>
 	      <groupId>org.apache.commons</groupId>

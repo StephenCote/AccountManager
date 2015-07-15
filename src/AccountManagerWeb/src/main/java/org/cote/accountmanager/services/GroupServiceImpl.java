@@ -175,7 +175,7 @@ public class GroupServiceImpl  {
 			else{
 				bean = dir;
 			}
-			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
+			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getUrn());
 			AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 			
 			
@@ -196,7 +196,7 @@ public class GroupServiceImpl  {
 		List<BaseGroupType> out_obj = new ArrayList<BaseGroupType>();
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All groups",AuditEnumType.GROUP,(user == null ? "Null" : user.getName()));
-		AuditService.targetAudit(audit, AuditEnumType.GROUP, "All groups");
+		AuditService.targetAudit(audit, AuditEnumType.GROUP, parentGroup.getUrn());
 		
 		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
@@ -230,7 +230,7 @@ public class GroupServiceImpl  {
 	}
 	public static BaseGroupType readById(long id,HttpServletRequest request){
 		BaseGroupType role = BaseService.readById(AuditEnumType.GROUP, id, request);
-		Factories.getAttributeFactory().populateAttributes(role);
+		if(role != null) Factories.getAttributeFactory().populateAttributes(role);
 		return role;
 	}
 	public static List<BaseGroupType> listInGroup(UserType user,String type, String path, long startIndex, int recordCount){
@@ -344,7 +344,7 @@ public class GroupServiceImpl  {
 		List<T> out_obj = new ArrayList<T>();
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All groups in group",AuditEnumType.GROUP,(user == null ? "Null" : user.getName()));
-		AuditService.targetAudit(audit, AuditEnumType.GROUP, "All " + memberType.toString() + " in group");
+		AuditService.targetAudit(audit, AuditEnumType.GROUP, targGroup.getUrn());
 		
 		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");

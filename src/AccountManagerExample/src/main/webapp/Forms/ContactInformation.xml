@@ -123,7 +123,16 @@
 			var o = this.getBean("rocketType");
 			if(!o || !o.contactInformation || !o.contactInformation[aP]) return;
 			for(var i = 0; i < o.contactInformation[aP].length;i++){
-				oL.addItem(o.contactInformation[aP][i].name,o.contactInformation[aP][i]);
+				/// var sLabel = o.contactInformation[aP][i].name;
+				var oC = o.contactInformation[aP][i];
+				var sLabel = 
+					oC.locationType.substring(0,1) + oC.locationType.substring(1,oC.locationType.length).toLowerCase()
+					+ " "
+					+ oC.contactType.substring(0,1) + oC.contactType.substring(1,oC.contactType.length).toLowerCase()
+					+ " "
+					+ oC.contactValue
+				; 
+				oL.addItem(sLabel,o.contactInformation[aP][i]);
 			}
 		},
 		getContactsList : function(){

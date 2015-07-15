@@ -282,7 +282,7 @@ public class ArticleUtil {
 				startIndex = page * recordCount;
 			}
 			AuditType caudit = AuditService.beginAudit(ActionEnumType.READ, "Count " + type + " items", AuditEnumType.USER, user.getName());
-			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getPath());
+			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getUrn());
 			totalCount = BaseService.count(caudit, AuditEnumType.DATA, user, dir, request);
 			logger.info("Page = " + pageStr + " / " + startIndex + " / " + recordCount);
 			if(startIndex < 0) startIndex = 0;

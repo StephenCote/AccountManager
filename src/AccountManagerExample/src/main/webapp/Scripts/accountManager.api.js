@@ -1,5 +1,10 @@
 (function () {
 	
+	/*
+	 * TODO: I very much dislike the 'add*' operations.  All of these need to just take in the object and not build them up.
+	 */
+	
+	
 	/// The following script classifies Type to API assignment, used for discovery when multiple service APIs are intermixed in the same common View code
 	///
 	uwm.addApi("accountManager", "/AccountManagerExample");
@@ -168,6 +173,7 @@
 			addAccount : function(sName, sType, sStatus, oGroup){
 				var o = new org.cote.beans.accountType();
 				o.name = sName;
+				o.nameType = "ACCOUNT";
 				o.accountType = sType;
 				o.accountStatus = sStatus;
 				if(oGroup){
@@ -204,6 +210,7 @@
 			addPerson : function(sName, oGroup){
 				var o = new org.cote.beans.personType();
 				o.name = sName;
+				o.nameType = "PERSON";
 				o.birthDate = new Date();
 				if(oGroup){
 					o.group = accountManager.getCleanGroup(oGroup);
@@ -230,6 +237,10 @@
 			updatePerson : function(oRec){
 				return uwmServices.getService("Person").update(oRec);
 			},
+			getPersonForUser : function(vUser){
+				if(typeof vUser == "object") vUser = vUser.id;
+				return uwmServices.getService("Person").readPersonForUserId(vUser);
+			},
 			getPerson : function(sName, oGroup){
 				if(oGroup) return uwmServices.getService("Person").readByGroupId(oGroup.id,sName);
 				return uwmServices.getService("Person").read(sName);
@@ -253,6 +264,7 @@
 			addTag : function(sName, sType, oGroup){
 				var o = new org.cote.beans.personType();
 				o.name = sName;
+				o.nameType = "TAG";
 				o.tagType = sType;
 				if(oGroup){
 					o.group = accountManager.getCleanGroup(oGroup);
@@ -290,6 +302,7 @@
 			addAddress : function(sName, sLocType, oGroup){
 				var o = new org.cote.beans.addressType();
 				o.name = sName;
+				o.nameType = "ADDRESS";
 				o.locationType = sLocType;
 				if(oGroup){
 					o.group = accountManager.getCleanGroup(oGroup);
@@ -325,6 +338,7 @@
 			addContact : function(sName, sType, sLocType, sVal, oGroup){
 				var o = new org.cote.beans.contactType();
 				o.name = sName;
+				o.nameType = "CONTACT";
 				o.locationType = sLocType;
 				o.contactType = sType;
 				o.contactValue = sVal;
@@ -364,6 +378,7 @@
 			addUser : function(sName, oOrg){
 				if(!oOrg) oOrg = uwm.getUser().organization;
 				var o = new org.cote.beans.userType(),b = false;
+				o.nameType = "USER";
 				o.name = sName;
 
 				
@@ -403,6 +418,22 @@
 				if(!oOrg) oOrg = uwm.getUser().organization;
 				return uwmServices.getService("Role").authorizeUser(oOrg.id, iUserId, iRoleId, bView, bEdit, bDel, bCreate);
 			},
+
+			listRoleAccounts : function(oRole){
+				var oOrg, iRoleId = 0;
+				if(!oRole) return null;
+				oOrg = oRole.organization;
+				iRoleId = oRole.id;
+				return uwmServices.getService("Role").listAccounts(oOrg.id, iRoleId);
+			},
+			listRolePersons : function(oRole){
+				var oOrg, iRoleId = 0;
+				if(!oRole) return null;
+				oOrg = oRole.organization;
+				iRoleId = oRole.id;
+				return uwmServices.getService("Role").listPersons(oOrg.id, iRoleId);
+			},
+
 			listRoleUsers : function(oRole){
 				var oOrg, iRoleId = 0;
 				if(!oRole) return null;
@@ -451,6 +482,7 @@
 				if(!oOrg) oOrg = uwm.getUser().organization;
 				var o = new org.cote.beans.baseRoleType();
 				o.name = sName;
+				o.nameType = "ROLE";
 				o.roleType = sType;
 				o.organization = oOrg;
 				if(typeof oPar == "object" && oPar != null) o.parentId = oPar.id;
@@ -516,6 +548,7 @@
 				if(!oOrg) oOrg = uwm.getUser().organization;
 				var o = new org.cote.beans.basePermissionType();
 				o.name = sName;
+				o.nameType = "PERMISSION";
 				o.permissionType = sType;
 				o.organization = oOrg;
 				if(typeof oPar == "object" && oPar != null) o.parentId = oPar.id;
@@ -630,6 +663,7 @@
 			var o = new org.cote.beans.baseGroupType();
 			if(!oOrg) oOrg = uwm.getUser().organization;
 			o.organization = oOrg;
+			o.nameType = "GROUP";
 			o.parentId = iParentId;
 			o.name = sName;
 			if(!sType) sType = 'DATA';
@@ -694,6 +728,7 @@
 		addData : function(sName, sDesc, sType, vData, oGroup, vCfg){
 			var o = new org.cote.beans.dataType();
 			o.name = sName;
+			o.nameType = "DATA";
 			o.description = sDesc;
 			o.mimeType = sType;
 			o.dataBytesStore = uwm.base64Encode(vData);

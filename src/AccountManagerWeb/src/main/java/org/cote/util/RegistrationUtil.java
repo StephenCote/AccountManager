@@ -23,9 +23,11 @@
  *******************************************************************************/
 package org.cote.util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -38,6 +40,7 @@ import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
@@ -53,9 +56,10 @@ import org.cote.beans.SessionBean;
 
 public class RegistrationUtil {
 	private static int registrationExpiry = 1;
-	
-	public static boolean confirmUserRegistration(String regSessId, String regId, String remoteAddr, String sessionId){
+	public static final Logger logger = Logger.getLogger(RegistrationUtil.class.getName());
+	public static boolean confirmUserRegistration(String regSessId, String regId, String cred,String remoteAddr, String sessionId){
 		boolean out_bool = false;
+
 		SessionBean session = null;
 		SessionBean regSession = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.RESPONSE, "confirmUserRegistration",AuditEnumType.INFO, remoteAddr);
@@ -76,6 +80,7 @@ public class RegistrationUtil {
 				if(orgStr != null) regOrgId = Long.parseLong(orgStr);
 			}
 			catch(NumberFormatException nfe){
+				logger.error(nfe.getMessage());
 				System.out.println(nfe.getMessage());
 			}
 			if(regOrgId > 0) regOrg = Factories.getOrganizationFactory().getOrganizationById( regOrgId);
@@ -106,13 +111,15 @@ public class RegistrationUtil {
 
 			/// password is encrypted with the target organization key
 			///
+			/*
 			String decPassword = OrganizationSecurityUtil.decipherString(regSession.getValue("password"), regOrg);
 			if(decPassword == null || decPassword.length() == 0){
 				AuditService.denyResult(audit, "Invalid password decryption while requesting new user '" + userName + "'");
-				return false;
+				return null;
 			}
+			*/
 			String email = regSession.getValue("email");
-			out_bool = PersonService.createRegisteredUserAsPerson(audit, userName, decPassword,email,regOrg);
+			out_bool = PersonService.createRegisteredUserAsPerson(audit, userName, cred,email,regOrg);
 			/*
 			UserType newUser = Factories.getUserFactory().newUser(userName,  SecurityUtil.getSaltedDigest(decPassword), UserEnumType.NORMAL, UserStatusEnumType.REGISTERED, regOrg);
 			if(Factories.getUserFactory().addUser(newUser, true)){
@@ -133,12 +140,13 @@ public class RegistrationUtil {
 			*/
 		}
 		catch(FactoryException fe){
-			System.out.println(fe.getMessage());
+			logger.error(fe.getMessage());
 			fe.printStackTrace();
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
-		}
+		} 
 		/// Regardless of the outcome, remove the request audit (to unlock the IP check), and the registration session
 		///
 		try {
@@ -157,7 +165,7 @@ public class RegistrationUtil {
 	/// createUserRegistration will generate a session that includes registration information
 	/// 
 	///
-	public static UserSessionType createUserRegistration(UserType user, String remoteAddr){
+	public static UserSessionType createUserRegistration(UserType user, String remoteAddr, boolean limitIP){
 		UserSessionType regSession = null;
 		String sessionId = null;
 		String registrationId = null;
@@ -168,10 +176,16 @@ public class RegistrationUtil {
 		AuditService.targetAudit(audit, AuditEnumType.USER, user.getName());
 		try{
 			AuditType[] nameAudits = Factories.getAuditFactory().getAuditByTarget(AuditEnumType.USER, user.getName());
-			AuditType[] ipAudits = Factories.getAuditFactory().getAuditBySource(AuditEnumType.REGISTRATION, remoteAddr);
-			if(ipAudits.length > 0){
-				AuditService.denyResult(audit, "IP already registered");
-				return null;
+			if(limitIP){
+				logger.info("IP Limiter Enabled.  Checking for other registrations by IP " + remoteAddr);
+				AuditType[] ipAudits = Factories.getAuditFactory().getAuditBySource(AuditEnumType.REGISTRATION, remoteAddr);
+				if(ipAudits.length > 0){
+					AuditService.denyResult(audit, "IP already registered");
+					return null;
+				}
+			}
+			else{
+				logger.info("IP Limiter Disabled.  The same IP can submit multiple registrations");
 			}
 			if(nameAudits.length > 0){
 				AuditService.denyResult(audit, "User name '" + user.getName() + "' is pending registeration in " + user.getOrganization().getName() + " organization");
@@ -199,12 +213,12 @@ public class RegistrationUtil {
 			Factories.getSessionFactory().addSession(regSession);
 
 			//regSession = Factories.getSessionFactory().getSession(sessionId, Factories.getPublicOrganization());
-			String enc_password = OrganizationSecurityUtil.encipherString(UUID.randomUUID().toString(), user.getOrganization());
+			//String enc_password = OrganizationSecurityUtil.encipherString(UUID.randomUUID().toString(), user.getOrganization());
 			//String enc_password = OrganizationSecurityUtil.encipherString(user.getPassword(), Factories.getPublicOrganization());
 			df.setValue(regSession, "remote-address", remoteAddr);
 			df.setValue(regSession, "registration-id", registrationId);
 			df.setValue(regSession, "userName", user.getName());
-			df.setValue(regSession, "password", enc_password);
+			//df.setValue(regSession, "password", enc_password);
 			df.setValue(regSession, "organization-id",Long.toString(user.getOrganization().getId()));
 			
 			/*
@@ -233,7 +247,7 @@ public class RegistrationUtil {
 			/// And set the original password to null
 			/// There's no reason to keep it
 			///
-			df.setValue(regSession, "password", null);
+			//df.setValue(regSession, "password", null);
 			df.setValue(regSession, "userName", null);
 			regSession.getChangeSessionData().clear();
 

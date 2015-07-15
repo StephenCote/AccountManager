@@ -118,7 +118,7 @@ public class RoleServiceImpl  {
 		boolean bAdd = false;
 		if(RoleService.getIsUserInRole(role, user)==false){
 			AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "Role Access", AuditEnumType.USER, user.getName());
-			AuditService.targetAudit(audit, AuditEnumType.ROLE, role.getName());
+			AuditService.targetAudit(audit, AuditEnumType.ROLE, role.getUrn());
 			if(RoleService.addUserToRole(user, role)){
 				bAdd = true;
 				AuditService.permitResult(audit, "Granted access to role");
@@ -144,6 +144,7 @@ public class RoleServiceImpl  {
 				logger.error("Account manager objects not correctly setup.  User role is missing.");
 				return null;
 			}
+			AuditService.targetAudit(audit, AuditEnumType.ROLE, targetRole.getUrn());
 			if(BaseService.canViewType(AuditEnumType.ROLE, user, targetRole)){
 				AuditService.permitResult(audit, "Returning root role");
 			}
@@ -183,6 +184,7 @@ public class RoleServiceImpl  {
 				logger.error("Account manager objects not correctly setup.  Root role is missing.");
 				return null;
 			}
+			AuditService.targetAudit(audit, AuditEnumType.ROLE, targetRole.getUrn());
 			if(BaseService.canViewType(AuditEnumType.ROLE, user, targetRole)){
 				AuditService.permitResult(audit, "Returning root role");
 			}
@@ -320,7 +322,7 @@ public class RoleServiceImpl  {
 	}	
 	public static BaseRoleType readById(long id,HttpServletRequest request){
 		BaseRoleType role = BaseService.readById(AuditEnumType.ROLE, id, request);
-		Factories.getAttributeFactory().populateAttributes(role);
+		if(role != null) Factories.getAttributeFactory().populateAttributes(role);
 		return role;
 	}
 	public static int count(long orgId, HttpServletRequest request){

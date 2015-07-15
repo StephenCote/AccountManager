@@ -102,6 +102,7 @@ public class PersonService {
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
 			newPerson.setContactInformation(cit);
 			if(email != null){
+				logger.info("Adding email to user registration: '" + email + "'");
 				ContactType ct = Factories.getContactFactory().newContact(newUser, cDir);
 				ct.setName(newPerson.getName() + " Registration Email");
 				ct.setPreferred(true);
@@ -110,6 +111,9 @@ public class PersonService {
 				ct.setContactValue(email);
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT, ct);
 				cit.getContacts().add(ct);
+			}
+			else{
+				logger.warn("No email was specified during user registration");
 			}
 			
 			BulkFactories.getBulkFactory().write(sessionId);

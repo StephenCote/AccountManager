@@ -137,7 +137,7 @@ public class GroupService {
 				AuditService.denyResult(audit, "Group not found");
 				return 0;
 			}
-			AuditService.targetAudit(audit, AuditEnumType.GROUP, group.getName() + "(#" + group.getId() + ")");
+			AuditService.targetAudit(audit, AuditEnumType.GROUP, group.getUrn());
 			if(!AuthorizationService.canViewGroup(user, group)){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is not authorized to view group " + group.getName() + " (#" + group.getId() + ")");
 				return 0;
@@ -246,7 +246,7 @@ public class GroupService {
 			///user.setHomeDirectory(clone);
 			Factories.getGroupFactory().populate(user.getHomeDirectory());
 
-			AuditService.targetAudit(audit, AuditEnumType.GROUP, user.getHomeDirectory().getName() + " (#" + user.getHomeDirectory().getId() + ")");
+			AuditService.targetAudit(audit, AuditEnumType.GROUP, user.getHomeDirectory().getUrn());
 			AuditService.permitResult(audit, "Access authenticated user's home group");
 			bean = BeanUtil.getSanitizedGroup(user.getHomeDirectory(),false);
 		}
@@ -403,7 +403,7 @@ public class GroupService {
 			}
 			Factories.getGroupFactory().populate(dir);	
 			
-			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
+			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getUrn());
 			AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 			bean = dir;
 			if(bean.getGroupType() == GroupEnumType.DATA) bean = BeanUtil.getSanitizedGroup((DirectoryGroupType)dir,false);

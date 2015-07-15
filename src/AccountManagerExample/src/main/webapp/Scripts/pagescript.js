@@ -275,6 +275,14 @@ if (typeof window != "object") window = {};
 		profile : function(){
 			var sType = 'User';
 			var oType = uwm.getUser();
+
+			/// A person object will exist for users created via registration or the console
+			///
+			var oP = accountManager.getPersonForUser(oType);
+			if(oP){
+				sType = 'Person';
+				oType = oP;
+			}
 			var oProps = {viewType:oType};
 			var oW = Hemi.app.createWindow(oType.name, uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + sType + "-" + oType.id , 0, 0, oProps, 0);
             if (oW) {
@@ -297,7 +305,7 @@ if (typeof window != "object") window = {};
 			authReq.credentialType = "HASHED_PASSWORD";
 			authReq.credential = uwm.base64Encode(p);
 			authReq.subject = u;
-			authReq.organizationPath = accountManager.getOrganizationPath(o);
+			authReq.organizationPath = (typeof o == "string" ? o : accountManager.getOrganizationPath(o));
 			var vParms = (v ? v : {});
 			userSvc.authenticate(authReq,{
 				hemiSvcCfg:1,
@@ -336,26 +344,26 @@ if (typeof window != "object") window = {};
 			window.uwmServiceCache.clearCache();
 			Hemi.xml.clearCache();
 		},
-		register : function(u, p, e, o){
+		register : function(u, e, o){
 			var userSvc = window.uwmServices.getService("User");
 			var user = new org.cote.beans.userType();
 			var ci = new org.cote.beans.contactInformationType();
 			var ct = new org.cote.beans.contactType();
 			user.name = u;
-			user.password = p;
+			//user.password = p;
 			user.organization = o;
 			//ci.email = e;
 			ci.contacts = [];
 			ci.contacts.push(ct);
 
-			ct.group = accountManager.getGroupByPath("/Contacts");
+			//ct.group = accountManager.getGroupByPath("/Contacts");
 			ct.name = u + " Registration Email";
 			ct.preferred = true;
 			ct.contactType = "EMAIL";
 			ct.locationType = "HOME";
 			ct.contactValue = e;
 
-			Hemi.log("Submit registration: " + u + " / " + p + " / " + e + " in org " + (o ? o.name : "public"));
+			Hemi.log("Submit registration: " + u + " / " + e + " in org " + (o ? o.name : "public"));
 			user.contactInformation = ci;
 			window.uwm.registration = userSvc.postRegistration(user);
 			return window.uwm.registration;

@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.services.PersonServiceImpl;
+import org.cote.accountmanager.services.UserServiceImpl;
 import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.beans.SchemaBean;
 import org.cote.rest.schema.ServiceSchemaBuilder;
@@ -86,6 +87,17 @@ public class PersonService{
 	public PersonType readById(@PathParam("id") long id,@Context HttpServletRequest request){
 		return PersonServiceImpl.readById(id, request);
 	}
+
+	@GET @Path("/readPersonForUserId/{id: [0-9]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public PersonType readPersonForUserId(@PathParam("id") long id,@Context HttpServletRequest request){
+		UserType user = UserServiceImpl.readById(id, request);
+		PersonType person = null;
+		if(user != null){
+			person = PersonServiceImpl.readPersonForUser(user,request);
+		}
+		return person;
+	}
+	
 	
 	@GET @Path("/list") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public List<PersonType> list(@Context HttpServletRequest request){

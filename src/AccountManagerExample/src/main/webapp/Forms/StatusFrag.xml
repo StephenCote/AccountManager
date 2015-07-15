@@ -1,11 +1,11 @@
 <html-fragment>
-<p style = "display:none;clear:both;"><span rid = "status"></span></p>
+<p rid = "statusCont" style = "display:none;margin: 0px !important;clear:both;"><span rid = "status"></span></p>
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
 			if(!this.setStatus){
 				this.setStatus = this._setStatus;
-				this.GetElementByRID("status").style.display = "block";
+				this.GetElementByRID("statusCont").style.display = "block";
 			}
 		},
 		_setStatus : function(s){

@@ -151,7 +151,7 @@ create table data (
 	Id bigint not null default nextval('data_id_seq'),
 	OwnerId bigint not null default 0,
 	Name varchar(255) not null,
-	MimeType varchar(32) not null,
+	MimeType varchar(127) not null,
 	VaultId varchar(64),
 	KeyId varchar(64),
 	IsVaulted boolean not null default false,
@@ -564,22 +564,36 @@ CREATE INDEX tagparticipation_pid ON tagparticipation(ParticipationId);
 
 DROP TABLE IF EXISTS spool CASCADE;
 CREATE TABLE spool (
-	SpoolGuid varchar(42) not null,
+	Guid varchar(42) not null,
+	OwnerId bigint not null default 0,
+	ParentGuid varchar(42),
+
 	SpoolBucketName varchar(64) not null,
 	SpoolBucketType varchar(16) not null,
-	SpoolOwnerId bigint not null default 0,
-	SpoolCreated timestamp not null,
-	SpoolExpiration timestamp not null,
-	SpoolExpires boolean not null default false,
-	SpoolValueType varchar(16) not null,
-	SpoolName varchar(64) not null,
-	SpoolData varchar(255),
-	SpoolStatus bigint not null default 0,
+	SpoolValueType varchar(32) not null,
+	SpoolData bytea,
+	SpoolStatus varchar(32) not null,
+
+	CreatedDate timestamp not null,
+	ExpirationDate timestamp not null,
+	Expires boolean not null default false,
+	Classification varchar(64),
+	Name varchar(511) not null,
+	CurrentLevel int not null default 0,
+	EndLevel int not null default 0,
+	ReferenceId bigint not null default 0,
+	ReferenceType varchar(64) not null,
+	RecipientId bigint not null default 0,
+	RecipientType varchar(64) not null,
+	TransportId bigint not null default 0,
+	TransportType varchar(64) not null,
+	CredentialId bigint not null default 0,
 	GroupId bigint not null default 0,
 	OrganizationId bigint not null default 0
 );
-CREATE UNIQUE INDEX spool_spool_guid ON spool(SpoolGuid);
+CREATE UNIQUE INDEX spool_spool_guid ON spool(Guid);
 CREATE INDEX spool_spool_expiry ON spool(SpoolExpires,SpoolExpiration);
+CREATE INDEX spool_spool_group ON spool(GroupId,OrganizationId);
  CREATE INDEX spool_spool_bucknametype ON spool(SpoolBucketName,SpoolBucketType,OrganizationId);
 
 
@@ -1537,7 +1551,9 @@ organizationid not in (select id from organizations)
 
 create or replace view orphanContactInformationParticipations as
 select id from ContactInformationParticipation GP1
-where (participanttype = 'CONTACT' and participantid not in (select id from ContactInformation U1))
+where (participanttype = 'CONTACT' and participantid not in (select id from Contacts U1))
+or
+(participanttype = 'ADDRESS' and participantid not in (select id from Addresses A1))
 or
 organizationid not in (select id from organizations)
 ;

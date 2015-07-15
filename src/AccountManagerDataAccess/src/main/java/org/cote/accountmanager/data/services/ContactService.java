@@ -26,27 +26,49 @@ package org.cote.accountmanager.data.services;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
+import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.types.ContactEnumType;
+import org.cote.accountmanager.objects.types.LocationEnumType;
 
 public class ContactService {
 public static final Logger logger = Logger.getLogger(ContactService.class.getName());
-	
+	public static ContactType getPreferredMobileContact(ContactInformationType cinfo){
+		return getPreferredContact(cinfo,ContactEnumType.PHONE,LocationEnumType.MOBILE);
+	}	
 	public static ContactType getPreferredEmailContact(ContactInformationType cinfo){
-		ContactType email = null;
+		return getPreferredContact(cinfo,ContactEnumType.EMAIL,LocationEnumType.UNKNOWN);
+	}	
+	public static ContactType getPreferredPhoneContact(ContactInformationType cinfo){
+		return getPreferredContact(cinfo,ContactEnumType.PHONE,LocationEnumType.UNKNOWN);
+	}
+	public static ContactType getPreferredContact(ContactInformationType cinfo,ContactEnumType preferredType,LocationEnumType preferredLocation){
+		if(cinfo.getPopulated() == false){
+			try {
+				Factories.getContactInformationFactory().populate(cinfo);
+			} catch (FactoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		ContactType contact = null;
 		ContactType check = null;
-		if(cinfo == null) return email;
+		if(cinfo == null) return contact;
 		List<ContactType> contacts = cinfo.getContacts();
 		for(int i = 0; i < contacts.size();i++){
 			check = contacts.get(i);
-			if(check.getContactType() == ContactEnumType.EMAIL){
-				if(email == null || check.getPreferred()) email = check;
+			if(check.getContactType() == preferredType && (preferredLocation == LocationEnumType.UNKNOWN || check.getLocationType() == preferredLocation)){
+				if(contact == null || check.getPreferred()) contact = check;
 				if(check.getPreferred()) break;
 			}
 		}
-		return email;
+		return contact;
 	}
 	
 }

@@ -40,6 +40,7 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -62,6 +63,7 @@ import org.cote.rest.schema.ServiceSchemaBuilder;
 
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,8 +78,8 @@ public class DataService{
 	public boolean updateProfile(DataType data, @Context HttpServletRequest request){
 		boolean out_bool = false;
 
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getProfile",AuditEnumType.SESSION, request.getSession(true).getId());
-		AuditService.targetAudit(audit, AuditEnumType.DATA, "Read profile information");
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "updateProfile",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditService.targetAudit(audit, AuditEnumType.DATA, (data == null? "Null":UrnUtil.getUrn(data)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null){
 			AuditService.denyResult(audit, "Deny for anonymous user");

@@ -63,6 +63,7 @@ import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -127,6 +128,7 @@ public class UserService{
 					user.getContactInformation().setEmail("none");
 				}
 				*/
+				Factories.getAttributeFactory().populateAttributes(user);
 				//bean = BeanUtil.getUserType(user);
 			}
 		}
@@ -176,9 +178,12 @@ public class UserService{
 			user = SessionSecurity.login(sessionId,authRequest.getSubject(), authRequest.getCredentialType(), new String(authRequest.getCredential(),"UTF-8"), org);
 			if(user != null){
 				//Factories.getUserFactory().populate(user);
+				AuditService.targetAudit(audit, AuditEnumType.USER, user.getUrn());
+				Factories.getAttributeFactory().populateAttributes(user);
 				authResponse.setResponse(AuthenticationResponseEnumType.AUTHENTICATED);
 				authResponse.setUser(user);
 				AuditService.permitResult(audit,"#" + user.getId());
+				
 			}
 			else{
 				AuditService.denyResult(audit, "User not found");
@@ -187,22 +192,25 @@ public class UserService{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			//fe.printStackTrace();
 			user = null;
 			AuditService.denyResult(audit, "Error: " + fe.getMessage());
 			authResponse.setMessage("An error occured.");
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			//e.printStackTrace();
 			user = null;
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			authResponse.setMessage("An error occured.");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			logger.error(e.getMessage());
 		}
-		if(user != null) ServiceUtil.addCookie(response,"OrganizationId",Long.toString(user.getOrganization().getId()));
+		if(user != null){
+			ServiceUtil.addCookie(response,"OrganizationId",Long.toString(user.getOrganization().getId()));
+		}
 		
 		return authResponse;
 	}
@@ -258,23 +266,45 @@ public class UserService{
 
 	//@POST @Path("/postConfirmation") @Produces(MediaType.TEXT_PLAIN) @Consumes(MediaType.APPLICATION_JSON)
 	//public boolean postRegistration(String id, String regId, @Context HttpServletRequest request){
-	@GET @Path("/confirm/{id : [a-zA-Z_0-9\\-]+}/{reg : [a-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_XHTML_XML) @Consumes(MediaType.APPLICATION_JSON)
-	public String confirmRegistration(@PathParam("id") String id,@PathParam("reg") String regId, @Context HttpServletRequest request) {
+	@POST @Path("/confirm") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean confirmRegistration(AuthenticationRequestType authRequest, @Context HttpServletRequest request) {
 		StringBuffer buff = new StringBuffer();
-		
+		if(authRequest.getTokens().size() == 0){
+			logger.error("Token is missing");
+			return false;
+		}
+		if(authRequest.getTokens().size() == 0){
+			logger.error("Token is missing");
+			return false;
+		}
+		if(authRequest.getCredentialType() != CredentialEnumType.HASHED_PASSWORD || authRequest.getCredential() == null || authRequest.getCredential().length == 0){
+			logger.error("Invalid credential");
+			return false;
+		}
 		String sessionId = request.getSession(true).getId();
+		String id = authRequest.getSubject();
+		String regId = authRequest.getTokens().get(0);
 		
-		boolean registered = RegistrationUtil.confirmUserRegistration(id,  regId, request.getRemoteAddr(), sessionId);
-		
+		//boolean registered = false;
+		boolean registered = false;
+		try {
+			registered = RegistrationUtil.confirmUserRegistration(id,  regId, new String(authRequest.getCredential(),"UTF-8"),request.getRemoteAddr(), sessionId);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*
 		MessageBean bean = new MessageBean();
 		bean.setId(UUID.randomUUID().toString());
 		bean.setId(id);
 		bean.setName("Registration");
 		bean.setData(regId);
 		logger.error("id=" + id + " / reg=" + regId);
-		buff.append("<html><head></head><body>[ ... " + registered + " ...]</body></html>");
-		return buff.toString();
+		*/
+		//buff.append("<html><head></head><body>[ ... " + registered + " ...]</body></html>");
+		//return buff.toString();
 		//return bean;
+		return registered;
 		
 	}
 	
@@ -288,8 +318,9 @@ public class UserService{
 
 		if(user.getOrganization() == null) user.setOrganization(Factories.getPublicOrganization());
 		
-		logger.error("Configuring registration for organization " + user.getOrganization().getName());
+		logger.info("Processing registration in organization " + user.getOrganization().getName());
 		
+		boolean ipLimit = Boolean.parseBoolean(request.getServletContext().getInitParameter("registration.ip.limit"));
 		boolean regEnabled = Boolean.parseBoolean(request.getServletContext().getInitParameter("registration.enabled"));
 		if(regEnabled == false){
 			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Registration", AuditEnumType.USER, user.getName() + " in " + user.getOrganization().getName());
@@ -298,7 +329,7 @@ public class UserService{
 		}
 
 				
-		UserSessionType session1 = RegistrationUtil.createUserRegistration(user, request.getRemoteAddr());
+		UserSessionType session1 = RegistrationUtil.createUserRegistration(user, request.getRemoteAddr(),ipLimit);
 		if(session1 != null){
 			try{
 				ctxSession = BeanUtil.getSessionBean(SessionSecurity.getUserSession(sessionId, user.getOrganization()),sessionId);
@@ -373,51 +404,6 @@ public class UserService{
 			return new ArrayList<UserType>();
 		}
 		return UserServiceImpl.getList(user, org, startIndex, recordCount );
-
-	}
-	
-	@POST @Path("/newPrimaryCredential") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public boolean newPrimaryCredential(AuthenticationRequestType authReq,@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "newPrimaryCredential", AuditEnumType.SESSION, request.getSession().getId());
-		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		boolean out_bool = false;
-		if(user == null) return out_bool;
-		CredentialType newCred = null;
-		try{
-			UserType updateUser = Factories.getUserFactory().getUserByName(authReq.getSubject(), user.getOrganization());
-			if(updateUser == null){
-				AuditService.denyResult(audit, "Target user " + authReq.getSubject() + " does not exist");
-				return out_bool;
-			}
-			/// If not account admin, then validate the current password
-			if(AuthorizationService.isAccountAdministratorInOrganization(user, user.getOrganization()) == false){
-				CredentialType currentCred = CredentialService.getPrimaryCredential(updateUser);
-				if(CredentialService.validatePasswordCredential(updateUser, currentCred, new String(authReq.getCheckCredential(),"UTF-8"))==false){
-					AuditService.denyResult(audit, "Failed to validate current credential");
-					return out_bool;
-				}
-			}
-			/// Create a new primary credential for target user
-			newCred = CredentialService.newCredential(authReq.getCredentialType(), null, updateUser, updateUser, authReq.getCredential(), true, true);
-		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if(newCred != null){
-			AuditService.permitResult(audit, "Created a new primary credential");
-			out_bool = true;
-		}
-		else{
-			AuditService.denyResult(audit, "Failed to create new primary credential");
-		}
-		return out_bool;
 
 	}
 	

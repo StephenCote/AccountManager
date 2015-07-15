@@ -124,7 +124,7 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		}
 		assertTrue("Expected one or more messages", messages.size() > 0);
 		MessageSpoolType message = messages.get(0);
-		message.setData("Example data");
+		message.setData("Example data".getBytes());
 		message.setValueType(ValueEnumType.STRING);
 		boolean updated = false;
 		try{

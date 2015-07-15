@@ -1,5 +1,5 @@
 <html-fragment>
-	<div class = "rocket-column-2">
+	<div rid = "descriptionCont" class = "rocket-column-2">
 		<p>
 			Description:
 		</p>
@@ -7,7 +7,7 @@
 			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
-	<div class = "rocket-column-2">
+	<div rid = "titleCont" class = "rocket-column-2">
 		<p>
 			Title:
 		</p>
@@ -15,7 +15,7 @@
 			<input type = "text" rid = "title" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
-	<div class = "rocket-column-2">
+	<div rid = "prefixCont" class = "rocket-column-2">
 		<p>
 			Prefix:
 		</p>
@@ -47,7 +47,7 @@
 			<input type = "text" rid = "lastName" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
-	<div class = "rocket-column-2">
+	<div rid = "suffixCont" class = "rocket-column-2">
 		<p>
 			Suffix:
 		</p>
@@ -55,7 +55,7 @@
 			<input type = "text" rid = "suffix" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
-	<div class = "rocket-column-2">
+	<div rid = "aliasCont" class = "rocket-column-2">
 		<p>
 			Alias:
 		</p>
@@ -71,7 +71,7 @@
 			<input component = "calendar" type = "text" rid = "birthDate" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
-	<div class = "rocket-column-2">
+	<div rid = "genderCont" class = "rocket-column-2">
 		<p>
 			Gender:
 		</p>
@@ -88,12 +88,13 @@
 	<import-xml src = "/AccountManagerExample/Forms/ContactInformation.xml" id = "ContactInformation" />
 	<import-xml src = "/AccountManagerExample/Forms/PersonPicker.xml" id = "PersonPicker" />
 	<import-xml src = "/AccountManagerExample/Forms/AccountPicker.xml" id = "AccountPicker" />
-	
+	<import-xml src = "/AccountManagerExample/Forms/UserPicker.xml" id = "UserPicker" />
 
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
 			//this.GetElementByRID("pathCont").style.display = "none";
+			this.initUserPicker();
 			this.initAccountPicker();
 			this.initContactInformation();
 			this.getProperties().personListProp = "dependents";
@@ -109,6 +110,7 @@
 		prepareSave : function(o){
 			this.prepareSaveContactInformation(o);
 			this.prepareSaveAccountsList(o);
+			this.prepareSaveUsersList(o);
 			this.prepareSavePersonsList(o);
 			return 1;
 		}

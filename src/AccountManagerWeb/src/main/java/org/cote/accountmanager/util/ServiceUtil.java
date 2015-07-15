@@ -100,7 +100,7 @@ public class ServiceUtil {
 			System.out.println("User is null or not authenticated");
 			return null;
 		}
-		AuditService.sourceAudit(audit,AuditEnumType.USER,user.getName() + " (#" + user.getId() + ") in Org " + user.getOrganization().getName() + " (#" + user.getOrganization().getId() + ")");
+		AuditService.sourceAudit(audit,AuditEnumType.USER,user.getUrn());
 		return user;
 	}
 	public static UserType getUserFromSession(HttpServletRequest request){

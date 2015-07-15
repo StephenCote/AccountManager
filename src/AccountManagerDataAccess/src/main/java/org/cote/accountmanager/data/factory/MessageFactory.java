@@ -25,6 +25,7 @@ package org.cote.accountmanager.data.factory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -46,8 +47,10 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SpoolBucketEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
+import org.cote.accountmanager.objects.types.SpoolStatusEnumType;
 import org.cote.accountmanager.objects.types.ValueEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
@@ -55,19 +58,20 @@ public class MessageFactory extends SpoolFactory {
 	public MessageFactory()
 	{
 		super();
+		this.factoryType = FactoryEnumType.MESSAGE;
 	}
 
 	public boolean deleteMessage(MessageSpoolType message) throws FactoryException
 	{
 		removeFromCache(message);
-		int deleted = deleteByField(new QueryField[] { QueryFields.getFieldSpoolGuid(message) }, message.getOrganization().getId());
+		int deleted = deleteByField(new QueryField[] { QueryFields.getFieldGuid(message.getGuid()) }, message.getOrganization().getId());
 		return (deleted > 0);
 	}
 	public boolean deleteMessagesForUser(UserType user) throws FactoryException
 	{
 
 		clearCache();
-		int deleted = deleteByField(new QueryField[] { QueryFields.getFieldSpoolOwner(user.getOwnerId()) }, user.getOrganization().getId());
+		int deleted = deleteByField(new QueryField[] { QueryFields.getFieldOwner(user.getOwnerId()) }, user.getOrganization().getId());
 		return (deleted > 0);
 	}
 	public boolean deleteMessagesInGroup(SpoolNameEnumType queue, DirectoryGroupType group) throws FactoryException
@@ -91,23 +95,20 @@ public class MessageFactory extends SpoolFactory {
 	{
 		return newMessage(queue, owner, getUserMessagesGroup(owner));
 	}
-	public MessageSpoolType newMessage(SpoolNameEnumType queue, UserType owner, DirectoryGroupType group)
+	public MessageSpoolType newMessage(SpoolNameEnumType queue, UserType owner, DirectoryGroupType group) throws ArgumentException
 	{
-		MessageSpoolType new_message = new MessageSpoolType();
-		new_message.setGuid(UUID.randomUUID().toString());
+		MessageSpoolType new_message = (MessageSpoolType)newSpoolEntry(SpoolBucketEnumType.MESSAGE_QUEUE);
 		new_message.setSpoolBucketName(queue);
 		new_message.setOwnerId(owner.getId());
 		new_message.setOrganization(owner.getOrganization());
 		new_message.setGroup(group);
 		new_message.setSpoolBucketType(SpoolBucketEnumType.MESSAGE_QUEUE);
 		new_message.setValueType(ValueEnumType.UNKNOWN);
-		new_message.setCreated(CalendarUtil.getXmlGregorianCalendar(Calendar.getInstance().getTime()));
 		Date expDate = Calendar.getInstance().getTime();
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.YEAR, 1);
 		new_message.setExpiration(CalendarUtil.getXmlGregorianCalendar(cal.getTime()));
 		new_message.setExpires(true);
-		new_message.setSpoolStatus(0);
 		return new_message;
 	}
 	
@@ -118,7 +119,7 @@ public class MessageFactory extends SpoolFactory {
 
 	public List<MessageSpoolType> getMessagesAfterDate(SpoolNameEnumType queue, XMLGregorianCalendar startDate, long startIndex, OrganizationType organization) throws FactoryException, ArgumentException
 	{
-		QueryField dateField = QueryFields.getFieldSpoolCreated(startDate);
+		QueryField dateField = QueryFields.getFieldCreatedDate(startDate);
 		dateField.setComparator(ComparatorEnumType.GREATER_THAN_OR_EQUALS);
 		return getMessages(new QueryField[] { QueryFields.getFieldSpoolBucketName(queue), QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.MESSAGE_QUEUE), dateField }, startIndex, organization);
 	}
@@ -130,7 +131,7 @@ public class MessageFactory extends SpoolFactory {
 	}
 	public MessageSpoolType getMessageByGuid(String guid, OrganizationType organization) throws FactoryException, ArgumentException
 	{
-		List<BaseSpoolType> messages = getByField(new QueryField[] { QueryFields.getFieldSpoolGuid(guid) }, organization.getId());
+		List<BaseSpoolType> messages = getByField(new QueryField[] { QueryFields.getFieldGuid(guid) }, organization.getId());
 		if (messages.size() == 0) return null;
 		return (MessageSpoolType)messages.get(0);
 	}
@@ -144,11 +145,22 @@ public class MessageFactory extends SpoolFactory {
 	}
 	public List<MessageSpoolType> getMessagesFromUserGroup(SpoolNameEnumType queue, UserType user) throws FactoryException, ArgumentException
 	{
-		return getMessagesFromUserGroup(queue, user, getUserMessagesGroup(user));
+		return getMessagesFromUserGroup(null,queue, SpoolStatusEnumType.UNKNOWN, null,user);
 	}
-	public List<MessageSpoolType> getMessagesFromUserGroup(SpoolNameEnumType queue, UserType user, DirectoryGroupType group) throws FactoryException, ArgumentException
+	public List<MessageSpoolType> getMessagesFromUserGroup(String name, SpoolNameEnumType queue, SpoolStatusEnumType status,MessageSpoolType parentMessage,UserType user) throws FactoryException, ArgumentException
 	{
-		return getMessages(new QueryField[]{QueryFields.getFieldSpoolBucketName(queue),QueryFields.getFieldGroup(group.getId()),QueryFields.getFieldSpoolOwner(user.getId())}, 0, user.getOrganization());
+		return getMessagesFromUserGroup(name, queue, status, user, parentMessage,getUserMessagesGroup(user));
+	}
+	public List<MessageSpoolType> getMessagesFromUserGroup(String name, SpoolNameEnumType queue, SpoolStatusEnumType status, UserType user, MessageSpoolType parentMessage,DirectoryGroupType group) throws FactoryException, ArgumentException
+	{
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldSpoolBucketName(queue));
+		fields.add(QueryFields.getFieldGroup(group.getId()));
+		fields.add(QueryFields.getFieldOwner(user.getId()));
+		if(name != null) fields.add(QueryFields.getFieldName(name));
+		if(status != SpoolStatusEnumType.UNKNOWN) fields.add(QueryFields.getFieldSpoolStatus(status));
+		if(parentMessage != null) fields.add(QueryFields.getFieldParentGuid(parentMessage.getGuid()));
+		return getMessages(fields.toArray(new QueryField[0]), 0, user.getOrganization());
 	}
 	public List<MessageSpoolType> getMessages(QueryField[] fields, long startIndex, OrganizationType organization) throws FactoryException, ArgumentException
 	{

@@ -66,6 +66,7 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.objects.types.SessionStatusEnumType;
 import org.cote.accountmanager.objects.types.SpoolBucketEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
+import org.cote.accountmanager.objects.types.SpoolStatusEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.objects.types.StatisticsEnumType;
 import org.cote.accountmanager.objects.types.TagEnumType;
@@ -612,44 +613,35 @@ public class QueryFields {
 	{
 		return getIntField("sessiondatasize", val);
 	}
-	public static QueryField getFieldSpoolGuid(BaseSpoolType spool_type)
+
+	public static QueryField getFieldGuid(String guid)
 	{
-		return getFieldSpoolGuid(spool_type.getGuid());
+		return getStringField("guid", guid);
 	}
-	public static QueryField getFieldSpoolGuid(String guid)
+	public static QueryField getFieldClassification(String cls)
 	{
-		return getStringField("spoolguid", guid);
+		return getStringField("classification", cls);
 	}
-	public static QueryField getFieldSpoolName(BaseSpoolType spool_type)
+	public static QueryField getFieldCurrentLevel(int level)
 	{
-		return getFieldSpoolName(spool_type.getName());
+		return getIntField("currentlevel", level);
 	}
-	public static QueryField getFieldSpoolName(String name){
-		return getStringField("spoolname", name);
-	}
-	public static QueryField getFieldSpoolOwner(BaseSpoolType spool_type)
+	public static QueryField getFieldEndLevel(int level)
 	{
-		return getFieldSpoolOwner(spool_type.getOwnerId());
+		return getIntField("endlevel", level);
 	}
-	public static QueryField getFieldSpoolOwner(long owner_id)
+	public static QueryField getFieldParentGuid(String guid)
 	{
-		return getBigIntField("spoolownerid", owner_id);
+		return getStringField("parentguid", guid);
 	}
-	public static QueryField getFieldSpoolCreated(XMLGregorianCalendar val)
+	
+	public static QueryField getFieldExpires(boolean val)
 	{
-		return getTimestampField("spoolcreated", val);
+		return getBooleanField("expires", val);
 	}
-	public static QueryField getFieldSpoolExpiration(XMLGregorianCalendar val)
+	public static QueryField getFieldSpoolStatus(SpoolStatusEnumType val)
 	{
-		return getTimestampField("spoolexpiration", val);
-	}
-	public static QueryField getFieldSpoolExpires(boolean val)
-	{
-		return getBooleanField("spoolexpires", val);
-	}
-	public static QueryField getFieldSpoolStatus(Integer val)
-	{
-		return getIntField("spoolstatus", val);
+		return getStringField("spoolstatus", val.toString());
 	}
 	public static QueryField getFieldSpoolBucketName(SpoolNameEnumType spool_type){
 		return getStringField("spoolbucketname",spool_type.toString());
@@ -657,8 +649,8 @@ public class QueryFields {
 	public static QueryField getFieldSpoolBucketType(SpoolBucketEnumType spool_type){
 		return getStringField("spoolbuckettype",spool_type.toString());
 	}
-	public static QueryField getFieldSpoolData(String data){
-		return getStringField("spooldata",data);
+	public static QueryField getFieldSpoolData(byte[] data){
+		return getBytesField("spooldata",data);
 	}
 	public static QueryField getFieldSpoolValueType(ValueEnumType spool_type){
 		return getStringField("spoolvaluetype",spool_type.toString());
@@ -705,6 +697,26 @@ public class QueryFields {
 	public static QueryField getFieldPrimaryKey(boolean b)
 	{
 		return getBooleanField("primarykey", b);
+	}
+	public static QueryField getFieldCredentialId(long b)
+	{
+		return getBigIntField("credentialid", b);
+	}
+	public static QueryField getFieldRecipientId(long b)
+	{
+		return getBigIntField("recipientid", b);
+	}
+	public static QueryField getFieldTransportId(long b)
+	{
+		return getBigIntField("transportid", b);
+	}
+	public static QueryField getFieldRecipientType(FactoryEnumType type)
+	{
+		return getStringField("recipienttype", type.toString());
+	}
+	public static QueryField getFieldTransportType(FactoryEnumType type)
+	{
+		return getStringField("transporttype", type.toString());
 	}
 	public static QueryField getFieldPreviousKeyId(long b)
 	{

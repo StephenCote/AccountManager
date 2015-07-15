@@ -58,9 +58,31 @@ public class TikaShredder {
 		  InputStream input = null;
 	        try {
 	        	input = new FileInputStream(path);
+	        	content = getExcelAsString(path,input);
+
+	            
+	        } catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	            if(input != null){
+					try {
+						input.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	            }
+	        }
+	        return content;
+	}
+	public static String getExcelAsString(String path,InputStream input){
+		String content = null;
+
+	        try {
 	            Metadata metadata = new Metadata();
 	            ContentHandler handler = new BodyContentHandler(tikaWriteLimit);
-	            
+
 	            ParseContext context = new ParseContext();
 
 	            context.set(Locale.class, Locale.US);
@@ -139,7 +161,7 @@ public class TikaShredder {
 				if(hasColumnLabels == false || currentSheetRows > 0) currentSheet.getRows().add(row);
 				else if(hasColumnLabels && currentSheetRows == 0) labels = row;
 
-				line = line.replaceAll("^\\t{1}","");
+				//line = line.replaceAll("^\\t{1}","");
 				String[] cells = line.split("\\t");
 				for(int c = 0; c < cells.length; c++){
 					CellType cell = new CellType();
