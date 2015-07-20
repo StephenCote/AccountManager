@@ -10,7 +10,6 @@
 		</p>
 	</div>
 
-	<import-xml src = "/AccountManagerExample/Forms/StatusFrag.xml" id = "StatusFrag" />
 <embedded-script><![CDATA[
 		embedded_init : function(){
 			//this.setStatus("");

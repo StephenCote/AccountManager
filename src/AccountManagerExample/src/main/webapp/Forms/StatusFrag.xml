@@ -1,6 +1,5 @@
 <html-fragment>
 <p rid = "statusCont" style = "display:none;margin: 0px !important;clear:both;"><span rid = "status"></span></p>
-
 	<embedded-script><![CDATA[
 		embedded_init : function(){
 			if(!this.setStatus){

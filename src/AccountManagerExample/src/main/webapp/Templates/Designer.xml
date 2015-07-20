@@ -397,10 +397,11 @@
 			var oA = d.document.createElement("a");
 			var oI = d.document.createElement("img");
 			oA.appendChild(oI);
-			var sThumbUrl = "/AccountManager/Thumbnail/Public/Data" + oG.path + "/" + o.name + "/" + w + "x" + h;
+			var sOrg = accountManager.getOrganizationDotPath(oG.organization);
+			var sThumbUrl = "/AccountManager/Thumbnail/" + sOrg + "/Data" + oG.path + "/" + o.name + "/" + w + "x" + h;
+			//Hemi.log(sThumbUrl);
 			
-			
-			var sUrl = "/AccountManager/Media/Public/Data" + oG.path + "/" + o.name;
+			var sUrl = "/AccountManager/Media/" + sOrg + "/Data" + oG.path + "/" + o.name;
 			var sIco = 0;
 			if(!o.mimeType.match(/^image/)){
 				/*
@@ -417,7 +418,7 @@
 			}
 			else{
 				oI.setAttribute("src",sThumbUrl);
-				//sIco = "/AccountManager/Thumbnail/Public/Data" + oG.path + "/" + o.name + "/" + w + "x" + h;
+				//sIco = "/AccountManager/Thumbnail/" + sOrg + "/Data" + oG.path + "/" + o.name + "/" + w + "x" + h;
 				/// null the dimensions because the end ratio isn't known yet
 				//w = 0;
 				//h = 0;
