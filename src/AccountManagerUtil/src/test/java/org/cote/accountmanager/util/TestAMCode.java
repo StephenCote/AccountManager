@@ -33,7 +33,8 @@ public class TestAMCode {
 	
 	@Test
 	public void TestAMCode(){
-		String code = "[b]Test[/b]\n[url=http://www.whitefrost.com]whitefrost[/url]\n[i]test[/i]\n[ul][li]Test[/li][/ul]";
+		String code = new String(FileUtil.getFile("/Users/Steve/Projects/workspace/AccountManagerUtil/src/test/testData2.txt")); 
+				//"[b]Test[/b]\n[url=http://www.whitefrost.com]whitefrost[/url]\n[i]test[/i]\n[ul][li]Test[/li][/ul]";
 		String out = AMCodeUtil.decodeAMCodeToHtml(code);
 		logger.info(out);
 		String code2 = "[div]\n[p]Test[/p][p][/p]\n[p]\n[p]Test[/p][/p][/div]";

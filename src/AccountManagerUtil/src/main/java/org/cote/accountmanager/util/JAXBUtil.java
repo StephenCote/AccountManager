@@ -29,10 +29,34 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.util.JAXBSource;
+import javax.xml.namespace.QName;
 
 public class JAXBUtil {
-
+	public static <U,T> T clone(Class<T> tClass, U map){
+		return clone(tClass,map,new QName("http://www.cote.org/accountmanager/objects"));
+	}
+	public static <U,T> T clone(Class<T> tClass, U map, QName qName){
+		 T bean = null;
+		try{
+			 JAXBContext contextA = JAXBContext.newInstance(map.getClass());
+		      JAXBElement<U> jaxbElementA = new JAXBElement(qName, map.getClass(), map);
+		        JAXBSource sourceA = new JAXBSource(contextA, jaxbElementA);
+	
+		        JAXBContext contextB = JAXBContext.newInstance(tClass);
+		        Unmarshaller unmarshallerB = contextB.createUnmarshaller();
+		        JAXBElement<T> jaxbElementB = unmarshallerB.unmarshal(sourceA, tClass);
+	        bean = jaxbElementB.getValue();
+		}
+		catch(JAXBException je){
+			je.printStackTrace();
+			System.out.println(je.getMessage());
+		}
+		return bean;
+	}
 	public static <T> T importObject(Class<T> tClass, String input){
 
 		T obj = null;

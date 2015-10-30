@@ -40,7 +40,9 @@ public class MapUtil {
 		targ.setParentId(src.getParentId());
 		//if(src.getNameType() == null) targ.setNameType(NameEnumType.APPLICATION);
 		if(src.getNameType() != NameEnumType.UNKNOWN) targ.setNameType(src.getNameType());
-		if(targ.getOrganization() == null) targ.setOrganization(src.getOrganization());
+		//if(targ.getOrganization() == null) targ.setOrganization(src.getOrganization());
+		targ.setOrganizationId(src.getOrganizationId());
+		targ.setOrganizationPath(src.getOrganizationPath());
 		if(targ.getUrn() != null) targ.setUrn(src.getUrn());
 	}
 }

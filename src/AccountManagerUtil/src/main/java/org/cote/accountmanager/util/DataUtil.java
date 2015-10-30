@@ -167,6 +167,7 @@ public class DataUtil {
 				throw new DataException("Cipher key not specified for enciphered data");
 			}
 			else{
+				
 				SecurityBean bean = SecurityFactory.getSecurityFactory().createSecurityBean(d.getCipherKey(), false);
 				value = SecurityUtil.encipher(bean, value);
 				d.setEnciphered(true);
@@ -186,6 +187,9 @@ public class DataUtil {
 
 	public static byte[] getValue(DataType d) throws DataException
 	{
+		if(d.getDetailsOnly() == true){
+			throw new DataException("Cannot access data with a meta data object.");
+		}
 		if (!d.getBlob())
 		{
 			byte[] ret = new byte[0];
