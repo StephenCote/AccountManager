@@ -41,9 +41,9 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.services.BlogServiceImpl;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
 import org.cote.util.ArticleUtil;
 
 import java.util.List;
@@ -70,7 +70,7 @@ public class BlogService{
 			e.printStackTrace();
 		}
 		if(org == null) return null;
-		return ArticleUtil.getRoleByType("Blog", org);
+		return ArticleUtil.getRoleByType("Blog", orgId);
 	}
 	
 	@GET @Path("/read/{organizationId:[\\d]+}/{user : [@\\.~%\\s0-9a-z_A-Z\\/\\-]+}/{name: [@%\\sa-zA-Z_0-9\\-\\.]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)

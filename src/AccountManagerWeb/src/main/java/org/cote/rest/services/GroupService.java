@@ -49,6 +49,9 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
@@ -65,12 +68,9 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
-import org.cote.accountmanager.services.BaseService;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.services.GroupServiceImpl;
 import org.cote.accountmanager.services.RoleServiceImpl;
-import org.cote.accountmanager.util.ServiceUtil;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
 import org.cote.util.BeanUtil;
 
 @Path("/group")
@@ -103,7 +103,7 @@ public class GroupService {
 	
 	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean flushCache(@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.INFO, "Request clear factory cache");
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null){
@@ -125,14 +125,14 @@ public class GroupService {
 	@GET @Path("/count/{group:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public int count(@PathParam("group") String path,@Context HttpServletRequest request){
 		int out_count = 0;
-		String sessionId = request.getSession(true).getId();
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "Count Group",AuditEnumType.SESSION,request.getSession(true).getId());
+		String sessionId = ServiceUtil.getSessionId(request);
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "Count Group",AuditEnumType.SESSION,ServiceUtil.getSessionId(request));
 
 		UserType user = ServiceUtil.getUserFromSession(audit, request);
 		if(user == null) return 0;
 
 		try{
-			BaseGroupType group = (BaseGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.UNKNOWN, path, user.getOrganization());
+			BaseGroupType group = (BaseGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.UNKNOWN, path, user.getOrganizationId());
 			if(group == null ){
 				AuditService.denyResult(audit, "Group not found");
 				return 0;
@@ -172,7 +172,7 @@ public class GroupService {
 		OrganizationType org = null;
 		try {
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, org);
+			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, organizationId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -196,7 +196,7 @@ public class GroupService {
 		OrganizationType org = null;
 		try {
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, org);
+			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, organizationId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -206,7 +206,7 @@ public class GroupService {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		if(group != null) out_bool = BaseService.authorizeRole(AuditEnumType.GROUP, org, roleId, group, view, edit, delete, create, request);
+		if(group != null) out_bool = BaseService.authorizeRole(AuditEnumType.GROUP, organizationId, roleId, group, view, edit, delete, create, request);
 		return out_bool;
 	}
 	
@@ -218,7 +218,7 @@ public class GroupService {
 		OrganizationType org = null;
 		try {
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, org);
+			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, organizationId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -228,15 +228,15 @@ public class GroupService {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		if(group != null) out_bool = BaseService.authorizeUser(AuditEnumType.GROUP, org, userId, group, view, edit, delete, create, request);
+		if(group != null) out_bool = BaseService.authorizeUser(AuditEnumType.GROUP, organizationId, userId, group, view, edit, delete, create, request);
 		return out_bool;
 	}
 	
 	@GET @Path("/home") @Produces(MediaType.APPLICATION_JSON)
 	public DirectoryGroupType home(@Context HttpServletRequest request){
 		DirectoryGroupType bean = null;
-		String sessionId = request.getSession(true).getId();
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "home",AuditEnumType.SESSION,request.getSession(true).getId());
+		String sessionId = ServiceUtil.getSessionId(request);
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "home",AuditEnumType.SESSION,ServiceUtil.getSessionId(request));
 		UserType user = ServiceUtil.getUserFromSession(audit, request);
 		if(user == null) return bean;
 
@@ -245,10 +245,11 @@ public class GroupService {
 			///DirectoryGroupType clone = BeanUtil.getBean(DirectoryGroupType.class, user.getHomeDirectory());
 			///user.setHomeDirectory(clone);
 			Factories.getGroupFactory().populate(user.getHomeDirectory());
+			Factories.getGroupFactory().denormalize(user.getHomeDirectory());
 
 			AuditService.targetAudit(audit, AuditEnumType.GROUP, user.getHomeDirectory().getUrn());
 			AuditService.permitResult(audit, "Access authenticated user's home group");
-			bean = BeanUtil.getSanitizedGroup(user.getHomeDirectory(),false);
+			bean = user.getHomeDirectory();
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -273,7 +274,7 @@ public class GroupService {
 	///
 	@GET @Path("/readByPath/{type: [%\\sa-zA-Z_0-9\\-]+}/{path : [@\\.\\.~%\\s0-9a-z_A-Z\\/\\-]+}")  @Produces(MediaType.APPLICATION_JSON)
 	public BaseGroupType readByPath(@PathParam("type") String type,@PathParam("path") String path,@Context HttpServletRequest request){
-		return (BaseGroupType)GroupServiceImpl.findGroup(GroupEnumType.valueOf(type), path, request);
+		return (BaseGroupType)BaseService.findGroup(GroupEnumType.valueOf(type), path, request);
 
 	}
 
@@ -284,7 +285,7 @@ public class GroupService {
 		PersonGroupType targGroup = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			targGroup = Factories.getGroupFactory().getById(recordId, targOrg);
+			if(targOrg != null) targGroup = Factories.getGroupFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -295,7 +296,8 @@ public class GroupService {
 			e.printStackTrace();
 		}
 		
-		return GroupServiceImpl.getListOfPersons(user, targGroup);
+		if(targGroup != null) return GroupServiceImpl.getListOfPersons(user, targGroup);
+		return new ArrayList<PersonType>();
 	}
 	@GET @Path("/listAccounts/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public List<AccountType> listAccounts(@PathParam("orgId") long orgId,@PathParam("recordId") long recordId,@Context HttpServletRequest request){
@@ -304,7 +306,7 @@ public class GroupService {
 		AccountGroupType targGroup = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			targGroup = Factories.getGroupFactory().getById(recordId, targOrg);
+			if(targOrg != null) targGroup = Factories.getGroupFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -315,7 +317,8 @@ public class GroupService {
 			e.printStackTrace();
 		}
 		
-		return GroupServiceImpl.getListOfAccounts(user, targGroup);
+		if(targGroup != null) return GroupServiceImpl.getListOfAccounts(user, targGroup);
+		return new ArrayList<AccountType>();
 	}
 	@GET @Path("/listUsers/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public List<UserType> listUsers(@PathParam("orgId") long orgId,@PathParam("recordId") long recordId,@Context HttpServletRequest request){
@@ -324,7 +327,7 @@ public class GroupService {
 		UserGroupType targGroup = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			targGroup = Factories.getGroupFactory().getById(recordId, targOrg);
+			if(targOrg != null) targGroup = Factories.getGroupFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -335,7 +338,8 @@ public class GroupService {
 			e.printStackTrace();
 		}
 		
-		return GroupServiceImpl.getListOfUsers(user, targGroup);
+		if(targGroup != null) return GroupServiceImpl.getListOfUsers(user, targGroup);
+		return new ArrayList<UserType>();
 	}
 	
 	/// TODO - dir should return a list, not a single group
@@ -359,8 +363,8 @@ public class GroupService {
 		BaseGroupType parent = null;
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().getById(orgId, null);
-			if(org != null) parent =Factories.getGroupFactory().getById(parentId, org);
+			org = Factories.getOrganizationFactory().getById(orgId, 0L);
+			if(org != null) parent =Factories.getGroupFactory().getById(parentId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -382,8 +386,8 @@ public class GroupService {
 		//return GroupServiceImpl.readById(id, request);
 
 		BaseGroupType bean = null;
-		String sessionId = request.getSession(true).getId();
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "#" + parentId,AuditEnumType.SESSION,request.getSession(true).getId());
+		String sessionId = ServiceUtil.getSessionId(request);
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "#" + parentId,AuditEnumType.SESSION,ServiceUtil.getSessionId(request));
 		UserType user = ServiceUtil.getUserFromSession(audit, request);
 		if(user == null) return bean;
 		if(parentId <= 0){
@@ -391,9 +395,9 @@ public class GroupService {
 			return bean;
 		}
 		try{
-			BaseGroupType dir = Factories.getGroupFactory().getById(parentId, user.getOrganization());
+			BaseGroupType dir = Factories.getGroupFactory().getById(parentId, user.getOrganizationId());
 			if(dir == null){
-				AuditService.denyResult(audit, "Id " + parentId + " (Group) doesn't exist in org " + user.getOrganization().getId());
+				AuditService.denyResult(audit, "Id " + parentId + " (Group) doesn't exist in org " + user.getOrganizationId());
 				return bean;
 			}
 	
@@ -402,11 +406,10 @@ public class GroupService {
 				return bean;
 			}
 			Factories.getGroupFactory().populate(dir);	
-			
+			Factories.getGroupFactory().denormalize(dir);
 			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getUrn());
 			AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 			bean = dir;
-			if(bean.getGroupType() == GroupEnumType.DATA) bean = BeanUtil.getSanitizedGroup((DirectoryGroupType)dir,false);
 			
 		}
 		catch(FactoryException fe){
@@ -424,8 +427,8 @@ public class GroupService {
 	@GET @Path("/getCreatePath/{type: [%\\sa-zA-Z_0-9\\-]+}/{path : [@\\.~%\\s0-9_a-zA-Z\\/\\-]+}")  @Produces(MediaType.APPLICATION_JSON)
 	public BaseGroupType getCreatePath(@PathParam("type") String type, @PathParam("path") String path, @Context HttpServletRequest request){
 		BaseGroupType bean = null;
-		String sessionId = request.getSession(true).getId();
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "GetCreate Group",AuditEnumType.SESSION,request.getSession(true).getId());
+		String sessionId = ServiceUtil.getSessionId(request);
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "GetCreate Group",AuditEnumType.SESSION,ServiceUtil.getSessionId(request));
 		if(path == null || path.length() == 0){
 			AuditService.denyResult(audit, "Path is null");
 			return null;
@@ -439,14 +442,15 @@ public class GroupService {
 			/// And it needs to include an AuthZ check so someone can't just go making directory groups all over the place
 			///
 			///
-			bean = (BaseGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.valueOf(type), path, user.getOrganization());
+			bean = (BaseGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.valueOf(type), path, user.getOrganizationId());
 			if(bean == null && path.startsWith("~") == false && path.startsWith("/Home/" + user.getName() + "/") == false){
 				AuditService.denyResult(audit, "Paths can only be created from the home directory");
 				return null;
 			}
-			if(bean == null) bean = Factories.getGroupFactory().getCreatePath(user, path, user.getOrganization());
+			if(bean == null) bean = Factories.getGroupFactory().getCreatePath(user, path, user.getOrganizationId());
 			if(bean != null){
 				Factories.getGroupFactory().populate(bean);
+				Factories.getGroupFactory().denormalize(bean);
 				AuditService.permitResult(audit, "GetCreate group " + bean.getName());
 			}
 		} catch (FactoryException e) {

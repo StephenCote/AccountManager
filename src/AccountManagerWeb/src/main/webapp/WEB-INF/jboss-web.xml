@@ -7,4 +7,9 @@
       <role-name>AuthorizedUser</role-name>
       <principal-name>AuthorizedUser</principal-name>
         </security-role>
+            <session-config>
+       <cookie-config>
+          <path>/</path>
+       </cookie-config>
+    </session-config>
 </jboss-web>  

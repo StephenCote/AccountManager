@@ -131,7 +131,7 @@
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer
 		</servlet-class>
     <init-param>
-      <param-name>com.sun.jersey.config.property.packages;org.codehaus.jackson.jaxrs</param-name>
+      <param-name>com.sun.jersey.config.property.packages;com.fasterxml.jackson.jaxrs</param-name>
       <param-value>org.cote.rest.services</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
@@ -228,6 +228,8 @@
     <cookie-config>
       <path>/</path>
     </cookie-config>
+
+    <tracking-mode>COOKIE</tracking-mode>
   </session-config>
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>

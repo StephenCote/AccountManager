@@ -40,6 +40,9 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
@@ -51,12 +54,12 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
-import org.cote.accountmanager.services.BaseService;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.services.DataServiceImpl;
 import org.cote.accountmanager.services.RoleServiceImpl;
-import org.cote.accountmanager.util.ServiceUtil;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
+
+
+
 
 
 
@@ -78,7 +81,7 @@ public class DataService{
 	public boolean updateProfile(DataType data, @Context HttpServletRequest request){
 		boolean out_bool = false;
 
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "updateProfile",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "updateProfile",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.DATA, (data == null? "Null":UrnUtil.getUrn(data)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null){
@@ -87,7 +90,7 @@ public class DataService{
 		}
 		try{
 		Factories.getUserFactory().populate(user);
-		if(data.getOwnerId() != user.getId() || data.getGroup().getId() != user.getHomeDirectory().getId() || data.getName().equals(".profile") == false){
+		if(data.getOwnerId() != user.getId() || data.getGroupId() != user.getHomeDirectory().getId() || data.getName().equals(".profile") == false){
 			AuditService.denyResult(audit, "Profile data is not the right name, owner, or in the right group");
 			return false;
 		}
@@ -118,7 +121,7 @@ public class DataService{
 	}
 	@GET @Path("/getProfile") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public DataType getProfile(@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getProfile",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getProfile",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.DATA, "Read profile information");
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null){
@@ -130,7 +133,7 @@ public class DataService{
 	
 	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean flushCache(@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.INFO, "Request clear factory cache");
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null){
@@ -159,7 +162,7 @@ public class DataService{
 		OrganizationType org = null;
 		try {
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			if(org != null) data = Factories.getDataFactory().getDataById(dataId, true, org);
+			if(org != null) data = Factories.getDataFactory().getDataById(dataId, true, organizationId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -183,7 +186,7 @@ public class DataService{
 		OrganizationType org = null;
 		try {
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			if(org != null) data = Factories.getDataFactory().getDataById(dataId, org);
+			if(org != null) data = Factories.getDataFactory().getDataById(dataId, organizationId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -193,7 +196,7 @@ public class DataService{
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		if(data != null) out_bool = BaseService.authorizeRole(AuditEnumType.DATA, org, roleId, data, view, edit, delete, create, request);
+		if(data != null) out_bool = BaseService.authorizeRole(AuditEnumType.DATA, org.getId(), roleId, data, view, edit, delete, create, request);
 		return out_bool;
 	}
 	
@@ -205,7 +208,7 @@ public class DataService{
 		OrganizationType org = null;
 		try {
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			if(org != null) data = Factories.getDataFactory().getDataById(dataId, org);
+			if(org != null) data = Factories.getDataFactory().getDataById(dataId, organizationId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -215,7 +218,7 @@ public class DataService{
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		if(data != null) out_bool = BaseService.authorizeUser(AuditEnumType.DATA, org, userId, data, view, edit, delete, create, request);
+		if(data != null) out_bool = BaseService.authorizeUser(AuditEnumType.DATA, org.getId(), userId, data, view, edit, delete, create, request);
 		return out_bool;
 	}
 	

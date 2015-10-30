@@ -33,18 +33,15 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
@@ -53,11 +50,10 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.services.DataServiceImpl;
-
-import org.cote.beans.SchemaBean;
 //import org.cote.beans.UserBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
 import org.cote.util.BeanUtil;
 
 
@@ -91,6 +87,7 @@ public class OrganizationService{
 		OrganizationType org = null;
 		try {
 			org = Factories.getOrganizationFactory().findOrganization(path);
+			if(org != null) Factories.getOrganizationFactory().denormalize(org);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -112,6 +109,7 @@ public class OrganizationService{
 			if(parent != null){
 				System.out.println("Looking for organization '" + name + "' in parent '" + parent.getName() + "'");
 				out_org = Factories.getOrganizationFactory().getOrganizationByName(name, parent);
+				if(out_org != null) Factories.getOrganizationFactory().denormalize(out_org);
 			}
 			else{
 				System.out.println("Parent organization not found for id #" + parentId);
@@ -135,6 +133,7 @@ public class OrganizationService{
 		OrganizationType out_org = null;
 		try {
 			out_org = Factories.getOrganizationFactory().getOrganizationById(id);
+			if(out_org != null) Factories.getOrganizationFactory().denormalize(out_org);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());

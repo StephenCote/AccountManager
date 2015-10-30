@@ -40,15 +40,21 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.SecuritySpoolType;
@@ -59,10 +65,7 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
-import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.beans.CryptoBean;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -95,14 +98,14 @@ public class CryptoService{
 	@GET @Path("/getKeyRing") @Produces(MediaType.APPLICATION_JSON)
 	public CryptoBean[] getKeyRing(@Context HttpServletRequest request){
 
-		String sessionId = request.getSession(true).getId();
+		String sessionId = ServiceUtil.getSessionId(request);
 		UserSessionType session = null;
 		SecuritySpoolType[] tokens = new SecuritySpoolType[0];
 		List<CryptoBean> secs = new ArrayList<CryptoBean>();
 		OrganizationType org = ServiceUtil.getOrganizationFromRequest(request);
 		try {
-			session = SessionSecurity.getUserSession(sessionId, org);
-			tokens = Factories.getSecurityTokenFactory().getSecurityTokens(sessionId, org);
+			session = SessionSecurity.getUserSession(sessionId, org.getId());
+			tokens = Factories.getSecurityTokenFactory().getSecurityTokens(sessionId, org.getId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage()); 
@@ -130,7 +133,7 @@ public class CryptoService{
 				for(int i = 0; i < 10;i++){
 					SecurityBean bean = new SecurityBean();
 					SecurityFactory.getSecurityFactory().generateSecretKey(bean);
-					SecuritySpoolType tokenType = Factories.getSecurityTokenFactory().newSecurityToken(sessionId, org);
+					SecuritySpoolType tokenType = Factories.getSecurityTokenFactory().newSecurityToken(sessionId, org.getId());
 					secs.add(getCryptoBean(bean,tokenType.getGuid()));
 					
 					tokenType.setOwnerId(session.getUserId());
@@ -155,14 +158,49 @@ public class CryptoService{
 			}
 		}
 		
-		///System.out.println(request.getSession(true).getId());
+		///System.out.println(ServiceUtil.getSessionId(request));
 
 		return secs.toArray(new CryptoBean[0]);
 	}
+	
+	/// TODO: Add throttle to prevent BRUTE FORCE attempts to crack
+	///
+	@GET @Path("/validateApiToken/{token:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean validateApiToken(@PathParam("token") String token,@Context HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHENTICATE, "validateCredential", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user == null) return false;
+		boolean out_bool = false;
+		if(token == null || token.length() == 0){
+			AuditService.denyResult(audit, "Credential is missing");
+			return out_bool;
+		}
 
-	@GET @Path("/validateToken/{type:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}/{token:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public boolean validateToken(@PathParam("type") String type,@PathParam("token") String token,@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHENTICATE, "validateCredential", AuditEnumType.SESSION, request.getSession().getId());
+		DirectoryGroupType dir = ApiConnectionConfigurationService.getApiDirectory(user);
+		if(dir == null){
+			AuditService.denyResult(audit, "Invalid API Directory");
+			return false;
+		}
+
+		CredentialType currentCred = CredentialService.getPrimaryCredential(dir,CredentialEnumType.TOKEN,true);
+		if(currentCred == null){
+			AuditService.denyResult(audit, "Object does not define a credential");
+			return false;
+		}
+		if(CredentialService.validateTokenCredential(dir, currentCred, token)==true){
+			AuditService.permitResult(audit, "Validated credential");
+			out_bool = true;
+			
+		}
+		else{
+			AuditService.denyResult(audit, "Failed to validate credential");
+			out_bool = false;
+		}
+		return out_bool;
+	}
+	@GET @Path("/validateMaterialToken/{type:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}/{token:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public boolean validateMaterialToken(@PathParam("type") String type,@PathParam("token") String token,@Context HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHENTICATE, "validateCredential", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		//UserType user = ServiceUtil.getUserFromSession(audit,request);
 		//if(user == null) return false;
 		boolean out_bool = false;
@@ -185,14 +223,14 @@ public class CryptoService{
 				AuditService.denyResult(audit, "Invalid organization from id " + orgId);
 				return false;
 			}
-			UserType targUser = Factories.getUserFactory().getById(userId, org);
+			UserType targUser = Factories.getUserFactory().getById(userId, org.getId());
 			if(targUser == null){
 				AuditService.denyResult(audit, "Invalid user from id " + userId);
 				return false;
 			}
 			FactoryEnumType ftype = FactoryEnumType.valueOf(type);
 			if(ftype == FactoryEnumType.GROUP){
-				BaseGroupType group = Factories.getGroupFactory().getGroupById(objId, org);
+				BaseGroupType group = Factories.getGroupFactory().getGroupById(objId, org.getId());
 				if(group == null){
 					AuditService.denyResult(audit, "Invalid group from id " + objId);
 					return false;
@@ -232,7 +270,7 @@ public class CryptoService{
 	}
 	@POST @Path("/newPrimaryCredential") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean newPrimaryCredential(AuthenticationRequestType authReq,@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "newPrimaryCredential", AuditEnumType.SESSION, request.getSession().getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "newCredential", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		UserType owner = null;
 		boolean out_bool = false;
@@ -246,10 +284,10 @@ public class CryptoService{
 			 *    The authenticated user must be an account administrator
 			 *    Or the current credential must be supplied
 			 */
-			boolean accountAdmin = AuthorizationService.isAccountAdministratorInOrganization(user, user.getOrganization());
-			boolean dataAdmin = AuthorizationService.isDataAdministratorInOrganization(user, user.getOrganization());
+			boolean accountAdmin = AuthorizationService.isAccountAdministratorInOrganization(user, user.getOrganizationId());
+			boolean dataAdmin = AuthorizationService.isDataAdministratorInOrganization(user, user.getOrganizationId());
 			if(authReq.getSubjectType() == NameEnumType.USER){
-				UserType updateUser = Factories.getUserFactory().getUserByName(authReq.getSubject(), user.getOrganization());
+				UserType updateUser = Factories.getUserFactory().getUserByName(authReq.getSubject(), user.getOrganizationId());
 				if(updateUser == null){
 					AuditService.denyResult(audit, "Target user " + authReq.getSubject() + " does not exist");
 					return out_bool;
@@ -302,7 +340,7 @@ public class CryptoService{
 					}
 				}
 				targetObject = updateGroup;
-				owner = Factories.getUserFactory().getById(updateGroup.getOwnerId(), updateGroup.getOrganization());
+				owner = Factories.getUserFactory().getById(updateGroup.getOwnerId(), updateGroup.getOrganizationId());
 			}
 			else{
 				//logger.error("Subject type " + authReq.getSubjectType().toString() + " is unsupported");

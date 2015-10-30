@@ -43,6 +43,9 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
@@ -56,10 +59,6 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.services.RoleServiceImpl;
-import org.cote.accountmanager.util.ServiceUtil;
-import org.cote.beans.SchemaBean;
-//import org.cote.beans.UserBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
 
 @Path("/role")
 public class RoleService{
@@ -97,7 +96,7 @@ public class RoleService{
 	
 	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean flushCache(@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.INFO, "Request clear factory cache");
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null){
@@ -195,7 +194,7 @@ public class RoleService{
 		UserRoleType targRole = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			targRole = Factories.getRoleFactory().getById(recordId, targOrg);
+			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -206,7 +205,8 @@ public class RoleService{
 			e.printStackTrace();
 		}
 		
-		return RoleServiceImpl.getListOfGroups(user, targRole);
+		if(targRole != null) return RoleServiceImpl.getListOfGroups(user, targRole);
+		return new ArrayList<UserGroupType>();
 	}
 	
 
@@ -217,7 +217,7 @@ public class RoleService{
 		PersonRoleType targRole = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			targRole = Factories.getRoleFactory().getById(recordId, targOrg);
+			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -228,7 +228,8 @@ public class RoleService{
 			e.printStackTrace();
 		}
 		
-		return RoleServiceImpl.getListOfPersons(user, targRole);
+		if(targRole != null) return RoleServiceImpl.getListOfPersons(user, targRole);
+		return new ArrayList<PersonType>();
 	}
 	@GET @Path("/listForPerson/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public List<PersonRoleType> listForPerson(@PathParam("orgId") long orgId,@PathParam("recordId") long recordId,@Context HttpServletRequest request){
@@ -237,7 +238,7 @@ public class RoleService{
 		OrganizationType targOrg = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targPerson = Factories.getPersonFactory().getById(recordId, targOrg);
+			if(targOrg != null) targPerson = Factories.getPersonFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -260,7 +261,7 @@ public class RoleService{
 		AccountRoleType targRole = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			targRole = Factories.getRoleFactory().getById(recordId, targOrg);
+			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -271,7 +272,8 @@ public class RoleService{
 			e.printStackTrace();
 		}
 		
-		return RoleServiceImpl.getListOfAccounts(user, targRole);
+		if(targRole != null) return RoleServiceImpl.getListOfAccounts(user, targRole);
+		return new ArrayList<AccountType>();
 	}
 	@GET @Path("/listForAccount/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public List<AccountRoleType> listForAccount(@PathParam("orgId") long orgId,@PathParam("recordId") long recordId,@Context HttpServletRequest request){
@@ -280,7 +282,7 @@ public class RoleService{
 		OrganizationType targOrg = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targAccount = Factories.getAccountFactory().getById(recordId, targOrg);
+			if(targOrg != null) targAccount = Factories.getAccountFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -304,7 +306,7 @@ public class RoleService{
 		UserRoleType targRole = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			targRole = Factories.getRoleFactory().getById(recordId, targOrg);
+			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -315,7 +317,8 @@ public class RoleService{
 			e.printStackTrace();
 		}
 		
-		return RoleServiceImpl.getListOfUsers(user, targRole);
+		if(targRole != null) return RoleServiceImpl.getListOfUsers(user, targRole);
+		return new ArrayList<UserType>();
 	}
 	
 	@GET @Path("/listForUser/{orgId : [\\d]+}/{recordId : [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
@@ -325,7 +328,7 @@ public class RoleService{
 		OrganizationType targOrg = null;
 		try {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targUser = Factories.getUserFactory().getById(recordId, targOrg);
+			if(targOrg != null) targUser = Factories.getUserFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -354,8 +357,8 @@ public class RoleService{
 		BaseRoleType parent = null;
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().getById(orgId, null);
-			if(org != null) parent =Factories.getRoleFactory().getById(parentId, org);
+			org = Factories.getOrganizationFactory().getById(orgId, 0L);
+			if(org != null && parentId > 0L) parent =Factories.getRoleFactory().getById(parentId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -365,10 +368,12 @@ public class RoleService{
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
+		/*
 		if(parent == null){
 			System.out.println("Null role for id " + parentId + " in org " + org);
 			return new ArrayList<BaseRoleType>();
 		}
+		*/
 		return RoleServiceImpl.getListInParent(user, type, parent, startIndex, recordCount );
 
 	}

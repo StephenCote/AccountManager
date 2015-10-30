@@ -42,6 +42,7 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
@@ -63,8 +64,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.objects.BaseRoleType;
-import org.cote.accountmanager.util.ServiceUtil;
-
+import org.cote.accountmanager.service.rest.BaseService;
 
 
 
@@ -80,7 +80,7 @@ public class RoleServiceImpl  {
 		OrganizationType org = null;
 		try {
 			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(org != null) role = Factories.getRoleFactory().getRoleById(roleId, org);
+			if(org != null) role = Factories.getRoleFactory().getRoleById(roleId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -90,7 +90,7 @@ public class RoleServiceImpl  {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		if(role != null) out_bool = BaseService.authorizeUser(AuditEnumType.ROLE, org, userId, role, view, edit, delete, create, request);
+		if(role != null) out_bool = BaseService.authorizeUser(AuditEnumType.ROLE, orgId, userId, role, view, edit, delete, create, request);
 		return out_bool;
 	}
 	
@@ -108,10 +108,10 @@ public class RoleServiceImpl  {
 	}
 	
 	public static boolean requestAccessToReadUserRole(UserType user) throws FactoryException, ArgumentException, DataAccessException{
-		return requestUserRoleAccess(user, RoleService.getAccountUsersReaderUserRole(user.getOrganization()));
+		return requestUserRoleAccess(user, RoleService.getAccountUsersReaderUserRole(user.getOrganizationId()));
 	}
 	public static boolean requestAccessToReadRoleRole(UserType user) throws FactoryException, ArgumentException, DataAccessException{
-		return requestUserRoleAccess(user, RoleService.getRoleReaderUserRole(user.getOrganization()));
+		return requestUserRoleAccess(user, RoleService.getRoleReaderUserRole(user.getOrganizationId()));
 	}
 
 	public static boolean requestUserRoleAccess(UserType user, UserRoleType role) throws FactoryException, ArgumentException, DataAccessException{
@@ -131,7 +131,7 @@ public class RoleServiceImpl  {
 	}
 	public static BaseRoleType getUserRole(long organizationId, UserType user, String type, HttpServletRequest request){
 		BaseRoleType targetRole = null;
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "Read User Role", AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "Read User Role", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "User role");
 		if(user==null) return null;
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, user.getName() + " user role");
@@ -139,11 +139,12 @@ public class RoleServiceImpl  {
 		OrganizationType org = null;
 		try{
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			targetRole = Factories.getRoleFactory().getUserRole(user, roleType, org);
+			if(org != null) targetRole = Factories.getRoleFactory().getUserRole(user, roleType, organizationId);
 			if(targetRole == null){
 				logger.error("Account manager objects not correctly setup.  User role is missing.");
 				return null;
 			}
+			Factories.getRoleFactory().denormalize(targetRole);
 			AuditService.targetAudit(audit, AuditEnumType.ROLE, targetRole.getUrn());
 			if(BaseService.canViewType(AuditEnumType.ROLE, user, targetRole)){
 				AuditService.permitResult(audit, "Returning root role");
@@ -171,7 +172,7 @@ public class RoleServiceImpl  {
 	}
 	public static BaseRoleType getRootRole(long organizationId,UserType user, String type, HttpServletRequest request){
 		BaseRoleType targetRole = null;
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "Read Root Role", AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "Read Root Role", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "Root role");
 		if(user==null) return null;
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, user.getName() + " user role");
@@ -179,11 +180,12 @@ public class RoleServiceImpl  {
 		OrganizationType org = null;
 		try{
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			targetRole = Factories.getRoleFactory().getRootRole(roleType, org);
+			if(org != null) targetRole = Factories.getRoleFactory().getRootRole(roleType, organizationId);
 			if(targetRole == null){
 				logger.error("Account manager objects not correctly setup.  Root role is missing.");
 				return null;
 			}
+			Factories.getRoleFactory().denormalize(targetRole);
 			AuditService.targetAudit(audit, AuditEnumType.ROLE, targetRole.getUrn());
 			if(BaseService.canViewType(AuditEnumType.ROLE, user, targetRole)){
 				AuditService.permitResult(audit, "Returning root role");
@@ -214,7 +216,7 @@ public class RoleServiceImpl  {
 		BaseRoleType role = null;
 		NameIdType obj = null;
 		try {
-			role = Factories.getRoleFactory().getRoleById(roleId, user.getOrganization());
+			role = Factories.getRoleFactory().getRoleById(roleId, user.getOrganizationId());
 			if(role == null){
 				AuditService.denyResult(audit, "Role does not exist");
 				return out_bool;
@@ -224,8 +226,8 @@ public class RoleServiceImpl  {
 				AuditService.denyResult(audit, "Role type must match the object type");
 				return out_bool;
 			}
-			if(objType != AuditEnumType.DATA) obj = ((NameIdFactory)BaseService.getFactory(objType)).getById(objId, user.getOrganization());
-			else obj = ((DataFactory)BaseService.getFactory(objType)).getDataById(objId, true, user.getOrganization());
+			if(objType != AuditEnumType.DATA) obj = ((NameIdFactory)BaseService.getFactory(objType)).getById(objId, user.getOrganizationId());
+			else obj = ((DataFactory)BaseService.getFactory(objType)).getDataById(objId, true, user.getOrganizationId());
 			if(obj == null){
 				AuditService.denyResult(audit, "Object does not exist");
 				return out_bool;
@@ -293,8 +295,8 @@ public class RoleServiceImpl  {
 		logger.info("Reading " + name + " in #" + parentId + " in org #" + orgId);
 		try{
 			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(org != null && parentId > 0L) parent = Factories.getRoleFactory().getById(parentId, org);
-			else logger.error("Organization id #" + orgId + " is null");
+			if(org != null && parentId > 0L) parent = Factories.getRoleFactory().getById(parentId, orgId);
+			else if(org == null) logger.error("Organization id #" + orgId + " is invalid");
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -304,12 +306,13 @@ public class RoleServiceImpl  {
 			
 			e.printStackTrace();
 		}
-		
+		/*
+
 		if(parent == null){
 			logger.error("Parent id #" + parentId + " is null in organization #" + orgId);
 			return null;
 		}
-		
+		*/
 		return BaseService.readByNameInParent(AuditEnumType.ROLE, parent, name, type, request);
 	}
 	public static BaseRoleType readByParent(BaseRoleType parent, String name, String type, HttpServletRequest request){
@@ -333,7 +336,7 @@ public class RoleServiceImpl  {
 		BaseRoleType role = null;
 		try{
 			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(org != null) role = Factories.getRoleFactory().getById(parentId, org);
+			if(org != null) role = Factories.getRoleFactory().getById(parentId, orgId);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -370,10 +373,10 @@ public class RoleServiceImpl  {
 			if(
 				AuthorizationService.isMapOwner(user, type)
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user,type.getOrganization())
+				AuthorizationService.isAccountAdministratorInOrganization(user,type.getOrganizationId())
 				||
-				//(AuthorizationService.isRoleReaderInOrganization(user, type.getOrganization()) && AuthorizationService.isAccountReaderInOrganization(user, type.getOrganization()))
-				AuthorizationService.isRoleReaderInOrganization(user, type.getOrganization())
+				//(AuthorizationService.isRoleReaderInOrganization(user, type.getOrganizationId()) && AuthorizationService.isAccountReaderInOrganization(user, type.getOrganizationId()))
+				AuthorizationService.isRoleReaderInOrganization(user, type.getOrganizationId())
 			){
 				AuditService.permitResult(audit, "Access authorized to list roles");
 				switch(type.getNameType()){
@@ -427,9 +430,9 @@ public class RoleServiceImpl  {
 			if(
 				AuthorizationService.isMapOwner(user, targRole)
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user,targRole.getOrganization())
+				AuthorizationService.isAccountAdministratorInOrganization(user,targRole.getOrganizationId())
 				||
-				(AuthorizationService.isRoleReaderInOrganization(user, targRole.getOrganization()) && AuthorizationService.isAccountReaderInOrganization(user, targRole.getOrganization()))
+				(AuthorizationService.isRoleReaderInOrganization(user, targRole.getOrganizationId()) && AuthorizationService.isAccountReaderInOrganization(user, targRole.getOrganizationId()))
 			){
 				AuditService.permitResult(audit, "Access authorized to list groups in role");
 				switch(memberType){
@@ -501,9 +504,9 @@ public class RoleServiceImpl  {
 			if(
 				(memberType == FactoryEnumType.USER && user.getId() == ((UserType)obj).getId())
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user,obj.getOrganization())
+				AuthorizationService.isAccountAdministratorInOrganization(user,obj.getOrganizationId())
 				||
-				AuthorizationService.isRoleReaderInOrganization(user, obj.getOrganization())
+				AuthorizationService.isRoleReaderInOrganization(user, obj.getOrganizationId())
 			){
 				AuditService.permitResult(audit, "Access authorized to list roles");
 				switch(memberType){
@@ -519,6 +522,9 @@ public class RoleServiceImpl  {
 						break;
 					default:
 						break;
+				}
+				for(int i = 0; i < out_obj.size();i++){
+					Factories.getRoleFactory().denormalize((BaseRoleType)out_obj.get(i));
 				}
 
 			}
@@ -595,12 +601,14 @@ public class RoleServiceImpl  {
 		try {
 			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			if(
-				AuthorizationService.canViewRole(user, parentRole)
+				(parentRole != null && AuthorizationService.canViewRole(user, parentRole))
 				||
-				AuthorizationService.isRoleReaderInMapOrganization(user, parentRole)
+				AuthorizationService.isAccountAdministratorInOrganization(user,user.getOrganizationId())
+				||
+				AuthorizationService.isRoleReaderInMapOrganization(user, user)
 			){
 				AuditService.permitResult(audit, "Access authorized to list roles");
-				out_obj = getList(type,parentRole,startRecord,recordCount,parentRole.getOrganization() );
+				out_obj = getList(type,parentRole,startRecord,recordCount,user.getOrganizationId() );
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
@@ -617,13 +625,14 @@ public class RoleServiceImpl  {
 		return out_obj;
 		
 	}
-	private static List<BaseRoleType> getList(String type,BaseRoleType parentRole, long startRecord, int recordCount, OrganizationType organization) throws ArgumentException, FactoryException {
+	private static List<BaseRoleType> getList(String type,BaseRoleType parentRole, long startRecord, int recordCount, long organizationId) throws ArgumentException, FactoryException {
 		//if(parentRole == null) return Factories.getRoleFactory().getRoleList(startRecord, recordCount, organization);
 		RoleEnumType roleType = RoleEnumType.fromValue(type);
-		List<BaseRoleType> roles = Factories.getRoleFactory().getRoleList(roleType,parentRole,startRecord, recordCount, organization);
+		List<BaseRoleType> roles = Factories.getRoleFactory().getRoleList(roleType,parentRole,startRecord, recordCount, organizationId);
 		if(BaseService.enableExtendedAttributes){
 			for(int i = 0; i < roles.size(); i++){
 				Factories.getAttributeFactory().populateAttributes((NameIdType)roles.get(i));
+				Factories.getRoleFactory().denormalize((BaseRoleType)roles.get(i));
 			}
 		}
 		return roles;

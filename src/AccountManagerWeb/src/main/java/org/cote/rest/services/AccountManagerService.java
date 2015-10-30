@@ -37,13 +37,13 @@ import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
-import org.cote.accountmanager.util.ServiceUtil;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
 
 
 @Path("/accountmanager")
@@ -57,7 +57,7 @@ public class AccountManagerService{
 	}
 	@GET @Path("/flushCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean flushCache(@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "flushAll",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "flushAll",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.INFO, "Flush all factory caches");
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
@@ -69,7 +69,7 @@ public class AccountManagerService{
 
 	@GET @Path("/clearAuthorizationCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean clearAuthorizationCache(@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Clear Authorization Cache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Clear Authorization Cache",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.INFO, "Flush authorization caches");
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;

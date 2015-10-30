@@ -43,6 +43,9 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -52,9 +55,6 @@ import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.services.PermissionServiceImpl;
 import org.cote.accountmanager.services.RoleServiceImpl;
-import org.cote.accountmanager.util.ServiceUtil;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
 
 
 @Path("/permission")
@@ -65,7 +65,7 @@ public class PermissionService{
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 	}
 	
-	@GET @Path("/count/{group:[~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	@GET @Path("/count/{group:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public int count(@PathParam("organizationId") long organizationId,@Context HttpServletRequest request){
 		return PermissionServiceImpl.count(organizationId, request);
 	}
@@ -151,8 +151,8 @@ public class PermissionService{
 		BasePermissionType parent = null;
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().getById(orgId, null);
-			if(org != null) parent =Factories.getPermissionFactory().getById(parentId, org);
+			org = Factories.getOrganizationFactory().getById(orgId, 0L);
+			if(org != null) parent =Factories.getPermissionFactory().getById(parentId, orgId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -235,18 +235,18 @@ public class PermissionService{
 				logger.error("Invalid organization");
 				return permissions;
 			}
-			permissions.add(AuthorizationService.getCreateDataPermission(organization));
-			permissions.add(AuthorizationService.getCreateGroupPermission(organization));
-			permissions.add(AuthorizationService.getCreateRolePermission(organization));
-			permissions.add(AuthorizationService.getDeleteDataPermission(organization));
-			permissions.add(AuthorizationService.getDeleteGroupPermission(organization));
-			permissions.add(AuthorizationService.getDeleteRolePermission(organization));
-			permissions.add(AuthorizationService.getEditDataPermission(organization));
-			permissions.add(AuthorizationService.getEditGroupPermission(organization));
-			permissions.add(AuthorizationService.getEditRolePermission(organization));
-			permissions.add(AuthorizationService.getViewDataPermission(organization));
-			permissions.add(AuthorizationService.getViewGroupPermission(organization));
-			permissions.add(AuthorizationService.getViewRolePermission(organization));
+			permissions.add(AuthorizationService.getCreateDataPermission(organizationId));
+			permissions.add(AuthorizationService.getCreateGroupPermission(organizationId));
+			permissions.add(AuthorizationService.getCreateRolePermission(organizationId));
+			permissions.add(AuthorizationService.getDeleteDataPermission(organizationId));
+			permissions.add(AuthorizationService.getDeleteGroupPermission(organizationId));
+			permissions.add(AuthorizationService.getDeleteRolePermission(organizationId));
+			permissions.add(AuthorizationService.getEditDataPermission(organizationId));
+			permissions.add(AuthorizationService.getEditGroupPermission(organizationId));
+			permissions.add(AuthorizationService.getEditRolePermission(organizationId));
+			permissions.add(AuthorizationService.getViewDataPermission(organizationId));
+			permissions.add(AuthorizationService.getViewGroupPermission(organizationId));
+			permissions.add(AuthorizationService.getViewRolePermission(organizationId));
 			
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
@@ -260,7 +260,7 @@ public class PermissionService{
 	}
 	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean flushCache(@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.INFO, "Request clear factory cache");
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null){

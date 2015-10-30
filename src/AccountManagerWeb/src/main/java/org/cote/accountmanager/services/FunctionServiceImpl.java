@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 
 public class FunctionServiceImpl  {
 	

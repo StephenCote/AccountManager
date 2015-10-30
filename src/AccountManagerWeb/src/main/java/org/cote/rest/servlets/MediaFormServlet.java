@@ -40,14 +40,15 @@ import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.services.DataServiceImpl;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.MimeUtil;
-import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.accountmanager.util.StreamUtil;
 
 /**
@@ -86,6 +87,8 @@ public class MediaFormServlet extends HttpServlet {
 		String description = null;
 		String mimeType = null;
 		long groupId = 0;
+		String groupPath = null;
+		String orgPath = null;
 		long id = 0;
 		byte[] data = new byte[0];
 		
@@ -108,6 +111,12 @@ public class MediaFormServlet extends HttpServlet {
 			    	}
 			    	else if(fname.equals("groupId")){
 			    		groupId = Long.parseLong(Streams.asString(stream));
+			    	}
+			    	else if(fname.equals("groupPath")){
+			    		groupPath = Streams.asString(stream);
+			    	}
+			    	else if(fname.equals("organizationPath")){
+			    		orgPath = Streams.asString(stream);
 			    	}
 			    	else if(fname.equals("name")){
 			    		name = Streams.asString(stream);
@@ -139,30 +148,27 @@ public class MediaFormServlet extends HttpServlet {
 		System.out.println(description);
 		System.out.println(mimeType);
 		System.out.println("Group id = " + groupId);
+		System.out.println("Group path = " + groupPath);
 		System.out.println("Data size = " + data.length);
 		UserType user = ServiceUtil.getUserFromSession(request);
 		if(user != null){
 			try{
 				DataType newData = new org.cote.accountmanager.objects.DataType();
-				if(groupId > 0) newData.setGroup((DirectoryGroupType)Factories.getGroupFactory().getById(groupId,user.getOrganization()));
+				if(groupId > 0L) newData.setGroupId(groupId);
+				newData.setGroupPath(groupPath);
+				newData.setOrganizationPath(orgPath);
+				newData.setNameType(NameEnumType.DATA);
 				newData.setName(name);
 				newData.setDescription(description);
 				newData.setMimeType(mimeType);
 				DataUtil.setValue(newData,  data);
 				bBit = DataServiceImpl.add(newData,request);
 			}
-			catch(FactoryException fe){
-				logger.error(fe.getMessage());
-				fe.printStackTrace();
-			} catch (DataException e) {
+			 catch (DataException e) {
 				// TODO Auto-generated catch block
 				logger.error(e.getMessage());
 				e.printStackTrace();
-			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				logger.error(e.getMessage());
-				e.printStackTrace();
-			}
+			} 
 		}
 		
 		response.setContentType("text/html");

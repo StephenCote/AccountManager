@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
-
+import org.cote.accountmanager.service.rest.BaseService;
 public class RuleServiceImpl  {
 	
 	public static final String defaultDirectory = "~/Rules";

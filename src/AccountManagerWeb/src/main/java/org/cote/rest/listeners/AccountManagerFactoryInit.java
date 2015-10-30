@@ -49,7 +49,7 @@ import org.cote.accountmanager.data.services.DatabaseMaintenance;
 import org.cote.accountmanager.data.services.SessionDataMaintenance;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
-import org.cote.accountmanager.services.BaseService;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.util.ArticleUtil;
 
 /**
@@ -157,7 +157,7 @@ public class AccountManagerFactoryInit implements ServletContextListener {
 				e.printStackTrace();
 			}
 			for(int i = 0; i < ArticleUtil.ARTICLE_ROLES.length; i++){
-				UserRoleType role = ArticleUtil.getRoleByName(ArticleUtil.ARTICLE_ROLES[i], org);
+				UserRoleType role = ArticleUtil.getRoleByName(ArticleUtil.ARTICLE_ROLES[i], org.getId());
 			}
 		}
 		else{

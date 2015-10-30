@@ -42,7 +42,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
-
+import org.cote.accountmanager.service.rest.BaseService;
 
 public class BlogServiceImpl{
 	public static final Logger logger = Logger.getLogger(BlogServiceImpl.class.getName());
@@ -57,14 +57,14 @@ public class BlogServiceImpl{
 				AuditService.denyResult(audit, "Organization #" + orgId + " does not exist");
 				return data;
 			}
-			UserType user = Factories.getUserFactory().getUserByName(userName, org);
+			UserType user = Factories.getUserFactory().getUserByName(userName, orgId);
 			if(user == null){
 				AuditService.denyResult(audit, "User " + userName + " does not exist in Organization #" + orgId);
 				return data;
 				
 			}
-			UserType docUser = Factories.getDocumentControl(org);
-			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, "/Home/" + userName + "/" + blogPath, org);
+			UserType docUser = Factories.getDocumentControl(orgId);
+			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, "/Home/" + userName + "/" + blogPath, orgId);
 			if(dir != null){
 				AuditService.permitResult(audit, "Proxy anonymous request through document control user");
 				data = BaseService.readByName(audit,AuditEnumType.DATA,docUser,dir,name,null);
@@ -91,13 +91,13 @@ public class BlogServiceImpl{
 				AuditService.denyResult(audit, "Organization #" + orgId + " does not exist");
 				return data;
 			}
-			UserType user = Factories.getUserFactory().getUserByName(userName, org);
+			UserType user = Factories.getUserFactory().getUserByName(userName, orgId);
 			if(user == null){
 				AuditService.denyResult(audit, "User " + userName + " does not exist in Organization #" + orgId);
 				return data;
 				
 			}
-			UserType docUser = Factories.getDocumentControl(org);
+			UserType docUser = Factories.getDocumentControl(orgId);
 			//DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, blogPath, org);
 			//if(dir != null){
 			//UserType user = ServiceUtil.getUserFromSession(request);

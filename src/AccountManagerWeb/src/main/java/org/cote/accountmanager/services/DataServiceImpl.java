@@ -38,6 +38,7 @@ import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AuditType;
@@ -52,10 +53,9 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.util.DataUtil;
-import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.beans.SessionBean;
 import org.cote.util.BeanUtil;
-
+import org.cote.accountmanager.service.rest.BaseService;
 
 
 
@@ -86,7 +86,7 @@ public class DataServiceImpl  {
 			Factories.getUserFactory().populate(user);
 			data = Factories.getDataFactory().getDataByName(".profile", false, user.getHomeDirectory());
 			if(data == null){
-				data = Factories.getDataFactory().newData(user, user.getHomeDirectory());
+				data = Factories.getDataFactory().newData(user, user.getHomeDirectory().getId());
 				data.setMimeType("text/plain");
 				data.setName(".profile");
 				if(Factories.getDataFactory().addData(data)){
@@ -122,29 +122,29 @@ public class DataServiceImpl  {
 		String feedbackUserName = request.getServletContext().getInitParameter("feedback.user");
 		boolean out_bool = false;
 		try {
-			SessionBean usess = BeanUtil.getSessionBean(SessionSecurity.getUserSession(request.getSession(true).getId(), org),request.getSession(true).getId());
+			SessionBean usess = BeanUtil.getSessionBean(SessionSecurity.getUserSession(ServiceUtil.getSessionId(request), org.getId()),ServiceUtil.getSessionId(request));
 			int subCount = 0;
 			String subCountStr = usess.getValue("feedback.submitted");
 			if(subCountStr != null) subCount = Integer.parseInt(subCountStr);
 			if(subCount > MAX_FEEDBACK_PER_SESSION){
-				AuditService.denyResult(audit, "Maximum number of feedback submissions made for session " + request.getSession(true).getId());
+				AuditService.denyResult(audit, "Maximum number of feedback submissions made for session " + ServiceUtil.getSessionId(request));
 				return false;
 			}
 			usess.setValue("feedback.submitted", Integer.toString(subCount + 1));
 			Factories.getSessionFactory().updateData(usess);
-			UserType user = Factories.getUserFactory().getUserByName(feedbackUserName, org);
+			UserType user = Factories.getUserFactory().getUserByName(feedbackUserName, org.getId());
 			if(user == null){
 				AuditService.denyResult(audit,"Feedback user '" + feedbackUserName + "' doesn't exist in organization " + org.getName());
 				return out_bool;
 			}
 			Factories.getUserFactory().populate(user);
-			DirectoryGroupType feedbackGroup = Factories.getGroupFactory().getCreateDirectory(user, "Feedback", user.getHomeDirectory(), org);
+			DirectoryGroupType feedbackGroup = Factories.getGroupFactory().getCreateDirectory(user, "Feedback", user.getHomeDirectory(), org.getId());
 			if(feedbackGroup == null){
 				AuditService.denyResult(audit, "Feedback group is null");
 				return out_bool;
 			}
 			
-			DataType feedback = Factories.getDataFactory().newData(user, feedbackGroup);
+			DataType feedback = Factories.getDataFactory().newData(user, feedbackGroup.getId());
 			DataUtil.setValue(feedback, DataUtil.getValue(bean));
 			feedback.setMimeType("text/plain");
 			UserType subUser = ServiceUtil.getUserFromSession(request);
@@ -153,7 +153,7 @@ public class DataServiceImpl  {
 			feedback.setDescription(sDesc);
 			feedback.setName("Feedback - " + UUID.randomUUID().toString());
 			if(Factories.getDataFactory().addData(feedback)){
-				feedback = Factories.getDataFactory().getDataByName(feedback.getName(), true, feedback.getGroup());
+				feedback = Factories.getDataFactory().getDataByName(feedback.getName(), true, feedbackGroup);
 				if(feedback == null){
 					AuditService.denyResult(audit, "Failed to lookup feedback data");
 					
@@ -219,7 +219,7 @@ public class DataServiceImpl  {
 		}
 			
 		try {
-			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,path, user.getOrganization());
+			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,path, user.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Invalid path: '" + path + "'");
 				return out_obj;
@@ -247,14 +247,18 @@ public class DataServiceImpl  {
 	}
 	public static  List<DataType> getListByGroup(DirectoryGroupType group,ProcessingInstructionType instruction, boolean detailsOnly, long startRecord, int recordCount) throws ArgumentException, FactoryException {
 
-		List<DataType> out_obj = Factories.getDataFactory().getDataListByGroup(group, instruction,detailsOnly,startRecord, recordCount, group.getOrganization());
+		List<DataType> out_obj = Factories.getDataFactory().getDataListByGroup(group, instruction,detailsOnly,startRecord, recordCount, group.getOrganizationId());
 		for(int i = 0; i < out_obj.size();i++){
 			DataType ngt = out_obj.get(i);
+			//Factories.getDataFactory().populate(ngt);
+			Factories.getDataFactory().denormalize(ngt);
+			/*
 			if(ngt.getGroup().getPopulated() == true){
-				ngt.getGroup().setParentGroup(null);
-				ngt.getGroup().getSubDirectories().clear();
+				//ngt.getGroup().setParentGroup(null);
+				//ngt.getGroup().getSubDirectories().clear();
 				ngt.setPopulated(false);
 			}
+			*/
 		}
 		return out_obj;			
 	}

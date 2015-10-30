@@ -42,6 +42,8 @@ import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.accountmanager.util.JAXBUtil;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -62,9 +64,8 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
-import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.util.BeanUtil;
-
+import org.cote.accountmanager.service.rest.BaseService;
 
 
 
@@ -90,7 +91,7 @@ public class GroupServiceImpl  {
 		logger.info("Reading " + name + " in #" + parentId + " in org #" + orgId);
 		try{
 			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(org != null && parentId > 0L) parent = Factories.getGroupFactory().getById(parentId, org);
+			if(org != null && parentId > 0L) parent = Factories.getGroupFactory().getById(parentId, orgId);
 			else logger.error("Organization id #" + orgId + " is null");
 		}
 		catch(FactoryException fe){
@@ -119,7 +120,7 @@ public class GroupServiceImpl  {
 		BaseGroupType group = null;
 		try{
 			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(org != null) group = Factories.getGroupFactory().getById(parentId, org);
+			if(org != null) group = Factories.getGroupFactory().getById(parentId, orgId);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -135,60 +136,7 @@ public class GroupServiceImpl  {
 		}
 		return BaseService.countInParent(AuditEnumType.GROUP, group, request);
 	}
-	public static BaseGroupType findGroup(GroupEnumType groupType, String path, HttpServletRequest request){
-		UserType user = ServiceUtil.getUserFromSession(request);
-		if(user == null) return null;
-		return findGroup(user,groupType,path);
-	
-	}
-	public static BaseGroupType findGroup(UserType user,GroupEnumType groupType, String path){
-		BaseGroupType bean = null;
-		if(path == null || path.length() == 0) path = "~";
-		if(path.startsWith("~") == false && path.startsWith("/") == false) path = "/" + path;
-		//logger.error("Path = '" + path + "'");
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,user.getName());
-		try {
-			BaseGroupType dir = Factories.getGroupFactory().findGroup(user, groupType, path, user.getOrganization());
-			if(dir == null){
-				AuditService.denyResult(audit, "Invalid path: " + groupType.toString() + " " + path);
-				return bean;
-			}
-			if(AuthorizationService.canViewGroup(user, dir) == false){
-				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
-				return bean;
-			}
-			Factories.getGroupFactory().populate(dir);	
-			/// Work with a clone of the group because if it's cached, don't null out the cached copy's version
-			dir = BeanUtil.getBean(DirectoryGroupType.class,dir);
 
-			//Factories.getGroupFactory().get
-			if(dir.getGroupType() == GroupEnumType.DATA){
-				DirectoryGroupType ddir = (DirectoryGroupType)dir;
-				/*
-				Factories.getGroupFactory().populateSubDirectories(ddir);
-				for(int i = 0; i < ddir.getSubDirectories().size();i++){
-					Factories.getGroupFactory().populate(ddir.getSubDirectories().get(i));
-				}
-				*/
-				bean = BeanUtil.getSanitizedGroup(ddir,false);
-			}
-			else{
-				bean = dir;
-			}
-			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getUrn());
-			AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
-			
-			
-			
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return bean;
-	}
 	public static List<BaseGroupType> getListInParent(UserType user, String type, BaseGroupType parentGroup, long startRecord, int recordCount){
 		///return BaseService.getGroupList(AuditEnumType.ROLE, user, path, startRecord, recordCount);
 		
@@ -211,7 +159,7 @@ public class GroupServiceImpl  {
 				AuthorizationService.isGroupReaderInMapOrganization(user, parentGroup)
 			){
 				AuditService.permitResult(audit, "Access authorized to list groups");
-				out_obj = getList(type,parentGroup,startRecord,recordCount,parentGroup.getOrganization() );
+				out_obj = getList(type,parentGroup,startRecord,recordCount,parentGroup.getOrganizationId() );
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
@@ -234,16 +182,16 @@ public class GroupServiceImpl  {
 		return role;
 	}
 	public static List<BaseGroupType> listInGroup(UserType user,String type, String path, long startIndex, int recordCount){
-		BaseGroupType dir = findGroup(user,GroupEnumType.valueOf(type), path);
+		BaseGroupType dir = BaseService.findGroup(user,GroupEnumType.valueOf(type), path);
 		return getListInParent(user,type,dir,startIndex,recordCount);
 	}
-	private static List<BaseGroupType> getList(String type, BaseGroupType parentGroup, long startIndex, int recordCount, OrganizationType org){
+	private static List<BaseGroupType> getList(String type, BaseGroupType parentGroup, long startIndex, int recordCount, long organizationId){
 		//BaseGroupType dir = findGroup(groupType, path, request);
 		List<BaseGroupType> dirs = new ArrayList<BaseGroupType>();
 		GroupEnumType groupType = GroupEnumType.valueOf(type);
 		if(parentGroup == null) return dirs;
 		try {
-			dirs = Factories.getGroupFactory().getListByParent(groupType, parentGroup,  startIndex, recordCount, parentGroup.getOrganization());
+			dirs = Factories.getGroupFactory().getListByParent(groupType, parentGroup,  startIndex, recordCount, parentGroup.getOrganizationId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -267,7 +215,7 @@ public class GroupServiceImpl  {
 		BaseGroupType group = null;
 		NameIdType obj = null;
 		try {
-			group = Factories.getGroupFactory().getGroupById(groupId, user.getOrganization());
+			group = Factories.getGroupFactory().getGroupById(groupId, user.getOrganizationId());
 			if(group == null){
 				AuditService.denyResult(audit, "Group does not exist");
 				return out_bool;
@@ -276,7 +224,7 @@ public class GroupServiceImpl  {
 				AuditService.denyResult(audit, "Group type must match the object type");
 				return out_bool;
 			}
-			obj = ((NameIdFactory)BaseService.getFactory(objType)).getById(objId, user.getOrganization());
+			obj = ((NameIdFactory)BaseService.getFactory(objType)).getById(objId, user.getOrganizationId());
 
 			if(obj == null){
 				AuditService.denyResult(audit, "Object does not exist");
@@ -360,11 +308,11 @@ public class GroupServiceImpl  {
 			if(
 				AuthorizationService.isMapOwner(user, targGroup)
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user,targGroup.getOrganization())
+				AuthorizationService.isAccountAdministratorInOrganization(user,targGroup.getOrganizationId())
 				||
 				AuthorizationService.canViewGroup(user, targGroup)
 				||
-				(AuthorizationService.isGroupReaderInOrganization(user, targGroup.getOrganization()) && AuthorizationService.isAccountReaderInOrganization(user, targGroup.getOrganization()))
+				(AuthorizationService.isGroupReaderInOrganization(user, targGroup.getOrganizationId()) && AuthorizationService.isAccountReaderInOrganization(user, targGroup.getOrganizationId()))
 			){
 				AuditService.permitResult(audit, "Access authorized to list groups in group");
 				switch(memberType){

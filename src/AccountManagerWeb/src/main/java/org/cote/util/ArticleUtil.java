@@ -45,6 +45,7 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.DataType;
@@ -56,13 +57,12 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
-import org.cote.accountmanager.services.BaseService;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.services.DataServiceImpl;
 import org.cote.accountmanager.util.AMCodeUtil;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.GraphicsUtil;
-import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.accountmanager.util.StreamUtil;
 import org.cote.beans.MediaOptions;
 
@@ -132,16 +132,16 @@ public class ArticleUtil {
 	///private static Pattern recPattern = Pattern.compile("^\\/([A-Za-z0-9\\.]+)\\/([\\w]+)\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static Pattern articlePattern = Pattern.compile("^\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-	public static UserRoleType getRoleByType(String type, OrganizationType org){
-		return getRoleByName(type + "Author",org);
+	public static UserRoleType getRoleByType(String type, long organizationId){
+		return getRoleByName(type + "Author",organizationId);
 	}
 	
-	public static UserRoleType getRoleByName(String name, OrganizationType org){
-		String key = org.getId() + "-" + name;
+	public static UserRoleType getRoleByName(String name, long organizationId){
+		String key = organizationId + "-" + name;
 		if(roles.containsKey(key)) return roles.get(key);
 		UserRoleType role = null;
 		try {
-			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", org);
+			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", organizationId);
 			role = Factories.getRoleFactory().getCreateUserRole(adminUser, name, null);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
@@ -164,7 +164,7 @@ public class ArticleUtil {
 	}
 	
 	public static void writeBinaryContent(HttpServletRequest request, HttpServletResponse response, MediaOptions options) throws IOException{
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "ArticleRead", AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "ArticleRead", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		String path = request.getPathInfo();
 		AuditService.targetAudit(audit, AuditEnumType.UNKNOWN, path);
 		if(path == null || path.length() == 0){
@@ -204,30 +204,31 @@ public class ArticleUtil {
 			return;
 		}
 
-		OrganizationType org = null;
+		long organizationId = 0L;
 		UserType user = null;
 		UserType targUser = null;
 		UserRoleType role = null;
 		DirectoryGroupType dir = null;
 		try{
-			org = Factories.getOrganizationFactory().findOrganization(orgPath);
+			OrganizationType org = Factories.getOrganizationFactory().findOrganization(orgPath);
 			if(org == null){
 				AuditService.denyResult(audit, "Organization is invalid: '" + orgPath + "'");
 				response.sendError(404);
 				return;
 			}
+			organizationId = org.getId();
 
 			user = ServiceUtil.getUserFromSession(request);
-			if(user == null) user = Factories.getDocumentControl(org);
+			if(user == null) user = Factories.getDocumentControl(organizationId);
 			
-			targUser = Factories.getUserFactory().getUserByName(subPath[0], org);
+			targUser = Factories.getUserFactory().getUserByName(subPath[0], organizationId);
 			if(targUser == null){
 				AuditService.denyResult(audit, "User is invalid: '" + subPath[0] + "'");
 				response.sendError(404);
 				return;
 			}
 			Factories.getUserFactory().populate(targUser);
-			dir = Factories.getGroupFactory().getDirectoryByName(type, targUser.getHomeDirectory(), targUser.getOrganization());
+			dir = Factories.getGroupFactory().getDirectoryByName(type, targUser.getHomeDirectory(), targUser.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Content directory is null for " + targUser.getName() + ": '~/" + type + "'");
 				response.sendError(404);
@@ -237,7 +238,7 @@ public class ArticleUtil {
 			/// This role check is in here more to stop people from driving random tests into the system
 			/// So if a user isn't in this role, they obviously don't want to share anything this way, so stop checking
 			///
-			role = getRoleByType(type,org);
+			role = getRoleByType(type,organizationId);
 			if(RoleService.getIsUserInEffectiveRole(role, targUser) == false){
 				AuditService.denyResult(audit, "User " + subPath[0] + " is not an authorized author in : '" + type + "Author' role");
 				response.sendError(404);

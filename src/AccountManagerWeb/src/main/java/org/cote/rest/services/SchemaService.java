@@ -32,10 +32,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.ServiceSchemaMethod;
+import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.beans.EntitySchema;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
-import org.cote.rest.schema.ServiceSchemaMethod;
 
 @Path("/schema")
 public class SchemaService{

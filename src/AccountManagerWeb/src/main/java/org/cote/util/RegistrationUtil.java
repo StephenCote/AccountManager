@@ -68,7 +68,7 @@ public class RegistrationUtil {
 		try{
 			OrganizationType regOrg = null;
 			//session = BeanUtil.getSessionBean(SessionSecurity.getUserSession(sessionId, Factories.getPublicOrganization()),sessionId);
-			session = BeanUtil.getSessionBean(SessionSecurity.getUserSession(regSessId, Factories.getPublicOrganization()),regSessId);
+			session = BeanUtil.getSessionBean(SessionSecurity.getUserSession(regSessId, Factories.getPublicOrganization().getId()),regSessId);
 			System.out.println("Registration Session Data for " + regSessId);
 			for(int i = 0; i < session.getSessionData().size();i++){
 				System.out.println(session.getSessionData().get(i).getName() + "=" + session.getSessionData().get(i).getValue());
@@ -90,7 +90,7 @@ public class RegistrationUtil {
 				//regOrg = Factories.getPublicOrganization();
 			}
 			
-			regSession = BeanUtil.getSessionBean(SessionSecurity.getUserSession(regSessId, regOrg),regSessId);
+			regSession = BeanUtil.getSessionBean(SessionSecurity.getUserSession(regSessId, regOrg.getId()),regSessId);
 			if(regSession == null){
 				AuditService.denyResult(audit, "Registration id not found");
 				return false;
@@ -119,7 +119,7 @@ public class RegistrationUtil {
 			}
 			*/
 			String email = regSession.getValue("email");
-			out_bool = PersonService.createRegisteredUserAsPerson(audit, userName, cred,email,regOrg);
+			out_bool = PersonService.createRegisteredUserAsPerson(audit, userName, cred,email,regOrg.getId());
 			/*
 			UserType newUser = Factories.getUserFactory().newUser(userName,  SecurityUtil.getSaltedDigest(decPassword), UserEnumType.NORMAL, UserStatusEnumType.REGISTERED, regOrg);
 			if(Factories.getUserFactory().addUser(newUser, true)){
@@ -188,11 +188,11 @@ public class RegistrationUtil {
 				logger.info("IP Limiter Disabled.  The same IP can submit multiple registrations");
 			}
 			if(nameAudits.length > 0){
-				AuditService.denyResult(audit, "User name '" + user.getName() + "' is pending registeration in " + user.getOrganization().getName() + " organization");
+				AuditService.denyResult(audit, "User name '" + user.getName() + "' is pending registeration in " + user.getOrganizationId() + " organization");
 				return null;				
 			}
-			if(Factories.getUserFactory().getUserNameExists(user.getName(), user.getOrganization())){
-				AuditService.denyResult(audit, "User name '" + user.getName() + "' is already registered in " + user.getOrganization().getName() + " organization");
+			if(Factories.getUserFactory().getUserNameExists(user.getName(), user.getOrganizationId())){
+				AuditService.denyResult(audit, "User name '" + user.getName() + "' is already registered in " + user.getOrganizationId() + " organization");
 				return null;
 			}			
 			sessionId = UUID.randomUUID().toString();
@@ -219,7 +219,7 @@ public class RegistrationUtil {
 			df.setValue(regSession, "registration-id", registrationId);
 			df.setValue(regSession, "userName", user.getName());
 			//df.setValue(regSession, "password", enc_password);
-			df.setValue(regSession, "organization-id",Long.toString(user.getOrganization().getId()));
+			df.setValue(regSession, "organization-id",Long.toString(user.getOrganizationId()));
 			
 			/*
 			if(true){

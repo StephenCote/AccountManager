@@ -24,6 +24,7 @@
 package org.cote.rest.servlets;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.util.ServiceUtil;
 
 /**
  * Servlet implementation class AccountManagerLogoutServlet
@@ -56,7 +58,8 @@ public class AccountManagerLogoutServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		UserType user = null;
 		try {
-			user = SessionSecurity.getUserBySession(request.getSession().getId(), ServiceUtil.getOrganizationFromRequest(request));
+			OrganizationType org = ServiceUtil.getOrganizationFromRequest(request);
+			if(org != null) user = SessionSecurity.getUserBySession(ServiceUtil.getSessionId(request), org.getId());
 			if(user != null) SessionSecurity.logout(user);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
@@ -68,6 +71,7 @@ public class AccountManagerLogoutServlet extends HttpServlet {
 		//logger.info("Invalidate the session because the JEE LoginModule was used.");		
 		request.getSession().invalidate();
 		ServiceUtil.clearCookie(response, "OrganizationId");
+		ServiceUtil.clearCookie(response, "OrganizationPath");
 	}
 
 	/**

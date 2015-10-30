@@ -38,8 +38,8 @@ import javax.xml.bind.JAXBElement;
 import org.cote.accountmanager.objects.types.*;
 import org.cote.accountmanager.objects.MessageType;
 import org.cote.accountmanager.objects.SchemaType;
+import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.beans.MessageBean;
-import org.cote.beans.SchemaBean;
 
 import com.sun.jersey.api.json.JSONConfiguration;
 

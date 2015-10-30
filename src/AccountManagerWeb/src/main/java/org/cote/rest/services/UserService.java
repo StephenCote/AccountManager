@@ -56,6 +56,9 @@ import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.AuthenticationResponseEnumType;
@@ -78,12 +81,9 @@ import org.cote.accountmanager.services.DataServiceImpl;
 import org.cote.accountmanager.services.UserServiceImpl;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.SecurityUtil;
-import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.beans.MessageBean;
 import org.cote.beans.SessionBean;
-import org.cote.beans.SchemaBean;
 //import org.cote.beans.UserBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
 import org.cote.util.BeanUtil;
 import org.cote.util.RegistrationUtil;
 
@@ -98,7 +98,7 @@ public class UserService{
 	}
 	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean flushCache(@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.INFO, "Request clear factory cache");
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null){
@@ -112,15 +112,18 @@ public class UserService{
 	}
 	@GET @Path("/getPublicUser") @Produces(MediaType.APPLICATION_JSON)
 	public UserType getPublicUser(@Context HttpServletRequest request){
-		 return Factories.getDocumentControl(ServiceUtil.getOrganizationFromRequest(request));
+		OrganizationType org = ServiceUtil.getOrganizationFromRequest(request);
+		if(org != null) return Factories.getDocumentControl(org.getId());
+		return null;
 	}
 	@GET @Path("/getSelf") @Produces(MediaType.APPLICATION_JSON)
 	public UserType getSelf(@Context HttpServletRequest request){
 		//UserType bean = null;
-		String sessionId = request.getSession(true).getId();
+		String sessionId = ServiceUtil.getSessionId(request);
 		UserType user = null;
 		try{
-			user = SessionSecurity.getUserBySession(sessionId,ServiceUtil.getOrganizationFromRequest(request));
+			OrganizationType org = ServiceUtil.getOrganizationFromRequest(request);
+			if(org != null) user = SessionSecurity.getUserBySession(sessionId,org.getId());
 			if(user != null){
 				/*
 				if(user.getContactInformation() == null){
@@ -145,7 +148,7 @@ public class UserService{
 	@POST @Path("/authenticate") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public AuthenticationResponseType authenticate(AuthenticationRequestType authRequest, @Context HttpServletRequest request, @Context HttpServletResponse response){
 		
-		String sessionId = request.getSession(true).getId();
+		String sessionId = ServiceUtil.getSessionId(request,response,true);
 		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHENTICATE, "authenticate", AuditEnumType.SESSION, sessionId);
 		AuthenticationResponseType authResponse = new AuthenticationResponseType();
 		authResponse.setSessionId(sessionId);
@@ -175,7 +178,7 @@ public class UserService{
 				authResponse.setMessage("Authentication failed.");
 				return authResponse;
 			}
-			user = SessionSecurity.login(sessionId,authRequest.getSubject(), authRequest.getCredentialType(), new String(authRequest.getCredential(),"UTF-8"), org);
+			user = SessionSecurity.login(sessionId,authRequest.getSubject(), authRequest.getCredentialType(), new String(authRequest.getCredential(),"UTF-8"), org.getId());
 			if(user != null){
 				//Factories.getUserFactory().populate(user);
 				AuditService.targetAudit(audit, AuditEnumType.USER, user.getUrn());
@@ -209,7 +212,8 @@ public class UserService{
 			logger.error(e.getMessage());
 		}
 		if(user != null){
-			ServiceUtil.addCookie(response,"OrganizationId",Long.toString(user.getOrganization().getId()));
+			//ServiceUtil.addCookie(response,"OrganizationId",Long.toString(user.getOrganizationId()));
+			ServiceUtil.addCookie(response,"OrganizationPath",user.getOrganizationPath());
 		}
 		
 		return authResponse;
@@ -227,14 +231,15 @@ public class UserService{
 	}
 	public SessionBean doLogout(HttpServletRequest request, HttpServletResponse response){
 		HttpSession session = request.getSession(true);
-		String sessionId = session.getId();
+		String sessionId = ServiceUtil.getSessionId(request);
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "getLogout",AuditEnumType.SESSION, sessionId);
 		OrganizationType org = null;
 		
 		UserType user = null;
 		UserSessionType userSession = null;
 		try{
-			user = SessionSecurity.getUserBySession(sessionId, ServiceUtil.getOrganizationFromRequest(request));
+			org = ServiceUtil.getOrganizationFromRequest(request);
+			if(org != null) user = SessionSecurity.getUserBySession(sessionId, org.getId());
 			if(user != null){
 				AuditService.targetAudit(audit, AuditEnumType.USER, user.getName());
 				SessionSecurity.logout(user.getSession());
@@ -243,7 +248,7 @@ public class UserService{
 			}
 			else{
 				AuditService.denyResult(audit, "User not found");
-				userSession = SessionSecurity.getUserSession(sessionId, ServiceUtil.getOrganizationFromRequest(request));
+				if(org != null) userSession = SessionSecurity.getUserSession(sessionId, org.getId());
 			}
 			logger.info("Not invalidating the session while JEE LoginModule is not being used.");
 			//session.invalidate();
@@ -260,8 +265,11 @@ public class UserService{
 			e.printStackTrace();
 		}
 		ServiceUtil.clearCookie(response, "OrganizationId");
+		ServiceUtil.clearCookie(response, "OrganizationPath");
+		ServiceUtil.clearCookie(response, ServiceUtil.AM5_COOKIE_NAME);
 		//ServiceUtil.clearCookie(response, "JSESSIONID");
-		return BeanUtil.getSessionBean(userSession, sessionId);
+		if(userSession != null) return BeanUtil.getSessionBean(userSession, sessionId);
+		return null;
 	}
 
 	//@POST @Path("/postConfirmation") @Produces(MediaType.TEXT_PLAIN) @Consumes(MediaType.APPLICATION_JSON)
@@ -281,7 +289,7 @@ public class UserService{
 			logger.error("Invalid credential");
 			return false;
 		}
-		String sessionId = request.getSession(true).getId();
+		String sessionId = ServiceUtil.getSessionId(request);
 		String id = authRequest.getSubject();
 		String regId = authRequest.getTokens().get(0);
 		
@@ -311,19 +319,27 @@ public class UserService{
 	
 	
 	@POST @Path("/postRegistration") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public SessionBean postRegistration(UserType user, @Context HttpServletRequest request){
+	public SessionBean postRegistration(UserType user, @Context HttpServletRequest request, @Context HttpServletResponse response){
 		//logger.error(request.getRemoteAddr());
-		String sessionId = request.getSession(true).getId();
+		String sessionId = ServiceUtil.getSessionId(request,response,true);
 		SessionBean ctxSession = null;
-
-		if(user.getOrganization() == null) user.setOrganization(Factories.getPublicOrganization());
+		try {
+			Factories.getUserFactory().normalize(user);
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(user.getOrganizationId().compareTo(0L) == 0) user.setOrganizationId(Factories.getPublicOrganization().getId());
 		
-		logger.info("Processing registration in organization " + user.getOrganization().getName());
+		logger.info("Processing registration in organization " + user.getOrganizationId());
 		
 		boolean ipLimit = Boolean.parseBoolean(request.getServletContext().getInitParameter("registration.ip.limit"));
 		boolean regEnabled = Boolean.parseBoolean(request.getServletContext().getInitParameter("registration.enabled"));
 		if(regEnabled == false){
-			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Registration", AuditEnumType.USER, user.getName() + " in " + user.getOrganization().getName());
+			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Registration", AuditEnumType.USER, user.getName() + " in " + user.getOrganizationId());
 			AuditService.denyResult(audit, "Web Registration is disabled");
 			return null;
 		}
@@ -332,9 +348,9 @@ public class UserService{
 		UserSessionType session1 = RegistrationUtil.createUserRegistration(user, request.getRemoteAddr(),ipLimit);
 		if(session1 != null){
 			try{
-				ctxSession = BeanUtil.getSessionBean(SessionSecurity.getUserSession(sessionId, user.getOrganization()),sessionId);
+				ctxSession = BeanUtil.getSessionBean(SessionSecurity.getUserSession(sessionId, user.getOrganizationId()),sessionId);
 				ctxSession.setValue("registration-session-id", session1.getSessionId());
-				ctxSession.setValue("registration-organization-id", Long.toString(user.getOrganization().getId()));
+				ctxSession.setValue("registration-organization-id", Long.toString(user.getOrganizationId()));
 				Factories.getSessionFactory().updateData(ctxSession);
 			}
 			catch(FactoryException fe){
@@ -382,7 +398,7 @@ public class UserService{
 	@GET @Path("/list") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public List<UserType> list(@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
-		return UserServiceImpl.getList(user, user.getOrganization(),0,0);
+		return UserServiceImpl.getList(user, user.getOrganizationId(),0,0);
 
 	}
 	@GET @Path("/listInOrganization/{orgId : [\\d]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
@@ -403,7 +419,7 @@ public class UserService{
 		if(org == null){
 			return new ArrayList<UserType>();
 		}
-		return UserServiceImpl.getList(user, org, startIndex, recordCount );
+		return UserServiceImpl.getList(user, orgId, startIndex, recordCount );
 
 	}
 	

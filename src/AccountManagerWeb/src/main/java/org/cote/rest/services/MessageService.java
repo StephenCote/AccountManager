@@ -33,14 +33,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.ServiceSchemaMethod;
+import org.cote.accountmanager.service.rest.ServiceSchemaMethodParameter;
+import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.beans.DataBean;
 import org.cote.beans.EntitySchema;
 import org.cote.beans.MessageBean;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
-import org.cote.rest.schema.ServiceSchemaMethod;
-import org.cote.rest.schema.ServiceSchemaMethodParameter;
+
 import java.util.UUID;
 
 @Path("/message")

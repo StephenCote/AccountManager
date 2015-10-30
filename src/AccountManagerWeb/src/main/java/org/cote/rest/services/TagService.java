@@ -42,6 +42,9 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
@@ -56,10 +59,7 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.TagEnumType;
 import org.cote.accountmanager.services.TagServiceImpl;
-import org.cote.accountmanager.util.ServiceUtil;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
-import org.cote.accountmanager.services.BaseService;;
+import org.cote.accountmanager.service.rest.BaseService;;
 
 @Path("/tag")
 public class TagService{
@@ -68,7 +68,7 @@ public class TagService{
 	public TagService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 	}
-	@GET @Path("/count/{group:[~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	@GET @Path("/count/{group:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public int count(@PathParam("group") String group,@Context HttpServletRequest request){
 		return TagServiceImpl.count(group, request);
 	}
@@ -136,11 +136,12 @@ public class TagService{
 		logger.info("Searching for " + searchRequest.getRecordCount() + " data items starting at " + searchRequest.getStartRecord() + " having " + searchRequest.getTags().size() + " tags");
 		List<DataType> list = new ArrayList<DataType>();
 		try {
-			list = Factories.getTagFactory().getDataForTags(searchRequest.getTags().toArray(new BaseTagType[0]), searchRequest.getStartRecord(), searchRequest.getRecordCount(), user.getOrganization());
+			list = Factories.getTagFactory().getDataForTags(searchRequest.getTags().toArray(new BaseTagType[0]), searchRequest.getStartRecord(), searchRequest.getRecordCount(), user.getOrganizationId());
 			if(searchRequest.getPopulateGroup()){
 				logger.info("Pre-populating referenced groups");
 				for(int i = 0; i < list.size();i++){
-					Factories.getGroupFactory().populate(list.get(i).getGroup());
+					//Factories.getGroupFactory().populate(list.get(i).getGroupId());
+					Factories.getGroupFactory().normalize(list.get(i));
 				}
 			}
 		} catch (FactoryException e) {
@@ -192,7 +193,7 @@ public class TagService{
 		return TagServiceImpl.getGroupList(user, TagServiceImpl.defaultDirectory, 0,0 );
 
 	}
-	@GET @Path("/listInGroup/{path : [~%\\s0-9a-zA-Z\\/]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	@GET @Path("/listInGroup/{path : [@\\.~%\\s0-9a-z_A-Z\\/\\-]+}/{startIndex: [\\d]+}/{recordCount: [\\d]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	
 	public List<BaseTagType> listInGroup(@PathParam("path") String path,@PathParam("startIndex") long startIndex,@PathParam("recordCount") int recordCount,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
@@ -202,7 +203,7 @@ public class TagService{
 	
 	@GET @Path("/clearCache") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public boolean flushCache(@Context HttpServletRequest request){
-		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "clearCache",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, AuditEnumType.INFO, "Request clear factory cache");
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null){

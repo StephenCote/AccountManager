@@ -36,6 +36,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AuditType;
@@ -48,7 +49,6 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.GraphicsUtil;
-import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.beans.MediaOptions;
 
 public class MediaUtil {
@@ -104,7 +104,7 @@ public class MediaUtil {
 		writeBinaryContent(request, response, new MediaOptions());
 	}
 	public static void writeBinaryContent(HttpServletRequest request, HttpServletResponse response, MediaOptions options) throws IOException{
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "MediaRead", AuditEnumType.SESSION, request.getSession(true).getId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "MediaRead", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		String path = request.getPathInfo();
 		AuditService.targetAudit(audit, AuditEnumType.UNKNOWN, path);
 		if(path == null || path.length() == 0){
@@ -185,7 +185,7 @@ public class MediaUtil {
 		
 		UserType user = ServiceUtil.getUserFromSession(request);
 		
-		if(user == null) user = Factories.getDocumentControl(org);
+		if(user == null) user = Factories.getDocumentControl(org.getId());
 		writeBinaryContent(request, response, options, audit, type, org, user, objPath, objName);
 	}
 	public static void writeBinaryContent(
@@ -202,7 +202,7 @@ public class MediaUtil {
 		
 		DirectoryGroupType dir = null;
 		try{
-			dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, objPath, org);
+			dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, objPath, org.getId());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -286,9 +286,9 @@ public class MediaUtil {
 				String thumbName = objName + " " + options.getThumbWidth() + "x" + options.getThumbHeight();
 				DirectoryGroupType thumbGroup = null;
 				synchronized(Factories.getGroupFactory()){
-					thumbGroup = Factories.getGroupFactory().getDirectoryByName(".thumbnail", group, org);
+					thumbGroup = Factories.getGroupFactory().getDirectoryByName(".thumbnail", group, org.getId());
 					if(thumbGroup == null && AuthorizationService.canChangeGroup(user, group)){
-						thumbGroup = Factories.getGroupFactory().getCreateDirectory(user, ".thumbnail", group, org);
+						thumbGroup = Factories.getGroupFactory().getCreateDirectory(user, ".thumbnail", group, org.getId());
 					}
 				}
 				//DataType thumbData = 
@@ -340,13 +340,13 @@ public class MediaUtil {
 							}
 							/// 2014/03/13 - Thumbnail data is owned by the original image owner, not by the context user
 							///
-							UserType dataOwner = Factories.getUserFactory().getById(chkData.getOwnerId(), group.getOrganization());
+							UserType dataOwner = Factories.getUserFactory().getById(chkData.getOwnerId(), group.getOrganizationId());
 							if(dataOwner == null){
-								AuditService.denyResult(audit, "Deny '" + objName + "' owner #" + chkData.getOwnerId() + " was not found in Org #"  + group.getOrganization().getId());;
+								AuditService.denyResult(audit, "Deny '" + objName + "' owner #" + chkData.getOwnerId() + " was not found in Org #"  + group.getOrganizationId());;
 								response.sendError(404);
 								return;
 							}
-							DataType thumbData = Factories.getDataFactory().newData(dataOwner, thumbGroup);
+							DataType thumbData = Factories.getDataFactory().newData(dataOwner, thumbGroup.getId());
 							thumbData.setMimeType("image/jpg");
 							thumbData.setName(thumbName);
 							DataUtil.setValue(thumbData, thumbBytes);
@@ -374,7 +374,8 @@ public class MediaUtil {
 				if(data.getMimeType() != null && data.getMimeType().startsWith("image/") && restrictSize){
 					logger.info("Redirecting to restricted image path");
 					Factories.getGroupFactory().populate(group);
-					String dotPath = UrnUtil.getDotOrganizationPath(org);
+					Factories.getGroupFactory().denormalize(group);
+					String dotPath = UrnUtil.getDotOrganizationPath(org.getId());
 					AuditService.pendResult(audit, "Redirecting user " + user.getName() + " to " + request.getServletContext().getContextPath() + "/Thumbnail/" + dotPath + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight + " with restricted dimensions");
 					response.sendRedirect(request.getServletContext().getContextPath() + "/Thumbnail/" + dotPath + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight);
 					return;
@@ -406,7 +407,7 @@ public class MediaUtil {
 			response.sendError(404);
 			return;	
 		}
-		AuditService.permitResult(audit, "User " + user.getName() + " is authorized to view  " + data.getName() + " in " + data.getGroup());
+		AuditService.permitResult(audit, "User " + user.getName() + " is authorized to view  " + data.getName() + " in " + data.getGroupId());
 		response.setContentType(data.getMimeType());
 		byte[] value = new byte[0];
 		try {

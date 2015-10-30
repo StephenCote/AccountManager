@@ -45,13 +45,14 @@ import javax.ws.rs.core.UriInfo;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserSessionType;
-import org.cote.accountmanager.util.ServiceUtil;
 import org.cote.beans.SessionBean;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
 import org.cote.util.BeanUtil;
 
 @Path("/session")
@@ -66,19 +67,20 @@ public class SessionService{
 	
 	@GET @Path("/getSafeSession/{id : [a-zA-Z_0-9\\-]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public SessionBean getSafeSession(@PathParam("id") String id,@Context HttpServletRequest request, @Context HttpServletResponse response){
-		return getCreateSession(request);
+		return getCreateSession(request,response);
 	}
 	
 	@GET @Path("/getSession") @Produces(MediaType.APPLICATION_JSON)
-	public SessionBean getSession(@Context HttpServletRequest request){
-		return getCreateSession(request);
+	public SessionBean getSession(@Context HttpServletRequest request, @Context HttpServletResponse response){
+		return getCreateSession(request,response);
 	}
-	private SessionBean getCreateSession(HttpServletRequest request){
-		String sessionId = request.getSession(true).getId();
+	private SessionBean getCreateSession(HttpServletRequest request,HttpServletResponse response){
+		String sessionId = ServiceUtil.getSessionId(request,response,true);
 		UserSessionType session = null;
 		
 		try {
-			session = SessionSecurity.getUserSession(sessionId, ServiceUtil.getOrganizationFromRequest(request));
+			OrganizationType org = ServiceUtil.getOrganizationFromRequest(request);
+			if(org != null) session = SessionSecurity.getUserSession(sessionId, org.getId());
 
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block

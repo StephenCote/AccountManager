@@ -48,11 +48,11 @@ public class OrganizationSecurityUtil {
 		return out_str;
 	}
 	public static byte[] encipherBytes(byte[] inBytes, OrganizationType org){
-		SecurityBean secBean = KeyService.getPrimarySymmetricKey(org);
+		SecurityBean secBean = KeyService.getPrimarySymmetricKey(org.getId());
 		return SecurityUtil.encipher(secBean, inBytes);
 	}
 	public static byte[] decipherBytes(byte[] inBytes, OrganizationType org){
-		SecurityBean secBean = KeyService.getPrimarySymmetricKey(org); 
+		SecurityBean secBean = KeyService.getPrimarySymmetricKey(org.getId()); 
 				//OrganizationSecurity.getSecurityBean(org);
 		return SecurityUtil.decipher(secBean, inBytes);
 	}

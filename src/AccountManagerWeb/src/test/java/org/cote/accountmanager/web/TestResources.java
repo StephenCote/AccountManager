@@ -36,16 +36,15 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.rest.ServiceSchemaMethod;
+import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.util.StreamUtil;
 import org.cote.accountmanager.util.XmlUtil;
 import org.cote.beans.MessageBean;
-import org.cote.beans.SchemaBean;
-import org.cote.rest.schema.ServiceSchemaBuilder;
-import org.cote.rest.schema.ServiceSchemaMethod;
 import org.cote.rest.services.GroupService;
 import org.cote.rest.services.MessageService;
 import org.cote.rest.services.SchemaService;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
