@@ -69,7 +69,7 @@ public class ControlService {
 		else if(control.getControlType() == ControlEnumType.POLICY && control.getControlId().compareTo(0L) > 0){
 			logger.info("Execute policy " + control.getControlId());
 			try{
-				PolicyType policy = Factories.getPolicyFactory().getById(control.getControlId(), control.getOrganization());
+				PolicyType policy = Factories.getPolicyFactory().getById(control.getControlId(), control.getOrganizationId());
 				if(policy == null){
 					logger.error("Invalid policy reference");
 				}

@@ -71,12 +71,14 @@ public class AttributeFactory extends NameIdFactory{
 	}
 	public AttributeType newAttribute(NameIdType obj){
 		AttributeType attr = new AttributeType();
+		attr.setDataType(SqlDataEnumType.VARCHAR);
 		/// Note: Reference id will be 0L for new objects, and < 0L for bulk objects
 		///
-		attr.setReferenceId(obj.getId());
-		attr.setDataType(SqlDataEnumType.VARCHAR);
-		attr.setReferenceType(obj.getNameType());
-		attr.setOrganizationId(obj.getOrganization().getId());
+		if(obj != null){
+			attr.setReferenceId(obj.getId());
+			attr.setReferenceType(obj.getNameType());
+			attr.setOrganizationId(obj.getOrganizationId());
+		}
 		return attr;
 	}
 	public void repopulateAttributes(NameIdType obj){
@@ -174,7 +176,7 @@ public class AttributeFactory extends NameIdFactory{
 						psa.setString(4, attr.getDataType().toString());
 						psa.setInt(5, v);
 						psa.setString(6,attr.getValues().get(v));
-						psa.setLong(7,obj.getOrganization().getId());
+						psa.setLong(7,obj.getOrganizationId());
 						psa.addBatch();
 						if(aiter++ >= maximumInsBatch){
 							psa.executeBatch();
@@ -227,7 +229,7 @@ public class AttributeFactory extends NameIdFactory{
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		DataTable table = this.dataTables.get(0);
 		String selectString = getSelectTemplate(table, instruction);
-		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, obj.getOrganization().getId());
+		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, obj.getOrganizationId());
 		//logger.debug(sqlQuery);
 		try {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
@@ -285,7 +287,7 @@ public class AttributeFactory extends NameIdFactory{
 
 		boolean out_bool = false;
 		try {
-			int delCount = deleteByField(fields.toArray(new QueryField[0]),object.getOrganization().getId());
+			int delCount = deleteByField(fields.toArray(new QueryField[0]),object.getOrganizationId());
 			out_bool = (delCount > 0);
 			if(!preserveValues) object.getAttributes().clear();
 		} catch (FactoryException e) {
@@ -305,7 +307,7 @@ public class AttributeFactory extends NameIdFactory{
 			nobj = (NameIdType)objects[i];
 			if(i==0){
 				ntype = nobj.getNameType();
-				organization_id = nobj.getOrganization().getId();
+				organization_id = nobj.getOrganizationId();
 			}
 			ids[i] = nobj.getId();
 		}

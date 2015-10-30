@@ -113,13 +113,13 @@ public class PolicyFactory extends NameIdGroupFactory {
 	}
 	
 	
-	public PolicyType newPolicy(UserType user, DirectoryGroupType group) throws ArgumentException
+	public PolicyType newPolicy(UserType user, long groupId) throws ArgumentException
 	{
 		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
 		PolicyType obj = new PolicyType();
-		obj.setOrganization(group.getOrganization());
+		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
-		obj.setGroup(group);
+		obj.setGroupId(groupId);
 		obj.setNameType(NameEnumType.POLICY);
 		obj.setCondition(ConditionEnumType.UNKNOWN);
 	    GregorianCalendar cal = new GregorianCalendar();
@@ -134,11 +134,11 @@ public class PolicyFactory extends NameIdGroupFactory {
 	
 	public boolean addPolicy(PolicyType obj) throws FactoryException
 	{
-		if (obj.getGroup() == null) throw new FactoryException("Cannot add new Fact without a group");
+		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "policy");
 		try{
-			row.setCellValue("groupid", obj.getGroup().getId());
+			row.setCellValue("groupid", obj.getGroupId());
 			row.setCellValue("description", obj.getDescription());
 			//row.setCellValue("urn", obj.getUrn());
 			
@@ -152,7 +152,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 			row.setCellValue("condition", obj.getCondition().toString());
 
 			if (insertRow(row)){
-				PolicyType cobj = (bulkMode ? obj : (PolicyType)getByName(obj.getName(), obj.getGroup()));
+				PolicyType cobj = (bulkMode ? obj : (PolicyType)getByNameInGroup(obj.getName(), obj.getGroupId(),obj.getOrganizationId()));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
 				BulkFactories.getBulkFactory().setDirty(factoryType);
 				BaseParticipantType part = null;
@@ -217,7 +217,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 						set.remove(data.getRules().get(i).getId());
 					}
 				}
-				Factories.getPolicyParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganization());
+				Factories.getPolicyParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				out_bool = true;
 			}
 			catch(ArgumentException ae){
@@ -235,7 +235,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldScore(use_map.getScore()));
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 		fields.add(QueryFields.getFieldEnabled(use_map.getEnabled()));
 		//fields.add(QueryFields.getFieldCreatedDate(use_map.getCreated()));
 		fields.add(QueryFields.getFieldModifiedDate(use_map.getModifiedDate()));
@@ -245,24 +245,24 @@ public class PolicyFactory extends NameIdGroupFactory {
 	}
 	public int deletePoliciesByUser(UserType user) throws FactoryException
 	{
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganization().getId());
-		return deletePoliciesByIds(ids, user.getOrganization());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganizationId());
+		return deletePoliciesByIds(ids, user.getOrganizationId());
 	}
 
 	public boolean deletePolicy(PolicyType obj) throws FactoryException
 	{
 		removeFromCache(obj);
 		removeFromCache(obj,getUrnCacheKey(obj));
-		//int deleted = deleteById(obj.getId(), obj.getOrganization().getId());
-		int deleted = deletePoliciesByIds(new long[]{obj.getId()},obj.getOrganization());
+		//int deleted = deleteById(obj.getId(), obj.getOrganizationId());
+		int deleted = deletePoliciesByIds(new long[]{obj.getId()},obj.getOrganizationId());
 		return (deleted > 0);
 	}
-	public int deletePoliciesByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deletePoliciesByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
-			Factories.getPolicyParticipationFactory().deleteParticipations(ids, organization);
+			Factories.getPolicyParticipationFactory().deleteParticipations(ids, organizationId);
 			/*
 			Factories.getPolicyParticipationFactory().deleteParticipations(ids, organization);
 			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
@@ -276,26 +276,26 @@ public class PolicyFactory extends NameIdGroupFactory {
 		// Can't just delete by group;
 		// Need to get ids so as to delete participations as well
 		//
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 		/// TODO: Delete participations
 		///
-		return deletePoliciesByIds(ids, group.getOrganization());
+		return deletePoliciesByIds(ids, group.getOrganizationId());
 	}
 
-	public List<PolicyType> getPolicies(QueryField[] matches, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<PolicyType> getPolicies(QueryField[] matches, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> lst = getByField(matches, organization.getId());
+		List<NameIdType> lst = getByField(matches, organizationId);
 		return convertList(lst);
 
 	}
 	
-	public List<PolicyType>  getPolicyList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<PolicyType>  getPolicyList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organization);
+		return getPaginatedList(fields, startRecord, recordCount, organizationId);
 	}
-	public List<PolicyType> getPolicyListByIds(long[] ids, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<PolicyType> getPolicyListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organization);
+		return getListByIds(ids, organizationId);
 	}
 	
 }

@@ -101,7 +101,7 @@ public class PolicyDefinitionUtil {
 		pdt.setExpiresDate(pol.getExpiresDate());
 		pdt.setModifiedDate(pol.getModifiedDate());
 		pdt.setUrn(pol.getUrn());
-		pdt.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(pol.getOrganization()));
+		pdt.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(pol.getOrganizationId()));
 		copyParameters(pdt,pol);
 		return pdt;
 	}

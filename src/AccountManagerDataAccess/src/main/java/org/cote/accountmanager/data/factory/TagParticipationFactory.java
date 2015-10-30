@@ -82,7 +82,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 	{
 
 		List<PersonParticipantType> dp = getPersonParticipants(person);
-		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), person.getOrganization());
+		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), person.getOrganizationId());
 	}
 	
 	public boolean deleteUserTagParticipant(UserTagType tag, UserType user) throws FactoryException, ArgumentException
@@ -96,7 +96,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 	{
 
 		List<UserParticipantType> dp = getUserParticipants(user);
-		return deleteParticipants(dp.toArray(new UserParticipantType[0]), user.getOrganization());
+		return deleteParticipants(dp.toArray(new UserParticipantType[0]), user.getOrganizationId());
 	}
 	public boolean deleteAccountTagParticipant(AccountTagType tag, AccountType account) throws FactoryException, ArgumentException
 	{
@@ -109,7 +109,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 	{
 
 		List<AccountParticipantType> dp = getAccountParticipants(account);
-		return deleteParticipants(dp.toArray(new AccountParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new AccountParticipantType[0]), account.getOrganizationId());
 	}
 	public boolean deleteDataTagParticipant(DataTagType tag, DataType data) throws FactoryException, ArgumentException
 	{
@@ -122,7 +122,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 	{
 
 		List<DataParticipantType> dp = getDataParticipants(data);
-		return deleteParticipants(dp.toArray(new DataParticipantType[0]), data.getOrganization());
+		return deleteParticipants(dp.toArray(new DataParticipantType[0]), data.getOrganizationId());
 	}
 	public boolean deleteGroupTagParticipant(GroupTagType tag, BaseGroupType group) throws FactoryException, ArgumentException
 	{
@@ -135,7 +135,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 	{
 
 		List<GroupParticipantType> dp = getGroupParticipants(group);
-		return deleteParticipants(dp.toArray(new GroupParticipantType[0]), group.getOrganization());
+		return deleteParticipants(dp.toArray(new GroupParticipantType[0]), group.getOrganizationId());
 	}
 
 	public DataParticipantType newDataTagParticipation(BaseTagType tag, DataType data) throws ArgumentException {
@@ -172,7 +172,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 		List<AccountParticipantType> list = getAccountParticipants(account);
 		if(list.size() == 0) return new ArrayList<BaseTagType>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
-		return Factories.getTagFactory().listTags(null, TagEnumType.ACCOUNT, field, 0, 0,account.getOrganization());
+		return Factories.getTagFactory().listTags(null, TagEnumType.ACCOUNT, field, 0, 0,account.getOrganizationId());
 	}
 	
 	public List<BaseTagType> getUserTags(UserType user) throws FactoryException, ArgumentException
@@ -180,48 +180,48 @@ public class TagParticipationFactory extends ParticipationFactory {
 		List<UserParticipantType> list = getUserParticipants(user);
 		if(list.size() == 0) return new ArrayList<BaseTagType>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
-		return Factories.getTagFactory().listTags(null, TagEnumType.USER, field, 0, 0,user.getOrganization());
+		return Factories.getTagFactory().listTags(null, TagEnumType.USER, field, 0, 0,user.getOrganizationId());
 	}
 	public List<BaseTagType> getPersonTags(PersonType person) throws FactoryException, ArgumentException
 	{
 		List<PersonParticipantType> list = getPersonParticipants(person);
 		if(list.size() == 0) return new ArrayList<BaseTagType>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
-		return Factories.getTagFactory().listTags(null, TagEnumType.PERSON, field, 0, 0,person.getOrganization());
+		return Factories.getTagFactory().listTags(null, TagEnumType.PERSON, field, 0, 0,person.getOrganizationId());
 	}
 	public List<BaseTagType> getDataTags(DataType data) throws FactoryException, ArgumentException
 	{
 		List<DataParticipantType> list = getDataParticipants(data);
 		if(list.size() == 0) return new ArrayList<BaseTagType>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
-		return Factories.getTagFactory().listTags(null, TagEnumType.DATA, field, 0, 0,data.getOrganization());
+		return Factories.getTagFactory().listTags(null, TagEnumType.DATA, field, 0, 0,data.getOrganizationId());
 	}
 	public List<BaseTagType> getGroupTags(BaseGroupType group) throws FactoryException, ArgumentException
 	{
 		List<GroupParticipantType> list = getGroupParticipants(group);
 		if(list.size() == 0) return new ArrayList<BaseTagType>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
-		return Factories.getTagFactory().listTags(null, TagEnumType.GROUP, field, 0, 0,group.getOrganization());
+		return Factories.getTagFactory().listTags(null, TagEnumType.GROUP, field, 0, 0,group.getOrganizationId());
 	}
 	public List<PersonParticipantType> getPersonParticipants(PersonType person) throws FactoryException, ArgumentException
 	{
-		return convertList(getByField(QueryFields.getFieldParticipantMatch(person,ParticipantEnumType.PERSON), person.getOrganization().getId()));
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(person,ParticipantEnumType.PERSON), person.getOrganizationId()));
 	}
 	public List<AccountParticipantType> getAccountParticipants(AccountType account) throws FactoryException, ArgumentException
 	{
-		return convertList(getByField(QueryFields.getFieldParticipantMatch(account,ParticipantEnumType.ACCOUNT), account.getOrganization().getId()));
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(account,ParticipantEnumType.ACCOUNT), account.getOrganizationId()));
 	}
 	public List<UserParticipantType> getUserParticipants(UserType user) throws FactoryException, ArgumentException
 	{
-		return convertList(getByField(QueryFields.getFieldParticipantMatch(user,ParticipantEnumType.USER), user.getOrganization().getId()));
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(user,ParticipantEnumType.USER), user.getOrganizationId()));
 	}
 	public List<DataParticipantType> getDataParticipants(DataType data) throws FactoryException, ArgumentException
 	{
-		return convertList(getByField(QueryFields.getFieldParticipantMatch(data,ParticipantEnumType.DATA), data.getOrganization().getId()));
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(data,ParticipantEnumType.DATA), data.getOrganizationId()));
 	}
 	public List<GroupParticipantType> getGroupParticipants(BaseGroupType group) throws FactoryException, ArgumentException
 	{
-		return convertList(getByField(QueryFields.getFieldParticipantMatch(group,ParticipantEnumType.GROUP), group.getOrganization().getId()));
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(group,ParticipantEnumType.GROUP), group.getOrganizationId()));
 	}
 	public <T> List<T> getTagParticipations(BaseTagType tag, ParticipantEnumType type) throws FactoryException, ArgumentException
 	{
@@ -244,7 +244,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 		///return convertList(getParticipations(tags,ParticipantEnumType.DATA));
 		if(tags.length == 0) return out_list;
 		if(instruction == null) instruction = new ProcessingInstructionType();
-		OrganizationType org = tags[0].getOrganization();
+		long org = tags[0].getOrganizationId();
 		
 		
 		List<QueryField> matches = new ArrayList<QueryField>();
@@ -270,7 +270,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 		//String token = DBFactory.getParamToken(connectionType);
 		//int id_count = 0;
 		try{
-			String sql = assembleQueryString("SELECT participantid FROM " + dataTables.get(0).getName(),matches.toArray(new QueryField[0]),connectionType,instruction,org.getId());
+			String sql = assembleQueryString("SELECT participantid FROM " + dataTables.get(0).getName(),matches.toArray(new QueryField[0]),connectionType,instruction,org);
 			/*
 			String sql = "SELECT participantid FROM " + dataTables.get(0).getName()
 				+ " WHERE participationid IN (" + buff.toString() + ")"
@@ -293,7 +293,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 			while (rset.next())
 			{
 				BaseParticipantType bpt = Factories.getTagParticipationFactory().newParticipant(type);
-				bpt.setOrganization(org);
+				bpt.setOrganizationId(org);
 				//bpt.setParticipationId(rset.getLong(1));
 				bpt.setParticipantId(rset.getLong(1));
 				out_list.add((T)bpt);
@@ -329,7 +329,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 		int count = 0;
 		if(tags.length == 0) return count;
 
-		OrganizationType org = tags[0].getOrganization();
+		long org = tags[0].getOrganizationId();
 
 		StringBuilder buff = new StringBuilder();
 		for (int i = 0; i < tags.length; i++)
@@ -354,7 +354,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 			PreparedStatement statement = connection.prepareStatement(sql);
 			int paramCount = 1;
 			if(type != ParticipantEnumType.UNKNOWN) statement.setString(paramCount++, type.toString());
-			statement.setLong(paramCount++, org.getId());
+			statement.setLong(paramCount++, org);
 			statement.setInt(paramCount++, tags.length);
 			ResultSet rset = statement.executeQuery();
 		
@@ -383,14 +383,14 @@ public class TagParticipationFactory extends ParticipationFactory {
 	public GroupParticipantType getGroupParticipant(BaseTagType tag,BaseGroupType group) throws FactoryException, ArgumentException
 	{
 
-		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(group), QueryFields.getFieldParticipantType(ParticipantEnumType.GROUP), QueryFields.getFieldParticipationId(tag)}, group.getOrganization().getId());
+		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(group), QueryFields.getFieldParticipantType(ParticipantEnumType.GROUP), QueryFields.getFieldParticipationId(tag)}, group.getOrganizationId());
 		if(list.size() == 0) return null;
 		return (GroupParticipantType)list.get(0);
 	}
 	public DataParticipantType getDataParticipant(BaseTagType tag,DataType data) throws FactoryException, ArgumentException
 	{
 
-		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(data), QueryFields.getFieldParticipantType(ParticipantEnumType.DATA), QueryFields.getFieldParticipationId(tag)}, data.getOrganization().getId());
+		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(data), QueryFields.getFieldParticipantType(ParticipantEnumType.DATA), QueryFields.getFieldParticipationId(tag)}, data.getOrganizationId());
 		if(list.size() == 0) return null;
 		return (DataParticipantType)list.get(0);
 	}
@@ -398,21 +398,21 @@ public class TagParticipationFactory extends ParticipationFactory {
 	public AccountParticipantType getAccountParticipant(BaseTagType tag, AccountType account) throws FactoryException, ArgumentException
 	{
 
-		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(account), QueryFields.getFieldParticipantType(ParticipantEnumType.ACCOUNT), QueryFields.getFieldParticipationId(tag) }, account.getOrganization().getId());
+		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(account), QueryFields.getFieldParticipantType(ParticipantEnumType.ACCOUNT), QueryFields.getFieldParticipationId(tag) }, account.getOrganizationId());
 		if (list.size() == 0) return null;
 		return (AccountParticipantType)list.get(0);
 	}
 	public UserParticipantType getUserParticipant(BaseTagType tag, UserType user) throws FactoryException, ArgumentException
 	{
 
-		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(user), QueryFields.getFieldParticipantType(ParticipantEnumType.USER), QueryFields.getFieldParticipationId(tag) }, user.getOrganization().getId());
+		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(user), QueryFields.getFieldParticipantType(ParticipantEnumType.USER), QueryFields.getFieldParticipationId(tag) }, user.getOrganizationId());
 		if (list.size() == 0) return null;
 		return (UserParticipantType)list.get(0);
 	}
 	public PersonParticipantType getPersonParticipant(BaseTagType tag, PersonType person) throws FactoryException, ArgumentException
 	{
 
-		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(person), QueryFields.getFieldParticipantType(ParticipantEnumType.PERSON), QueryFields.getFieldParticipationId(tag) }, person.getOrganization().getId());
+		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(person), QueryFields.getFieldParticipantType(ParticipantEnumType.PERSON), QueryFields.getFieldParticipationId(tag) }, person.getOrganizationId());
 		if (list.size() == 0) return null;
 		return (PersonParticipantType)list.get(0);
 	}

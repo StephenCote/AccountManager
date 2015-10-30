@@ -96,7 +96,15 @@ import org.cote.accountmanager.util.ZipUtil;
 		public VaultService(UserType serviceUser,String vaultBasePath, String vaultName)
 		{
 			vaultServiceUser = serviceUser;
-			this.organization = serviceUser.getOrganization();
+			try {
+				this.organization = Factories.getOrganizationFactory().getOrganizationById(serviceUser.getOrganizationId());
+			} catch (FactoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			this.vaultName = vaultName;
 			vaultNameHash = Hex.encodeHexString(vaultName.getBytes());//SecurityUtil.getDigestAsString(vaultName);
 			
@@ -218,8 +226,8 @@ import org.cote.accountmanager.util.ZipUtil;
 			byte[] config_bytes = FileUtil.getFile(vaultKeyPath);
 			if (config_bytes.length == 0) return false;
 
-			SecurityBean org_sm = KeyService.getPrimarySymmetricKey(organization);
-					//OrganizationSecurity.getSecurityBean(organization);
+			SecurityBean org_sm = KeyService.getPrimarySymmetricKey(organization.getId());
+					//OrganizationSecurity.getSecurityBean(organization.getId());
 			
 			byte[] dec_config = SecurityUtil.decipher(org_sm,  config_bytes);
 			dec_config = SecurityUtil.decipher(dec_config, password,getSalt());
@@ -251,8 +259,8 @@ import org.cote.accountmanager.util.ZipUtil;
 						byte[] config_bytes = FileUtil.getFile(this.vaultKeyPath);
 						if (config_bytes.length == 0) return null;
 						//Core.Tools.Security.SecurityManager org_sm = (Core.Tools.Security.SecurityManager)product.SecurityManager;
-						SecurityBean org_sm = KeyService.getPrimarySymmetricKey(organization); 
-								///OrganizationSecurity.getSecurityBean(organization);
+						SecurityBean org_sm = KeyService.getPrimarySymmetricKey(organization.getId()); 
+								///OrganizationSecurity.getSecurityBean(organization.getId());
 						byte[] dec_config = SecurityUtil.decipher(org_sm,config_bytes);
 						if (passwordProtected) dec_config = SecurityUtil.decipher(dec_config, password,getSalt());
 						if (dec_config.length == 0) return null;
@@ -275,10 +283,10 @@ import org.cote.accountmanager.util.ZipUtil;
 			return haveVaultKey;
 		}
 		public DirectoryGroupType getVaultGroup() throws FactoryException, ArgumentException{
-			return Factories.getGroupFactory().getDirectoryByName(VAULT_GROUP_NAME, vaultServiceUser.getHomeDirectory(), organization);
+			return Factories.getGroupFactory().getDirectoryByName(VAULT_GROUP_NAME, vaultServiceUser.getHomeDirectory(), organization.getId());
 		}
 		public DirectoryGroupType getVaultInstanceGroup() throws FactoryException, ArgumentException{
-			return Factories.getGroupFactory().getDirectoryByName(vaultName,getVaultGroup(), organization);
+			return Factories.getGroupFactory().getDirectoryByName(vaultName,getVaultGroup(), organization.getId());
 		}
 		public boolean deleteVault() throws ArgumentException, FactoryException
 		{
@@ -330,7 +338,7 @@ import org.cote.accountmanager.util.ZipUtil;
 				return false;
 			}
 			
-			DirectoryGroupType imp_dir = Factories.getGroupFactory().getCreateDirectory(vaultServiceUser, VAULT_GROUP_NAME, vaultServiceUser.getHomeDirectory(), organization);
+			DirectoryGroupType imp_dir = Factories.getGroupFactory().getCreateDirectory(vaultServiceUser, VAULT_GROUP_NAME, vaultServiceUser.getHomeDirectory(), organization.getId());
 
 			DataType imp_data = Factories.getDataFactory().getDataByName(vaultName, true, imp_dir);
 			if (imp_data != null)
@@ -366,21 +374,21 @@ import org.cote.accountmanager.util.ZipUtil;
 
 			// Encipher with product key
 			//
-			SecurityBean org_sm = KeyService.getPrimarySymmetricKey(organization); 
-					//OrganizationSecurity.getSecurityBean(organization);
+			SecurityBean org_sm = KeyService.getPrimarySymmetricKey(organization.getId()); 
+					//OrganizationSecurity.getSecurityBean(organization.getId());
 			byte[] enc_private_key = SecurityUtil.encipher(org_sm,private_key_config);
 			FileUtil.emitFile(vaultKeyPath, enc_private_key);
 
 			// Create a new group directory for storing DES keys that are vaulted for a specified vault
 			// The name is the same as the vault data name
 			//
-			DirectoryGroupType local_imp_dir = Factories.getGroupFactory().getCreateDirectory(vaultServiceUser, vaultName, imp_dir, organization);
+			DirectoryGroupType local_imp_dir = Factories.getGroupFactory().getCreateDirectory(vaultServiceUser, vaultName, imp_dir, organization.getId());
 
 			// No need to encrypt the public key beyond the auto-encrypt supplied by the AM org-level key (same key as used by default to encrypt private key)
 			//
 			byte[] public_key_config = SecurityUtil.serializeToXml(sm, false, true, false).getBytes("UTF-8");
 
-			imp_data = Factories.getDataFactory().newData(vaultServiceUser, imp_dir);
+			imp_data = Factories.getDataFactory().newData(vaultServiceUser, imp_dir.getId());
 			imp_data.setName(vaultName);
 			imp_data.setDescription("Vault public key for node/cluster");
 			imp_data.setMimeType("text/xml");
@@ -398,7 +406,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			List<SecurityBean> beans = new ArrayList<SecurityBean>();
 			
 			try {
-				List<DataType> dataList = Factories.getDataFactory().getDataListByGroup(getVaultInstanceGroup(), false, 0, 0, organization);
+				List<DataType> dataList = Factories.getDataFactory().getDataListByGroup(getVaultInstanceGroup(), false, 0, 0, organization.getId());
 				for(int i = 0; i < dataList.size();i++) beans.add(getCipherFromData(dataList.get(i)));
 			} catch (FactoryException e) {
 				// TODO Auto-generated catch block
@@ -562,7 +570,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			//
 
 
-			DataType out_data = Factories.getDataFactory().newData(vaultServiceUser, group);
+			DataType out_data = Factories.getDataFactory().newData(vaultServiceUser, group.getId());
 			out_data.setName(name);
 			out_data.setMimeType(mime_type);
 
@@ -604,7 +612,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			String id = UUID.randomUUID().toString();
 			
 			DirectoryGroupType loc_imp_dir = getVaultInstanceGroup();
-			DataType new_key = Factories.getDataFactory().newData(vaultServiceUser, loc_imp_dir);
+			DataType new_key = Factories.getDataFactory().newData(vaultServiceUser, loc_imp_dir.getId());
 			new_key.setName(id);
 			new_key.setMimeType("text/xml");
 			new_key.setDescription("Improvement key for " + vaultName);

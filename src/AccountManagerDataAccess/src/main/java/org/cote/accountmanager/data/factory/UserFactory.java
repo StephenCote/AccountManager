@@ -122,7 +122,7 @@ public class UserFactory extends NameIdFactory {
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		UserType t = (UserType)obj;
-		return t.getName() + "-" + t.getAccountId() + "-" + t.getOrganization().getId();
+		return t.getName() + "-" + t.getAccountId() + "-" + t.getOrganizationId();
 	}
 
 	public void updateUserToCache(UserType user) throws ArgumentException{
@@ -145,7 +145,7 @@ public class UserFactory extends NameIdFactory {
 	public boolean deleteUser(UserType user) throws FactoryException, ArgumentException
 	{
 		removeFromCache(user);
-		int deleted = deleteById(user.getId(), user.getOrganization().getId());
+		int deleted = deleteById(user.getId(), user.getOrganizationId());
 		if (deleted > 0)
 		{
 			/// TODO
@@ -171,22 +171,23 @@ public class UserFactory extends NameIdFactory {
 		return (deleted > 0);
 	}
 	public UserType newUserForAccount(String name, AccountType account) throws FactoryException{
-		UserType user = newUser(name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, account.getOrganization());
+		UserType user = newUser(name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, account.getOrganizationId());
 		user.setAccountId(account.getId());
 		return user;
 	}
 	public UserType newUserForAccount(String name, AccountType account, UserEnumType type, UserStatusEnumType status) throws FactoryException{
-		UserType user = newUser(name, type, status, account.getOrganization());
+		UserType user = newUser(name, type, status, account.getOrganizationId());
 		user.setAccountId(account.getId());
 		return user;
 	}
-	public UserType newUser(String name, UserEnumType type, UserStatusEnumType status, OrganizationType organization)
+	public UserType newUser(String name, UserEnumType type, UserStatusEnumType status, long organizationId)
 	{
 		UserType new_user = new UserType();
 		new_user.setNameType(NameEnumType.USER);
 		new_user.setUserStatus(status);
 		new_user.setUserType(type);
-		new_user.setOrganization(organization);
+		//new_user.setOrganization(organization);
+		new_user.setOrganizationId(organizationId);
 		new_user.setName(name);
 		new_user.setUserId(UUID.randomUUID().toString());
 		return new_user;
@@ -201,22 +202,20 @@ public class UserFactory extends NameIdFactory {
 			System.out.println("*** getUserBySession: " + session.getUserId());
 			return out_type;
 		}
-		List<NameIdType> types =  getById(session.getUserId(), session.getOrganizationId());
-		if(types.size() > 0) return (UserType)types.get(0);
-		return null;
+		return getById(session.getUserId(), session.getOrganizationId());
 	}
 	
-	public boolean getUserNameExists(String user_name, OrganizationType organization) throws FactoryException {
-		return (getIdByName(user_name, organization.getId()) > 0);
+	public boolean getUserNameExists(String user_name, long organizationId) throws FactoryException {
+		return (getIdByName(user_name, organizationId) > 0);
 	}
-	public UserType getUserByName(String name, OrganizationType organization) throws FactoryException, ArgumentException
+	public UserType getUserByName(String name, long organizationId) throws FactoryException, ArgumentException
 	{
-		String key_name = name + "-0-" + organization.getId();
+		String key_name = name + "-0-" + organizationId;
 		UserType out_user = (UserType)readCache(key_name);
 		if(out_user != null)
 			return out_user;
 		
-		List<NameIdType> users = getByName(name, organization.getId());
+		List<NameIdType> users = getByName(name, organizationId);
 		if (users.size() > 0)
 		{
 			out_user = (UserType)users.get(0);
@@ -230,9 +229,9 @@ public class UserFactory extends NameIdFactory {
 	}
 	public boolean addUser(UserType new_user, boolean allot_contact_info) throws FactoryException, ArgumentException
 	{
-		if (new_user.getOrganization() == null || new_user.getOrganization().getId() <= 0) throw new FactoryException("Cannot add user to invalid organization");
+		if (new_user.getOrganizationId() == null || new_user.getOrganizationId() <= 0) throw new FactoryException("Cannot add user to invalid organization");
 		//if(new_user.getPassword() == null || new_user.getPassword().length() < 42) throw new FactoryException("Password hash is not strong enough.  Must be at least 42 characters");;
-		if (!bulkMode && getUserNameExists(new_user.getName(), new_user.getOrganization()))
+		if (!bulkMode && getUserNameExists(new_user.getName(), new_user.getOrganizationId()))
 		{
 			throw new FactoryException("User name " + new_user.getName() + " already exists");
 		}
@@ -250,10 +249,10 @@ public class UserFactory extends NameIdFactory {
 
 			if (insertRow(row)){
 				
-				new_user = (bulkMode ? new_user : getUserByName(new_user.getName(), new_user.getOrganization()));
+				new_user = (bulkMode ? new_user : getUserByName(new_user.getName(), new_user.getOrganizationId()));
 				if(new_user == null) throw new FactoryException("Failed to retrieve new user object");
 				StatisticsType stats = Factories.getStatisticsFactory().newStatistics(new_user);
-				DirectoryGroupType home_dir = Factories.getGroupFactory().newDirectoryGroup(new_user, new_user.getName(), Factories.getGroupFactory().getHomeDirectory(new_user.getOrganization()), new_user.getOrganization());
+				DirectoryGroupType home_dir = Factories.getGroupFactory().newDirectoryGroup(new_user, new_user.getName(), Factories.getGroupFactory().getHomeDirectory(new_user.getOrganizationId()), new_user.getOrganizationId());
 				String sessionId = null;
 				if(bulkMode){
 					
@@ -291,7 +290,7 @@ public class UserFactory extends NameIdFactory {
 					if(Factories.getGroupFactory().addGroup(home_dir) == false) throw new FactoryException("Failed to add home directory for #" + new_user.getId());
 					if(allot_contact_info){
 						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_user);
-						logger.debug("Adding cinfo for user in org " + new_user.getOrganization().getId());
+						logger.debug("Adding cinfo for user in org " + new_user.getOrganizationId());
 						if(Factories.getContactInformationFactory().addContactInformation(cinfo) == false) throw new FactoryException("Failed to assign contact information for user #" + new_user.getId());
 						cinfo = Factories.getContactInformationFactory().getContactInformationForUser(new_user);
 						if(cinfo == null) throw new FactoryException("Failed to retrieve contact information for user #" + new_user.getId());
@@ -301,7 +300,7 @@ public class UserFactory extends NameIdFactory {
 				}
 				/// re-read home dir to get the right id / bulk id
 				///
-				home_dir = Factories.getGroupFactory().getDirectoryByName(new_user.getName(), Factories.getGroupFactory().getHomeDirectory(new_user.getOrganization()), new_user.getOrganization());
+				home_dir = Factories.getGroupFactory().getDirectoryByName(new_user.getName(), Factories.getGroupFactory().getHomeDirectory(new_user.getOrganizationId()), new_user.getOrganizationId());
 				if(home_dir == null) throw new FactoryException("Missing home directory");
 				Factories.getGroupFactory().addDefaultUserGroups(new_user, home_dir, bulkMode,sessionId);
 				return true;
@@ -324,21 +323,21 @@ public class UserFactory extends NameIdFactory {
 		new_user.setUserType(UserEnumType.valueOf(rset.getString("usertype")));
 		return super.read(rset, new_user);
 	}
-	public List<UserType>  getUserList(long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserType>  getUserList(long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getUserList(new QueryField[] {  }, startRecord, recordCount, organization);
+		return getUserList(new QueryField[] {  }, startRecord, recordCount, organizationId);
 	}
-	public List<UserType>  getUserList(ProcessingInstructionType instruction, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserType>  getUserList(ProcessingInstructionType instruction, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getUserList(new QueryField[] {  }, instruction, startRecord, recordCount,organization);
+		return getUserList(new QueryField[] {  }, instruction, startRecord, recordCount,organizationId);
 	}
-	public List<UserType>  getUserList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserType>  getUserList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
-		return getUserList(fields, instruction, startRecord,recordCount,organization);
+		return getUserList(fields, instruction, startRecord,recordCount,organizationId);
 	}
-	public List<UserType>  getUserList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserType>  getUserList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///
@@ -348,19 +347,19 @@ public class UserFactory extends NameIdFactory {
 			instruction.setStartIndex(startRecord);
 			instruction.setRecordCount(recordCount);
 		}
-		return getUserList(fields, instruction, organization);
+		return getUserList(fields, instruction, organizationId);
 	}
-	public List<UserType> getUserList(QueryField[] fields, ProcessingInstructionType instruction, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<UserType> getUserList(QueryField[] fields, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException
 	{
 
 		if(instruction == null) instruction = new ProcessingInstructionType();
 
-		List<NameIdType> UserList = getByField(fields, instruction, organization.getId());
+		List<NameIdType> UserList = getByField(fields, instruction, organizationId);
 		return convertList(UserList);
 
 	}
 	
-	public List<UserType> getUserListByIds(int[] User_ids, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<UserType> getUserListByIds(int[] User_ids, long organizationId) throws FactoryException, ArgumentException
 	{
 		StringBuffer buff = new StringBuffer();
 		int deleted = 0;
@@ -373,7 +372,7 @@ public class UserFactory extends NameIdFactory {
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
 				match.setComparator(ComparatorEnumType.IN);
-				List<UserType> tmp_User_list = getUserList(new QueryField[] { match }, null, organization);
+				List<UserType> tmp_User_list = getUserList(new QueryField[] { match }, null, organizationId);
 				out_list.addAll(tmp_User_list);
 				buff.delete(0,  buff.length());
 			}
@@ -381,7 +380,7 @@ public class UserFactory extends NameIdFactory {
 		return out_list;
 	}
 
-	public List<UserType> searchUsers(String searchValue, long startRecord, int recordCount, OrganizationType org) throws FactoryException{
+	public List<UserType> searchUsers(String searchValue, long startRecord, int recordCount, long org) throws FactoryException{
 		
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){
@@ -400,9 +399,9 @@ public class UserFactory extends NameIdFactory {
 	/// User search uses a different query to join in contact information
 	/// Otherwise, this could be the getPaginatedList method
 	///
-	/// public List<UserType> search(QueryField[] filters, OrganizationType organization){
+	/// public List<UserType> search(QueryField[] filters, long organizationId){
 	@Override
-	public List<QueryField> buildSearchQuery(String searchValue, OrganizationType organization) throws FactoryException{
+	public List<QueryField> buildSearchQuery(String searchValue, long organizationId) throws FactoryException{
 		
 		searchValue = searchValue.replaceAll("\\*","%");
 		
@@ -420,8 +419,8 @@ public class UserFactory extends NameIdFactory {
 	}
 	
 	@Override
-	public <T> List<T> search(QueryField[] filters, ProcessingInstructionType instruction, OrganizationType organization){
-		return searchByIdInView("userContact", filters,instruction,organization);
+	public <T> List<T> search(QueryField[] filters, ProcessingInstructionType instruction, long organizationId){
+		return searchByIdInView("userContact", filters,instruction,organizationId);
 	}
 		
 

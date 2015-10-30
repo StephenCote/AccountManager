@@ -43,12 +43,12 @@ public class TestVaultService extends BaseDataAccessTest{
 		SecurityBean cipherBean = new SecurityBean();
 		SecurityFactory.getSecurityFactory().generateSecretKey(cipherBean);
 		try {
-			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(qaUser, "VaultExamples", qaUser.getHomeDirectory(), qaUser.getOrganization());
+			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(qaUser, "VaultExamples", qaUser.getHomeDirectory(), qaUser.getOrganizationId());
 			vs.initialize();
 			if(vs.getIsImproved() == false) vs.createVault("password");
 			else vs.setPassword("password");
 			String dataStr = "This is the vaulted data";
-			DataType data = Factories.getDataFactory().newData(qaUser, dir);
+			DataType data = Factories.getDataFactory().newData(qaUser, dir.getId());
 			data.setName(dataName);
 			data.setMimeType("text/plain");
 			DataUtil.setCipher(data, cipherBean);

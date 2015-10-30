@@ -69,64 +69,64 @@ public class SecurityTokenFactory extends SpoolFactory {
 	public boolean deleteToken(SecuritySpoolType message) throws FactoryException
 	{
 		removeFromCache(message);
-		int deleted = deleteByField(new QueryField[] { QueryFields.getFieldGuid(message.getGuid()) }, message.getOrganization().getId());
+		int deleted = deleteByField(new QueryField[] { QueryFields.getFieldGuid(message.getGuid()) }, message.getOrganizationId());
 		return (deleted > 0);
 	}
-	public boolean deleteTokens(String referenceId, OrganizationType organization) throws FactoryException
+	public boolean deleteTokens(String referenceId, long organizationId) throws FactoryException
 	{
 
 		clearCache();
-		int deleted = deleteByField(new QueryField[] { QueryFields.getFieldName(referenceId), QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN), QueryFields.getFieldSpoolBucketName(SpoolNameEnumType.GENERAL) }, organization.getId());
+		int deleted = deleteByField(new QueryField[] { QueryFields.getFieldName(referenceId), QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN), QueryFields.getFieldSpoolBucketName(SpoolNameEnumType.GENERAL) }, organizationId);
 		return (deleted > 0);
 	}
 	
-	public SecuritySpoolType getSecurityToken(String referenceId, OrganizationType organization) throws FactoryException, ArgumentException
+	public SecuritySpoolType getSecurityToken(String referenceId, long organizationId) throws FactoryException, ArgumentException
 	{
-		SecuritySpoolType[] tokens = getSecurityTokens(referenceId, organization);
+		SecuritySpoolType[] tokens = getSecurityTokens(referenceId, organizationId);
 		if (tokens.length == 0) return null;
 		return tokens[0];
 	}
 
-	public SecuritySpoolType[] getSecurityTokens(String spoolName, OrganizationType organization) throws FactoryException, ArgumentException
+	public SecuritySpoolType[] getSecurityTokens(String spoolName, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldName(spoolName), QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organization.getId());
+		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldName(spoolName), QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organizationId);
 		if (tokens.size() == 0) return new SecuritySpoolType[0];
 		return tokens.toArray(new SecuritySpoolType[0]);
 	}
-	public SecuritySpoolType popSecurityToken(String guid, OrganizationType organization) throws FactoryException, ArgumentException
+	public SecuritySpoolType popSecurityToken(String guid, long organizationId) throws FactoryException, ArgumentException
 	{
-		SecuritySpoolType token = getSecurityToken(guid, organization);
+		SecuritySpoolType token = getSecurityToken(guid, organizationId);
 		if (token == null || deleteToken(token) == false) return null;
 		return token;
 	}
 
-	public SecuritySpoolType getSecurityTokenById(String guid, OrganizationType organization) throws FactoryException, ArgumentException
+	public SecuritySpoolType getSecurityTokenById(String guid, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldGuid(guid),QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organization.getId());
+		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldGuid(guid),QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organizationId);
 		if (tokens.size() == 0) return null;
 		return (SecuritySpoolType)tokens.get(0);
 	}
 
 
-	public SecuritySpoolType generateSecurityToken(String referenceId, OrganizationType organization) throws FactoryException, ArgumentException
+	public SecuritySpoolType generateSecurityToken(String referenceId, long organizationId) throws FactoryException, ArgumentException
 	{
-		return generateSecurityToken(referenceId, new byte[0], organization);
+		return generateSecurityToken(referenceId, new byte[0], organizationId);
 	}
-	public SecuritySpoolType generateSecurityToken(String referenceId, byte[] data, OrganizationType organization) throws FactoryException, ArgumentException
+	public SecuritySpoolType generateSecurityToken(String referenceId, byte[] data, long organizationId) throws FactoryException, ArgumentException
 	{
-		SecuritySpoolType new_token = newSecurityToken(referenceId, organization);
+		SecuritySpoolType new_token = newSecurityToken(referenceId, organizationId);
 		new_token.setData(data);
 		if (new_token == null || addSecurityToken(new_token) == false) return null;
 		return new_token;
 		
 	}
-	public SecuritySpoolType newSecurityToken(String referenceId, OrganizationType organization) throws FactoryException, ArgumentException
+	public SecuritySpoolType newSecurityToken(String referenceId, long organizationId) throws FactoryException, ArgumentException
 	{
-		if (organization == null || organization.getId() <=0) throw new FactoryException("Invalid organization");
+		if ( organizationId <=0L) throw new FactoryException("Invalid organization");
 
 		SecuritySpoolType new_token = (SecuritySpoolType)newSpoolEntry(SpoolBucketEnumType.SECURITY_TOKEN);
 		new_token.setSpoolBucketName(SpoolNameEnumType.GENERAL);
-		new_token.setOrganization(organization);
+		new_token.setOrganizationId(organizationId);
 		new_token.setName(referenceId);
 
 		new_token.setValueType(ValueEnumType.STRING);
@@ -143,8 +143,8 @@ public class SecurityTokenFactory extends SpoolFactory {
 	{
 		if (
 			message == null
-			|| message.getOrganization() == null
-			|| message.getOrganization().getId() <= 0
+
+			|| message.getOrganizationId() <= 0L
 			|| message.getSpoolBucketName() == null
 			|| message.getSpoolBucketType() == null
 			|| message.getName() == null

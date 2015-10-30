@@ -60,10 +60,10 @@ public class FactUtil {
 		
 		NameIdType obj = factoryRead(sourceFact,matchFact);
 		if(obj == null){
-			logger.error("Failed to find object " + sourceFact.getSourceUrn() + " (" + sourceFact.getFactoryType().toString() + ") in organization " + matchFact.getOrganization().getName());
+			logger.error("Failed to find object " + sourceFact.getSourceUrn() + " (" + sourceFact.getFactoryType().toString() + ") in organization " + matchFact.getOrganizationId());
 			return;
 		}
-		logger.info("Found object " + sourceFact.getSourceUrn() + " (" + sourceFact.getFactoryType().toString() + ") in organization " + matchFact.getOrganization().getName() + " having id " + obj.getId());
+		logger.info("Found object " + sourceFact.getSourceUrn() + " (" + sourceFact.getFactoryType().toString() + ") in organization " + matchFact.getOrganizationId() + " having id " + obj.getId());
 		sourceFact.setFactReference(obj);
 	}
 	public static String getFactAttributeValue(FactType sourceFact, FactType matchFact){
@@ -129,18 +129,18 @@ public class FactUtil {
 			logger.error("Source URL is null");
 			return null;
 		}
-		DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, sourceFact.getSourceUrl(), referenceFact.getOrganization());
+		DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, sourceFact.getSourceUrl(), referenceFact.getOrganizationId());
 		if(dir == null) throw new ArgumentException("Invalid group path " + sourceFact.getSourceUrl());
 		return dir;
 	}
 	private static BasePermissionType getPermissionFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException, DataAccessException{
 		
-		BasePermissionType permission = (BasePermissionType)Factories.getPermissionFactory().findPermission(PermissionEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganization());
+		BasePermissionType permission = (BasePermissionType)Factories.getPermissionFactory().findPermission(PermissionEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganizationId());
 		if(permission == null) throw new ArgumentException("Invalid permission path " + sourceFact.getSourceUrl());
 		return permission;
 	}
 	private static BaseRoleType getRoleFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException, DataAccessException{
-		BaseRoleType role = (BaseRoleType)Factories.getRoleFactory().findRole(RoleEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganization());
+		BaseRoleType role = (BaseRoleType)Factories.getRoleFactory().findRole(RoleEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganizationId());
 		if(role == null) throw new ArgumentException("Invalid role path " + sourceFact.getSourceUrl());
 		return role;
 	}
@@ -165,20 +165,20 @@ public class FactUtil {
 			NameIdFactory fact = Factories.getFactory(useRef.getFactoryType());
 			DirectoryGroupType dir = null;
 			if(idPattern.matcher(sourceFact.getSourceUrn()).matches()){
-				out_obj = fact.getById(Long.parseLong(sourceFact.getSourceUrn()), referenceFact.getOrganization());
+				out_obj = fact.getById(Long.parseLong(sourceFact.getSourceUrn()), referenceFact.getOrganizationId());
 			}
 			else{
 				switch(useRef.getFactoryType()){
 					/// User is one of the only organization level schemas with a unique constraint on just the name
 					///
 					case USER:
-						out_obj = (T)((UserFactory)fact).getUserByName(sourceFact.getSourceUrn(), referenceFact.getOrganization());
+						out_obj = (T)((UserFactory)fact).getUserByName(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;
 					case CREDENTIAL:
-						out_obj = (T)((CredentialFactory)fact).getCredentialByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganization());
+						out_obj = (T)((CredentialFactory)fact).getCredentialByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;
 					case CONTROL:
-						out_obj = (T)((ControlFactory)fact).getControlByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganization());
+						out_obj = (T)((ControlFactory)fact).getControlByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;		
 					/// NameIdGroupFactory types
 					case ACCOUNT:
@@ -190,7 +190,7 @@ public class FactUtil {
 						}
 						else{
 							dir =  getDirectoryFromFact(sourceFact,referenceFact);
-							out_obj = (T)((NameIdGroupFactory)fact).getByName(sourceFact.getSourceUrn(), dir);
+							out_obj = (T)((NameIdGroupFactory)fact).getByNameInGroup(sourceFact.getSourceUrn(), dir);
 							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (out_obj == null ? "Null":"Found"));
 						}
 						break;
@@ -209,7 +209,7 @@ public class FactUtil {
 						}
 						else{
 							dir =  getDirectoryFromFact(sourceFact,referenceFact);
-							out_obj = (T)((GroupFactory)fact).getDirectoryByName(sourceFact.getSourceUrn(), dir,referenceFact.getOrganization());
+							out_obj = (T)((GroupFactory)fact).getDirectoryByName(sourceFact.getSourceUrn(), dir,referenceFact.getOrganizationId());
 							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (out_obj == null ? "Null":"Found"));
 						}
 						break;
@@ -219,7 +219,7 @@ public class FactUtil {
 						}
 						else{
 							BaseRoleType parent = getRoleFromFact(sourceFact, referenceFact);
-							out_obj = (T)((RoleFactory)fact).getRoleByName(sourceFact.getSourceUrn(), parent, RoleEnumType.fromValue(sourceFact.getSourceType()), referenceFact.getOrganization());
+							out_obj = (T)((RoleFactory)fact).getRoleByName(sourceFact.getSourceUrn(), parent, RoleEnumType.fromValue(sourceFact.getSourceType()), referenceFact.getOrganizationId());
 							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (parent != null ? sourceFact.getSourceUrl() : "Null Role") + " - Result is " + (out_obj == null ? "Null":"Found"));
 						}
 						break;
@@ -229,7 +229,7 @@ public class FactUtil {
 						}
 						else{
 							BasePermissionType perparent = getPermissionFromFact(sourceFact, referenceFact);
-							out_obj = (T)((PermissionFactory)fact).getPermissionByName(sourceFact.getSourceUrn(),PermissionEnumType.fromValue(sourceFact.getSourceType()), perparent, referenceFact.getOrganization());
+							out_obj = (T)((PermissionFactory)fact).getPermissionByName(sourceFact.getSourceUrn(),PermissionEnumType.fromValue(sourceFact.getSourceType()), perparent, referenceFact.getOrganizationId());
 							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (perparent != null ? sourceFact.getSourceUrl() : "Null Permission") + " - Result is " + (out_obj == null ? "Null":"Found"));
 						}
 						break;

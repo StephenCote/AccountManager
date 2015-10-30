@@ -75,7 +75,7 @@ public class TestUserSession extends BaseDataAccessTest{
 		assertNotNull(testUser);
 		UserSessionType session = null;
 		try {
-			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganization());
+			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,7 +89,7 @@ public class TestUserSession extends BaseDataAccessTest{
 		UserSessionType session = null;
 		boolean updated = false;
 		try {
-			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganization());
+			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 			session.setSessionStatus(SessionStatusEnumType.NOT_AUTHENTICATED);
 			updated = Factories.getSessionFactory().update(session);
 		} catch (FactoryException e) {
@@ -104,8 +104,8 @@ public class TestUserSession extends BaseDataAccessTest{
 		UserSessionType session = null;
 		UserSessionType session2 = null;
 		try {
-			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganization());
-			session2 = Factories.getSessionFactory().getSession(sessionId2, testUser2.getOrganization());
+			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
+			session2 = Factories.getSessionFactory().getSession(sessionId2, testUser2.getOrganizationId());
 			String testName1 = "testdata";
 			String testName2 = "testdata2";
 			String testName3 = "testdata3";
@@ -120,7 +120,7 @@ public class TestUserSession extends BaseDataAccessTest{
 			Factories.getSessionDataFactory().setValue(session2,testName1,testVal1);
 			Factories.getSessionFactory().update(session2);
 			Factories.getSessionFactory().updateData(session2);
-			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganization());
+			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 			assertTrue("Session data for '" + sessionId + "' should be 3",session.getSessionData().size() == 3);
 			for(int i = 0; i < session.getSessionData().size();i++){
 				logger.info(session.getSessionData().get(i) + " = " + session.getSessionData().get(i).getValue());
@@ -146,7 +146,7 @@ public class TestUserSession extends BaseDataAccessTest{
 		UserSessionType session = null;
 		try{
 			Factories.getSessionFactory().clearSession(sessionId);
-			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganization());
+			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

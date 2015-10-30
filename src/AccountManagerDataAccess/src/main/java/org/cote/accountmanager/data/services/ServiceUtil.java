@@ -46,8 +46,8 @@ public class ServiceUtil {
 		UserRoleType adminRole = null;
 		UserRoleType dataRole = null;
 		try{
-			dataRole = RoleService.getDataAdministratorUserRole(Factories.getPublicOrganization());
-			adminRole = RoleService.getAccountAdministratorUserRole(Factories.getPublicOrganization());
+			dataRole = RoleService.getDataAdministratorUserRole(Factories.getPublicOrganization().getId());
+			adminRole = RoleService.getAccountAdministratorUserRole(Factories.getPublicOrganization().getId());
 			if(dataRole == null){
 				logger.error("Data role in public org is null");
 				return out_bool;
@@ -56,8 +56,8 @@ public class ServiceUtil {
 				logger.error("Admin role in public org is null");
 				return out_bool;
 			}
-			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization()));
-			root = Factories.getUserFactory().getUserByName("Root", Factories.getSystemOrganization());
+			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
+			root = Factories.getUserFactory().getUserByName("Root", Factories.getSystemOrganization().getId());
 			if(rootAcct == null || root == null){
 				logger.error("Root account or root user is null");
 				return out_bool;
@@ -65,8 +65,8 @@ public class ServiceUtil {
 			
 			Factories.getUserFactory().populate(root);
 			
-			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getPublicOrganization());
-			doc = Factories.getUserFactory().getUserByName("Document Control", Factories.getPublicOrganization());
+			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getPublicOrganization().getId());
+			doc = Factories.getUserFactory().getUserByName("Document Control", Factories.getPublicOrganization().getId());
 			if(admin == null || doc == null){
 				logger.error("Admin or Document Control user in public org was null");
 				return out_bool;
@@ -82,8 +82,8 @@ public class ServiceUtil {
 				logger.info("Root " + root.getId() + " Has Role " + adminRole.getId() + " = " + rootHasRole);
 				logger.info("Doc " + doc.getId() + " Has Role " + dataRole.getId() + " = " + docHasRole);
 				logger.warn("Attempting to rebuild role cache.");
-				EffectiveAuthorizationService.rebuildUserRoleCache(Factories.getPublicOrganization());
-				EffectiveAuthorizationService.rebuildUserRoleCache(Factories.getSystemOrganization());
+				EffectiveAuthorizationService.rebuildUserRoleCache(Factories.getPublicOrganization().getId());
+				EffectiveAuthorizationService.rebuildUserRoleCache(Factories.getSystemOrganization().getId());
 				
 				/// 2014/07/14 - Removed check for doc control in data admin role per prior authorization changes where doc control is delegated permission instead of receiving carte blanche data admin rigths
 				///  || RoleService.getIsUserInRole(dataRole, doc) == false

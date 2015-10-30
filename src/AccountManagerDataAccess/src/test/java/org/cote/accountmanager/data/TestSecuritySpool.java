@@ -51,12 +51,18 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 	
 	
 	@Test
+	public void testTokens(){
+		testInsertToken();
+		testGetToken();
+		testUpdateToken();
+		testDeleteToken();
+	}
 	public void testInsertToken(){
 		assertNotNull("User is null", testUser);
 		SecuritySpoolType token = null;
 		boolean add_token = false;
 		try{
-			token = Factories.getSecurityTokenFactory().generateSecurityToken(referenceId, testUser.getOrganization());
+			token = Factories.getSecurityTokenFactory().generateSecurityToken(referenceId, testUser.getOrganizationId());
 			add_token = (token != null);
 		}
 		catch(FactoryException fe){
@@ -69,14 +75,13 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 		assertTrue("token was not added", add_token);
 	}
 
-	
-	@Test
+
 	public void testGetToken(){
 		assertNotNull("User is null", testUser);
 		SecuritySpoolType token = null;
 		logger.info("Token: " + referenceId);
 		try{
-			token = Factories.getSecurityTokenFactory().getSecurityToken(referenceId, testUser.getOrganization());
+			token = Factories.getSecurityTokenFactory().getSecurityToken(referenceId, testUser.getOrganizationId());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -87,12 +92,12 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 		assertNotNull("Expected one token", token);
 	}
 	
-	@Test
+
 	public void testUpdateToken(){
 		assertNotNull("User is null", testUser);
 		SecuritySpoolType token = null;
 		try{
-			token = Factories.getSecurityTokenFactory().getSecurityToken(referenceId, testUser.getOrganization());
+			token = Factories.getSecurityTokenFactory().getSecurityToken(referenceId, testUser.getOrganizationId());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -112,12 +117,11 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 		assertTrue("token was not updated", updated);
 	}
 	
-	@Test
 	public void testDeleteToken(){
 		assertNotNull("User is null", testUser);
 		boolean deleted = false;
 		try{
-			deleted = Factories.getSecurityTokenFactory().deleteTokens(referenceId, testUser.getOrganization());
+			deleted = Factories.getSecurityTokenFactory().deleteTokens(referenceId, testUser.getOrganizationId());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());

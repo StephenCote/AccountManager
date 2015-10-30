@@ -79,7 +79,7 @@ public class ControlFactory extends NameIdFactory {
 	public boolean deleteControl(ControlType obj) throws FactoryException
 	{
 		removeFromCache(obj);
-		int deleted = deleteById(obj.getId(), obj.getOrganization().getId());
+		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
 	}
 	
@@ -90,12 +90,12 @@ public class ControlFactory extends NameIdFactory {
 		/// It's ok if targetObject has no ID - this will be used to indicate its organization level
 		/// This is needed for create operations of a given type
 		///
-		/// targetObject.getId() == 0L || 
+		/// targetObject.getId().compareTo(0L) == 0 || 
 		ControlType cred = new ControlType();
 		cred.setNameType(NameEnumType.CREDENTIAL);
 		cred.setControlType(ControlEnumType.UNKNOWN);
 		cred.setControlAction(ControlActionEnumType.UNKNOWN);
-		cred.setOrganization(owner.getOrganization());
+		cred.setOrganizationId(owner.getOrganizationId());
 		cred.setOwnerId(owner.getId());
 		cred.setReferenceType(FactoryEnumType.valueOf(targetObject.getNameType().toString()));
 		cred.setReferenceId(targetObject.getId());
@@ -169,8 +169,8 @@ public class ControlFactory extends NameIdFactory {
 		fields.add(QueryFields.getFieldControlType(use_map.getControlType()));
 		fields.add(QueryFields.getFieldControlAction(use_map.getControlAction()));
 	}
-	public ControlType getControlByObjectId(String id, OrganizationType org) throws FactoryException, ArgumentException{
-		List<NameIdType> sec = getByObjectId(id, org.getId());
+	public ControlType getControlByObjectId(String id, long organizationId) throws FactoryException, ArgumentException{
+		List<NameIdType> sec = getByObjectId(id, organizationId);
 		if(sec.size() > 0) return (ControlType)sec.get(0);
 		return null;
 	}
@@ -184,7 +184,7 @@ public class ControlFactory extends NameIdFactory {
 		List<QueryField> fields = new ArrayList<QueryField>();
 		// allow id of 0 for global control checks
 		// || obj.getId().compareTo(0L) == 0
-		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganization() == null) throw new ArgumentException("Invalid object reference");
+		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganizationId() == null) throw new ArgumentException("Invalid object reference");
 		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));
 		
 		QueryField reference_id_filters = new QueryField(SqlDataEnumType.NULL,"referenceid",null);
@@ -198,13 +198,13 @@ public class ControlFactory extends NameIdFactory {
 		pi.setStartIndex(0L);
 		pi.setRecordCount(2);
 		
-		return getList(fields.toArray(new QueryField[0]), pi, obj.getOrganization());
+		return getList(fields.toArray(new QueryField[0]), pi, obj.getOrganizationId());
 	}
 	public boolean deleteControlsForType(NameIdType obj) throws FactoryException, ArgumentException{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		// allow id of 0 for global controls
 		// || obj.getId().compareTo(0L) == 0
-		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganization() == null) throw new ArgumentException("Invalid object reference");
+		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganizationId() == null) throw new ArgumentException("Invalid object reference");
 		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));
 		
 		fields.add(QueryFields.getFieldReferenceId(obj.getId()));

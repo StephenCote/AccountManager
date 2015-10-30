@@ -116,15 +116,15 @@ public class TestFactorySetup {
 		UserType doc = null;
 		UserRoleType adminRole = null;
 		try{
-			adminRole = RoleService.getAccountAdministratorUserRole(Factories.getPublicOrganization());
+			adminRole = RoleService.getAccountAdministratorUserRole(Factories.getPublicOrganization().getId());
 			assertNotNull("Role is null", adminRole);
-			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getRootDirectory(Factories.getSystemOrganization()));
-			root = Factories.getUserFactory().getUserByName("Root", Factories.getSystemOrganization());
+			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getRootDirectory(Factories.getSystemOrganization().getId()));
+			root = Factories.getUserFactory().getUserByName("Root", Factories.getSystemOrganization().getId());
 			assertNotNull("Root is null", root);
 			Factories.getUserFactory().populate(root);
 			assertTrue("Root not populated", root.getPopulated());
-			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getPublicOrganization());
-			doc = Factories.getUserFactory().getUserByName("Document Control", Factories.getPublicOrganization());
+			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getPublicOrganization().getId());
+			doc = Factories.getUserFactory().getUserByName("Document Control", Factories.getPublicOrganization().getId());
 			assertNotNull("Admin is null", admin);
 			assertNotNull("Doc Control is null", doc);
 			Factories.getUserFactory().populate(admin);

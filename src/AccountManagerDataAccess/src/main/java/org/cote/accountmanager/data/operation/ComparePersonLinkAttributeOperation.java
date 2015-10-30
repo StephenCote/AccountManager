@@ -61,10 +61,10 @@ public class ComparePersonLinkAttributeOperation implements IOperation {
 		PersonType obj = read(sourceFact,referenceFact);
 		
 		if(obj == null){
-			logger.error("Failed to find person " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganization().getName());
+			logger.error("Failed to find person " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganizationId());
 			return OperationResponseEnumType.FAILED;
 		}
-		logger.info("Found person " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganization().getName() + " having id " + obj.getId());
+		logger.info("Found person " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganizationId() + " having id " + obj.getId());
 		OperationResponseEnumType out_resp = OperationResponseEnumType.FAILED;
 		try {
 			

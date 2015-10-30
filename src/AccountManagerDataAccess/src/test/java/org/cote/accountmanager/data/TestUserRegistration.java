@@ -87,8 +87,8 @@ public class TestUserRegistration{
 			Factories.getSessionFactory().addSession(session2);
 
 			
-			session1 = Factories.getSessionFactory().getSession(sessionId, Factories.getDevelopmentOrganization());
-			session2 = Factories.getSessionFactory().getSession(sessionId2, Factories.getDevelopmentOrganization());
+			session1 = Factories.getSessionFactory().getSession(sessionId, Factories.getDevelopmentOrganization().getId());
+			session2 = Factories.getSessionFactory().getSession(sessionId2, Factories.getDevelopmentOrganization().getId());
 			
 			Factories.getSessionDataFactory().setValue(session1, "registration-id", registrationId);
 			Factories.getSessionDataFactory().setValue(session2, "registration-id", registrationId2);
@@ -118,12 +118,12 @@ public class TestUserRegistration{
 		String email = UUID.randomUUID().toString() + "@nowhere.no";
 		AuditType audit = AuditService.beginAudit(ActionEnumType.REQUEST, "Register", AuditEnumType.USER, userName);
 		AuditService.targetAudit(audit, AuditEnumType.USER, userName);
-		boolean created = PersonService.createRegisteredUserAsPerson(audit, userName, password, email, Factories.getDevelopmentOrganization());
+		boolean created = PersonService.createRegisteredUserAsPerson(audit, userName, password, email, Factories.getDevelopmentOrganization().getId());
 		assertTrue("User was not created",created);
 		
 		UserType user = null;
 		try {
-			user = SessionSecurity.login(UUID.randomUUID().toString(), userName, CredentialEnumType.HASHED_PASSWORD,password, Factories.getDevelopmentOrganization());
+			user = SessionSecurity.login(UUID.randomUUID().toString(), userName, CredentialEnumType.HASHED_PASSWORD,password, Factories.getDevelopmentOrganization().getId());
 			assertNotNull("Failed to login with new user", user);
 			
 			PersonType person = Factories.getPersonFactory().getPersonByUser(user);

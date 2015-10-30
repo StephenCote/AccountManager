@@ -20,12 +20,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>3.3</version>
 				<configuration>
         <meminitial>512m</meminitial>
         <maxmem>2048m</maxmem>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<fork>true</fork>
 				</configuration>
 			</plugin>
@@ -44,7 +44,7 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>true</skipTests>
+  					<skipTests>false</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine>  
 
   					<includes>
@@ -52,77 +52,65 @@
 					</includes>
 					<excludes>
 						<!-- 
-						<exclude>**/TestFunctionFactory.java</exclude>
+												
+						<exclude>**/TestSoD.java</exclude>
+						
 						
 						-->
+						<exclude>**/TestEffectiveAuthorization.java</exclude>
+						<exclude>**/TestGroupAuthorization.java</exclude>
+						<exclude>**/TestCredentialFactory.java</exclude>
+						<exclude>**/TestPermissions.java</exclude>
+						<exclude>**/TestFactoryCache.java</exclude>
+						<exclude>**/TestOrganizationFactory.java</exclude>
+						<exclude>**/TestBaseService.java</exclude>
+						
+						<exclude>**/TestFunctionFactory.java</exclude>
 						<exclude>**/TestControlFactory.java</exclude>
 						<exclude>**/TestBulkPerson.java</exclude>
 						<exclude>**/TestBulkUser.java</exclude>
-						<exclude>**/TestCredentialFactory.java</exclude>
 						<exclude>**/TestVaultService.java</exclude>
-						
-						<exclude>**/TestDataTags.java</exclude>
-						<exclude>**/TestCachePerformance.java</exclude>
-						
-						<exclude>**/TestBulkUpdate.java</exclude>
-						<exclude>**/TestSoD.java</exclude>
+						<exclude>**/TestDataTags.java</exclude>		
+						<exclude>**/TestCachePerformance.java</exclude>		
+						<exclude>**/TestBulkUpdate.java</exclude>		
 						<exclude>**/TestContactInformationFactory.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>
 						<exclude>**/TestPolicyService.java</exclude>
 						
-						<exclude>**/TestPermissions.java</exclude>
 						<exclude>**/TestRoleService.java</exclude>
 						<exclude>**/TestDataFactory.java</exclude>
 						
-						
-						
 						<exclude>**/TestBulkAccount.java</exclude>
-					<exclude>**/TestDataAuthorization.java</exclude>	
+						<exclude>**/TestDataAuthorization.java</exclude>	
 						<exclude>**/TestAttributes.java</exclude>
-						
-						
 						<exclude>**/TestAuditFactory.java</exclude>
-						<exclude>**/TestImportContacts.java</exclude>
-						
 						<exclude>**/TestUserRegistration.java</exclude>
-						
-							
-						
-						<exclude>**/TestPerson.java</exclude>
-						
-						
-
 						<exclude>**/TestBulkSession.java</exclude>
-						<exclude>**/TestFactoryCache.java</exclude>
-						
-						<exclude>**/TestSecuritySpool.java</exclude>	
-						
-						<exclude>**/TestUserLogin.java</exclude>						
+
 						<exclude>**/TestMessageSpool.java</exclude>
 						<exclude>**/TestUserSession.java</exclude>
-
 						<exclude>**/TestSpoolFactory.java</exclude>
-						
-						
-						
 						<exclude>**/TestFindOrganization.java</exclude>
 						<exclude>**/TestAggregateCount.java</exclude>
 						
-						<!--  WARNING: TestFactorySetup WILL ERASE EVERYTHING IN THE DATABASE -->
-						<exclude>**/TestFactorySetup.java</exclude>
+						<exclude>**/TestPerson.java</exclude>
+						<exclude>**/TestSecuritySpool.java</exclude>
+
+						<!-- REFACTOR/RETEST BAR -->
+						<exclude>**/TestImportContacts.java</exclude>
+						<exclude>**/TestUserLogin.java</exclude>
+						
+						<!--  RETEST BAR -->
 						
 						<exclude>**/TestDBStress.java</exclude>
-						
 						<exclude>**/TestDataAccess.java</exclude>
 						<exclude>**/TestUserFactory.java</exclude>
-						
 						<exclude>**/TestGroupFactory.java</exclude>
-						<exclude>**/TestOrganizationFactory.java</exclude>
-						
-						
-
 						
 						<exclude>**/TestDataRow.java</exclude>
+						
+						<!--  WARNING: TestFactorySetup WILL ERASE EVERYTHING IN THE DATABASE -->
+						<exclude>**/TestFactorySetup.java</exclude>
 					</excludes>
 					<systemPropertyVariables>
       					<log4j.configuration>${project.build.directory}/test-classes/logging.properties</log4j.configuration>
@@ -186,5 +174,57 @@
 	<artifactId>bsh</artifactId>
 	<version>2.0b5</version>
 </dependency>
+	<dependency>
+	<groupId>javax.mail</groupId>
+	<artifactId>javax.mail-api</artifactId>
+	<version>1.5.4</version>
+</dependency>
+<dependency>
+	<groupId>com.sun.mail</groupId>
+	<artifactId>smtp</artifactId>
+	<version>1.5.4</version>
+</dependency>
+<dependency>
+	<groupId>com.sun.mail</groupId>
+	<artifactId>javax.mail</artifactId>
+	<version>1.5.1</version>
+</dependency>
+			        <dependency>
+			            <groupId>xalan</groupId>
+			            <artifactId>xalan</artifactId>
+			            <version>2.7.1</version>
+			            <scope>test</scope>
+			        </dependency>
+				<dependency>
+					<groupId>org.jboss.spec</groupId>
+					<artifactId>jboss-javaee-7.0</artifactId>
+					<version>1.0.3.Final</version>
+					<scope>test</scope>
+					<type>pom</type>
+				</dependency>
+		  <dependency>
+    <groupId>javax</groupId>
+    <artifactId>javaee-web-api</artifactId>
+    <version>6.0</version>
+    <!-- 
+    <scope>provided</scope>
+    -->
+  </dependency>
+  <!-- 
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>6.0</version>
+            
+        </dependency>
+        -->
+  <!-- 
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		-->
 	</dependencies>
 </project>

@@ -59,7 +59,7 @@ public class ParticipationUtil {
 			"ownerid",
 			null,
 			AffectEnumType.AGGREGATE,
-			account.getOrganization().getId()
+			account.getOrganizationId()
 		);
 	}
 	public static long[] getDataFromGroupForAccount(BaseGroupType group, AccountType account)
@@ -74,7 +74,7 @@ public class ParticipationUtil {
 			"ownerid",
 			null,
 			AffectEnumType.AGGREGATE,
-			group.getOrganization().getId()
+			group.getOrganizationId()
 		);
 	}
 	*/
@@ -170,7 +170,7 @@ public class ParticipationUtil {
 	{
 		long out_id = 0;
 		ParticipantEnumType part_type = ParticipantEnumType.valueOf(map.getNameType().toString());
-		long[] ids = getParticipationMap("dataparticipation", data.getId(), ParticipantEnumType.ROLE, "roleparticipation", map.getId(), part_type, permission, affect_type, data.getOrganization().getId());
+		long[] ids = getParticipationMap("dataparticipation", data.getId(), ParticipantEnumType.ROLE, "roleparticipation", map.getId(), part_type, permission, affect_type, data.getOrganizationId());
 		if (ids.length > 0) out_id = ids[0];
 		return out_id;
 	}
@@ -178,7 +178,7 @@ public class ParticipationUtil {
 	{
 		long out_id = 0;
 		ParticipantEnumType part_type = ParticipantEnumType.valueOf(map.getNameType().toString());
-		long[] ids = getParticipationMap("groupparticipation", group.getId(), ParticipantEnumType.ROLE, "roleparticipation", map.getId(), part_type, permission, affect_type, group.getOrganization().getId());
+		long[] ids = getParticipationMap("groupparticipation", group.getId(), ParticipantEnumType.ROLE, "roleparticipation", map.getId(), part_type, permission, affect_type, group.getOrganizationId());
 		if (ids.length > 0) out_id = ids[0];
 		return out_id;
 	}

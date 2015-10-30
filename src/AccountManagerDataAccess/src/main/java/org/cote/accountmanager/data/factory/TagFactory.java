@@ -81,7 +81,7 @@ public class TagFactory extends NameIdGroupFactory {
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		BaseTagType t = (BaseTagType)obj;
-		return t.getName() + "-" + t.getTagType().toString() + "-" + t.getGroup().getId();
+		return t.getName() + "-" + t.getTagType().toString() + "-" + t.getGroupId();
 	}
 	public boolean updateTag(BaseTagType tag) throws FactoryException
 	{
@@ -93,7 +93,7 @@ public class TagFactory extends NameIdGroupFactory {
 	{
 
 		removeFromCache(tag);
-		int deleted = deleteById(tag.getId(), tag.getOrganization().getId());
+		int deleted = deleteById(tag.getId(), tag.getOrganizationId());
 		Factories.getTagParticipationFactory().deleteParticipations(tag);
 		return (deleted > 0);
 	}
@@ -102,18 +102,18 @@ public class TagFactory extends NameIdGroupFactory {
 	///
 	public int deleteTagsByUser(UserType map) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> tags = getByField(new QueryField[] { QueryFields.getFieldOwner(map.getId()) }, map.getOrganization().getId());
+		List<NameIdType> tags = getByField(new QueryField[] { QueryFields.getFieldOwner(map.getId()) }, map.getOrganizationId());
 		List<Long> tag_ids = new ArrayList<Long>();
 		for (int i = 0; i < tags.size(); i++)
 		{
 			tag_ids.add(tags.get(i).getId());
 			removeFromCache(tags.get(i));
 		}
-		return deleteTagsByIds(convertLongList(tag_ids), map.getOrganization());
+		return deleteTagsByIds(convertLongList(tag_ids), map.getOrganizationId());
 	}
-	public int deleteTagsByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deleteTagsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
 			//Factory.TagParticipationFactoryInstance.DeleteParticipations(ids, organization);
@@ -122,14 +122,14 @@ public class TagFactory extends NameIdGroupFactory {
 	}
 	public boolean addTag(BaseTagType new_tag) throws DataAccessException, FactoryException
 	{
-		if (new_tag.getOrganization() == null || new_tag.getOrganization().getId() <= 0) throw new FactoryException("Cannot add tag to invalid organization");
+		if (new_tag.getOrganizationId() <= 0L) throw new FactoryException("Cannot add tag to invalid organization");
 		DataRow row = prepareAdd(new_tag, "tags");
-		row.setCellValue("groupid", new_tag.getGroup().getId());
+		row.setCellValue("groupid", new_tag.getGroupId());
 		row.setCellValue("tagtype", new_tag.getTagType().toString());
 		return insertRow(row);
 	}
 	/*
-	public <T> T getTagById(int id, OrganizationType organization) throws FactoryException, ArgumentException
+	public <T> T getTagById(int id, long organizationId) throws FactoryException, ArgumentException
 	{
 		T out_tag = readCache(id);
 		if (out_tag != null) return out_tag;
@@ -138,7 +138,7 @@ public class TagFactory extends NameIdGroupFactory {
 		if (tags.size() > 0)
 		{
 			BaseTagType tag = (BaseTagType)tags.get(0);
-			String key_name = tag.getTagType() + "-" + tag.getName() + "-" + tag.getOrganization().getId();
+			String key_name = tag.getTagType() + "-" + tag.getName() + "-" + tag.getOrganizationId();
 			addToCache(tag,key_name);
 			return (T)tag;
 		}
@@ -172,7 +172,7 @@ public class TagFactory extends NameIdGroupFactory {
 		T out_tag = readCache(key_name);
 		if (out_tag != null) return out_tag;
 
-		List<NameIdType> tags = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldGroup(group.getId()),QueryFields.getFieldTagType(type)}, group.getOrganization().getId());
+		List<NameIdType> tags = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldGroup(group.getId()),QueryFields.getFieldTagType(type)}, group.getOrganizationId());
 		if (tags.size() > 0)
 		{
 			addToCache(tags.get(0),key_name);
@@ -181,46 +181,46 @@ public class TagFactory extends NameIdGroupFactory {
 		return null;
 	}
 
-	public <T> List<T> listTags(DirectoryGroupType group, long startRecord, int recordCount,OrganizationType org) throws FactoryException, ArgumentException{
-		return listTags(group, TagEnumType.UNKNOWN, null,startRecord, recordCount,org);
+	public <T> List<T> listTags(DirectoryGroupType group, long startRecord, int recordCount,long organizationId) throws FactoryException, ArgumentException{
+		return listTags(group, TagEnumType.UNKNOWN, null,startRecord, recordCount,organizationId);
 	}
-	public <T> List<T> listTags(DirectoryGroupType group, TagEnumType type, QueryField match, long startRecord, int recordCount,OrganizationType org) throws FactoryException, ArgumentException{
+	public <T> List<T> listTags(DirectoryGroupType group, TagEnumType type, QueryField match, long startRecord, int recordCount,long organizationId) throws FactoryException, ArgumentException{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		if(group != null) fields.add(QueryFields.getFieldGroup(group.getId()));
 		if(type != TagEnumType.UNKNOWN) fields.add(QueryFields.getFieldTagType(type));
 		if(match != null) fields.add(match);
-		return getPaginatedList(fields.toArray(new QueryField[0]),startRecord,recordCount,org);
+		return getPaginatedList(fields.toArray(new QueryField[0]),startRecord,recordCount,organizationId);
 	}
 
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		BaseTagType use_map = (BaseTagType)map;
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 		fields.add(QueryFields.getFieldTagType(use_map.getTagType()));
 	}
-	public DataTagType newDataTag(UserType owner,String tag_name, DirectoryGroupType group) throws ArgumentException{
-		return newTag(owner,tag_name, TagEnumType.DATA, group);
+	public DataTagType newDataTag(UserType owner,String tag_name, long groupId) throws ArgumentException{
+		return newTag(owner,tag_name, TagEnumType.DATA, groupId);
 	}
-	public AccountTagType newAccountTag(UserType owner,String tag_name, DirectoryGroupType group) throws ArgumentException{
-		return newTag(owner,tag_name, TagEnumType.ACCOUNT, group);
+	public AccountTagType newAccountTag(UserType owner,String tag_name, long groupId) throws ArgumentException{
+		return newTag(owner,tag_name, TagEnumType.ACCOUNT, groupId);
 	}
-	public UserTagType newUserTag(UserType owner,String tag_name, DirectoryGroupType group) throws ArgumentException{
-		return newTag(owner,tag_name, TagEnumType.USER, group);
+	public UserTagType newUserTag(UserType owner,String tag_name, long groupId) throws ArgumentException{
+		return newTag(owner,tag_name, TagEnumType.USER, groupId);
 	}
-	public UserTagType newPersonTag(UserType owner,String tag_name, DirectoryGroupType group) throws ArgumentException{
-		return newTag(owner,tag_name, TagEnumType.PERSON, group);
+	public UserTagType newPersonTag(UserType owner,String tag_name, long groupId) throws ArgumentException{
+		return newTag(owner,tag_name, TagEnumType.PERSON, groupId);
 	}
-	public UserTagType newGroupTag(UserType owner,String tag_name, DirectoryGroupType group) throws ArgumentException{
-		return newTag(owner,tag_name, TagEnumType.GROUP, group);
+	public UserTagType newGroupTag(UserType owner,String tag_name, long groupId) throws ArgumentException{
+		return newTag(owner,tag_name, TagEnumType.GROUP, groupId);
 	}
 
 
-	public <T> T newTag(UserType owner,String tag_name, TagEnumType Type, DirectoryGroupType group) throws ArgumentException
+	public <T> T newTag(UserType owner,String tag_name, TagEnumType Type, long groupId) throws ArgumentException
 	{
 		BaseTagType new_tag = newTag(Type);
 		new_tag.setOwnerId(owner.getId());
-		new_tag.setGroup(group);
-		new_tag.setOrganization(group.getOrganization());
+		new_tag.setGroupId(groupId);
+		new_tag.setOrganizationId(owner.getOrganizationId());
 		new_tag.setName(tag_name);
 		return (T)new_tag;
 	}
@@ -267,10 +267,10 @@ public class TagFactory extends NameIdGroupFactory {
 		return new_tag;
 	}
 
-	public List<DataType> getDataForTag(BaseTagType tag, OrganizationType organization) throws FactoryException, ArgumentException{
-		return getDataForTags(new BaseTagType[]{tag}, 0L,0, organization);
+	public List<DataType> getDataForTag(BaseTagType tag, long organizationId) throws FactoryException, ArgumentException{
+		return getDataForTags(new BaseTagType[]{tag}, 0L,0, organizationId);
 	}
-	public List<DataType> getDataForTags(BaseTagType[] tags, long startRecord, int recordCount, OrganizationType organization) throws FactoryException, ArgumentException{
+	public List<DataType> getDataForTags(BaseTagType[] tags, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setPaginate(true);
 		instruction.setStartIndex(startRecord);
@@ -279,7 +279,7 @@ public class TagFactory extends NameIdGroupFactory {
 		if(parts.size() == 0) return new ArrayList<DataType>();
 		/// Don't apply pagination to the secondary query because it's already been paginated from the parts list
 		///
-		return Factories.getTagParticipationFactory().getDataListFromParticipations(parts.toArray(new DataParticipantType[0]), true, 0, 0, organization);
+		return Factories.getTagParticipationFactory().getDataListFromParticipations(parts.toArray(new DataParticipantType[0]), true, 0, 0, organizationId);
 
 		//Factories.getTagParticipationFactory().getTagParticipations(tags);
 		//List<Core.Tools.AccountManager.Map.DataParticipant> dps = Core.Tools.AccountManager.Factory.TagParticipationFactoryInstance.GetTagParticipations(tags.ToArray());

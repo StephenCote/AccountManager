@@ -98,20 +98,20 @@ public class TestPerson extends BaseDataAccessTest{
 		PersonType person = null;
 		
 		try{
-			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
+			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			
 			PersonType child = getCreatePerson(new_child_name, pDir);
 			addContactValues(child, new_child_name);
 			PersonType partner = getCreatePerson(new_partner_name, pDir);
 			addContactValues(child, new_partner_name);
-			person = Factories.getPersonFactory().newPerson(testUser,pDir);
+			person = Factories.getPersonFactory().newPerson(testUser,pDir.getId());
 			person.setName(new_name);
 			person.getDependents().add(child);
 			person.getPartners().add(partner);
 
 			assertTrue("Failed to add new person",Factories.getPersonFactory().addPerson(person));
 			
-			person = Factories.getPersonFactory().getByName(new_name, pDir);
+			person = Factories.getPersonFactory().getByNameInGroup(new_name, pDir);
 			addContactValues(person,new_name);
 			Factories.getPersonFactory().populate(person);
 			assertNotNull("Person is null",person);
@@ -237,12 +237,12 @@ public class TestPerson extends BaseDataAccessTest{
 	private AddressType getCreateAddress(String name, DirectoryGroupType pDir){
 		AddressType address = null;
 		try{
-			address = Factories.getAddressFactory().getByName(name, pDir);
+			address = Factories.getAddressFactory().getByNameInGroup(name, pDir);
 			if(address == null){
-				address = Factories.getAddressFactory().newAddress(testUser,pDir);
+				address = Factories.getAddressFactory().newAddress(testUser,pDir.getId());
 				address.setName(name);
 				assertTrue("Failed to add new address",Factories.getAddressFactory().addAddress(address));
-				address = Factories.getAddressFactory().getByName(name, pDir);
+				address = Factories.getAddressFactory().getByNameInGroup(name, pDir);
 				assertNotNull("Address is null",address);
 			}
 			Factories.getAddressFactory().populate(address);
@@ -259,12 +259,12 @@ public class TestPerson extends BaseDataAccessTest{
 	private ContactType getCreateContact(String name, DirectoryGroupType pDir){
 		ContactType contact = null;
 		try{
-			contact = Factories.getContactFactory().getByName(name, pDir);
+			contact = Factories.getContactFactory().getByNameInGroup(name, pDir);
 			if(contact == null){
-				contact = Factories.getContactFactory().newContact(testUser,pDir);
+				contact = Factories.getContactFactory().newContact(testUser,pDir.getId());
 				contact.setName(name);
 				assertTrue("Failed to add new contact",Factories.getContactFactory().addContact(contact));
-				contact = Factories.getContactFactory().getByName(name, pDir);
+				contact = Factories.getContactFactory().getByNameInGroup(name, pDir);
 				assertNotNull("Contact is null",contact);
 			}
 			Factories.getContactFactory().populate(contact);
@@ -281,12 +281,12 @@ public class TestPerson extends BaseDataAccessTest{
 	private PersonType getCreatePerson(String name, DirectoryGroupType pDir){
 		PersonType person = null;
 		try{
-			person = Factories.getPersonFactory().getByName(name, pDir);
+			person = Factories.getPersonFactory().getByNameInGroup(name, pDir);
 			if(person == null){
-				person = Factories.getPersonFactory().newPerson(testUser,pDir);
+				person = Factories.getPersonFactory().newPerson(testUser,pDir.getId());
 				person.setName(name);
 				assertTrue("Failed to add new person",Factories.getPersonFactory().addPerson(person));
-				person = Factories.getPersonFactory().getByName(name, pDir);
+				person = Factories.getPersonFactory().getByNameInGroup(name, pDir);
 				assertNotNull("Person is null",person);
 			}
 			Factories.getPersonFactory().populate(person);
@@ -300,18 +300,18 @@ public class TestPerson extends BaseDataAccessTest{
 		}
 		return person;
 	}
-	private void addContactValues(PersonType person, String name){
+	private void addContactValues(PersonType person, String name) throws ArgumentException{
 		boolean bUp = false;
 		try{
 			if(person.getContactInformation().getAddresses().size() == 0){
-				AddressType homeAddr = getCreateAddress(name,person.getGroup());
+				AddressType homeAddr = getCreateAddress(name,Factories.getGroupFactory().getDirectoryById(person.getGroupId(),person.getOrganizationId()));
 				setDemoAddressValues(homeAddr);
 				Factories.getAddressFactory().updateAddress(homeAddr);
 				person.getContactInformation().getAddresses().add(homeAddr);
 				bUp = true;
 			}
 			if(person.getContactInformation().getContacts().size() == 0){
-				ContactType homeEmail = getCreateContact(name,person.getGroup());
+				ContactType homeEmail = getCreateContact(name,Factories.getGroupFactory().getDirectoryById(person.getGroupId(),person.getOrganizationId()));
 				setHomeEmailValues(homeEmail);
 				Factories.getContactFactory().updateContact(homeEmail);
 				person.getContactInformation().getContacts().add(homeEmail);
@@ -333,16 +333,16 @@ public class TestPerson extends BaseDataAccessTest{
 	private void setHomeEmailValues(ContactType ct){
 		ct.setContactType(ContactEnumType.EMAIL);
 		ct.setLocationType(LocationEnumType.HOME);
-		ct.setContactValue("sw.cote@gmail.com");
+		ct.setContactValue("email");
 	}
 	private void setDemoAddressValues(AddressType addr){
-		addr.setAddressLine1("6808 Denny Peak DR SE");
+		addr.setAddressLine1("street");
 		addr.setAddressLine2("[blank]");
-		addr.setCity("Snoqualmie");
-		addr.setState("WA");
-		addr.setCountry("US");
+		addr.setCity("city");
+		addr.setState("ST");
+		addr.setCountry("CO");
 		addr.setRegion("[blank]");
-		addr.setPostalCode("98065");
+		addr.setPostalCode("00000");
 		addr.setLocationType(LocationEnumType.HOME);
 	}
 	

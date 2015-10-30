@@ -36,12 +36,12 @@ public class TestAggregateCount extends BaseDataAccessTest{
 		DirectoryGroupType dir1 = null;
 		try {
 			Factories.getUserFactory().populate(sessionUser);
-			dir1 = Factories.getGroupFactory().getCreateDirectory(sessionUser, "Count Dir 1",sessionUser.getHomeDirectory(), sessionUser.getOrganization());
+			dir1 = Factories.getGroupFactory().getCreateDirectory(sessionUser, "Count Dir 1",sessionUser.getHomeDirectory(), sessionUser.getOrganizationId());
 			
 			for(int i = 0; i < 20;i++){
 				DataType data = Factories.getDataFactory().getDataByName("Test-" + (i + 1), dir1);
 				if(data == null){
-					data = Factories.getDataFactory().newData(sessionUser, dir1);
+					data = Factories.getDataFactory().newData(sessionUser, dir1.getId());
 					data.setName("Test-" + (i + 1));
 					data.setMimeType("text/plain");
 					DataUtil.setValueString(data, "Example Data");
@@ -54,7 +54,7 @@ public class TestAggregateCount extends BaseDataAccessTest{
 			count = Factories.getDataFactory().getCount(dir1);
 			assertTrue("Unexpected count - " + count, count == 20);
 			
-			List<DataType> dataList1 = Factories.getDataFactory().getDataListByGroup(dir1, true, 1, 10, dir1.getOrganization());
+			List<DataType> dataList1 = Factories.getDataFactory().getDataListByGroup(dir1, true, 1, 10, dir1.getOrganizationId());
 			assertTrue("List size is not 10",dataList1.size() == 10);
 			//assertTrue("Last item is " + dataList1.get(9).getName() + ", not Test-10",dataList1.get(9).getName().equals("Test-10"));
 			

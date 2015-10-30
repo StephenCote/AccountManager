@@ -37,10 +37,10 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 	public void TestCRUD(){
 		try{
 			Factories.getUserFactory().populate(testUser);
-			DirectoryGroupType ddir = Factories.getGroupFactory().getCreateDirectory(testUser, "Data", testUser.getHomeDirectory(), testUser.getOrganization());
+			DirectoryGroupType ddir = Factories.getGroupFactory().getCreateDirectory(testUser, "Data", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			DataType bsh = getCreateTextData(testUser,"Test.bsh",getDebugShellScript(),ddir); 
 			
-			DirectoryGroupType fdir = Factories.getGroupFactory().getCreateDirectory(testUser, "Functions", testUser.getHomeDirectory(), testUser.getOrganization());
+			DirectoryGroupType fdir = Factories.getGroupFactory().getCreateDirectory(testUser, "Functions", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			FunctionType func = getCreateFunction(testUser,"TestBSH1",bsh,fdir);
 			
 			assertNotNull("Function is null",func);
@@ -99,13 +99,13 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		String funcName = "FactComparator.func";
 		
 		try {
-			fudir = Factories.getGroupFactory().getCreateDirectory(user, "Functions", user.getHomeDirectory(), testUser.getOrganization());
-			rdir = Factories.getGroupFactory().getCreatePath(user, "~/Rules", user.getOrganization());
-			pdir = Factories.getGroupFactory().getCreatePath(user, "~/Patterns", user.getOrganization());
-			fdir = Factories.getGroupFactory().getCreatePath(user, "~/Facts", user.getOrganization());
-			podir = Factories.getGroupFactory().getCreatePath(user, "~/Policies", user.getOrganization());
-			odir = Factories.getGroupFactory().getCreatePath(user, "~/Operations", user.getOrganization());
-			ddir = Factories.getGroupFactory().getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganization());
+			fudir = Factories.getGroupFactory().getCreateDirectory(user, "Functions", user.getHomeDirectory(), testUser.getOrganizationId());
+			rdir = Factories.getGroupFactory().getCreatePath(user, "~/Rules", user.getOrganizationId());
+			pdir = Factories.getGroupFactory().getCreatePath(user, "~/Patterns", user.getOrganizationId());
+			fdir = Factories.getGroupFactory().getCreatePath(user, "~/Facts", user.getOrganizationId());
+			podir = Factories.getGroupFactory().getCreatePath(user, "~/Policies", user.getOrganizationId());
+			odir = Factories.getGroupFactory().getCreatePath(user, "~/Operations", user.getOrganizationId());
+			ddir = Factories.getGroupFactory().getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganizationId());
 			
 			FactType setCredParamFact = getCreateCredentialParamFact(user,"Set Credential Parameter",fdir);
 			setCredParamFact.setFactoryType(FactoryEnumType.CREDENTIAL);
@@ -134,7 +134,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			pol.getRules().clear();
 			pol.getRules().add(useRule);
 			Factories.getPolicyFactory().updatePolicy(pol);
-			pol = Factories.getPolicyFactory().getByName(pname,podir);
+			pol = Factories.getPolicyFactory().getByNameInGroup(pname,podir);
 		}
 		catch(FactoryException e){
 			logger.error(e.getMessage());
@@ -158,7 +158,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		//buff.append("import org.cote.accountmanager.data.Factories;\n");
 		//buff.append("Logger logger = Logger.getLogger(\"BeanShell\");\n");
 		
-		buff.append("DirectoryGroupType dir = Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, \"/Home/TestUser1\", Factories.getOrganizationFactory().findOrganization(\"/Accelerant/Rocket\"));");
+		buff.append("DirectoryGroupType dir = Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, \"/Home/TestUser1\", Factories.getOrganizationFactory().findOrganization(\"/Accelerant/Rocket\").getId());");
 		buff.append("logger.info(\"BeanShell: \" + dir.getName());");
 		buff.append("OperationResponseEnumType respError = OperationResponseEnumType.ERROR;");
 		buff.append("OperationResponseEnumType respSucceeded = OperationResponseEnumType.SUCCEEDED;");
@@ -180,7 +180,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		//buff.append("import org.cote.accountmanager.data.Factories;\n");
 		//buff.append("Logger logger = Logger.getLogger(\"BeanShell\");\n");
 		
-		buff.append("DirectoryGroupType dir = Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, \"/Home/TestUser1\", Factories.getOrganizationFactory().findOrganization(\"/Accelerant/Rocket\"));");
+		buff.append("DirectoryGroupType dir = Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, \"/Home/TestUser1\", Factories.getOrganizationFactory().findOrganization(\"/Accelerant/Rocket\").getId());");
 		buff.append("logger.info(\"BeanShell: \" + dir.getName());");
 		buff.append("UserType user = (UserType)debug;\n");
 		buff.append("logger.info(\"User = \" + user.getName());\n");

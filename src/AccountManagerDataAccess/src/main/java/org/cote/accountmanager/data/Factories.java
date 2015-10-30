@@ -72,6 +72,7 @@ import org.cote.accountmanager.data.factory.SymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BaseGroupType;
@@ -137,14 +138,18 @@ public class Factories {
 	
 	static{
 		getOrganizationFactory();
+		AuthorizationService.registerParticipationFactory(FactoryEnumType.DATA,getDataParticipationFactory());
+		AuthorizationService.registerParticipationFactory(FactoryEnumType.GROUP,getGroupParticipationFactory());
+		AuthorizationService.registerParticipationFactory(FactoryEnumType.PERSON,getPersonParticipationFactory());
+		AuthorizationService.registerParticipationFactory(FactoryEnumType.ROLE,getRoleParticipationFactory());
 	}
 	public static String getDocumentControlName(){
 		return documentControlName;
 	}
-	public static UserType getDocumentControl(OrganizationType org){
+	public static UserType getDocumentControl(long organizationId){
 		UserType user = null;
 		try {
-			user = Factories.getUserFactory().getUserByName(documentControlName, org);
+			user = Factories.getUserFactory().getUserByName(documentControlName, organizationId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -154,10 +159,10 @@ public class Factories {
 		}
 		return user;
 	}
-	public static UserType getAdminUser(OrganizationType org){
+	public static UserType getAdminUser(long organizationId){
 		UserType u = null;
 		try {
-			u = Factories.getUserFactory().getUserByName("Admin", org);
+			u = Factories.getUserFactory().getUserByName("Admin", organizationId);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -172,7 +177,7 @@ public class Factories {
 	public static UserType getRootUser(){
 		UserType u = null;
 		try {
-			u = Factories.getUserFactory().getUserByName("Root", getSystemOrganization());
+			u = Factories.getUserFactory().getUserByName("Root", getSystemOrganization().getId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -498,6 +503,10 @@ public class Factories {
 				systemOrganization = orgFactory.addOrganization("System", OrganizationEnumType.SYSTEM, rootOrganization);
 				publicOrganization = orgFactory.addOrganization("Public", OrganizationEnumType.PUBLIC, rootOrganization);
 				developmentOrganization = orgFactory.addOrganization("Development", OrganizationEnumType.DEVELOPMENT, rootOrganization);
+				Factories.getOrganizationFactory().denormalize(rootOrganization);
+				Factories.getOrganizationFactory().denormalize(systemOrganization);
+				Factories.getOrganizationFactory().denormalize(developmentOrganization);
+				Factories.getOrganizationFactory().denormalize(publicOrganization);
 				out_bool = true;
 				
 			}
@@ -541,17 +550,17 @@ public class Factories {
 		return init;
 	}
 	
-	public static boolean isSetup(OrganizationType org){
+	public static boolean isSetup(long organizationId){
 		boolean out_bool = false;
 
-		if(org != null){
+		if(organizationId > 0L){
 			try{
-				UserType adminUser = Factories.getUserFactory().getUserByName("Admin", org);
+				UserType adminUser = Factories.getUserFactory().getUserByName("Admin", organizationId);
 				if(adminUser != null){
 					out_bool = true;
 				}
 				else{
-					logger.info("Organization not configured.  Could not find 'Admin' user in org " + org.getName());
+					logger.info("Organization not configured.  Could not find 'Admin' user in org " + organizationId);
 				}
 			}
 			catch(FactoryException fe){
@@ -817,8 +826,10 @@ public class Factories {
 	}
 	
 	public static <T> void populate(FactoryEnumType factoryType, T object) throws FactoryException, ArgumentException{
+		NameIdFactory fact = Factories.getFactory(factoryType);
+		if(fact != null) fact.populate(object);
+		/*
 		switch(factoryType){
-
 			case ADDRESS:
 				getAddressFactory().populate((AddressType)object);
 				break;
@@ -841,6 +852,7 @@ public class Factories {
 				break;
 		
 		}
+		*/
 	}
 	
 	public static boolean cleanupOrphans(){

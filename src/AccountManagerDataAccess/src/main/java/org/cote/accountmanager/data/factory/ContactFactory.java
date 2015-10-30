@@ -79,7 +79,7 @@ public class ContactFactory extends NameIdGroupFactory {
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		NameIdDirectoryGroupType t = (NameIdDirectoryGroupType)obj;
-		return t.getName() + "-" + t.getGroup().getId();
+		return t.getName() + "-" + t.getGroupId();
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
@@ -101,21 +101,21 @@ public class ContactFactory extends NameIdGroupFactory {
 	{
 		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
 		
-		ContactType obj = newContact(user,parentContact.getGroup());
+		ContactType obj = newContact(user,parentContact.getGroupId());
 		
 		return obj;
 	}
-	public ContactType newContact(UserType user, DirectoryGroupType group) throws ArgumentException
+	public ContactType newContact(UserType user, long groupId) throws ArgumentException
 	{
 		if (user == null || user.getId().equals(0L)) throw new ArgumentException("Invalid owner");
 		ContactType obj = new ContactType();
 		
 		obj.setLocationType(LocationEnumType.UNKNOWN);
 		obj.setContactType(ContactEnumType.UNKNOWN);
-
-		obj.setOrganization(group.getOrganization());
+		obj.setDescription("");
+		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
-		obj.setGroup(group);
+		obj.setGroupId(groupId);
 		obj.setNameType(NameEnumType.CONTACT);
 		return obj;
 	}
@@ -123,7 +123,7 @@ public class ContactFactory extends NameIdGroupFactory {
 	public boolean addContact(ContactType obj) throws FactoryException
 	{
 
-		if (obj.getGroup() == null) throw new FactoryException("Cannot add new Contact without a group");
+		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Contact without a group");
 
 		DataRow row = prepareAdd(obj, "contacts");
 
@@ -133,7 +133,7 @@ public class ContactFactory extends NameIdGroupFactory {
 			row.setCellValue("locationtype",obj.getLocationType().toString());
 			row.setCellValue("contacttype",obj.getContactType().toString());
 			row.setCellValue("contactvalue",obj.getContactValue());
-			row.setCellValue("groupid", obj.getGroup().getId());
+			row.setCellValue("groupid", obj.getGroupId());
 			row.setCellValue("preferred", obj.getPreferred());
 			if(insertRow(row)) return true;
 		}
@@ -171,7 +171,7 @@ public class ContactFactory extends NameIdGroupFactory {
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		ContactType use_map = (ContactType)map;
 		fields.add(QueryFields.getFieldPreferred(use_map.getPreferred()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
 		fields.add(QueryFields.getFieldLocationType(use_map.getLocationType()));
 		fields.add(QueryFields.getFieldContactType(use_map.getContactType()));
@@ -179,19 +179,19 @@ public class ContactFactory extends NameIdGroupFactory {
 	}
 	public int deleteContactsByUser(UserType user) throws FactoryException
 	{
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganization().getId());
-		return deleteContactsByIds(ids, user.getOrganization());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganizationId());
+		return deleteContactsByIds(ids, user.getOrganizationId());
 	}
 
 	public boolean deleteContact(ContactType obj) throws FactoryException
 	{
 		removeFromCache(obj);
-		int deleted = deleteById(obj.getId(), obj.getOrganization().getId());
+		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
 	}
-	public int deleteContactsByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deleteContactsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
 			/*
@@ -209,10 +209,10 @@ public class ContactFactory extends NameIdGroupFactory {
 		// Can't just delete by group;
 		// Need to get ids so as to delete participations as well
 		//
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 		/// TODO: Delete participations
 		///
-		return deleteContactsByIds(ids, group.getOrganization());
+		return deleteContactsByIds(ids, group.getOrganizationId());
 	}
 /*	
 	public List<ContactType> getChildContactList(ContactType parent) throws FactoryException,ArgumentException{
@@ -220,17 +220,17 @@ public class ContactFactory extends NameIdGroupFactory {
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		fields.add(QueryFields.getFieldGroup(parent.getGroup().getId()));
-		return getContactList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganization());
+		return getContactList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());
 
 	}
 */
-	public List<ContactType>  getContactList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<ContactType>  getContactList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organization);
+		return getPaginatedList(fields, startRecord, recordCount, organizationId);
 	}
-	public List<ContactType> getContactListByIds(long[] ids, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<ContactType> getContactListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organization);
+		return getListByIds(ids, organizationId);
 	}
 	
 	
@@ -245,18 +245,18 @@ public class ContactFactory extends NameIdGroupFactory {
 			instruction.setRecordCount(recordCount);
 		}
 		
-		List<QueryField> fields = buildSearchQuery(searchValue, dir.getOrganization());
+		List<QueryField> fields = buildSearchQuery(searchValue, dir.getOrganizationId());
 		fields.add(QueryFields.getFieldGroup(dir.getId()));
-		return search(fields.toArray(new QueryField[0]), instruction, dir.getOrganization());
+		return search(fields.toArray(new QueryField[0]), instruction, dir.getOrganizationId());
 	}
 	
 	
 	/// Contact search uses a different query to join in contact information
 	/// Otherwise, this could be the getPaginatedList method
 	///
-	/// public List<ContactType> search(QueryField[] filters, OrganizationType organization){
+	/// public List<ContactType> search(QueryField[] filters, long organizationId){
 	@Override
-	public List<QueryField> buildSearchQuery(String searchValue, OrganizationType organization) throws FactoryException{
+	public List<QueryField> buildSearchQuery(String searchValue, long organizationId) throws FactoryException{
 		
 		searchValue = searchValue.replaceAll("\\*","%");
 		
@@ -274,8 +274,8 @@ public class ContactFactory extends NameIdGroupFactory {
 	}
 	
 	@Override
-	public <T> List<T> search(QueryField[] filters, ProcessingInstructionType instruction, OrganizationType organization){
-		return searchByIdInView("personContact", filters,instruction,organization);
+	public <T> List<T> search(QueryField[] filters, ProcessingInstructionType instruction, long organizationId){
+		return searchByIdInView("personContact", filters,instruction,organizationId);
 
 /*
 		Connection connection = ConnectionFactory.getInstance().getConnection();

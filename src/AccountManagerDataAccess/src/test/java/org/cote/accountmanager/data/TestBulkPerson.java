@@ -36,7 +36,7 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			
 			
 			logger.info("Retrieving Bulk Person");
-			PersonType check = Factories.getPersonFactory().getByName("BulkPerson-" + guid,pDir);
+			PersonType check = Factories.getPersonFactory().getByNameInGroup("BulkPerson-" + guid,pDir);
 			assertNotNull("Failed person cache check",check);
 			
 			logger.info("Retrieving Person By Id");
@@ -65,10 +65,10 @@ public class TestBulkPerson extends BaseDataAccessTest{
 		boolean success = false;
 		DirectoryGroupType pDir = null;
 		try{
-			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
+			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			String guid = UUID.randomUUID().toString();
-			PersonType new_person = Factories.getPersonFactory().newPerson(testUser,pDir);
+			PersonType new_person = Factories.getPersonFactory().newPerson(testUser,pDir.getId());
 			new_person.setName("BulkPerson-" + guid);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, new_person);
 			
@@ -79,19 +79,19 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			
 			new_person.setContactInformation(cit);
 			
-			AddressType addr = Factories.getAddressFactory().newAddress(testUser,pDir);
+			AddressType addr = Factories.getAddressFactory().newAddress(testUser,pDir.getId());
 			addr.setName(new_person.getName());
 			addr.setPreferred(true);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ADDRESS, addr);
 			cit.getAddresses().add(addr);
 			
-			addr = Factories.getAddressFactory().newAddress(testUser,pDir);
+			addr = Factories.getAddressFactory().newAddress(testUser,pDir.getId());
 			addr.setName(new_person.getName() + "-2");
 			addr.setPreferred(false);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ADDRESS, addr);
 			cit.getAddresses().add(addr);
 			
-			ContactType ct = Factories.getContactFactory().newContact(testUser, pDir);
+			ContactType ct = Factories.getContactFactory().newContact(testUser, pDir.getId());
 			ct.setName(new_person.getName());
 			ct.setPreferred(true);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT, ct);
@@ -99,7 +99,7 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			
 			cit.getContacts().add(ct);
 			
-			UserType user = Factories.getUserFactory().newUser(new_person.getName(), UserEnumType.DEVELOPMENT, UserStatusEnumType.RESTRICTED, new_person.getOrganization());
+			UserType user = Factories.getUserFactory().newUser(new_person.getName(), UserEnumType.DEVELOPMENT, UserStatusEnumType.RESTRICTED, new_person.getOrganizationId());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
 			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId, user, user, "password1".getBytes("UTF-8"), true,true);
 
@@ -108,18 +108,18 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			
 			
 			logger.info("Retrieving Bulk Person");
-			PersonType check = Factories.getPersonFactory().getByName("BulkPerson-" + guid,pDir);
+			PersonType check = Factories.getPersonFactory().getByNameInGroup("BulkPerson-" + guid,pDir);
 			assertNotNull("Failed person cache check",check);
 			
 			logger.info("Retrieving Person By Id");
-			check = Factories.getPersonFactory().getById(new_person.getId(),pDir.getOrganization());
+			check = Factories.getPersonFactory().getById(new_person.getId(),pDir.getOrganizationId());
 			assertNotNull("Failed id cache check",check);
 			
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
 			
 			
-			check = Factories.getPersonFactory().getById(new_person.getId(),pDir.getOrganization());
+			check = Factories.getPersonFactory().getById(new_person.getId(),pDir.getOrganizationId());
 			Factories.getPersonFactory().populate(check);
 			assertNotNull("Failed person check",check);
 			assertTrue("Person is still cached with bulk id",check.getId() > 0);
@@ -169,7 +169,7 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			person.getPartners().add(partner);
 
 			assertTrue("Failed to add new person",Factories.getPersonFactory().addPerson(person));
-			person = Factories.getPersonFactory().getByName(new_name, pDir);
+			person = Factories.getPersonFactory().getByNameInGroup(new_name, pDir);
 			Factories.getPersonFactory().populate(person);
 			assertNotNull("Person is null",person);
 			assertTrue("Partner not retrieved",person.getPartners().size() == 1);

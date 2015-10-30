@@ -68,12 +68,12 @@ public class StatisticsFactory extends NameIdFactory {
 
 	public boolean deleteStatisticsByReferenceType(NameIdType map) throws FactoryException
 	{
-		int deleted = deleteByBigIntField("referenceid",new long[]{map.getId()},map.getOrganization().getId());
+		int deleted = deleteByBigIntField("referenceid",new long[]{map.getId()},map.getOrganizationId());
 		return (deleted > 0);
 	}
 	public boolean deleteStatistics(StatisticsType cinfo) throws FactoryException
 	{
-		int deleted = deleteById(cinfo.getId(), cinfo.getOrganization().getId());
+		int deleted = deleteById(cinfo.getId(), cinfo.getOrganizationId());
 		return (deleted > 0);
 	}
 	public boolean updateStatistics(StatisticsType cinfo) throws FactoryException
@@ -83,8 +83,8 @@ public class StatisticsFactory extends NameIdFactory {
 
 	public boolean addStatistics(StatisticsType new_info) throws FactoryException
 	{
-		if (new_info.getReferenceId() <= 0) throw new FactoryException("Cannot add statistics without a corresponding reference id");
-		if (new_info.getOrganization() == null || new_info.getOrganization().getId() <= 0) throw new FactoryException("Cannot add statistics to invalid organization");
+		if (new_info.getReferenceId().compareTo(0L) == 0) throw new FactoryException("Cannot add statistics without a corresponding reference id");
+		if (new_info.getOrganizationId() <= 0L) throw new FactoryException("Cannot add statistics to invalid organization");
 
 		DataRow row = prepareAdd(new_info, "statistics");
 		try{
@@ -105,19 +105,19 @@ public class StatisticsFactory extends NameIdFactory {
 
 	public StatisticsType getStatistics(UserType map) throws FactoryException, ArgumentException
 	{
-		return getStatisticsByReferenceId(map.getId(), StatisticsEnumType.USER, map.getOrganization());
+		return getStatisticsByReferenceId(map.getId(), StatisticsEnumType.USER, map.getOrganizationId());
 	}
 	public StatisticsType getStatistics(AccountType map) throws FactoryException, ArgumentException
 	{
-		return getStatisticsByReferenceId(map.getId(), StatisticsEnumType.ACCOUNT, map.getOrganization());
+		return getStatisticsByReferenceId(map.getId(), StatisticsEnumType.ACCOUNT, map.getOrganizationId());
 	}
 	public StatisticsType getStatistics(DataType map) throws FactoryException, ArgumentException
 	{
-		return getStatisticsByReferenceId(map.getId(), StatisticsEnumType.DATA, map.getOrganization());
+		return getStatisticsByReferenceId(map.getId(), StatisticsEnumType.DATA, map.getOrganizationId());
 	}
-	public StatisticsType getStatisticsByReferenceId(long reference_id, StatisticsEnumType type, OrganizationType organization) throws FactoryException, ArgumentException
+	public StatisticsType getStatisticsByReferenceId(long reference_id, StatisticsEnumType type, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> cinfo = getByField(new QueryField[]{QueryFields.getFieldReferenceId(reference_id),QueryFields.getFieldStatisticsType(type)},organization.getId());
+		List<NameIdType> cinfo = getByField(new QueryField[]{QueryFields.getFieldReferenceId(reference_id),QueryFields.getFieldStatisticsType(type)},organizationId);
 		if (cinfo.size() > 0) return (StatisticsType)cinfo.get(0);
 		return null;
 	}
@@ -159,7 +159,8 @@ public class StatisticsFactory extends NameIdFactory {
 		cinfo.setAccessedDate(cinfo.getCreatedDate());
 		cinfo.setModifiedDate(cinfo.getCreatedDate());
 		cinfo.setExpirationDate(cinfo.getCreatedDate());
-		cinfo.setOrganization(map.getOrganization());
+		//cinfo.setOrganization(map.getOrganizationId());
+		cinfo.setOrganizationId(map.getOrganizationId());
 		cinfo.setStatisticsType(type);
 		return cinfo;
 	}

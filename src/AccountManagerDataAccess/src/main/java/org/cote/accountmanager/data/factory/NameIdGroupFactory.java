@@ -30,19 +30,23 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
+
 
 
 
@@ -56,24 +60,71 @@ public class NameIdGroupFactory extends NameIdFactory{
 		this.hasUrn = true;
 	}
 	
+	@Override
+	public <T> void normalize(T object) throws ArgumentException, FactoryException{
+		super.normalize(object);
+		if(object == null){
+			throw new ArgumentException("Null object");
+		}
+		NameIdDirectoryGroupType obj = (NameIdDirectoryGroupType)object;
+		if(obj.getParentId().compareTo(0L) != 0) return;
+		if(obj.getGroupPath() == null || obj.getGroupPath().length() == 0){
+			logger.debug("Group path not defined");
+			return;
+		}
+		BaseGroupType dir = Factories.getGroupFactory().findGroup(null,GroupEnumType.DATA, obj.getGroupPath(), obj.getOrganizationId());
+		if(dir == null){
+			throw new ArgumentException("Invalid group path '" + obj.getGroupPath() + "' in organization '" + obj.getOrganizationPath() + "' #" + obj.getOrganizationId());
+		}
+		obj.setGroupId(dir.getId());
+	}
+	
+	@Override
+	public <T> void denormalize(T object) throws ArgumentException, FactoryException{
+		super.denormalize(object);
+		if(object == null){
+			throw new ArgumentException("Null object");
+		}
+		NameIdDirectoryGroupType obj = (NameIdDirectoryGroupType)object;
+		if(obj.getGroupId() != null && obj.getGroupId().compareTo(0L) == 0){
+			throw new ArgumentException("Invalid object group");	
+		}
+		if(obj.getGroupPath() != null) return;
+		BaseGroupType dir = Factories.getGroupFactory().getGroupById(obj.getGroupId(), obj.getOrganizationId());
+		obj.setGroupPath(Factories.getGroupFactory().getPath(dir));
+	}
+	
+	@Override
+	public void mapBulkIds(NameIdType map){
+		super.mapBulkIds(map);
+		NameIdDirectoryGroupType dir = (NameIdDirectoryGroupType)map;
+		Long tmpId = 0L;
+		if(dir.getGroupId().compareTo(0L) < 0){
+			tmpId = BulkFactories.getBulkFactory().getMappedId(dir.getGroupId());
+			if(tmpId.compareTo(0L) > 0) dir.setGroupId(tmpId.longValue());
+		}
+	}
+	
 	protected NameIdType readGroup(ResultSet rset, NameIdType obj) throws SQLException, FactoryException, ArgumentException
 	{
 		super.read(rset, obj);
 		long group_id = rset.getLong("groupid");
 		NameIdDirectoryGroupType dobj = (NameIdDirectoryGroupType)obj;
-		dobj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, dobj.getOrganization()));
+		//dobj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, dobj.getOrganizationId()));
+		
 		dobj.setGroupId(group_id);
+		dobj.setGroupPath(Factories.getGroupFactory().getPath(group_id,obj.getOrganizationId()));
 		//logger.info("Reading group " + group_id);
 		return obj;
 	}
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		NameIdDirectoryGroupType t = (NameIdDirectoryGroupType)obj;
-		if(t.getGroup() == null){
+		if(t.getGroupId().compareTo(0L) == 0){
 			logger.error("ORPHAN " + t.getNameType() + " OBJECT #" + t.getId());
 		}
 		///logger.info("CKN: " + t.getParentId() + (t.getGroup() == null ? "NULL GROUP" : t.getGroup().getId()));
-		return t.getName() + "-" + t.getParentId() + "-" + (t.getGroup() == null ? "ORPHAN" : t.getGroup().getId());
+		return t.getName() + "-" + t.getParentId() + "-" + (t.getGroupId().compareTo(0L) == 0 ? "ORPHAN" : t.getGroupId());
 	}
 	
 	public <T> List<T> search(String searchValue, long startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException, ArgumentException{
@@ -86,24 +137,30 @@ public class NameIdGroupFactory extends NameIdFactory{
 			instruction.setRecordCount(recordCount);
 		}
 		
-		List<QueryField> fields = buildSearchQuery(searchValue, dir.getOrganization());
+		List<QueryField> fields = buildSearchQuery(searchValue, dir.getOrganizationId());
 		fields.add(QueryFields.getFieldGroup(dir.getId()));
-		return search(fields.toArray(new QueryField[0]), instruction, dir.getOrganization());
+		return search(fields.toArray(new QueryField[0]), instruction, dir.getOrganizationId());
 	}
 	
-	public <T> T getByName(String name, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
-		return getByName(name, 0, parentGroup);
+	public <T> T getByNameInGroup(String name, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
+		return getByNameInGroup(name, 0, parentGroup);
 	}
-	public <T> T getByName(String name, long parentId, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
-		String key_name = name + "-" + parentId + "-" + parentGroup.getId();
+	public <T> T getByNameInGroup(String name, long parentId, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
+		return getByNameInGroup(name, parentId, parentGroup.getId(), parentGroup.getOrganizationId());
+	}
+	public <T> T getByNameInGroup(String name, long parentGroupId, long organizationId) throws FactoryException, ArgumentException{
+		return getByNameInGroup(name, 0L, parentGroupId, organizationId);
+	}
+	public <T> T getByNameInGroup(String name, long parentId, long parentGroupId, long organizationId) throws FactoryException, ArgumentException{
+		String key_name = name + "-" + parentId + "-" + parentGroupId;
 		T out_data = readCache(key_name);
 		if (out_data != null) return out_data;
 		List<QueryField> fields = new ArrayList<QueryField>();
 		if(hasParentId) fields.add(QueryFields.getFieldParent(parentId));
 		fields.add(QueryFields.getFieldName(name));
-		fields.add(QueryFields.getFieldGroup(parentGroup.getId()));
+		fields.add(QueryFields.getFieldGroup(parentGroupId));
 		
-		List<NameIdType> obj_list = getByField(fields.toArray(new QueryField[0]), parentGroup.getOrganization().getId());
+		List<NameIdType> obj_list = getByField(fields.toArray(new QueryField[0]), organizationId);
 
 		if (obj_list.size() > 0)
 		{
@@ -125,17 +182,17 @@ public class NameIdGroupFactory extends NameIdFactory{
 		if(this.hasParentId){
 			fields.add(QueryFields.getFieldParent(0));
 		}
-		return getCountByField(this.getDataTables().get(0), fields.toArray(new QueryField[0]), group.getOrganization().getId());
+		return getCountByField(this.getDataTables().get(0), fields.toArray(new QueryField[0]), group.getOrganizationId());
 	}
 
-	public <T> List<T>  getListByGroup(BaseGroupType group, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getListByGroup(BaseGroupType group, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldGroup(group.getId()));
 		if(hasParentId){
 			fields.add(QueryFields.getFieldParent(0));
 		}
-		return getPaginatedList(fields.toArray(new QueryField[0]), startRecord, recordCount, organization);
+		return getPaginatedList(fields.toArray(new QueryField[0]), startRecord, recordCount, organizationId);
 	}
 
 	

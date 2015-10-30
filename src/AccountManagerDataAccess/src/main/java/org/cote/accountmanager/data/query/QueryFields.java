@@ -324,11 +324,12 @@ public class QueryFields {
 	{
 		return getTimestampField("endtime", val);
 	}
-
+/*
 	public static QueryField getFieldOrganization(NameIdType map)
 	{
 		return getFieldOrganization((map.getOrganization() != null ? map.getOrganization().getId() : 0));
 	}
+*/
 	public static QueryField getFieldOrganization(long id)
 	{
 		QueryField of =  new QueryField(SqlDataEnumType.BIGINT, "organizationid", id);

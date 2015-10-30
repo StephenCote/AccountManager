@@ -91,7 +91,7 @@ public class AccountFactory extends NameIdGroupFactory {
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		NameIdDirectoryGroupType t = (NameIdDirectoryGroupType)obj;
-		return t.getName() + "-" + t.getParentId() + "-" + ((NameIdDirectoryGroupType)obj).getGroup().getId();
+		return t.getName() + "-" + t.getParentId() + "-" + ((NameIdDirectoryGroupType)obj).getGroupId();
 	}
 	public boolean updateAccount(AccountType account) throws FactoryException{
 		removeAccountFromCache(account);
@@ -121,18 +121,18 @@ public class AccountFactory extends NameIdGroupFactory {
 		// Can't just delete by group;
 		// Need to get ids so as to delete participations as well
 		//
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 		/// TODO: Delete participations
 		///
-		return deleteAccountsByIds(ids, group.getOrganization());
+		return deleteAccountsByIds(ids, group.getOrganizationId());
 	}
-	public int deleteAccountsByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deleteAccountsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
 			/*
-			Factories.getContactInformationFactory().deleteContactInformationByReferenceIds(ids,organization.getId());
+			Factories.getContactInformationFactory().deleteContactInformationByReferenceIds(ids,organizationId);
 			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
 			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
 			*/
@@ -142,7 +142,7 @@ public class AccountFactory extends NameIdGroupFactory {
 	public boolean deleteAccount(AccountType account) throws FactoryException, ArgumentException
 	{
 		removeFromCache(account);
-		int deleted = deleteById(account.getId(), account.getOrganization().getId());
+		int deleted = deleteById(account.getId(), account.getOrganizationId());
 		if (deleted > 0)
 		{
 			/// TODO
@@ -168,29 +168,37 @@ public class AccountFactory extends NameIdGroupFactory {
 	}
 
 	public AccountType newAccount(UserType owner, String name, AccountType parentAccount, AccountEnumType type, AccountStatusEnumType status){
-		AccountType account = newAccount(owner, name, type, status, parentAccount.getGroup());
+		AccountType account = newAccount(owner, name, type, status, parentAccount.getGroupId());
 		account.setParentId(parentAccount.getId());
 		return account;
 	}
-	public AccountType newAccount(UserType owner, String name, AccountEnumType type, AccountStatusEnumType status, DirectoryGroupType group)
+	public AccountType newAccount(UserType owner, String name, AccountEnumType type, AccountStatusEnumType status, long groupId)
 	{
+		return newAccount(owner,name,type,status,groupId,(owner != null ? owner.getOrganizationId() : 0L));
+	}
+	/// TODO: Refactor order in which account is created.  At the moment, a null user is allowed primarily to support initial organization setup
+	public AccountType newAccount(UserType owner, String name, AccountEnumType type, AccountStatusEnumType status, long groupId, long organizationId)
+	{
+		if(organizationId <= 0L){
+			logger.error("Invalid organization id for new acount '" + name + "' = " + organizationId);
+		}
 		AccountType new_account = new AccountType();
 		new_account.setNameType(NameEnumType.ACCOUNT);
 		if(owner != null) new_account.setOwnerId(owner.getId());
 		new_account.setAccountStatus(status);
 		new_account.setAccountType(type);
-		new_account.setOrganization(group.getOrganization());
+		new_account.setOrganizationId(organizationId);
 		new_account.setName(name);
-		new_account.setGroup(group);
+		new_account.setGroupId(groupId);
 		new_account.setAccountId(UUID.randomUUID().toString());
 		return new_account;
 	}
 	public boolean getAccountNameExists(String name, DirectoryGroupType group) throws FactoryException {
-		return (getIdByField(new QueryField[]{QueryFields.getFieldName(name),QueryFields.getFieldGroup(group.getId())}, group.getOrganization().getId()).length > 0);
+		return (getIdByField(new QueryField[]{QueryFields.getFieldName(name),QueryFields.getFieldGroup(group.getId())}, group.getOrganizationId()).length > 0);
 		//return getAccountNameExists(name, null, organization);
 	}
 	public boolean getAccountNameExists(String name, AccountType parent) throws FactoryException {
-		return (getIdByField(new QueryField[]{QueryFields.getFieldName(name),QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroup(parent.getGroup().getId())}, parent.getOrganization().getId()).length > 0);
+		return (getIdByField(new QueryField[]{QueryFields.getFieldName(name),QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroup(parent.getGroupId())}, parent.getOrganizationId()).length > 0);
 	}
 
 	public AccountType getAccountByName(String name, DirectoryGroupType group) throws FactoryException, ArgumentException
@@ -204,7 +212,7 @@ public class AccountFactory extends NameIdGroupFactory {
 		String key_name = name + "-" + (parent != null ? parent.getId() : 0) + "-" + group.getId();
 		AccountType out_user = (AccountType)readCache(key_name);
 		if(out_user != null) return out_user;
-		List<NameIdType> users = getByField(new QueryField[] { QueryFields.getFieldName(name), QueryFields.getFieldParent(( parent != null ? parent.getId() : 0)), QueryFields.getFieldGroup(group.getId())},group.getOrganization().getId());
+		List<NameIdType> users = getByField(new QueryField[] { QueryFields.getFieldName(name), QueryFields.getFieldParent(( parent != null ? parent.getId() : 0)), QueryFields.getFieldGroup(group.getId())},group.getOrganizationId());
 		if (users.size() > 0)
 		{
 			out_user = (AccountType)users.get(0);
@@ -218,9 +226,9 @@ public class AccountFactory extends NameIdGroupFactory {
 	}
 	public boolean addAccount(AccountType new_account, boolean allot_contact_info) throws FactoryException, ArgumentException
 	{
-		if (new_account.getOrganization() == null || new_account.getOrganization().getId() <= 0) throw new FactoryException("Cannot add contact information to invalid organization");
+		if (new_account.getOrganizationId() == null || new_account.getOrganizationId() <= 0) throw new FactoryException("Cannot add contact information to invalid organization");
 		/*
-		if (!bulkMode && getAccountNameExists(new_account.getName(), (new_account.getParentId() != 0L ?  (AccountType)getById(new_account.getParentId(), new_account.getOrganization()) : null), new_account.getOrganization()))
+		if (!bulkMode && getAccountNameExists(new_account.getName(), (new_account.getParentId() != 0L ?  (AccountType)getById(new_account.getParentId(), new_account.getOrganizationId()) : null), new_account.getOrganizationId()))
 		{
 			throw new FactoryException("Account name " + new_account.getName() + " already exists");
 		}
@@ -231,10 +239,10 @@ public class AccountFactory extends NameIdGroupFactory {
 			row.setCellValue("accounttype", new_account.getAccountType().toString());
 			row.setCellValue("accountid", new_account.getAccountId());
 			row.setCellValue("referenceid", new_account.getReferenceId());
-			row.setCellValue("groupid", new_account.getGroup().getId());
+			row.setCellValue("groupid", new_account.getGroupId());
 			if (insertRow(row)){
 
-				new_account = (bulkMode ? new_account : getAccountByName(new_account.getName(), new_account.getGroup(), (new_account.getParentId() != 0L ?  (AccountType)getById(new_account.getParentId(),new_account.getOrganization().getId()) : null)));
+				new_account = (bulkMode ? new_account : getAccountByName(new_account.getName(), (DirectoryGroupType)Factories.getGroupFactory().getGroupById(new_account.getGroupId(),new_account.getOrganizationId()), (new_account.getParentId() != 0L ?  (AccountType)getById(new_account.getParentId(),new_account.getOrganizationId()) : null)));
 				if(new_account == null) throw new FactoryException("Failed to retrieve new account object");
 				StatisticsType stats = Factories.getStatisticsFactory().newStatistics(new_account);
 				if(bulkMode){
@@ -266,7 +274,7 @@ public class AccountFactory extends NameIdGroupFactory {
 					new_account.setStatistics(stats);
 					if(allot_contact_info){
 						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_account);
-						System.out.println("Adding cinfo for account in org " + new_account.getOrganization().getId());
+						System.out.println("Adding cinfo for account in org " + new_account.getOrganizationId());
 						if(Factories.getContactInformationFactory().addContactInformation(cinfo) == false) throw new FactoryException("Failed to assign contact information for account #" + new_account.getId());
 						cinfo = Factories.getContactInformationFactory().getContactInformationForAccount(new_account);
 						if(cinfo == null) throw new FactoryException("Failed to retrieve contact information for account #" + new_account.getId());
@@ -304,15 +312,15 @@ public class AccountFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldAccountId(use_map.getAccountId()));
 		fields.add(QueryFields.getFieldAccountStatus(use_map.getAccountStatus()));
 		fields.add(QueryFields.getFieldAccountType(use_map.getAccountType()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 		fields.add(QueryFields.getFieldReferenceId(use_map.getReferenceId()));
 	}
 	
 	/*
-	public List<AccountType> getAccountList(QueryField[] fields, OrganizationType organization) throws FactoryException
+	public List<AccountType> getAccountList(QueryField[] fields, long organizationId) throws FactoryException
 	{
 
-		List<NameIdType> account_list = getByField(fields, organization.getId());
+		List<NameIdType> account_list = getByField(fields, organizationId);
 		return convertList(account_list);
 	}
 	*/
@@ -321,17 +329,17 @@ public class AccountFactory extends NameIdGroupFactory {
 
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
-		fields.add(QueryFields.getFieldGroup(parent.getGroup().getId()));
-		return getAccountList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganization());
+		fields.add(QueryFields.getFieldGroup(parent.getGroupId()));
+		return getAccountList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());
 
 	}
-	public List<AccountType>  getAccountList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<AccountType>  getAccountList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organization);
+		return getPaginatedList(fields, startRecord, recordCount, organizationId);
 	}
-	public List<AccountType> getAccountListByIds(long[] ids, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<AccountType> getAccountListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organization);
+		return getListByIds(ids, organizationId);
 	}
 	
 }

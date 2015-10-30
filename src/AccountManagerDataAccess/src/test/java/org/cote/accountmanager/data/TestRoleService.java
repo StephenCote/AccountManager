@@ -28,7 +28,7 @@ public class TestRoleService extends BaseDataAccessTest{
 	public void testSystemRoles(){
 		boolean isDataAdmin = false;
 		try {
-			isDataAdmin = AuthorizationService.isDataAdministratorInOrganization(testUser, testUser.getOrganization());
+			isDataAdmin = AuthorizationService.isDataAdministratorInOrganization(testUser, testUser.getOrganizationId());
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

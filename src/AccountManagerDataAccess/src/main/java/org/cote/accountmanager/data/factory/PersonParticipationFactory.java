@@ -55,6 +55,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		super(ParticipationEnumType.PERSON, "personparticipation");
 		this.haveAffect = true;
 		factoryType = FactoryEnumType.PERSONPARTICIPATION;
+		
 	}
 	
 	public boolean deletePartnerPersonParticipant(PersonType person, PersonType account) throws ArgumentException, FactoryException
@@ -74,7 +75,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	{
 
 		List<PersonParticipantType> dp = getPersonParticipants(account);
-		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), account.getOrganizationId());
 	}
 	
 	public boolean deleteDependentPersonParticipant(PersonType person, PersonType account) throws ArgumentException, FactoryException
@@ -94,7 +95,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	{
 
 		List<PersonParticipantType> dp = getDependentParticipants(account);
-		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), account.getOrganizationId());
 	}
 	
 	public boolean deleteDataPersonParticipant(PersonType person, DataType account) throws ArgumentException, FactoryException
@@ -114,7 +115,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	{
 
 		List<DataParticipantType> dp = getDataParticipants(account);
-		return deleteParticipants(dp.toArray(new DataParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new DataParticipantType[0]), account.getOrganizationId());
 	}
 	
 	public boolean deleteAccountPersonParticipant(PersonType person, AccountType account) throws ArgumentException, FactoryException
@@ -134,7 +135,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	{
 
 		List<AccountParticipantType> dp = getAccountParticipants(account);
-		return deleteParticipants(dp.toArray(new AccountParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new AccountParticipantType[0]), account.getOrganizationId());
 	}
 	
 	public boolean deleteUserPersonParticipant(PersonType person, UserType user) throws ArgumentException, FactoryException
@@ -155,10 +156,10 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	{
 
 		List<UserParticipantType> dp = getUserParticipants(account);
-		return deleteParticipants(dp.toArray(new UserParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new UserParticipantType[0]), account.getOrganizationId());
 	}
 	public PersonParticipantType newPartnerPersonParticipation(PersonType person, PersonType partner) throws ArgumentException, FactoryException{
-		return newPartnerPersonParticipation(person,partner,AuthorizationService.getViewObjectPermission(person.getOrganization()),AffectEnumType.GRANT_PERMISSION);
+		return newPartnerPersonParticipation(person,partner,AuthorizationService.getViewObjectPermission(person.getOrganizationId()),AffectEnumType.GRANT_PERMISSION);
 	}
 	public PersonParticipantType newPartnerPersonParticipation(
 			PersonType person,
@@ -171,7 +172,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 			return newPersonParticipation(person, account, permission, affect_type, ParticipantEnumType.PERSON);
 		}
 	public PersonParticipantType newDependentPersonParticipation(PersonType person, PersonType dependent) throws ArgumentException, FactoryException{
-		return newDependentPersonParticipation(person,dependent,AuthorizationService.getViewObjectPermission(person.getOrganization()),AffectEnumType.GRANT_PERMISSION);
+		return newDependentPersonParticipation(person,dependent,AuthorizationService.getViewObjectPermission(person.getOrganizationId()),AffectEnumType.GRANT_PERMISSION);
 	}
 	public PersonParticipantType newDependentPersonParticipation(
 			PersonType person,
@@ -184,7 +185,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 			return newPersonParticipation(person, account, permission, affect_type, ParticipantEnumType.DEPENDENTPERSON);
 		}
 	public DataParticipantType newDataPersonParticipation(PersonType person, DataType data) throws ArgumentException, FactoryException{
-		return newDataPersonParticipation(person,data,AuthorizationService.getViewObjectPermission(person.getOrganization()),AffectEnumType.GRANT_PERMISSION);
+		return newDataPersonParticipation(person,data,AuthorizationService.getViewObjectPermission(person.getOrganizationId()),AffectEnumType.GRANT_PERMISSION);
 	}
 	public DataParticipantType newDataPersonParticipation(
 			PersonType person,
@@ -197,7 +198,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 			return newPersonParticipation(person, account, permission, affect_type, ParticipantEnumType.DATA);
 		}
 	public AccountParticipantType newAccountPersonParticipation(PersonType person, AccountType data) throws ArgumentException, FactoryException{
-		return newAccountPersonParticipation(person,data,AuthorizationService.getViewObjectPermission(person.getOrganization()),AffectEnumType.GRANT_PERMISSION);
+		return newAccountPersonParticipation(person,data,AuthorizationService.getViewObjectPermission(person.getOrganizationId()),AffectEnumType.GRANT_PERMISSION);
 	}
 
 	public AccountParticipantType newAccountPersonParticipation(
@@ -211,7 +212,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		return newPersonParticipation(person, account, permission, affect_type, ParticipantEnumType.ACCOUNT);
 	}
 	public UserParticipantType newUserPersonParticipation(PersonType person, UserType data) throws ArgumentException, FactoryException{
-		return newUserPersonParticipation(person,data,AuthorizationService.getViewObjectPermission(person.getOrganization()),AffectEnumType.GRANT_PERMISSION);
+		return newUserPersonParticipation(person,data,AuthorizationService.getViewObjectPermission(person.getOrganizationId()),AffectEnumType.GRANT_PERMISSION);
 	}
 
 	public UserParticipantType newUserPersonParticipation(
@@ -239,26 +240,26 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	
 	public List<PersonParticipantType> getPersonParticipants(PersonType account) throws FactoryException, ArgumentException
 	{
-		return convertList(getByField(QueryFields.getFieldParticipantMatch(account, ParticipantEnumType.PERSON), account.getOrganization().getId()));	
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(account, ParticipantEnumType.PERSON), account.getOrganizationId()));	
 	}
 	
 	public List<PersonParticipantType> getDependentParticipants(PersonType account) throws FactoryException, ArgumentException
 	{
-		return convertList(getByField(QueryFields.getFieldParticipantMatch(account, ParticipantEnumType.DEPENDENTPERSON), account.getOrganization().getId()));	
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(account, ParticipantEnumType.DEPENDENTPERSON), account.getOrganizationId()));	
 	}
 	
 	public List<DataParticipantType> getDataParticipants(DataType account) throws FactoryException, ArgumentException
 	{
-		return convertList(getByField(QueryFields.getFieldParticipantMatch(account, ParticipantEnumType.DATA), account.getOrganization().getId()));	
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(account, ParticipantEnumType.DATA), account.getOrganizationId()));	
 	}
 	
 	public List<AccountParticipantType> getAccountParticipants(AccountType account) throws FactoryException, ArgumentException
 	{
-		return convertList(getByField(QueryFields.getFieldParticipantMatch(account, ParticipantEnumType.ACCOUNT), account.getOrganization().getId()));	
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(account, ParticipantEnumType.ACCOUNT), account.getOrganizationId()));	
 	}
 	public List<UserParticipantType> getUserParticipants(UserType account) throws FactoryException, ArgumentException
 	{
-		return convertList(getByField(QueryFields.getFieldParticipantMatch(account, ParticipantEnumType.USER), account.getOrganization().getId()));	
+		return convertList(getByField(QueryFields.getFieldParticipantMatch(account, ParticipantEnumType.USER), account.getOrganizationId()));	
 	}
 	public List<PersonParticipantType> getPartnerParticipations(PersonType person) throws FactoryException, ArgumentException
 	{
@@ -291,7 +292,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	}
 	public List<DataParticipantType> getPersonDataParticipations(PersonType[] person) throws FactoryException, ArgumentException
 	{
-		return convertList(getPersonParticipations(person, ParticipantEnumType.PERSON));
+		return convertList(getPersonParticipations(person, ParticipantEnumType.DATA));
 	}
 	public List<AccountParticipantType> getPersonAccountParticipations(PersonType[] person) throws FactoryException, ArgumentException
 	{
@@ -307,7 +308,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		try{
 			PersonParticipantType[] parts = getPartnerParticipations(participation).toArray(new PersonParticipantType[0]);
 			if(parts.length > 0){
-				items = getPersonsFromParticipations(parts, 0, 0, participation.getOrganization());
+				items = getPersonsFromParticipations(parts, 0, 0, participation.getOrganizationId());
 			}
 		}
 		catch(FactoryException fe){
@@ -321,7 +322,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		try{
 			PersonParticipantType[] parts = getDependentParticipations(participation).toArray(new PersonParticipantType[0]);
 			if(parts.length > 0){
-				items = getPersonsFromParticipations(parts, 0, 0, participation.getOrganization());
+				items = getPersonsFromParticipations(parts, 0, 0, participation.getOrganizationId());
 			}
 		}
 		catch(FactoryException fe){
@@ -335,7 +336,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		try{
 			DataParticipantType[] parts = getDataParticipations(participation).toArray(new DataParticipantType[0]);
 			if(parts.length > 0){
-				items = getDatasFromParticipations(parts, 0, 0, participation.getOrganization());
+				items = getDatasFromParticipations(parts, 0, 0, participation.getOrganizationId());
 			}
 		}
 		catch(FactoryException fe){
@@ -349,7 +350,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		try{
 			AccountParticipantType[] parts = getAccountParticipations(participation).toArray(new AccountParticipantType[0]);
 			if(parts.length > 0){
-				items = getAccountsFromParticipations(parts, 0, 0, participation.getOrganization());
+				items = getAccountsFromParticipations(parts, 0, 0, participation.getOrganizationId());
 			}
 		}
 		catch(FactoryException fe){
@@ -363,7 +364,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		try{
 			UserParticipantType[] parts = getUserParticipations(participation).toArray(new UserParticipantType[0]);
 			if(parts.length > 0){
-				items = getUsersFromParticipations(parts, 0, 0, participation.getOrganization());
+				items = getUsersFromParticipations(parts, 0, 0, participation.getOrganizationId());
 			}
 		}
 		catch(FactoryException fe){
@@ -372,32 +373,32 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		return items;
 	}
-	public List<PersonType> getPersonsFromParticipations(PersonParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<PersonType> getPersonsFromParticipations(PersonParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getPersonFactory().getPersonList(new QueryField[]{ field }, startRecord, recordCount, organization);
+		return Factories.getPersonFactory().getPersonList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
 
-	public List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getAccountFactory().getAccountList(new QueryField[]{ field }, startRecord, recordCount, organization);
+		return Factories.getAccountFactory().getAccountList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
-	public List<UserType> getUsersFromParticipations(UserParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<UserType> getUsersFromParticipations(UserParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getUserFactory().getUserList(new QueryField[]{ field }, startRecord, recordCount, organization);
+		return Factories.getUserFactory().getUserList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
-	public List<DataType> getDatasFromParticipations(DataParticipantType[] list, long startRecord, int recordCount, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<DataType> getDatasFromParticipations(DataParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getDataFactory().getDataList(new QueryField[]{ field }, true,startRecord, recordCount, organization);
+		return Factories.getDataFactory().getDataList(new QueryField[]{ field }, true,startRecord, recordCount, organizationId);
 	}	
 	public List<NameIdType> getPersonParticipations(PersonType[] person, ParticipantEnumType participant_type) throws FactoryException, ArgumentException
 	{
 		/*
 		if (person.length == 0) return new ArrayList<NameIdType>();
-		OrganizationType org = person[0].getOrganization();
+		OrganizationType org = person[0].getOrganizationId();
 
 		List<QueryField> matches = new ArrayList<QueryField>();
 		matches.add(QueryFields.getFieldParticipantType(participant_type));

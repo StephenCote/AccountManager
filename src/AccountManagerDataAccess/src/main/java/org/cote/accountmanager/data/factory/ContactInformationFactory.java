@@ -87,12 +87,12 @@ public class ContactInformationFactory extends NameIdFactory {
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		ContactInformationType t = (ContactInformationType)obj;
-		return t.getReferenceId() + "-" + t.getContactInformationType().toString() + "-" + t.getOrganization().getId();
+		return t.getReferenceId() + "-" + t.getContactInformationType().toString() + "-" + t.getOrganizationId();
 	}
 
 	public boolean deleteContactInformationByReferenceType(NameIdType map) throws FactoryException
 	{
-		return deleteContactInformationByReferenceIds(new long[]{map.getId()},map.getOrganization().getId());
+		return deleteContactInformationByReferenceIds(new long[]{map.getId()},map.getOrganizationId());
 	}
 	public boolean deleteContactInformationByReferenceIds(long[] ids, long organizationId){
 		
@@ -101,9 +101,9 @@ public class ContactInformationFactory extends NameIdFactory {
 	}
 	public boolean deleteContactInformation(ContactInformationType cinfo) throws FactoryException
 	{
-		int deleted = deleteById(cinfo.getId(), cinfo.getOrganization().getId());
+		int deleted = deleteById(cinfo.getId(), cinfo.getOrganizationId());
 		if(deleted > 0){
-			Factories.getContactInformationParticipationFactory().deleteParticipations(new long[]{cinfo.getId()},cinfo.getOrganization());
+			Factories.getContactInformationParticipationFactory().deleteParticipations(new long[]{cinfo.getId()},cinfo.getOrganizationId());
 		}
 		return (deleted > 0);
 	}
@@ -129,7 +129,7 @@ public class ContactInformationFactory extends NameIdFactory {
 						set.remove(cinfo.getContacts().get(i).getId());
 					}
 				}
-				Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganization());
+				Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
 				
 				set.clear();
 				maps = Factories.getContactInformationParticipationFactory().getAddressParticipations(cinfo).toArray(new BaseParticipantType[0]);
@@ -144,7 +144,7 @@ public class ContactInformationFactory extends NameIdFactory {
 						set.remove(cinfo.getAddresses().get(i).getId());
 					}
 				}
-				Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganization());
+				Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
 				
 				out_bool = true;
 			}
@@ -169,7 +169,7 @@ public class ContactInformationFactory extends NameIdFactory {
 	public boolean addContactInformation(ContactInformationType new_info) throws FactoryException
 	{
 		if (new_info.getReferenceId().equals(0L)) throw new FactoryException("Cannot add information without a corresponding reference id");
-		if (new_info.getOrganization() == null || new_info.getOrganization().getId() <= 0) throw new FactoryException("Cannot add contact information to invalid organization");
+		if (new_info.getOrganizationId() == null || new_info.getOrganizationId() <= 0) throw new FactoryException("Cannot add contact information to invalid organization");
 		if(new_info.getOwnerId().equals(0L)) throw new FactoryException("Contact Information must now have an owner id");
 		DataRow row = prepareAdd(new_info, "contactinformation");
 		try{
@@ -177,7 +177,7 @@ public class ContactInformationFactory extends NameIdFactory {
 			row.setCellValue("contactinformationtype", new_info.getContactInformationType().toString());
 			row.setCellValue("description",new_info.getDescription());
 			if (insertRow(row)){
-				ContactInformationType cobj = (bulkMode ? new_info : (ContactInformationType)getContactInformationByReferenceId(new_info.getReferenceId(),new_info.getContactInformationType(),new_info.getOrganization()));
+				ContactInformationType cobj = (bulkMode ? new_info : (ContactInformationType)getContactInformationByReferenceId(new_info.getReferenceId(),new_info.getContactInformationType(),new_info.getOrganizationId()));
 				if(cobj == null) throw new FactoryException("Failed to retrieve new user cobject");
 
 				BulkFactories.getBulkFactory().setDirty(factoryType);
@@ -209,19 +209,19 @@ public class ContactInformationFactory extends NameIdFactory {
 	
 	public ContactInformationType getContactInformationForPerson(PersonType map) throws FactoryException, ArgumentException
 	{
-		return getContactInformationByReferenceId(map.getId(), ContactInformationEnumType.PERSON, map.getOrganization());
+		return getContactInformationByReferenceId(map.getId(), ContactInformationEnumType.PERSON, map.getOrganizationId());
 	}
 	public ContactInformationType getContactInformationForUser(UserType map) throws FactoryException, ArgumentException
 	{
-		return getContactInformationByReferenceId(map.getId(), ContactInformationEnumType.USER, map.getOrganization());
+		return getContactInformationByReferenceId(map.getId(), ContactInformationEnumType.USER, map.getOrganizationId());
 	}
 	public ContactInformationType getContactInformationForAccount(AccountType map) throws FactoryException, ArgumentException
 	{
-		return getContactInformationByReferenceId(map.getId(), ContactInformationEnumType.ACCOUNT, map.getOrganization());
+		return getContactInformationByReferenceId(map.getId(), ContactInformationEnumType.ACCOUNT, map.getOrganizationId());
 	}
-	public ContactInformationType getContactInformationByReferenceId(long reference_id, ContactInformationEnumType type, OrganizationType organization) throws FactoryException, ArgumentException
+	public ContactInformationType getContactInformationByReferenceId(long reference_id, ContactInformationEnumType type, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> cinfo = getByField(new QueryField[]{QueryFields.getFieldReferenceId(reference_id),QueryFields.getFieldContactInformationType(type)},organization.getId());
+		List<NameIdType> cinfo = getByField(new QueryField[]{QueryFields.getFieldReferenceId(reference_id),QueryFields.getFieldContactInformationType(type)},organizationId);
 		if (cinfo.size() > 0) return (ContactInformationType)cinfo.get(0);
 		return null;
 	}
@@ -255,7 +255,7 @@ public class ContactInformationFactory extends NameIdFactory {
 	{
 		ContactInformationType cinfo = new ContactInformationType();
 		cinfo.setReferenceId(map.getId());
-		cinfo.setOrganization(map.getOrganization());
+		cinfo.setOrganizationId(map.getOrganizationId());
 		cinfo.setContactInformationType(type);
 		cinfo.setNameType(NameEnumType.CONTACTINFORMATION);
 		return cinfo;

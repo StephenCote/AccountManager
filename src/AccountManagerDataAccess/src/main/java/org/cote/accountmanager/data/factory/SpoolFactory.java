@@ -110,6 +110,7 @@ public abstract class SpoolFactory extends FactoryBase {
 		spoolItem.setCredentialId(0L);
 		spoolItem.setCurrentLevel(0);
 		spoolItem.setEndLevel(0);
+		spoolItem.setGroupId(0L);
 		
 		return (T)spoolItem;
 	}
@@ -130,8 +131,8 @@ public abstract class SpoolFactory extends FactoryBase {
 			if(obj.getData() != null) row.setCellValue("spooldata", obj.getData());
 			row.setCellValue("spoolstatus", obj.getSpoolStatus().toString());
 			row.setCellValue("ownerid", obj.getOwnerId());
-			if(obj.getGroup() != null) row.setCellValue("groupid", obj.getGroup().getId());
-			if(scopeToOrganization) row.setCellValue("organizationid", obj.getOrganization().getId());
+			row.setCellValue("groupid", obj.getGroupId());
+			if(scopeToOrganization) row.setCellValue("organizationid", obj.getOrganizationId());
 			row.setCellValue("spoolvaluetype", obj.getValueType().toString());
 			row.setCellValue("credentialid", obj.getCredentialId());
 			row.setCellValue("referenceid", obj.getReferenceId());
@@ -208,8 +209,8 @@ public abstract class SpoolFactory extends FactoryBase {
 		obj.setGuid(rset.getString("guid"));
 		obj.setParentGuid(rset.getString("parentguid"));
 		obj.setOwnerId(rset.getLong("ownerid"));
-		obj.setOrganization(Factories.getOrganizationFactory().getOrganizationById(rset.getLong("organizationid")));
-		obj.setGroup(Factories.getGroupFactory().getDirectoryById(rset.getLong("groupid"), obj.getOrganization()));
+		obj.setOrganizationId(rset.getLong("organizationid"));
+		obj.setGroupId(rset.getLong("groupid"));
 
 		obj.setSpoolBucketName(SpoolNameEnumType.valueOf(rset.getString("spoolbucketname")));
 		obj.setSpoolBucketType(SpoolBucketEnumType.valueOf(rset.getString("spoolbuckettype")));
@@ -248,7 +249,7 @@ public abstract class SpoolFactory extends FactoryBase {
 		List<QueryField> updateFields = new ArrayList<QueryField>();
 
 		queryFields.add(QueryFields.getFieldGuid(map.getGuid()));
-		queryFields.add(QueryFields.getFieldOrganization(map.getOrganization().getId()));
+		queryFields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
 		setNameIdFields(updateFields, map);
 		setFactoryFields(updateFields, map, instruction);
 		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(queryFields.toArray(new QueryField[0]), token);
@@ -284,7 +285,7 @@ public abstract class SpoolFactory extends FactoryBase {
 		fields.add(QueryFields.getFieldSpoolValueType(map.getValueType()));
 		fields.add(QueryFields.getFieldExpirationDate(map.getExpiration()));
 		fields.add(QueryFields.getFieldExpires(map.getExpires()));
-		fields.add(QueryFields.getFieldGroup((map.getGroup() != null ? map.getGroup().getId() : 0)));
+		fields.add(QueryFields.getFieldGroup(map.getGroupId()));
 		fields.add(QueryFields.getFieldSpoolStatus(map.getSpoolStatus()));
 		fields.add(QueryFields.getFieldCredentialId(map.getCredentialId()));
 		fields.add(QueryFields.getFieldReferenceId(map.getReferenceId()));
@@ -300,7 +301,7 @@ public abstract class SpoolFactory extends FactoryBase {
 	private void setNameIdFields(List<QueryField> fields, BaseSpoolType map){
 			fields.add(QueryFields.getFieldName(map.getName()));
 			fields.add(QueryFields.getFieldOwner(map.getOwnerId()));
-			if(scopeToOrganization) fields.add(QueryFields.getFieldOrganization(map.getOrganization().getId()));
+			if(scopeToOrganization) fields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
 	}
 
 	

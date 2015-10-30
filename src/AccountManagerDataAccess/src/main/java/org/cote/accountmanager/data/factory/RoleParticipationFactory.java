@@ -31,6 +31,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -74,7 +75,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 
 		List<RoleParticipantType> dp = getRoleRoleParticipants(child_role);
-		return deleteParticipants(dp.toArray(new RoleParticipantType[0]), child_role.getOrganization());
+		return deleteParticipants(dp.toArray(new RoleParticipantType[0]), child_role.getOrganizationId());
 	}
 
 	public RoleParticipantType newRoleRoleParticipation(BaseRoleType role, BaseRoleType child_role) throws ArgumentException
@@ -99,19 +100,19 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		match.setComparator(ComparatorEnumType.IN);
 */
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new RoleParticipantType[0]));
-		return Factories.getRoleFactory().getRoles(match, child_role.getOrganization());
+		return Factories.getRoleFactory().getRoles(match, child_role.getOrganizationId());
 	}
 	public List<BaseRoleType> getRolesInRole(BaseRoleType role)  throws FactoryException, ArgumentException
 	{
 		List<RoleParticipantType> ap = getRoleRoleParticipations(role);
-		return getRoleListFromParticipations(ap.toArray(new RoleParticipantType[0]), role.getOrganization());
+		return getRoleListFromParticipations(ap.toArray(new RoleParticipantType[0]), role.getOrganizationId());
 	}
 	public List<RoleParticipantType> getRoleRoleParticipants(BaseRoleType child_role)  throws FactoryException, ArgumentException
 	{
 		List<QueryField> matches = new ArrayList<QueryField>();
 		matches.add(QueryFields.getFieldParticipantType(ParticipantEnumType.ROLE));
 		matches.add(QueryFields.getFieldParticipantId(child_role));
-		List<NameIdType> dtlist = getByField(matches.toArray(new QueryField[0]), child_role.getOrganization().getId());
+		List<NameIdType> dtlist = getByField(matches.toArray(new QueryField[0]), child_role.getOrganizationId());
 		return convertList(dtlist);
 	}
 	public List<RoleParticipantType> getRoleRoleParticipations(BaseRoleType role)  throws FactoryException, ArgumentException
@@ -119,14 +120,14 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		List<QueryField> matches = new ArrayList<QueryField>();
 		matches.add(QueryFields.getFieldParticipantType(ParticipantEnumType.ROLE));
 		matches.add(QueryFields.getFieldParticipationId(role));
-		List<NameIdType> list = getByField(matches.toArray(new QueryField[0]), role.getOrganization().getId());
+		List<NameIdType> list = getByField(matches.toArray(new QueryField[0]), role.getOrganizationId());
 		return convertList(list);
 	}
 
 	public RoleParticipantType getRoleRoleParticipant(BaseRoleType role, BaseRoleType child_role) throws FactoryException, ArgumentException
 	{
 
-		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(child_role), QueryFields.getFieldParticipantType(ParticipantEnumType.ROLE), QueryFields.getFieldParticipationId(role) }, role.getOrganization().getId());
+		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(child_role), QueryFields.getFieldParticipantType(ParticipantEnumType.ROLE), QueryFields.getFieldParticipationId(role) }, role.getOrganizationId());
 		if (list.size() == 0) return null;
 		return (RoleParticipantType)list.get(0);
 	}
@@ -154,14 +155,14 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public boolean deleteUserRoleParticipants(UserRoleType role, UserType account) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> dp = getUserRoleParticipants(role, account);
-		return deleteParticipants(dp.toArray(new UserParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new UserParticipantType[0]), account.getOrganizationId());
 	}
 
 	public boolean deleteUserParticipations(UserType account)  throws FactoryException, ArgumentException
 	{
 
 		List<UserParticipantType> dp = getUserRoleParticipants(account);
-		return deleteParticipants(dp.toArray(new UserParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new UserParticipantType[0]), account.getOrganizationId());
 	}
 
 	public UserParticipantType newUserRoleParticipation(BaseRoleType role, UserType account) throws ArgumentException
@@ -179,21 +180,21 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		List<UserParticipantType> list = getUserRoleParticipants(account);
 		if(list.size() == 0) return new ArrayList<UserRoleType>();
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new UserParticipantType[0]));
-		return Factories.getRoleFactory().getUserRoles(match, account.getOrganization());
+		return Factories.getRoleFactory().getUserRoles(match, account.getOrganizationId());
 	}
 	public List<UserType> getUsersInRole(UserRoleType role) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> ap = getUserRoleParticipations(role);
-		return getUserListFromParticipations(ap.toArray(new UserParticipantType[0]), role.getOrganization());
+		return getUserListFromParticipations(ap.toArray(new UserParticipantType[0]), role.getOrganizationId());
 	}
 	public List<UserParticipantType> getUserRoleParticipants(UserType account) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipantMatch(account,ParticipantEnumType.USER), account.getOrganization().getId());
+		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipantMatch(account,ParticipantEnumType.USER), account.getOrganizationId());
 		return convertList(dtlist);
 	}
 	public List<UserParticipantType> getUserRoleParticipations(BaseRoleType role)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipationMatch(role,ParticipantEnumType.USER), role.getOrganization().getId());
+		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipationMatch(role,ParticipantEnumType.USER), role.getOrganizationId());
 		return convertList(dtlist);
 	}
 
@@ -256,14 +257,14 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public boolean deletePersonRoleParticipants(PersonRoleType role, PersonType person) throws FactoryException, ArgumentException
 	{
 		List<PersonParticipantType> dp = getPersonRoleParticipants(role, person);
-		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), person.getOrganization());
+		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), person.getOrganizationId());
 	}
 
 	public boolean deletePersonParticipations(PersonType person)  throws FactoryException, ArgumentException
 	{
 
 		List<PersonParticipantType> dp = getPersonRoleParticipants(person);
-		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), person.getOrganization());
+		return deleteParticipants(dp.toArray(new PersonParticipantType[0]), person.getOrganizationId());
 	}
 
 	public PersonParticipantType newPersonRoleParticipation(BaseRoleType role, PersonType person) throws ArgumentException
@@ -280,21 +281,21 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		List<PersonParticipantType> list = getPersonRoleParticipants(person);
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new PersonParticipantType[0]));
-		return Factories.getRoleFactory().getPersonRoles(match, person.getOrganization());
+		return Factories.getRoleFactory().getPersonRoles(match, person.getOrganizationId());
 	}
 	public List<PersonType> getPersonsInRole(BaseRoleType role) throws FactoryException, ArgumentException
 	{
 		List<PersonParticipantType> ap = getPersonRoleParticipations(role);
-		return getPersonListFromParticipations(ap.toArray(new PersonParticipantType[0]), role.getOrganization());
+		return getPersonListFromParticipations(ap.toArray(new PersonParticipantType[0]), role.getOrganizationId());
 	}
 	public List<PersonParticipantType> getPersonRoleParticipants(PersonType person) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipantMatch(person,ParticipantEnumType.PERSON), person.getOrganization().getId());
+		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipantMatch(person,ParticipantEnumType.PERSON), person.getOrganizationId());
 		return convertList(dtlist);
 	}
 	public List<PersonParticipantType> getPersonRoleParticipations(BaseRoleType role)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipationMatch(role,ParticipantEnumType.PERSON), role.getOrganization().getId());
+		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipationMatch(role,ParticipantEnumType.PERSON), role.getOrganizationId());
 		return convertList(dtlist);
 	}
 
@@ -357,14 +358,14 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public boolean deleteAccountRoleParticipants(AccountRoleType role, AccountType account) throws FactoryException, ArgumentException
 	{
 		List<AccountParticipantType> dp = getAccountRoleParticipants(role, account);
-		return deleteParticipants(dp.toArray(new AccountParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new AccountParticipantType[0]), account.getOrganizationId());
 	}
 
 	public boolean deleteAccountParticipations(AccountType account)  throws FactoryException, ArgumentException
 	{
 
 		List<AccountParticipantType> dp = getAccountRoleParticipants(account);
-		return deleteParticipants(dp.toArray(new AccountParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new AccountParticipantType[0]), account.getOrganizationId());
 	}
 
 	public AccountParticipantType newAccountRoleParticipation(BaseRoleType role, AccountType account) throws ArgumentException
@@ -381,21 +382,21 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		List<AccountParticipantType> list = getAccountRoleParticipants(account);
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new AccountParticipantType[0]));
-		return Factories.getRoleFactory().getAccountRoles(match, account.getOrganization());
+		return Factories.getRoleFactory().getAccountRoles(match, account.getOrganizationId());
 	}
 	public List<AccountType> getAccountsInRole(BaseRoleType role) throws FactoryException, ArgumentException
 	{
 		List<AccountParticipantType> ap = getAccountRoleParticipations(role);
-		return getAccountListFromParticipations(ap.toArray(new AccountParticipantType[0]), role.getOrganization());
+		return getAccountListFromParticipations(ap.toArray(new AccountParticipantType[0]), role.getOrganizationId());
 	}
 	public List<AccountParticipantType> getAccountRoleParticipants(AccountType account) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipantMatch(account,ParticipantEnumType.ACCOUNT), account.getOrganization().getId());
+		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipantMatch(account,ParticipantEnumType.ACCOUNT), account.getOrganizationId());
 		return convertList(dtlist);
 	}
 	public List<AccountParticipantType> getAccountRoleParticipations(BaseRoleType role)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipationMatch(role,ParticipantEnumType.ACCOUNT), role.getOrganization().getId());
+		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipationMatch(role,ParticipantEnumType.ACCOUNT), role.getOrganizationId());
 		return convertList(dtlist);
 	}
 
@@ -456,14 +457,14 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public boolean deleteGroupRoleParticipants(BaseRoleType role, BaseGroupType account) throws FactoryException, ArgumentException
 	{
 		List<GroupParticipantType> dp = getGroupRoleParticipants(role, account);
-		return deleteParticipants(dp.toArray(new GroupParticipantType[0]), account.getOrganization());
+		return deleteParticipants(dp.toArray(new GroupParticipantType[0]), account.getOrganizationId());
 	}
 
 	public boolean deleteGroupParticipations(UserGroupType group)  throws FactoryException, ArgumentException
 	{
 
 		List<GroupParticipantType> dp = getGroupRoleParticipants(group);
-		return deleteParticipants(dp.toArray(new GroupParticipantType[0]), group.getOrganization());
+		return deleteParticipants(dp.toArray(new GroupParticipantType[0]), group.getOrganizationId());
 	}
 
 	public GroupParticipantType newGroupRoleParticipation(BaseRoleType role, BaseGroupType group) throws ArgumentException
@@ -479,16 +480,16 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public List<UserGroupType> getGroupsInRole(BaseRoleType role) throws FactoryException, ArgumentException
 	{
 		List<GroupParticipantType> ap = getGroupRoleParticipations(role);
-		return getGroupListFromParticipations(ap.toArray(new GroupParticipantType[0]), role.getOrganization());
+		return getGroupListFromParticipations(ap.toArray(new GroupParticipantType[0]), role.getOrganizationId());
 	}
 	public List<GroupParticipantType> getGroupRoleParticipants(BaseGroupType group) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipantMatch(group,ParticipantEnumType.GROUP), group.getOrganization().getId());
+		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipantMatch(group,ParticipantEnumType.GROUP), group.getOrganizationId());
 		return convertList(dtlist);
 	}
 	public List<GroupParticipantType> getGroupRoleParticipations(BaseRoleType role)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipationMatch(role,ParticipantEnumType.GROUP), role.getOrganization().getId());
+		List<NameIdType> dtlist = getByField(QueryFields.getFieldParticipationMatch(role,ParticipantEnumType.GROUP), role.getOrganizationId());
 		return convertList(dtlist);
 	}
 

@@ -158,7 +158,7 @@ public class TestOrganizationFactory{
 		assertNotNull("Org is null", new_org);
 		
 
-		SecurityBean bean = KeyService.getPrimaryAsymmetricKey(new_org); 
+		SecurityBean bean = KeyService.getPrimaryAsymmetricKey(new_org.getId()); 
 				//OrganizationSecurity.getSecurityBean(new_org);
 		String test_data = "This is some test data.";
 		byte[] enc = SecurityUtil.encipher(bean, test_data.getBytes());
@@ -174,7 +174,7 @@ public class TestOrganizationFactory{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		bean = KeyService.getPrimaryAsymmetricKey(new_org);
+		bean = KeyService.getPrimaryAsymmetricKey(new_org.getId());
 				//OrganizationSecurity.getSecurityBean(new_org);
 		byte[] dec = SecurityUtil.decipher(bean, enc);
 		logger.info("Decrypted: " + (new String(dec)));

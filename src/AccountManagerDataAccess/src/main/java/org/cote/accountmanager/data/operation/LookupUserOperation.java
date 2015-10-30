@@ -46,10 +46,10 @@ public class LookupUserOperation implements IOperation {
 		}
 		UserType u = read(sourceFact,referenceFact);
 		if(u == null){
-			logger.error("Failed to find user " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganization().getName());
+			logger.error("Failed to find user " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganizationId());
 			return OperationResponseEnumType.FAILED;
 		}
-		logger.info("Found user " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganization().getName() + " having user id " + u.getId());
+		logger.info("Found user " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganizationId() + " having user id " + u.getId());
 		return OperationResponseEnumType.SUCCEEDED;
 	}
 	

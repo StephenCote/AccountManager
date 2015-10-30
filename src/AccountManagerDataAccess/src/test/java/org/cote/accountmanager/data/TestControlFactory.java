@@ -42,7 +42,7 @@ public class TestControlFactory extends BaseDataAccessTest {
 		CredentialType everyCred = new CredentialType();
 		everyCred.setNameType(NameEnumType.CREDENTIAL);
 		everyCred.setCredentialType(CredentialEnumType.HASHED_PASSWORD);
-		everyCred.setOrganization(testUser.getOrganization());
+		everyCred.setOrganizationId(testUser.getOrganizationId());
 		
 		CredentialType cred = CredentialService.getPrimaryCredential(testUser2,CredentialEnumType.HASHED_PASSWORD,false);
 		PolicyType pol = getPasswordStrengthPolicy(testUser);
@@ -113,11 +113,11 @@ public class TestControlFactory extends BaseDataAccessTest {
 		String patName = "Password Strength Pattern";
 		String clsRegExClass = "org.cote.accountmanager.data.operation.RegexOperation";
 		try {
-			rdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Rules", testUser.getOrganization());
-			pdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganization());
-			fdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Facts", testUser.getOrganization());
-			podir = Factories.getGroupFactory().getCreatePath(testUser, "~/Policies", testUser.getOrganization());
-			odir = Factories.getGroupFactory().getCreatePath(testUser, "~/Operations", testUser.getOrganization());
+			rdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Rules", testUser.getOrganizationId());
+			pdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId());
+			fdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Facts", testUser.getOrganizationId());
+			podir = Factories.getGroupFactory().getCreatePath(testUser, "~/Policies", testUser.getOrganizationId());
+			odir = Factories.getGroupFactory().getCreatePath(testUser, "~/Operations", testUser.getOrganizationId());
 			
 			FactType setCredParamFact = getCreateCredentialParamFact(testUser,"Set Credential Parameter",fdir);
 			setCredParamFact.setFactoryType(FactoryEnumType.CREDENTIAL);

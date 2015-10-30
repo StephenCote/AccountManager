@@ -96,7 +96,7 @@ public class TestMessageSpool extends BaseDataAccessTest{
 			XMLGregorianCalendar xCal = CalendarUtil.getXmlGregorianCalendar(now.getTime());
 			Date xCalCheck = CalendarUtil.getDate(xCal);
 			logger.info(xCal.toString() + " :: " + xCalCheck.toString());
-			messages = Factories.getMessageFactory().getMessagesAfterDate(SpoolNameEnumType.GENERAL, xCal, 0, testUser.getOrganization());
+			messages = Factories.getMessageFactory().getMessagesAfterDate(SpoolNameEnumType.GENERAL, xCal, 0, testUser.getOrganizationId());
 			
 		}
 		catch(FactoryException fe){

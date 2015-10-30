@@ -55,7 +55,7 @@ public class TestImportContacts extends BaseDataAccessTest{
 		
 		DirectoryGroupType pDir = null;
 		try{
-			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons-" + UUID.randomUUID().toString(), testUser.getHomeDirectory(), testUser.getOrganization());
+			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons-" + UUID.randomUUID().toString(), testUser.getHomeDirectory(), testUser.getOrganizationId());
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			for(int i = 0; i < sheet.getRows().size();i++){
 				importPersonRow(sessionId,pDir,sheet.getRows().get(i));	
@@ -98,7 +98,7 @@ public class TestImportContacts extends BaseDataAccessTest{
 		try {
 			dir = Factories.getGroupFactory().getCreateUserDirectory(testUser, "TestPersons");
 			parentRole = Factories.getRoleFactory().getCreateUserRole(testUser, "TestUserRoles", null);
-			parentGroup = Factories.getGroupFactory().getCreateUserGroup(testUser,"TestUserGroups",testUser.getHomeDirectory(),testUser.getOrganization());
+			parentGroup = Factories.getGroupFactory().getCreateUserGroup(testUser,"TestUserGroups",testUser.getHomeDirectory(),testUser.getOrganizationId());
 			
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 
@@ -115,13 +115,13 @@ public class TestImportContacts extends BaseDataAccessTest{
 					logger.warn("Skipping null person entry");
 					continue;
 				}
-				PersonType person = Factories.getPersonFactory().getByName(name, dir);
+				PersonType person = Factories.getPersonFactory().getByNameInGroup(name, dir);
 				UserType user = null;
 				if(person == null){
-					person = Factories.getPersonFactory().newPerson(testUser, dir);
+					person = Factories.getPersonFactory().newPerson(testUser, dir.getId());
 					person.setName(name);
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, person);
-					user = Factories.getUserFactory().newUser(name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, testUser.getOrganization());
+					user = Factories.getUserFactory().newUser(name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, testUser.getOrganizationId());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
 					CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, "password".getBytes("UTF-8"), true, true);
 
@@ -130,14 +130,14 @@ public class TestImportContacts extends BaseDataAccessTest{
 				else{
 					user = person.getUsers().get(0);
 				}
-				UserRoleType role = Factories.getRoleFactory().getUserRoleByName(roleName, parentRole, parentRole.getOrganization());
+				UserRoleType role = Factories.getRoleFactory().getUserRoleByName(roleName, parentRole, parentRole.getOrganizationId());
 				if(role == null){
 					role = Factories.getRoleFactory().newUserRole(testUser, roleName, parentRole);
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ROLE, role);
 				}
-				UserGroupType group = Factories.getGroupFactory().getUserGroupByName(groupName, parentGroup,parentGroup.getOrganization());
+				UserGroupType group = Factories.getGroupFactory().getUserGroupByName(groupName, parentGroup,parentGroup.getOrganizationId());
 				if(group == null){
-					group = Factories.getGroupFactory().newUserGroup(testUser, groupName, parentGroup, parentGroup.getOrganization());
+					group = Factories.getGroupFactory().newUserGroup(testUser, groupName, parentGroup, parentGroup.getOrganizationId());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, group);
 				}
 				if(userGroup.containsKey(name) == false){
@@ -190,7 +190,7 @@ public class TestImportContacts extends BaseDataAccessTest{
 		
 		logger.info(lastName + ":" + firstName + ":" + child + ":" + address + ":" + city + ":" + state + ":" + zip + ":" + phone);
 		try{
-			PersonType new_person = Factories.getPersonFactory().newPerson(testUser,pDir);
+			PersonType new_person = Factories.getPersonFactory().newPerson(testUser,pDir.getId());
 			new_person.setName(firstName + " " + lastName);
 			new_person.setFirstName(firstName);
 			new_person.setLastName(lastName);
@@ -203,7 +203,7 @@ public class TestImportContacts extends BaseDataAccessTest{
 			
 			new_person.setContactInformation(cit);
 			
-			AddressType addr = Factories.getAddressFactory().newAddress(testUser, pDir);
+			AddressType addr = Factories.getAddressFactory().newAddress(testUser, pDir.getId());
 			addr.setName(firstName + " " + lastName + " Address");
 			addr.setLocationType(LocationEnumType.HOME);
 			addr.setAddressLine1(address);
@@ -215,7 +215,7 @@ public class TestImportContacts extends BaseDataAccessTest{
 			
 			cit.getAddresses().add(addr);
 			
-			ContactType contact = Factories.getContactFactory().newContact(testUser, pDir);
+			ContactType contact = Factories.getContactFactory().newContact(testUser, pDir.getId());
 			contact.setName(firstName + " " + lastName + " Email");
 			contact.setContactType(ContactEnumType.EMAIL);
 			contact.setLocationType(LocationEnumType.HOME);
@@ -224,7 +224,7 @@ public class TestImportContacts extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT,contact);
 			cit.getContacts().add(contact);
 			
-			contact = Factories.getContactFactory().newContact(testUser, pDir);
+			contact = Factories.getContactFactory().newContact(testUser, pDir.getId());
 			contact.setName(firstName + " " + lastName + " Phone");
 			contact.setContactType(ContactEnumType.PHONE);
 			contact.setLocationType(LocationEnumType.HOME);

@@ -101,13 +101,13 @@ public class RuleFactory extends NameIdGroupFactory {
 	}
 	
 	
-	public RuleType newRule(UserType user, DirectoryGroupType group) throws ArgumentException
+	public RuleType newRule(UserType user, long groupId) throws ArgumentException
 	{
 		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
 		RuleType obj = new RuleType();
-		obj.setOrganization(group.getOrganization());
+		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
-		obj.setGroup(group);
+		obj.setGroupId(groupId);
 		obj.setRuleType(RuleEnumType.UNKNOWN);
 		obj.setCondition(ConditionEnumType.UNKNOWN);
 		obj.setNameType(NameEnumType.RULE);
@@ -116,19 +116,19 @@ public class RuleFactory extends NameIdGroupFactory {
 	
 	public boolean addRule(RuleType obj) throws FactoryException
 	{
-		if (obj.getGroup() == null) throw new FactoryException("Cannot add new Fact without a group");
+		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "rule");
 		try{
 			row.setCellValue("ruletype", obj.getRuleType().toString());
 			row.setCellValue("condition", obj.getCondition().toString());
-			row.setCellValue("groupid", obj.getGroup().getId());
+			row.setCellValue("groupid", obj.getGroupId());
 			row.setCellValue("description", obj.getDescription());
 			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("score", obj.getScore());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			if (insertRow(row)){
-				RuleType cobj = (bulkMode ? obj : (RuleType)getByName(obj.getName(), obj.getGroup()));
+				RuleType cobj = (bulkMode ? obj : (RuleType)getByNameInGroup(obj.getName(), obj.getGroupId(),obj.getOrganizationId()));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
 				BulkFactories.getBulkFactory().setDirty(factoryType);
 				BaseParticipantType part = null;
@@ -187,7 +187,7 @@ public class RuleFactory extends NameIdGroupFactory {
 						set.remove(data.getPatterns().get(i).getId());
 					}
 				}
-				Factories.getRuleParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganization());
+				Factories.getRuleParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				out_bool = true;
 			}
 			catch(ArgumentException ae){
@@ -207,27 +207,27 @@ public class RuleFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldRuleType(use_map.getRuleType()));
 		fields.add(QueryFields.getFieldCondition(use_map.getCondition()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 	}
 	public int deleteRulesByUser(UserType user) throws FactoryException
 	{
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganization().getId());
-		return deleteRulesByIds(ids, user.getOrganization());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganizationId());
+		return deleteRulesByIds(ids, user.getOrganizationId());
 	}
 
 	public boolean deleteRule(RuleType obj) throws FactoryException
 	{
 		removeFromCache(obj);
-		//int deleted = deleteById(obj.getId(), obj.getOrganization().getId());
-		int deleted = deleteRulesByIds(new long[]{obj.getId()},obj.getOrganization());
+		//int deleted = deleteById(obj.getId(), obj.getOrganizationId().getId());
+		int deleted = deleteRulesByIds(new long[]{obj.getId()},obj.getOrganizationId());
 		return (deleted > 0);
 	}
-	public int deleteRulesByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deleteRulesByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
-			Factories.getRuleParticipationFactory().deleteParticipations(ids, organization);
+			Factories.getRuleParticipationFactory().deleteParticipations(ids, organizationId);
 			/*
 			Factories.getRuleParticipationFactory().deleteParticipations(ids, organization);
 			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
@@ -241,25 +241,25 @@ public class RuleFactory extends NameIdGroupFactory {
 		// Can't just delete by group;
 		// Need to get ids so as to delete participations as well
 		//
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 		/// TODO: Delete participations
 		///
-		return deleteRulesByIds(ids, group.getOrganization());
+		return deleteRulesByIds(ids, group.getOrganizationId());
 	}
-	public List<FactType> getRules(QueryField[] matches, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<FactType> getRules(QueryField[] matches, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> lst = getByField(matches, organization.getId());
+		List<NameIdType> lst = getByField(matches, organizationId);
 		return convertList(lst);
 
 	}
 	
-	public List<RuleType>  getRuleList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<RuleType>  getRuleList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organization);
+		return getPaginatedList(fields, startRecord, recordCount, organizationId);
 	}
-	public List<RuleType> getRuleListByIds(long[] ids, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<RuleType> getRuleListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organization);
+		return getListByIds(ids, organizationId);
 	}
 	
 }

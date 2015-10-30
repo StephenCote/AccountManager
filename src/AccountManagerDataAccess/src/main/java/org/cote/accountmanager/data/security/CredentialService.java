@@ -49,6 +49,9 @@ public class CredentialService {
 
 		return cred;
 	}
+	public static boolean validateTokenCredential(NameIdType object, CredentialType credential, String token){
+		return validatePasswordCredential(object, credential, token);
+	}
 	public static boolean validatePasswordCredential(NameIdType object, CredentialType credential, String password){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHENTICATE, "Validate hashed password", AuditEnumType.valueOf(object.getNameType().toString()), object.getName() + " (#" + object.getId() + ")");
 		AuditService.targetAudit(audit, AuditEnumType.CREDENTIAL, credential.getCredentialType().toString() + "(# " + credential.getId() + ")");
@@ -60,13 +63,14 @@ public class CredentialService {
 			return out_bool;
 		}
 		switch(credential.getCredentialType()){
+			case TOKEN:
 			case HASHED_PASSWORD:
-				out_bool = validateHashedPasswordCredential(credential, password);
+			case ENCRYPTED_PASSWORD:
+				out_bool = comparePasswordCredential(credential, password);
 				break;
 			case LEGACY_PASSWORD:
-				out_bool = validateLegacyPasswordCredential(credential, password);
+				out_bool = compareLegacyPasswordCredential(credential, password);
 				break;
-			case ENCRYPTED_PASSWORD:
 			default:
 				logger.error("Not implemented");
 				break;
@@ -83,7 +87,7 @@ public class CredentialService {
 		CredentialType cred = new CredentialType();
 		cred.setCredentialType(CredentialEnumType.LEGACY_PASSWORD);
 		cred.setNameType(NameEnumType.CREDENTIAL);
-		cred.setOrganization(user.getOrganization());
+		cred.setOrganizationId(user.getOrganizationId());
 		cred.setReferenceId(user.getId());
 		cred.setReferenceType(FactoryEnumType.USER);
 		try {
@@ -98,7 +102,7 @@ public class CredentialService {
 	/// New system is to obtain the credential for the object, then run it through the validator
 	/// This is throw-away to migrate off the legacy system - just take the hashed password in, lookup the user, and call it good
 	///
-	public static boolean validateLegacyPasswordCredential(CredentialType credential, String password){
+	public static boolean compareLegacyPasswordCredential(CredentialType credential, String password){
 		boolean out_bool = false;
 		if(credential.getReferenceType() != FactoryEnumType.USER){
 			logger.error("Unsupported legacy type");
@@ -107,7 +111,7 @@ public class CredentialService {
 		String passwordHash = new String(credential.getCredential());
 		logger.info("Hash = " + passwordHash);
 		try {
-			List<NameIdType> users = Factories.getUserFactory().getList(new QueryField[]{QueryFields.getFieldId(credential.getReferenceId()), QueryFields.getFieldPassword(passwordHash)}, credential.getOrganization());
+			List<NameIdType> users = Factories.getUserFactory().getList(new QueryField[]{QueryFields.getFieldId(credential.getReferenceId()), QueryFields.getFieldPassword(passwordHash)}, credential.getOrganizationId());
 			if (users.size() == 1){
 				out_bool = true;
 			}
@@ -121,36 +125,76 @@ public class CredentialService {
 
 		return out_bool;
 	}
-	public static boolean validateHashedPasswordCredential(CredentialType credential, String password){
-		boolean out_bool = false;
-		if(credential.getCredentialType() != CredentialEnumType.HASHED_PASSWORD){
-			logger.error("Invalid credential type for a hashed password validation");
-			return out_bool;
+	public static byte[] decryptCredential(CredentialType credential){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.OPEN, "Decrypted credential", AuditEnumType.CREDENTIAL, credential.getObjectId());
+		AuditService.targetAudit(audit, AuditEnumType.CREDENTIAL, credential.getCredentialType().toString() + "(# " + credential.getId() + ")");
+
+		byte[] outBytes = new byte[0];
+		if(credential.getCredentialType() != CredentialEnumType.ENCRYPTED_IDENTITY && credential.getCredentialType() != CredentialEnumType.ENCRYPTED_PASSWORD){
+			AuditService.denyResult(audit, "Credential type " + credential.getCredentialType().toString() + " is not supported");
+			return outBytes;
 		}
-		byte[] hash = credential.getCredential();
-		if(hash.length == 0){
-			logger.error("Credential hash is invalid");
-			return out_bool;
+		outBytes = extractCredential(credential);
+		if(outBytes.length > 0){
+			AuditService.permitResult(audit, "Extracted credential");
+		}
+		else{
+			AuditService.denyResult(audit, "Failed to extract credential");
+		}
+		return outBytes;
+	}
+	private static byte[] extractCredential(CredentialType credential){
+		byte[] outBytes = new byte[0];
+		byte[] cred = credential.getCredential();
+		if(cred.length == 0){
+			logger.error("Credential value is empty");
+			return outBytes;
 		}
 		if(credential.getEnciphered()){
 			if(credential.getKeyId() == null){
 				logger.error("Enciphered credential does not define a key");
-				return out_bool;
+				return outBytes;
 			}
-			SecurityBean bean = KeyService.getAsymmetricKeyByObjectId(credential.getKeyId(), credential.getOrganization());
+			SecurityBean bean = KeyService.getAsymmetricKeyByObjectId(credential.getKeyId(), credential.getOrganizationId());
 			if(bean == null){
 				logger.error("Credential key is invalid");
-				return out_bool;
+				return outBytes;
 			}
-			hash = SecurityUtil.decrypt(bean, hash);
-			if(hash.length == 0){
-				logger.error("Post-decrypted credential hash is invalid");
-				return out_bool;
+			cred = SecurityUtil.decrypt(bean, cred);
+			if(cred.length == 0){
+				logger.error("Post-decrypted credential is invalid");
+				return outBytes;
 			}
+			outBytes = cred;
 		}
+		else{
+			outBytes = cred;
+		}
+		return outBytes;
+	}
+	
+	public static boolean comparePasswordCredential(CredentialType credential, String password){
+		boolean out_bool = false;
+		if(credential.getCredentialType() != CredentialEnumType.HASHED_PASSWORD && credential.getCredentialType() != CredentialEnumType.ENCRYPTED_PASSWORD && credential.getCredentialType() != CredentialEnumType.TOKEN){
+			logger.error("Invalid credential type for a the specified validation");
+			return out_bool;
+		}
+		byte[] cred = extractCredential(credential);
+
+		if(cred.length == 0){
+			logger.error("Credential is invalid");
+			return out_bool;
+		}
+
 		try {
-			byte[] matchHash = SecurityUtil.getDigest(password.getBytes("UTF-8"), credential.getSalt());
-			out_bool = Arrays.areEqual(hash, matchHash);
+			byte[] pwdBytes = password.getBytes("UTF-8");
+			if(credential.getCredentialType() == CredentialEnumType.HASHED_PASSWORD){
+				byte[] matchHash = SecurityUtil.getDigest(pwdBytes, credential.getSalt());
+				out_bool = Arrays.areEqual(cred, matchHash);
+			}
+			else if(credential.getCredentialType() == CredentialEnumType.ENCRYPTED_PASSWORD || credential.getCredentialType() == CredentialEnumType.TOKEN){
+				out_bool = Arrays.areEqual(cred, pwdBytes);
+			}
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -169,8 +213,24 @@ public class CredentialService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return newCredential(CredentialEnumType.HASHED_PASSWORD, null, owner, targetObject, pwdBytes, primary, true);
+		return newCredential(CredentialEnumType.HASHED_PASSWORD, bulkSessionId, owner, targetObject, pwdBytes, primary, true);
 	}
+	
+	public static CredentialType newTokenCredential(UserType owner, NameIdType targetObject, String token, boolean primary){
+		return newTokenCredential(null,owner,targetObject,token,primary);
+	}
+	public static CredentialType newTokenCredential(String bulkSessionId, UserType owner, NameIdType targetObject, String token, boolean primary){
+
+		byte[] pwdBytes = new byte[0];
+		try {
+			pwdBytes = token.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return newCredential(CredentialEnumType.TOKEN, bulkSessionId, owner, targetObject, pwdBytes, primary, true);
+	}
+	
 	/// TODO: At the moment, a bulk credential requires a synchronous key insertion
 	///
 	///
@@ -209,7 +269,7 @@ public class CredentialService {
 			
 			if(bulkSessionId != null) BulkFactories.getBulkFactory().createBulkEntry(bulkSessionId, FactoryEnumType.CREDENTIAL, cred);
 			else if(Factories.getCredentialFactory().addCredential(cred)){
-				cred = Factories.getCredentialFactory().getCredentialByObjectId(cred.getObjectId(),cred.getOrganization());
+				cred = Factories.getCredentialFactory().getCredentialByObjectId(cred.getObjectId(),cred.getOrganizationId());
 			}
 			else{
 				logger.error("Failed to add credential");

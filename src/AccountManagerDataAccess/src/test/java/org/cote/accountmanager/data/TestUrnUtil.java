@@ -18,7 +18,7 @@ public class TestUrnUtil extends BaseDataAccessTest {
 		DirectoryGroupType group = null;
 		try{
 			Factories.getUserFactory().populate(testUser);
-			group = Factories.getGroupFactory().newDirectoryGroup(testUser,UUID.randomUUID().toString(),testUser.getHomeDirectory(), testUser.getOrganization());
+			group = Factories.getGroupFactory().newDirectoryGroup(testUser,UUID.randomUUID().toString(),testUser.getHomeDirectory(), testUser.getOrganizationId());
 			urn = UrnUtil.getUrn(group);
 		}
 		catch(FactoryException fe){

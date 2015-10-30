@@ -55,13 +55,13 @@ public class TestDataFactory extends BaseDataAccessTest {
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
 		try{
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
 
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
 			if(dir == null){
-				dir = gf.newDirectoryGroup("Test", rootDir, Factories.getDevelopmentOrganization());
+				dir = gf.newDirectoryGroup("Test", rootDir, Factories.getDevelopmentOrganization().getId());
 				gf.addGroup(dir);
-				dir = gf.getDirectoryByName("Test", rootDir, Factories.getDevelopmentOrganization());
+				dir = gf.getDirectoryByName("Test", rootDir, Factories.getDevelopmentOrganization().getId());
 			}
 		}
 		catch(FactoryException fe){
@@ -84,9 +84,9 @@ public class TestDataFactory extends BaseDataAccessTest {
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
 		try{
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
-			DataType new_data = df.newData(testUser,  dir);
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
+			DataType new_data = df.newData(testUser,  dir.getId());
 			logger.info("BEGIN DATATYPE");
 			logger.info(new_data.getName());
 			logger.info(new_data.getCreatedDate().toString());
@@ -118,13 +118,13 @@ public class TestDataFactory extends BaseDataAccessTest {
 		testShortDataName = data_name;
 
 		try{
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
 			/*
 			new_data = df.getDataByName(testShortDataName, dir);
 			if(new_data != null) df.deleteData(new_data);
 			*/
-			new_data = df.newData(testUser, dir);
+			new_data = df.newData(testUser, dir.getId());
 			new_data.setName(data_name);
 			new_data.setMimeType("text/plain");
 			DataUtil.setValueString(new_data, "This is the example text.");
@@ -157,9 +157,9 @@ public class TestDataFactory extends BaseDataAccessTest {
 		String data_name = "Example - " + System.currentTimeMillis();
 		testLongDataName = data_name;
 		try{
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
-			new_data = df.newData(testUser, dir);
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
+			new_data = df.newData(testUser, dir.getId());
 			new_data.setName(data_name);
 			new_data.setMimeType("text/plain");
 			DataUtil.setValue(new_data, "This is the example text.".getBytes());
@@ -190,11 +190,11 @@ public class TestDataFactory extends BaseDataAccessTest {
 		DirectoryGroupType rootDir = null;
 		String data_name = "Example - " + System.currentTimeMillis();
 		testEncLongDataName = data_name;
-		SecurityBean bean = KeyService.getPrimarySymmetricKey(Factories.getDevelopmentOrganization());
+		SecurityBean bean = KeyService.getPrimarySymmetricKey(Factories.getDevelopmentOrganization().getId());
 		try{
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
-			new_data = df.newData(testUser, dir);
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
+			new_data = df.newData(testUser, dir.getId());
 			DataUtil.setCipher(new_data, bean);
 			new_data.setEncipher(true);
 			new_data.setName(data_name);
@@ -228,8 +228,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 		DirectoryGroupType rootDir = null;
 		DataType data = null;
 		try{
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
 			logger.info("Looking for " + testShortDataName + " in " + dir.getId());
 			data = df.getDataByName(testShortDataName, dir);
 		}
@@ -260,8 +260,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 		DirectoryGroupType rootDir = null;
 		DataType data = null;
 		try{
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
 			logger.info("Looking for " + testEncLongDataName + " in " + dir.getId());
 			data = df.getDataByName(testEncLongDataName, dir);
 		}
@@ -292,9 +292,9 @@ public class TestDataFactory extends BaseDataAccessTest {
 		List<DataType> data = new ArrayList<DataType>();
 		boolean updated = false;
 		try {
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
-			data = df.getDataListByGroup(dir, true, 0, 0, Factories.getDevelopmentOrganization());
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
+			data = df.getDataListByGroup(dir, true, 0, 0, Factories.getDevelopmentOrganization().getId());
 			
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
@@ -318,8 +318,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 		DataType data = null;
 		boolean updated = false;
 		try{
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
 			logger.info("Looking for " + testLongDataName + " in " + dir.getId());
 			data = df.getDataByName(testLongDataName, dir);
 			DataUtil.setValue(data,  "New Example Value".getBytes());
@@ -366,8 +366,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 		DataType data = null;
 		boolean updated = false;
 		try{
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
 
 			
 			logger.info("Looking for " + testShortDataName + " in " + dir.getId());
@@ -419,8 +419,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 		DataType data = null;
 		boolean deleted = false;
 		try {
-			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization());
-			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization());
+			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
+			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
 /*
 			data = df.getDataByName(testShortDataName, dir);
 			assertTrue("Failed to delete short data", df.deleteData(data));

@@ -95,14 +95,14 @@ public class FactFactory extends NameIdGroupFactory {
 	}
 	
 	
-	public FactType newFact(UserType user, DirectoryGroupType group) throws ArgumentException
+	public FactType newFact(UserType user, long groupId) throws ArgumentException
 	{
 		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
 		FactType obj = new FactType();
-		obj.setOrganization(group.getOrganization());
+		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
 		obj.setFactType(FactEnumType.UNKNOWN);
-		obj.setGroup(group);
+		obj.setGroupId(groupId);
 		obj.setNameType(NameEnumType.FACT);
 		obj.setFactoryType(FactoryEnumType.UNKNOWN);
 		obj.setSourceDataType(SqlDataEnumType.UNKNOWN);
@@ -111,13 +111,13 @@ public class FactFactory extends NameIdGroupFactory {
 	
 	public boolean addFact(FactType obj) throws FactoryException
 	{
-		if (obj.getGroup() == null) throw new FactoryException("Cannot add new Fact without a group");
+		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "fact");
 		try{
 			row.setCellValue("facttype", obj.getFactType().toString());
 			row.setCellValue("factorytype", obj.getFactoryType().toString());
-			row.setCellValue("groupid", obj.getGroup().getId());
+			row.setCellValue("groupid", obj.getGroupId());
 			row.setCellValue("factdata", obj.getFactData());
 			row.setCellValue("description", obj.getDescription());
 			//row.setCellValue("urn", obj.getUrn());
@@ -180,24 +180,24 @@ public class FactFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldFactType(use_map.getFactType()));
 		fields.add(QueryFields.getFieldFactoryType(use_map.getFactoryType()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 	}
 	public int deleteFactsByUser(UserType user) throws FactoryException
 	{
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganization().getId());
-		return deleteFactsByIds(ids, user.getOrganization());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganizationId());
+		return deleteFactsByIds(ids, user.getOrganizationId());
 	}
 
 	public boolean deleteFact(FactType obj) throws FactoryException
 	{
 		removeFromCache(obj);
 		removeFromCache(obj,getUrnCacheKey(obj));
-		int deleted = deleteById(obj.getId(), obj.getOrganization().getId());
+		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
 	}
-	public int deleteFactsByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deleteFactsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
 			/*
@@ -213,26 +213,26 @@ public class FactFactory extends NameIdGroupFactory {
 		// Can't just delete by group;
 		// Need to get ids so as to delete participations as well
 		//
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 		/// TODO: Delete participations
 		///
-		return deleteFactsByIds(ids, group.getOrganization());
+		return deleteFactsByIds(ids, group.getOrganizationId());
 	}
 
 	
-	public List<FactType> getFacts(QueryField[] matches, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<FactType> getFacts(QueryField[] matches, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> lst = getByField(matches, organization.getId());
+		List<NameIdType> lst = getByField(matches, organizationId);
 		return convertList(lst);
 
 	}
-	public List<FactType>  getFactList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<FactType>  getFactList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organization);
+		return getPaginatedList(fields, startRecord, recordCount, organizationId);
 	}
-	public List<FactType> getFactListByIds(long[] ids, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<FactType> getFactListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organization);
+		return getListByIds(ids, organizationId);
 	}
 	
 }

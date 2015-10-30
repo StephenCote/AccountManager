@@ -225,7 +225,7 @@ public class SessionFactory extends FactoryBase {
 		UserSessionType session = newUserSession(session_id);
 		if(user != null){
 			session.setUserId(user.getId());
-			session.setOrganizationId(user.getOrganization().getId());
+			session.setOrganizationId(user.getOrganizationId());
 		}
 		return session;
 	}
@@ -439,28 +439,28 @@ public class SessionFactory extends FactoryBase {
 	}
 	/// 2014/03/13 - made this synchronized due to race condition from initial session sending in multiple requests
 	///
-	public synchronized UserSessionType getCreateSession(String session_id, OrganizationType organization) throws FactoryException{
+	public synchronized UserSessionType getCreateSession(String session_id, long organizationId) throws FactoryException{
 		if(session_id == null){
 			logger.error("Session ID is null");
 			return null;
 		}
-		if(organization == null){
+		if(organizationId <= 0L){
 			logger.error("Organization is null");
 			return null;
 		}
-		UserSessionType session = getSession(session_id, organization);
+		UserSessionType session = getSession(session_id, organizationId);
 		if(session != null) return session;
 		session = this.newUserSession(session_id);
-		session.setOrganizationId(organization.getId());
+		session.setOrganizationId(organizationId);
 		if(addSession(session)) return session;
 		return null;
 	}
-	public UserSessionType getSession(String session_id, OrganizationType organization) throws FactoryException
+	public UserSessionType getSession(String session_id, long organizationId) throws FactoryException
 	{
 		UserSessionType out_session = readCache(session_id);
 		if(out_session != null) return out_session;
 		ProcessingInstructionType instruction = getPagingInstruction(0);
-		List<UserSessionType> sessions = getByField(new QueryField[]{QueryFields.getFieldSessionId(session_id)}, instruction, organization.getId());
+		List<UserSessionType> sessions = getByField(new QueryField[]{QueryFields.getFieldSessionId(session_id)}, instruction, organizationId);
 		if(sessions.size() > 0){
 			UserSessionType session = sessions.get(0);
 			if(isValid(session) == false){

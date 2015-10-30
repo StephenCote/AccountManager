@@ -98,13 +98,13 @@ public class FunctionFactory extends NameIdGroupFactory {
 	}
 	
 	
-	public FunctionType newFunction(UserType user, DirectoryGroupType group) throws ArgumentException
+	public FunctionType newFunction(UserType user, long groupId) throws ArgumentException
 	{
 		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
 		FunctionType obj = new FunctionType();
-		obj.setOrganization(group.getOrganization());
+		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
-		obj.setGroup(group);
+		obj.setGroupId(groupId);
 		obj.setFunctionType(FunctionEnumType.UNKNOWN);
 		obj.setNameType(NameEnumType.FUNCTION);
 		return obj;
@@ -112,12 +112,12 @@ public class FunctionFactory extends NameIdGroupFactory {
 	
 	public boolean addFunction(FunctionType obj) throws FactoryException
 	{
-		if (obj.getGroup() == null) throw new FactoryException("Cannot add new Fact without a group");
+		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "function");
 		try{
 			row.setCellValue("functiontype", obj.getFunctionType().toString());
-			row.setCellValue("groupid", obj.getGroup().getId());
+			row.setCellValue("groupid", obj.getGroupId());
 			row.setCellValue("description", obj.getDescription());
 			row.setCellValue("score", obj.getScore());
 			//row.setCellValue("urn", obj.getUrn());
@@ -131,7 +131,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 				row.setCellValue("sourceurl", obj.getSourceUrl());
 			}
 			if (insertRow(row)){
-				FunctionType cobj = (bulkMode ? obj : (FunctionType)getByName(obj.getName(), obj.getGroup()));
+				FunctionType cobj = (bulkMode ? obj : (FunctionType)getByNameInGroup(obj.getName(), obj.getGroupId(),obj.getOrganizationId()));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
 				BulkFactories.getBulkFactory().setDirty(factoryType);
 				BaseParticipantType part = null;
@@ -191,7 +191,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 						set.remove(data.getFacts().get(i).getId());
 					}
 				}
-				Factories.getFunctionParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganization());
+				Factories.getFunctionParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				out_bool = true;
 			}
 			catch(ArgumentException ae){
@@ -211,31 +211,31 @@ public class FunctionFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
 		fields.add(QueryFields.getFieldFunctionType(use_map.getFunctionType()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 	}
 	public int deleteFunctionsByUser(UserType user) throws FactoryException
 	{
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganization().getId());
-		return deleteFunctionsByIds(ids, user.getOrganization());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganizationId());
+		return deleteFunctionsByIds(ids, user.getOrganizationId());
 	}
 
 	public boolean deleteFunction(FunctionType obj) throws FactoryException
 	{
 		removeFromCache(obj);
-		//int deleted = deleteById(obj.getId(), obj.getOrganization().getId());
-		int deleted = deleteFunctionsByIds(new long[]{obj.getId()},obj.getOrganization());
+		//int deleted = deleteById(obj.getId(), obj.getOrganizationId());
+		int deleted = deleteFunctionsByIds(new long[]{obj.getId()},obj.getOrganizationId());
 		return (deleted > 0);
 	}
-	public int deleteFunctionsByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deleteFunctionsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
-			Factories.getFunctionParticipationFactory().deleteParticipations(ids, organization);
+			Factories.getFunctionParticipationFactory().deleteParticipations(ids, organizationId);
 			/*
-			Factories.getFunctionParticipationFactory().deleteParticipations(ids, organization);
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
+			Factories.getFunctionParticipationFactory().deleteParticipations(ids, organizationId);
+			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
+			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
 			*/
 		}
 		return deleted;
@@ -245,25 +245,25 @@ public class FunctionFactory extends NameIdGroupFactory {
 		// Can't just delete by group;
 		// Need to get ids so as to delete participations as well
 		//
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 		/// TODO: Delete participations
 		///
-		return deleteFunctionsByIds(ids, group.getOrganization());
+		return deleteFunctionsByIds(ids, group.getOrganizationId());
 	}
-	public List<FactType> getFunctions(QueryField[] matches, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<FactType> getFunctions(QueryField[] matches, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> lst = getByField(matches, organization.getId());
+		List<NameIdType> lst = getByField(matches, organizationId);
 		return convertList(lst);
 
 	}
 	
-	public List<FunctionType>  getFunctionList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<FunctionType>  getFunctionList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organization);
+		return getPaginatedList(fields, startRecord, recordCount, organizationId);
 	}
-	public List<FunctionType> getFunctionListByIds(long[] ids, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<FunctionType> getFunctionListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organization);
+		return getListByIds(ids, organizationId);
 	}
 	
 }

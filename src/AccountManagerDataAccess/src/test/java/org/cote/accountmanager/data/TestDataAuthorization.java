@@ -25,10 +25,10 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 
 	private void switchPermissions(UserType owner, UserType user, DataType data, boolean enabled){
 		try {
-			AuthorizationService.switchData(owner, user, data, AuthorizationService.getViewDataPermission(owner.getOrganization()),enabled);
-			AuthorizationService.switchData(owner, user, data, AuthorizationService.getEditDataPermission(owner.getOrganization()),enabled);
-			AuthorizationService.switchData(owner, user, data, AuthorizationService.getCreateDataPermission(owner.getOrganization()),enabled);
-			AuthorizationService.switchData(owner, user, data, AuthorizationService.getDeleteDataPermission(owner.getOrganization()),enabled);
+			AuthorizationService.switchData(owner, user, data, AuthorizationService.getViewDataPermission(owner.getOrganizationId()),enabled);
+			AuthorizationService.switchData(owner, user, data, AuthorizationService.getEditDataPermission(owner.getOrganizationId()),enabled);
+			AuthorizationService.switchData(owner, user, data, AuthorizationService.getCreateDataPermission(owner.getOrganizationId()),enabled);
+			AuthorizationService.switchData(owner, user, data, AuthorizationService.getDeleteDataPermission(owner.getOrganizationId()),enabled);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -45,11 +45,11 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 	public void testEncryptedData(){
 		UserType user = getUser("testuser1","password");
 		
-		SecurityBean bean = KeyService.getPrimarySymmetricKey(Factories.getDevelopmentOrganization());
+		SecurityBean bean = KeyService.getPrimarySymmetricKey(Factories.getDevelopmentOrganization().getId());
 		
 		try{
 			DirectoryGroupType dir = Factories.getGroupFactory().getCreateUserDirectory(user, "CryptoData");
-			DataType data = Factories.getDataFactory().newData(user, dir);
+			DataType data = Factories.getDataFactory().newData(user, dir.getId());
 			String d1name = UUID.randomUUID().toString();
 			String d2name = UUID.randomUUID().toString();
 			DataUtil.setPassword(data, "My special password");
@@ -246,20 +246,20 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			
 			 /// Cleanup any leftover permission checks
 			
-			AuthorizationService.switchData(user2, user1, data3, AuthorizationService.getEditDataPermission(data3.getOrganization()), false);
-			EffectiveAuthorizationService.rebuildUserRoleCache(Arrays.asList(new UserType[]{user1,user2}), user1.getOrganization());
+			AuthorizationService.switchData(user2, user1, data3, AuthorizationService.getEditDataPermission(data3.getOrganizationId()), false);
+			EffectiveAuthorizationService.rebuildUserRoleCache(Arrays.asList(new UserType[]{user1,user2}), user1.getOrganizationId());
 			logger.info("Check default permissions - only owner and data admin can change data in a given org");
 			assertTrue(AuthorizationService.canChangeData(user1, data1));
 			assertTrue(AuthorizationService.canChangeData(user2, data3));
 			assertFalse(AuthorizationService.canChangeData(user1, data3));
 			logger.info("Give user #1 permission to change user #2's data");
-			AuthorizationService.switchData(user2, user1, data3, AuthorizationService.getEditDataPermission(data3.getOrganization()), true);
+			AuthorizationService.switchData(user2, user1, data3, AuthorizationService.getEditDataPermission(data3.getOrganizationId()), true);
 			//EffectiveAuthorizationService.rebuildUserRoleCache(Arrays.asList(new UserType[]{user1,user2}), user1.getOrganization());
 			//EffectiveAuthorizationService.rebuildDataRoleCache(data3);
 			EffectiveAuthorizationService.clearCache(data3);
 			assertTrue(AuthorizationService.canChangeData(user1, data3));
 			logger.info("Remove user #1 permission to change user #2's data");
-			AuthorizationService.switchData(user2, user1, data3, AuthorizationService.getEditDataPermission(data3.getOrganization()), false);
+			AuthorizationService.switchData(user2, user1, data3, AuthorizationService.getEditDataPermission(data3.getOrganizationId()), false);
 			//EffectiveAuthorizationService.rebuildUserRoleCache(Arrays.asList(new UserType[]{user1,user2}), user1.getOrganization());
 			//EffectiveAuthorizationService.rebuildDataRoleCache(data3);
 			EffectiveAuthorizationService.clearCache(data3);

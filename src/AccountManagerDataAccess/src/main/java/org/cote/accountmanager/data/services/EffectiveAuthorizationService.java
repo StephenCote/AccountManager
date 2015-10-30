@@ -61,6 +61,7 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -73,6 +74,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.ParticipationEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 
 
@@ -80,6 +82,9 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 /*
  
  Updates
+ 	2015/10/15 - Added database functions to unwind group and role hierarchies when evaluating entitlements.  The Effective Authorization service will still be used for computing effective roles, but the entitlement checks will be migrated from the *Rights views to use the
+ 	*_member_entitlement functions, because (a) it will make it more generic, and (b) will get used by the more generic authorize/unauthorize methods.
+ 
     2014/08/04 - Extended authorization query to view rights inherited from linked user and account entities.  Does not include siblings or dependency persons. This allows for asserting whether a person has an entitlement because their account or user has that entitlement.
     Example Query:
     	SELECT distinct referenceid FROM grouprights WHERE referenceid = 8 AND groupid = 5307 AND affecttype = 'GRANT_PERMISSION' AND affectid IN (343) and organizationid = 4 and referencetype = 'PERSON'
@@ -97,7 +102,7 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
  view groupUserRights - direct group<-user permission assignments
  view dataUserRights - direct data<-user permission assignments
  function roles_from_leaf(id,orgId) - computes a role hierarchy up from a given node.  Permissions accumulate up (per RBAC spec)
- ALT: function roles_to_leaf(id,org) - computes a role hierarchy down from a given node. Permissions accumulate down (inverse spec)
+ ALT: function roles_to_leaf(id,organizationId) - computes a role hierarchy down from a given node. Permissions accumulate down (inverse spec)
  view effectiveUserRoles - computed permission<->role distribution, following the role hierarchy and mapping to users or groups of users
  function cache_user_roles(id,orgId) - caches the result of effectiveUserRoles for a specified user into the userrolecache table
  view effectiveGroupRoleRights - maps userrolecache to groupparticipation to yield all effective permissions by group id by user
@@ -282,6 +287,8 @@ public class EffectiveAuthorizationService {
 				BaseGroupType group = (BaseGroupType)object;
 				if(group.getGroupType() == GroupEnumType.DATA){
 					clearPerCache(userGroupMap, group);
+					clearPerCache(accountGroupMap, group);
+					clearPerCache(personGroupMap, group);
 					clearPerCache(roleGroupMap, group);
 				}
 				rebuildGroups.remove(group.getId());
@@ -289,6 +296,8 @@ public class EffectiveAuthorizationService {
 			case DATA:
 				DataType data = (DataType)object;
 				clearPerCache(userDataMap, data);
+				clearPerCache(accountDataMap,data);
+				clearPerCache(personDataMap,data);
 				clearPerCache(roleDataMap, data);
 				rebuildData.remove(data.getId());
 				break;
@@ -536,6 +545,266 @@ public class EffectiveAuthorizationService {
 		}
 		
 	}
+	
+	
+	public static boolean isMemberCacheable(NameIdType object){
+		return (object.getNameType() == NameEnumType.ROLE || object.getNameType() == NameEnumType.PERSON || object.getNameType() == NameEnumType.ACCOUNT || object.getNameType() == NameEnumType.USER);
+	}
+	public static boolean isObjectCacheable(NameIdType object){
+		return (object.getNameType() == NameEnumType.GROUP || object.getNameType() == NameEnumType.DATA || object.getNameType() == NameEnumType.ROLE);
+	}
+	public static String getEntitlementCheckString(NameIdType object, NameIdType member, BasePermissionType[] permissions){
+		StringBuffer buff = new StringBuffer();
+		buff.append(member.getNameType().toString() + " " + member.getName() + " (");
+		for(int i = 0; i < permissions.length;i++){
+			if(i > 0) buff.append(", ");
+			buff.append(permissions[i].getName());
+		}
+		buff.append(") " + object.getNameType().toString() + " " + object.getName());
+		return buff.toString();
+	}
+	public static boolean getEntitlementsGrantAccess(NameIdType object, NameIdType member, BasePermissionType[] permissions){
+		/// The backing query and related database functions support zero permission length and a null member value
+		/// but for direct effective authorization checks, these are required
+		///
+		if(object == null || member == null || permissions == null || permissions.length == 0){
+			logger.error("Invalid parameters");
+			return false;
+		}
+		boolean out_bool = false;
+		boolean cache = (isMemberCacheable(member) && isObjectCacheable(object));
+		String entChkStr = getEntitlementCheckString(object,member,permissions);
+		if(cache && hasPerCache(member, object, permissions)){
+			logger.debug("*** CACHED AUTHORIZATION: " + entChkStr);
+			return getPerCacheValue(getActorMap(member.getNameType(),object.getNameType()), member, object, permissions);
+		}
+		
+		List<EntitlementType> ents = getEffectiveMemberEntitlements(object, member, permissions,false);
+
+		if(ents.size() > 0){
+			out_bool = true;
+		}
+		/// Note: While this could be handled in the DB, I left it outside because I didn't want to have to fork to a different view or function
+		/// that included unwinding the person dimension - there is a DB function that does this, but it doesn't scale beyond data and group types.
+		///
+		else if(member.getNameType() == NameEnumType.PERSON){
+			PersonType person = (PersonType)member;
+			try {
+				Factories.getPersonFactory().populate(person);
+			} catch (FactoryException | ArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			for(int i = 0; i < person.getAccounts().size();i++){
+				if(getEntitlementsGrantAccess(object, person.getAccounts().get(i),permissions)){
+					out_bool = true;
+					break;
+				}
+				//ents = getEffectiveMemberEntitlements(object, person.getAccounts().get(i), permissions);
+				//if(ents.size() > 0) break;
+			}
+		}
+		logger.info("*** AUTHORIZING: " + entChkStr);
+		/*
+		for(int i = 0; i < ents.size();i++){
+			logger.debug("*** AUTHORIZATION RELEVANCE: " + ents.get(i).getEntitlementType().toString() + " " + ents.get(i).getEntitlementId() + " to " + ents.get(i).getMemberType().toString() + " " + ents.get(i).getMemberId() + " for " + ents.get(i).getObjectType() + " " + ents.get(i).getObjectId());
+		}
+		*/
+		if(cache){
+			logger.debug("*** CACHING AUTHORIZATION: " + entChkStr);
+			addToPerCache(member,object,permissions,out_bool);
+		}
+		return out_bool;
+	}
+	/*
+	 * Given some entity type with a participation table
+	 * Find the effective entitlements for the specified member and specified entitlements.
+	 * - Warning: The broader the search, the more recursion takes place at participation scope, such that a A permissions * B groups * C accounts can take a fair amount of time to unwind.
+	*
+	 * Oh my god, it's a dynamic query. Why isn't this a sproc?  What heresy!
+	 *    - Because for N number of *participation tables, a sproc would basically wind up being the same thing,
+	 *    - And I didn't like the options for dynamically constructing the table reference inside a function in PostGres
+	 *    -
+	 * Note: This intentionally does not use materialized views.  I was trying to find a query that could build a materialized view faster than the groupRights and dataRights query,
+	 * But I also wanted to increase scope to all participation tables, and this query allows that without having to add in all the cache hooks, functions, and views that the other caches use.
+	 * 
+	 * Also note that this query does not directly hit the caches.  This is because the caches are for specific type combinations, while the functions used in the query remain agnostic
+	 * So for specific checks, such as whether an object is in a role or group, use the corresponding method
+	 * But when looking for an entitlement check, use this function because it will check across a broader set of possible combinations and then locally cache the entitlement check
+	 *    
+	 * There are a couple functions defined for this as well.
+	 */
+	public static List<EntitlementType> getEffectiveMemberEntitlements(NameIdType object, NameIdType member, BasePermissionType[] permissions, boolean exclusion){
+		Long[] permissionIds = new Long[permissions.length];
+		for(int i = 0; i < permissions.length;i++){
+			//if(i > 0) buff.append(",");
+			//buff.append(permissions[i].getId());
+			permissionIds[i] = permissions[i].getId();
+		}
+		return getEffectiveMemberEntitlements(object,member,permissionIds,exclusion);
+	}
+	public static List<EntitlementType> getEffectiveMemberEntitlements(NameIdType object, NameIdType member, Long[] permissionIds, boolean exclusion){
+		List<EntitlementType> out_ents = new ArrayList<EntitlementType>();
+		/// TODO: Need to add check that object type has a corresponding participation capability
+		///
+		if(object == null || object.getNameType() == NameEnumType.UNKNOWN){
+			logger.error("Invalid object or object name type");
+			return out_ents;
+		}
+	
+
+		String referenceType = (member == null ? "" : member.getNameType().toString());
+		long referenceId = (member == null ? 0L : member.getId());
+		long objectId = object.getId();
+		NameEnumType objectType = object.getNameType();
+		Connection conn = ConnectionFactory.getInstance().getConnection();
+		CONNECTION_TYPE connType = DBFactory.getConnectionType(conn);
+		String token = DBFactory.getParamToken(connType);
+
+		  // Match the db function version - RETURNS TABLE (id BIGINT,affectid BIGINT, affecttype text,referenceid BIGINT, referencetype text)
+		String sqlQuery =
+		"SELECT participationid as id, affectid, affecttype, referenceid, referencetype FROM ("
+		+ "SELECT PP.participationid,PP.affectid,PP.affecttype,"
+		+"	CASE WHEN GM.referenceid > 0 THEN GM.referenceid"
+		+"	ELSE PP.participantid END as referenceid,"
+		+"	CASE WHEN GM.referencetype <> '' THEN GM.referencetype"
+		+"	ELSE PP.participanttype END as referencetype"
+		+"	FROM " + object.getNameType().toString().toLowerCase() + "participation PP"
+		+"	LEFT JOIN group_membership(PP.participantid) GM ON (" + token + " = '' OR GM.referencetype = " + token + ") AND (" + token + " = 0 OR GM.referenceid = " + token + ")"
+		+"	WHERE " + (exclusion ? "NOT ":"") + "PP.participationid = " + token + " AND (0 = cardinality(" + token + ") OR PP.affectId = ANY(" + token + ")) AND PP.participanttype = 'GROUP'"
+		+"	UNION ALL"
+		+"	SELECT PP.participationid,PP.affectid,PP.affecttype,"
+		+"	CASE WHEN GM.referenceid > 0 THEN GM.referenceid"
+		+"	ELSE PP.participantid END as referenceid,"
+		+"	CASE WHEN GM.referencetype <> '' THEN GM.referencetype"
+		+"	ELSE PP.participanttype END as referencetype"
+		+"	FROM " + object.getNameType().toString().toLowerCase() + "participation PP"
+		+"	LEFT JOIN role_membership(PP.participantid) GM ON (" + token + " = '' OR GM.referencetype = " + token + ") AND (" + token + " = 0 OR GM.referenceid = " + token + ")"
+		+"	WHERE " + (exclusion ? "NOT ":"") + "PP.participationid = " + token + " AND (0 = cardinality(" + token + ") OR PP.affectId = ANY(" + token + ")) AND PP.participanttype = 'ROLE'	"
+		+"	UNION ALL"
+		+"	SELECT PP.participationid,PP.affectid,PP.affecttype,"
+		+"	PP.participantid as referenceid,PP.participanttype as referencetype"
+		+"	FROM " + object.getNameType().toString().toLowerCase() + "participation PP"
+		+"	WHERE " + (exclusion ? "NOT ":"") + "PP.participationid = " + token + ""
+		+"	AND (0 = cardinality(" + token + ") OR PP.affectId = ANY(" + token + "))"
+		+"	AND NOT PP.participanttype IN('GROUP','ROLE')"
+		+"	AND (" + token + " = '' OR PP.participanttype = " + token + ")"
+		+"	AND (" + token + " = 0 OR PP.participantid =" + token + ")"
+		+ ") DM WHERE (" + token + " = '' OR referencetype = " + token + ") AND (" + token + " = 0 OR referenceid =" + token + ") AND affectid > 0;"
+		;
+		
+		//logger.info(sqlQuery);
+		StringBuffer buff = new StringBuffer();
+		logger.info((exclusion ? "NOT " : "") + "Object: " + object.getId() + " / " + object.getUrn());
+		logger.info("Member: " + (member == null ? "null" : member.getId() + " / " + member.getUrn()));
+		for(int i = 0; i < permissionIds.length;i++){
+			if(i > 0) buff.append(", ");
+			buff.append(Long.toString(permissionIds[i]));
+		}
+		logger.info("permissions: " + buff.toString());
+		/*
+		 * PARAM ORDER
+		 
+		1: rtype
+		2: rtype
+		3: rid
+		4: rid
+		5: id
+		6: per[]
+		7: per[]
+		8: rtype
+		9: rtype
+		10: rid
+		11: rid
+		12: id
+		13: per[]
+		14: per[]
+		15: id
+		16: per[]
+		17: per[]
+		18: rtype
+		19: rtype
+		20: rid
+		21: rid
+		22: rtype
+		23: rtype
+		24: rid
+		25: rid
+		*/
+		try{
+			long start_query = System.currentTimeMillis();
+			PreparedStatement statement = conn.prepareStatement(sqlQuery);
+			statement.setString(1, referenceType);
+			statement.setString(2, referenceType);
+			statement.setLong(3, referenceId);
+			statement.setLong(4, referenceId);
+			statement.setLong(5, objectId);
+			statement.setArray(6, conn.createArrayOf("bigint", permissionIds));
+			statement.setArray(7, conn.createArrayOf("bigint", permissionIds));
+			statement.setString(8, referenceType);
+			statement.setString(9, referenceType);
+			statement.setLong(10, referenceId);
+			statement.setLong(11, referenceId);
+			statement.setLong(12, objectId);
+			statement.setArray(13, conn.createArrayOf("bigint", permissionIds));
+			statement.setArray(14, conn.createArrayOf("bigint", permissionIds));
+			statement.setLong(15, objectId);
+			statement.setArray(16, conn.createArrayOf("bigint", permissionIds));
+			statement.setArray(17, conn.createArrayOf("bigint", permissionIds));
+			statement.setString(18, referenceType);
+			statement.setString(19, referenceType);
+			statement.setLong(20, referenceId);
+			statement.setLong(21, referenceId);
+			statement.setString(22, referenceType);
+			statement.setString(23, referenceType);
+			statement.setLong(24, referenceId);
+			statement.setLong(25, referenceId);
+			
+			ResultSet rset = statement.executeQuery();
+			while(rset.next()){
+				//long match_id = rset.getLong(1);
+				EntitlementType ent = new EntitlementType();
+				ent.setObjectId(objectId);
+				ent.setObjectType(objectType);
+				ent.setMemberId(rset.getLong(4));
+				ent.setMemberType(NameEnumType.valueOf(rset.getString(5)));
+				ent.setEntitlementId(rset.getLong(2));
+				ent.setEntitlementType(AffectEnumType.valueOf(rset.getString(3)));
+				ent.setOrganizationId(object.getOrganizationId());
+				out_ents.add(ent);
+				//out_bool = true;
+				//logger.debug("Matched " + referenceType + " " + referenceId + " having at least one permission for " + object.getNameType() + " " + objectId);
+			}
+			if(out_ents.size() > 0){
+				logger.debug("Matched " + referenceType + " " + referenceId + " having at least one permission for " + object.getNameType() + " " + objectId);
+			}
+			else{
+				logger.debug("Did not match " + referenceType + " " + referenceId + " having at least one permission for " + object.getNameType() + " " + objectId);
+			}
+			
+			rset.close();
+			statement.close();
+			long stop_query = System.currentTimeMillis();
+			long diff = (stop_query - start_query);
+			//if(diff > 50L) 
+			logger.warn("*** QUERY TIME: " + (stop_query - start_query) + "ms");
+		}
+		catch(SQLException sqe){
+			logger.error(sqe.getMessage());
+			sqe.printStackTrace();
+		}
+		finally{
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		return out_ents;
+	}
+	
 	private static boolean getAuthorization(String tableName,String idColumnName,String matchColumnName, NameIdType actor, boolean requireReference, NameIdType obj, BasePermissionType[] permissions)  throws ArgumentException, FactoryException
 	{
 
@@ -566,23 +835,23 @@ public class EffectiveAuthorizationService {
 			//logger.debug(sql);
 			stat.setLong(1, actor.getId());
 			stat.setLong(2,obj.getId());
-			stat.setLong(3, obj.getOrganization().getId());
+			stat.setLong(3, obj.getOrganizationId());
 			if(requireReference) stat.setString(4, actor.getNameType().toString());
 			if(linkPerson){
 				stat.setLong(5, actor.getId());
 				stat.setLong(6, obj.getId());
-				stat.setLong(7, obj.getOrganization().getId());
+				stat.setLong(7, obj.getOrganizationId());
 			}
 			ResultSet rset = stat.executeQuery();
 			if(rset.next()){
 				long match_id = rset.getLong(1);
 				//addToCache(user,role);
 				out_bool = true;
-				logger.debug("Matched " + actor.getNameType() + " " + match_id + (linkPerson ? " (via person linkage)" : "") + " having at least one permission in (" + buff.toString() + ") for " + obj.getNameType() + " " + obj.getId() + " in org " + obj.getOrganization().getId());
+				logger.debug("Matched " + actor.getNameType() + " " + match_id + (linkPerson ? " (via person linkage)" : "") + " having at least one permission in (" + buff.toString() + ") for " + obj.getNameType() + " " + obj.getId() + " in org " + obj.getOrganizationId());
 
 			}
 			else{
-				logger.debug("Did not match " + actor.getNameType() + " " + actor.getId() + " having at least one permission in (" + buff.toString() + ") for " + obj.getNameType() + " " + obj.getId() + " in org " + obj.getOrganization().getId());
+				logger.debug("Did not match " + actor.getNameType() + " " + actor.getId() + " having at least one permission in (" + buff.toString() + ") for " + obj.getNameType() + " " + obj.getId() + " in org " + obj.getOrganizationId());
 			}
 			rset.close();
 			stat.close();
@@ -612,7 +881,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(person, data, permissions)){
-			//logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
+			//logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking data " + data.getId() + " in org " + data.getOrganizationId());
 			return getCacheValue(person,data,permissions);
 
 		}
@@ -629,7 +898,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(person, role, permissions)){
-			//logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			//logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking role " + role.getId() + " in org " + role.getOrganizationId());
 			return getCacheValue(person,role,permissions);
 
 		}
@@ -645,7 +914,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(person, group, permissions)){
-			//logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
+			//logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking group " + group.getId() + " in org " + group.getOrganizationId());
 			return getCacheValue(person,group,permissions);
 
 		}
@@ -662,7 +931,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(account, data, permissions)){
-			//logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
+			//logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking data " + data.getId() + " in org " + data.getOrganizationId());
 			return getCacheValue(account,data,permissions);
 
 		}
@@ -679,7 +948,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(account, role, permissions)){
-			//logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			//logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking role " + role.getId() + " in org " + role.getOrganizationId());
 			return getCacheValue(account,role,permissions);
 
 		}
@@ -695,7 +964,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(account, group, permissions)){
-			//logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
+			//logger.debug("Cached match " + account.getNameType() + " " + account.getId() + " checking group " + group.getId() + " in org " + group.getOrganizationId());
 			return getCacheValue(account,group,permissions);
 
 		}
@@ -711,7 +980,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(user, data, permissions)){
-			//logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
+			//logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking data " + data.getId() + " in org " + data.getOrganizationId());
 			return getCacheValue(user,data,permissions);
 
 		}
@@ -728,7 +997,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(user, role, permissions)){
-			//logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			//logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking role " + role.getId() + " in org " + role.getOrganizationId());
 			return getCacheValue(user,role,permissions);
 
 		}
@@ -744,7 +1013,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(user, group, permissions)){
-			//logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
+			//logger.debug("Cached match " + user.getNameType() + " " + user.getId() + " checking group " + group.getId() + " in org " + group.getOrganizationId());
 			return getCacheValue(user,group,permissions);
 
 		}
@@ -761,7 +1030,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(actor, data, permissions)){
-			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking data " + data.getId() + " in org " + data.getOrganization().getId());
+			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking data " + data.getId() + " in org " + data.getOrganizationId());
 			return getCacheValue(actor,data,permissions);
 
 		}
@@ -778,7 +1047,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(actor, role, permissions)){
-			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking role " + role.getId() + " in org " + role.getOrganizationId());
 			return getCacheValue(actor,role,permissions);
 
 		}
@@ -794,7 +1063,7 @@ public class EffectiveAuthorizationService {
 		if(permissions.length == 0) throw new ArgumentException("At least one permission must be specified");
 		
 		if(hasPerCache(actor, group, permissions)){
-			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking group " + group.getId() + " in org " + group.getOrganization().getId());
+			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking group " + group.getId() + " in org " + group.getOrganizationId());
 			return getCacheValue(actor,group,permissions);
 
 		}
@@ -833,7 +1102,7 @@ public class EffectiveAuthorizationService {
 		{
 		if(affect_type != AffectEnumType.UNKNOWN) throw new ArgumentException("AffectType is not supported for checking role participation (at the moment)");
 		if(hasCache(actor,role)){
-			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking role " + role.getId() + " in org " + role.getOrganization().getId());
+			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking role " + role.getId() + " in org " + role.getOrganizationId());
 			return getCacheValue(actor,role);
 		}
 		String prefix = null;
@@ -865,14 +1134,14 @@ public class EffectiveAuthorizationService {
 
 			stat.setLong(1, actor.getId());
 			stat.setLong(2,role.getId());
-			stat.setLong(3, role.getOrganization().getId());
+			stat.setLong(3, role.getOrganizationId());
 			if(linkPerson){
 				stat.setLong(4, actor.getId());
 				stat.setLong(5,role.getId());
-				stat.setLong(6, role.getOrganization().getId());
+				stat.setLong(6, role.getOrganizationId());
 				stat.setLong(7, actor.getId());
 				stat.setLong(8,role.getId());
-				stat.setLong(9, role.getOrganization().getId());
+				stat.setLong(9, role.getOrganizationId());
 			}
 			ResultSet rset = stat.executeQuery();
 			if(rset.next()){
@@ -883,11 +1152,11 @@ public class EffectiveAuthorizationService {
 				///
 				addToCache(actor,role,true);
 				out_bool = true;
-				logger.debug("Matched " + actor.getNameType() + " " + match_id + (linkPerson ? " (via person linkage)" : "") + " having role " + role.getId() + " in org " + role.getOrganization().getId());
+				logger.debug("Matched " + actor.getNameType() + " " + match_id + (linkPerson ? " (via person linkage)" : "") + " having role " + role.getId() + " in org " + role.getOrganizationId());
 			}
 			else{
 				addToCache(actor,role,false);
-				logger.warn("Failed to match " + actor.getNameType() + " " + actor.getName() + " (" + actor.getId() + ") with role " + role.getName() + " (" + role.getId() + ") in organization (" + role.getOrganization().getId() + ")");
+				logger.warn("Failed to match " + actor.getNameType() + " " + actor.getName() + " (" + actor.getId() + ") with role " + role.getName() + " (" + role.getId() + ") in organization (" + role.getOrganizationId() + ")");
 			}
 			rset.close();
 			stat.close();
@@ -953,12 +1222,12 @@ public class EffectiveAuthorizationService {
 			logger.debug(sql);
 	
 			stat.setLong(1, actor.getId());
-			stat.setLong(2, actor.getOrganization().getId());
+			stat.setLong(2, actor.getOrganizationId());
 			if(linkPerson){
 				stat.setLong(3, actor.getId());
-				stat.setLong(4, actor.getOrganization().getId());
+				stat.setLong(4, actor.getOrganizationId());
 				stat.setLong(5, actor.getId());
-				stat.setLong(6, actor.getOrganization().getId());
+				stat.setLong(6, actor.getOrganizationId());
 			}
 			ResultSet rset = stat.executeQuery();
 			List<Long> ids = new ArrayList<Long>();
@@ -967,7 +1236,7 @@ public class EffectiveAuthorizationService {
 			}
 			rset.close();
 			stat.close();
-			roles = Factories.getRoleFactory().getListByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])), actor.getOrganization());
+			roles = Factories.getRoleFactory().getListByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])), actor.getOrganizationId());
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
@@ -1037,7 +1306,7 @@ public class EffectiveAuthorizationService {
 			}
 			logger.info("Rebuilding role cache for " + roles.size() + " roles");
 			if(roles.size() > 0){
-				rebuildRoleRoleCache(roles,roles.get(0).getOrganization());
+				rebuildRoleRoleCache(roles,roles.get(0).getOrganizationId());
 				rebuildRoles.clear();
 			}
 			///rebuildRoles.clear();
@@ -1079,7 +1348,7 @@ public class EffectiveAuthorizationService {
 			}
 			logger.info("Rebuilding role cache for " + groups.size() + " groups");
 			if(groups.size() > 0){
-				rebuildGroupRoleCache(groups,groups.get(0).getOrganization());
+				rebuildGroupRoleCache(groups,groups.get(0).getOrganizationId());
 				rebuildGroups.clear();
 			}
 				
@@ -1087,28 +1356,28 @@ public class EffectiveAuthorizationService {
 			List<UserType> users = Arrays.asList(rebuildUsers.values().toArray(new UserType[0]));
 			logger.info("Rebuilding role cache for " + users.size() + " users");
 			if(users.size() > 0){
-				out_bool = rebuildUserRoleCache(users,users.get(0).getOrganization());
+				out_bool = rebuildUserRoleCache(users,users.get(0).getOrganizationId());
 				rebuildUsers.clear();
 			}
 			
 			List<AccountType> accounts = Arrays.asList(rebuildAccounts.values().toArray(new AccountType[0]));
 			logger.info("Rebuilding role cache for " + accounts.size() + " accounts");
 			if(accounts.size() > 0){
-				out_bool = rebuildAccountRoleCache(accounts,accounts.get(0).getOrganization());
+				out_bool = rebuildAccountRoleCache(accounts,accounts.get(0).getOrganizationId());
 				rebuildAccounts.clear();
 			}
 
 			List<PersonType> persons = Arrays.asList(rebuildPersons.values().toArray(new PersonType[0]));
 			logger.info("Rebuilding role cache for " + persons.size() + " persons");
 			if(persons.size() > 0){
-				out_bool = rebuildPersonRoleCache(persons,persons.get(0).getOrganization());
+				out_bool = rebuildPersonRoleCache(persons,persons.get(0).getOrganizationId());
 				rebuildPersons.clear();
 			}
 			
 			List<DataType> data = Arrays.asList(rebuildData.values().toArray(new DataType[0]));
 			logger.info("Rebuilding role cache for " + data.size() + " data");
 			if(data.size() > 0){
-				out_bool = rebuildDataRoleCache(data,data.get(0).getOrganization());
+				out_bool = rebuildDataRoleCache(data,data.get(0).getOrganizationId());
 				rebuildData.clear();
 			}
 		}
@@ -1119,43 +1388,43 @@ public class EffectiveAuthorizationService {
 		
 	}
 	public static boolean rebuildGroupRoleCache(BaseGroupType user) throws ArgumentException{
-		return rebuildRoleCache("cache_group_roles",Arrays.asList(user),user.getOrganization());
+		return rebuildRoleCache("cache_group_roles",Arrays.asList(user),user.getOrganizationId());
 	}
-	public static boolean rebuildGroupRoleCache(List<BaseGroupType> users, OrganizationType org) throws ArgumentException{
-		return rebuildRoleCache("cache_group_roles",users,org);
+	public static boolean rebuildGroupRoleCache(List<BaseGroupType> users, long organizationId) throws ArgumentException{
+		return rebuildRoleCache("cache_group_roles",users,organizationId);
 	}
 	public static boolean rebuildDataRoleCache(DataType data) throws ArgumentException{
-		return rebuildRoleCache("cache_data_roles",Arrays.asList(data),data.getOrganization());
+		return rebuildRoleCache("cache_data_roles",Arrays.asList(data),data.getOrganizationId());
 	}
-	public static boolean rebuildDataRoleCache(List<DataType> users, OrganizationType org) throws ArgumentException{
-		return rebuildRoleCache("cache_data_roles",users,org);
+	public static boolean rebuildDataRoleCache(List<DataType> users, long organizationId) throws ArgumentException{
+		return rebuildRoleCache("cache_data_roles",users,organizationId);
 	}
 	public static boolean rebuildRoleRoleCache(BaseRoleType role) throws ArgumentException{
-		return rebuildRoleCache("cache_role_roles",Arrays.asList(role),role.getOrganization());
+		return rebuildRoleCache("cache_role_roles",Arrays.asList(role),role.getOrganizationId());
 	}
-	public static boolean rebuildRoleRoleCache(List<BaseRoleType> roles, OrganizationType org) throws ArgumentException{
-		return rebuildRoleCache("cache_role_roles",roles,org);
+	public static boolean rebuildRoleRoleCache(List<BaseRoleType> roles, long organizationId) throws ArgumentException{
+		return rebuildRoleCache("cache_role_roles",roles,organizationId);
 	}
 	public static boolean rebuildUserRoleCache(UserType user) throws ArgumentException{
-		return rebuildRoleCache("cache_user_roles",Arrays.asList(user),user.getOrganization());
+		return rebuildRoleCache("cache_user_roles",Arrays.asList(user),user.getOrganizationId());
 	}
-	public static boolean rebuildUserRoleCache(List<UserType> users, OrganizationType org) throws ArgumentException{
-		return rebuildRoleCache("cache_user_roles",users,org);
+	public static boolean rebuildUserRoleCache(List<UserType> users, long organizationId) throws ArgumentException{
+		return rebuildRoleCache("cache_user_roles",users,organizationId);
 	}
 	public static boolean rebuildAccountRoleCache(AccountType account) throws ArgumentException{
-		return rebuildRoleCache("cache_account_roles",Arrays.asList(account),account.getOrganization());
+		return rebuildRoleCache("cache_account_roles",Arrays.asList(account),account.getOrganizationId());
 	}
-	public static boolean rebuildAccountRoleCache(List<AccountType> accounts, OrganizationType org) throws ArgumentException{
-		return rebuildRoleCache("cache_account_roles",accounts,org);
+	public static boolean rebuildAccountRoleCache(List<AccountType> accounts, long organizationId) throws ArgumentException{
+		return rebuildRoleCache("cache_account_roles",accounts,organizationId);
 	}
 	public static boolean rebuildPersonRoleCache(PersonType person) throws ArgumentException{
-		return rebuildRoleCache("cache_person_roles",Arrays.asList(person),person.getOrganization());
+		return rebuildRoleCache("cache_person_roles",Arrays.asList(person),person.getOrganizationId());
 	}
-	public static boolean rebuildPersonRoleCache(List<PersonType> persons, OrganizationType org) throws ArgumentException{
-		return rebuildRoleCache("cache_person_roles",persons,org);
+	public static boolean rebuildPersonRoleCache(List<PersonType> persons, long organizationId) throws ArgumentException{
+		return rebuildRoleCache("cache_person_roles",persons,organizationId);
 	}
 
-	private static <T> boolean rebuildRoleCache(String functionName, List<T> objects,OrganizationType org) throws ArgumentException{
+	private static <T> boolean rebuildRoleCache(String functionName, List<T> objects,long organizationId) throws ArgumentException{
 		boolean out_bool = false;
 		Connection conn = ConnectionFactory.getInstance().getConnection();
 		int maxIn = maximum_insert_size;
@@ -1188,7 +1457,7 @@ public class EffectiveAuthorizationService {
 			
 			for(int i = 0; i < buffs.size();i++){
 				//String sql = "SELECT U.id,cache_user_roles(U.id,U.organizationid) from users U WHERE U.organizationid = " + org.getId() + " AND U.id IN (" + buffs.get(i).toString() + ")";
-				String sql = "SELECT " + functionName + "(ARRAY[" + buffs.get(i).toString() + "]," + org.getId() + ")";
+				String sql = "SELECT " + functionName + "(ARRAY[" + buffs.get(i).toString() + "]," + organizationId + ")";
 				//logger.debug(sql);
 				ResultSet rset = stat.executeQuery(sql);
 				if(rset.next()){
@@ -1215,41 +1484,41 @@ public class EffectiveAuthorizationService {
 		logger.info("Rebuilt role cache with " + updated + " operations");
 		return (updated > 0);
 	}
-	public static boolean rebuildGroupRoleCache(OrganizationType org){
-		return rebuildRoleCache("cache_all_group_roles",org); 
+	public static boolean rebuildGroupRoleCache(long organizationId){
+		return rebuildRoleCache("cache_all_group_roles",organizationId); 
 	}
-	public static boolean rebuildRoleRoleCache(OrganizationType org){
-		return rebuildRoleCache("cache_all_role_roles",org);
+	public static boolean rebuildRoleRoleCache(long organizationId){
+		return rebuildRoleCache("cache_all_role_roles",organizationId);
 	}
-	public static boolean rebuildDataRoleCache(OrganizationType org){
-		return rebuildRoleCache("cache_all_data_roles",org);
+	public static boolean rebuildDataRoleCache(long organizationId){
+		return rebuildRoleCache("cache_all_data_roles",organizationId);
 	}
-	public static boolean rebuildUserRoleCache(OrganizationType org){
-		return rebuildRoleCache("cache_all_user_roles",org);
+	public static boolean rebuildUserRoleCache(long organizationId){
+		return rebuildRoleCache("cache_all_user_roles",organizationId);
 	}
-	public static boolean rebuildAccountRoleCache(OrganizationType org){
-		return rebuildRoleCache("cache_all_account_roles",org);
+	public static boolean rebuildAccountRoleCache(long organizationId){
+		return rebuildRoleCache("cache_all_account_roles",organizationId);
 	}
-	public static boolean rebuildPersonRoleCache(OrganizationType org){
-		return rebuildRoleCache("cache_all_person_roles",org);
+	public static boolean rebuildPersonRoleCache(long organizationId){
+		return rebuildRoleCache("cache_all_person_roles",organizationId);
 	}
-	public static boolean rebuildRoleCache(OrganizationType org){
+	public static boolean rebuildRoleCache(long organizationId){
 		return (
-				rebuildRoleCache("cache_all_group_roles",org)
+				rebuildRoleCache("cache_all_group_roles",organizationId)
 				&&
-				rebuildRoleCache("cache_all_role_roles",org)
+				rebuildRoleCache("cache_all_role_roles",organizationId)
 				&&
-				rebuildRoleCache("cache_all_data_roles",org)
+				rebuildRoleCache("cache_all_data_roles",organizationId)
 				&&
-				rebuildRoleCache("cache_all_user_roles",org)
+				rebuildRoleCache("cache_all_user_roles",organizationId)
 				&&
-				rebuildRoleCache("cache_all_account_roles",org)
+				rebuildRoleCache("cache_all_account_roles",organizationId)
 				&&
-				rebuildRoleCache("cache_all_person_roles",org)
+				rebuildRoleCache("cache_all_person_roles",organizationId)
 			);
 	}
 
-	private static boolean rebuildRoleCache(String functionName,OrganizationType org){
+	private static boolean rebuildRoleCache(String functionName,long organizationId){
 		boolean out_bool = false;
 		Connection conn = ConnectionFactory.getInstance().getConnection();
 
@@ -1258,7 +1527,7 @@ public class EffectiveAuthorizationService {
 		try{
 			//PreparedStatement stat = conn.prepareStatement("SELECT U.id,cache_user_roles(U.id,U.organizationid) from users U WHERE U.organizationid = " + token);
 			Statement stat = conn.createStatement();
-			ResultSet rset = stat.executeQuery("SELECT " + functionName + "(" + org.getId() + ");");
+			ResultSet rset = stat.executeQuery("SELECT " + functionName + "(" + organizationId + ");");
 			if(rset.next()){
 				out_bool = true;
 				clearCache();
@@ -1295,9 +1564,10 @@ public class EffectiveAuthorizationService {
 		
 		return out_bool;
 	}
+	
 	public static boolean rebuildEntitlementsCache(){
 		boolean out_bool = false;
-		
+		logger.warn("DEV DEV - Still Under Development");
 		long start = System.currentTimeMillis();
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		try {

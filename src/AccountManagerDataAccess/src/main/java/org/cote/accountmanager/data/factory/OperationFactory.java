@@ -95,13 +95,13 @@ public class OperationFactory extends NameIdGroupFactory {
 	}
 	
 	
-	public OperationType newOperation(UserType user, DirectoryGroupType group) throws ArgumentException
+	public OperationType newOperation(UserType user, long groupId) throws ArgumentException
 	{
 		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
 		OperationType obj = new OperationType();
-		obj.setOrganization(group.getOrganization());
+		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
-		obj.setGroup(group);
+		obj.setGroupId(groupId);
 		obj.setOperationType(OperationEnumType.UNKNOWN);
 		obj.setNameType(NameEnumType.OPERATION);
 		return obj;
@@ -109,12 +109,12 @@ public class OperationFactory extends NameIdGroupFactory {
 	
 	public boolean addOperation(OperationType obj) throws FactoryException
 	{
-		if (obj.getGroup() == null) throw new FactoryException("Cannot add new Fact without a group");
+		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "operation");
 		try{
 			row.setCellValue("operationtype", obj.getOperationType().toString());
-			row.setCellValue("groupid", obj.getGroup().getId());
+			row.setCellValue("groupid", obj.getGroupId());
 			row.setCellValue("description", obj.getDescription());
 			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("score", obj.getScore());
@@ -163,30 +163,30 @@ public class OperationFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
 		fields.add(QueryFields.getFieldOperationType(use_map.getOperationType()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 	}
 	public int deleteOperationsByUser(UserType user) throws FactoryException
 	{
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganization().getId());
-		return deleteOperationsByIds(ids, user.getOrganization());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganizationId());
+		return deleteOperationsByIds(ids, user.getOrganizationId());
 	}
 
 	public boolean deleteOperation(OperationType obj) throws FactoryException
 	{
 		removeFromCache(obj);
 		removeFromCache(obj,getUrnCacheKey(obj));
-		int deleted = deleteById(obj.getId(), obj.getOrganization().getId());
+		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
 	}
-	public int deleteOperationsByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deleteOperationsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
 			/*
-			Factories.getOperationParticipationFactory().deleteParticipations(ids, organization);
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
+			Factories.getOperationParticipationFactory().deleteParticipations(ids, organizationId);
+			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
+			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
 			*/
 		}
 		return deleted;
@@ -196,31 +196,31 @@ public class OperationFactory extends NameIdGroupFactory {
 		// Can't just delete by group;
 		// Need to get ids so as to delete participations as well
 		//
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 		/// TODO: Delete participations
 		///
-		return deleteOperationsByIds(ids, group.getOrganization());
+		return deleteOperationsByIds(ids, group.getOrganizationId());
 	}
 	public String getUrnCacheKey(OperationType operation){
-		return getUrnCacheKey(operation.getUrn(),operation.getOrganization());
+		return getUrnCacheKey(operation.getUrn(),operation.getOrganizationId());
 	}
-	public String getUrnCacheKey(String urn, OrganizationType org){
-		return urn + "-" + org.getId();
+	public String getUrnCacheKey(String urn, long organizationId){
+		return urn + "-" + organizationId;
 	}
 	
-	public List<OperationType> getOperations(QueryField[] matches, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<OperationType> getOperations(QueryField[] matches, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> lst = getByField(matches, organization.getId());
+		List<NameIdType> lst = getByField(matches, organizationId);
 		return convertList(lst);
 
 	}
-	public List<OperationType>  getOperationList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<OperationType>  getOperationList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organization);
+		return getPaginatedList(fields, startRecord, recordCount, organizationId);
 	}
-	public List<OperationType> getOperationListByIds(long[] ids, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<OperationType> getOperationListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organization);
+		return getListByIds(ids, organizationId);
 	}
 	
 }

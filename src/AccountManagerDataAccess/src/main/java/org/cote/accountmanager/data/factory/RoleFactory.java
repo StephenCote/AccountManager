@@ -54,6 +54,7 @@ import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
@@ -81,74 +82,115 @@ public class RoleFactory extends NameIdFactory {
 	}
 	
 	@Override
+	public <T> void normalize(T object) throws ArgumentException, FactoryException{
+		super.normalize(object);
+		if(object == null){
+			throw new ArgumentException("Null object");
+		}
+		BaseRoleType obj = (BaseRoleType)object;
+		if(obj.getParentId().compareTo(0L) != 0) return;
+		if(obj.getParentPath() == null || obj.getParentPath().length() == 0 || obj.getRoleType() == RoleEnumType.UNKNOWN){
+			throw new ArgumentException("Invalid object parent path or type");	
+		}
+		BaseRoleType dir = null;
+		try{
+			dir = findRole(obj.getRoleType(), obj.getParentPath(), obj.getOrganizationId());
+			if(dir == null){
+				throw new ArgumentException("Invalid group path '" + obj.getParentPath() + "'");
+			}
+			obj.setParentId(dir.getId());
+		}
+		catch(DataAccessException e){
+			throw new FactoryException(e.getMessage());
+		}
+	}
+	
+	@Override
+	public <T> void denormalize(T object) throws ArgumentException, FactoryException{
+		super.denormalize(object);
+		if(object == null){
+			throw new ArgumentException("Null object");
+		}
+		BaseRoleType obj = (BaseRoleType)object;
+		if(obj.getParentId().compareTo(0L) == 0){
+			logger.warn("Root level role does not have a path");
+			return;	
+		}
+		if(obj.getParentPath() != null) return;
+		BaseRoleType parent = Factories.getRoleFactory().getRoleById(obj.getParentId(), obj.getOrganizationId());
+		obj.setParentPath(Factories.getRoleFactory().getRolePath(parent));
+	}
+	
+	
+	@Override
 	public <T> String getCacheKeyName(T obj){
 		BaseRoleType role = (BaseRoleType)obj;
-		return role.getRoleType().toString() + "-" + role.getName() + "-" + role.getParentId() + "-" + role.getOrganization().getId();
+		return role.getRoleType().toString() + "-" + role.getName() + "-" + role.getParentId() + "-" + role.getOrganizationId();
 	}
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase("groups")){
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	protected void addDefaultRoles(OrganizationType organization) throws DataAccessException, FactoryException, ArgumentException
+	protected void addDefaultRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		addDefaultAccountRoles(organization);
-		addDefaultUserRoles(organization);
+		addDefaultAccountRoles(organizationId);
+		addDefaultUserRoles(organizationId);
 	}
-	public void addDefaultPersonRoles(OrganizationType organization) throws DataAccessException, FactoryException, ArgumentException
+	public void addDefaultPersonRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getUserFactory().getUserByName("Admin", organization);
+		UserType admin = Factories.getUserFactory().getUserByName("Admin", organizationId);
 		
 		PersonRoleType root_role = newPersonRole(admin,"Root");
 		addRole(root_role);
-		root_role = getPersonRoleByName("Root", organization);
+		root_role = getPersonRoleByName("Root", organizationId);
 
 		PersonRoleType home_role = getCreatePersonRole(admin,"Home", root_role);
 
 	}
-	public void addDefaultAccountRoles(OrganizationType organization) throws DataAccessException, FactoryException, ArgumentException
+	public void addDefaultAccountRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getUserFactory().getUserByName("Admin", organization);
+		UserType admin = Factories.getUserFactory().getUserByName("Admin", organizationId);
 		
 		AccountRoleType root_role = newAccountRole(admin,"Root");
 		addRole(root_role);
-		root_role = getAccountRoleByName("Root", organization);
+		root_role = getAccountRoleByName("Root", organizationId);
 
 		AccountRoleType home_role = getCreateAccountRole(admin,"Home", root_role);
 
 	}
-	public void addDefaultUserRoles(OrganizationType organization) throws DataAccessException, FactoryException, ArgumentException
+	public void addDefaultUserRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getUserFactory().getUserByName("Admin", organization);
+		UserType admin = Factories.getUserFactory().getUserByName("Admin", organizationId);
 		
 		UserRoleType root_role = newUserRole(admin,"Root");
 		addRole(root_role);
-		root_role = getUserRoleByName("Root", organization);
+		root_role = getUserRoleByName("Root", organizationId);
 
 		UserRoleType home_role = getCreateUserRole(admin,"Home", root_role);
 
 	}
 
 	protected void removeRoleFromCache(BaseRoleType role){
-		//String key_name = role.getRoleType().toString() + "-" + role.getName() + "-" + role.getParentId() + "-" + role.getOrganization().getId();
+		//String key_name = role.getRoleType().toString() + "-" + role.getName() + "-" + role.getParentId() + "-" + role.getOrganizationId();
 		String key_name = getCacheKeyName(role);
 		removeFromCache(role, key_name);
 	}
 	public boolean deleteRole(BaseRoleType role) throws FactoryException, ArgumentException
 	{
 		if(role == null) return false;
-		List<BaseRoleType> childRoles = getRoleList(new QueryField[]{QueryFields.getFieldParent(role.getId())}, null, 0, 0, role.getOrganization());
+		List<BaseRoleType> childRoles = getRoleList(new QueryField[]{QueryFields.getFieldParent(role.getId())}, null, 0, 0, role.getOrganizationId());
 		//System.out.println("Remove " + childRoles.size() + " children of role #" + role.getId());
 		for(int i = childRoles.size() -1; i >=0; i--) deleteRole(childRoles.get(i));
 		removeRoleFromCache(role);
-		int deleted = deleteById(role.getId(), role.getOrganization().getId());
+		int deleted = deleteById(role.getId(), role.getOrganizationId());
 		Factories.getRoleParticipationFactory().deleteParticipations(role);
 		return (deleted > 0);
 	}
 	public int deleteRolesByUser(NameIdType map) throws FactoryException, ArgumentException
 	{
 		/// QueryFields.getFieldRoleType(RoleEnumType.valueOf(map.getNameType().toString()))
-		List<BaseRoleType> roles = getRoles(new QueryField[]{QueryFields.getFieldOwner(map)}, map.getOrganization());
+		List<BaseRoleType> roles = getRoles(new QueryField[]{QueryFields.getFieldOwner(map)}, map.getOrganizationId());
 		List<Long> role_ids = new ArrayList<Long>();
 		for (int i = 0; i < roles.size(); i++)
 		{
@@ -156,14 +198,14 @@ public class RoleFactory extends NameIdFactory {
 			removeRoleFromCache(roles.get(i));
 		}
 		
-		return deleteRolesByIds(convertLongList(role_ids), map.getOrganization());
+		return deleteRolesByIds(convertLongList(role_ids), map.getOrganizationId());
 	}
-	public int deleteRolesByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deleteRolesByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
-			Factories.getRoleParticipationFactory().deleteParticipations(ids, organization);
+			Factories.getRoleParticipationFactory().deleteParticipations(ids, organizationId);
 		}
 		return deleted;
 	}
@@ -175,7 +217,7 @@ public class RoleFactory extends NameIdFactory {
 
 	public boolean addRole(BaseRoleType new_role) throws FactoryException, DataAccessException
 	{
-		if (new_role.getOrganization() == null || new_role.getOrganization().getId() <= 0 || new_role.getOwnerId() <= 0) throw new FactoryException("Cannot add role to invalid organization, or without an OwnerId");
+		if (new_role.getOrganizationId() == null || new_role.getOrganizationId() <= 0 || new_role.getOwnerId() <= 0) throw new FactoryException("Cannot add role to invalid organization, or without an OwnerId");
 		DataRow row = prepareAdd(new_role, "roles");
 		row.setCellValue("roletype", new_role.getRoleType().toString());
 		row.setCellValue("referenceid", new_role.getReferenceId());
@@ -183,23 +225,23 @@ public class RoleFactory extends NameIdFactory {
 	}
 	
 	
-	public <T> T getRootRole(RoleEnumType type, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
-		return getCreateRole(Factories.getAdminUser(org),"Root",type,null,org);
+	public <T> T getRootRole(RoleEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return getCreateRole(Factories.getAdminUser(organizationId),"Root",type,null,organizationId);
 	}
-	public <T> T getHomeRole(RoleEnumType type, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
-		return getCreateRole(Factories.getAdminUser(org),"Home",type,(T)getRootRole(type,org),org);
+	public <T> T getHomeRole(RoleEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return getCreateRole(Factories.getAdminUser(organizationId),"Home",type,(T)getRootRole(type,organizationId),organizationId);
 	}
-	public <T> T getUserRole(UserType user,RoleEnumType type, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
-		return getCreateRole(user,user.getName(),type,(T)getHomeRole(type,org),org);
+	public <T> T getUserRole(UserType user,RoleEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return getCreateRole(user,user.getName(),type,(T)getHomeRole(type,organizationId),organizationId);
 	}
 
-	public <T> T getCreateRole(UserType user, String name, RoleEnumType type, T parent, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
-		T per = (T)getRoleByName(name,(BaseRoleType)parent,type,org);
+	public <T> T getCreateRole(UserType user, String name, RoleEnumType type, T parent, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		T per = (T)getRoleByName(name,(BaseRoleType)parent,type,organizationId);
 		if(per == null){
 			logger.info("Role " + type + " " + name + " doesn't exist.  Attempting to create.");
 			per = (T)newRoleType(type,user,name,(BaseRoleType)parent);
 			if(addRole((BaseRoleType)per)){
-				per = (T)getRoleByName(name,(BaseRoleType)parent,type,org);
+				per = (T)getRoleByName(name,(BaseRoleType)parent,type,organizationId);
 			}
 		}
 		return per;
@@ -211,149 +253,147 @@ public class RoleFactory extends NameIdFactory {
 	/// These need to be refactored out as dupes
 	///
 	
-	public PersonRoleType getRootPersonRoleType(OrganizationType organization)  throws FactoryException, ArgumentException
+	public PersonRoleType getRootPersonRoleType(long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getPersonRoleByName("Root", organization);
+		return getPersonRoleByName("Root", organizationId);
 	}
-	public PersonRoleType getHomePersonRole(OrganizationType organization) throws FactoryException, ArgumentException
+	public PersonRoleType getHomePersonRole(long organizationId) throws FactoryException, ArgumentException
 	{
 
-		return getPersonRoleByName("Home", getRootPersonRoleType(organization), organization);
+		return getPersonRoleByName("Home", getRootPersonRoleType(organizationId), organizationId);
 	}
 	public PersonRoleType getPersonRole(PersonType account)  throws FactoryException, ArgumentException
 	{
 
-		return getPersonRoleByName(account.getName(), getHomePersonRole(account.getOrganization()), account.getOrganization());
+		return getPersonRoleByName(account.getName(), getHomePersonRole(account.getOrganizationId()), account.getOrganizationId());
 	}
 
 	public PersonRoleType getCreatePersonRole(UserType role_owner, String role_name, BaseRoleType Parent) throws FactoryException, DataAccessException, ArgumentException
 	{
-		PersonRoleType role = getPersonRoleByName(role_name, Parent, role_owner.getOrganization());
+		PersonRoleType role = getPersonRoleByName(role_name, Parent, role_owner.getOrganizationId());
 		if (role == null)
 		{
 			role = newPersonRole(role_owner, role_name, Parent);
 			if (addRole(role))
 			{
-				role = getPersonRoleByName(role_name, Parent, role_owner.getOrganization());
+				role = getPersonRoleByName(role_name, Parent, role_owner.getOrganizationId());
 			}
 			else role = null;
 		}
 		return role;
 	}
-	public AccountRoleType getRootAccountRoleType(OrganizationType organization)  throws FactoryException, ArgumentException
+	public AccountRoleType getRootAccountRoleType(long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getAccountRoleByName("Root", organization);
+		return getAccountRoleByName("Root", organizationId);
 	}
-	public AccountRoleType getHomeAccountRole(OrganizationType organization) throws FactoryException, ArgumentException
+	public AccountRoleType getHomeAccountRole(long organizationId) throws FactoryException, ArgumentException
 	{
 
-		return getAccountRoleByName("Home", getRootAccountRoleType(organization), organization);
+		return getAccountRoleByName("Home", getRootAccountRoleType(organizationId), organizationId);
 	}
 	public AccountRoleType getAccountRole(AccountType account)  throws FactoryException, ArgumentException
 	{
 
-		return getAccountRoleByName(account.getName(), getHomeAccountRole(account.getOrganization()), account.getOrganization());
+		return getAccountRoleByName(account.getName(), getHomeAccountRole(account.getOrganizationId()), account.getOrganizationId());
 	}
 
 	public AccountRoleType getCreateAccountRole(UserType role_owner, String role_name, BaseRoleType Parent) throws FactoryException, DataAccessException, ArgumentException
 	{
-		AccountRoleType role = getAccountRoleByName(role_name, Parent, role_owner.getOrganization());
+		AccountRoleType role = getAccountRoleByName(role_name, Parent, role_owner.getOrganizationId());
 		if (role == null)
 		{
 			role = newAccountRole(role_owner, role_name, Parent);
 			if (addRole(role))
 			{
-				role = getAccountRoleByName(role_name, Parent, role_owner.getOrganization());
+				role = getAccountRoleByName(role_name, Parent, role_owner.getOrganizationId());
 			}
 			else role = null;
 		}
 		return role;
 	}
-	public UserRoleType getRootUserRoleType(OrganizationType organization)  throws FactoryException, ArgumentException
+	public UserRoleType getRootUserRoleType(long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getUserRoleByName("Root", organization);
+		return getUserRoleByName("Root", organizationId);
 	}
-	public UserRoleType getHomeUserRole(OrganizationType organization) throws FactoryException, ArgumentException
+	public UserRoleType getHomeUserRole(long organizationId) throws FactoryException, ArgumentException
 	{
 
-		return getUserRoleByName("Home", getRootUserRoleType(organization), organization);
+		return getUserRoleByName("Home", getRootUserRoleType(organizationId), organizationId);
 	}
 	public UserRoleType getUserRole(UserType account)  throws FactoryException, ArgumentException
 	{
 
-		return getUserRoleByName(account.getName(), getHomeUserRole(account.getOrganization()), account.getOrganization());
+		return getUserRoleByName(account.getName(), getHomeUserRole(account.getOrganizationId()), account.getOrganizationId());
 	}
 	public UserRoleType getCreateUserRole(UserType role_owner, String role_name, BaseRoleType Parent) throws FactoryException, DataAccessException, ArgumentException
 	{
-		UserRoleType role = getUserRoleByName(role_name, Parent, role_owner.getOrganization());
+		UserRoleType role = getUserRoleByName(role_name, Parent, role_owner.getOrganizationId());
 		if (role == null)
 		{
 			role = newUserRole(role_owner, role_name, Parent);
 			if (addRole(role))
 			{
-				role = getUserRoleByName(role_name, Parent, role_owner.getOrganization());
+				role = getUserRoleByName(role_name, Parent, role_owner.getOrganizationId());
 			}
 			else role = null;
 		}
 		return role;
 	}
-	public <T> T getRoleById(long id, OrganizationType organization) throws FactoryException, ArgumentException
+	public <T> T getRoleById(long id, long organizationId) throws FactoryException, ArgumentException
 	{
 		NameIdType out_role = readCache(id);
 		if (out_role != null) return (T)out_role;
 
-		List<NameIdType> roles = getById(id, organization.getId());
-		if (roles.size() > 0)
+		BaseRoleType role = getById(id, organizationId);
+		if (role != null)
 		{
-			BaseRoleType role = (BaseRoleType)roles.get(0);
-			//String key_name = role.getRoleType() + "-" + role.getName() + "-" + role.getParentId() + "-" + role.getOrganization().getId();
 			String key_name = getCacheKeyName(role);
-			addToCache(roles.get(0), key_name);
-			return (T)roles.get(0);
+			addToCache(role, key_name);
+			return (T)role;
 		}
 		return null;
 	}
-	public PersonRoleType getPersonRoleByName(String name, OrganizationType organization)  throws FactoryException, ArgumentException
+	public PersonRoleType getPersonRoleByName(String name, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getPersonRoleByName(name, null, organization);
+		return getPersonRoleByName(name, null, organizationId);
 	}
-	public PersonRoleType getPersonRoleByName(String name, BaseRoleType Parent, OrganizationType organization)  throws FactoryException, ArgumentException
+	public PersonRoleType getPersonRoleByName(String name, BaseRoleType Parent, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getRoleByName(name, Parent, RoleEnumType.PERSON, organization);
+		return getRoleByName(name, Parent, RoleEnumType.PERSON, organizationId);
 	}
 	
-	public AccountRoleType getAccountRoleByName(String name, OrganizationType organization)  throws FactoryException, ArgumentException
+	public AccountRoleType getAccountRoleByName(String name, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getAccountRoleByName(name, null, organization);
+		return getAccountRoleByName(name, null, organizationId);
 	}
-	public AccountRoleType getAccountRoleByName(String name, BaseRoleType Parent, OrganizationType organization)  throws FactoryException, ArgumentException
+	public AccountRoleType getAccountRoleByName(String name, BaseRoleType Parent, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getRoleByName(name, Parent, RoleEnumType.ACCOUNT, organization);
+		return getRoleByName(name, Parent, RoleEnumType.ACCOUNT, organizationId);
 	}
-	public UserRoleType getUserRoleByName(String name, OrganizationType organization)  throws FactoryException, ArgumentException
+	public UserRoleType getUserRoleByName(String name, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getUserRoleByName(name, null, organization);
+		return getUserRoleByName(name, null, organizationId);
 	}
-	public UserRoleType getUserRoleByName(String name, BaseRoleType Parent, OrganizationType organization)  throws FactoryException, ArgumentException
+	public UserRoleType getUserRoleByName(String name, BaseRoleType Parent, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getRoleByName(name, Parent, RoleEnumType.USER, organization);
+		return getRoleByName(name, Parent, RoleEnumType.USER, organizationId);
 	}
-	public <T> T getRoleByName(String name, OrganizationType organization) throws FactoryException, ArgumentException
+	public <T> T getRoleByName(String name, long organizationId) throws FactoryException, ArgumentException
 	{
-		return getRoleByName(name, null, organization);
+		return getRoleByName(name, null, organizationId);
 	}
 
-	public <T> T getRoleByName(String name, BaseRoleType Parent, OrganizationType organization) throws FactoryException, ArgumentException
+	public <T> T getRoleByName(String name, BaseRoleType Parent, long organizationId) throws FactoryException, ArgumentException
 	{
-		return getRoleByName(name, Parent, RoleEnumType.UNKNOWN, organization);
+		return getRoleByName(name, Parent, RoleEnumType.UNKNOWN, organizationId);
 	}
-	public <T> T getRoleByName(String name, BaseRoleType Parent, RoleEnumType role_type, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> T getRoleByName(String name, BaseRoleType Parent, RoleEnumType role_type, long organizationId)  throws FactoryException, ArgumentException
 	{
-		if(name == null || organization == null) throw new ArgumentException((name == null ? "Name" : "Organization") + " is null");
+		if(name == null || organizationId <= 0L) throw new ArgumentException((name == null ? "Name" : "Organization") + " is null");
 		if(Parent != null && Parent.getId() == null) throw new ArgumentException("Parent id is null");
 		long parent_id = 0;
 		if (Parent != null) parent_id = Parent.getId();
-		String key_name = role_type.toString() + "-" + name + "-" + parent_id + "-" + organization.getId();
+		String key_name = role_type.toString() + "-" + name + "-" + parent_id + "-" + organizationId;
 		NameIdType out_role = readCache(key_name);
 		if (out_role != null){
 //			System.out.println("Reading Cache: " + key_name);
@@ -364,7 +404,7 @@ public class RoleFactory extends NameIdFactory {
 		Fields.add(QueryFields.getFieldName(name));
 		Fields.add(QueryFields.getFieldParent(parent_id));
 		if (role_type != RoleEnumType.UNKNOWN) Fields.add(QueryFields.getFieldRoleType(role_type));
-		List<NameIdType> roles = getByField(Fields.toArray(new QueryField[0]),organization.getId());
+		List<NameIdType> roles = getByField(Fields.toArray(new QueryField[0]),organizationId);
 		if (roles.size() > 0)
 		{
 			addToCache(roles.get(0), key_name);
@@ -409,7 +449,7 @@ public class RoleFactory extends NameIdFactory {
 	{
 		if (owner == null) throw new FactoryException("Role '" + role_name + "' cannot be created without a valid owner");
 		BaseRoleType new_role = newRole(type);
-		new_role.setOrganization(owner.getOrganization());
+		new_role.setOrganizationId(owner.getOrganizationId());
 		new_role.setOwnerId(owner.getId());
 		new_role.setName(role_name);
 		if (parentRole != null) new_role.setParentId(parentRole.getId());
@@ -439,50 +479,50 @@ public class RoleFactory extends NameIdFactory {
 		new_role.setRoleType(Type);
 		return (T)new_role;
 	}
-	public List<PersonRoleType> getPersonRoles(OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<PersonRoleType> getPersonRoles(long organizationId)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> roles = getByField(new QueryField[] { QueryFields.getFieldRoleType(RoleEnumType.PERSON) }, organization.getId());
+		List<NameIdType> roles = getByField(new QueryField[] { QueryFields.getFieldRoleType(RoleEnumType.PERSON) }, organizationId);
 		return convertList(roles);
 
 	}
-	public List<PersonRoleType> getPersonRoles(QueryField match, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<PersonRoleType> getPersonRoles(QueryField match, long organizationId)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> roles = getByField(new QueryField[] { match, QueryFields.getFieldRoleType(RoleEnumType.PERSON) }, organization.getId());
+		List<NameIdType> roles = getByField(new QueryField[] { match, QueryFields.getFieldRoleType(RoleEnumType.PERSON) }, organizationId);
 		return convertList(roles);
 
 	}
-	public List<AccountRoleType> getAccountRoles(OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<AccountRoleType> getAccountRoles(long organizationId)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> roles = getByField(new QueryField[] { QueryFields.getFieldRoleType(RoleEnumType.ACCOUNT) }, organization.getId());
+		List<NameIdType> roles = getByField(new QueryField[] { QueryFields.getFieldRoleType(RoleEnumType.ACCOUNT) }, organizationId);
 		return convertList(roles);
 
 	}
-	public List<AccountRoleType> getAccountRoles(QueryField match, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<AccountRoleType> getAccountRoles(QueryField match, long organizationId)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> roles = getByField(new QueryField[] { match, QueryFields.getFieldRoleType(RoleEnumType.ACCOUNT) }, organization.getId());
+		List<NameIdType> roles = getByField(new QueryField[] { match, QueryFields.getFieldRoleType(RoleEnumType.ACCOUNT) }, organizationId);
 		return convertList(roles);
 
 	}
 
-	public List<UserRoleType> getUserRoles(OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserRoleType> getUserRoles(long organizationId)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> roles = getByField(new QueryField[] { QueryFields.getFieldRoleType(RoleEnumType.USER) }, organization.getId());
+		List<NameIdType> roles = getByField(new QueryField[] { QueryFields.getFieldRoleType(RoleEnumType.USER) }, organizationId);
 		return convertList(roles);
 
 	}
-	public List<UserRoleType> getUserRoles(QueryField match, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<UserRoleType> getUserRoles(QueryField match, long organizationId)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> roles = getByField(new QueryField[] { match, QueryFields.getFieldRoleType(RoleEnumType.USER) }, organization.getId());
+		List<NameIdType> roles = getByField(new QueryField[] { match, QueryFields.getFieldRoleType(RoleEnumType.USER) }, organizationId);
 		return convertList(roles);
 
 	}
-	public List<BaseRoleType> getRoles(QueryField match, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<BaseRoleType> getRoles(QueryField match, long organizationId) throws FactoryException, ArgumentException
 	{
-		return getRoles(new QueryField[] { match }, organization);
+		return getRoles(new QueryField[] { match }, organizationId);
 	}
-	public List<BaseRoleType> getRoles(QueryField[] matches, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<BaseRoleType> getRoles(QueryField[] matches, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> roles = getByField(matches, organization.getId());
+		List<NameIdType> roles = getByField(matches, organizationId);
 		return convertList(roles);
 
 	}
@@ -495,36 +535,36 @@ public class RoleFactory extends NameIdFactory {
 		return super.read(rset, role);
 	}
 	
-	public List<BaseRoleType>  getRoleList(long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		//return getRoleList(new QueryField[] { QueryFields.getFieldParent(0)  }, startRecord, recordCount, organization);
-		return getRoleList(RoleEnumType.UNKNOWN, null, startRecord, recordCount, organization);
+		//return getRoleList(new QueryField[] { QueryFields.getFieldParent(0)  }, startRecord, recordCount, organizationId);
+		return getRoleList(RoleEnumType.UNKNOWN, null, startRecord, recordCount, organizationId);
 	}
-	public List<BaseRoleType>  getRoleList(BaseRoleType parentRole, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(BaseRoleType parentRole, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		//return getRoleList(new QueryField[] { QueryFields.getFieldParent(parentRole.getId()) }, startRecord, recordCount, organization);
-		return getRoleList(RoleEnumType.UNKNOWN, parentRole, startRecord, recordCount, organization);
+		//return getRoleList(new QueryField[] { QueryFields.getFieldParent(parentRole.getId()) }, startRecord, recordCount, organizationId);
+		return getRoleList(RoleEnumType.UNKNOWN, parentRole, startRecord, recordCount, organizationId);
 	}
-	public List<BaseRoleType>  getRoleList(RoleEnumType type, BaseRoleType parent, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(RoleEnumType type, BaseRoleType parent, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		if(type != RoleEnumType.UNKNOWN) fields.add(QueryFields.getFieldRoleType(type));
 		fields.add(QueryFields.getFieldParent((parent != null ? parent.getId() : 0L)));
-		return getRoleList(fields.toArray(new QueryField[0]), startRecord, recordCount, organization);
+		return getRoleList(fields.toArray(new QueryField[0]), startRecord, recordCount, organizationId);
 	}
 	/*
-	public List<BaseRoleType>  getRoleList(ProcessingInstructionType instruction, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(ProcessingInstructionType instruction, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getRoleList(new QueryField[] { QueryFields.getFieldParent(0)  }, instruction, startRecord, recordCount,organization);
+		return getRoleList(new QueryField[] { QueryFields.getFieldParent(0)  }, instruction, startRecord, recordCount,organizationId);
 	}
 	*/
-	public List<BaseRoleType>  getRoleList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
-		return getRoleList(fields, instruction, startRecord,recordCount,organization);
+		return getRoleList(fields, instruction, startRecord,recordCount,organizationId);
 	}
-	public List<BaseRoleType>  getRoleList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<BaseRoleType>  getRoleList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///
@@ -534,19 +574,19 @@ public class RoleFactory extends NameIdFactory {
 			instruction.setStartIndex(startRecord);
 			instruction.setRecordCount(recordCount);
 		}
-		return getRoleList(fields, instruction, organization);
+		return getRoleList(fields, instruction, organizationId);
 	}
-	public List<BaseRoleType> getRoleList(QueryField[] fields, ProcessingInstructionType instruction, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<BaseRoleType> getRoleList(QueryField[] fields, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException
 	{
 
 		if(instruction == null) instruction = new ProcessingInstructionType();
 
-		List<NameIdType> RoleList = getByField(fields, instruction, organization.getId());
+		List<NameIdType> RoleList = getByField(fields, instruction, organizationId);
 		return convertList(RoleList);
 
 	}
 	
-	public List<BaseRoleType> getRoleListByIds(long[] Role_ids, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<BaseRoleType> getRoleListByIds(long[] Role_ids, long organizationId) throws FactoryException, ArgumentException
 	{
 		StringBuffer buff = new StringBuffer();
 		List<BaseRoleType> out_list = new ArrayList<BaseRoleType>();
@@ -558,7 +598,7 @@ public class RoleFactory extends NameIdFactory {
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
 				match.setComparator(ComparatorEnumType.IN);
-				List<BaseRoleType> tmp_Role_list = getRoleList(new QueryField[] { match }, null, organization);
+				List<BaseRoleType> tmp_Role_list = getRoleList(new QueryField[] { match }, null, organizationId);
 				out_list.addAll(tmp_Role_list);
 				buff.delete(0,  buff.length());
 			}
@@ -573,35 +613,35 @@ public class RoleFactory extends NameIdFactory {
 		/// Note: Skip 'Global' Role, which is always 1L
 		/// (always == until it's not, but it's never been not because it must be setup first)
 		if(role.getParentId() > 1L){
-			path = getRolePath((BaseRoleType)getRoleById(role.getParentId(),role.getOrganization()));
+			path = getRolePath((BaseRoleType)getRoleById(role.getParentId(),role.getOrganizationId()));
 		}
-		if(role.getParentId() == 0L && role.getName().equals("Root")) return "";
+		if(role.getParentId().compareTo(0L) == 0 && role.getName().equals("Root")) return "";
 		path = path + "/" + role.getName();
 		return path;
 	}
-	public <T> T findRole(RoleEnumType type, String pathBase, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
-		return makePath(null, type, pathBase,org);
+	public <T> T findRole(RoleEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return makePath(null, type, pathBase,organizationId);
 	}
 	public <T> T makePath(UserType user, RoleEnumType type, DirectoryGroupType group) throws FactoryException, ArgumentException, DataAccessException{
 		Factories.getGroupFactory().populate(group);
-		return makePath(user, type, group.getPath(), group.getOrganization());
+		return makePath(user, type, group.getPath(), group.getOrganizationId());
 	}
-	public <T> T makePath(UserType user, RoleEnumType type, String pathBase, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
+	public <T> T makePath(UserType user, RoleEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		String[] path = pathBase.split("/");
 		BaseRoleType parent = null;
 		T per = null;
 		for(int i = 0; i < path.length;i++){
 			String seg = path[i];
 			if(seg.equals("")){
-				parent = getRootRole(type,  org);
+				parent = getRootRole(type,  organizationId);
 				continue;
 			}
-			if(seg.equals("Home") && parent != null && parent.getName().equals("Root") && parent.getParentId() == 0L){
-				parent = getHomeRole(type, org);
+			if(seg.equals("Home") && parent != null && parent.getName().equals("Root") && parent.getParentId().compareTo(0L) == 0){
+				parent = getHomeRole(type, organizationId);
 				continue;
 			}
-			if(user != null) per = getCreateRole(user, seg, type, (T)parent, org);
-			else per = getRoleByName(seg, (BaseRoleType)parent, type, org);
+			if(user != null) per = getCreateRole(user, seg, type, (T)parent, organizationId);
+			else per = getRoleByName(seg, (BaseRoleType)parent, type, organizationId);
 			if(per == null) throw new ArgumentException("Failed to find role '" + seg + "' in " + (parent == null ? "Null Parent":parent.getName()) + " from path " + pathBase);
 			parent = (BaseRoleType)per;
 		}

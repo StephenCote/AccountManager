@@ -94,7 +94,7 @@ public class OrganizationFactory extends NameIdFactory {
 		if (deleted > 0)
 		{
 			//OrganizationSecurity.deleteSecurityKeys(organization);
-			KeyService.deleteKeys(organization);
+			KeyService.deleteKeys(organization.getId());
 			Connection conn = ConnectionFactory.getInstance().getConnection();
 			CONNECTION_TYPE connection_type = DBFactory.getConnectionType(conn);
 			try {
@@ -222,10 +222,10 @@ public class OrganizationFactory extends NameIdFactory {
 				//System.out.println("Inserted row");
 				new_org = getOrganizationByName(new_org.getName(), new_org.getParentId());
 				//System.out.println("Got new org: " + (new_org == null ? "NULL" : new_org.getId()));
-				if(KeyService.newOrganizationAsymmetricKey(new_org, true) == null){
+				if(KeyService.newOrganizationAsymmetricKey(new_org.getId(), true) == null){
 					throw new FactoryException("Unable to generate organization security keys for " + new_org.getName() + "(#" + new_org.getId() + ")");
 				}
-				Factories.getGroupFactory().addDefaultGroups(new_org);
+				Factories.getGroupFactory().addDefaultGroups(new_org.getId());
 				return new_org;
 			}
 		}
@@ -236,12 +236,17 @@ public class OrganizationFactory extends NameIdFactory {
 		
 		return null;
 	}
+	public String getOrganizationPath(long organizationId) throws FactoryException, ArgumentException{
+		OrganizationType org = getOrganizationById(organizationId);
+		return getOrganizationPath(org);
+	}
 	public String getOrganizationPath(OrganizationType org) throws FactoryException, ArgumentException{
+		if(org == null) throw new ArgumentException("Organization is null");
 		String path = "";
 		/// Note: Skip 'Global' Organization, which is always 1L
 		/// (always == until it's not, but it's never been not because it must be setup first)
 		if(org.getParentId() > 1L){
-			path = getOrganizationPath(getOrganizationById(org.getParentId()));
+			path = getOrganizationPath(org.getParentId());
 		}
 		path = path + "/" + org.getName();
 		return path;

@@ -47,6 +47,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DataColumnType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -57,6 +58,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -99,10 +101,46 @@ public class DataFactory extends NameIdFactory {
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		DataType t = (DataType)obj;
-		return t.getName() + "-" + t.getGroup().getId();
+		return t.getName() + "-" + t.getGroupId();
 	}
+	
+	@Override
+	public <T> void normalize(T object) throws ArgumentException, FactoryException{
+		super.normalize(object);
+		if(object == null){
+			throw new ArgumentException("Null object");
+		}
+		DataType obj = (DataType)object;
+		if(obj.getGroupId() != null && obj.getGroupId().compareTo(0L) != 0) return;
+		if(obj.getGroupPath() == null || obj.getGroupPath().length() == 0){
+			logger.debug("Group path is not defined");
+			return;
+		}
+		BaseGroupType dir = Factories.getGroupFactory().findGroup(null,GroupEnumType.DATA, obj.getGroupPath(), obj.getOrganizationId());
+		if(dir == null){
+			throw new ArgumentException("Invalid group path '" + obj.getGroupPath() + "'");
+		}
+		obj.setGroupId(dir.getId());
+	}
+	
+	@Override
+	public <T> void denormalize(T object) throws ArgumentException, FactoryException{
+		super.denormalize(object);
+		if(object == null){
+			throw new ArgumentException("Null object");
+		}
+		DataType obj = (DataType)object;
+		if(obj.getGroupId().compareTo(0L) == 0){
+			throw new ArgumentException("Invalid object group");	
+		}
+		if(obj.getGroupPath() != null) return;
+		BaseGroupType dir = Factories.getGroupFactory().getGroupById(obj.getGroupId(), obj.getOrganizationId());
+		obj.setGroupPath(Factories.getGroupFactory().getPath(dir));
+	}
+	
+	
 	protected void updateDataToCache(DataType data) throws ArgumentException{
-		String key_name = data.getName() + "-" + data.getGroup().getId();
+		String key_name = data.getName() + "-" + data.getGroupId();
 		//System.out.println("Update data to cache: " + key_name);
 		if(this.haveCacheId(data.getId())) removeFromCache(data);
 		addToCache(data, key_name);
@@ -183,14 +221,14 @@ public class DataFactory extends NameIdFactory {
 		}
 
 	}
-	public DataType newData(UserType user, DirectoryGroupType group) throws ArgumentException
+	public DataType newData(UserType user, long groupId) throws ArgumentException
 	{
 		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
 		DataType data = new DataType();
 		data.setNameType(NameEnumType.DATA);
-		data.setOrganization(group.getOrganization());
+		data.setOrganizationId(user.getOrganizationId());
 		data.setOwnerId(user.getId());
-		data.setGroup(group);
+		data.setGroupId(groupId);
 
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(new Date());
@@ -209,14 +247,14 @@ public class DataFactory extends NameIdFactory {
 			
 
 		if (new_data.getBlob() && new_data.getReadDataBytes()) throw new FactoryException("Cannot add blob data whose byte store has been read");
-		if (new_data.getGroup() == null) throw new FactoryException("Cannot add new data without a group");
+		if (new_data.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new data without a group");
 
 		DataRow row = prepareAdd(new_data, "data");
 		try{
 			row.setCellValue("description",new_data.getDescription());
 			row.setCellValue("mimetype", new_data.getMimeType());
 			row.setCellValue("vaultid",new_data.getVaultId());
-			row.setCellValue("groupid", new_data.getGroup().getId());
+			row.setCellValue("groupid", new_data.getGroupId());
 			row.setCellValue("keyid", new_data.getKeyId());
 			row.setCellValue("isvaulted", new_data.getVaulted());
 			row.setCellValue("isenciphered", new_data.getEnciphered());
@@ -256,7 +294,7 @@ public class DataFactory extends NameIdFactory {
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setAlternateQuery(detailsOnly);
 		
-		List<NameIdType> data = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldGroup(parentGroup.getId()) }, instruction,parentGroup.getOrganization().getId());
+		List<NameIdType> data = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldGroup(parentGroup.getId()) }, instruction,parentGroup.getOrganizationId());
 			//GetByName(name);
 		if (data.size() > 0)
 		{
@@ -268,11 +306,11 @@ public class DataFactory extends NameIdFactory {
 		}
 		return out_data;
 	}
-	public DataType getDataById(long id, OrganizationType org) throws FactoryException, ArgumentException
+	public DataType getDataById(long id, long organizationId) throws FactoryException, ArgumentException
 	{
-		return getDataById(id, false, org);
+		return getDataById(id, false, organizationId);
 	}
-	public DataType getDataById(long id, boolean detailsOnly, OrganizationType org) throws FactoryException, ArgumentException
+	public DataType getDataById(long id, boolean detailsOnly, long organizationId) throws FactoryException, ArgumentException
 	{
 
 		DataType out_data = readCache(id);
@@ -281,7 +319,7 @@ public class DataFactory extends NameIdFactory {
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setAlternateQuery(detailsOnly);
 
-		List<NameIdType> data = getByField(new QueryField[] { QueryFields.getFieldId(id) }, instruction, org.getId());
+		List<NameIdType> data = getByField(new QueryField[] { QueryFields.getFieldId(id) }, instruction, organizationId);
 
 		if (data.size() > 0)
 		{
@@ -293,18 +331,18 @@ public class DataFactory extends NameIdFactory {
 	}
 	public int deleteDataByUser(UserType user) throws FactoryException
 	{
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganization().getId());
-		return deleteDataByIds(ids, user.getOrganization());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganizationId());
+		return deleteDataByIds(ids, user.getOrganizationId());
 	}
 
 	public boolean deleteData(DataType data) throws FactoryException
 	{
 		removeFromCache(data);
-		int deleted = deleteById(data.getId(), data.getOrganization().getId());
+		int deleted = deleteById(data.getId(), data.getOrganizationId());
 		/*
 		if (deleted > 0)
 		{
-			OrganizationSecurity.deleteSecurityKeys(organization);
+			OrganizationSecurity.deleteSecurityKeys(organizationId);
 		}
 		*/
 		return (deleted > 0);
@@ -361,7 +399,7 @@ public class DataFactory extends NameIdFactory {
 		/// 2008/01/28
 		/// Moved to bottom for Mono; Mono throws an 'array index' error on any sibling read operation
 		///
-		new_data.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, new_data.getOrganization()));
+		new_data.setGroupId(group_id);
 		return new_data;
 	}
 	public boolean updateData(DataType data) throws FactoryException, DataAccessException
@@ -384,7 +422,7 @@ public class DataFactory extends NameIdFactory {
 		fields.add(QueryFields.getFieldVaulted(use_map.getVaulted()));
 		fields.add(QueryFields.getFieldEnciphered(use_map.getEnciphered()));
 		fields.add(QueryFields.getFieldPasswordProtected(use_map.getPasswordProtected()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 		fields.add(QueryFields.getFieldCompressed(use_map.getCompressed()));
 		fields.add(QueryFields.getFieldDimensions(use_map.getDimensions()));
 		fields.add(QueryFields.getFieldSize(use_map.getSize()));
@@ -407,14 +445,14 @@ public class DataFactory extends NameIdFactory {
 		}
 	}
 	
-	public int deleteDataByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deleteDataByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
 			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
+			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
+			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
 			*/
 		}
 		return deleted;
@@ -425,25 +463,25 @@ public class DataFactory extends NameIdFactory {
 		// Need to get ids so as to delete participations as well
 		//
 		//logger.info("Deleting group data for " + group.getName());
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
-		return deleteDataByIds(ids, group.getOrganization());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
+		return deleteDataByIds(ids, group.getOrganizationId());
 	}
 	
-	public List<DataType>  getDataListByGroup(DirectoryGroupType group, boolean detailsOnly, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<DataType>  getDataListByGroup(DirectoryGroupType group, boolean detailsOnly, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getDataList(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, detailsOnly, startRecord, recordCount, organization);
+		return getDataList(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, detailsOnly, startRecord, recordCount, organizationId);
 	}
-	public List<DataType>  getDataListByGroup(DirectoryGroupType group, ProcessingInstructionType instruction, boolean detailsOnly, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<DataType>  getDataListByGroup(DirectoryGroupType group, ProcessingInstructionType instruction, boolean detailsOnly, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getDataList(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, instruction, detailsOnly, startRecord, recordCount,organization);
+		return getDataList(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, instruction, detailsOnly, startRecord, recordCount,organizationId);
 	}
-	public List<DataType>  getDataList(QueryField[] fields, boolean detailsOnly, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<DataType>  getDataList(QueryField[] fields, boolean detailsOnly, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
-		return getDataList(fields, instruction, detailsOnly, startRecord,recordCount,organization);
+		return getDataList(fields, instruction, detailsOnly, startRecord,recordCount,organizationId);
 	}
-	public List<DataType>  getDataList(QueryField[] fields, ProcessingInstructionType instruction,boolean detailsOnly, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public List<DataType>  getDataList(QueryField[] fields, ProcessingInstructionType instruction,boolean detailsOnly, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///
@@ -453,21 +491,21 @@ public class DataFactory extends NameIdFactory {
 			instruction.setStartIndex(startRecord);
 			instruction.setRecordCount(recordCount);
 		}
-		return getDataList(fields, instruction, detailsOnly, organization);
+		return getDataList(fields, instruction, detailsOnly, organizationId);
 	}
-	public List<DataType> getDataList(QueryField[] fields, ProcessingInstructionType instruction,boolean detailsOnly, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<DataType> getDataList(QueryField[] fields, ProcessingInstructionType instruction,boolean detailsOnly, long organizationId) throws FactoryException, ArgumentException
 	{
 
 		if(instruction == null) instruction = new ProcessingInstructionType();
 		instruction.setAlternateQuery(detailsOnly);
 
-		List<NameIdType> dataList = getByField(fields, instruction, organization.getId());
+		List<NameIdType> dataList = getByField(fields, instruction, organizationId);
 		return convertList(dataList);
 		//return data_list.toArray(new DataType[0]);
 		//return data_list.ConvertAll(new Converter<NameId, Core.Tools.AccountManager.Map.Data>(MapConverter));
 	}
 	
-	public List<DataType> getDataListByIds(long[] data_ids, boolean detailsOnly, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<DataType> getDataListByIds(long[] data_ids, boolean detailsOnly, long organizationId) throws FactoryException, ArgumentException
 	{
 		StringBuffer buff = new StringBuffer();
 		int deleted = 0;
@@ -480,7 +518,7 @@ public class DataFactory extends NameIdFactory {
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
 				match.setComparator(ComparatorEnumType.IN);
-				List<DataType> tmp_data_list = getDataList(new QueryField[] { match }, null, detailsOnly, organization);
+				List<DataType> tmp_data_list = getDataList(new QueryField[] { match }, null, detailsOnly, organizationId);
 				out_list.addAll(tmp_data_list);
 				buff.delete(0,  buff.length());
 			}
@@ -490,7 +528,7 @@ public class DataFactory extends NameIdFactory {
 
 	public int getCount(DirectoryGroupType group) throws FactoryException
 	{
-		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldGroup(group.getId())}, group.getOrganization().getId());
+		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldGroup(group.getId())}, group.getOrganizationId());
 	}
 	
 }

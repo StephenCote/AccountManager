@@ -41,8 +41,8 @@ public class TestUserFactory extends BaseDataAccessTest{
 	@Test
 	public void testAddUser(){
 		OrganizationFactory of = Factories.getOrganizationFactory();
-		UserType user1 = Factories.getUserFactory().newUser(testUserName1, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
-		UserType user2 = Factories.getUserFactory().newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
+		UserType user1 = Factories.getUserFactory().newUser(testUserName1, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
+		UserType user2 = Factories.getUserFactory().newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
 		boolean add = false;
 		boolean error = false;
 		logger.info(testUserPassword + ":" + testUserPassword.length());
@@ -73,7 +73,7 @@ public class TestUserFactory extends BaseDataAccessTest{
 		boolean error = false;
 
 		try{
-			user = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
+			user = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization().getId());
 			Factories.getUserFactory().populate(user);
 			assertTrue(user.getPopulated());
 		}
@@ -100,11 +100,11 @@ public class TestUserFactory extends BaseDataAccessTest{
 		boolean error = false;
 
 		try{
-			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getDevelopmentOrganization());
+			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getDevelopmentOrganization().getId());
 			assertNotNull(admin);
 			devRole = RoleService.getCreateUserRole(admin, "Dev Role", null);
 			assertNotNull(devRole);
-			user1 = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
+			user1 = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization().getId());
 			Factories.getUserFactory().populate(user1);
 			assertTrue("Did not populate user", user1.getPopulated());
 			/// moved addUserToRole outside of the FactoryService
@@ -141,15 +141,15 @@ public class TestUserFactory extends BaseDataAccessTest{
 		boolean error = false;
 
 		try{
-			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getDevelopmentOrganization());
+			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getDevelopmentOrganization().getId());
 			assertNotNull(admin);
-			AccountRoleType adminRole = RoleService.getDataAdministratorAccountRole(Factories.getDevelopmentOrganization());
+			AccountRoleType adminRole = RoleService.getDataAdministratorAccountRole(Factories.getDevelopmentOrganization().getId());
 			assertNotNull("Admin role is null", adminRole);
 			//assertTrue("Admin should be a data administrator in its own organization", AuthorizationService.isDataAdministratorInMapOrganization(admin, admin.getOrganization()));
 			devRole = RoleService.getCreateUserRole(admin, "Dev Role", null);
 			assertNotNull(devRole);
-			user1 = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization());
-			user2 = Factories.getUserFactory().getUserByName(testUserName2,Factories.getDevelopmentOrganization());
+			user1 = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization().getId());
+			user2 = Factories.getUserFactory().getUserByName(testUserName2,Factories.getDevelopmentOrganization().getId());
 			Factories.getUserFactory().populate(user1);
 			Factories.getUserFactory().populate(user2);
 			assertTrue("Did not populate user", user1.getPopulated() && user2.getPopulated());
@@ -157,10 +157,10 @@ public class TestUserFactory extends BaseDataAccessTest{
 			assertTrue("User #2 should be able to change their group.", AuthorizationService.canChangeGroup(user2, user2.getHomeDirectory()));
 			assertFalse("User #1 should not be able to change User #2's group.", AuthorizationService.canChangeGroup(user1, user2.getHomeDirectory()));
 			
-			AuthorizationService.switchGroup(user2, user1, user2.getHomeDirectory(), AuthorizationService.getEditGroupPermission(user2.getOrganization()), true);
+			AuthorizationService.switchGroup(user2, user1, user2.getHomeDirectory(), AuthorizationService.getEditGroupPermission(user2.getOrganizationId()), true);
 			assertTrue("User #1 should now be able to change User #2's group.", AuthorizationService.canChangeGroup(user1, user2.getHomeDirectory()));
 
-			AuthorizationService.switchGroup(user2, user1, user2.getHomeDirectory(), AuthorizationService.getEditGroupPermission(user2.getOrganization()), false);
+			AuthorizationService.switchGroup(user2, user1, user2.getHomeDirectory(), AuthorizationService.getEditGroupPermission(user2.getOrganizationId()), false);
 			assertFalse("User #1 should no longer be able to change User #2's group.", AuthorizationService.canChangeGroup(user1, user2.getHomeDirectory()));
 
 			//assertTrue("Admin user should be able to change user #1 group.", AuthorizationService.canChangeGroup(admin, user1.getHomeDirectory()));

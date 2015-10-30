@@ -37,7 +37,7 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 		UserType type = new UserType();
 		type.setId(testRefId);
 		type.setName("example");
-		type.setOrganization(Factories.getDevelopmentOrganization());
+		type.setOrganizationId(Factories.getDevelopmentOrganization().getId());
 		return type;
 	}
 	
@@ -47,15 +47,15 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 		String testAcctName = "Test Account 1";
 		try {
 			Factories.getUserFactory().populate(testUser);
-			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(testUser, "Accounts", testUser.getHomeDirectory(), testUser.getOrganization());
-			DirectoryGroupType adir = Factories.getGroupFactory().getCreateDirectory(testUser, "Addresses", testUser.getHomeDirectory(), testUser.getOrganization());
+			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(testUser, "Accounts", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			DirectoryGroupType adir = Factories.getGroupFactory().getCreateDirectory(testUser, "Addresses", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			acct = Factories.getAccountFactory().getAccountByName(testAcctName, dir);
 			if(acct != null){
 				Factories.getAccountFactory().deleteAccount(acct);
 				acct = null;
 			}
 			if(acct == null){
-				acct = Factories.getAccountFactory().newAccount(testUser, testAcctName, AccountEnumType.NORMAL,AccountStatusEnumType.NORMAL,dir);
+				acct = Factories.getAccountFactory().newAccount(testUser, testAcctName, AccountEnumType.NORMAL,AccountStatusEnumType.NORMAL,dir.getId());
 				if(Factories.getAccountFactory().addAccount(acct,true)){
 					logger.info("Clearing address factory cache to break the foreign key link");
 					Factories.getAccountFactory().clearCache();
@@ -77,13 +77,13 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			Factories.getAccountFactory().updateAccount(acct);
 			//Factories.clearCaches();
 			
-			AddressType addr = Factories.getAddressFactory().getByName("Test Address 1", adir);
+			AddressType addr = Factories.getAddressFactory().getByNameInGroup("Test Address 1", adir);
 			if(addr == null){
-				addr = Factories.getAddressFactory().newAddress(testUser, adir);
+				addr = Factories.getAddressFactory().newAddress(testUser, adir.getId());
 				addr.setName("Test Address 1");
 				if(Factories.getAddressFactory().addAddress(addr)){
 					//Factories.clearCaches();
-					addr = Factories.getAddressFactory().getByName("Test Address 1", adir);
+					addr = Factories.getAddressFactory().getByNameInGroup("Test Address 1", adir);
 				}
 				else{
 					addr = null;

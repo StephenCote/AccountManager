@@ -33,6 +33,7 @@ import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
+import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.PersonGroupType;
 import org.cote.accountmanager.objects.PersonParticipantType;
 import org.cote.accountmanager.objects.PersonType;
@@ -99,6 +100,65 @@ public class GroupService{
 		}
 		return false;
 	}
+	
+	
+	public static boolean getIsGroupInGroup(BaseGroupType group, BaseGroupType member) throws ArgumentException, FactoryException{
+		if(group == null){
+			logger.error("Group is null");
+			return false;
+		}
+		/// accommodate bulk inserts with a negative id; don't check the DB for the negative value
+		///
+		
+		if(group.getId() < 0) return true;
+		return getIsGroupInGroup(group, member, null, AffectEnumType.UNKNOWN);
+	}
+	public static boolean getIsGroupInGroup(BaseGroupType group, BaseGroupType member, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	{
+		if(group == null){
+			logger.error("Group is null");
+			return false;
+		}
+
+		/// accommodate bulk inserts with a negative id
+		///
+		if(group.getId() < 0) return true;
+		return Factories.getGroupParticipationFactory().getIsGroupInGroup(group, member,permission,affect_type);
+	}
+	
+	public static boolean addGroupToGroup(BaseGroupType member, BaseGroupType group) throws ArgumentException, DataAccessException, FactoryException
+	{
+		return addGroupToGroup(member, group, null, AffectEnumType.UNKNOWN);
+
+	}
+
+	public static boolean addGroupToGroup(BaseGroupType member, BaseGroupType group, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, DataAccessException, FactoryException
+	{
+		/// accommodate bulk inserts with a negative id - skip the check for the getGroupInGroup, which will return true for bulk jobs
+		///
+		if (group.getId() < 0 || getIsGroupInGroup(group, member) == false)
+		{
+			GroupParticipantType ap = Factories.getGroupParticipationFactory().newGroupGroupParticipation(group, member);
+			if (Factories.getGroupParticipationFactory().addParticipant(ap))
+			{
+				EffectiveAuthorizationService.pendGroupUpdate(member);
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean removeGroupFromGroup(BaseGroupType group, BaseGroupType member) throws FactoryException, ArgumentException
+	{
+
+		if (Factories.getGroupParticipationFactory().deleteGroupGroupParticipants(group, member))
+		{
+			EffectiveAuthorizationService.pendGroupUpdate(member);
+			return true;
+		}
+		return false;
+	}
+	
+	
 	public static boolean getIsAccountInGroup(AccountGroupType group, AccountType account) throws ArgumentException, FactoryException{
 		if(group == null){
 			logger.error("Group is null");

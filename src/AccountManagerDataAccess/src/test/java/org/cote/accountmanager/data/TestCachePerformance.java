@@ -24,7 +24,7 @@ public class TestCachePerformance extends BaseDataAccessTest {
 				DataParticipantType dpt = new DataParticipantType();
 				dpt.setNameType(NameEnumType.PARTICIPANT);
 				dpt.setOwnerId(testUser.getId());
-				dpt.setOrganization(testUser.getOrganization());
+				dpt.setOrganizationId(testUser.getOrganizationId());
 				dpt.setParticipantType(ParticipantEnumType.DATA);
 				dpt.setParticipationType(ParticipationEnumType.TAG);
 				dpt.setParticipantId(random.nextLong());

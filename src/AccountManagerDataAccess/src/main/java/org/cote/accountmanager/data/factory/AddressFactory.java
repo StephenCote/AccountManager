@@ -77,7 +77,7 @@ public class AddressFactory extends NameIdGroupFactory {
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		NameIdDirectoryGroupType t = (NameIdDirectoryGroupType)obj;
-		return t.getName() + "-" + t.getGroup().getId();
+		return t.getName() + "-" + t.getGroupId();
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
@@ -98,18 +98,18 @@ public class AddressFactory extends NameIdGroupFactory {
 	{
 		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
 		
-		AddressType obj = newAddress(user,parentAddress.getGroup());
+		AddressType obj = newAddress(user,parentAddress.getGroupId());
 		
 		return obj;
 	}
-	public AddressType newAddress(UserType user, DirectoryGroupType group) throws ArgumentException
+	public AddressType newAddress(UserType user, long groupId) throws ArgumentException
 	{
 		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
 		AddressType obj = new AddressType();
 		obj.setLocationType(LocationEnumType.UNKNOWN);
-		obj.setOrganization(group.getOrganization());
+		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
-		obj.setGroup(group);
+		obj.setGroupId(groupId);
 		obj.setNameType(NameEnumType.ADDRESS);
 		return obj;
 	}
@@ -117,7 +117,7 @@ public class AddressFactory extends NameIdGroupFactory {
 	public boolean addAddress(AddressType obj) throws FactoryException
 	{
 
-		if (obj.getGroup() == null) throw new FactoryException("Cannot add new Address without a group");
+		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Address without a group");
 
 		DataRow row = prepareAdd(obj, "addresses");
 
@@ -133,7 +133,7 @@ public class AddressFactory extends NameIdGroupFactory {
 			row.setCellValue("state",obj.getState());
 			row.setCellValue("region",obj.getRegion());
 			row.setCellValue("locationtype",obj.getLocationType().toString());
-			row.setCellValue("groupid", obj.getGroup().getId());
+			row.setCellValue("groupid", obj.getGroupId());
 			
 			if(insertRow(row)) return true;
 		}
@@ -175,7 +175,7 @@ public class AddressFactory extends NameIdGroupFactory {
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		AddressType use_map = (AddressType)map;
 		fields.add(QueryFields.getFieldPreferred(use_map.getPreferred()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
 		fields.add(QueryFields.getFieldAddressLine1(use_map.getAddressLine1()));
 		fields.add(QueryFields.getFieldAddressLine2(use_map.getAddressLine2()));
@@ -188,27 +188,27 @@ public class AddressFactory extends NameIdGroupFactory {
 	}
 	public int deleteAddresssByUser(UserType user) throws FactoryException
 	{
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganization().getId());
-		return deleteAddresssByIds(ids, user.getOrganization());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganizationId());
+		return deleteAddresssByIds(ids, user.getOrganizationId());
 	}
 
 	public boolean deleteAddress(AddressType obj) throws FactoryException
 	{
 		removeFromCache(obj);
-		int deleted = deleteById(obj.getId(), obj.getOrganization().getId());
+		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
 	}
-	public int deleteAddresssByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deleteAddresssByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
 			/*
 			Factories.getContactInformationFactory().deleteContactInformationByReferenceIds(ids,organization.getId());
-			Factories.getAddressParticipationFactory().deleteParticipations(ids, organization);
+			Factories.getAddressParticipationFactory().deleteParticipations(ids, organizationId);
 
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
+			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
+			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
 			*/
 		}
 		return deleted;
@@ -218,28 +218,28 @@ public class AddressFactory extends NameIdGroupFactory {
 		// Can't just delete by group;
 		// Need to get ids so as to delete participations as well
 		//
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 		/// TODO: Delete participations
 		///
-		return deleteAddresssByIds(ids, group.getOrganization());
+		return deleteAddresssByIds(ids, group.getOrganizationId());
 	}
 /*	
 	public List<AddressType> getChildAddressList(AddressType parent) throws FactoryException,ArgumentException{
 
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
-		fields.add(QueryFields.getFieldGroup(parent.getGroup().getId()));
-		return getAddressList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganization());
+		fields.add(QueryFields.getFieldGroup(parent.getGroupId()));
+		return getAddressList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());
 
 	}
 */
-	public List<AddressType>  getAddressList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<AddressType>  getAddressList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organization);
+		return getPaginatedList(fields, startRecord, recordCount, organizationId);
 	}
-	public List<AddressType> getAddressListByIds(long[] ids, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<AddressType> getAddressListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organization);
+		return getListByIds(ids, organizationId);
 	}
 	
 	
@@ -254,18 +254,18 @@ public class AddressFactory extends NameIdGroupFactory {
 			instruction.setRecordCount(recordCount);
 		}
 		
-		List<QueryField> fields = buildSearchQuery(searchValue, dir.getOrganization());
+		List<QueryField> fields = buildSearchQuery(searchValue, dir.getOrganizationId());
 		fields.add(QueryFields.getFieldGroup(dir.getId()));
-		return search(fields.toArray(new QueryField[0]), instruction, dir.getOrganization());
+		return search(fields.toArray(new QueryField[0]), instruction, dir.getOrganizationId());
 	}
 	
 	
 	/// Address search uses a different query to join in contact information
 	/// Otherwise, this could be the getPaginatedList method
 	///
-	/// public List<AddressType> search(QueryField[] filters, OrganizationType organization){
+	/// public List<AddressType> search(QueryField[] filters, long organizationId){
 	@Override
-	public List<QueryField> buildSearchQuery(String searchValue, OrganizationType organization) throws FactoryException{
+	public List<QueryField> buildSearchQuery(String searchValue, long organizationId) throws FactoryException{
 		
 		searchValue = searchValue.replaceAll("\\*","%");
 		
@@ -283,8 +283,8 @@ public class AddressFactory extends NameIdGroupFactory {
 	}
 	
 	@Override
-	public <T> List<T> search(QueryField[] filters, ProcessingInstructionType instruction, OrganizationType organization){
-		return searchByIdInView("personContact", filters,instruction,organization);
+	public <T> List<T> search(QueryField[] filters, ProcessingInstructionType instruction, long organizationId){
+		return searchByIdInView("personContact", filters,instruction,organizationId);
 
 /*
 		Connection connection = ConnectionFactory.getInstance().getConnection();
@@ -308,7 +308,7 @@ public class AddressFactory extends NameIdGroupFactory {
 			///
 			ProcessingInstructionType pi2 = new ProcessingInstructionType();
 			pi2.setOrderClause(instruction.getOrderClause());
-			persons = getListByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organization);
+			persons = getListByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organizationId);
 			logger.info("Retrieved " + persons.size() + " from " + ids.size() + " ids");
 		}
 		catch(SQLException sqe){
@@ -333,7 +333,7 @@ public class AddressFactory extends NameIdGroupFactory {
 				e.printStackTrace();
 			}
 		}
-		//return search(fields, instruction, organization);
+		//return search(fields, instruction, organizationId);
 		return persons;
 */
 	}

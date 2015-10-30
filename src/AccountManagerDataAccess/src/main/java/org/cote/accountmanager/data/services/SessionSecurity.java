@@ -33,9 +33,11 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.StatisticsType;
@@ -71,9 +73,9 @@ public class SessionSecurity {
 		if(Factories.getSessionFactory().isValid(session) == false) return false;
 		return session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED);
 	}	
-	public static UserType getUserBySession(String session_id, OrganizationType organization) throws FactoryException, ArgumentException{
+	public static UserType getUserBySession(String session_id, long organizationId) throws FactoryException, ArgumentException{
 		UserType user = null;
-		UserSessionType session = getUserSession(session_id, organization);
+		UserSessionType session = getUserSession(session_id, organizationId);
 		if(session == null) return null;
 		verifySessionAuthentication(session);
 		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED)) user = Factories.getUserFactory().getUserBySession(session);
@@ -83,8 +85,8 @@ public class SessionSecurity {
 		return user;
 	}
 
-	public static UserSessionType getUserSession(String session_id, OrganizationType organization) throws FactoryException{
-		UserSessionType session = Factories.getSessionFactory().getCreateSession(session_id, organization);
+	public static UserSessionType getUserSession(String session_id, long organizationId) throws FactoryException{
+		UserSessionType session = Factories.getSessionFactory().getCreateSession(session_id, organizationId);
 		if(verifySessionAuthentication(session) == false){
 			throw new FactoryException("Failed to verify session authentication status");
 		}
@@ -139,7 +141,7 @@ public class SessionSecurity {
 		boolean out_bool = false;
 		UserSessionType session = user.getSession();
 		if(session == null){
-			session = Factories.getSessionFactory().getCreateSession(null, user.getOrganization());
+			session = Factories.getSessionFactory().getCreateSession(null, user.getOrganizationId());
 			if(session == null) throw new FactoryException("Session is null for user #" + user.getId());
 			user.setSession(session);
 		}
@@ -150,12 +152,12 @@ public class SessionSecurity {
 		return out_bool;
 	}
 	/*
-	public static UserType legacyLogin(String user_name, String password_hash, OrganizationType organization) throws FactoryException, ArgumentException
+	public static UserType legacyLogin(String user_name, String password_hash, long organizationId) throws FactoryException, ArgumentException
 	{
 		return legacyLogin(UUID.randomUUID().toString(), user_name, password_hash, organization);
 	}
 
-	public static UserType legacyLogin(String session_id, String user_name, String password_hash, OrganizationType organization) throws FactoryException, ArgumentException{
+	public static UserType legacyLogin(String session_id, String user_name, String password_hash, long organizationId) throws FactoryException, ArgumentException{
 		/// 2015/06/24 - Legacy password handling
 		/// The hashed password is put into a LegacyPassword CredentialType.
 		/// The validation will repeat the following query to make sure the hash matches the persisted record
@@ -167,22 +169,30 @@ public class SessionSecurity {
 	/// New 'login' API to reflect change in approach
 	/// All existing login calls must be changed to use legacyLogin, or use the new method once the credentials are migrated
 	///
-	public static UserType login(String userName, CredentialEnumType credType, String suppliedCredential, OrganizationType organization) throws FactoryException, ArgumentException{
-		return authenticateSession(UUID.randomUUID().toString(), userName, credType, suppliedCredential, organization);
+	public static UserType login(String userName, CredentialEnumType credType, String suppliedCredential, long organizationId) throws FactoryException, ArgumentException{
+		return authenticateSession(UUID.randomUUID().toString(), userName, credType, suppliedCredential, organizationId);
 	}
-	public static UserType login(String sessionId, String userName, CredentialEnumType credType, String suppliedCredential, OrganizationType organization) throws FactoryException, ArgumentException{
-		return authenticateSession(sessionId, userName, credType, suppliedCredential, organization);
+	public static UserType login(String sessionId, String userName, CredentialEnumType credType, String suppliedCredential, long organizationId) throws FactoryException, ArgumentException{
+		return authenticateSession(sessionId, userName, credType, suppliedCredential, organizationId);
 	}
 	/// 2015/06/24
 	/// Rebranded API to reflect change in approach and actual intent of authenticating against a session using a user and a credential
 	///
-	private static UserType authenticateSession(String sessionId, String userName, CredentialEnumType credType, String suppliedCredential, OrganizationType organization) throws FactoryException, ArgumentException{
-		UserType user = Factories.getUserFactory().getUserByName(userName, organization);
+	private static UserType authenticateSession(String sessionId, String userName, CredentialEnumType credType, String suppliedCredential, long organizationId) throws FactoryException, ArgumentException{
+		UserType user = Factories.getUserFactory().getUserByName(userName, organizationId);
 		if(user == null){
 			throw new ArgumentException("User does not exist");
 		}
 		CredentialType cred = null;
-		if(credType == CredentialEnumType.HASHED_PASSWORD) cred = CredentialService.getPrimaryCredential(user,credType,true);
+		if(credType == CredentialEnumType.TOKEN){
+			if(RoleService.getIsUserInEffectiveRole(RoleService.getApiUserUserRole(user.getOrganizationId()), user) == false){
+				logger.error("User '" + user.getName() + "' is not an authorized API User.");
+				return null;
+			}
+			DirectoryGroupType dir = ApiConnectionConfigurationService.getApiDirectory(user);
+			cred = CredentialService.getPrimaryCredential(dir,credType,true);
+		}
+		else if(credType == CredentialEnumType.HASHED_PASSWORD) cred = CredentialService.getPrimaryCredential(user,credType,true);
 		else if(credType == CredentialEnumType.LEGACY_PASSWORD){
 			/// Legacy support means:
 			/// 1) Password is hashed using the old method
@@ -203,13 +213,13 @@ public class SessionSecurity {
 			throw new ArgumentException("AM5.1 credential does not exist");
 
 		}
-		return authenticateSession(sessionId, user, cred, suppliedCredential, organization);
+		return authenticateSession(sessionId, user, cred, suppliedCredential, organizationId);
 	}
 	/// 2015/06/24
 	/// Rebranded API to reflect change in approach and actual intent of authenticating against a session using a user and a credential
 	///
-	private static UserType authenticateSession(String sessionId, UserType user, CredentialType credential, String suppliedCredential, OrganizationType organization) throws FactoryException, ArgumentException{
-		UserSessionType session = Factories.getSessionFactory().getCreateSession(sessionId, organization);
+	private static UserType authenticateSession(String sessionId, UserType user, CredentialType credential, String suppliedCredential, long organizationId) throws FactoryException, ArgumentException{
+		UserSessionType session = Factories.getSessionFactory().getCreateSession(sessionId, organizationId);
 		if (session == null){
 			throw new FactoryException("New session was not allocated.");
 		}
@@ -226,9 +236,10 @@ public class SessionSecurity {
 		}
 		
 		session.setUserId(user.getId());
-		session.setOrganizationId(user.getOrganization().getId());
+		session.setOrganizationId(user.getOrganizationId());
 		user.setSession(session);
 		Factories.getUserFactory().populate(user);
+		Factories.getUserFactory().normalize(user);
 		Factories.getUserFactory().updateUserToCache(user);
 
 		session.setSessionStatus(SessionStatusEnumType.AUTHENTICATED);
@@ -254,14 +265,14 @@ public class SessionSecurity {
 		if (user.getSession() == null) return true;
 		return logout(user.getSession());
 	}
-	public static boolean logout(String session_id, OrganizationType organization) throws FactoryException {
-		UserSessionType session = Factories.getSessionFactory().getSession(session_id, organization);
-		if(session_id == null || organization == null){
+	public static boolean logout(String session_id, long organizationId) throws FactoryException {
+		UserSessionType session = Factories.getSessionFactory().getSession(session_id, organizationId);
+		if(session_id == null || organizationId <= 0L){
 			logger.error("Invalid parameters");
 			return false;
 		}
 		if(session == null){
-			logger.info("Session " + session_id + " does not exist in " + organization.getName() + ".  Skipping logout procedure");
+			logger.info("Session " + session_id + " does not exist in " + organizationId + ".  Skipping logout procedure");
 			return false;
 		}
 		/*

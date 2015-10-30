@@ -38,10 +38,39 @@ import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
+import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 
 
 public class FactoryService {
 	public static final Logger logger = Logger.getLogger(FactoryService.class.getName());
 	
-
+	/// Directory Type is a specific object where it is scoped to a group
+	/// but it is NOT the group itself
+	///
+	public static boolean isDirectoryType(AuditEnumType type){
+		return isDirectoryType(NameEnumType.valueOf(type.toString()));
+	}
+	public static boolean isDirectoryType(NameEnumType type){
+		boolean out_bool = false;
+		switch(type){
+			case TAG:
+			case ACCOUNT:
+			case PERSON:
+			case ADDRESS:
+			case CONTACT:
+			case FACT:
+			case FUNCTION:
+			case FUNCTIONFACT:
+			case OPERATION:
+			case PATTERN:
+			case POLICY:
+			case RULE:
+			case DATA:
+				out_bool = true;
+				break;
+		}
+		return out_bool;
+		
+	}
 }

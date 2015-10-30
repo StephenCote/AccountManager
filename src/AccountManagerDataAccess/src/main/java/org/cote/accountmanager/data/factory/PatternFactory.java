@@ -104,13 +104,13 @@ public class PatternFactory extends NameIdGroupFactory {
 	}
 	
 	
-	public PatternType newPattern(UserType user, DirectoryGroupType group) throws ArgumentException
+	public PatternType newPattern(UserType user, long groupId) throws ArgumentException
 	{
 		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
 		PatternType obj = new PatternType();
-		obj.setOrganization(group.getOrganization());
+		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
-		obj.setGroup(group);
+		obj.setGroupId(groupId);
 		obj.setPatternType(PatternEnumType.UNKNOWN);
 		obj.setComparator(ComparatorEnumType.UNKNOWN);
 		obj.setNameType(NameEnumType.PATTERN);
@@ -119,12 +119,12 @@ public class PatternFactory extends NameIdGroupFactory {
 	
 	public boolean addPattern(PatternType obj) throws FactoryException
 	{
-		if (obj.getGroup() == null) throw new FactoryException("Cannot add new Fact without a group");
+		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "pattern");
 		try{
 			row.setCellValue("patterntype", obj.getPatternType().toString());
-			row.setCellValue("groupid", obj.getGroup().getId());
+			row.setCellValue("groupid", obj.getGroupId());
 			row.setCellValue("description", obj.getDescription());
 			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("score", obj.getScore());
@@ -181,29 +181,29 @@ public class PatternFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
 		fields.add(QueryFields.getFieldPatternType(use_map.getPatternType()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroup().getId()));
+		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 	}
 	public int deletePatternsByUser(UserType user) throws FactoryException
 	{
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganization().getId());
-		return deletePatternsByIds(ids, user.getOrganization());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganizationId());
+		return deletePatternsByIds(ids, user.getOrganizationId());
 	}
 
 	public boolean deletePattern(PatternType obj) throws FactoryException
 	{
 		removeFromCache(obj);
-		int deleted = deleteById(obj.getId(), obj.getOrganization().getId());
+		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
 	}
-	public int deletePatternsByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deletePatternsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organization.getId());
+		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
 			/*
-			Factories.getPatternParticipationFactory().deleteParticipations(ids, organization);
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
+			Factories.getPatternParticipationFactory().deleteParticipations(ids, organizationId);
+			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
+			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
 			*/
 		}
 		return deleted;
@@ -213,25 +213,25 @@ public class PatternFactory extends NameIdGroupFactory {
 		// Can't just delete by group;
 		// Need to get ids so as to delete participations as well
 		//
-		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganization().getId());
+		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 		/// TODO: Delete participations
 		///
-		return deletePatternsByIds(ids, group.getOrganization());
+		return deletePatternsByIds(ids, group.getOrganizationId());
 	}
-	public List<FactType> getPatterns(QueryField[] matches, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<FactType> getPatterns(QueryField[] matches, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> lst = getByField(matches, organization.getId());
+		List<NameIdType> lst = getByField(matches, organizationId);
 		return convertList(lst);
 
 	}
 	
-	public List<PatternType>  getPatternList(QueryField[] fields, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException,ArgumentException
+	public List<PatternType>  getPatternList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organization);
+		return getPaginatedList(fields, startRecord, recordCount, organizationId);
 	}
-	public List<PatternType> getPatternListByIds(long[] ids, OrganizationType organization) throws FactoryException,ArgumentException
+	public List<PatternType> getPatternListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organization);
+		return getListByIds(ids, organizationId);
 	}
 	
 }

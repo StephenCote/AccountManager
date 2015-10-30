@@ -164,7 +164,7 @@ public class BshService {
 			if(contextUser != null){
 				DirectoryGroupType homeDir = Factories.getGroupFactory().getUserDirectory(contextUser);
 				intr.set("user",contextUser);
-				intr.set("organization", contextUser.getOrganization());
+				intr.set("organizationId", contextUser.getOrganizationId());
 				intr.set("home",homeDir);
 			}
 			if(params != null){

@@ -32,11 +32,11 @@ public class TestBulkAccount extends BaseDataAccessTest{
 		DirectoryGroupType rootDir = null;
 		AccountType qaAccount = null;
 		try{
-			rootDir = Factories.getGroupFactory().getRootDirectory(owner.getOrganization());
+			rootDir = Factories.getGroupFactory().getRootDirectory(owner.getOrganizationId());
 			qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
 	
 			if(qaAccount == null){
-				qaAccount = Factories.getAccountFactory().newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir);
+				qaAccount = Factories.getAccountFactory().newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir.getId());
 				Factories.getAccountFactory().addAccount(qaAccount);
 				qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
 			}
@@ -72,13 +72,13 @@ public class TestBulkAccount extends BaseDataAccessTest{
 		try{
 			
 			String qaDirName = "QA Dir - Static";// + UUID.randomUUID().toString();
-			dir = Factories.getGroupFactory().getCreateDirectory(testUser, qaDirName, testUser.getHomeDirectory(), Factories.getDevelopmentOrganization());
+			dir = Factories.getGroupFactory().getCreateDirectory(testUser, qaDirName, testUser.getHomeDirectory(), Factories.getDevelopmentOrganization().getId());
 			art = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Roles", null);
 			readerRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Reader Role", art);
 			writerRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Writer Role", readerRole);
 			deleterRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Deleter Role", writerRole);
 			adminRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Admin Role", deleterRole);
-			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", Factories.getDevelopmentOrganization());
+			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", Factories.getDevelopmentOrganization().getId());
 			
 			/// Put qaAccount1 in readerRole Role
 			AuthorizationService.authorizeAccountType(adminUser, qaAccount1, readerRole, true, false, false, false);

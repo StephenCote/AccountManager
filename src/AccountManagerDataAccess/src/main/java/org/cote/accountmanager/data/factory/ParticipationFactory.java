@@ -84,11 +84,11 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		BaseParticipantType participant = (BaseParticipantType)obj;
-		return participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganization().getId();
+		return participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganizationId();
 	}
 	public boolean deleteParticipations(NameIdType source) throws FactoryException
 	{
-		int count = deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source) }, source.getOrganization().getId());
+		int count = deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source) }, source.getOrganizationId());
 		return (count > 0);
 	}
 	public boolean deleteParticipationsByAffects(NameIdType source, long[] permissions) throws FactoryException{
@@ -102,7 +102,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "affectid", buff.toString());
 				match.setComparator(ComparatorEnumType.IN);
-				count += deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source),match }, source.getOrganization().getId());
+				count += deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source),match }, source.getOrganizationId());
 				buff.delete(0,  buff.length());
 			}
 		}
@@ -110,26 +110,32 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	}
 	public boolean deleteParticipationsByAffect(NameIdType source,BasePermissionType permission) throws FactoryException
 	{
-		int count = deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source),QueryFields.getFieldAffectId(permission) }, source.getOrganization().getId());
+		int count = deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source),QueryFields.getFieldAffectId(permission) }, source.getOrganizationId());
 		return (count > 0);
 	}
-	public boolean deleteParticipations(long[] ids, OrganizationType organization) throws FactoryException
+	public boolean deleteParticipations(long[] ids, long organizationId) throws FactoryException
 	{
-		return deleteParts(ids, "ParticipationId", null, organization);
+		return deleteParts(ids, "ParticipationId", null, organizationId);
 	}
-
-	public boolean deleteParticipantsForParticipation(long[] ids, NameIdType participation, OrganizationType organization) throws FactoryException
+	public boolean deleteParticipantsWithAffect(long[] participationIds, long organizationId) throws FactoryException
+	{
+		QueryField query = new QueryField(SqlDataEnumType.VARCHAR, "AffectType",AffectEnumType.GRANT_PERMISSION.toString());
+		query.setComparator(ComparatorEnumType.EQUALS);
+		return deleteParts(participationIds, "ParticipationId", query, organizationId);
+	}
+	public boolean deleteParticipantsForParticipation(long[] ids, NameIdType participation, long organizationId) throws FactoryException
 	{
 		QueryField query = new QueryField(SqlDataEnumType.BIGINT, "ParticipationId",participation.getId());
 		query.setComparator(ComparatorEnumType.EQUALS);
-		return deleteParts(ids, "ParticipantId", query, organization);
-	}	
-	
-	public boolean deleteParticipants(long[] ids, OrganizationType organization) throws FactoryException
-	{
-		return deleteParts(ids, "ParticipantId", null, organization);
+		return deleteParts(ids, "ParticipantId", query, organizationId);
 	}
-	protected boolean deleteParts(long[] ids, String field_name, QueryField query, OrganizationType organization) throws FactoryException
+	
+	
+	public boolean deleteParticipants(long[] ids, long organizationId) throws FactoryException
+	{
+		return deleteParts(ids, "ParticipantId", null, organizationId);
+	}
+	protected boolean deleteParts(long[] ids, String field_name, QueryField query, long organizationId) throws FactoryException
 	{
 		StringBuffer buff = new StringBuffer();
 		int deleted = 0;
@@ -144,14 +150,14 @@ public abstract class ParticipationFactory extends NameIdFactory {
 				match.setComparator(ComparatorEnumType.IN);
 				matches.add(match);
 				if(query != null) matches.add(query);
-				deleted += deleteByField(matches.toArray(new QueryField[0]), organization.getId());
+				deleted += deleteByField(matches.toArray(new QueryField[0]), organizationId);
 				buff.delete(0, buff.length());
 			}
 		}
 
 		return (deleted > 0);
 	}
-	public boolean deleteParticipants(BaseParticipantType[] list, OrganizationType organization)  throws FactoryException
+	public boolean deleteParticipants(BaseParticipantType[] list, long organizationId)  throws FactoryException
 	{
 
 		List<Long> ids = new ArrayList<Long>();
@@ -160,11 +166,11 @@ public abstract class ParticipationFactory extends NameIdFactory {
 			ids.add(list[i].getId());
 			removeParticipantFromCache(list[i]);
 		}
-		return (deleteById(convertLongList(ids), organization.getId()) > 0);
+		return (deleteById(convertLongList(ids), organizationId) > 0);
 	}
 	public boolean deleteParticipant(BaseParticipantType participant) throws FactoryException
 	{
-		int deleted = deleteById(participant.getId(), participant.getOrganization().getId());
+		int deleted = deleteById(participant.getId(), participant.getOrganizationId());
 		removeParticipantFromCache(participant);
 		return (deleted > 0);
 	}
@@ -174,7 +180,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		return update(participant);
 	}
 	protected void updateParticipantToCache(BaseParticipantType participant) throws ArgumentException{
-		//String key_name = participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganization().getId();
+		//String key_name = participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganizationId();
 		String key_name = getCacheKeyName(participant);
 		logger.debug("Update participant to cache: " + key_name);
 		if(this.haveCacheId(participant.getId())) removeFromCache(participant);
@@ -182,7 +188,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	}
 
 	protected void removeParticipantFromCache(BaseParticipantType participant){
-		//String key_name = participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganization().getId();
+		//String key_name = participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganizationId();
 		String key_name = getCacheKeyName(participant);
 		logger.debug("Remove participant from cache: " + key_name);
 		
@@ -190,7 +196,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	}
 	public boolean addParticipant(BaseParticipantType participant) throws FactoryException, DataAccessException
 	{
-		if (participant.getOrganization() == null || participant.getOrganization().getId() <= 0) throw new FactoryException("Cannot add participant to invalid organization");
+		if (participant.getOrganizationId() <= 0L) throw new FactoryException("Cannot add participant to invalid organization");
 		if (participant.getParticipantId().compareTo(0L)==0 || participant.getParticipationId().compareTo(0L)==0 || participant.getOwnerId().compareTo(0L)==0)
 		{
 			logger.warn("Participant Id: " + participant.getParticipantId());
@@ -260,59 +266,59 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		return insertRow(row);
 
 	}
-	protected List<BaseRoleType> getRoleListFromParticipations(RoleParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
+	protected List<BaseRoleType> getRoleListFromParticipations(RoleParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 	
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return  Factories.getRoleFactory().getRoles(new QueryField[] { field }, organization);
+		return  Factories.getRoleFactory().getRoles(new QueryField[] { field }, organizationId);
 		//return new ArrayList<BaseRoleType>();
 
 	}
-	protected List<FactType> getFactListFromParticipations(FactParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
+	protected List<FactType> getFactListFromParticipations(FactParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 	
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return  Factories.getFactFactory().getFacts(new QueryField[] { field }, organization);
+		return  Factories.getFactFactory().getFacts(new QueryField[] { field }, organizationId);
 		//return new ArrayList<BaseFactType>();
 
 	}
-	protected <T> List<T> getGroupListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
+	protected <T> List<T> getGroupListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getGroupFactory().getList(new QueryField[]{ field }, organization);
+		return Factories.getGroupFactory().getList(new QueryField[]{ field }, organizationId);
 	}
-	protected <T> List<T> getUserListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
+	protected <T> List<T> getUserListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getUserFactory().getList(new QueryField[]{ field }, organization);
+		return Factories.getUserFactory().getList(new QueryField[]{ field }, organizationId);
 	}	
-	protected <T> List<T> getAccountListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
+	protected <T> List<T> getAccountListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getAccountFactory().getList(new QueryField[]{ field }, organization);
+		return Factories.getAccountFactory().getList(new QueryField[]{ field }, organizationId);
 	}
-	protected <T> List<T> getPersonListFromParticipations(BaseParticipantType[] list, OrganizationType organization) throws FactoryException, ArgumentException
+	protected <T> List<T> getPersonListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getPersonFactory().getList(new QueryField[]{ field }, organization);
+		return Factories.getPersonFactory().getList(new QueryField[]{ field }, organizationId);
 	}
 /*
-	protected List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, OrganizationType organization) throws FactoryException
+	protected List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, long organizationId) throws FactoryException
 	{
-		QueryField field = QueryFields.getFieldParticipationList(list, organization);
-		return Factories.getAccountFactory().getList(new QueryField[]{ field }, organization);
+		QueryField field = QueryFields.getFieldParticipationList(list, organizationId);
+		return Factories.getAccountFactory().getList(new QueryField[]{ field }, organizationId);
 	}
 */
-	public List<DataType> getDataListFromParticipations(DataParticipantType[] list, boolean detailsOnly, long startRecord, int recordCount, OrganizationType organization) throws FactoryException, ArgumentException
+	public List<DataType> getDataListFromParticipations(DataParticipantType[] list, boolean detailsOnly, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getDataFactory().getDataList(new QueryField[]{ field }, detailsOnly, startRecord, recordCount, organization);
+		return Factories.getDataFactory().getDataList(new QueryField[]{ field }, detailsOnly, startRecord, recordCount, organizationId);
 		/*
-		return Factory.DataFactoryInstance.GetDataList(new QueryField[] { match }, DetailsOnly, StartRecord, RecordCount,organization);
+		return Factory.DataFactoryInstance.GetDataList(new QueryField[] { match }, DetailsOnly, StartRecord, RecordCount, organizationId);
 		*/
 		//return new ArrayList<DataType>();
 	}
@@ -326,7 +332,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	{
 		QueryField[] fields = QueryFields.getFieldParticipantsMatch(participation, participant, participant_type, permission, affect_type);
 		
-		return getByField(fields, participation.getOrganization().getId());
+		return getByField(fields, participation.getOrganizationId());
 
 
 	}
@@ -334,7 +340,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	{
 
 		if (maps.length == 0) return new ArrayList<NameIdType>();
-		OrganizationType org = maps[0].getOrganization();
+		long org = maps[0].getOrganizationId();
 
 		List<QueryField> matches = new ArrayList<QueryField>();
 		matches.add(QueryFields.getFieldParticipantType(participant_type));
@@ -348,7 +354,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		QueryField match = new QueryField(SqlDataEnumType.VARCHAR, "participationid", QueryFields.getFilteredLongList(convertLongList(ids)));
 		match.setComparator(ComparatorEnumType.IN);
 		matches.add(match);
-		return getByField(matches.toArray(new QueryField[0]), org.getId());
+		return getByField(matches.toArray(new QueryField[0]), org);
 	}
 	public <T> T getParticipant(NameIdType participation, NameIdType participant, ParticipantEnumType type) throws FactoryException, ArgumentException
 	{
@@ -356,12 +362,12 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		T out_participant = null;
 		if (participation == null || participant == null || participation.getId() <= 0 || participant.getId() <= 0 || type == ParticipantEnumType.UNKNOWN) throw new ArgumentException("getParticipant: Invalid parameters");
 
-		String key_name = participation.getId() + "-" + this.participationType + "-" + participant.getId() + "-" + type + "-" + participation.getOrganization().getId();
+		String key_name = participation.getId() + "-" + this.participationType + "-" + participant.getId() + "-" + type + "-" + participation.getOrganizationId();
 		out_participant = (T)readCache(key_name);
 		boolean add_to_cache = false;
 		if (out_participant == null)
 		{
-			List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(participant), QueryFields.getFieldParticipantType(type), QueryFields.getFieldParticipationId(participation)}, participation.getOrganization().getId());
+			List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(participant), QueryFields.getFieldParticipantType(type), QueryFields.getFieldParticipationId(participation)}, participation.getOrganizationId());
 			if (list.size() == 0) return null;
 			out_participant = (T)list.get(0);
 			add_to_cache = true;
@@ -391,7 +397,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 				);
 		}
 
-		String key_name = participation.getId() + "-" + this.participationType + "-" + participant.getId() + "-" + participant_type + "-" + (permission != null ? permission.getId() : "0") + "-" + affect_type + "-" + participation.getOrganization().getId();
+		String key_name = participation.getId() + "-" + this.participationType + "-" + participant.getId() + "-" + participant_type + "-" + (permission != null ? permission.getId() : "0") + "-" + affect_type + "-" + participation.getOrganizationId();
 		out_participant = (T)readCache(key_name);
 		boolean add_to_cache = false;
 		
@@ -426,14 +432,15 @@ public abstract class ParticipationFactory extends NameIdFactory {
 
 
 
-	protected BaseParticipantType newParticipant(String participant_name, ParticipantEnumType type, OrganizationType organization) throws ArgumentException
+	protected BaseParticipantType newParticipant(String participant_name, ParticipantEnumType type, long organizationId) throws ArgumentException
 	{
-		return newParticipant(participant_name, type, null, organization);
+		return newParticipant(participant_name, type, null, organizationId);
 	}
-	protected BaseParticipantType newParticipant(String participant_name, ParticipantEnumType type, BaseParticipantType Parent, OrganizationType organization) throws ArgumentException
+	protected BaseParticipantType newParticipant(String participant_name, ParticipantEnumType type, BaseParticipantType Parent, long organizationId) throws ArgumentException
 	{
 		BaseParticipantType new_participant = newParticipant(type);
-		new_participant.setOrganization(organization);
+		//new_participant.setOrganization(organization);
+		new_participant.setOrganizationId(organizationId);
 		return new_participant;
 	}
 
@@ -531,7 +538,8 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		out_participant.setParticipationId(participation.getId());
 		out_participant.setParticipantId(participant.getId());
 		out_participant.setOwnerId(participation.getOwnerId());
-		out_participant.setOrganization(participation.getOrganization());
+		//out_participant.setOrganization(participation.getOrganization());
+		out_participant.setOrganizationId(participation.getOrganizationId());
 		if (permission != null) out_participant.setAffectId(permission.getId());
 		out_participant.setAffectType(affect_type);
 

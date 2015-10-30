@@ -42,10 +42,10 @@ public class TestDataTags extends BaseDataAccessTest {
 			Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/\\~])",Pattern.MULTILINE);
 			OrganizationType org = Factories.getOrganizationFactory().findOrganization("/Accelerant/Rocket");
 			assertNotNull("Org is null",org);
-			UserType user = Factories.getUserFactory().getUserByName("TestUser1", org);
+			UserType user = Factories.getUserFactory().getUserByName("TestUser1", org.getId());
 			Factories.getUserFactory().populate(user);
 			assertNotNull("User is null",user);
-			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org);
+			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org.getId());
 			/*
 			List<BaseTagType> tags = Factories.getTagFactory().listTags(tagDir,0,0,tagDir.getOrganization());
 			logger.info("Got the tags: " + tags.size());
@@ -60,17 +60,17 @@ public class TestDataTags extends BaseDataAccessTest {
 			instruction.setOrderClause("participantid");
 			assertTrue("Instruction is not ready for pagination",DBFactory.isInstructionReadyForPagination(instruction));
 			*/
-			DataTagType tag1 = Factories.getTagFactory().getByName("xx", tagDir);
-			DataTagType tag2 = Factories.getTagFactory().getByName("xx", tagDir);
-			DataTagType tag3 = Factories.getTagFactory().getByName("xx", tagDir);
-			boolean canRead = AuthorizationService.canViewGroup(user, tag1.getGroup());
+			DataTagType tag1 = Factories.getTagFactory().getByNameInGroup("xx", tagDir);
+			DataTagType tag2 = Factories.getTagFactory().getByNameInGroup("xx", tagDir);
+			DataTagType tag3 = Factories.getTagFactory().getByNameInGroup("xx", tagDir);
+			boolean canRead = AuthorizationService.canViewGroup(user, Factories.getGroupFactory().getGroupById(tag1.getGroupId(),user.getOrganizationId()));
 			//List<DataParticipantType> tagParts = Factories.getTagParticipationFactory().getTagParticipations(new DataTagType[]{tag1,tag2}, ParticipantEnumType.DATA);
 			int count = Factories.getTagParticipationFactory().countTagParticipations(new DataTagType[]{tag1,tag2}, ParticipantEnumType.DATA);
-			List<DataType> dataList = Factories.getTagFactory().getDataForTags(new DataTagType[]{tag1,tag2}, 10,10,org);
+			List<DataType> dataList = Factories.getTagFactory().getDataForTags(new DataTagType[]{tag1,tag2}, 10,10,org.getId());
 			assertTrue("Parts to List don't match: " + dataList.size() + " != " + 10,dataList.size() == 10 && count > 0);
 			logger.info("Found " + dataList.size() + " data tags");
 			for(int i = 0; i < 250 && i < dataList.size();i++){
-				logger.info(dataList.get(i).getGroup().getName() + "/" + dataList.get(i).getName());
+				logger.info(dataList.get(i).getGroupId() + "/" + dataList.get(i).getName());
 			}
 		}
 		catch(FactoryException e){
@@ -96,10 +96,10 @@ public class TestDataTags extends BaseDataAccessTest {
 			Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/\\~])",Pattern.MULTILINE);
 			OrganizationType org = Factories.getOrganizationFactory().findOrganization("/Accelerant/Rocket");
 			assertNotNull("Org is null",org);
-			UserType user = Factories.getUserFactory().getUserByName("TestUser1", org);
+			UserType user = Factories.getUserFactory().getUserByName("TestUser1", org.getId());
 			Factories.getUserFactory().populate(user);
 			assertNotNull("User is null",user);
-			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org);
+			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org.getId());
 			String[] dataFile = FileUtil.getFileAsString("/Users/Steve/Temp/tagstest.csv").split("\n");
 			logger.info("Reading " + dataFile.length + " lines");
 			String match = "Root/Home/product_user/Media";
@@ -132,7 +132,7 @@ public class TestDataTags extends BaseDataAccessTest {
 				long startTag = System.currentTimeMillis();
 				String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 				if(dataTags.containsKey(tags[i])==false){
-					DataTagType tag = Factories.getTagFactory().newDataTag(user,tags[i],tagDir);
+					DataTagType tag = Factories.getTagFactory().newDataTag(user,tags[i],tagDir.getId());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TAG, tag);
 					dataTags.put(tags[i], tag);
 					nTag = tag;
@@ -143,7 +143,7 @@ public class TestDataTags extends BaseDataAccessTest {
 				for(int g = 0; g < paths.length; g++){
 					long startLookup = System.currentTimeMillis();
 					String path = limitPath.matcher(paths[g]).replaceAll("");
-					DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,path, org);
+					DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,path, org.getId());
 					//logger.info("Group Lookup: " + (System.currentTimeMillis() - startLookup));
 					if(dir == null){
 						logger.warn("Failed to find path '" + path + "'");
@@ -164,7 +164,7 @@ public class TestDataTags extends BaseDataAccessTest {
 					fields.add(QueryFields.getFieldGroup(dir.getId()));
 					
 					startLookup = System.currentTimeMillis();
-					List<DataType> data = Factories.getDataFactory().getDataList(fields.toArray(new QueryField[0]), null,true,dir.getOrganization());
+					List<DataType> data = Factories.getDataFactory().getDataList(fields.toArray(new QueryField[0]), null,true,dir.getOrganizationId());
 					//logger.info("Data Lookup: " + (System.currentTimeMillis() - startLookup));
 					
 					if(data.size() == 0){
@@ -205,10 +205,10 @@ public class TestDataTags extends BaseDataAccessTest {
 			Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s])",Pattern.MULTILINE);
 			OrganizationType org = Factories.getOrganizationFactory().findOrganization("/Accelerant/Rocket");
 			assertNotNull("Org is null",org);
-			UserType user = Factories.getUserFactory().getUserByName("TestUser1", org);
+			UserType user = Factories.getUserFactory().getUserByName("TestUser1", org.getId());
 			Factories.getUserFactory().populate(user);
 			assertNotNull("User is null",user);
-			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org);
+			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org.getId());
 			String[] dataFile = FileUtil.getFileAsString("/Users/Steve/Temp/tagstest.csv").split("\n");
 			logger.info("Reading " + dataFile.length + " lines");
 			String match = "Root/Home/product_user/Media";
@@ -221,14 +221,14 @@ public class TestDataTags extends BaseDataAccessTest {
 				String[] pairs = dataFile[i].split("\t");
 				if(pairs.length != 4) logger.warn("Unexpected length");
 				if(tags.containsKey(pairs[2])==false){
-					DataTagType tag = Factories.getTagFactory().newDataTag(user,pairs[2],tagDir);
+					DataTagType tag = Factories.getTagFactory().newDataTag(user,pairs[2],tagDir.getId());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TAG, tag);
 					tags.put(pairs[2], tag);
 					nTag = tag;
 				}
 				else nTag = tags.get(pairs[2]);
 				String path = pairs[3].replace(match,replace).trim();
-				DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,path, org);
+				DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,path, org.getId());
 				if(dir == null){
 					logger.warn("Failed to find path '" + path + "'");
 					continue;
@@ -284,14 +284,14 @@ public class TestDataTags extends BaseDataAccessTest {
 			List<DataParticipantType> parts = Factories.getTagParticipationFactory().convertList(Factories.getTagParticipationFactory().getParticipations(new DataTagType[]{tag1}, ParticipantEnumType.DATA));
 			assertTrue("Unexpected count", parts.size() == 3);
 			logger.info("Parts = " + parts.size());
-			List<DataType> data_list = Factories.getTagFactory().getDataForTag(tag1, Factories.getDevelopmentOrganization());
+			List<DataType> data_list = Factories.getTagFactory().getDataForTag(tag1, Factories.getDevelopmentOrganization().getId());
 			assertTrue("Unexpected count", data_list.size() == 3);
 			logger.info("Data for parts = " + data_list.size());
 			
 			parts = Factories.getTagParticipationFactory().convertList(Factories.getTagParticipationFactory().getParticipations(new DataTagType[]{tag2}, ParticipantEnumType.DATA));
 			assertTrue("Unexpected count", parts.size() == 2);
 			logger.info("Parts = " + parts.size());
-			data_list = Factories.getTagFactory().getDataForTag(tag2, Factories.getDevelopmentOrganization());
+			data_list = Factories.getTagFactory().getDataForTag(tag2, Factories.getDevelopmentOrganization().getId());
 			assertTrue("Unexpected count", data_list.size() == 2);
 			logger.info("Data for parts = " + data_list.size());
 
@@ -300,12 +300,12 @@ public class TestDataTags extends BaseDataAccessTest {
 			logger.info("Perf Note/Bug: getTagParticipations returns N instances of participant ids instead of just 1.  This doesn't affect the result, but does add duplicate entries to the query.");
 			//assertTrue("Unexpected count", parts.size() == 4);
 
-			data_list = Factories.getTagFactory().getDataForTags(new DataTagType[]{tag1,tag2}, 0,0,Factories.getDevelopmentOrganization());
+			data_list = Factories.getTagFactory().getDataForTags(new DataTagType[]{tag1,tag2}, 0,0,Factories.getDevelopmentOrganization().getId());
 			logger.info("Data for parts = " + data_list.size());
 			assertTrue("Unexpected count", data_list.size() == 2);
 
 			assertTrue("Unable to tag data", AuthorizationService.switchData(user2, tag2, data3, false));
-			data_list = Factories.getTagFactory().getDataForTags(new DataTagType[]{tag1,tag2}, 0,0,Factories.getDevelopmentOrganization());
+			data_list = Factories.getTagFactory().getDataForTags(new DataTagType[]{tag1,tag2}, 0,0,Factories.getDevelopmentOrganization().getId());
 			logger.info("Data for parts = " + data_list.size());
 			assertTrue("Unexpected count", data_list.size() == 1);	
 			

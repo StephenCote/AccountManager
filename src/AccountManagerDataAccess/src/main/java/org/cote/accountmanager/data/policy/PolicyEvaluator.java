@@ -258,7 +258,7 @@ public class PolicyEvaluator {
 		if(pattern.getPatternType() == PatternEnumType.PARAMETER){
 			opr = OperationResponseEnumType.SUCCEEDED;
 		}
-		if(pattern.getPatternType() == PatternEnumType.OPERATION){
+		else if(pattern.getPatternType() == PatternEnumType.OPERATION){
 			opr = evaluateOperation(pattern, pfact,mfact,pattern.getOperationUrn());
 		}
 		/// Expression - simple in-line expression/comparison
@@ -315,13 +315,16 @@ public class PolicyEvaluator {
 			logger.error("Match fact of group is expected");
 			return OperationResponseEnumType.ERROR;			
 		}
-		List<String> perms = new ArrayList<String>();
+		List<Long> perms = new ArrayList<Long>();
+		perms = SoDPolicyUtil.getActivityPermissionsForType(g.getUrn(), p);
+		/*
 		if(p.getNameType() == NameEnumType.ACCOUNT){
 			perms = SoDPolicyUtil.getActivityPermissionsForAccount(g.getUrn(), p.getUrn());
 		}
 		if(p.getNameType() == NameEnumType.PERSON){
 			perms = SoDPolicyUtil.getActivityPermissionsForPerson(g.getUrn(), p.getUrn());
 		}
+		*/
 		if(perms.size() > 0) out_response = OperationResponseEnumType.SUCCEEDED;
 		else out_response = OperationResponseEnumType.FAILED;
 		return out_response;
@@ -341,7 +344,8 @@ public class PolicyEvaluator {
 		if(matchFact.getFactType() == FactEnumType.PERMISSION){
 			
 			BasePermissionType perm = null;
-			if(FactUtil.idPattern.matcher(matchFact.getFactData()).matches()) perm = Factories.getPermissionFactory().getPermissionById(Long.parseLong(matchFact.getFactData()), matchFact.getOrganization());
+			if(matchFact.getFactoryType() == FactoryEnumType.PERMISSION) perm = (BasePermissionType)g;
+			else if(FactUtil.idPattern.matcher(matchFact.getFactData()).matches()) perm = Factories.getPermissionFactory().getPermissionById(Long.parseLong(matchFact.getFactData()), matchFact.getOrganizationId());
 			else perm = Factories.getPermissionFactory().getByUrn(matchFact.getFactData());
 			if(perm == null){
 				logger.error("Permission reference does not exist");

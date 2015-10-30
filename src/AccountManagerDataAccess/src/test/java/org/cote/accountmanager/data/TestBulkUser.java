@@ -30,18 +30,18 @@ public class TestBulkUser extends BaseDataAccessTest{
 		try{
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			
-			UserType new_user = Factories.getUserFactory().newUser("BulkUser-" + guid, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
+			UserType new_user = Factories.getUserFactory().newUser("BulkUser-" + guid, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, new_user);
 			//SecurityType asymKey = KeyService.newPersonalAsymmetricKey(sessionId,null,new_user,false);
 			//SecurityType symKey = KeyService.newPersonalSymmetricKey(sessionId,null,new_user,false);
 			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,new_user, new_user, "password1".getBytes("UTF-8"), true, true);
 
 			logger.info("Retrieving Bulk User");
-			UserType check = Factories.getUserFactory().getUserByName("BulkUser-" + guid, new_user.getOrganization());
+			UserType check = Factories.getUserFactory().getUserByName("BulkUser-" + guid, new_user.getOrganizationId());
 			assertNotNull("Failed user cache check",check);
 			
 			logger.info("Retrieving User By Id");
-			check = Factories.getUserFactory().getById(new_user.getId(), new_user.getOrganization());
+			check = Factories.getUserFactory().getById(new_user.getId(), new_user.getOrganizationId());
 			assertNotNull("Failed id cache check",check);
 			
 			BulkFactories.getBulkFactory().write(sessionId);
@@ -67,7 +67,7 @@ public class TestBulkUser extends BaseDataAccessTest{
 		// Now try to authenticate as the new bulk loaded user
 		UserType chkUser = null;
 		try {
-			 chkUser = SessionSecurity.login("BulkUser-" + guid, CredentialEnumType.HASHED_PASSWORD, "password1", Factories.getDevelopmentOrganization());
+			 chkUser = SessionSecurity.login("BulkUser-" + guid, CredentialEnumType.HASHED_PASSWORD, "password1", Factories.getDevelopmentOrganization().getId());
 			 assertNotNull("Unable to authenticate as new user",chkUser);
 			 SessionSecurity.logout(chkUser);
 		} catch (FactoryException e) {

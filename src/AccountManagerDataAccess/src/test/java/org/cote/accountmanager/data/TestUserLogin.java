@@ -39,8 +39,8 @@ public class TestUserLogin extends BaseDataAccessTest {
 		UserType user1 = null;
 		UserSessionType session1 = null;
 		try{
-			session1 = SessionSecurity.getUserSession(UUID.randomUUID().toString(), Factories.getDevelopmentOrganization());
-			user1 = SessionSecurity.login(session1.getSessionId(),"Invalid", CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization());
+			session1 = SessionSecurity.getUserSession(UUID.randomUUID().toString(), Factories.getDevelopmentOrganization().getId());
+			user1 = SessionSecurity.login(session1.getSessionId(),"Invalid", CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization().getId());
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
@@ -59,11 +59,11 @@ public class TestUserLogin extends BaseDataAccessTest {
 		UserType session1b = null;
 		UserType session2 = null;
 		try{
-			session1 = SessionSecurity.login(testUserName1, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization());
-			session2 = SessionSecurity.login(testUserName2, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization());
+			session1 = SessionSecurity.login(testUserName1, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization().getId());
+			session2 = SessionSecurity.login(testUserName2, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization().getId());
 			Factories.getUserFactory().populate(session1);
 			logger.info("*** Check session populated: " + session1.getSession().getSessionId());
-			session1b = SessionSecurity.getUserBySession(session1.getSession().getSessionId(), session1.getOrganization());
+			session1b = SessionSecurity.getUserBySession(session1.getSession().getSessionId(), session1.getOrganizationId());
 			logger.info("*** Check populated: " + session1b.getPopulated() + " should be " + session1.getPopulated());
 			//assertTrue("Session was not populated",session1b.getPopulated());
 		}
@@ -93,7 +93,7 @@ public class TestUserLogin extends BaseDataAccessTest {
 		UserType user = null;
 		try {
 			
-			user = SessionSecurity.getUserBySession(sessionId, Factories.getDevelopmentOrganization());
+			user = SessionSecurity.getUserBySession(sessionId, Factories.getDevelopmentOrganization().getId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,7 +111,7 @@ public class TestUserLogin extends BaseDataAccessTest {
 		UserType user1 = null;
 		boolean updated = false;
 		try{
-			user1 = SessionSecurity.getUserBySession(sessionId, Factories.getDevelopmentOrganization());
+			user1 = SessionSecurity.getUserBySession(sessionId, Factories.getDevelopmentOrganization().getId());
 			Factories.getSessionDataFactory().setValue(user1.getSession(), "Example data","Example example example");
 			updated = SessionSecurity.updateSession(user1.getSession());
 		}
@@ -130,8 +130,8 @@ public class TestUserLogin extends BaseDataAccessTest {
 		boolean logout = false;
 		logger.info("Log out session '" + sessionId + "'");
 		try {
-			logout = SessionSecurity.logout(sessionId, Factories.getDevelopmentOrganization());
-			if(logout) logout = SessionSecurity.logout(sessionId2, Factories.getDevelopmentOrganization());
+			logout = SessionSecurity.logout(sessionId, Factories.getDevelopmentOrganization().getId());
+			if(logout) logout = SessionSecurity.logout(sessionId2, Factories.getDevelopmentOrganization().getId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -147,8 +147,8 @@ public class TestUserLogin extends BaseDataAccessTest {
 		UserSessionType session1 = null;
 		UserType user1 = null;
 		try{
-			session1 = SessionSecurity.getUserSession(sessionId, Factories.getDevelopmentOrganization());
-			user1 = SessionSecurity.login(sessionId, testUserName1, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization());
+			session1 = SessionSecurity.getUserSession(sessionId, Factories.getDevelopmentOrganization().getId());
+			user1 = SessionSecurity.login(sessionId, testUserName1, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization().getId());
 			Factories.getUserFactory().populate(user1);
 		}
 		catch(FactoryException fe){
@@ -164,7 +164,7 @@ public class TestUserLogin extends BaseDataAccessTest {
 		boolean logout = false;
 
 		try {
-			logout = SessionSecurity.logout(sessionId, Factories.getDevelopmentOrganization());
+			logout = SessionSecurity.logout(sessionId, Factories.getDevelopmentOrganization().getId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -179,9 +179,9 @@ public class TestUserLogin extends BaseDataAccessTest {
 		UserType session1 = null;
 		boolean logout = false;
 		try{
-			session1 = SessionSecurity.login(testUserName1, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization());
-			session1 = SessionSecurity.login(testUserName1, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization());
-			logout = SessionSecurity.logout(session1.getSession().getSessionId(), Factories.getDevelopmentOrganization());
+			session1 = SessionSecurity.login(testUserName1, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization().getId());
+			session1 = SessionSecurity.login(testUserName1, CredentialEnumType.HASHED_PASSWORD,"password1", Factories.getDevelopmentOrganization().getId());
+			logout = SessionSecurity.logout(session1.getSession().getSessionId(), Factories.getDevelopmentOrganization().getId());
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());

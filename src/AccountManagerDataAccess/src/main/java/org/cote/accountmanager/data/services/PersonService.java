@@ -55,22 +55,22 @@ public class PersonService {
 	}
 	
 	
-	public static boolean createRegisteredUserAsPerson(AuditType audit, String userName, String password, String email,OrganizationType org){
-		return createUserAsPerson(audit, userName, password,email,UserEnumType.NORMAL,UserStatusEnumType.REGISTERED,org);
+	public static boolean createRegisteredUserAsPerson(AuditType audit, String userName, String password, String email,long organizationId){
+		return createUserAsPerson(audit, userName, password,email,UserEnumType.NORMAL,UserStatusEnumType.REGISTERED,organizationId);
 	}
-	public static boolean createUserAsPerson(AuditType audit, String userName, String password, String email,UserEnumType userType,UserStatusEnumType userStatus,OrganizationType org){
+	public static boolean createUserAsPerson(AuditType audit, String userName, String password, String email,UserEnumType userType,UserStatusEnumType userStatus,long organizationId){
 		boolean out_bool = false;
 		try{
-			if(Factories.getUserFactory().getUserNameExists(userName, org)){
-				logger.error("User name '" + userName + "' is already used in organization " + org.getName());
+			if(Factories.getUserFactory().getUserNameExists(userName, organizationId)){
+				logger.error("User name '" + userName + "' is already used in organization " + organizationId);
 				return false;
 			}
 
 			/// TODO - change this to just get the persons directory from the GroupFactory
 			///
-			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", org);
-			DirectoryGroupType pDir = Factories.getGroupFactory().getCreateDirectory(adminUser, "Persons", Factories.getGroupFactory().getRootDirectory(org), org);
-			DirectoryGroupType cDir = Factories.getGroupFactory().getCreateDirectory(adminUser, "Contacts", Factories.getGroupFactory().getRootDirectory(org), org);
+			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", organizationId);
+			DirectoryGroupType pDir = Factories.getGroupFactory().getCreateDirectory(adminUser, "Persons", Factories.getGroupFactory().getRootDirectory(organizationId), organizationId);
+			DirectoryGroupType cDir = Factories.getGroupFactory().getCreateDirectory(adminUser, "Contacts", Factories.getGroupFactory().getRootDirectory(organizationId), organizationId);
 			
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			
@@ -83,7 +83,7 @@ public class PersonService {
 			/// I'm leaving it as-is for the moment.  If it's going to be any more robust, it may as well just be an LDAP,
 			/// And making an LDAP isn't the goal.
 			///
-			UserType newUser = Factories.getUserFactory().newUser(userName,  userType, userStatus, org);
+			UserType newUser = Factories.getUserFactory().newUser(userName,  userType, userStatus, organizationId);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, newUser);
 			
 			/// 2015/06/23 - New Credential System
@@ -91,7 +91,7 @@ public class PersonService {
 			///
 			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,newUser, newUser, password.getBytes("UTF-8"), true,true);
 
-			PersonType newPerson = Factories.getPersonFactory().newPerson(newUser,pDir);
+			PersonType newPerson = Factories.getPersonFactory().newPerson(newUser,pDir.getId());
 			newPerson.setName(userName);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, newPerson);
 			newPerson.getUsers().add(newUser);
@@ -103,7 +103,7 @@ public class PersonService {
 			newPerson.setContactInformation(cit);
 			if(email != null){
 				logger.info("Adding email to user registration: '" + email + "'");
-				ContactType ct = Factories.getContactFactory().newContact(newUser, cDir);
+				ContactType ct = Factories.getContactFactory().newContact(newUser, cDir.getId());
 				ct.setName(newPerson.getName() + " Registration Email");
 				ct.setPreferred(true);
 				ct.setContactType(ContactEnumType.EMAIL);

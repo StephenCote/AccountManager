@@ -34,118 +34,52 @@ public class TestPermissions extends BaseDataAccessTest{
 	
 
 	
-	private DirectoryGroupType getApplication(String name){
-		DirectoryGroupType dir = null;
-		try {
-			dir =Factories.getGroupFactory().getCreatePath(testUser, "~/Applications/" + name, testUser.getOrganization());
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return dir;
-	}
 
-	private PersonType getApplicationPerson(String name,DirectoryGroupType dir){
-		PersonType acct = null;
-		try {
-			acct = Factories.getPersonFactory().getByName(name, dir);
-			if(acct == null){
-				acct = Factories.getPersonFactory().newPerson(testUser, dir);
-				acct.setName(name);
-				if(Factories.getPersonFactory().addPerson(acct)){
-					acct = Factories.getPersonFactory().getByName(name, dir);
-				}
-			}
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return acct;
-	}
-	
-	private AccountType getApplicationAccount(UserType owner, String name,DirectoryGroupType dir){
-		AccountType acct = null;
-		try {
-			acct = Factories.getAccountFactory().getAccountByName(name, dir);
-			if(acct == null){
-				acct = Factories.getAccountFactory().newAccount(owner, name, AccountEnumType.DEVELOPMENT, AccountStatusEnumType.RESTRICTED, dir);
-				if(Factories.getAccountFactory().addAccount(acct)){
-					acct = Factories.getAccountFactory().getAccountByName(name, dir);
-				}
-			}
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return acct;
-	}
-
-	
-	private <T> T getApplicationPermission(String name,PermissionEnumType type, DirectoryGroupType dir){
-		T per = null;
-		try {
-			Factories.getGroupFactory().populate(dir);
-			String perPath = dir.getPath() + "/" + name;
-			per = Factories.getPermissionFactory().makePath(testUser, type, perPath, dir.getOrganization());
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return per;
-	}
-	
-	private <T> T getApplicationRole(String name,RoleEnumType type,DirectoryGroupType dir){
-		T role = null;
-		try {
-			Factories.getGroupFactory().populate(dir);
-			String perPath = dir.getPath() + "/" + name;
-			role = Factories.getRoleFactory().makePath(testUser, type, perPath, dir.getOrganization());
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return role;
-	}
 	
 	@Test
 	public void TestPersonPermissions(){
-		DirectoryGroupType app1 = getApplication("Application #1");
+		DirectoryGroupType app1 = getApplication("Application 1");
 		PersonRoleType roleP = getApplicationRole("Role #1",RoleEnumType.PERSON,app1);
 		AccountRoleType roleP2 = getApplicationRole("Role #2",RoleEnumType.ACCOUNT,app1);
 		ApplicationPermissionType per1 = getApplicationPermission("Permission #1",PermissionEnumType.APPLICATION,app1);
 		ApplicationPermissionType per2 = getApplicationPermission("Permission #2",PermissionEnumType.APPLICATION,app1);
 		ApplicationPermissionType per3 = getApplicationPermission("Permission #3",PermissionEnumType.APPLICATION,app1);
 		ApplicationPermissionType per4 = getApplicationPermission("Permission #4",PermissionEnumType.APPLICATION,app1);
-		assertNotNull("Permission is null",per1);
-		
+		BasePermissionType perc1 = null;
+		try{
+			PersonPermissionType per5 = Factories.getPermissionFactory().getPermissionByName("Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
+			if(per5 == null){
+				per5 = (PersonPermissionType)Factories.getPermissionFactory().newPermission(testUser2, "Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
+				Factories.getPermissionFactory().addPermission(per5);
+				per5 = Factories.getPermissionFactory().getPermissionByName("Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
+			}
+			Factories.getPermissionFactory().denormalize(per5);
+			assertNotNull("Permission is null",per5);
+
+			//Factories.getPermissionFactory().denormalize(per1);
+			/// Find permission by path
+			logger.info("Looking for '" + per5.getParentPath() + "/" + per5.getName() + "' from " + Factories.getPermissionFactory().getPermissionPath(per5));
+			perc1 = Factories.getPermissionFactory().findPermission(PermissionEnumType.UNKNOWN, per5.getParentPath() + "/" + per5.getName(), per5.getOrganizationId());
+		}
+		catch(FactoryException e){
+			logger.error(e.getMessage());
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (DataAccessException e) {
+			logger.error(e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		assertNotNull("Permission #1 Check was null",perc1);
 		PersonType acct1 = getApplicationPerson("Person #1", app1);
 		PersonType acct2 = getApplicationPerson("Person #2", app1);
 		PersonType acct3 = getApplicationPerson("Person #3", app1);
 		PersonType acct4 = getApplicationPerson("Person #4", app1);
 		PersonType acct5 = getApplicationPerson("Person #5", app1);
-		AccountType pacct4 = getApplicationAccount(testUser,"Account #4", app1);
-		AccountType pacct5 = getApplicationAccount(testUser,"Account #5", app1);
+		AccountType pacct4 = getApplicationAccount("Account #4", app1);
+		AccountType pacct5 = getApplicationAccount("Account #5", app1);
 		
 		assertNotNull("Person is null",acct1);
 		boolean havePerm = false;
@@ -267,11 +201,11 @@ public class TestPermissions extends BaseDataAccessTest{
 			
 			String sess = BulkFactories.getBulkFactory().newBulkSession();
 			for(int i = 0; i < 50; i++){
-				ApplicationPermissionType p = (ApplicationPermissionType)Factories.getPermissionFactory().newPermission(testUser, "Permission " + appName + " " + (i+1), PermissionEnumType.APPLICATION,perB, testUser.getOrganization());
+				ApplicationPermissionType p = (ApplicationPermissionType)Factories.getPermissionFactory().newPermission(testUser, "Permission " + appName + " " + (i+1), PermissionEnumType.APPLICATION,perB, testUser.getOrganizationId());
 				BulkFactories.getBulkFactory().createBulkEntry(sess, FactoryEnumType.PERMISSION, p);
 				
 				/// Test that the bulk entry is 'discoverable'
-				ApplicationPermissionType p2 = Factories.getPermissionFactory().getPermissionByName("Permission " + appName + " " + (i+1), PermissionEnumType.APPLICATION, perB, testUser.getOrganization());
+				ApplicationPermissionType p2 = Factories.getPermissionFactory().getPermissionByName("Permission " + appName + " " + (i+1), PermissionEnumType.APPLICATION, perB, testUser.getOrganizationId());
 				assertNotNull("Bulk cached permission not available",p2);
 			}
 			BulkFactories.getBulkFactory().write(sess);
@@ -291,13 +225,13 @@ public class TestPermissions extends BaseDataAccessTest{
 	/*
 	@Test
 	public void TestPermissionHierarchy(){
-		ObjectPermissionType rootPer = getCreatePermission(testUser,"PermissionRoot", PermissionEnumType.OBJECT, null,testUser.getOrganization());
+		ObjectPermissionType rootPer = getCreatePermission(testUser,"PermissionRoot", PermissionEnumType.OBJECT, null,testUser.getOrganizationId());
 		assertNotNull("Permission is null", rootPer);
-		ObjectPermissionType childPer1 = getCreatePermission(testUser,"Child1", PermissionEnumType.OBJECT, rootPer,testUser.getOrganization());
-		ObjectPermissionType childPer2 = getCreatePermission(testUser,"Child2", PermissionEnumType.OBJECT, rootPer,testUser.getOrganization());
-		ObjectPermissionType subPer = getCreatePermission(testUser,"Sub", PermissionEnumType.OBJECT, rootPer,testUser.getOrganization());
-		ObjectPermissionType childPer1a = getCreatePermission(testUser,"Child1", PermissionEnumType.OBJECT, subPer,testUser.getOrganization());
-		ObjectPermissionType childPer2a = getCreatePermission(testUser,"Child2", PermissionEnumType.OBJECT, subPer,testUser.getOrganization());
+		ObjectPermissionType childPer1 = getCreatePermission(testUser,"Child1", PermissionEnumType.OBJECT, rootPer,testUser.getOrganizationId());
+		ObjectPermissionType childPer2 = getCreatePermission(testUser,"Child2", PermissionEnumType.OBJECT, rootPer,testUser.getOrganizationId());
+		ObjectPermissionType subPer = getCreatePermission(testUser,"Sub", PermissionEnumType.OBJECT, rootPer,testUser.getOrganizationId());
+		ObjectPermissionType childPer1a = getCreatePermission(testUser,"Child1", PermissionEnumType.OBJECT, subPer,testUser.getOrganizationId());
+		ObjectPermissionType childPer2a = getCreatePermission(testUser,"Child2", PermissionEnumType.OBJECT, subPer,testUser.getOrganizationId());
 		
 		
 		rootPer.getAttributes().add(Factories.getAttributeFactory().newAttribute(rootPer, "DemoAttr", "Demo value"));
@@ -306,8 +240,8 @@ public class TestPermissions extends BaseDataAccessTest{
 		List<ObjectPermissionType> per = new ArrayList<ObjectPermissionType>();
 		List<ObjectPermissionType> per2 = new ArrayList<ObjectPermissionType>();
 		try {
-			per = Factories.getPermissionFactory().getPermissionList(PermissionEnumType.OBJECT, 0, 10, testUser.getOrganization());
-			per2 = Factories.getPermissionFactory().getPermissionList(rootPer, PermissionEnumType.OBJECT, 0, 10, testUser.getOrganization());
+			per = Factories.getPermissionFactory().getPermissionList(PermissionEnumType.OBJECT, 0, 10, testUser.getOrganizationId());
+			per2 = Factories.getPermissionFactory().getPermissionList(rootPer, PermissionEnumType.OBJECT, 0, 10, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

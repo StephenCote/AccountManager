@@ -30,7 +30,7 @@ public class TestGroupFactory extends BaseDataAccessTest{
 	public void testFindUserDir(){
 		DirectoryGroupType dir = null;
 		try {
-			dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(testUser, GroupEnumType.DATA, "~", testUser.getOrganization());
+			dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(testUser, GroupEnumType.DATA, "~", testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,9 +49,9 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		boolean error = false;
 		boolean addDir = false;
 		try{
-			DirectoryGroupType parentDir = Factories.getGroupFactory().getDirectoryByName("Root", dev);
+			DirectoryGroupType parentDir = Factories.getGroupFactory().getDirectoryByName("Root", dev.getId());
 			assertNotNull("Root dir is null", parentDir);
-			DirectoryGroupType dir = Factories.getGroupFactory().newDirectoryGroup(testDirGroupName, parentDir, dev);
+			DirectoryGroupType dir = Factories.getGroupFactory().newDirectoryGroup(testDirGroupName, parentDir, dev.getId());
 			//DirectoryGroupType newDir = null;
 			addDir = Factories.getGroupFactory().addGroup(dir);
 		}
@@ -76,9 +76,9 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		boolean error = false;
 		boolean editDir = false;
 		try{
-			DirectoryGroupType parentDir = Factories.getGroupFactory().getDirectoryByName("Root", dev);
+			DirectoryGroupType parentDir = Factories.getGroupFactory().getDirectoryByName("Root", dev.getId());
 			assertNotNull("Root dir is null", parentDir);
-			DirectoryGroupType dir = Factories.getGroupFactory().getDirectoryByName(testDirGroupName, parentDir, parentDir.getOrganization());
+			DirectoryGroupType dir = Factories.getGroupFactory().getDirectoryByName(testDirGroupName, parentDir, parentDir.getOrganizationId());
 			assertNotNull("Directory is null", dir);
 			dir.setName(newTestDirGroupName);
 			editDir = Factories.getGroupFactory().updateGroup(dir);
@@ -105,9 +105,9 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		boolean editDir = false;
 		String path = null;
 		try{
-			DirectoryGroupType parentDir = Factories.getGroupFactory().getDirectoryByName("Root", dev);
+			DirectoryGroupType parentDir = Factories.getGroupFactory().getDirectoryByName("Root", dev.getId());
 			assertNotNull("Root dir is null", parentDir);
-			DirectoryGroupType dir = Factories.getGroupFactory().getDirectoryByName(testDirGroupName, parentDir, parentDir.getOrganization());
+			DirectoryGroupType dir = Factories.getGroupFactory().getDirectoryByName(testDirGroupName, parentDir, parentDir.getOrganizationId());
 			assertNotNull("Directory is null", dir);
 			path = Factories.getGroupFactory().getPath(dir);
 
@@ -133,18 +133,18 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		boolean path = false;
 		boolean cleanUp = false;
 		try {
-			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(null,  GroupEnumType.DATA,"/Example1", dev);
+			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(null,  GroupEnumType.DATA,"/Example1", dev.getId());
 			if(dir != null){
 				logger.info("Cleanup example path");
 				cleanUp = Factories.getGroupFactory().deleteDirectoryGroup(dir);
 				assertTrue("Unable to cleanup directory path", cleanUp);
-				dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, "/Example1", dev);
+				dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, "/Example1", dev.getId());
 				assertNull("Directory was not fully removed", dir);
 			}
 			else{
 				logger.info("Did not find example path");
 			}
-			path = Factories.getGroupFactory().makePath(null, "/Example1/Example2/Example3/Example4", dev);
+			path = Factories.getGroupFactory().makePath(null, GroupEnumType.DATA,"/Example1/Example2/Example3/Example4", dev.getId());
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

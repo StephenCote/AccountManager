@@ -78,6 +78,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 	
 	@Test
 	public void TestCacheNames(){
+		sessionUser = testUser;
 		DataType data = getTestData("Test data",sessionUser.getHomeDirectory());
 
 		logger.info("Data Cache Key Name #1 = " + Factories.getDataFactory().getCacheKeyName(data));
@@ -86,7 +87,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 		try {
 			DataUtil.setValueString(data, UUID.randomUUID().toString());
 			Factories.getDataFactory().updateData(data);
-			datas = Factories.getDataFactory().getDataListByGroup(sessionUser.getHomeDirectory(), true, 0, 10, sessionUser.getOrganization());
+			datas = Factories.getDataFactory().getDataListByGroup(sessionUser.getHomeDirectory(), true, 0, 10, sessionUser.getOrganizationId());
 		} catch (DataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -107,10 +108,11 @@ public class TestFactoryCache extends BaseDataAccessTest{
 	
 	private DataType getTestData(String name, DirectoryGroupType dir){
 		DataType data = null;
+		sessionUser = testUser;
 		try{
 			data = Factories.getDataFactory().getDataByName(name,dir);
 			if(data == null){
-				data = Factories.getDataFactory().newData(sessionUser, dir);
+				data = Factories.getDataFactory().newData(sessionUser, dir.getId());
 				data.setName(name);
 				data.setMimeType("text/plain");
 				DataUtil.setValueString(data, "Example data");
@@ -157,6 +159,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 	*/
 	private DirectoryGroupType getGroupById(long parentId) throws FactoryException, ArgumentException{
 		DirectoryGroupType bean = null;
+		sessionUser = testUser;
 		String sessionId = "unit test";
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "#" + parentId,AuditEnumType.SESSION,sessionId);
 		UserType user = sessionUser;
@@ -166,9 +169,9 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			return bean;
 		}
 
-			DirectoryGroupType dir = Factories.getGroupFactory().getById(parentId, user.getOrganization());
+			DirectoryGroupType dir = Factories.getGroupFactory().getById(parentId, user.getOrganizationId());
 			if(dir == null){
-				AuditService.denyResult(audit, "Id " + parentId + " doesn't exist in org " + user.getOrganization().getId());
+				AuditService.denyResult(audit, "Id " + parentId + " doesn't exist in org " + user.getOrganizationId());
 				return bean;
 			}
 			/*
@@ -192,13 +195,14 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			//for(int i = 0; i < dir.getSubDirectories().size();i++) Factories.getGroupFactory().populate(dir.getSubDirectories().get(i));
 			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
-			bean = BeanUtil.getSanitizedGroup(dir,false);
+			//bean = BeanUtil.getSanitizedGroup(dir,false);
 			
 
 		return bean;
 	}
 	private DirectoryGroupType getPath(String path) throws FactoryException, ArgumentException{
 		DirectoryGroupType bean = null;
+		sessionUser = testUser;
 		if(path == null || path.length() == 0) path = "~";
 		if(path.startsWith("~") == false && path.startsWith("/") == false) path = "/" + path;
 		System.out.println("Path = '" + path + "'");
@@ -206,7 +210,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 		UserType user = sessionUser;
 		if(user == null) return bean;
 
-			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, path, user.getOrganization());
+			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, path, user.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Invalid path");
 				return bean;
@@ -218,7 +222,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			Factories.getGroupFactory().populate(dir);	
 			/// Work with a clone of the group because if it's cached, don't null out the cached copy's version
 			dir = BeanUtil.getBean(DirectoryGroupType.class,dir);
-			Factories.getGroupFactory().populateSubDirectories(dir);
+			//Factories.getGroupFactory().populateSubDirectories(dir);
 			/*
 			for(int i = 0; i < dir.getSubDirectories().size();i++){
 				Factories.getGroupFactory().populate(dir.getSubDirectories().get(i));
@@ -227,7 +231,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 			
-			bean = BeanUtil.getSanitizedGroup(dir,false);
+			//bean = BeanUtil.getSanitizedGroup(dir,false);
 	
 		return bean;
 	}

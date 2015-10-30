@@ -30,7 +30,7 @@ public class TestBulkUpdate extends BaseDataAccessTest{
 		DirectoryGroupType rootDir = null;
 		AccountType qaAccount = null;
 		try{
-			rootDir = Factories.getGroupFactory().getHomeDirectory(owner.getOrganization());
+			rootDir = Factories.getGroupFactory().getHomeDirectory(owner.getOrganizationId());
 			if(rootDir == null){
 				logger.error("Null directory");
 				return null;
@@ -38,7 +38,7 @@ public class TestBulkUpdate extends BaseDataAccessTest{
 			qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
 	
 			if(qaAccount == null){
-				qaAccount = Factories.getAccountFactory().newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir);
+				qaAccount = Factories.getAccountFactory().newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir.getId());
 				Factories.getAccountFactory().addAccount(qaAccount);
 				qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
 			}

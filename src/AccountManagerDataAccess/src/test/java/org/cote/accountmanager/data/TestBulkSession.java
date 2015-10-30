@@ -95,11 +95,11 @@ public class TestBulkSession extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ROLE, childRole);
 			
 			logger.info("Retrieving Bulk Role Parent");
-			UserRoleType check = Factories.getRoleFactory().getUserRoleByName("BulkRoleParent", testUser.getOrganization());
+			UserRoleType check = Factories.getRoleFactory().getUserRoleByName("BulkRoleParent", testUser.getOrganizationId());
 			assertNotNull("Failed role cache check",check);
 			
 			logger.info("Retrieving Child Role By Parent");
-			check = Factories.getRoleFactory().getUserRoleByName("ChildRole", check, testUser.getOrganization());
+			check = Factories.getRoleFactory().getUserRoleByName("ChildRole", check, testUser.getOrganizationId());
 			assertNotNull("Failed role+parent cache check",check);
 			
 			BulkFactories.getBulkFactory().close(sessionId);

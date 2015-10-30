@@ -36,36 +36,7 @@ public class BeanUtil {
 		}
 		return bean;
 	}
-	public static DirectoryGroupType[] getSanitizedGroups(DirectoryGroupType[] groups){
-		List<DirectoryGroupType> beans = new ArrayList<DirectoryGroupType>();
-		for(int i = 0; i < groups.length; i++) beans.add(getSanitizedGroup(groups[i],false));
-		return beans.toArray(new DirectoryGroupType[0]);
-	}
-	public static DirectoryGroupType getSanitizedGroup(DirectoryGroupType group, boolean deepCopy){
-		if(group == null) return null;
-		group.getSubDirectories().clear();
-		DirectoryGroupType bean = getBean(DirectoryGroupType.class, group);
-		bean.setParentGroup(null);
-		bean.setOrganization(null);
-		/*
-		for(int i = 0;i<group.getSubDirectories().size();i++){
-			group.getSubDirectories().get(i).setOrganization(null);
-			group.getSubDirectories().get(i).setParentGroup(null);
-		}
-		*/
-		/*
-		bean.setParentGroup(null);
-		for(int i = 0;i<bean.getSubDirectories().size();i++){
-			bean.getSubDirectories().get(i).setParentGroup(null);
-		}
-		*/
-		
-		//if(deepCopy == false){
-		//	bean.setPopulated(false);
-		//	bean.getSubDirectories().clear();
-		//}
-		return bean;
-	}
+
 	/*
 	public static UserBean getUserBean(UserType user){
 		UserBean bean = new UserBean();

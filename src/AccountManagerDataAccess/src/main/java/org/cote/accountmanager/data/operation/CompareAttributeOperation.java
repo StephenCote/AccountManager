@@ -59,10 +59,10 @@ public class CompareAttributeOperation implements IOperation {
 		*/
 		NameIdType obj = read(sourceFact,referenceFact);
 		if(obj == null){
-			logger.error("Failed to find object " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganization().getName());
+			logger.error("Failed to find object " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganizationId());
 			return OperationResponseEnumType.FAILED;
 		}
-		logger.info("Found object " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganization().getName() + " having user id " + obj.getId());
+		logger.info("Found object " + sourceFact.getSourceUrn() + " in organization " + referenceFact.getOrganizationId() + " having user id " + obj.getId());
 		
 		Factories.getAttributeFactory().populateAttributes(obj);
 		String attrVal = Factories.getAttributeFactory().getAttributeValueByName(obj, referenceFact.getSourceUrn());

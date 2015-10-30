@@ -82,14 +82,14 @@ public class CredentialFactory extends NameIdFactory {
 	public boolean deleteCredential(CredentialType obj) throws FactoryException
 	{
 		removeFromCache(obj);
-		int deleted = deleteById(obj.getId(), obj.getOrganization().getId());
+		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
 	}
 
 	public CredentialType newCredential(UserType owner, NameIdType targetObject) throws ArgumentException
 	{
 		if (owner == null || owner.getId().compareTo(0L)==0) throw new ArgumentException("Invalid owner");
-		if(targetObject.getId() == 0L || targetObject.getNameType() == NameEnumType.UNKNOWN) throw new ArgumentException("Invalid target object");
+		if(targetObject.getId().compareTo(0L) == 0 || targetObject.getNameType() == NameEnumType.UNKNOWN) throw new ArgumentException("Invalid target object");
 		
 		CredentialType cred = new CredentialType();
 		cred.setNameType(NameEnumType.CREDENTIAL);
@@ -97,7 +97,7 @@ public class CredentialFactory extends NameIdFactory {
 		cred.setOwnerId(owner.getId());
 		cred.setReferenceType(FactoryEnumType.valueOf(targetObject.getNameType().toString()));
 		cred.setReferenceId(targetObject.getId());
-		cred.setOrganization(targetObject.getOrganization());
+		cred.setOrganizationId(targetObject.getOrganizationId());
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(new Date());
 	    //cal.add(GregorianCalendar.YEAR, 1);
@@ -190,8 +190,8 @@ public class CredentialFactory extends NameIdFactory {
 		fields.add(QueryFields.getFieldSalt(use_map.getSalt()));
 		fields.add(QueryFields.getFieldCredential(use_map.getCredential()));
 	}
-	public CredentialType getCredentialByObjectId(String id, OrganizationType org) throws FactoryException, ArgumentException{
-		List<NameIdType> sec = getByObjectId(id, org.getId());
+	public CredentialType getCredentialByObjectId(String id, long organizationId) throws FactoryException, ArgumentException{
+		List<NameIdType> sec = getByObjectId(id, organizationId);
 		if(sec.size() > 0) return (CredentialType)sec.get(0);
 		return null;
 	}
@@ -211,7 +211,7 @@ public class CredentialFactory extends NameIdFactory {
 		pi.setStartIndex(0L);
 		pi.setRecordCount(2);
 		
-		return getList(fields.toArray(new QueryField[0]), pi, obj.getOrganization());
+		return getList(fields.toArray(new QueryField[0]), pi, obj.getOrganizationId());
 	}
 	
 	public CredentialType getActivePrimaryCredential(NameIdType obj,CredentialEnumType credType) throws FactoryException, ArgumentException{
@@ -236,7 +236,7 @@ public class CredentialFactory extends NameIdFactory {
 		pi.setRecordCount(1);
 		if(credType != CredentialEnumType.UNKNOWN) fields.add(QueryFields.getFieldCredentialType(credType));
 		CredentialType outsec = null;
-		List<NameIdType> recs = this.getByField(fields.toArray(new QueryField[0]), obj.getOrganization().getId());
+		List<NameIdType> recs = this.getByField(fields.toArray(new QueryField[0]), obj.getOrganizationId());
 		if(recs.size() > 0) outsec = (CredentialType)recs.get(0);
 		return outsec;
 	}

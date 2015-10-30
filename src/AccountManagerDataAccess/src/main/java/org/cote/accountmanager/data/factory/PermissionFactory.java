@@ -86,15 +86,56 @@ public class PermissionFactory extends NameIdFactory {
 		updateToCache(perm);
 	}
 	
+
+	@Override
+	public <T> void normalize(T object) throws ArgumentException, FactoryException{
+		super.normalize(object);
+		if(object == null){
+			throw new ArgumentException("Null object");
+		}
+		BasePermissionType obj = (BasePermissionType)object;
+		if(obj.getParentPath() == null || obj.getParentPath().length() == 0 || obj.getPermissionType() == PermissionEnumType.UNKNOWN){
+			throw new ArgumentException("Invalid object parent path or type");	
+		}
+		if(obj.getParentId().compareTo(0L) != 0) return;
+		BasePermissionType dir = null;
+		try{
+			dir = findPermission(obj.getPermissionType(), obj.getParentPath(), obj.getOrganizationId());
+			if(dir == null){
+				throw new ArgumentException("Invalid parent path '" + obj.getParentPath() + "'");
+			}
+			obj.setParentId(dir.getId());
+		}
+		catch(DataAccessException e){
+			throw new FactoryException(e.getMessage());
+		}
+	}
+	
+	@Override
+	public <T> void denormalize(T object) throws ArgumentException, FactoryException{
+		super.denormalize(object);
+		if(object == null){
+			throw new ArgumentException("Null object");
+		}
+		BasePermissionType obj = (BasePermissionType)object;
+		if(obj.getParentId().compareTo(0L) == 0){
+			logger.warn("Root level permission does not have a path");
+			return;	
+		}
+		if(obj.getParentPath() != null) return;
+		BasePermissionType parent = Factories.getPermissionFactory().getPermissionById(obj.getParentId(), obj.getOrganizationId());
+		obj.setParentPath(Factories.getPermissionFactory().getPermissionPath(parent));
+	}
+	
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		BasePermissionType t = (BasePermissionType)obj;
-		return t.getName() + "-" + t.getPermissionType().toString() + "-" + t.getParentId() + "-" + t.getOrganization().getId();
+		return t.getName() + "-" + t.getPermissionType().toString() + "-" + t.getParentId() + "-" + t.getOrganizationId();
 	}
 	public boolean deletePermission(BasePermissionType permission) throws FactoryException
 	{
 		removeFromCache(permission);
-		int deleted = deleteById(permission.getId(), permission.getOrganization().getId());
+		int deleted = deleteById(permission.getId(), permission.getOrganizationId());
 		return (deleted > 0);
 	}
 	public boolean updatePermission(BasePermissionType permission) throws FactoryException
@@ -104,47 +145,47 @@ public class PermissionFactory extends NameIdFactory {
 
 	public boolean addPermission(BasePermissionType new_permission) throws DataAccessException, FactoryException
 	{
-		if (new_permission.getOrganization() == null || new_permission.getOrganization().getId() <= 0) throw new FactoryException("Cannot add permission to invalid organization");
+		if (new_permission.getOrganizationId() <= 0L) throw new FactoryException("Cannot add permission to invalid organization");
 		DataRow row = prepareAdd(new_permission, "permissions");
 		row.setCellValue("permissiontype",new_permission.getPermissionType().toString());
 		row.setCellValue("referenceid",new_permission.getReferenceId());
 		return insertRow(row);
 	}
 
-	public <T> T getPermissionById(long id, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> T getPermissionById(long id, long organizationId)  throws FactoryException, ArgumentException
 	{
 		T out_perm = readCache(id);
 		if (out_perm != null) return out_perm;
 
-		List<NameIdType> perms = getById(id, organization.getId());
-		if (perms.size() > 0)
+		BasePermissionType perm = getById(id, organizationId);
+		if (perm != null)
 		{
-			addToCache(perms.get(0));
-			return (T)perms.get(0);
+			addToCache(perm);
+			return (T)perm;
 		}
 		return null;
 	}
 	
-	public <T> T getPermissionByName(String name, PermissionEnumType type, OrganizationType organization) throws FactoryException, ArgumentException
+	public <T> T getPermissionByName(String name, PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException
 	{
-		return getPermissionByName(name, type, null, organization);
+		return getPermissionByName(name, type, null, organizationId);
 	}
 	
-	public <T> T getPermissionByName(String name, PermissionEnumType type, BasePermissionType parent, OrganizationType organization) throws FactoryException, ArgumentException
+	public <T> T getPermissionByName(String name, PermissionEnumType type, BasePermissionType parent, long organizationId) throws FactoryException, ArgumentException
 	{
 		long parent_id = 0;
 		if (parent != null) parent_id = parent.getId();
 
-		String key_name = name + "-" + type.toString() + "-" + parent_id + "-" + organization.getId();
+		String key_name = name + "-" + type.toString() + "-" + parent_id + "-" + organizationId;
 		T out_perm = readCache(key_name);
 		if (out_perm != null) return out_perm;
 
-		//List<NameIdType> perms = getByName(name,organization.getId());
+		//List<NameIdType> perms = getByNameInGroup(name,organizationId);
 		List<QueryField> Fields = new ArrayList<QueryField>();
 		Fields.add(QueryFields.getFieldName(name));
 		Fields.add(QueryFields.getFieldParent(parent_id));
 		if (type != PermissionEnumType.UNKNOWN) Fields.add(QueryFields.getFieldPermissionType(type));
-		List<NameIdType> perms = getByField(Fields.toArray(new QueryField[0]),organization.getId());
+		List<NameIdType> perms = getByField(Fields.toArray(new QueryField[0]),organizationId);
 		if (perms.size() > 0)
 		{
 			addToCache(perms.get(0),key_name);
@@ -160,22 +201,22 @@ public class PermissionFactory extends NameIdFactory {
 
 	}
 	
-	public <T> T getRootPermission(PermissionEnumType type, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
-		return getCreatePermission(null,"Root",type,null,org);
+	public <T> T getRootPermission(PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return getCreatePermission(null,"Root",type,null,organizationId);
 	}
-	public <T> T getHomePermission(PermissionEnumType type, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
-		return getCreatePermission(null,"Home",type,(T)getRootPermission(type,org),org);
+	public <T> T getHomePermission(PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return getCreatePermission(null,"Home",type,(T)getRootPermission(type,organizationId),organizationId);
 	}
-	public <T> T getUserPermission(UserType user,PermissionEnumType type, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
-		return getCreatePermission(user,user.getName(),type,(T)getHomePermission(type,org),org);
+	public <T> T getUserPermission(UserType user,PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return getCreatePermission(user,user.getName(),type,(T)getHomePermission(type,organizationId),organizationId);
 	}
 
-	public <T> T getCreatePermission(UserType user, String name, PermissionEnumType type, T parent, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
-		T per = (T)getPermissionByName(name,type,(BasePermissionType)parent,org);
+	public <T> T getCreatePermission(UserType user, String name, PermissionEnumType type, T parent, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		T per = (T)getPermissionByName(name,type,(BasePermissionType)parent,organizationId);
 		if(per == null){
-			per = (T)newPermission(user,name,type,(BasePermissionType)parent,org);
+			per = (T)newPermission(user,name,type,(BasePermissionType)parent,organizationId);
 			if(addPermission((BasePermissionType)per)){
-				per = (T)getPermissionByName(name,type,(BasePermissionType)parent,org);
+				per = (T)getPermissionByName(name,type,(BasePermissionType)parent,organizationId);
 			}
 		}
 		return per;
@@ -189,36 +230,36 @@ public class PermissionFactory extends NameIdFactory {
 		/// Note: Skip 'Global' Permission, which is always 1L
 		/// (always == until it's not, but it's never been not because it must be setup first)
 		if(per.getParentId() > 1L){
-			path = getPermissionPath((BasePermissionType)getPermissionById(per.getParentId(),per.getOrganization()));
+			path = getPermissionPath((BasePermissionType)getPermissionById(per.getParentId(),per.getOrganizationId()));
 		}
-		if(per.getParentId() == 0L && per.getName().equals("Root")) return "";
+		if(per.getParentId().compareTo(0L) == 0 && per.getName().equals("Root")) return "";
 		path = path + "/" + per.getName();
 		return path;
 	}
 
-	public <T> T findPermission(PermissionEnumType type, String pathBase, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
-		return makePath(null, type, pathBase,org);
+	public <T> T findPermission(PermissionEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return makePath(null, type, pathBase,organizationId);
 	}
 	public <T> T makePath(UserType user, PermissionEnumType type, DirectoryGroupType group) throws FactoryException, ArgumentException, DataAccessException{
 		Factories.getGroupFactory().populate(group);
-		return makePath(user, type, group.getPath(), group.getOrganization());
+		return makePath(user, type, group.getPath(), group.getOrganizationId());
 	}
-	public <T> T makePath(UserType user, PermissionEnumType type, String pathBase, OrganizationType org) throws FactoryException, ArgumentException, DataAccessException{
+	public <T> T makePath(UserType user, PermissionEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		String[] path = pathBase.split("/");
 		BasePermissionType parent = null;
 		T per = null;
 		for(int i = 0; i < path.length;i++){
 			String seg = path[i];
 			if(seg.equals("")){
-				parent = getRootPermission(type,  org);
+				parent = getRootPermission(type,  organizationId);
 				continue;
 			}
-			if(seg.equals("Home") && parent != null && parent.getName().equals("Root") && parent.getParentId() == 0L){
-				parent = getHomePermission(type, org);
+			if(seg.equals("Home") && parent != null && parent.getName().equals("Root") && parent.getParentId().compareTo(0L) == 0){
+				parent = getHomePermission(type, organizationId);
 				continue;
 			}
-			if(user != null) per = getCreatePermission(user, seg, type, (T)parent, org);
-			else per = getPermissionByName(seg,type,(BasePermissionType)parent,org);
+			if(user != null) per = getCreatePermission(user, seg, type, (T)parent, organizationId);
+			else per = getPermissionByName(seg,type,(BasePermissionType)parent,organizationId);
 			if(per == null){
 				logger.warn("Failed to find permission '" + seg + "' in " + (parent == null ? "Null Parent":parent.getName()) + " from " + pathBase);
 				return null;
@@ -229,24 +270,24 @@ public class PermissionFactory extends NameIdFactory {
 	}
 
 	
-	public BasePermissionType newPermission(UserType owner, String permission_name, PermissionEnumType type, BasePermissionType parent, OrganizationType organization)
+	public BasePermissionType newPermission(UserType owner, String permission_name, PermissionEnumType type, BasePermissionType parent, long organizationId)
 	{
-		BasePermissionType new_perm = newPermission(permission_name, type, parent, organization);
+		BasePermissionType new_perm = newPermission(permission_name, type, parent, organizationId);
 		new_perm.setOwnerId((owner != null ? owner.getId() : 0L));
 		return new_perm;
 	}
 	
-	public BasePermissionType newPermission(String permission_name, PermissionEnumType type, BasePermissionType parent, OrganizationType organization)
+	public BasePermissionType newPermission(String permission_name, PermissionEnumType type, BasePermissionType parent, long organizationId)
 	{
-		BasePermissionType new_perm = newPermission(permission_name, type, organization);
+		BasePermissionType new_perm = newPermission(permission_name, type, organizationId);
 		new_perm.setParentId((parent != null ? parent.getId() : 0L));
 		return new_perm;
 	}
 	
-	public BasePermissionType newPermission(String permission_name, PermissionEnumType type, OrganizationType organization)
+	public BasePermissionType newPermission(String permission_name, PermissionEnumType type, long organizationId)
 	{
 		BasePermissionType new_perm = newPermission(type);
-		new_perm.setOrganization(organization);
+		new_perm.setOrganizationId(organizationId);
 		new_perm.setName(permission_name);
 		return new_perm;
 	}
@@ -294,11 +335,11 @@ public class PermissionFactory extends NameIdFactory {
 		return super.read(rset, new_per);
 	}
 
-	public <T> List<T>  getPermissionList(PermissionEnumType type, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getPermissionList(PermissionEnumType type, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getPermissionList(null, type, startRecord, recordCount, organization);
+		return getPermissionList(null, type, startRecord, recordCount, organizationId);
 	}	
-	public <T> List<T>  getPermissionList(BasePermissionType parent, PermissionEnumType type, long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getPermissionList(BasePermissionType parent, PermissionEnumType type, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		if(type != PermissionEnumType.UNKNOWN) fields.add(QueryFields.getFieldPermissionType(type));
@@ -306,9 +347,9 @@ public class PermissionFactory extends NameIdFactory {
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
 
-		return getPermissionList(fields.toArray(new QueryField[0]), instruction, startRecord, recordCount, organization);
+		return getPermissionList(fields.toArray(new QueryField[0]), instruction, startRecord, recordCount, organizationId);
 	}
-	public <T> List<T>  getPermissionList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, OrganizationType organization)  throws FactoryException, ArgumentException
+	public <T> List<T>  getPermissionList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///
@@ -318,18 +359,18 @@ public class PermissionFactory extends NameIdFactory {
 			instruction.setStartIndex(startRecord);
 			instruction.setRecordCount(recordCount);
 		}
-		return getPermissionList(fields, instruction, organization);
+		return getPermissionList(fields, instruction, organizationId);
 	}
-	public <T> List<T> getPermissionList(QueryField[] fields, ProcessingInstructionType instruction, OrganizationType organization) throws FactoryException, ArgumentException
+	public <T> List<T> getPermissionList(QueryField[] fields, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException
 	{
 
 		if(instruction == null) instruction = new ProcessingInstructionType();
-		List<NameIdType> PermissionList = getByField(fields, instruction, organization.getId());
+		List<NameIdType> PermissionList = getByField(fields, instruction, organizationId);
 		return convertList(PermissionList);
 	}
-	public int deletePermissionsByIds(long[] ids, OrganizationType organization) throws FactoryException
+	public int deletePermissionsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		return deleteById(ids, organization.getId());
+		return deleteById(ids, organizationId);
 	}
 
 

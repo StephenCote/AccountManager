@@ -36,6 +36,7 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -56,8 +57,18 @@ public class UrnUtil {
 	public static Pattern bucketPattern = Pattern.compile("^am:(\\S[^:]+):(\\S[^:]+):(\\S[^:]+):(\\S[^:]+)");
 	public static Pattern groupedObjectPattern = Pattern.compile("^am:(\\S[^:]+):(\\S[^:]+):(\\S[^:]+):(\\S[^:]+):(\\S[^:]+)");
 	*/
+
 	private static String getEncodedGroupPath(BaseGroupType group) throws FactoryException, ArgumentException{
 		return group.getGroupType().toString().toLowerCase() + urnSeparator + getDotGroupPath(group);
+	}
+	private static String getEncodedGroupPath(long groupId,long organizationId) throws FactoryException, ArgumentException{
+		if(groupId == 0L) throw new ArgumentException("Invalid groupId: " + groupId);
+		if(organizationId == 0L) throw new ArgumentException("Invalid organizationId: " + organizationId);
+		BaseGroupType dir = Factories.getGroupFactory().getGroupById(groupId,organizationId);
+		if(dir == null){
+			throw new ArgumentException("Null group for " + groupId + " in " + organizationId);
+		}
+		return dir.getGroupType().toString().toLowerCase() + urnSeparator + getDotGroupPath(dir);
 	}
 	private static String getEncodedPermissionPath(BasePermissionType per) throws FactoryException, ArgumentException{
 		return per.getPermissionType().toString().toLowerCase() + urnSeparator + getDotPermissionPath(per);
@@ -120,21 +131,21 @@ public class UrnUtil {
 				case POLICY:
 				case RULE:
 					NameIdDirectoryGroupType gobj = (NameIdDirectoryGroupType)object;
-					key = getEncodedGroupPath(gobj.getGroup()) + urnSeparator + gobj.getName();
+					key = getEncodedGroupPath(gobj.getGroupId(),gobj.getOrganizationId()) + urnSeparator + gobj.getName();
 					break;
 				case TAG:
 					BaseTagType tobj = (BaseTagType)object;
-					key = getEncodedGroupPath(tobj.getGroup()) + urnSeparator + tobj.getTagType().toString() + urnSeparator + tobj.getName();
+					key = getEncodedGroupPath(tobj.getGroupId(),tobj.getOrganizationId()) + urnSeparator + tobj.getTagType().toString() + urnSeparator + tobj.getName();
 					break;
 				case DATA:
 					/// 2015/06/29 - the data URN is intentionally encoded to accomodate mixed case names that are otherwise conflicting when cast to lower case.
- 
-					key = getEncodedGroupPath(((DataType)object).getGroup()) + urnSeparator + BinaryUtil.toBase64Str(object.getName());
+					DataType data = (DataType)object;
+					key = getEncodedGroupPath(data.getGroupId(),data.getOrganizationId()) + urnSeparator + BinaryUtil.toBase64Str(object.getName());
 					break;
 				case NOTE:
 				case TASK:
 					NameIdDirectoryGroupType gobj2 = (NameIdDirectoryGroupType)object;
-					key = getEncodedGroupPath(gobj2.getGroup()) + urnSeparator + gobj2.getParentId() + urnSeparator + gobj2.getName();
+					key = getEncodedGroupPath(gobj2.getGroupId(),gobj2.getOrganizationId()) + urnSeparator + gobj2.getParentId() + urnSeparator + gobj2.getName();
 					break;
 				default:
 					logger.error("Unhandled object type: " + object.getNameType());
@@ -142,7 +153,7 @@ public class UrnUtil {
 			}
 			if(key != null){
 				urn = urnPrefix + urnSeparator + object.getNameType().toString()
-					 + urnSeparator + getDotOrganizationPath(object.getOrganization())
+					 + urnSeparator + getDotOrganizationPath(object.getOrganizationId())
 					 + urnSeparator + key;
 				urn = getNormalizedString(urn);
 			}
@@ -160,8 +171,11 @@ public class UrnUtil {
 	}
 	private static String getDotGroupPath(BaseGroupType group) throws FactoryException, ArgumentException{
 		Factories.getGroupFactory().populate(group);
-
-		String path = group.getPath();
+		Factories.getGroupFactory().denormalize(group);
+		//Factories
+		return getDotPath(group.getPath());
+	}
+	private static String getDotPath(String path) throws ArgumentException{
 		if(path == null){
 			throw new ArgumentException("Null group path");
 		}
@@ -191,6 +205,9 @@ public class UrnUtil {
 		return path.substring(1,path.length()).replace('/', '.');
 	}
 
+	public static String getDotOrganizationPath(long org) throws FactoryException, ArgumentException{
+		return getDotOrganizationPath(Factories.getOrganizationFactory().getOrganizationById(org));
+	}
 	public static String getDotOrganizationPath(OrganizationType org) throws FactoryException, ArgumentException{
 		String path = Factories.getOrganizationFactory().getOrganizationPath(org);
 		if(path == null || path.length() < 2){
@@ -320,7 +337,7 @@ public class UrnUtil {
 
 			default:
 				NameIdGroupFactory fact = Factories.getFactory(FactoryEnumType.fromValue(objType.toUpperCase()));
-				obj = fact.getByName(itemName, (DirectoryGroupType)group);
+				obj = fact.getByNameInGroup(itemName, (DirectoryGroupType)group);
 				break;
 		}
 
