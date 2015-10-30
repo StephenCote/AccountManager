@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/accountmanager/objects"
+	xmlns:pref="http://www.cote.org/accountmanager/objects/types">
+	<include schemaLocation="AttributeType.xsd"></include>
+	<import schemaLocation="Types.xsd"
+		namespace="http://www.cote.org/accountmanager/objects/types">
+	</import>
+
+	<complexType name="ApiClientConfigurationType">
+		<sequence>
+			<element name="attributes" type="tns:AttributeType"
+				minOccurs="0" maxOccurs="unbounded">
+			</element>
+		</sequence>
+		<attribute name="serviceType" type="tns:ApiServiceEnumType"></attribute>
+		<attribute name="serviceUrl" type="string"></attribute>
+		<attribute name="name" type="string"></attribute>
+		<attribute name="dataUrn" type="string"></attribute>
+	</complexType>
+
+	<simpleType name="ApiServiceEnumType">
+		<restriction base="string">
+			<enumeration value="UNKNOWN"></enumeration>
+			<enumeration value="EMAIL"></enumeration>
+			<enumeration value="REST"></enumeration>
+		</restriction>
+	</simpleType>
+
+</schema>

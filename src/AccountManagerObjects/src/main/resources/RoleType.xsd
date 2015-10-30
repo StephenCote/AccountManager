@@ -8,6 +8,7 @@
 				<attribute name="roleType" type="Q2:RoleEnumType">
 				</attribute>
 				<attribute name="referenceId" type="long" default="0"></attribute>
+				<attribute name="parentPath" type="string"></attribute>
 			</extension>
 		</complexContent>
 	</complexType>

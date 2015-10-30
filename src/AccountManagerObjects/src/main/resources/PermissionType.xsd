@@ -9,6 +9,7 @@
 					type="Q2:PermissionEnumType">
 				</attribute>
 				<attribute name="referenceId" type="long" default="0"></attribute>
+				<attribute name="parentPath" type="string"></attribute>
 			</extension>
 		</complexContent>
 	</complexType>

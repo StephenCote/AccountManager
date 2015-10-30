@@ -307,6 +307,7 @@
 			<enumeration value="HASHED_PASSWORD"></enumeration>
 			<enumeration value="SALT"></enumeration>
 			<enumeration value="ENCRYPTED_PASSWORD"></enumeration>
+			<enumeration value="ENCRYPTED_IDENTITY"></enumeration>
 			<enumeration value="TOKEN"></enumeration>
 			<enumeration value="CERTIFICATE"></enumeration>
 			<enumeration value="SIGNATURE"></enumeration>
@@ -440,4 +441,14 @@
 			<enumeration value="STEP_UP_REQUIRED"></enumeration>
 		</restriction>
 	</simpleType>
+
+	<complexType name="EntitlementType">
+		<attribute name="memberId" type="long"></attribute>
+		<attribute name="memberType" type="Q1:NameEnumType"></attribute>
+		<attribute name="objectId" type="long"></attribute>
+		<attribute name="objectType" type="Q1:NameEnumType"></attribute>
+		<attribute name="entitlementId" type="long"></attribute>
+		<attribute name="entitlementType" type="Q1:AffectEnumType"></attribute>
+		<attribute name="organizationId" type="long"></attribute>
+	</complexType>
 </schema>

@@ -11,7 +11,6 @@
 	<include schemaLocation="SessionType.xsd"></include>
 	<complexType name="NameIdType">
 		<sequence>
-			<element name="organization" type="tns:OrganizationType"></element>
 			<element name="attributes" type="tns:AttributeType"
 				minOccurs="0" maxOccurs="unbounded">
 			</element>
@@ -31,7 +30,7 @@
 		</attribute>
 		<attribute name="urn" type="string"></attribute>
 		<attribute name="organizationId" type="long" default="0"></attribute>
-		<attribute name="groupId" type="long" default="0"></attribute>
+		<attribute name="organizationPath" type="string"></attribute>
 	</complexType>
 
 	<complexType name="OrganizationType">
@@ -75,8 +74,9 @@
 		<complexContent>
 			<extension base="tns:NameIdType">
 				<sequence>
-					<element name="group" type="tns:DirectoryGroupType"></element>
 				</sequence>
+				<attribute name="groupId" type="long"></attribute>
+				<attribute name="groupPath" type="string"></attribute>
 			</extension>
 		</complexContent>
 	</complexType>

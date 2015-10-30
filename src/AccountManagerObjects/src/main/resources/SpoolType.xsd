@@ -12,8 +12,6 @@
 	<include schemaLocation="CredentialType.xsd"></include>
 	<complexType name="BaseSpoolType">
 		<sequence>
-			<element name="group" type="tns:DirectoryGroupType"></element>
-			<element name="organization" type="tns:OrganizationType"></element>
 			<element name="data" type="base64Binary" minOccurs="0"
 				maxOccurs="1">
 			</element>
@@ -29,7 +27,7 @@
 		<attribute name="expiration" type="dateTime"></attribute>
 		<attribute name="ownerId" type="long" default="0"></attribute>
 		<attribute name="spoolStatus" type="Q2:SpoolStatusEnumType"
-			default="0">
+			default="UNKNOWN">
 		</attribute>
 		<attribute name="expires" type="boolean" default="false"></attribute>
 		<attribute name="referenceId" type="long"></attribute>
@@ -43,6 +41,10 @@
 		<attribute name="currentLevel" type="int" default="0"></attribute>
 		<attribute name="endLevel" type="int" default="0"></attribute>
 		<attribute name="classification" type="string"></attribute>
+		<attribute name="groupId" type="long"></attribute>
+		<attribute name="organizationId" type="long"></attribute>
+		<attribute name="groupPath" type="string"></attribute>
+		<attribute name="organizationPath" type="string"></attribute>
 	</complexType>
 
 

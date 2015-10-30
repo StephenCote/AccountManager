@@ -39,18 +39,7 @@
 		<complexContent>
 			<extension base="tns:BaseGroupType">
 				<sequence>
-					<element name="subDirectories"
-						type="tns:DirectoryGroupType" minOccurs="0"
-						maxOccurs="unbounded">
-					</element>
-					<element name="parentGroup"
-						type="tns:DirectoryGroupType">
-					</element>
-					<element name="data" type="tns:DataType" maxOccurs="unbounded" minOccurs="0"></element>
 				</sequence>
-				<attribute name="readData" type="boolean"
-					default="false">
-				</attribute>
 			</extension>
 		</complexContent>
 	</complexType>
