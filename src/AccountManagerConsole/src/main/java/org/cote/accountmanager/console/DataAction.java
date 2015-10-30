@@ -65,8 +65,8 @@ public class DataAction {
 	public static final Logger logger = Logger.getLogger(DataAction.class.getName());
 	private static int maxLoad = 50;
 	public static void setMaximumLoad(int i){ maxLoad = i;}
-	private static Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s])",Pattern.MULTILINE);
-	private static Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/])",Pattern.MULTILINE);
+	private static Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s@])",Pattern.MULTILINE);
+	private static Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/@])",Pattern.MULTILINE);
 	
 	public static void tagData(UserType user, String tagFile){
 		Map<String,Map<String,List<String>>> tagMap = new HashMap<String,Map<String,List<String>>>();
@@ -75,13 +75,12 @@ public class DataAction {
 
 		try{
 
-			OrganizationType org = user.getOrganization();
 			Factories.getUserFactory().populate(user);
-			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org);
+			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), user.getOrganizationId());
 			String[] dataFile = FileUtil.getFileAsString(tagFile).split("\n");
 			logger.info("Reading " + dataFile.length + " lines");
 			String match = "Root/Home/product_user/Media";
-			String replace = "/Home/TestUser1/GalleryHome/rd";
+			String replace = "/Home/test@foo.bar/GalleryHome/rd";
 			
 			Map<String,DataTagType> dataTags = new HashMap<String,DataTagType>();
 			
@@ -111,7 +110,7 @@ public class DataAction {
 				long startTag = System.currentTimeMillis();
 				String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 				if(dataTags.containsKey(tags[i])==false){
-					DataTagType tag = Factories.getTagFactory().newDataTag(user,tags[i],tagDir);
+					DataTagType tag = Factories.getTagFactory().newDataTag(user,tags[i],tagDir.getId());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TAG, tag);
 					dataTags.put(tags[i], tag);
 					nTag = tag;
@@ -121,7 +120,7 @@ public class DataAction {
 				//logger.info("Tag Path Size = " + paths.length);
 				for(int g = 0; g < paths.length; g++){
 					long startLookup = System.currentTimeMillis();
-					DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,paths[g], org);
+					DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,paths[g], user.getOrganizationId());
 					//logger.info("Group Lookup: " + (System.currentTimeMillis() - startLookup));
 					if(dir == null){
 						logger.warn("Failed to find path '" + paths[g] + "'");
@@ -142,7 +141,7 @@ public class DataAction {
 					fields.add(QueryFields.getFieldGroup(dir.getId()));
 					
 					startLookup = System.currentTimeMillis();
-					List<DataType> data = Factories.getDataFactory().getDataList(fields.toArray(new QueryField[0]), null,true,dir.getOrganization());
+					List<DataType> data = Factories.getDataFactory().getDataList(fields.toArray(new QueryField[0]), null,true,dir.getOrganizationId());
 					//logger.info("Data Lookup: " + (System.currentTimeMillis() - startLookup));
 					
 					if(data.size() == 0){
@@ -208,10 +207,10 @@ public class DataAction {
 		    		logger.info("Skip extraneous data");
 		    		continue;
 		    	}
-		    	DirectoryGroupType group = Factories.getGroupFactory().getCreateDirectory(user, groupName, user.getHomeDirectory(), user.getOrganization());
+		    	DirectoryGroupType group = Factories.getGroupFactory().getCreateDirectory(user, groupName, user.getHomeDirectory(), user.getOrganizationId());
 		    	
 		    	
-		    	DataType data = Factories.getDataFactory().newData(user, group);
+		    	DataType data = Factories.getDataFactory().newData(user, group.getId());
 		    	data.setName(name);
 		    	data.setMimeType(mimeType);
 		    	data.setDescription(rset.getString("Description"));
@@ -270,7 +269,7 @@ public class DataAction {
 	}
 	public static void importDataPath(UserType user, String localPath, String targetPath, boolean isPointer){
 		try{
-			DirectoryGroupType dir = Factories.getGroupFactory().getCreatePath(user, targetPath, user.getOrganization());
+			DirectoryGroupType dir = Factories.getGroupFactory().getCreatePath(user, targetPath, user.getOrganizationId());
 			File f = new File(localPath);
 			if(f.exists() == false){
 				System.out.println("Source directory " + localPath + " not found");
@@ -320,7 +319,7 @@ public class DataAction {
 	}
 	
 	private static void importFile(UserType user, DirectoryGroupType dir, File f, String bulkSession, boolean isPointer) throws ArgumentException, DataException, FactoryException{
-		DataType data = Factories.getDataFactory().newData(user, dir);
+		DataType data = Factories.getDataFactory().newData(user, dir.getId());
 		if(f.getName().startsWith(".")){
 			logger.info("Skipping possible system name: " + f.getName());
 			return;
@@ -356,14 +355,19 @@ public class DataAction {
 			logger.info("Skipping possible system name: " + f.getName());
 			return;
 		}
+		File[] fs = f.listFiles();
+		if(fs.length == 0){
+			logger.info("Skipping empty directory");
+			return;
+		}
 		String fName = limitNames.matcher(f.getName()).replaceAll("");
-		DirectoryGroupType tdir = Factories.getGroupFactory().getCreateDirectory(user, fName, dir, user.getOrganization());
+		
+		DirectoryGroupType tdir = Factories.getGroupFactory().getCreateDirectory(user, fName, dir, user.getOrganizationId());
 		if(tdir == null){
 			logger.warn("Invalid directory for " + fName);
 			return;
 		}
 
-		File[] fs = f.listFiles();
 		List<File> bulkList = new ArrayList<File>();
 		logger.info("Importing Directory " + f.getName());
 		for(int i = 0; i < fs.length; i++){

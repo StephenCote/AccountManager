@@ -1,0 +1,27 @@
+{
+   "attributes" : [
+      {
+         "name" : "mail.smtp.auth",
+         "values" : [ "true" ],
+         "dataType" : "VARCHAR"
+      },
+      {
+         "name" : "mail.smtp.starttls.enable",
+         "values" : [ "true" ],
+         "dataType" : "VARCHAR"
+      },
+      {
+         "name" : "mail.smtp.host",
+         "values" : [ "smtp.gmail.com" ],
+         "dataType" : "VARCHAR"
+      },
+      {
+         "name" : "mail.smtp.port",
+         "values" : [ "587" ],
+         "dataType" : "VARCHAR"
+      }
+   ],
+   "serviceType" : "EMAIL",
+   "serviceUrl" : "smtp.gmail.com",
+   "name" : "Production Email"
+}

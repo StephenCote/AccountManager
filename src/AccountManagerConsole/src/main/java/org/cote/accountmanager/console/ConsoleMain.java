@@ -92,9 +92,12 @@ public class ConsoleMain {
 		options.addOption("organization",true,"AccountManager Organization Path");
 		options.addOption("username", true, "AccountManager user name");
 		options.addOption("password",true,"AccountManager password");
+		options.addOption("identity", true, "Identity information");
+		options.addOption("credential", true, "Credential information");
 		options.addOption("importData",true,"Local path or file");
 		options.addOption("pointer",false,"Load data objects as filesystem pointers");
 		options.addOption("tag",false,"Apply the supplied tags");
+		options.addOption("configureApi",false,"Apply the API Configuration");
 		options.addOption("file",true,"File reference");
 		options.addOption("batchSize",true,"Maximum data batch size");
 		options.addOption("patch",false,"Patch the current system");
@@ -102,7 +105,7 @@ public class ConsoleMain {
 		options.addOption("name",true,"Variable name");
 		options.addOption("addUser",false,"Add a new user");
 		options.addOption("addOrganization",false,"Add a new organization");
-		options.addOption("deleteOrganization",false,"Add a new organization");
+		options.addOption("deleteOrganization",false,"Delete a new organization");
 		options.addOption("migrateData",false,"Migrate data from a pre-configured target");
 		options.addOption("ownerId",true,"Migrate data from a pre-configured target");
 		
@@ -129,23 +132,23 @@ public class ConsoleMain {
 					OrganizationType org = Factories.getOrganizationFactory().findOrganization(cmd.getOptionValue("organization"));
 					if(org != null){
 						logger.info("Patching " + org.getName());
-						SecurityBean asymmKey = KeyService.getPrimaryAsymmetricKey(org);
+						SecurityBean asymmKey = KeyService.getPrimaryAsymmetricKey(org.getId());
 						if(asymmKey == null){
 							logger.info("Creating primary asymmetric key");
-							KeyService.newOrganizationAsymmetricKey(org, true);
+							KeyService.newOrganizationAsymmetricKey(org.getId(), true);
 						}
 						else{
 							logger.info("Checked asymmetric key");
 						}
-						SecurityBean symmKey = KeyService.getPrimarySymmetricKey(org);
+						SecurityBean symmKey = KeyService.getPrimarySymmetricKey(org.getId());
 						if(symmKey == null){
 							logger.info("Creating primary symmetric key");
-							KeyService.newOrganizationSymmetricKey(org, true);
+							KeyService.newOrganizationSymmetricKey(org.getId(), true);
 						}
 						else{
 							logger.info("Checked symmetric key");
 						}
-						List<UserType> users = Factories.getUserFactory().getUserList(0, 0, org);
+						List<UserType> users = Factories.getUserFactory().getUserList(0, 0, org.getId());
 						logger.info("Checking " + users.size() + " users for valid credentials");
 						for(int i = 0; i < users.size();i++){
 							CredentialType cred = CredentialService.getPrimaryCredential(users.get(i));
@@ -197,6 +200,10 @@ public class ConsoleMain {
 			else if(cmd.hasOption("addUser") && cmd.hasOption("password") && cmd.hasOption("organization") && cmd.hasOption("adminPassword") && cmd.hasOption("name")){
 				UserCommand.addUser(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("password"), cmd.getOptionValue("email"));
 			}
+			else if(cmd.hasOption("configureApi") && cmd.hasOption("organization") && cmd.hasOption("file") && cmd.hasOption("identity")&& cmd.hasOption("credential")  && cmd.hasOption("adminPassword")){
+				//logger.info("Configure API");
+				ApiConfigAction.configureApi(cmd.getOptionValue("organization"),cmd.getOptionValue("adminPassword"),cmd.getOptionValue("file"),cmd.getOptionValue("identity"),cmd.getOptionValue("credential"));
+			}
 			else if(cmd.hasOption("organization") && cmd.hasOption("username") && cmd.hasOption("password")){
 				
 				try{
@@ -208,7 +215,7 @@ public class ConsoleMain {
 								logger.info("Unauthenticated password reset capability is disabled");
 							}
 							else{
-								UserType user = Factories.getUserFactory().getUserByName(cmd.getOptionValue("username"),org);
+								UserType user = Factories.getUserFactory().getUserByName(cmd.getOptionValue("username"),org.getId());
 								if(user != null){
 									if(password != null && password.length() > 5){
 										logger.info("Creating new primary credential");
@@ -224,7 +231,7 @@ public class ConsoleMain {
 							}
 						}
 						else{
-							UserType user = SessionSecurity.login(cmd.getOptionValue("username"),CredentialEnumType.HASHED_PASSWORD, password, org);
+							UserType user = SessionSecurity.login(cmd.getOptionValue("username"),CredentialEnumType.HASHED_PASSWORD, password, org.getId());
 							if(user != null){
 								processAction(user,cmd);
 								SessionSecurity.logout(user);

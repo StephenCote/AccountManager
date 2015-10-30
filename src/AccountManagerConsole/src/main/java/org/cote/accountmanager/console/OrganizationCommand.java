@@ -46,7 +46,7 @@ public class OrganizationCommand {
 			OrganizationType org = Factories.getOrganizationFactory().findOrganization(orgPath);
 			if(org != null){
 				
-				UserType adminUser = (allowNoAuth ? null : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org));
+				UserType adminUser = (allowNoAuth ? null : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org.getId()));
 				if(allowNoAuth || adminUser != null){
 					logger.warn("Deleting " + org.getName());
 					Factories.getOrganizationFactory().deleteOrganization(org);
@@ -77,12 +77,12 @@ public class OrganizationCommand {
 		if(org != null){
 			OrganizationType uOrg = org;
 			if(uOrg.getName().equals("Global") && uOrg.getParentId().equals(0L)) uOrg = Factories.getSystemOrganization();
-			UserType adminUser = (allowNoAuth ? Factories.getUserFactory().getUserByName("Admin", uOrg) : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,parentAdminPassword, uOrg));
+			UserType adminUser = (allowNoAuth ? Factories.getUserFactory().getUserByName("Admin", uOrg.getId()) : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,parentAdminPassword, uOrg.getId()));
 			if(adminUser != null){
 				OrganizationType newOrg = Factories.getOrganizationFactory().addOrganization(name,OrganizationEnumType.PUBLIC,org);
 				if(newOrg != null && FactoryDefaults.setupOrganization(newOrg, newPassword)){
 					logger.info("Created organization " + name + " in " + org.getName());
-					UserType adminUser2 = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,newPassword, newOrg);
+					UserType adminUser2 = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,newPassword, newOrg.getId());
 					if(adminUser2 != null){
 						logger.info("Verified new administrator user");
 						SessionSecurity.logout(adminUser2);

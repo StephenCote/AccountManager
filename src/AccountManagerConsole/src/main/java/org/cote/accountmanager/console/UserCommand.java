@@ -51,11 +51,11 @@ public static final Logger logger = Logger.getLogger(UserCommand.class.getName()
 		try{
 		OrganizationType org = Factories.getOrganizationFactory().findOrganization(orgPath);
 		if(org != null){
-			UserType adminUser = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org);
+			UserType adminUser = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org.getId());
 			if(adminUser != null){
 				AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, UserCommand.class.getName(), AuditEnumType.USER, "Admin");
 				AuditService.targetAudit(audit, AuditEnumType.USER, name);
-				out_bool = PersonService.createUserAsPerson(audit, name, newPassword, email, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org);
+				out_bool = PersonService.createUserAsPerson(audit, name, newPassword, email, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org.getId());
 				SessionSecurity.logout(adminUser);
 			}
 			else{
