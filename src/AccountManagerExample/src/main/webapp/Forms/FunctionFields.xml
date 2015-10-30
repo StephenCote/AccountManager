@@ -62,7 +62,7 @@
 		addType : function(o){
 			Hemi.log("Add function type: " + o.name + ":" + o.functionType);
 			
-			return accountManagerRule.addFunction(o.name, o.description,o.functionType,o.logicalOrder, o.score, o.sourceUrl, o.sourceUrn, o.group);
+			return accountManagerRule.addFunction(o.name, o.description,o.functionType,o.logicalOrder, o.score, o.sourceUrl, o.sourceUrn, o.groupPath);
 		},
 		findType : function(){
 

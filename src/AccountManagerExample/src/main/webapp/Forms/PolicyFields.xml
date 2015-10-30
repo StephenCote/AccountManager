@@ -160,8 +160,7 @@ setRulePickerLabel : function(s){
 		},
 	addType : function(o){
 			Hemi.log("Add policy type: " + o.name);
-			return accountManagerRule.addPolicy(o.name, o.enabled, o.description, o.score,o.logicalOrder,o.condition, o.decisionAge, o.createdDate, o.modifiedDate, o.expiresDate, o.rules, o.group);
-			//return accountManagerRule.addPolicy(o.name, o.description,o.ruleType, o.condition, (o.fact ? o.fact.urn : 0), (o.match ? o.match.urn : 0), o.group);
+			return accountManagerRule.addPolicy(o.name, o.enabled, o.description, o.score,o.logicalOrder,o.condition, o.decisionAge, o.createdDate, o.modifiedDate, o.expiresDate, o.rules, o.groupPath);
 		},
 		prepareSave : function(o){
 			var _s = this.getProperties();

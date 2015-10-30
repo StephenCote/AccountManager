@@ -25,12 +25,7 @@
 			oI.setAttribute("class","alignright");
 			var sIco = "/AccountManagerExample/Media/Icons/Crystal/48x48/48px-Crystal_Clear_action_filenew.png";
 			if(o.mimeType.match(/^image/)){
-				var oG = o.group;
-				if(o.group.path == null || o.group.path.length == 0){
-					oG = accountManager.getGroupById(o.group.id);
-				}
-			
-				sIco = "/AccountManager/Thumbnail/" + accountManager.getOrganizationDotPath() + "/Data" + oG.path + "/" + o.name + "/" + w + "x" + h
+				sIco = "/AccountManager/Thumbnail/" + accountManager.getOrganizationDotPath() + "/Data" + o.groupPath + "/" + o.name + "/" + w + "x" + h
 			}
 			oI.setAttribute("src",sIco);
 			oP.appendChild(oI);

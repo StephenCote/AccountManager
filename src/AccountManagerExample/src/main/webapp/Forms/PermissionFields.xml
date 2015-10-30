@@ -70,7 +70,7 @@
 			oL.clearItems();
 			var o = this.getBean("rocketType");
 			if(!o || o == null || o.id <= 0) return;
-			var aL = accountManager.listPermissions(o.organization,o);
+			var aL = accountManager.listPermissions(o.organizationId,o);
 			for(var i = 0; i < aL.length;i++){
 				oL.addItem(aL[i].name + " " + aL[i].permissionType,aL[i]);
 			}
@@ -84,7 +84,7 @@
 		addType : function(o){
 			Hemi.log("Add permission type: " + o.name + ":" + o.permissionType);
 
-			return accountManager.addPermission(o.name, o.permissionType, o.parentId, o.organization);
+			return accountManager.addPermission(o.name, o.permissionType, o.parentId, o.organizationId);
 		},
 		
 		prepareSave : function(o){

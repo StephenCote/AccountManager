@@ -104,7 +104,7 @@
 		addType : function(o){
 			Hemi.log("Add person type: " + o.name );
 			var b = false;
-			o.group = accountManager.getCleanGroup(o.group);
+			//o.group = accountManager.getCleanGroup(o.group);
 			return uwmServices.getService("Person").add(o);
 		},
 		prepareSave : function(o){

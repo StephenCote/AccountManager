@@ -184,7 +184,7 @@ setRulePickerLabel : function(s){
 		},
 	addType : function(o){
 			Hemi.log("Add pattern type: " + o.name + ":" + o.patternType);
-			return accountManagerRule.addRule(o.name, o.description,o.score,o.logicalOrder,o.ruleType, o.condition, (o.fact ? o.fact.urn : 0), (o.match ? o.match.urn : 0), o.group);
+			return accountManagerRule.addRule(o.name, o.description,o.score,o.logicalOrder,o.ruleType, o.condition, (o.fact ? o.fact.urn : 0), (o.match ? o.match.urn : 0), o.groupPath);
 		},
 		prepareSave : function(o){
 			var _s = this.getProperties();

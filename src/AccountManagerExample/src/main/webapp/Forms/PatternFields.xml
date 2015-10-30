@@ -137,7 +137,7 @@ chooseMatch : function(){
 	},
 	addType : function(o){
 			Hemi.log("Add pattern type: " + o.name + ":" + o.patternType);
-			return accountManagerRule.addPattern(o.name, o.description,o.score,o.logicalOrder,o.patternType, o.comparator, (o.fact ? o.fact.urn : 0), (o.match ? o.match.urn : 0), o.group);
+			return accountManagerRule.addPattern(o.name, o.description,o.score,o.logicalOrder,o.patternType, o.comparator, (o.fact ? o.fact.urn : 0), (o.match ? o.match.urn : 0), o.groupPath);
 		},
 		prepareSave : function(o){
 			o.matchUrn = (o.match ? o.match.urn : 0);

@@ -15,6 +15,14 @@
 			<input rid = "userStatus" type = "text" class = "rocket-text" disabled = "true" bind = "${bean.rocketType}" />
 		</p>
 	</div>
+	<div class = "rocket-column-2" rid = "apiCredentialContainer" style = "display: none;">
+		<p>
+			API Credential:
+		</p>
+		<p>
+			<input type = "button" class = "rocket-button" value = "Reset API Credential" onclick = "${this}.resetApiCredential()" />
+		</p>
+	</div>
 	<div class = "rocket-column-2" rid = "credentialContainer" style = "display: none;">
 		<p>
 			Credential:
@@ -30,7 +38,26 @@
 			this.GetElementByRID("credentialContainer").style.display = (this.getBean("rocketType").id ? "block":"none");
 			this.GetElementByRID("pathCont").style.display = "none";
 			this.initContactInformation();
+			var aR = accountManager.listRolesForUser();
+			
+			for(var i = 0; i < aR.length;i++){
+				if(aR[i].name.match(/^apiusers$/gi)){
+					this.GetElementByRID("apiCredentialContainer").style.display = "block";
+					break;
+				}
+			}
 		},
+		resetApiCredential : function(){
+			var o = this.getBean("rocketType");
+			var oProps = {openerId:this.getObjectId(),viewType:0,tokenMode:1,apiToken:1};
+			var oW = Hemi.app.createWindow(o.name + " Credentials", "/AccountManagerExample/Forms/CredentialForm.xml", "ApiCredential-" + o.id, 0, 0, oProps);
+	           if (oW) {
+		           	oW.resizeTo(475, 400);
+		           	Hemi.app.getWindowManager().CenterWindow(oW);
+		           	oW.setHideOnClose(0);
+	           }
+		},
+
 		resetCredential : function(){
 			var o = this.getBean("rocketType");
 			var oProps = {openerId:this.getObjectId(),viewType:o};

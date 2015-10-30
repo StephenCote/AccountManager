@@ -17,7 +17,7 @@
 	<embedded-script><![CDATA[
 		embedded_init : function(){
 			this.GetElementByRID("rolePicker").style.display = "block";
-			this.toggleField("rolePickerToggle","rolePickerContent");
+			if(this.toggleField) this.toggleField("rolePickerToggle","rolePickerContent");
 			if(!this.getProperties().roleListProp) this.getProperties().roleListProp = "roles";
 		},
 		prepareSaveRolePicker : function(o){

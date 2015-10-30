@@ -124,7 +124,7 @@
 					Hemi.log("Not populated.  Fetching a populated version.");
 					var oApi = window[uwm.getApi(typeName)];
 					if(o.id) o = oApi["get" + typeName + "ById"](o.id);
-					else o = oApi["get" + typeName](o.name,o.group);
+					else o = oApi["get" + typeName](o.name,accountManager.getGroupByPath("DATA",o.groupPath));
 					if(!o.populated) alert("still not populated");
 				}
 			}

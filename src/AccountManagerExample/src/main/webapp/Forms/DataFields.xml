@@ -139,11 +139,11 @@
 			var o = this.getBean("rocketType");
 			var b = "none";
 			if(o.id){
-				var g = o.group;
-				if(g.path == null) g = accountManager.getGroupById(g.id);
+				var g = o.groupPath;
+				//if(g.path == null) g = accountManager.getGroupById(g.id);
 				var sUrl =
 					location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "")
-					+ "/AccountManager/Media/" + accountManager.getOrganizationDotPath(o.organization) + "/Data" + g.path + "/" + o.name
+					+ "/AccountManager/Media/" + o.organizationPath + "/Data" + g + "/" + o.name
 				;
 				/*
 				var oC = this.GetElementByRID("urlLabel");
@@ -151,7 +151,7 @@
 				var oA = document.createElement("a");
 				oA.setAttribute("target","_blank");
 				oA.setAttribute("href",sUrl);
-				oA.appendChild(document.createTextNode(o.group.path + "/" + o.name));
+				oA.appendChild(document.createTextNode(o.groupPath + "/" + o.name));
 				oC.appendChild(oA);
 				*/
 				this.GetElementByRID("urlText").value = sUrl;
@@ -182,14 +182,17 @@
 			var v = "";
 			if(o.mimeType && o.mimeType.match(/^text/)){
 				v = this.GetElementByRID("textData").value;
-				return accountManager.addData(o.name, o.description, o.mimeType, v, o.group);
+				return accountManager.addData(o.name, o.description, o.mimeType, v, o.groupPath);
 			}
 			else if(this.isBinary()){
 				var oF = this.get_frame("mediaUploadFrame");
+				
 				oF.document.forms["mediaForm"].elements["id"].value = "0";
 				oF.document.forms["mediaForm"].elements["name"].value = o.name;
 				oF.document.forms["mediaForm"].elements["description"].value = o.description;
-				oF.document.forms["mediaForm"].elements["groupId"].value = o.group.id;
+				oF.document.forms["mediaForm"].elements["groupId"].value = "0";
+				oF.document.forms["mediaForm"].elements["groupPath"].value = o.groupPath;
+				oF.document.forms["mediaForm"].elements["organizationPath"].value = accountManager.getOrganizationPath();
 				oF.document.forms["mediaForm"].submit();
 				return -1;
 			}
@@ -204,7 +207,7 @@
 		},
 		loadDetailData : function(){
 			var o = this.getBean("rocketType");
-			o = accountManager["get" + this.getProperties().typeName](o.name,o.group);
+			o = accountManager["get" + this.getProperties().typeName](o.name,accountManager.getGroupByPath("DATA",o.groupPath));
 			if(o != null){
 				this.clearBean("rocketType");
 				this.setBean(o,"rocketType");

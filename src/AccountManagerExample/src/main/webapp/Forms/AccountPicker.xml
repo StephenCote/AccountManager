@@ -29,7 +29,7 @@
 			_s.enableAccountInformation = (o != null ? 1 : 0);
 			
 			if(_s.enableAccountInformation){
-				//this.getProperties().accountListProp = "accounts";
+				this.getProperties().accountListProp = "accounts";
 				this.GetComponentByRID("accountsList").setLoadHandler(this.scopeHandler("configAccountsList",0,1,1));
 			}
 		},

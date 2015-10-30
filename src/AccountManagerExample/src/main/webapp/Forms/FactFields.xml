@@ -157,7 +157,7 @@
 		},
 		addType : function(o){
 			Hemi.log("Add fact type: " + o.name + ":" + o.factType);
-			return accountManagerRule.addFact(o.name, o.description,o.score,o.factType, o.factoryType, o.sourceDataType, o.sourceType,o.sourceUrn, o.sourceUrl,o.factData, o.group);
+			return accountManagerRule.addFact(o.name, o.description,o.score,o.factType, o.factoryType, o.sourceDataType, o.sourceType,o.sourceUrn, o.sourceUrl,o.factData, o.groupPath);
 		},
 		findType : function(bData){
 			var sFType = this.GetElementByRID((bData ? "factType" : "factoryType")).value;
@@ -174,8 +174,8 @@
 		importType : function(oBean,bSkipName,bDataOnly){
 			o = this.getBean("rocketType");
 			var _s = this.getProperties();
-			if(!oBean.id || !oBean.nameType.match(/^(group|role|permission|person|account|user|data|function|operation)$/gi)){
-				Hemi.logError("Unsupported fact import type " + oBean.nameType + " #" + oBean.id);
+			if(!oBean || !oBean.id || !oBean.nameType.match(/^(group|role|permission|person|account|user|data|function|operation)$/gi)){
+				Hemi.logError("Unsupported fact import type " + (oBean ? oBean.nameType + " #" + oBean.id : "null"));
 				return;
 			}
 			if(bDataOnly){
@@ -198,8 +198,11 @@
 				if(sPath) sPath = sPath.substring(0,sPath.lastIndexOf("/"));
 			}
 			else if(oBean.nameType.match(/^(person|account|data|function|operation)$/gi)){
+				sPath = oBean.groupPath;
+				/*
 				var oG = accountManager.getGroupById(oBean.group.id);
 				if(oG) sPath = oG.path;
+				*/
 			}
 			else if(oBean.nameType.match(/^group$/gi)){
 				var oG = oBean;
@@ -226,7 +229,7 @@
 			this.GetElementByRID("factType").value = sFactType;
 			if(!bSkipName){
 				this.GetElementByRID("name").value = oBean.name + " Fact";
-				this.GetElementByRID("description").value = "Fact representing a relative link to " + oBean.nameType + " " + oBean.name + " with current id #" + oBean.id + " in organization #" + oBean.organization.id;
+				this.GetElementByRID("description").value = "Fact representing a relative link to " + oBean.nameType + " " + oBean.name + " with current id #" + oBean.id + " in organization " + oBean.organizationPath;
 			}
 
 			

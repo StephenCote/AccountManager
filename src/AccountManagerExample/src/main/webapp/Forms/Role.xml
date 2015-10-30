@@ -16,8 +16,6 @@
 					o.parentId = (this.getProperties().parentRef ? this.getProperties().parentRef.id : 0);
 					o.nameType = "ROLE";
 					o.roleType = "USER";
-					o.organization = uwm.getUser().organization;
-
 				}
 				else if(o.parentId > 0){
 					this.getProperties().defaultPath = accountManager.getRolePath(o.parentId);

@@ -18,8 +18,8 @@
 					o.operationType = "UNKNOWN";
 					o.id = 0;
 				}
-				else if(o.group && o.group.path){
-					this.getProperties().defaultPath = o.group.path;
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
 				}
 				delete this.getProperties().viewType;
 				this.setBean(o,"rocketType");

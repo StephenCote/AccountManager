@@ -139,7 +139,7 @@
 			oL.clearItems();
 			var o = this.getBean("rocketType");
 			if(!o || o == null || o.id <= 0) return;
-			var aL = accountManager.listRoles(o.organization,o);
+			var aL = accountManager.listRoles(o.organizationId,o);
 			for(var i = 0; i < aL.length;i++){
 				oL.addItem(aL[i].name + " " + aL[i].roleType,aL[i]);
 			}
@@ -153,7 +153,7 @@
 		addType : function(o){
 			Hemi.log("Add role type: " + o.name + ":" + o.roleType);
 
-			return accountManager.addRole(o.name, o.roleType, o.parentId, o.organization);
+			return accountManager.addRole(o.name, o.roleType, o.parentId, o.organizationId);
 		},
 		
 		prepareSave : function(o){

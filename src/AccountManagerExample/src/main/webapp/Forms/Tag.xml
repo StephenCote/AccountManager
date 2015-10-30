@@ -15,8 +15,8 @@
 					o.id = 0;
 					o.tagType = "UNKNOWN";
 				}
-				else if(o.group && o.group.path){
-					this.getProperties().defaultPath = o.group.path;
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
 				}
 				delete this.getProperties().viewType;
 				this.setBean(o,"rocketType");

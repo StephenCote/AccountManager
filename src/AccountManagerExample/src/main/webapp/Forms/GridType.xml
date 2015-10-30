@@ -343,7 +343,7 @@
 					else if(o.nameType.match(/^(role|permission)$/gi)) o = oApi["get" + this.getProperties().typeName + "ById"](o.id);
 					else if(this.provideItem) o = this.provideItem(this.getProperties().typeName,o);
 					else if(o.id)  o = oApi["get" + this.getProperties().typeName + "ById"](o.id);
-					else o = oApi["get" + this.getProperties().typeName](o.name,o.group);
+					else o = oApi["get" + this.getProperties().typeName](o.name,accountManager.getGroupByPath("DATA",o.groupPath));
 					if(!o.populated) alert("still not populated");
 				}
 			}
@@ -483,7 +483,7 @@
 					var sFilt = this.GetElementByRID("filter").value;
 					if(this.provideCount) count = this.provideCount(sPath, sFilt);
 					else if(sPath && !_s.noGroup) count = oApi["count" + _s.typeName + "s"](sPath);
-					else count = oApi["count" + _s.typeName + "s"](uwm.getUser().organization,_o.parentRef); 
+					else count = oApi["count" + _s.typeName + "s"](uwm.getUser().organizationId,_o.parentRef); 
 					if(count != null) this.setTotalCount(count);
 				}
 				else{
@@ -495,12 +495,12 @@
 				if(this.provideList) aList = this.provideList(sPath, sFilt, _s.start_record,_s.record_count);
 				else if(sPath){
 					if(!tname.match(/^(group)$/gi)) aList = oApi["list" + tname + "s"](sPath,_s.start_record,_s.record_count);
-					else aList = oApi["list" + tname + "s"](uwm.getUser().organization,accountManager.getGroupByPath(_s.listGroupType,sPath),_s.listGroupType,_s.start_record,_s.record_count);
+					else aList = oApi["list" + tname + "s"](uwm.getUser().organizationId,accountManager.getGroupByPath(_s.listGroupType,sPath),_s.listGroupType,_s.start_record,_s.record_count);
 				}
 				else{
 				
-					if(!tname.match(/^(permission|role)$/gi)) aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,_s.start_record,_s.record_count);
-					else aList = oApi["list" + tname + "s"](uwm.getUser().organization,_o.parentRef,"UNKNOWN",_s.start_record,_s.record_count);
+					if(!tname.match(/^(permission|role)$/gi)) aList = oApi["list" + tname + "s"](uwm.getUser().organizationId,_o.parentRef,_s.start_record,_s.record_count);
+					else aList = oApi["list" + tname + "s"](uwm.getUser().organizationId,_o.parentRef,"UNKNOWN",_s.start_record,_s.record_count);
 				}
 				
 				if(_s.start_record == 0 && (_s.typeName.match(/^(group|permission|role)$/gi)) && (_s.viewType || _o.parentRef)){

@@ -16,8 +16,6 @@
 					o.parentId = (this.getProperties().parentRef ? this.getProperties().parentRef.id : 0);
 					o.nameType = "PERMISSION";
 					o.permissionType = "USER";
-					o.organization = uwm.getUser().organization;
-
 				}
 				else if(o.parentId > 0){
 					this.getProperties().defaultPath = accountManager.getPermissionPath(o.parentId);

@@ -53,8 +53,8 @@
 		},
 		addType : function(o){
 			Hemi.log("Add contact type: " + o.name );
-			var b = false;
-			o.group = accountManager.getCleanGroup(o.group);
+			//var b = false;
+			//o.group = accountManager.getCleanGroup(o.group);
 			return uwmServices.getService("Contact").add(o);
 		},
 		prepareSave : function(o){

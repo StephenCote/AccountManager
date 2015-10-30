@@ -85,43 +85,33 @@
 					}
 				}
 			},
-			/*
-			getPermissionPath : function(o){
-				if(!o) return null;
-				if(accountManager.permission_paths[o.id]) return accountManager.permission_paths[o.id];
-				var aB = [];
-				var oOrg = o;
-				// Don't count Global org, which is id = 1
-				while(oOrg && oOrg.id > 1){
-					aB.push(oOrg.name);
-					oOrg = accountManager.getPermissionById(oOrg.parentId);
-				}
-				sOrgPath = "/" + aB.reverse().join("/");
-				accountManager.permission_paths[o.id] = sOrgPath;
-				return accountManager.permission_paths[o.id];
-			},
-			*/
+
 			getPublicUser : function(){
 				return uwmServices.getService("User").getPublicUser();
 			},
 			getOrganizationPath : function(o){
-				if(!o && uwm.getUser()) o = uwm.getUser().organization;
+				if(typeof o == "number" && o > 0) o = accountManager.getOrganizationById(o);
+				else if(!o && uwm.getUser()) o = accountManager.getOrganizationById(uwm.getUser().organizationId);
 				if(!o) return null;
 				if(accountManager.organization_paths[o.id]) return accountManager.organization_paths[o.id];
 				var aB = [];
 				var oOrg = o;
 				// Don't count Global org, which is id = 1
-				while(oOrg && oOrg.id > 1){
+				sOrgPath = o.organizationPath;
+				/*
+				while(oOrg && iOrg > 1){
 					aB.push(oOrg.name);
 					oOrg = accountManager.getOrganizationById(oOrg.parentId);
 				}
 				sOrgPath = "/" + aB.reverse().join("/");
+				*/
 				accountManager.organization_paths[o.id] = sOrgPath;
 				return accountManager.organization_paths[o.id];
 			},
 
 			getOrganizationDotPath : function(o){
-				if(!o && uwm.getUser()) o = uwm.getUser().organization;
+				if(typeof o == "number" && o > 0) o = accountManager.getOrganizationById(o);
+				else if(!o && uwm.getUser()) o = accountManager.getOrganizationById(uwm.getUser().organizationId);
 				if(!o) return null;
 				var sKey = o.id + ".alt";
 				if(accountManager.organization_paths[sKey]) return accountManager.organization_paths[sKey];
@@ -177,7 +167,7 @@
 				o.accountType = sType;
 				o.accountStatus = sStatus;
 				if(oGroup){
-					o.group = accountManager.getCleanGroup(oGroup);
+					o.groupPath = oGroup;
 				}
 				return uwmServices.getService("Account").add(o);
 			},
@@ -213,7 +203,7 @@
 				o.nameType = "PERSON";
 				o.birthDate = new Date();
 				if(oGroup){
-					o.group = accountManager.getCleanGroup(oGroup);
+					o.groupPath = oGroup;
 				}
 				o.description = "";
 				o.suffix = "";
@@ -267,7 +257,7 @@
 				o.nameType = "TAG";
 				o.tagType = sType;
 				if(oGroup){
-					o.group = accountManager.getCleanGroup(oGroup);
+					o.groupPath = oGroup;
 				}
 				o.description = "";
 				return uwmServices.getService("Tag").add(o);
@@ -305,7 +295,7 @@
 				o.nameType = "ADDRESS";
 				o.locationType = sLocType;
 				if(oGroup){
-					o.group = accountManager.getCleanGroup(oGroup);
+					o.groupPath = oGroup;
 				}
 				return uwmServices.getService("Address").add(o);
 			},
@@ -343,7 +333,7 @@
 				o.contactType = sType;
 				o.contactValue = sVal;
 				if(oGroup){
-					o.group = accountManager.getCleanGroup(oGroup);
+					o.groupPath = oGroup;
 				}
 				return uwmServices.getService("Contact").add(o);
 			},
@@ -364,26 +354,26 @@
 			getContactById : function(iId){
 				return uwmServices.getService("Contact").readById(iId);
 			},
-			countUsers : function(oOrg){
-				if(!oOrg) oOrg = window.uwm.getUser().organization;
-				return uwmServices.getService("User").count(oOrg.id);
+			countUsers : function(iOrg){
+				if(!iOrg) iOrg = window.uwm.getUser().organizationId;
+				return uwmServices.getService("User").count(iOrg);
 			},
-			listUsers : function(oOrg, iStartIndex, iRecordCount){
+			listUsers : function(iOrg, iStartIndex, iRecordCount){
 				/// param difference when funneled through GridType.xml
-				if(typeof oOrg == "string") oOrg = 0;
+				if(typeof iOrg == "string") iOrg = 0;
 				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
 				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
-				return accountManager.serviceListInOrganization(uwmServices.getService("User"),oOrg, iStartIndex, iRecordCount);
+				return accountManager.serviceListInOrganization(uwmServices.getService("User"),iOrg, iStartIndex, iRecordCount);
 			},
-			addUser : function(sName, oOrg){
-				if(!oOrg) oOrg = uwm.getUser().organization;
+			addUser : function(sName, iOrg){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
 				var o = new org.cote.beans.userType(),b = false;
 				o.nameType = "USER";
 				o.name = sName;
 
 				
 				//o.contactInformation.email = sEmail;
-				o.organization = oOrg;
+				o.organizationId = iOrg;
 
 				return uwmServices.getService("User").add(o);
 				/*
@@ -414,79 +404,84 @@
 			getUserById : function(iId){
 				return uwmServices.getService("User").readById(iId);
 			},
-			authorizeRoleUser : function(oOrg, iUserId, iRoleId, bView, bEdit, bDel, bCreate){
-				if(!oOrg) oOrg = uwm.getUser().organization;
-				return uwmServices.getService("Role").authorizeUser(oOrg.id, iUserId, iRoleId, bView, bEdit, bDel, bCreate);
+			authorizeRoleUser : function(iOrg, iUserId, iRoleId, bView, bEdit, bDel, bCreate){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
+				return uwmServices.getService("Role").authorizeUser(iOrg, iUserId, iRoleId, bView, bEdit, bDel, bCreate);
 			},
 
 			listRoleAccounts : function(oRole){
-				var oOrg, iRoleId = 0;
+				var iOrg, iRoleId = 0;
 				if(!oRole) return null;
-				oOrg = oRole.organization;
+				iOrg = oRole.organizationId;
 				iRoleId = oRole.id;
-				return uwmServices.getService("Role").listAccounts(oOrg.id, iRoleId);
+				return uwmServices.getService("Role").listAccounts(iOrg, iRoleId);
 			},
 			listRolePersons : function(oRole){
-				var oOrg, iRoleId = 0;
+				var iOrg, iRoleId = 0;
 				if(!oRole) return null;
-				oOrg = oRole.organization;
+				iOrg = oRole.organizationId;
 				iRoleId = oRole.id;
-				return uwmServices.getService("Role").listPersons(oOrg.id, iRoleId);
+				return uwmServices.getService("Role").listPersons(iOrg, iRoleId);
 			},
 
 			listRoleUsers : function(oRole){
-				var oOrg, iRoleId = 0;
+				var iOrg, iRoleId = 0;
 				if(!oRole) return null;
-				oOrg = oRole.organization;
+				iOrg = oRole.organizationId;
 				iRoleId = oRole.id;
-				return uwmServices.getService("Role").listUsers(oOrg.id, iRoleId);
+				return uwmServices.getService("Role").listUsers(iOrg, iRoleId);
 			},
 			listRolesForGroup : function(oGroup){
-				var oOrg = oGroup.organization;
-				return uwmServices.getService("Group").listAuthorizedRoles(oOrg.id,oGroup.id);
+				var iOrg = oGroup.organizationId;
+				return uwmServices.getService("Group").listAuthorizedRoles(iOrg,oGroup.id);
 			},
 			listRolesForUser : function(oUser){
-				var oOrg, iUserId = 0;
+				var iOrg, iUserId = 0;
 				if(!oUser){
-					oOrg = uwm.getUser().organization;
+					iOrg = uwm.getUser().organizationId;
 					iUserId = uwm.getUser().id;
 				}
 				else{
-					oOrg = oUser.organization;
+					iOrg = iUser.organizationId;
 					iUserId = oUser.id;
 				}
 				
-				return uwmServices.getService("Role").listForUser(oOrg.id, iUserId);
+				return uwmServices.getService("Role").listForUser(iOrg, iUserId);
 			},
 			clearRoleCache : function(){
 				uwmServices.getService("Role").clearCache();
 				uwmServiceCache.clearServiceCache("Role");
 			},
 
-			countRoles : function(oOrg,oPar){
-				if(!oOrg) oOrg = uwm.getUser().organization;
-				if(!oPar) return uwmServices.getService("Role").count(oOrg.id);
-				return uwmServices.getService("Role").countInParent(oOrg.id, oPar.id);
+			countRoles : function(iOrg,oPar){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
+				if(!oPar) return uwmServices.getService("Role").count(iOrg);
+				return uwmServices.getService("Role").countInParent(iOrg, oPar.id);
 			},
-			listRoles : function(oOrg, oParent, sType,iStartIndex, iRecordCount){
+			listRoles : function(iOrg, oParent, sType,iStartIndex, iRecordCount){
 				// param difference when funneled through GridType.xml
-				if(typeof oOrg == "string") oOrg = 0;
+				if(typeof iOrg == "string" || !iOrg) iOrg = uwm.getUser().organizationId;
 				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
 				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				if(!sType) sType = "UNKNOWN";
-				return uwmServices.getService("Role").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
-				//if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Role"),oOrg, iStartIndex, iRecordCount);
-				//return accountManager.serviceListInParent(uwmServices.getService("Role"),oOrg, oParent,iStartIndex, iRecordCount);
+				return uwmServices.getService("Role").listInParent(iOrg, (oParent ? oParent.id : 0), sType, iStartIndex, iRecordCount);
 			},
-			addRole : function(sName, sType, oPar, oOrg){
-				if(!oOrg) oOrg = uwm.getUser().organization;
+			addRole : function(sName, sType, oPar, iOrg){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
 				var o = new org.cote.beans.baseRoleType();
 				o.name = sName;
 				o.nameType = "ROLE";
 				o.roleType = sType;
-				o.organization = oOrg;
-				if(typeof oPar == "object" && oPar != null) o.parentId = oPar.id;
-				else if(typeof oPar == "number") o.parentId = oPar;
+				o.organizationId = iOrg;
+				if(typeof oPar == "object" && oPar != null){
+					o.parentPath = accountManager.getRolePath(oPar.id);
+					o.parentId = oPar.id;
+				}
+				else if(typeof oPar == "number"){
+					o.parentPath = accountManager.getRolePath(oPar);
+					o.parentId = oPar;
+				}
+				else if(typeof oPar == "string") o.parentPath = oPar;
 				else o.parentId = 0;
 
 				return uwmServices.getService("Role").add(o);
@@ -503,25 +498,27 @@
 			getRolePath : function(iId){
 				return uwmServices.getService("Role").getPath((typeof iId == "object" ? iId.id : iId));
 			},
-			getRole : function(sName, sType, oParent, oOrg){
-				if(!oOrg) oOrg = uwm.getUser().organization;
+			getRole : function(sName, sType, iParent, iOrg){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
 				if(!sType) sType = "UNKNOWN";
-				return uwmServices.getService("Role").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
-				//if(!oParent) return uwmServices.getService("Role").readByOrganizationId(oOrg.id, sName);
-				//return uwmServices.getService("Role").readByParentId(oOrg.id, oParent.id, sName);
+				if(typeof iParent == "object") iParent = iParent.id;
+				else if(!iParent) iParent = 0;
+				return uwmServices.getService("Role").readByParentId(iOrg, iParent, sType,sName);
+				//if(!oParent) return uwmServices.getService("Role").readByOrganizationId(iOrg, sName);
+				//return uwmServices.getService("Role").readByParentId(iOrg, oParent.id, sName);
 			},
-			getRootRole : function(sType,oOrg){
-				if(!oOrg) oOrg = uwm.getUser().organization;
+			getRootRole : function(sType,iOrg){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
 				if(!sType) sType = "UNKNOWN";
-				return uwmServices.getService("Role").getRootRole(oOrg.id,sType);
+				return uwmServices.getService("Role").getRootRole(iOrg,sType);
 			},
 			/// Note: requesting the user's own role dynamically allocates the role, and also will add the user to the role and user reader role
 			/// This is a temporary setup in the RoleService
 			///
-			getUserRole : function(sType, oOrg){
-				if(!oOrg) oOrg = uwm.getUser().organization;
+			getUserRole : function(sType, iOrg){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
 				if(!sType) sType = "ACCOUNT";
-				return uwmServices.getService("Role").getUserRole(oOrg.id,sType);
+				return uwmServices.getService("Role").getUserRole(iOrg,sType);
 			},
 			
 			clearPermissionCache : function(){
@@ -529,30 +526,37 @@
 				uwmServiceCache.clearServiceCache("Permission");
 			},
 
-			countPermissions : function(oOrg,oPar){
-				if(!oOrg) oOrg = uwm.getUser().organization;
-				if(!oPar) return uwmServices.getService("Permission").count(oOrg.id);
-				return uwmServices.getService("Permission").countInParent(oOrg.id, oPar.id);
+			countPermissions : function(iOrg,oPar){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
+				if(!oPar) return uwmServices.getService("Permission").count(iOrg);
+				return uwmServices.getService("Permission").countInParent(iOrg, oPar.id);
 			},
-			listPermissions : function(oOrg, oParent, sType, iStartIndex, iRecordCount){
+			listPermissions : function(iOrg, oParent, sType, iStartIndex, iRecordCount){
 				// param difference when funneled through GridType.xml
-				if(typeof oOrg == "string" || !oOrg) oOrg = uwm.getUser().organization;
+				if(typeof iOrg == "string" || !iOrg) iOrg = uwm.getUser().organizationId;
 				if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
 				if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 				if(!sType) sType = "UNKNOWN";
-				return uwmServices.getService("Permission").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
-				//if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Permission"),oOrg, iStartIndex, iRecordCount);
-				//return accountManager.serviceListInParent(uwmServices.getService("Permission"),oOrg, oParent,iStartIndex, iRecordCount);
+				return uwmServices.getService("Permission").listInParent(iOrg, (oParent ? oParent.id : 0), sType, iStartIndex, iRecordCount);
+				//if(!oParent) return accountManager.serviceListInOrganization(uwmServices.getService("Permission"),iOrg, iStartIndex, iRecordCount);
+				//return accountManager.serviceListInParent(uwmServices.getService("Permission"),iOrg, oParent,iStartIndex, iRecordCount);
 			},
-			addPermission : function(sName, sType, oPar, oOrg){
-				if(!oOrg) oOrg = uwm.getUser().organization;
+			addPermission : function(sName, sType, oPar, iOrg){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
 				var o = new org.cote.beans.basePermissionType();
 				o.name = sName;
 				o.nameType = "PERMISSION";
 				o.permissionType = sType;
-				o.organization = oOrg;
-				if(typeof oPar == "object" && oPar != null) o.parentId = oPar.id;
-				else if(typeof oPar == "number") o.parentId = oPar;
+				o.organizationId = iOrg;
+				if(typeof oPar == "object" && oPar != null){
+					o.parentPath = accountManager.getPermissionPath(oPar.id);
+					o.parentId = oPar.id;
+				}
+				else if(typeof oPar == "number"){
+					o.parentPath = accountManager.getPermissionPath(oPar);
+					o.parentId = oPar;
+				}
+				else if(typeof oPar == "string") o.parentPath = oPar;
 				else o.parentId = 0;
 
 				return uwmServices.getService("Permission").add(o);
@@ -569,14 +573,16 @@
 			getPermissionPath : function(iId){
 				return uwmServices.getService("Permission").getPath((typeof iId == "object" ? iId.id : iId));
 			},
-			getPermission : function(sName, sType, oParent, oOrg){
-				if(!oOrg) oOrg = uwm.getUser().organization;
+			getPermission : function(sName, sType, iParent, iOrg){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
 				if(!sType) sType = "UNKNOWN";
-				return uwmServices.getService("Permission").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
+				if(typeof iParent == "object") iParent = iParent.id;
+				else if(!iParent) iParent = 0;
+				return uwmServices.getService("Permission").readByParentId(iOrg, iParent, sType,sName);
 			},
-			listSystemPermissions : function(oOrg){
-				if(!oOrg) oOrg = uwm.getUser().organization;
-				return uwmServices.getService("Permission").listSystemPermissions(oOrg.id);
+			listSystemPermissions : function(iOrg){
+				if(!iOrg) iOrg = uwm.getUser().organizationId;
+				return uwmServices.getService("Permission").listSystemPermissions(iOrg);
 			},
 			/// Note: requesting the user's own permission dynamically allocates a permission that the user owns.
 			/// Similar to roles, this is because Roles and Permissions scope to the parent and not to a groupid.
@@ -587,41 +593,41 @@
 				return uwmServices.getService("Permission").getUserPermission(sType);
 			},
 			
-		authorizeGroupRole : function(oOrg, iRoleId, iGroupId, bView, bEdit, bDel, bCreate){
-			if(!oOrg) oOrg = uwm.getUser().organization;
-			return uwmServices.getService("Group").authorizeRole(oOrg.id, iRoleId, iGroupId, bView, bEdit, bDel, bCreate);
+		authorizeGroupRole : function(iOrg, iRoleId, iGroupId, bView, bEdit, bDel, bCreate){
+			if(!iOrg) iOrg = uwm.getUser().organizationId;
+			return uwmServices.getService("Group").authorizeRole(iOrg, iRoleId, iGroupId, bView, bEdit, bDel, bCreate);
 		},
-		authorizeGroupUser : function(oOrg, iUserId, iRoleId, bView, bEdit, bDel, bCreate){
-			if(!oOrg) oOrg = uwm.getUser().organization;
-			return uwmServices.getService("Group").authorizeUser(oOrg.id, iUserId, iRoleId, bView, bEdit, bDel, bCreate);
+		authorizeGroupUser : function(iOrg, iUserId, iRoleId, bView, bEdit, bDel, bCreate){
+			if(!iOrg) iOrg = uwm.getUser().organizationId;
+			return uwmServices.getService("Group").authorizeUser(iOrg, iUserId, iRoleId, bView, bEdit, bDel, bCreate);
 		},
-		listGroups : function(oOrg, oParent, sType,iStartIndex, iRecordCount){
-			if(!oOrg) oOrg = uwm.getUser().organization;
+		listGroups : function(iOrg, oParent, sType,iStartIndex, iRecordCount){
+			if(!iOrg) iOrg = uwm.getUser().organizationId;
 			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
 			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 			if(!sType) sType = "UNKNOWN";
-			return uwmServices.getService("Group").listInParent(oOrg.id, oParent.id, sType, iStartIndex, iRecordCount);
+			return uwmServices.getService("Group").listInParent(iOrg, oParent.id, sType, iStartIndex, iRecordCount);
 		},
 		listGroupUsers : function(oGroup){
-			var oOrg, iGroupId = 0;
+			var iOrg, iGroupId = 0;
 			if(!oGroup) return null;
-			oOrg = oGroup.organization;
+			iOrg = oGroup.organizationId;
 			iGroupId = oGroup.id;
-			return uwmServices.getService("Group").listUsers(oOrg.id, iGroupId);
+			return uwmServices.getService("Group").listUsers(iOrg, iGroupId);
 		},
 		listGroupAccounts : function(oGroup){
-			var oOrg, iGroupId = 0;
+			var iOrg, iGroupId = 0;
 			if(!oGroup) return null;
-			oOrg = oGroup.organization;
+			iOrg = oGroup.organizationId;
 			iGroupId = oGroup.id;
-			return uwmServices.getService("Group").listAccounts(oOrg.id, iGroupId);
+			return uwmServices.getService("Group").listAccounts(iOrg, iGroupId);
 		},
 		listGroupPersons : function(oGroup){
-			var oOrg, iGroupId = 0;
+			var iOrg, iGroupId = 0;
 			if(!oGroup) return null;
-			oOrg = oGroup.organization;
+			iOrg = oGroup.organizationId;
 			iGroupId = oGroup.id;
-			return uwmServices.getService("Group").listPersons(oOrg.id, iGroupId);
+			return uwmServices.getService("Group").listPersons(iOrg, iGroupId);
 		},
 
 		/*
@@ -648,10 +654,10 @@
 		deleteGroup : function(oRec, vCfg){
 			return uwmServices.getService("Group")["delete" + (oRec.groupType == "DATA" ? "Directory" : "")](oRec, vCfg);
 		},
-		getGroup : function(sName, sType, oParent, oOrg){
-			if(!oOrg) oOrg = uwm.getUser().organization;
+		getGroup : function(sName, sType, oParent, iOrg){
+			if(!iOrg) iOrg = uwm.getUser().organizationId;
 			if(!sType) sType = "UNKNOWN";
-			return uwmServices.getService("Group").readByParentId(oOrg.id, (oParent ? oParent.id : 0), sType,sName);
+			return uwmServices.getService("Group").readByParentId(iOrg, (oParent ? oParent.id : 0), sType,sName);
 		},
 		getGroupByPath : function(sType,sPath){
 			return uwmServices.getService("Group").readByPath(sType,sPath);
@@ -659,10 +665,10 @@
 		getGroupById : function(iId){
 			return uwmServices.getService("Group").readById(iId);
 		},
-		addGroup : function(sName, sType, iParentId, oOrg){
+		addGroup : function(sName, sType, iParentId, iOrg){
 			var o = new org.cote.beans.baseGroupType();
-			if(!oOrg) oOrg = uwm.getUser().organization;
-			o.organization = oOrg;
+			if(!iOrg) iOrg = uwm.getUser().organizationId;
+			o.organizationId = iOrg;
 			o.nameType = "GROUP";
 			o.parentId = iParentId;
 			o.name = sName;
@@ -674,13 +680,13 @@
 			return uwmServices.getService("Group")["update" + (oGroup.groupType == "DATA" ? "Directory" : "")](oGroup);
 		},
 		
-		authorizeDataRole : function(oOrg, iRoleId, iDataId, bView, bEdit, bDel, bCreate){
-			if(!oOrg) oOrg = uwm.getUser().organization;
-			return uwmServices.getService("Data").authorizeRole(oOrg.id, iRoleId, iDataId, bView, bEdit, bDel, bCreate);
+		authorizeDataRole : function(iOrg, iRoleId, iDataId, bView, bEdit, bDel, bCreate){
+			if(!iOrg) iOrg = uwm.getUser().organizationId;
+			return uwmServices.getService("Data").authorizeRole(iOrg, iRoleId, iDataId, bView, bEdit, bDel, bCreate);
 		},
-		authorizeDataUser : function(oOrg, iUserId, iDataId, bView, bEdit, bDel, bCreate){
-			if(!oOrg) oOrg = uwm.getUser().organization;
-			return uwmServices.getService("Data").authorizeUser(oOrg.id, iUserId, iDataId, bView, bEdit, bDel, bCreate);
+		authorizeDataUser : function(iOrg, iUserId, iDataId, bView, bEdit, bDel, bCreate){
+			if(!iOrg) iOrg = uwm.getUser().organizationId;
+			return uwmServices.getService("Data").authorizeUser(iOrg, iUserId, iDataId, bView, bEdit, bDel, bCreate);
 		},
 		clearDataCache : function(){
 			uwmServices.getService("Data").clearCache();
@@ -720,7 +726,7 @@
 			o.name = sName;
 			o.dataBytesStore = uwm.base64Encode(vData);
 			o.blob = true;
-			o.group = null;
+			o.groupPath = null;
 			o.mimeType = null;
 			o.description = null;
 			return uwmServices.getService("Data").addFeedback(o);
@@ -735,7 +741,7 @@
 			o.blob = true;
 			if(oGroup){
 				//delete oGroup.javaClass;
-				o.group = accountManager.getCleanGroup(oGroup);
+				o.groupPath = oGroup;
 			}
 			return uwmServices.getService("Data").add(o, vCfg);
 		},
@@ -743,6 +749,7 @@
 		/// TODO: GroupService is choking on subDirectories due to type mismatch between 'bean' and 'type'
 		/// The 'bean' was for SCA compat, but presently i'm switching back to pure rest compat and skipping the extra work
 		///
+		/*
 		getCleanGroup : function(o){
 			var n = {};
 			n.id = o.id;
@@ -756,6 +763,7 @@
 			return n;
 		
 		},
+		*/
 		/// There is currently a hard coded implication that the group is a DATA group
 		///
 		serviceListInGroup : function(oSvc, sPath, iStartIndex, iRecordCount){
@@ -763,17 +771,17 @@
 			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
 			return oSvc.listInGroup(sPath, iStartIndex, iRecordCount);		
 		},
-		serviceListInOrganization : function(oSvc, oOrg, iStartIndex, iRecordCount){
-			if(!oOrg) oOrg = uwm.getUser().organization;
+		serviceListInOrganization : function(oSvc, iOrg, iStartIndex, iRecordCount){
+			if(!iOrg) iOrg = uwm.getUser().organizationId;
 			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
 			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
-			return oSvc.listInOrganization(oOrg.id, iStartIndex, iRecordCount);		
+			return oSvc.listInOrganization(iOrg, iStartIndex, iRecordCount);		
 		},
-		serviceListInParent : function(oSvc, oOrg, oPar, iStartIndex, iRecordCount){
-			if(!oOrg) oOrg = uwm.getUser().organization;
+		serviceListInParent : function(oSvc, iOrg, oPar, iStartIndex, iRecordCount){
+			if(!iOrg) iOrg = uwm.getUser().organizationId;
 			if(!iStartIndex || iStartIndex < 0) iStartIndex = 0;
 			if(!iRecordCount || iRecordCount < 0) iRecordCount = 0;
-			return oSvc.listInParent(oOrg.id, oPar.id, iStartIndex, iRecordCount);		
+			return oSvc.listInParent(iOrg, oPar.id, iStartIndex, iRecordCount);		
 		}
 	}
 })();

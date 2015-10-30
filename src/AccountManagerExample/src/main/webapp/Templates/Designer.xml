@@ -387,21 +387,22 @@
 			this.getProperties().lastPickerPath = w.getPath();
 			this.getFocus();
 			d.focus();
-			var oG = o.group;
+			//var oG = o.group;
 			var w = 250;
 			var h = 250;
+			/*
 			if(o.group.path == null || o.group.path.length == 0){
 				oG = accountManager.getGroupById(o.group.id);
 			}
-			
+			*/
 			var oA = d.document.createElement("a");
 			var oI = d.document.createElement("img");
 			oA.appendChild(oI);
-			var sOrg = accountManager.getOrganizationDotPath(oG.organization);
-			var sThumbUrl = "/AccountManager/Thumbnail/" + sOrg + "/Data" + oG.path + "/" + o.name + "/" + w + "x" + h;
+			var sOrg = accountManager.getOrganizationDotPath(oG.organizationId);
+			var sThumbUrl = "/AccountManager/Thumbnail/" + sOrg + "/Data" + o.groupPath + "/" + o.name + "/" + w + "x" + h;
 			//Hemi.log(sThumbUrl);
 			
-			var sUrl = "/AccountManager/Media/" + sOrg + "/Data" + oG.path + "/" + o.name;
+			var sUrl = "/AccountManager/Media/" + sOrg + "/Data" + o.groupPath + "/" + o.name;
 			var sIco = 0;
 			if(!o.mimeType.match(/^image/)){
 				/*
@@ -418,7 +419,7 @@
 			}
 			else{
 				oI.setAttribute("src",sThumbUrl);
-				//sIco = "/AccountManager/Thumbnail/" + sOrg + "/Data" + oG.path + "/" + o.name + "/" + w + "x" + h;
+				//sIco = "/AccountManager/Thumbnail/" + sOrg + "/Data" + o.groupPath + "/" + o.name + "/" + w + "x" + h;
 				/// null the dimensions because the end ratio isn't known yet
 				//w = 0;
 				//h = 0;
@@ -434,7 +435,7 @@
 			this.getProperties().linkNode = oA;
 			/*
 			var sThumb = "/" + w + "x" + h;
-			var sUrl = "/AccountManager/Thumbnail/Public/Data" + oG.path + "/" + o.name;
+			var sUrl = "/AccountManager/Thumbnail/Public/Data" + o.groupPath + "/" + o.name;
 			var sHtml = "<a href =\"" + sUrl + "\" title = \"" + o.name + "\" target = \"blank\"><img src = \"" + sUrl + sThumb + "\" border = \"0\" title =\"" + o.name + "\" /></a>";
 			d.document.execCommand("innerHTML",false,sHtml);
 			*/
@@ -484,8 +485,8 @@
 
 			/// TODO: Don't use the different bean class for the AM group object
 			///
-			o.group = accountManager.getCleanGroup(oGroup);
-
+			//o.group = accountManager.getCleanGroup(oGroup);
+			o.groupPath = oGroup.path;
 			
 			if(this.prepareSave && !this.prepareSave(o)){
 				Hemi.logError("Prepare save failed for type " + this.getProperties().typeName);
@@ -552,7 +553,7 @@
 				/// note - an old design artifact is the add operations want the atomic values, not the object, so because prep save converts, this decodes for the old api style to re-encode
 				/// to fix - all of the add operations need to be updated
 				///
-				return accountManager.addData(o.name, o.description, o.mimeType, uwm.base64Decode(o.dataBytesStore), o.group);
+				return accountManager.addData(o.name, o.description, o.mimeType, uwm.base64Decode(o.dataBytesStore), o.groupPath);
 			}
 			return 0;
 		},
@@ -562,7 +563,7 @@
 			var o = this.getBean("rocketType");
 			Hemi.log("Post process " + o.name);
 			var oApi = window[uwm.getApi(this.getProperties().typeName)];
-			var n = oApi["get" + this.getProperties().typeName](o.name,o.group);
+			var n = oApi["get" + this.getProperties().typeName](o.name,accountManager.getGroupByPath("DATA",o.groupPath));
 			if(n != null){
 				this.clearBean("rocketType");
 				this.setBean(n,"rocketType");

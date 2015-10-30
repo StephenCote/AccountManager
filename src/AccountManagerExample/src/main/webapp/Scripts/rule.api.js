@@ -21,13 +21,13 @@
 			o.decisionAge = iA;
 			o.condition = sC;
 			o.name = sName;
-
+			o.nameType = "POLICY";
 			o.createdDate = dC;
 			o.modifiedDate = dM;
 			o.expiresDate = dE;
 			o.rules = aR;
 			if(oGroup){
-				o.group = accountManager.getCleanGroup(oGroup);
+				o.groupPath = oGroup;
 			}
 			return uwmServices.getService("Policy").add(o);
 		},
@@ -58,6 +58,7 @@
 			var o = new org.cote.beans.ruleType();
 			
 			o.name = sName;
+			o.nameType = "RULE";
 			o.description = sDesc;
 			o.score = iS;
 			o.logicalOrder = iO;
@@ -67,7 +68,7 @@
 			if(aR) o.rules = aR;
 			
 			if(oGroup){
-				o.group = accountManager.getCleanGroup(oGroup);
+				o.groupPath = oGroup;
 			}
 			return uwmServices.getService("Rule").add(o);
 		},
@@ -99,6 +100,7 @@
 			
 			o.name = sName;
 			o.description = sDesc;
+			o.nameType = "PATTERN";
 			o.score = iS;
 			o.logicalOrder = iO;
 			if(sFact) o.factUrn = sFact;
@@ -106,7 +108,7 @@
 			o.patternType = (sType ? sType : "EXPRESSION");
 			o.comparator = (sComp ? sComp : "EQUALS");
 			if(oGroup){
-				o.group = accountManager.getCleanGroup(oGroup);
+				o.groupPath = oGroup;
 			}
 			return uwmServices.getService("Pattern").add(o);
 		},
@@ -137,6 +139,7 @@
 			var o = new org.cote.beans.factType();
 			
 			o.name = sName;
+			o.nameType = "FACT";
 			o.description = sDesc;
 			o.sourceDataType = sDType;
 			o.sourceType = sData;
@@ -149,7 +152,7 @@
 			o.factReference = null;
 
 			if(oGroup){
-				o.group = accountManager.getCleanGroup(oGroup);
+				o.groupPath = oGroup;
 			}
 			return uwmServices.getService("Fact").add(o);
 		},
@@ -176,12 +179,13 @@
 		addOperation : function(sName, sDesc, iScore, sType, sOp, oGroup){
 			var o = new org.cote.beans.operationType();
 			o.name = sName;
+			o.nameType = "OPERATION";
 			o.description = sDesc;
 			o.operationType = sType;
 			o.score = iScore;
 			o.operation = sOp;
 			if(oGroup){
-				o.group = accountManager.getCleanGroup(oGroup);
+				o.groupPath = oGroup;
 			}
 			return uwmServices.getService("Operation").add(o);
 		},
@@ -207,6 +211,7 @@
 		addFunction : function(sName, sDesc, sType, iLog, iSco, sUrl,sUrn, oGroup){
 			var o = new org.cote.beans.operationType();
 			o.name = sName;
+			o.nameType = "FUNCTION";
 			o.description = sDesc;
 			o.functionType = sType;
 			o.logicalOrder = iLog;
@@ -214,7 +219,7 @@
 			o.sourceUrl = sUrl;
 			o.sourceUrn = sUrn;
 			if(oGroup){
-				o.group = accountManager.getCleanGroup(oGroup);
+				o.groupPath = oGroup;
 			}
 			return uwmServices.getService("Function").add(o);
 		},

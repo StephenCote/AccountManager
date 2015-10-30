@@ -77,10 +77,12 @@
 			_p.waitingCount = aF.length;
 			_p.currentCount = 0;
 			this.GetElementByRID("uploadprogress").max = _p.waitingCount;
-			
+			var sOrg = accountManager.getOrganizationPath();
 			this.GetElementByRID("uploadprogress").value = 0;
 		    for (var i = 0; i < aF.length; i++) {
 		    	var formData = new FormData();
+		    	formData.append("organizationPath",sOrg);
+		    	formData.append("groupPath",oGroup.path);
 		    	formData.append("groupId",oGroup.id);
 		    	formData.append("name",aF[i].name);
 		    	this.getObjects().files.push(aF[i].name);

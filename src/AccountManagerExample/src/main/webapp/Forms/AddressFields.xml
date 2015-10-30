@@ -87,7 +87,7 @@
 		},
 		addType : function(o){
 			Hemi.log("Add address type: " + o.name );
-			o.group = accountManager.getCleanGroup(o.group);
+			//o.group = accountManager.getCleanGroup(o.group);
 			return uwmServices.getService("Address").add(o);
 		},
 		prepareSave : function(o){

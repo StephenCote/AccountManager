@@ -104,6 +104,7 @@
 			this.GetElementByRID("endTime").className = "rocket-text";
 			this.GetElementByRID("name").className = "rocket-text";
 			this.setStatus("");
+			// o.organizationPath = accountManager.getOrganizationPath();
 			if(!this.ValidateForPattern("name","not-empty")){
 				this.GetElementByRID("name").className = "rocket-text rocket-text-error";
 				this.setStatus("Name cannot be empty");
@@ -111,6 +112,7 @@
 			}
 			if(!o.nameType || (!o.nameType.match(/^GROUP$/) && !o.nameType.match(/^PERMISSION$/) && !o.nameType.match(/^ROLE$/) && !o.nameType.match(/^USER$/))){
 				var sPath = this.getPath();
+				/*
 				var oGroup = accountManager.getCreatePath("DATA",sPath);
 				if(!oGroup || oGroup == null){
 					this.GetElementByRID("path").className = "rocket-text rocket-text-error";
@@ -121,6 +123,12 @@
 				/// TODO: Don't use the different bean class for the AM group object
 				///
 				o.group = accountManager.getCleanGroup(oGroup);
+				*/
+				var oG = accountManager.getCreatePath("DATA",sPath);
+				o.groupPath = (oG ? oG.path : sPath);
+			}
+			else if(o.nameType.match(/^PERMISSION$/) || o.nameType.match(/^ROLE$/)){
+				o.parentPath = this.getPath();
 			}
 			
 			if(this.prepareSave && !this.prepareSave(o)){
@@ -169,8 +177,15 @@
 			var oApi = window[uwm.getApi(this.getProperties().typeName)];
 			if(o.nameType && o.nameType.match(/^group$/gi)) n = accountManager.getGroupByPath(o.groupType,this.getPath() + "/" + o.name);
 			else if(this.provideItem) n = this.provideItem(this.getProperties().typeName,o);
+			else if(o.nameType && o.nameType.match(/^(permission|role)$/gi)){
+				//n = oApi["get" + this.getProperties().typeName](o.name,(o.nameType.match(/^permission$/gi)?o.permissionType:o.roleType),o.parentId);
+				n = oApi["get" + this.getProperties().typeName](o.name,"UNKNOWN",o.parentId);
+			}
+			
 			else if(o.id) n = oApi["get" + this.getProperties().typeName + "ById"](o.id);
-			else n = oApi["get" + this.getProperties().typeName](o.name,o.group);
+			else{
+				n = oApi["get" + this.getProperties().typeName](o.name,accountManager.getGroupByPath("DATA",o.groupPath));
+			}
 			if(n != null){
 				this.clearBean("rocketType");
 				this.setBean(n,"rocketType");

@@ -5,11 +5,13 @@
                version="3.0">
   <display-name>AccountManagerExample</display-name>
 
-<session-config>
- <session-timeout>30</session-timeout>
-  <cookie-config>
-    <path>/</path>
-   </cookie-config>
+  <session-config>
+    <session-timeout>30</session-timeout>
+    <cookie-config>
+      <path>/</path>
+    </cookie-config>
+
+    <tracking-mode>COOKIE</tracking-mode>
 </session-config>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

@@ -22,7 +22,7 @@
 		addType : function(o){
 			Hemi.log("Add tag type: " + o.name );
 			var b = false;
-			o.group = tagManager.getCleanGroup(o.group);
+			//o.group = tagManager.getCleanGroup(o.group);
 			return uwmServices.getService("Tag").add(o);
 		},
 		prepareSave : function(o){

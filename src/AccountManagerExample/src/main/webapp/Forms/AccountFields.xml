@@ -42,7 +42,7 @@
 		addType : function(o){
 			Hemi.log("Add account type: " + o.name );
 			var b = false;
-			o.group = accountManager.getCleanGroup(o.group);
+			//o.group = accountManager.getCleanGroup(o.group);
 			return uwmServices.getService("Account").add(o);
 		},
 		prepareSave : function(o){

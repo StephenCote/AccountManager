@@ -81,7 +81,7 @@
 					var icoHeight = oPanel.getProperties().thumbHeight;//(oShape.icoType == "IMG" ?  o.imgThumbHeight : properties.dirThumbHeight);
 					this.logDebug("Shape: " + oShape.x + "," + oShape.y + " " + oShape.referenceName + " " + oShape.panelId + " " + (oPanel ? 'Panel' : 'No Panel') + " " + icoHeight);
 	
-					if(oShape.referenceName && !oShape.noLabel) oCanvas.Text(scaleText(oShape.referenceName), oShape.x, oShape.y + icoHeight, "#000000","#000000","8pt","Arial");
+					if(oShape.referenceName && !oShape.noLabel) oCanvas.Text(scaleText(oShape.referenceName), oShape.x, oShape.y + icoHeight + 10, "#000000","#000000","8pt","Arial");
 					oCanvas.setTemporaryContextConfig(oLast);
 				}
 			},
@@ -160,7 +160,7 @@
 					copyShapeProperties(oShape, oX);
 	
 					var icoHeight = oPanel.getProperties().thumbHeight;//(oShape.icoType == "IMG" ?  properties.imgThumbHeight : properties.dirThumbHeight);
-					if(oShape.referenceName && !oShape.noLabel) oCanvas.Text(scaleText(oShape.referenceName), oShape.x, oShape.y + icoHeight, "#000000","#000000","8pt","Arial");
+					if(oShape.referenceName && !oShape.noLabel) oCanvas.Text(scaleText(oShape.referenceName), oShape.x, oShape.y + icoHeight + 10, "#000000","#000000","8pt","Arial");
 					oCanvas.setTemporaryContextConfig(oLast);
 					
 					//if(oPanel.getObjects().menu) this.paintMenu(oPanel, oCanvas, oShape, oPanel.getObjects().menu);
@@ -282,7 +282,7 @@
 						);
 						oM.selectable = 0;
 						var icoHeight = oPanel.getProperties().thumbHeight;//(oCurrent.icoType == "IMG" ?  properties.imgThumbHeight : properties.dirThumbHeight);
-						if(oCurrent.referenceName && !oCurrent.noLabel) oCanvas.Text(scaleText(oCurrent.referenceName), oCanvas.getProperties().MouseTrackLeft - oCanvas.getProperties().MouseOffsetX, oCanvas.getProperties().MouseTrackTop - oCanvas.getProperties().MouseOffsetY + icoHeight, "#000000","#000000","8pt","Arial");
+						if(oCurrent.referenceName && !oCurrent.noLabel) oCanvas.Text(scaleText(oCurrent.referenceName), oCanvas.getProperties().MouseTrackLeft - oCanvas.getProperties().MouseOffsetX, oCanvas.getProperties().MouseTrackTop - oCanvas.getProperties().MouseOffsetY + icoHeight + 10, "#000000","#000000","8pt","Arial");
 						
 						//if(oPanel.getObjects().menu) this.paintMenu(oPanel, oCanvas, oCurrent, oPanel.getObjects().menu);
 						
@@ -294,7 +294,7 @@
 					if(oDropShape.referenceName && !oDropShape.noLabel){
 						var oPanel = Hemi.registry.service.getObject(oDropShape.panelId);
 						var icoHeight = oPanel.getProperties().thumbHeight;//(oDropShape.icoType == "IMG" ?  properties.imgThumbHeight : properties.dirThumbHeight);
-						oCanvas.Text(scaleText(oDropShape.referenceName), oDropShape.x, oDropShape.y + icoHeight, "#000000","#000000","8pt","Arial");
+						oCanvas.Text(scaleText(oDropShape.referenceName), oDropShape.x, oDropShape.y + icoHeight + 10, "#000000","#000000","8pt","Arial");
 					}
 					oM.selectable = 0;
 				}
@@ -907,7 +907,7 @@
 				oShape.referenceType = "OBJECT";
 				oShape.matteId = oR.id;
 				oShape.noLabel = 1;
-				oShape.groupId = o.group.id;
+				oShape.groupId = o.groupId;
 				oShape.referenceIndex = oR.referenceIndex;
 				oShape.panelId = mP.getObjectId();
 				oShape.contentPanelId = oPanel.getObjectId();
@@ -926,7 +926,7 @@
 				if(galleryView.getProperties().tagMode){
 					var aT = accountManager.listTagsFor(o);
 					for(var i = 0; i < aT.length;i++){
-						oG.Text(aT[i].name, 5, 5 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
+						oG.Text(aT[i].name, 5, 10 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
 					}
 				}
 			}
@@ -1182,7 +1182,7 @@
 		function paintItem(p,o,i,b){
 			if(!o) return;
 			
-			var _s = p.getProperties(),_o=p.getObjects(),oP, g = (o.nameType == 'GROUP' ? o : o.group), _no = p.getObjects().view.panel("nav").getObjects();
+			var _s = p.getProperties(),_o=p.getObjects(),oP, g = (o.nameType == 'GROUP' ? o : accountManager.getGroupById(o.groupId)), _no = p.getObjects().view.panel("nav").getObjects();
 			
 			//ctl.log("Paint item " + o.name + " in " + g.path);
 			
@@ -1278,7 +1278,7 @@
 				oShape.drag = bDrag;
 				if(sLbl) oShape.referenceName = sLbl;
 				
-				if(bText) oG.Text(scaleText(sLbl), iX, iY + _s.thumbHeight, "#000000","#000000","8pt","Arial");
+				if(bText) oG.Text(scaleText(sLbl), iX, iY + _s.thumbHeight + 10, "#000000","#000000","8pt","Arial");
 				//oG.Rasterize();
 				oPanel.getShapes().push(oShape.id);
 				oPanel.getProperties().rasterCount++;
@@ -1413,7 +1413,8 @@
 		function reparentObject(s, t){
 			ctl.log("Reparent " + s.name + " (" + s.nameType + ") to " + t.name + " (" + t.nameType + ")");
 			if(s.nameType.match(/^DATA/)){
-				s.group = t;
+				s.groupId = t.id;
+				s.groupPath = t.path;
 				s.detailsOnly = true;
 				delete s.dataBytesStore;
 			}
