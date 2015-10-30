@@ -123,8 +123,8 @@ CREATE TABLE groupparticipation (
 -- CREATE UNIQUE INDEX groupparticipation_id ON groupparticipation(Id);
 --CREATE INDEX groupparticipation_parttype ON groupparticipation(ParticipantId,ParticipantType,AffectId);
 CREATE INDEX groupparticipation_pid ON groupparticipation(ParticipationId);
-CREATE INDEX groupparticipant_pid ON groupparticipation(ParticipantId);
-CREATE INDEX groupptype_pid ON groupparticipation(ParticipantType);
+--CREATE INDEX groupparticipant_pid ON groupparticipation(ParticipantId);
+--CREATE INDEX groupptype_pid ON groupparticipation(ParticipantType);
 --CREATE UNIQUE INDEX IdxgroupparticipationCbo on groupparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
 
 
@@ -341,7 +341,7 @@ create table contacts (
 	Preferred boolean not null default false,
 	ContactType varchar(16) not null,
 	LocationType varchar(16) not null,
-	ContactValue varchar(255),
+	ContactValue text,
 	OwnerId bigint not null,
 	OrganizationId bigint not null default 0,
 	Urn text not null,
@@ -365,6 +365,7 @@ create table contactinformation (
 );
 --CREATE UNIQUE INDEX contactinformation_acct_id ON contactinformation(Id);
 CREATE UNIQUE INDEX contactinformation_reftype ON contactinformation(ReferenceId,ContactInformationType,OrganizationId);
+CREATE INDEX contactinformation_type ON contactinformation(ContactInformationType);
 
 DROP TABLE IF EXISTS contactinformationparticipation CASCADE;
 DROP SEQUENCE IF EXISTS contactinformationparticipation_id_seq;
@@ -592,7 +593,7 @@ CREATE TABLE spool (
 	OrganizationId bigint not null default 0
 );
 CREATE UNIQUE INDEX spool_spool_guid ON spool(Guid);
-CREATE INDEX spool_spool_expiry ON spool(SpoolExpires,SpoolExpiration);
+CREATE INDEX spool_spool_expiry ON spool(Expires,ExpirationDate);
 CREATE INDEX spool_spool_group ON spool(GroupId,OrganizationId);
  CREATE INDEX spool_spool_bucknametype ON spool(SpoolBucketName,SpoolBucketType,OrganizationId);
 
@@ -1154,6 +1155,38 @@ CREATE OR REPLACE FUNCTION roles_to_leaf(root_id BIGINT,organizationid BIGINT)
         $$ LANGUAGE 'sql';
 
 
+CREATE OR REPLACE FUNCTION role_membership(IN root_id bigint)
+	RETURNS TABLE(pid bigint,branchid bigint, roleid bigint, parentid bigint, referencetype text,referenceid bigint,organizationid bigint)
+	AS $$
+	WITH RECURSIVE role_membership(pid,branchid,roleid, parentid, referencetype,referenceid,organizationid) AS (
+	   SELECT CAST(0 as bigint),$1 as branchid, R.id as roleid, R.parentid, CAST('' as text), CAST(0 as bigint),R.organizationid
+	      FROM roles R
+	      WHERE R.id = $1
+	   UNION ALL
+	   SELECT P.id as pid,$1 as branchid, P.participantid, P.participationid, P.participanttype as referencetype,P.participantid as referenceid,P.organizationid
+	      FROM role_membership RT, roleparticipation P
+	      WHERE RT.roleid = P.participationid
+	      --and R.participanttype = 'ROLE'
+	)
+	select * from role_membership;
+	$$ LANGUAGE 'sql';
+
+CREATE OR REPLACE FUNCTION group_membership(IN root_id bigint)
+	RETURNS TABLE(pid bigint,branchid bigint, groupid bigint, parentid bigint, referencetype text,referenceid bigint, organizationid bigint)
+	AS $$
+	WITH RECURSIVE group_membership(pid,branchid,groupid, parentid, referencetype,referenceid, organizationid) AS (
+	   SELECT CAST(0 as bigint),$1 as branchid, G.id as groupid, G.parentid, CAST('' as text), CAST(0 as bigint), G.organizationid
+	      FROM groups G
+	      WHERE G.id = $1
+	   UNION ALL
+	   SELECT P.id as pid,$1 as branchid, P.participantid, P.participationid, P.participanttype as referencetype,P.participantid as referenceid, P.organizationid
+	      FROM group_membership RT, groupparticipation P
+	      WHERE RT.groupid = P.participationid
+	      --and P.participanttype = 'GROUP'
+	)
+	select * from group_membership;
+	$$ LANGUAGE 'sql';
+
 create or replace view effectiveDataRoles as
 WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
@@ -1501,6 +1534,14 @@ create or replace view roleRights as
 	FROM effectiveRoleAccountRoleRights GRR
 ) as AM;
 
+create or replace view orphanCredentials as
+select id from credential
+where
+organizationid NOT IN(select id from organizations)
+OR referencetype = 'USER' AND referenceid NOT IN (select id from users)
+OR referencetype = 'GROUP' AND referenceid NOT IN (select id from groups)
+OR referencetype = 'DATA' AND referenceid NOT IN (select id from data)
+;
 
 
 create or replace view orphanPersonParticipations as
@@ -1664,6 +1705,8 @@ CREATE OR REPLACE FUNCTION cleanup_orphans()
 	delete from groupparticipation where id in (select id from orphanGroupParticipations);
 	delete from personparticipation where id in (select id from orphanPersonParticipations);
 
+	delete from credential where id in (select id from orphanCredentials);
+
         delete from attribute where referencetype = 'GROUP' and referenceid not in (select id from groups);
 	delete from attribute where referencetype = 'PERMISSION' and referenceid not in (select id from permissions);
         delete from attribute where referencetype = 'PERSON' and referenceid not in (select id from persons);
@@ -1727,7 +1770,7 @@ inner join users U on U.id = PT.participantId
 ;
 
 create or replace view personAccounts as
-select P.id,P.ownerid,P.name,P.parentid,P.groupid,P.organizationid,P.title,P.prefix
+select P.id,P.ownerid,P.name,P.urn,P.parentid,P.groupid,P.organizationid,P.title,P.prefix
 ,P.suffix,P.description,P.firstname,P.middlename,P.lastname,P.alias,P.birthdate,P.gender,
 U.id as accountid,U.name as accountname
 from Persons P
@@ -1743,7 +1786,7 @@ G.id as groupId,G.urn as groupUrn,R.id as roleId, R.urn as roleUrn,
 CASE WHEN A2.id > 0 THEN A2.id ELSE A.id END as accountId,
 CASE WHEN A2.id > 0 THEN A2.urn ELSE A.urn END as accountUrn,
 CASE WHEN P3.id > 0 THEN P3.id ELSE P2.id END as personId,P2.urn as personUrn,
-GR.referenceId,GR.referenceType,
+GR.referenceId,GR.referenceType,GR.affectType,
 P.id as permissionId,P.urn as permissionUrn,GR.organizationId 
 FROM groupRights GR
 JOIN permissions P ON P.id = GR.affectId
@@ -1764,19 +1807,20 @@ CREATE TABLE groupEntitlementsCache (
 	PermissionUrn text not null,
 	PersonUrn text,
 	AccountUrn text,
+	RoleUrn text,
 	OrganizationId bigint not null default 0
 );
-CREATE UNIQUE INDEX groupentitlementscache_idx ON groupEntitlementsCache(GroupUrn,PermissionUrn,PersonUrn,AccountUrn);
-CREATE INDEX groupentitlementscache_groupurn ON groupEntitlementsCache(GroupUrn);
-CREATE INDEX groupentitlementscache_permissionurn ON groupEntitlementsCache(PermissionUrn);
-CREATE INDEX groupentitlementscache_personurn ON groupEntitlementsCache(PersonUrn);
-CREATE INDEX groupentitlementscache_accounturn ON groupEntitlementsCache(AccountUrn);
+CREATE UNIQUE INDEX groupentitlementscache_idx ON groupEntitlementsCache(GroupUrn,PermissionUrn,PersonUrn,AccountUrn,RoleUrn);
+--CREATE INDEX groupentitlementscache_groupurn ON groupEntitlementsCache(GroupUrn);
+--CREATE INDEX groupentitlementscache_permissionurn ON groupEntitlementsCache(PermissionUrn);
+--CREATE INDEX groupentitlementscache_personurn ON groupEntitlementsCache(PersonUrn);
+--CREATE INDEX groupentitlementscache_accounturn ON groupEntitlementsCache(AccountUrn);
 
 CREATE OR REPLACE FUNCTION cache_group_entitlements() 
         RETURNS BOOLEAN
         AS $$
 	truncate groupEntitlementsCache;
-	insert into groupEntitlementsCache (GroupUrn,PermissionUrn,PersonUrn,AccountUrn,OrganizationId) select distinct GroupUrn,PermissionUrn,PersonUrn,AccountUrn,OrganizationId from groupEntitlements;
+	insert into groupEntitlementsCache (GroupUrn,PermissionUrn,PersonUrn,AccountUrn,RoleUrn,OrganizationId) select distinct GroupUrn,PermissionUrn,PersonUrn,AccountUrn,RoleUrn,OrganizationId from groupEntitlements;
 
 	SELECT true;
         $$ LANGUAGE 'sql';
@@ -1788,7 +1832,7 @@ CASE WHEN A2.id > 0 THEN A2.id ELSE A.id END as accountId,
 CASE WHEN A2.id > 0 THEN A2.urn ELSE A.urn END as accountUrn,
 CASE WHEN P3.id > 0 THEN P3.id ELSE P2.id END as personId,P2.urn as personUrn,
 GR.referenceId,GR.referenceType,
-P.id as permissionId,P.urn as permissionUrn,GR.organizationId 
+P.id as permissionId,P.urn as permissionUrn,GR.affectType,GR.organizationId 
 FROM dataRights GR
 JOIN permissions P ON P.id = GR.affectId
 JOIN data G on G.id = GR.dataId
@@ -1807,21 +1851,23 @@ DROP TABLE IF EXISTS dataEntitlementsCache CASCADE;
 CREATE TABLE dataEntitlementsCache (
 	DataUrn text not null,
 	PermissionUrn text not null,
+	
 	PersonUrn text,
 	AccountUrn text,
+        RoleUrn text,
 	OrganizationId bigint not null default 0
 );
 CREATE UNIQUE INDEX dataentitlementscache_idx ON dataEntitlementsCache(DataUrn,PermissionUrn,PersonUrn,AccountUrn);
-CREATE INDEX dataentitlementscache_groupurn ON dataEntitlementsCache(DataUrn);
-CREATE INDEX dataentitlementscache_permissionurn ON dataEntitlementsCache(PermissionUrn);
-CREATE INDEX dataentitlementscache_personurn ON dataEntitlementsCache(PersonUrn);
-CREATE INDEX dataentitlementscache_accounturn ON dataEntitlementsCache(AccountUrn);
+-- CREATE INDEX dataentitlementscache_groupurn ON dataEntitlementsCache(DataUrn);
+-- CREATE INDEX dataentitlementscache_permissionurn ON dataEntitlementsCache(PermissionUrn);
+-- CREATE INDEX dataentitlementscache_personurn ON dataEntitlementsCache(PersonUrn);
+-- CREATE INDEX dataentitlementscache_accounturn ON dataEntitlementsCache(AccountUrn);
 
 CREATE OR REPLACE FUNCTION cache_data_entitlements() 
         RETURNS BOOLEAN
         AS $$
 	truncate dataEntitlementsCache;
-	insert into dataEntitlementsCache (DataUrn,PermissionUrn,PersonUrn,AccountUrn,OrganizationId) select distinct DataUrn,PermissionUrn,PersonUrn,AccountUrn,OrganizationId from dataEntitlements;
+	insert into dataEntitlementsCache (DataUrn,PermissionUrn,PersonUrn,AccountUrn,RoleUrn,OrganizationId) select distinct DataUrn,PermissionUrn,PersonUrn,AccountUrn,RoleUrn,OrganizationId from dataEntitlements;
 	SELECT true;
         $$ LANGUAGE 'sql';
 
@@ -1852,17 +1898,21 @@ select roleid,affectid,affecttype,personid as referenceid,'PERSON' as referencet
 ;
 
 create or replace view accountEntitlements as
-select 'GROUP' as referenceType, groupid as referenceid,roleid,roleurn,accountid,accounturn,permissionid,permissionurn,organizationid from groupEntitlements where referencetype = 'ACCOUNT' OR (referencetype = 'GROUP' AND accountid > 0)
+select 'GROUP' as referenceType, groupid as referenceid,roleid,roleurn,accountid,accounturn,permissionid,permissionurn,affectType,organizationid from groupEntitlements where referencetype = 'ACCOUNT' OR (referencetype = 'GROUP' AND accountid > 0)
 union all
-select 'DATA' as referenceType,dataid as referenceid,roleid,roleurn,accountid,accounturn,permissionid,permissionurn,organizationid from dataEntitlements where referencetype = 'ACCOUNT'
+select 'DATA' as referenceType,dataid as referenceid,roleid,roleurn,accountid,accounturn,permissionid,permissionurn,affectType,organizationid from dataEntitlements where referencetype = 'ACCOUNT'
 ;
 
 create or replace view personEntitlements as
-select 'GROUP' as referenceType, groupid as referenceid,roleid,roleurn,personid,personurn,permissionid,permissionurn,organizationid from groupEntitlements where referencetype = 'PERSON'
+select text('GROUP') as referenceType, groupid as referenceid,roleid,roleurn,personid,personurn,permissionid,permissionurn,organizationid from groupEntitlements where referencetype = 'PERSON'
 union all
 select 'DATA' as referenceType,dataid as referenceid,roleid,roleurn,personid,personurn,permissionid,permissionurn,organizationid from dataEntitlements where referencetype = 'PERSON'
 ;
 
+create or replace view personAccountEntitlements as
+select text('ACCOUNT') as referencetype, PA.accountid as referenceid,AE.roleid,AE.roleurn,PA.id as personid, PA.urn as personurn,AE.permissionid,AE.permissionurn,PA.organizationid from personAccounts PA
+inner join accountEntitlements AE on AE.accountid = PA.accountid
+;
 
 -- select ((EXTRACT(EPOCH FROM AuditResultDate)*1000) - (EXTRACT(EPOCH FROM AuditDate)) * 1000) as PerfInMS from Audit order by AuditResultDate DESC limit 100
 
