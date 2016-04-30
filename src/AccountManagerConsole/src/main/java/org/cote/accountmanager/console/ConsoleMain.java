@@ -87,6 +87,7 @@ public class ConsoleMain {
 		
 		PropertyConfigurator.configure(getLogProps());
 		logger.info("AccountManagerConsole");
+		logger.info("\tNote: Slow startup time due in part to cryptographic libraries being loaded and initialized");
 		
 		Options options = new Options();
 		options.addOption("organization",true,"AccountManager Organization Path");
@@ -123,11 +124,12 @@ public class ConsoleMain {
 		// options.addOption("test",false,"Run Tests");
 		CommandLineParser parser = new PosixParser();
 		try {
-			
+			logger.debug("Setting up connection factory");
 			setupConnectionFactory(props);
 			
 			CommandLine cmd = parser.parse( options, args);
 			if(cmd.hasOption("patch") && cmd.hasOption("organization")){
+				logger.debug("Applying patch ...");
 				try {
 					OrganizationType org = Factories.getOrganizationFactory().findOrganization(cmd.getOptionValue("organization"));
 					if(org != null){
@@ -155,7 +157,7 @@ public class ConsoleMain {
 							if(cred == null){
 								if(users.get(i).getName().equals(Factories.getDocumentControlName())){
 									logger.info("Resetting Document Control credential");
-									CredentialService.newHashedPasswordCredential(users.get(i), users.get(i), UUID.randomUUID().toString(), true);
+									CredentialService.newHashedPasswordCredential(users.get(i), users.get(i), UUID.randomUUID().toString(), true,false);
 								}
 								else{
 									logger.warn("Missing primary credential for " + users.get(i).getName() + " (#" + users.get(i).getId() + ")");
@@ -205,12 +207,14 @@ public class ConsoleMain {
 				ApiConfigAction.configureApi(cmd.getOptionValue("organization"),cmd.getOptionValue("adminPassword"),cmd.getOptionValue("file"),cmd.getOptionValue("identity"),cmd.getOptionValue("credential"));
 			}
 			else if(cmd.hasOption("organization") && cmd.hasOption("username") && cmd.hasOption("password")){
-				
+				logger.debug("Authenticating user");
 				try{
+					logger.debug("Finding organization");
 					OrganizationType org = Factories.getOrganizationFactory().findOrganization(cmd.getOptionValue("organization"));
 					if(org != null){
 						String password = cmd.getOptionValue("password");
 						if(cmd.hasOption("reset")){
+							logger.debug("Resetting credential");
 							if(enableUnauthenticatedResets == false){
 								logger.info("Unauthenticated password reset capability is disabled");
 							}
@@ -219,7 +223,7 @@ public class ConsoleMain {
 								if(user != null){
 									if(password != null && password.length() > 5){
 										logger.info("Creating new primary credential");
-										CredentialType cred = CredentialService.newHashedPasswordCredential(user, user, password, true);
+										CredentialType cred = CredentialService.newHashedPasswordCredential(user, user, password, true, false);
 									}
 									else{
 										logger.warn("Invalid password");
@@ -231,9 +235,12 @@ public class ConsoleMain {
 							}
 						}
 						else{
+							logger.debug("Logging in");
 							UserType user = SessionSecurity.login(cmd.getOptionValue("username"),CredentialEnumType.HASHED_PASSWORD, password, org.getId());
 							if(user != null){
+								logger.debug("Processing action");
 								processAction(user,cmd);
+								logger.debug("Logging out");
 								SessionSecurity.logout(user);
 							}
 							else{
