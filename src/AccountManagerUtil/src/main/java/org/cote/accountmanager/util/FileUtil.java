@@ -34,9 +34,11 @@ import java.io.UnsupportedEncodingException;
 
 public class FileUtil {
 	public static String getFileAsString(String path){
-		
+		return getFileAsString(new File(path));
+	}
+	public static String getFileAsString(File f){		
 		String out_str = null;
-		byte[] data = getFile(path);
+		byte[] data = getFile(f);
 		try {
 			out_str = new String(data,"UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -46,12 +48,15 @@ public class FileUtil {
 		return out_str;
 	}
 	public static byte[] getFile(String path){
+		return getFile(new File(path));
+	}
+	public static byte[] getFile(File f){
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		File f = new File(path);
+
 		if(f.exists() == false) return new byte[0];
 		
 		try{
-			FileInputStream fis = new FileInputStream(path);
+			FileInputStream fis = new FileInputStream(f);
 			copyStream(fis,baos);
 			fis.close();
 		}
