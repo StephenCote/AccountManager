@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.util;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -125,6 +126,18 @@ public class SecurityUtil {
 	public static SecurityBean getPasswordBean(String password, byte[] salt){
 		SecurityBean bean = new SecurityBean();
 		SecurityFactory.getSecurityFactory().setPassKey(bean, password, salt,false);
+		//SecurityBean bean = new SecurityBean();
+		//byte[] passKey = SecurityUtil.getPassphraseBytes(password);
+		//SecurityFactory.getSecurityFactory().setPassKey(bean, password, false);
+		/*
+		SecurityBean bean=null;
+		try {
+			bean = SecurityFactory.getSecurityFactory().createSecurityBean(getDigest(password.getBytes("UTF-8"),salt), false);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
 		return bean;
 	}
 	public static byte[] encipher(byte[] data, String password, byte[] salt){
