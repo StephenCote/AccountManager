@@ -20,7 +20,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>3.5.1</version>
 				<configuration>
         <meminitial>512m</meminitial>
         <maxmem>2048m</maxmem>
@@ -32,13 +32,13 @@
       	<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.9</version>
+				<version>2.19</version>
     			<dependencies>
 
       				<dependency>
         				<groupId>org.apache.maven.surefire</groupId>
         				<artifactId>surefire-junit47</artifactId>
-       					<version>2.9</version>
+       					<version>2.19</version>
       				</dependency>
 
     			</dependencies>
@@ -53,10 +53,12 @@
 					<excludes>
 						<!-- 
 												
-						<exclude>**/TestSoD.java</exclude>
 						
+						<exclude>**/TestVaultService.java</exclude>
 						
 						-->
+						
+						<exclude>**/TestSoD.java</exclude>
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
 						<exclude>**/TestGroupAuthorization.java</exclude>
 						<exclude>**/TestCredentialFactory.java</exclude>
@@ -69,7 +71,7 @@
 						<exclude>**/TestControlFactory.java</exclude>
 						<exclude>**/TestBulkPerson.java</exclude>
 						<exclude>**/TestBulkUser.java</exclude>
-						<exclude>**/TestVaultService.java</exclude>
+						
 						<exclude>**/TestDataTags.java</exclude>		
 						<exclude>**/TestCachePerformance.java</exclude>		
 						<exclude>**/TestBulkUpdate.java</exclude>		
@@ -164,11 +166,11 @@
 			<version>1.2.6</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.0-801.jdbc4</version>
-		</dependency>
+<dependency>
+	<groupId>org.postgresql</groupId>
+	<artifactId>postgresql</artifactId>
+	<version>9.4-1200-jdbc41</version>
+</dependency>
 <dependency>
 	<groupId>org.beanshell</groupId>
 	<artifactId>bsh</artifactId>
