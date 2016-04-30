@@ -192,7 +192,11 @@ public class SessionSecurity {
 			DirectoryGroupType dir = ApiConnectionConfigurationService.getApiDirectory(user);
 			cred = CredentialService.getPrimaryCredential(dir,credType,true);
 		}
-		else if(credType == CredentialEnumType.HASHED_PASSWORD) cred = CredentialService.getPrimaryCredential(user,credType,true);
+		else if(credType == CredentialEnumType.HASHED_PASSWORD){
+			logger.debug("Looking up primary credential");
+			cred = CredentialService.getPrimaryCredential(user,credType,true);
+			logger.debug("Found primary credential: " + (cred != null));
+		}
 		else if(credType == CredentialEnumType.LEGACY_PASSWORD){
 			/// Legacy support means:
 			/// 1) Password is hashed using the old method
@@ -219,6 +223,7 @@ public class SessionSecurity {
 	/// Rebranded API to reflect change in approach and actual intent of authenticating against a session using a user and a credential
 	///
 	private static UserType authenticateSession(String sessionId, UserType user, CredentialType credential, String suppliedCredential, long organizationId) throws FactoryException, ArgumentException{
+
 		UserSessionType session = Factories.getSessionFactory().getCreateSession(sessionId, organizationId);
 		if (session == null){
 			throw new FactoryException("New session was not allocated.");
@@ -230,6 +235,7 @@ public class SessionSecurity {
 			if(credential.getCredentialType() == CredentialEnumType.LEGACY_PASSWORD && enableLegacyPasswordAuthentication == false){
 				throw new ArgumentException("Legacy Password support is disabled, and a legacy password credential was supplied");
 			}
+			logger.debug("Validating credential");
 			if(CredentialService.validatePasswordCredential(user, credential, suppliedCredential) == false){
 				throw new FactoryException("Failed to validate user");
 			}
@@ -238,11 +244,15 @@ public class SessionSecurity {
 		session.setUserId(user.getId());
 		session.setOrganizationId(user.getOrganizationId());
 		user.setSession(session);
+
 		Factories.getUserFactory().populate(user);
+
 		Factories.getUserFactory().normalize(user);
+
 		Factories.getUserFactory().updateUserToCache(user);
 
 		session.setSessionStatus(SessionStatusEnumType.AUTHENTICATED);
+		
 		StatisticsType stats = Factories.getStatisticsFactory().getStatistics(user);
 		if(stats == null){
 			stats = Factories.getStatisticsFactory().newStatistics(user);
@@ -256,7 +266,7 @@ public class SessionSecurity {
 		if(Factories.getSessionFactory().update(session) == false){
 			throw new FactoryException("Error updating session " + session.getSessionId() + " in organization id " + session.getOrganizationId());
 		}
-		
+
 		return user;
 	}
 	
