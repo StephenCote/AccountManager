@@ -38,10 +38,13 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
+import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -91,6 +94,8 @@ import org.cote.accountmanager.util.ZipUtil;
 			-124,-25,48,114,-70,-7,-26,31,18,10,40,44,64,-97,27,-39
 		};
 		private static byte[] salt = new byte[0];
+		
+		//private CredentialType credSalt = null;
 		
 		//private SecurityFactory securityFactory = null;
 		public VaultService(UserType serviceUser,String vaultBasePath, String vaultName)
@@ -151,7 +156,18 @@ import org.cote.accountmanager.util.ZipUtil;
 		public void setDataCipher(byte[] dataCipher) {
 			this.dataCipher = dataCipher;
 		}
-
+		public CredentialType getSalt(){
+			DirectoryGroupType dir=null;
+			try {
+				dir = getVaultGroup();
+			} catch (FactoryException | ArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(dir == null) return null;
+			return CredentialService.getPrimaryCredential(dir, CredentialEnumType.SALT, true);
+		}
+/*
 		public byte[] getSalt(){
 			if(salt.length == 0) return defaultSalt;
 			return salt;
@@ -159,6 +175,7 @@ import org.cote.accountmanager.util.ZipUtil;
 		public void setSalt(byte[] salt){
 			this.salt = salt;
 		}
+*/
 		public void initialize() throws ArgumentException, FactoryException{
 			
 			if(vaultPath == null || vaultPath.length() == 0) throw new ArgumentException("Invalid base path");
@@ -230,10 +247,15 @@ import org.cote.accountmanager.util.ZipUtil;
 					//OrganizationSecurity.getSecurityBean(organization.getId());
 			
 			byte[] dec_config = SecurityUtil.decipher(org_sm,  config_bytes);
-			dec_config = SecurityUtil.decipher(dec_config, password,getSalt());
+			CredentialType credSalt = getSalt();
+			if(credSalt == null){
+				logger.info("Salt is null");
+				return false;
+			}
+			dec_config = SecurityUtil.decipher(dec_config, password,credSalt.getSalt());
 			if (dec_config.length == 0) throw new ArgumentException("Failed to decipher config");
 
-			dec_config = SecurityUtil.encipher(dec_config, new_password,getSalt());
+			dec_config = SecurityUtil.encipher(dec_config, new_password,credSalt.getSalt());
 
 			// Encipher with product key
 			//
@@ -262,7 +284,12 @@ import org.cote.accountmanager.util.ZipUtil;
 						SecurityBean org_sm = KeyService.getPrimarySymmetricKey(organization.getId()); 
 								///OrganizationSecurity.getSecurityBean(organization.getId());
 						byte[] dec_config = SecurityUtil.decipher(org_sm,config_bytes);
-						if (passwordProtected) dec_config = SecurityUtil.decipher(dec_config, password,getSalt());
+						CredentialType credSalt = getSalt();
+						if(credSalt == null){
+							logger.info("Salt is null");
+							return null;
+						}
+						if (passwordProtected) dec_config = SecurityUtil.decipher(dec_config, password,credSalt.getSalt());
 						if (dec_config.length == 0) return null;
 
 						vaultKey = SecurityFactory.getSecurityFactory().createSecurityBean(dec_config, true); 
@@ -290,10 +317,18 @@ import org.cote.accountmanager.util.ZipUtil;
 		}
 		public boolean deleteVault() throws ArgumentException, FactoryException
 		{
-			if (this.haveVaultKey == false) return true;
-			else if (this.vaultKeyPath == null) return false;
-			File vaultKeyFile = new File(vaultKeyPath);
-			if(vaultKeyFile.delete() == false) throw new ArgumentException("Unable to delete vault key file " + vaultKeyFile);
+			if (this.haveVaultKey == false){
+				logger.warn("No key detected, so nothing is deleted");
+				//return true;
+			}
+			if (this.vaultKeyPath == null){
+				logger.warn("Path is null");
+				//return false;
+			}
+			else{
+				File vaultKeyFile = new File(vaultKeyPath);
+				if(vaultKeyFile.delete() == false) throw new ArgumentException("Unable to delete vault key file " + vaultKeyFile);
+			}
 
 			// Flood 1MB of data over the file.
 			//
@@ -310,13 +345,14 @@ import org.cote.accountmanager.util.ZipUtil;
 			
 			if (local_imp_dir != null && Factories.getGroupFactory().deleteDirectoryGroup(local_imp_dir))
 			{
-				throw new FactoryException("Unable to delete keys from vault directory");
+				logger.warn("Unable to delete keys from vault directory");
 			}
 			DataType imp_data = Factories.getDataFactory().getDataByName(vaultName, true,getVaultGroup());
 			if(imp_data != null && Factories.getDataFactory().deleteData(imp_data) == false){
-				throw new FactoryException("Unable to delete improvement key");
+				logger.warn("Unable to delete improvement key");
 			}
 
+			vaultKeyPath = null;
 			haveVaultKey = false;
 
 			return true;
@@ -346,6 +382,12 @@ import org.cote.accountmanager.util.ZipUtil;
 				logger.error("Vault for '" + vaultName + "' could not be made.  Machine must first be unimproved.");
 				return false;
 			}
+			
+			CredentialType credSalt = CredentialService.newCredential(CredentialEnumType.SALT, null, vaultServiceUser, imp_dir, new byte[0], true, false,false);
+			if(credSalt == null || credSalt.getSalt().length == 0){
+				logger.info("Failed to create salt");
+				return false;
+			}
 
 			SecurityBean sm = new SecurityBean();
 			sm.setEncryptCipherKey(true);
@@ -365,7 +407,8 @@ import org.cote.accountmanager.util.ZipUtil;
 				this.passwordProtected = true;
 				vaultKeyPath = vaultPath + File.separator + vaultNameHash + "-" + VAULT_KEY_PREF + VAULT_KEY_PWD + KEY_EXT;
 				this.password = in_password;
-				private_key_config = SecurityUtil.encipher(private_key_config, password, getSalt()); 
+				logger.info("Private key config: " + private_key_config.length);
+				private_key_config = SecurityUtil.encipher(private_key_config, password, credSalt.getSalt()); 
 			}
 			else{
 				this.passwordProtected = false;
