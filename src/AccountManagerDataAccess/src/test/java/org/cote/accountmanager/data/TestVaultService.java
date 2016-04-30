@@ -26,26 +26,42 @@ import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
+import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.SecurityUtil;
 import org.junit.Test;
 
 public class TestVaultService extends BaseDataAccessTest{
 	public static final Logger logger = Logger.getLogger(TestVaultService.class.getName());
-	
+
+	private boolean resetVault = true;
 
 	@Test
 	public void TestVaultData(){
 		UserType qaUser = getUser("QA Vault User", "password");
 		String vaultName = "QA Vault Keys";
 		VaultService vs = new VaultService(qaUser,"./VaultExp",vaultName);
+
 		String dataName = "QA Vault Data - " + UUID.randomUUID().toString();
 		SecurityBean cipherBean = new SecurityBean();
 		SecurityFactory.getSecurityFactory().generateSecretKey(cipherBean);
 		try {
+
 			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(qaUser, "VaultExamples", qaUser.getHomeDirectory(), qaUser.getOrganizationId());
+
 			vs.initialize();
-			if(vs.getIsImproved() == false) vs.createVault("password");
+			if(resetVault){
+				/// Cleanup anything already present
+				vs.deleteVault();
+				/// run initialize a second time after deleting the remnants
+				///
+				vs.initialize();
+			}
+			if(vs.getIsImproved() == false){
+				boolean created = vs.createVault("password");
+				logger.info("Created = " + created);
+				assertTrue("Failed to create vault",created);
+			}
 			else vs.setPassword("password");
 			String dataStr = "This is the vaulted data";
 			DataType data = Factories.getDataFactory().newData(qaUser, dir.getId());
@@ -67,7 +83,7 @@ public class TestVaultService extends BaseDataAccessTest{
 
 			DataUtil.setPassword(dataCheck, "data password");
 			DataUtil.setCipher(dataCheck, cipherBean);
-			logger.info("Vaulted data value: " + new String(DataUtil.getValue(dataCheck)));
+			logger.info("Vaulted data value: " + BinaryUtil.toBase64Str(DataUtil.getValue(dataCheck)));
 			byte[] decBytes = vs.extractVaultData(dataCheck);
 			logger.info("Extracted data value: " + new String(decBytes));
 			
@@ -83,7 +99,7 @@ public class TestVaultService extends BaseDataAccessTest{
 
 			DataUtil.setPassword(dataCheck2, "data password");
 			DataUtil.setCipher(dataCheck2, cipherBean);
-			logger.info("Vaulted data value: " + new String(DataUtil.getValue(dataCheck2)));
+			logger.info("Vaulted data value: " + BinaryUtil.toBase64Str(DataUtil.getValue(dataCheck2)));
 			byte[] decBytes2 = vs.extractVaultData(dataCheck2);
 			logger.info("Extracted data value: " + new String(decBytes2));
 			
@@ -101,11 +117,19 @@ public class TestVaultService extends BaseDataAccessTest{
 			dataCheck3 = Factories.getDataFactory().getDataByName(dataName, false, dir);
 			DataUtil.setPassword(dataCheck3, "data password");
 			DataUtil.setCipher(dataCheck3, cipherBean);
-			logger.info("Vaulted data value: " + new String(DataUtil.getValue(dataCheck3)));
+			logger.info("Vaulted data value: " + BinaryUtil.toBase64Str(DataUtil.getValue(dataCheck3)));
 			byte[] decBytes3 = vs.extractVaultData(dataCheck3);
 			logger.info("Extracted data value: " + new String(decBytes3));
 
+			logger.info("Make sure vaulted data cannot be read outside of using the vault");
+			DataType dataCheck4 = Factories.getDataFactory().getDataByName(dataName, false, dir);
+			dataCheck4.setVaulted(false);
+			DataUtil.setPassword(dataCheck4, "data password");
+			DataUtil.setCipher(dataCheck4, cipherBean);
 			
+			String data4Str = new String(DataUtil.getValue(dataCheck4));
+			assertFalse("Attempt to read data without the vault should have failed",data4Str.equals("Updated vault data"));
+			//logger.info("Invalid data: '" + data4Str + "'");
 			
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
