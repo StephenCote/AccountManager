@@ -348,7 +348,7 @@ public class CryptoService{
 				return out_bool;
 			}
 			/// Create a new primary credential for target user
-			newCred = CredentialService.newCredential(authReq.getCredentialType(), null, owner, targetObject, authReq.getCredential(), true, true);
+			newCred = CredentialService.newCredential(authReq.getCredentialType(), null, owner, targetObject, authReq.getCredential(), true, true, false);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
