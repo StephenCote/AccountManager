@@ -40,6 +40,21 @@ public class TestSecurityFactory {
 	@After
 	public void tearDown() throws Exception {
 	}
+	
+	@Test
+	public void testEncipherDecipher(){
+		String phrase = "password";
+		String data = "This is the example data";
+		byte[] salt = SecurityUtil.getRandomSalt();
+		logger.info("Original: " + data);
+		String enc = BinaryUtil.toBase64Str(SecurityUtil.encipher(data.getBytes(), phrase, salt));
+		logger.info("Encrypted: " + enc);
+
+		String dec = new String(SecurityUtil.decipher(BinaryUtil.fromBase64(enc.getBytes()), phrase, salt));
+		
+		logger.info("Decrypted: " + dec);
+
+	}
 	@Test
 	public void testCipherCompat(){
 		SecurityBean bean = new SecurityBean();
