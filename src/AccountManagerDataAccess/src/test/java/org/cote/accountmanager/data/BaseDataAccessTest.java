@@ -2,7 +2,7 @@ package org.cote.accountmanager.data;
 
 
 import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.assertNotNull;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
@@ -125,6 +125,8 @@ public class BaseDataAccessTest{
 			}
 		
 		}
+		assertNotNull("QA User #1 is null",testUser);
+		assertNotNull("QA User #2 is null",testUser2);
 	}
 	
 	@After
@@ -257,7 +259,7 @@ public class BaseDataAccessTest{
 				user = Factories.getUserFactory().newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
 				Factories.getUserFactory().addUser(user);
 				user = Factories.getUserFactory().getUserByName(user_name, Factories.getDevelopmentOrganization().getId());
-				CredentialService.newHashedPasswordCredential(user, user, password, true);
+				CredentialService.newHashedPasswordCredential(user, user, password, true,false);
 			}
 			Factories.getUserFactory().populate(user);
 		} catch (FactoryException e) {

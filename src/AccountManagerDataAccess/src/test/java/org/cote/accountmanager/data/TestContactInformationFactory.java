@@ -122,22 +122,7 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 		UserType user = getUserTypeMock();
 		ContactInformationFactory cif = Factories.getContactInformationFactory();
 		ContactInformationType cit = cif.newContactInformation(user);
-		/*
-		cit.setAddressLine1("6808 Denny Peak DR SE");
-		cit.setCity("Snoqualmie");
-		cit.setPhone("206-669-7995");
-		cit.setState("Washington");
-		cit.setCountry("US");
-		cit.setEmail("sw.cote@gmail.com");
-		cit.setAlias("Steve");
-		cit.setFirstName("Stephen");
-		cit.setMiddleName("William");
-		cit.setLastName("Cote");
-		cit.setDescription("Example contact info");
-		cit.setTitle("Example");
-		cit.setGender("M");
-		cit.setWebsite("http://www.whitefrost.com");
-		*/
+
 		boolean add_cit = false;
 		boolean error = false;
 		try {
