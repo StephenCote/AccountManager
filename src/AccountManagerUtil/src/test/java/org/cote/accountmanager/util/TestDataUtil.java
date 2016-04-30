@@ -119,11 +119,13 @@ public class TestDataUtil {
 		SecurityFactory sf = SecurityFactory.getSecurityFactory();
 		SecurityBean ciphBean = new SecurityBean();
 		ciphBean.setEncryptCipherKey(true);
+		sf.generateKeyPair(ciphBean);
 		sf.generateSecretKey(ciphBean);
 
 
 		DataType data = new DataType();
-		data.setCipherKey(SecurityUtil.serializeToXml(ciphBean, false, false, true).getBytes());
+		//data.setCipherKey(SecurityUtil.serializeToXml(ciphBean, false, false, true).getBytes());
+		DataUtil.setCipher(data, ciphBean);
 		data.setEncipher(true);
 		boolean error = false;
 		String  value = "Example text";
@@ -137,6 +139,7 @@ public class TestDataUtil {
 			de.printStackTrace();
 			
 		}
+		logger.info("Completing test ...");
 		assertFalse("Error occurred", error);
 		assertTrue("Data was not enciphered",data.getEnciphered());
 	}
@@ -162,6 +165,8 @@ public class TestDataUtil {
 			DataUtil.setValue(data, value.getBytes());
 			logger.info("Input: " + BinaryUtil.toBase64Str(value));
 			logger.info("Output: " + BinaryUtil.toBase64Str(data.getDataBytesStore()));
+			/// NOTE: invoking setValue with a key set will strip the key off the object.  This is by design.  That means the key must be RESET before reading the value
+			DataUtil.setCipher(data,ciphBean);
 			outBytes = DataUtil.getValue(data);
 			
 		}
@@ -203,7 +208,9 @@ public class TestDataUtil {
 		sf.generateSecretKey(ciphBean);
 
 		DataType data = new DataType();
+		//DataUtil.setPassword(data, password);
 		data.setPassKey(SecurityUtil.serializeToXml(ciphBean, false, false, true).getBytes());
+		//DataUtil.setPassword(data, password);
 		data.setPasswordProtect(true);
 		boolean error = false;
 		String  value = "Example text";
@@ -212,6 +219,7 @@ public class TestDataUtil {
 			DataUtil.setValue(data, value.getBytes());
 			logger.info("Input: " + BinaryUtil.toBase64Str(value));
 			logger.info("Output: " + BinaryUtil.toBase64Str(data.getDataBytesStore()));
+			data.setPassKey(SecurityUtil.serializeToXml(ciphBean, false, false, true).getBytes());
 			outBytes = DataUtil.getValue(data);
 			
 		}
@@ -219,6 +227,8 @@ public class TestDataUtil {
 			error = true;
 		}
 		String comp_text = new String(outBytes);
+		logger.info("Check: '" + value + "'");
+		logger.info("Compare: '" + comp_text + "'");
 		assertTrue("Data does not match", comp_text.equals(value));
 		//assertTrue("Data was not enciphered",data.getEnciphered());
 	}
@@ -262,13 +272,21 @@ public class TestDataUtil {
 			DataUtil.setValue(data, value.getBytes());
 			logger.info("Input: " + BinaryUtil.toBase64Str(value));
 			logger.info("Output: " + BinaryUtil.toBase64Str(data.getDataBytesStore()));
+			/// By design - must reset any ciphers after setting or reading the value, as DataUtil will null these out for safety
+			///
+			DataUtil.setPassword(data, "password");
+			DataUtil.setCipher(data, ciphBean);
 			outBytes = DataUtil.getValue(data);
 			
 		}
 		catch(DataException de){
 			error = true;
 		}
+
 		String comp_text = new String(outBytes);
+		logger.info("Check: '" + value + "'");
+		logger.info("Compare: '" + comp_text + "'");
+
 		assertTrue("Data does not match", comp_text.equals(value));
 		//assertTrue("Data was not enciphered",data.getEnciphered());
 	}
