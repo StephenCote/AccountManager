@@ -89,7 +89,7 @@ public class PersonService {
 			/// 2015/06/23 - New Credential System
 			/// I intentionally left the credential operation decoupled from object creation
 			///
-			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,newUser, newUser, password.getBytes("UTF-8"), true,true);
+			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,newUser, newUser, password.getBytes("UTF-8"), true,true,false);
 
 			PersonType newPerson = Factories.getPersonFactory().newPerson(newUser,pDir.getId());
 			newPerson.setName(userName);

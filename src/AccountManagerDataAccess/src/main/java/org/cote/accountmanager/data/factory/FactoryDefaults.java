@@ -127,7 +127,7 @@ public class FactoryDefaults {
 			/// 2015/06/23 - New Credential System
 			/// I intentionally left the credential operation decoupled from object creation
 			///
-			CredentialType cred = CredentialService.newHashedPasswordCredential(root_user, root_user, root_password, true);
+			CredentialType cred = CredentialService.newHashedPasswordCredential(root_user, root_user, root_password, true,false);
 			if(cred == null) throw new FactoryException("Failed to persist root credential");
 		}
 		setupOrganization(Factories.getDevelopmentOrganization(), root_password);
@@ -157,7 +157,7 @@ public class FactoryDefaults {
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
 		///
-		CredentialType cred = CredentialService.newHashedPasswordCredential(admin_user, admin_user, admin_password, true);
+		CredentialType cred = CredentialService.newHashedPasswordCredential(admin_user, admin_user, admin_password, true, false);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
 
 		// Create the document control user
@@ -169,7 +169,7 @@ public class FactoryDefaults {
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
 		///
-		cred = CredentialService.newHashedPasswordCredential(dc_user, dc_user, UUID.randomUUID().toString(), true);
+		cred = CredentialService.newHashedPasswordCredential(dc_user, dc_user, UUID.randomUUID().toString(), true, false);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
 		
 		if(dc_user.getId() <= 0 || admin_user.getId() <= 0){

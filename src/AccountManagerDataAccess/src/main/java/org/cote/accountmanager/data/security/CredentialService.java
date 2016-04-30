@@ -90,6 +90,7 @@ public class CredentialService {
 		cred.setOrganizationId(user.getOrganizationId());
 		cred.setReferenceId(user.getId());
 		cred.setReferenceType(FactoryEnumType.USER);
+		cred.setVaulted(false);
 		try {
 			cred.setCredential((isPasswordHashed ? password.getBytes("UTF-8") : SecurityUtil.getSaltedDigest(password).getBytes("UTF-8")));
 		} catch (UnsupportedEncodingException e) {
@@ -144,6 +145,7 @@ public class CredentialService {
 		return outBytes;
 	}
 	private static byte[] extractCredential(CredentialType credential){
+
 		byte[] outBytes = new byte[0];
 		byte[] cred = credential.getCredential();
 		if(cred.length == 0){
@@ -201,10 +203,10 @@ public class CredentialService {
 		}
 		return out_bool;
 	}
-	public static CredentialType newHashedPasswordCredential(UserType owner, NameIdType targetObject, String password, boolean primary){
-		return newHashedPasswordCredential(null,owner,targetObject,password,primary);
+	public static CredentialType newHashedPasswordCredential(UserType owner, NameIdType targetObject, String password, boolean primary, boolean vaulted){
+		return newHashedPasswordCredential(null,owner,targetObject,password,primary, vaulted);
 	}
-	public static CredentialType newHashedPasswordCredential(String bulkSessionId, UserType owner, NameIdType targetObject, String password, boolean primary){
+	public static CredentialType newHashedPasswordCredential(String bulkSessionId, UserType owner, NameIdType targetObject, String password, boolean primary, boolean vaulted){
 
 		byte[] pwdBytes = new byte[0];
 		try {
@@ -213,7 +215,7 @@ public class CredentialService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return newCredential(CredentialEnumType.HASHED_PASSWORD, bulkSessionId, owner, targetObject, pwdBytes, primary, true);
+		return newCredential(CredentialEnumType.HASHED_PASSWORD, bulkSessionId, owner, targetObject, pwdBytes, primary, true, vaulted);
 	}
 	
 	public static CredentialType newTokenCredential(UserType owner, NameIdType targetObject, String token, boolean primary){
@@ -228,13 +230,13 @@ public class CredentialService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return newCredential(CredentialEnumType.TOKEN, bulkSessionId, owner, targetObject, pwdBytes, primary, true);
+		return newCredential(CredentialEnumType.TOKEN, bulkSessionId, owner, targetObject, pwdBytes, primary, true, false);
 	}
 	
 	/// TODO: At the moment, a bulk credential requires a synchronous key insertion
 	///
 	///
-	public static CredentialType newCredential(CredentialEnumType credType, String bulkSessionId, UserType owner, NameIdType targetObject, byte[] credBytes, boolean primary, boolean encrypted){
+	public static CredentialType newCredential(CredentialEnumType credType, String bulkSessionId, UserType owner, NameIdType targetObject, byte[] credBytes, boolean primary, boolean encrypted, boolean vaulted){
 		CredentialType cred = null;
 		CredentialType lastPrimary = null;
 		byte[] useCredBytes = credBytes;
