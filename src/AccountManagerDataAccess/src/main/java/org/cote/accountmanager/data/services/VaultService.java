@@ -343,12 +343,12 @@ import org.cote.accountmanager.util.ZipUtil;
 			
 			DirectoryGroupType local_imp_dir = getVaultInstanceGroup();
 			
-			if (local_imp_dir != null && Factories.getGroupFactory().deleteDirectoryGroup(local_imp_dir))
+			if (local_imp_dir != null && !Factories.getGroupFactory().deleteDirectoryGroup(local_imp_dir))
 			{
 				logger.warn("Unable to delete keys from vault directory");
 			}
 			DataType imp_data = Factories.getDataFactory().getDataByName(vaultName, true,getVaultGroup());
-			if(imp_data != null && Factories.getDataFactory().deleteData(imp_data) == false){
+			if(imp_data != null && !Factories.getDataFactory().deleteData(imp_data)){
 				logger.warn("Unable to delete improvement key");
 			}
 
