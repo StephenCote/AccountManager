@@ -105,7 +105,7 @@ public class TestOpenSSLUtil {
 		byte[] p12file = FileUtil.getFile("target/ssl/certificates/private/" + serverKey + ".p12");
 		byte[] certfile = FileUtil.getFile("target/ssl/certificates/signed/" + serverKey + ".cert");
 		assertTrue("File could not be found", p12file.length > 0);
-		boolean imported = KeyStoreUtil.importPKCS12(keyStore, keyStorePass, p12file, serverKey + ".key", serverKeyPassword);
+		boolean imported = KeyStoreUtil.importPKCS12(keyStore,  p12file, serverKey + ".key", serverKeyPassword);
 		assertTrue("Failed to import p12",imported);
 		imported = KeyStoreUtil.importCertificate(keyStore, certfile, serverKey);
 		assertTrue("Failed to import cert",imported);

@@ -85,7 +85,7 @@ public class KeyStoreUtil {
 		}
 		return out_bool;
 	}
-	public static boolean importPKCS12(KeyStore store, char[] storePassword, byte[] p12cert, String alias, char[] password){
+	public static boolean importPKCS12(KeyStore store,  byte[] p12cert, String alias, char[] password){
 		KeyStore pkstore = getKeyStore(p12cert,password);
 		if(pkstore == null){
 			logger.error("PKCS12 store is null");

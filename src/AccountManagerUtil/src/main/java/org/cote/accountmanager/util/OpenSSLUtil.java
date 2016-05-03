@@ -144,7 +144,8 @@ public class OpenSSLUtil {
 			"-passin","pass:" + String.valueOf(password),
 			"-passout","pass:" + String.valueOf(password),
 			"-in",CERTIFICATE_SIGNED_PATH + "/" + alias + ".cert",
-			"-out",CERTIFICATE_SIGNED_PATH + "/" + alias + ".p12"
+			"-out",CERTIFICATE_SIGNED_PATH + "/" + alias + ".p12",
+			"-name",alias
 		};
 		
 		List<String> cmd = ProcessUtil.runProcess(sslPath,commands);
@@ -203,6 +204,8 @@ public class OpenSSLUtil {
 		commands.add("-out");
 		commands.add(CERTIFICATE_PRIVATE_PATH + "/" + alias + ".p12");
 		commands.add("-descert");
+		commands.add("-name");
+		commands.add(alias);
 		
 		List<String> cmd = ProcessUtil.runProcess(sslPath,commands.toArray(new String[0]));
 		return (new File(sslPath + CERTIFICATE_PRIVATE_PATH + "/" + alias + ".p12")).exists();
