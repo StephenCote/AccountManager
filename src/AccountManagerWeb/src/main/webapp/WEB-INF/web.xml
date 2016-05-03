@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee" version="3.0">
   <display-name>AccountManager</display-name>
+  
+    <session-config>
+    <session-timeout>30</session-timeout>
+    <cookie-config>
+      <path>/</path>
+      <http-only>true</http-only>
+      <secure>true</secure>
+    </cookie-config>
+
+    <tracking-mode>COOKIE</tracking-mode>
+  </session-config>
+
+
+  <context-param>
+  	<description>Use AM5 Session</description>
+  	<param-name>session.am5.enabled</param-name>
+  	<param-value>false</param-value>
+  </context-param>
+
+  
   <context-param>
     <param-name>role.mapping.dynamic</param-name>
     <param-value>true</param-value>
@@ -11,7 +31,6 @@
     <param-name>organization.default</param-name>
     <param-value>/Public</param-value>
   </context-param>
-
   <context-param>
     <description>Registration Enabled</description>
     <param-name>registration.enabled</param-name>
@@ -223,14 +242,7 @@
     <url-pattern>
 		/EAIServlet</url-pattern>
   </servlet-mapping>
-  <session-config>
-    <session-timeout>30</session-timeout>
-    <cookie-config>
-      <path>/</path>
-    </cookie-config>
 
-    <tracking-mode>COOKIE</tracking-mode>
-  </session-config>
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>

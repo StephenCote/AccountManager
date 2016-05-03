@@ -50,6 +50,7 @@ import org.cote.accountmanager.data.services.SessionDataMaintenance;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.service.rest.BaseService;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.util.ArticleUtil;
 
 /**
@@ -104,8 +105,12 @@ public class AccountManagerFactoryInit implements ServletContextListener {
     	logger.info("Initializing Account Manager");
         this.context = event.getServletContext();
 
+        context.getSessionCookieConfig().setPath("/");
+        
     	logger.info("Adding Security Provider");
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+		
+		ServiceUtil.useAccountManagerSession = Boolean.parseBoolean(context.getInitParameter("session.am5.enabled"));
 		
 		logger.info("Testing Database Connection");
 		ConnectionFactory cf = ConnectionFactory.getInstance();
