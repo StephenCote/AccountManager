@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
@@ -68,7 +69,8 @@ public class ServiceUtil {
 			}
 		}
 		else{
-			sessionId = request.getSession(create).getId();
+			HttpSession sess = request.getSession(create);
+			sessionId = (sess != null ? sess.getId() : null);
 		}
 		if(sessionId == null){
 			logger.error("NULL SESSION ID. AM5 Session Mode Is " + (useAccountManagerSession ? "On":"Off"));
