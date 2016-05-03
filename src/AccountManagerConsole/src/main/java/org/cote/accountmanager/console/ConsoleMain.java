@@ -117,11 +117,37 @@ public class ConsoleMain {
 		options.addOption("rootPassword",true,"Account Manager Root Password");
 		options.addOption("adminPassword",true,"Account Manager Admin Password");
 		
+		
+		options.addOption("openssl",false,"Perform openssl activities");
+		options.addOption("dn",true,"DN of the openssl request");
+		options.addOption("expiry",true,"Number of days until the certificate expires");
+		options.addOption("cn",true,"CN of the openssl request (used in lieu of dn)");
+		options.addOption("root",false,"Create a self-signed root certificate");
+		options.addOption("request",false,"Request a CSR");
+		options.addOption("sign",false,"Sign a CSR");
+		options.addOption("signer",true,"CA used to sign or validate a certificate or request");
+		options.addOption("signerPassword",true,"Password of the CA");
+		options.addOption("export",false,"Export keys as pkcs12");
+		options.addOption("store",true,"Name of a store");
+		options.addOption("storePassword",true,"Password of the store");
+		options.addOption("setCertificate",false,"Set certificate to an object");
+		options.addOption("issueCertificate",false,"Create a certificate for a user in a given organization, and sign with that organization's certificate");
+		options.addOption("testCertificate",false,"Test certificate set to an object");
+		options.addOption("trust",false,"Bit indicating the store is a trust store");
+		options.addOption("private",false,"Bit indicating certificate containing the private key (a PKCS12 file) should be imported");
+		
+		//String storeName, char[] storePassword, boolean isTrust, String alias, char[] password, boolean isPrivate
+		
+		
 		// options.addOption("importProject",true,"Local path or file");
 		// options.addOption("projectName",true,"Name of the imported project");
 		// options.addOption("lifecycleName",true,"Name of the lifecycle to which the project belongs");
 		options.addOption("path",true,"AccountManager directory group");
 		// options.addOption("test",false,"Run Tests");
+		
+		
+		
+		
 		CommandLineParser parser = new PosixParser();
 		try {
 			logger.debug("Setting up connection factory");
@@ -205,6 +231,47 @@ public class ConsoleMain {
 			else if(cmd.hasOption("configureApi") && cmd.hasOption("organization") && cmd.hasOption("file") && cmd.hasOption("identity")&& cmd.hasOption("credential")  && cmd.hasOption("adminPassword")){
 				//logger.info("Configure API");
 				ApiConfigAction.configureApi(cmd.getOptionValue("organization"),cmd.getOptionValue("adminPassword"),cmd.getOptionValue("file"),cmd.getOptionValue("identity"),cmd.getOptionValue("credential"));
+			}
+			else if (cmd.hasOption("openssl")){
+				String sslBinary = props.getProperty("ssl.binary");
+				String localPath = props.getProperty("ssl.ca.path");
+				OpenSSLAction sslAction = new OpenSSLAction(sslBinary, localPath);
+				if(cmd.hasOption("root") && cmd.hasOption("name") && cmd.hasOption("password") && cmd.hasOption("expiry")){
+					//String dn = (cmd.hasOption("dn") ? cmd.getOptionValue("dn") || OpenSSLUtil.)
+					sslAction.generateRootCertificate(cmd.getOptionValue("name"),cmd.getOptionValue("dn"),cmd.getOptionValue("password").toCharArray(),Integer.parseInt(cmd.getOptionValue("expiry")));
+				}
+
+				if(cmd.hasOption("request") && cmd.hasOption("name") && cmd.hasOption("password") && cmd.hasOption("expiry")){
+					sslAction.generateCertificateRequest(cmd.getOptionValue("name"),cmd.getOptionValue("dn"),cmd.getOptionValue("password").toCharArray(),Integer.parseInt(cmd.getOptionValue("expiry")));
+				}
+				if(cmd.hasOption("sign") && cmd.hasOption("signer") && cmd.hasOption("expiry")){
+					sslAction.signCertificate(cmd.getOptionValue("name"), cmd.getOptionValue("signer"), Integer.parseInt(cmd.getOptionValue("expiry")));
+				}
+
+				if(cmd.hasOption("export") && cmd.hasOption("signer") && cmd.hasOption("expiry") && cmd.hasOption("password")){
+					sslAction.exportPKCS12Certificate(cmd.getOptionValue("name"), cmd.getOptionValue("password").toCharArray(), cmd.getOptionValue("signer"));
+				}
+
+			}
+			else if(cmd.hasOption("store")){
+				//String storeName, char[] storePassword, boolean isTrust, String alias, char[] password, boolean isPrivate
+				String keytoolBinary = props.getProperty("keytool.binary");
+				String localPath = props.getProperty("ssl.ca.path");
+
+				KeyStoreAction keyAct = new KeyStoreAction(keytoolBinary, localPath);
+				if(cmd.hasOption("storePassword") && cmd.hasOption("password") && cmd.hasOption("private") && cmd.hasOption("name")){
+					keyAct.importPKCS12(cmd.getOptionValue("store"), cmd.getOptionValue("storePassword").toCharArray(), cmd.hasOption("trust"), cmd.getOptionValue("name"), cmd.getOptionValue("password").toCharArray(), cmd.hasOption("private"));
+				}
+				else if(cmd.hasOption("storePassword") && cmd.hasOption("name")){
+					keyAct.importCertificate(cmd.getOptionValue("store"), cmd.getOptionValue("storePassword").toCharArray(), cmd.hasOption("trust"), cmd.getOptionValue("name"));
+				}
+			
+			}
+			else if(cmd.hasOption("setCertificate") && cmd.hasOption("organization") && cmd.hasOption("name") && cmd.hasOption("password") && cmd.hasOption("adminPassword")){
+				OrganizationCommand.setOrganizationCertificate(cmd.getOptionValue("organization"),  props.getProperty("ssl.ca.path"), cmd.getOptionValue("name"), cmd.getOptionValue("password").toCharArray(), cmd.getOptionValue("adminPassword"));
+			}
+			else if(cmd.hasOption("testCertificate") && cmd.hasOption("organization")  && cmd.hasOption("adminPassword")){
+				OrganizationCommand.testOrganizationCertificate(cmd.getOptionValue("organization"),  props.getProperty("ssl.ca.path"), cmd.getOptionValue("adminPassword"));
 			}
 			else if(cmd.hasOption("organization") && cmd.hasOption("username") && cmd.hasOption("password")){
 				logger.debug("Authenticating user");
