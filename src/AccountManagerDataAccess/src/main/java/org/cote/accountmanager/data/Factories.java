@@ -723,6 +723,9 @@ public class Factories {
 	public static <T> T getFactory(FactoryEnumType factoryType){
 		T fact = null;
 		switch(factoryType){
+			case ORGANIZATION:
+				fact = (T)Factories.getOrganizationFactory();
+				break;
 			case SYMMETRICKEY:
 				fact = (T)Factories.getSymmetricKeyFactory();
 				break;

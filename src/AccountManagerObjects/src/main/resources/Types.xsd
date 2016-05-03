@@ -513,6 +513,7 @@
     <simpleType name="FactoryEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ORGANIZATION"></enumeration>
     		<enumeration value="MESSAGE"></enumeration>
     		<enumeration value="SECURITYTOKEN"></enumeration>
     		<enumeration value="SYMMETRICKEY"></enumeration>
