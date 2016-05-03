@@ -241,8 +241,12 @@ public class OrganizationFactory extends NameIdFactory {
 		return getOrganizationPath(org);
 	}
 	public String getOrganizationPath(OrganizationType org) throws FactoryException, ArgumentException{
-		if(org == null) throw new ArgumentException("Organization is null");
+		//if(org == null) throw new ArgumentException("Organization is null");
 		String path = "";
+		if(org == null){
+			logger.debug("Organization not found.  This may occur if a reference object is used to set the organization id, and that object is not scoped to organizations");
+			return null;
+		}
 		/// Note: Skip 'Global' Organization, which is always 1L
 		/// (always == until it's not, but it's never been not because it must be setup first)
 		if(org.getParentId() > 1L){
