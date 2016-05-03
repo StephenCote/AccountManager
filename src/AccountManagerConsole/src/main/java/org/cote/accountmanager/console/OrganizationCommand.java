@@ -23,22 +23,128 @@
  *******************************************************************************/
 package org.cote.accountmanager.console;
 
+import java.security.Key;
+import java.security.KeyStore;
+
+import java.security.cert.Certificate;
+
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
+import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
+import org.cote.accountmanager.util.KeyStoreUtil;
+import org.cote.accountmanager.util.OpenSSLUtil;
 import org.cote.accountmanager.util.SecurityUtil;
 
 public class OrganizationCommand {
 	public static final Logger logger = Logger.getLogger(OrganizationCommand.class.getName());
-
+	public static boolean setOrganizationCertificate(String organizationPath, String sslPath, String alias, char[] password, String adminPassword){
+		boolean out_bool = false;
+		try{
+			OrganizationType org = Factories.getOrganizationFactory().findOrganization(organizationPath);
+			if(org == null){
+				logger.error("Null organization");
+				return false;
+			}
+			UserType adminUser = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org.getId());
+			if(adminUser == null){
+				logger.error("Unable to authenticate");
+				return false;
+			}
+			//logger.info("Admin org: " + adminUser.getOrganizationId());
+			//logger.debug("Bug: Organization objects don't have an organization, only parents, which breaks);
+			OpenSSLAction sslAction = new OpenSSLAction(null,sslPath);
+			byte[] certificate = sslAction.getCertificate(alias, true);
+			CredentialType cred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, org, certificate, true, false, false);
+			if(cred == null){
+				logger.error("Failed to create certificate credential");
+				return out_bool;
+			}
+			CredentialType cred2 = CredentialService.newCredential(CredentialEnumType.ENCRYPTED_PASSWORD, null, adminUser, cred, (new String(password)).getBytes(), true, true, false);
+			if(cred2 == null){
+				logger.error("Failed to create encrypted credential for certificate password");
+				return out_bool;
+			}
+			Factories.getAttributeFactory().populateAttributes(org);
+			AttributeType aliasAttr = Factories.getAttributeFactory().getAttributeByName(org, "certificate.alias");
+			if(aliasAttr != null) org.getAttributes().remove(aliasAttr);
+			org.getAttributes().add(Factories.getAttributeFactory().newAttribute(org, "certificate.alias", alias));
+			Factories.getAttributeFactory().updateAttributes(org);
+			out_bool = true;
+			
+		}
+		catch(FactoryException | ArgumentException e){
+			logger.error(e.getMessage());
+		}
+		return out_bool;
+	}
+	public static boolean testOrganizationCertificate(String organizationPath, String sslPath, String adminPassword){
+		boolean out_bool = false;
+		try{
+			OrganizationType org = Factories.getOrganizationFactory().findOrganization(organizationPath);
+			if(org == null){
+				logger.error("Null organization");
+				return false;
+			}
+			UserType adminUser = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org.getId());
+			if(adminUser == null){
+				logger.error("Unable to authenticate");
+				return false;
+			}
+			Factories.getAttributeFactory().populateAttributes(org);
+			AttributeType aliasAttr = Factories.getAttributeFactory().getAttributeByName(org, "certificate.alias");
+			String alias = null;
+			if(aliasAttr == null || aliasAttr.getValues().size() == 0) alias = "1";
+			else alias = aliasAttr.getValues().get(0);
+			
+			CredentialType cred = CredentialService.getPrimaryCredential(org, CredentialEnumType.CERTIFICATE, true);
+			if(cred == null){
+				logger.error("Failed to retrieve certificate");
+				return false;
+			}
+			CredentialType cred2 = CredentialService.getPrimaryCredential(cred, CredentialEnumType.ENCRYPTED_PASSWORD, true);
+			if(cred2 == null){
+				logger.error("Failed to retrieve certificate password");
+				return false;
+			}
+			byte[] p12 = (cred.getEnciphered() ? CredentialService.decryptCredential(cred) : cred.getCredential());
+			char[] p12pass = (new String((cred2.getEnciphered() ? CredentialService.decryptCredential(cred2) : cred2.getCredential()))).toCharArray();
+			logger.info("P12 P: " + (new String(p12pass)));
+			KeyStore store = KeyStoreUtil.getKeyStore(p12, p12pass);
+			if(store == null){
+				logger.error("Failed to open PKCS12 data");
+				return false;
+			}
+			
+			Key privateKey = KeyStoreUtil.getKey(store, p12pass, alias, p12pass);
+			if(privateKey == null){
+				logger.error("Failed to extract private key");
+				return false;
+			}
+			Certificate cert = KeyStoreUtil.getCertificate(store, p12pass, alias);
+			if(cert == null){
+				logger.error("Failed to extract certificate for alias '" + alias + "'");
+				return false;
+			}
+			logger.info("Retrieved private and public keys");
+			out_bool = true;
+			
+		}
+		catch(FactoryException | ArgumentException e){
+			logger.error(e.getMessage());
+		}
+		return out_bool;
+	}
 	public static boolean deleteOrganization(String parentPath, String name, String adminPassword, boolean allowNoAuth){
 		boolean out_bool = false;
 		try{
