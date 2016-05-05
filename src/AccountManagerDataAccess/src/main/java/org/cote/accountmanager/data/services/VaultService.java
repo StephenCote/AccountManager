@@ -90,10 +90,12 @@ import org.cote.accountmanager.util.ZipUtil;
 		
 		/// TODO: For CredentialType update, this will go away
 		///
+		/*
 		private static byte[] defaultSalt = new byte[]{
 			-124,-25,48,114,-70,-7,-26,31,18,10,40,44,64,-97,27,-39
 		};
-		private static byte[] salt = new byte[0];
+		*/
+		//private static byte[] salt = new byte[0];
 		
 		//private CredentialType credSalt = null;
 		
@@ -317,6 +319,7 @@ import org.cote.accountmanager.util.ZipUtil;
 		}
 		public boolean deleteVault() throws ArgumentException, FactoryException
 		{
+			logger.info("Cleaning up vault instance");
 			if (this.haveVaultKey == false){
 				logger.warn("No key detected, so nothing is deleted");
 				//return true;
