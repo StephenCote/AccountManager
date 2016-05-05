@@ -45,7 +45,9 @@ public class TestSecurityFactory {
 	public void testEncipherDecipher(){
 		String phrase = "password";
 		String data = "This is the example data";
+		
 		byte[] salt = SecurityUtil.getRandomSalt();
+		long start = System.currentTimeMillis();
 		logger.info("Original: " + data);
 		String enc = BinaryUtil.toBase64Str(SecurityUtil.encipher(data.getBytes(), phrase, salt));
 		logger.info("Encrypted: " + enc);
@@ -53,7 +55,7 @@ public class TestSecurityFactory {
 		String dec = new String(SecurityUtil.decipher(BinaryUtil.fromBase64(enc.getBytes()), phrase, salt));
 		
 		logger.info("Decrypted: " + dec);
-
+		logger.debug("Completed: " + (System.currentTimeMillis() - start) + "ms");
 	}
 	@Test
 	public void testCipherCompat(){
