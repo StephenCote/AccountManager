@@ -51,10 +51,11 @@
 						<!--
 						
 						
-						<exclude>**/TestOpenSSLUtil.java</exclude>
-						-->
-						<exclude>**/TestKeyStoreUtil.java</exclude>
 						<exclude>**/TestSecurityFactory.java</exclude>
+						-->
+						<exclude>**/TestOpenSSLUtil.java</exclude>
+						<exclude>**/TestKeyStoreUtil.java</exclude>
+						
 						<exclude>**/TestDataUtil.java</exclude>
 						<exclude>**/TestJSON.java</exclude>
 						<exclude>**/TestAMCode.java</exclude>
@@ -99,9 +100,9 @@
 			<version>1.5</version>
 		</dependency>
 		<dependency>
-			<groupId>bouncycastle</groupId>
-			<artifactId>bcprov-jdk16</artifactId>
-			<version>140</version>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.54</version>
 			<scope>provided</scope>
 		</dependency>
 	    <dependency>
