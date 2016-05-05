@@ -17,7 +17,7 @@
   <context-param>
   	<description>Use AM5 Session</description>
   	<param-name>session.am5.enabled</param-name>
-  	<param-value>false</param-value>
+  	<param-value>true</param-value>
   </context-param>
 
   
