@@ -26,6 +26,7 @@ package org.cote.accountmanager.util;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -43,11 +44,23 @@ import org.cote.accountmanager.factory.SecurityFactory;
 
 public class SecurityUtil {
 
+	public static final Logger logger = Logger.getLogger(SecurityUtil.class.getName());
 	/// TODO: 2015/06/23 - Need to refactor salt references to use a CredentialType
 	///
 	private static int SALT_LENGTH = 16;
-	private static final SecureRandom random = new SecureRandom();
-	public static final Logger logger = Logger.getLogger(SecurityUtil.class.getName());
+	private static SecureRandom random = null;
+	static{
+		try{
+			long start = System.currentTimeMillis();
+			random = SecureRandom.getInstance("SHA1PRNG");
+			logger.debug("Secure Random: " + (System.currentTimeMillis() - start) + "ms");
+		}
+		catch(NoSuchAlgorithmException e){
+			logger.error(e.getMessage());
+		}
+	}
+			//new SecureRandom("NativePRNG");
+	
 	private static MessageDigest hash_algorithm = null;
 	
 	/// TODO: For CredentialType update, this will go away
@@ -147,6 +160,7 @@ public class SecurityUtil {
 		return decipher(getPasswordBean(password, salt),data);
 	}
 	public static byte[] decipher(SecurityBean bean, byte[] data){
+		long start_enc = System.currentTimeMillis();
 		byte[] ret = new byte[0];
 		/// Cipher cipher = generateSecretCipherKey();
 		Cipher cipher = SecurityFactory.getSecurityFactory().getDecryptCipherKey(bean);;
@@ -167,9 +181,11 @@ public class SecurityUtil {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
+		logger.debug("Deciphered in " + (System.currentTimeMillis() - start_enc) + "ms");
 		return ret;
 	}
 	public static byte[] encipher(SecurityBean bean, byte[] data){
+		long start_enc = System.currentTimeMillis();
 		byte[] ret = new byte[0];
 		Cipher cipher = SecurityFactory.getSecurityFactory().getEncryptCipherKey(bean);;
 		if(cipher == null || bean.getSecretKey() == null ) return ret;
@@ -183,6 +199,7 @@ public class SecurityUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
+		logger.debug("Enciphered in " + (System.currentTimeMillis() - start_enc) + "ms");
 		return ret;
 	}
 	public static byte[] encrypt(SecurityBean bean, byte[] data){
