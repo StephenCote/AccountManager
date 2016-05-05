@@ -368,6 +368,7 @@
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
     		<enumeration value="CREDENTIAL"></enumeration>
+    		<enumeration value="SECURITY_TOKEN"></enumeration>
     		<enumeration value="CONTROL"></enumeration>
     		<enumeration value="ATTRIBUTE"></enumeration>
     		<enumeration value="PERSON"></enumeration>

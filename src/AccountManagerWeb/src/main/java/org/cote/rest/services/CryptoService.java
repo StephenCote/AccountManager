@@ -85,6 +85,10 @@ public class CryptoService{
 	}
 	
 	private CryptoBean getCryptoBean(SecurityBean bean,String guid){
+		if(bean == null || guid == null){
+			logger.error("Bean or guid is null");
+			return null;
+		}
 		CryptoBean cBean = new CryptoBean();
 		cBean.setSpoolId(guid);
 		cBean.setCipherIV(bean.getCipherIV());
@@ -95,6 +99,48 @@ public class CryptoService{
 		return cBean;
 	}
 
+	private SecuritySpoolType newSecurityToken(HttpServletRequest request){
+		SecuritySpoolType tokenType = null;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.REQUEST, "newSecurityToken", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user == null) return null;
+		try{
+			SecurityBean bean = new SecurityBean();
+			SecurityFactory.getSecurityFactory().generateSecretKey(bean);
+			tokenType = Factories.getSecurityTokenFactory().newSecurityToken(user.getSession().getSessionId(), user.getOrganizationId());
+			tokenType.setOwnerId(user.getId());
+			tokenType.setData(SecurityFactory.getSecurityFactory().serializeCipher(bean));
+			AuditService.targetAudit(audit, AuditEnumType.SECURITY_TOKEN, tokenType.getGuid());
+			if(Factories.getSecurityTokenFactory().addSecurityToken(tokenType) == false){
+				AuditService.denyResult(audit, "Failed to persist token");
+				logger.error("Failed to persist tokens");
+				tokenType = null;
+			}
+			else{
+				AuditService.permitResult(audit, "Created token");
+			}
+
+		}
+		catch(FactoryException | ArgumentException e){
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return tokenType;
+	}
+	
+	
+	@GET @Path("/accessToken") @Produces(MediaType.APPLICATION_JSON)
+	public String getAccessToken(@Context HttpServletRequest request){
+		SecuritySpoolType token = newSecurityToken(request);
+		if(token == null) return null;
+		/*
+		SecurityBean bean = new SecurityBean();
+		SecurityFactory.getSecurityFactory().importSecurityBean(bean, token.getData(), false);
+		return getCryptoBean(bean,token.getGuid());
+		*/
+		return token.getGuid();
+	}
+	
 	@GET @Path("/getKeyRing") @Produces(MediaType.APPLICATION_JSON)
 	public CryptoBean[] getKeyRing(@Context HttpServletRequest request){
 
