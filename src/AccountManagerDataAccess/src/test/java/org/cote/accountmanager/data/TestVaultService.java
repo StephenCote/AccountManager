@@ -40,7 +40,7 @@ public class TestVaultService extends BaseDataAccessTest{
 	public void TestVaultData(){
 		UserType qaUser = getUser("QA Vault User", "password");
 		String vaultName = "QA Vault Keys";
-		VaultService vs = new VaultService(qaUser,"./VaultExp",vaultName);
+		VaultService vs = new VaultService(qaUser,"./target/VaultExp",vaultName);
 
 		String dataName = "QA Vault Data - " + UUID.randomUUID().toString();
 		SecurityBean cipherBean = new SecurityBean();
