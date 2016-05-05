@@ -68,7 +68,9 @@ public class SecurityFactory {
 	public static SecurityFactory securityFactory = null;
 	public static SecurityFactory getSecurityFactory(){
 		if(securityFactory != null) return securityFactory;
+		long start = System.currentTimeMillis();
 		securityFactory = new SecurityFactory();
+		logger.debug("Initialized provider: " + (System.currentTimeMillis() - start) + "ms");
 		return securityFactory;
 	}
 	public SecurityFactory(){
@@ -191,14 +193,10 @@ public class SecurityFactory {
 		setPassKey(bean, passKey, defaultSalt, encrypted_pass_key);
 	}
 	public void setPassKey(SecurityBean bean, String passKey, byte[] salt, boolean encrypted_pass_key){
-		/*
-		final byte[] iv = {
-				64, 65, 66, 64, 65, 66, 78, 94,
-				64, 65, 66, 64, 65, 66, 78, 94
-		};
-		*/
+		long start = System.currentTimeMillis();
 		try{
-			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+			// PBKDF2WithHmacSHA512
+			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512"); //"PBKDF2WithHmacSHA1");
 			KeySpec spec = new javax.crypto.spec.PBEKeySpec(passKey.toCharArray(),salt, 65536, 256);
 			SecretKey tmp = factory.generateSecret(spec);
 			SecretKey secret = new SecretKeySpec(tmp.getEncoded(), bean.getCipherKeySpec());
@@ -247,6 +245,7 @@ public class SecurityFactory {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		} 
+		logger.debug("Generate Pass Key: " + (System.currentTimeMillis() - start) + "ms");
 	}
 	public void setSecretKey(SecurityBean bean, byte[] key, byte iv[], boolean encrypted_cipher){
 		byte[] dec_key = new byte[0];
