@@ -350,11 +350,13 @@ import org.cote.accountmanager.util.ZipUtil;
 			{
 				logger.warn("Unable to delete keys from vault directory");
 			}
-			DataType imp_data = Factories.getDataFactory().getDataByName(vaultName, true,getVaultGroup());
-			if(imp_data != null && !Factories.getDataFactory().deleteData(imp_data)){
-				logger.warn("Unable to delete improvement key");
+			DirectoryGroupType vaultGroup = getVaultGroup();
+			if(vaultGroup != null){
+				DataType imp_data = Factories.getDataFactory().getDataByName(vaultName, true,vaultGroup);
+				if(imp_data != null && !Factories.getDataFactory().deleteData(imp_data)){
+					logger.warn("Unable to delete improvement key");
+				}
 			}
-
 			vaultKeyPath = null;
 			haveVaultKey = false;
 

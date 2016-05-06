@@ -54,10 +54,10 @@
 						<!-- 
 												
 						
-						<exclude>**/TestVaultService.java</exclude>
+						<exclude>**/TestTokenService.java</exclude>
 						
 						-->
-						
+						<exclude>**/TestVaultService.java</exclude>
 						<exclude>**/TestSoD.java</exclude>
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
 						<exclude>**/TestGroupAuthorization.java</exclude>
