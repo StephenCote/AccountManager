@@ -36,28 +36,20 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountPermissionType;
-import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
-import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
-import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataPermissionType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ObjectPermissionType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonPermissionType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.RolePermissionType;
 import org.cote.accountmanager.objects.UserPermissionType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.AccountEnumType;
-import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
-import org.cote.accountmanager.objects.types.RoleEnumType;
 
 public class PermissionFactory extends NameIdFactory {
 	public PermissionFactory(){

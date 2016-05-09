@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
-import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserPermissionType;

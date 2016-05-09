@@ -1,13 +1,12 @@
 package org.cote.accountmanager.data;
 
-import java.util.Random;
+import static org.junit.Assert.assertTrue;
+
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
-
-import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.objects.AuditType;
@@ -18,11 +17,6 @@ import org.cote.accountmanager.objects.types.RetentionEnumType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
 public class TestAuditFactory{
 	public static final Logger logger = Logger.getLogger(TestAuditFactory.class.getName());

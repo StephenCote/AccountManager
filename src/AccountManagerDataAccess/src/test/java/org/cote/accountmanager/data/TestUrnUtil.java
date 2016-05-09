@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.junit.Test;
 
 public class TestUrnUtil extends BaseDataAccessTest {

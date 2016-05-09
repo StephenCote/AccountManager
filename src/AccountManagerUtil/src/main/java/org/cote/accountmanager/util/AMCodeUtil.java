@@ -33,19 +33,15 @@ public class AMCodeUtil {
 	private static Map<Pattern,String> patterns = null;
 	private static Map<Pattern, String> getPatterns(){
 		if(patterns != null) return patterns;
-		patterns = new HashMap<Pattern,String>();
+		patterns = new HashMap<>();
 
 		patterns.put(Pattern.compile("\\[ul(?:\\s*)\\]((.|\\n|\\r)*?)\\[/ul(?:\\s*)\\]"), "<ul>$1</ul>");
 		patterns.put(Pattern.compile("\\[ol(?:\\s*)\\]((.|\\n|\\r)*?)\\[/ol(?:\\s*)\\]"), "<ol>$1</ol>");
 		patterns.put(Pattern.compile("\\[li(?:\\s*)\\]((.|\\n|\\r)*?)\\[/li(?:\\s*)\\]"), "<li>$1</li>");
 		patterns.put(Pattern.compile("\\[b(?:\\s*)\\]((.|\\n|\\r)*?)\\[/b(?:\\s*)\\]"), "<b>$1</b>");
-		//patterns.put(Pattern.compile("\\[p(?:\\s*)\\]((.|\\n|\\r)*?)\\[/p(?:\\s*)\\]"), "<p>$1</p>");
-		//patterns.put(Pattern.compile("\\[p class=((.|\\n|\\r)*?)(?:\\s*)\\]((.|\\n|\\r)*?)\\[/p(?:\\s*)\\]"), "<p class=\"$1\">$3</p>");
 		patterns.put(Pattern.compile("\\[p(?:\\s*)\\]"), "<p>");
 		patterns.put(Pattern.compile("\\[/p(?:\\s*)\\]"), "</p>");
 		patterns.put(Pattern.compile("\\[p class=((.|\\n|\\r)*?)(?:\\s*)\\]"), "<p class=\"$1\">");
-		//patterns.put(Pattern.compile("\\[div class=((.|\\n|\\r)*?)(?:\\s*)\\]((.|\\n|\\r)*?)\\[/div(?:\\s*)\\]"), "<div class=\"$1\">$3</div>");
-		//patterns.put(Pattern.compile("\\[div(?:\\s*)\\]((.|\\n|\\r)*?)\\[/div(?:\\s*)\\]"), "<div>$1</div>");
 		patterns.put(Pattern.compile("\\[div class=((.|\\n|\\r)*?)(?:\\s*)\\]"), "<div class=\"$1\">");
 		patterns.put(Pattern.compile("\\[/div(?:\\s*)\\]"), "</div>");
 		patterns.put(Pattern.compile("\\[div(?:\\s*)\\]"), "<div>");

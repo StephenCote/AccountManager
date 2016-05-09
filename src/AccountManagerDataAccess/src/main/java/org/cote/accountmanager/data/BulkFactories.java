@@ -23,18 +23,17 @@
  *******************************************************************************/
 package org.cote.accountmanager.data;
 
-import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.BulkFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkAccountFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkAddressFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkAsymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkContactFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkContactInformationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkContactInformationParticipationFactory;
-import org.cote.accountmanager.data.factory.bulk.BulkDataFactory;
-import org.cote.accountmanager.data.factory.bulk.BulkDataParticipationFactory;
-import org.cote.accountmanager.data.factory.BulkFactory;
-import org.cote.accountmanager.data.factory.bulk.BulkAsymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkControlFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkCredentialFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkDataFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkDataParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkFactFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkFunctionFactFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkFunctionFactory;

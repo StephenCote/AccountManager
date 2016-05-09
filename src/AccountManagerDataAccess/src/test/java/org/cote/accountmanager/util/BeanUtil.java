@@ -1,19 +1,11 @@
 package org.cote.accountmanager.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.util.JAXBSource;
 import javax.xml.namespace.QName;
-
-
-import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.UserSessionType;
-import org.cote.accountmanager.objects.UserType;
 
 
 

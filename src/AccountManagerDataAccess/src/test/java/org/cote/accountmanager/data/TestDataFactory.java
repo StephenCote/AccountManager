@@ -1,44 +1,23 @@
 package org.cote.accountmanager.data;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.cote.accountmanager.beans.SecurityBean;
-import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
-import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
-import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.KeyService;
-import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.exceptions.DataException;
-import org.cote.accountmanager.objects.DataColumnType;
-import org.cote.accountmanager.objects.DataTableType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.OrganizationType;
-import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.OrganizationEnumType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
-import org.cote.accountmanager.objects.types.UserEnumType;
-import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.DataUtil;
-import org.cote.accountmanager.util.SecurityUtil;
+import org.junit.Test;
 
 public class TestDataFactory extends BaseDataAccessTest {
 	public static final Logger logger = Logger.getLogger(TestDataFactory.class.getName());

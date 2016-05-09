@@ -59,6 +59,7 @@ public class ControlService {
 		ControlActionEnumType action,
 		T contextObject
 	) {
+
 		boolean out_bool = false;
 		if(action == ControlActionEnumType.UNKNOWN || action == ControlActionEnumType.ANY){
 			logger.error(action.toString() + " is unsupported as a validation action");

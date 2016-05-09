@@ -31,18 +31,12 @@ package org.cote.accountmanager.data.factory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.cote.accountmanager.data.factory.NameIdGroupFactory;
-import org.cote.accountmanager.data.query.QueryField;
-import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.data.util.LogicalTypeComparator;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
@@ -50,22 +44,20 @@ import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.util.LogicalTypeComparator;
 import org.cote.accountmanager.objects.BaseParticipantType;
-import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
-import org.cote.accountmanager.objects.FunctionType;
-import org.cote.accountmanager.objects.RuleEnumType;
-import org.cote.accountmanager.objects.ConditionEnumType;
-import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.RuleEnumType;
+import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
-import org.cote.accountmanager.util.CalendarUtil;
 
 
 

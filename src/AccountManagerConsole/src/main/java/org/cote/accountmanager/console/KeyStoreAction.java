@@ -1,6 +1,5 @@
 package org.cote.accountmanager.console;
 
-import java.io.File;
 import java.security.KeyStore;
 
 import org.apache.log4j.Logger;

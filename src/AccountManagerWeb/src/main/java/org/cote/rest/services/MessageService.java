@@ -23,26 +23,23 @@
  *******************************************************************************/
 package org.cote.rest.services;
 
+import java.util.UUID;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import org.cote.accountmanager.exceptions.DataException;
-import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
-import org.cote.accountmanager.service.rest.ServiceSchemaMethod;
-import org.cote.accountmanager.service.rest.ServiceSchemaMethodParameter;
 import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.beans.DataBean;
-import org.cote.beans.EntitySchema;
 import org.cote.beans.MessageBean;
-
-import java.util.UUID;
 
 @Path("/message")
 public class MessageService{

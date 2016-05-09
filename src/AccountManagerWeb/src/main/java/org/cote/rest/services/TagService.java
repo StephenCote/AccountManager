@@ -42,9 +42,6 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
-import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
-import org.cote.accountmanager.service.rest.SchemaBean;
-import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
@@ -58,8 +55,11 @@ import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.TagEnumType;
-import org.cote.accountmanager.services.TagServiceImpl;
-import org.cote.accountmanager.service.rest.BaseService;;
+import org.cote.accountmanager.service.rest.BaseService;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.accountmanager.services.TagServiceImpl;;
 
 @Path("/tag")
 public class TagService{

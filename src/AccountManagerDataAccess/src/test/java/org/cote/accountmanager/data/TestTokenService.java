@@ -15,10 +15,19 @@ public class TestTokenService extends BaseDataAccessTest {
 		SecuritySpoolType token = TokenService.newSecurityToken(testUser);
 		assertNotNull("Token is null", token);
 	}
+	
+	
 	@Test
 	public void TestMaterializedToken(){
-		
-		assertNotNull("Token is null", null);
+		try {
+			Factories.getUserFactory().populate(testUser);
+		} catch (FactoryException | ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String materialToken = null; //TokenService.newMaterializedToken(testUser, testUser.getHomeDirectory());
+		assertNotNull("Token is null", materialToken);
+		logger.info("Material Token: " + materialToken);
 	}
 	
 }

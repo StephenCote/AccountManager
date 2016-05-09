@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.AbstractParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.microsoft.OfficeParser;
@@ -51,7 +50,6 @@ public class TikaShredder {
 	private static Pattern rowLinePattern = Pattern.compile("^\\t{1}\\S",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 	private static Pattern sheetLinePattern = Pattern.compile("^\\S",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 	private static Pattern returnPattern = Pattern.compile("\r");
-	//private Pattern rowLinePattern = Pattern.compile("^(\\t{2})\\s");
 	
 	public static String getExcelAsString(String path){
 		String content = null;
@@ -63,6 +61,7 @@ public class TikaShredder {
 	            
 	        } catch (IOException e) {
 				// TODO Auto-generated catch block
+	        	logger.error(e.getMessage());
 				e.printStackTrace();
 			} finally {
 	            if(input != null){
@@ -70,6 +69,7 @@ public class TikaShredder {
 						input.close();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
+						logger.error(e.getMessage());
 						e.printStackTrace();
 					}
 	            }
@@ -100,12 +100,15 @@ public class TikaShredder {
 	            
 	        } catch (IOException e) {
 				// TODO Auto-generated catch block
+	        	logger.error(e.getMessage());
 				e.printStackTrace();
 			} catch (SAXException e) {
 				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			} catch (TikaException e) {
 				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			} finally {
 	            if(input != null){
@@ -113,6 +116,7 @@ public class TikaShredder {
 						input.close();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
+						logger.error(e.getMessage());
 						e.printStackTrace();
 					}
 	            }
@@ -141,8 +145,6 @@ public class TikaShredder {
 			}
 			Matcher rM = returnPattern.matcher(line);
 			if(rM.find()) line = rM.replaceAll("");
-			//logger.info("Line: '" + line + "'");
-			//logger.info("Line Index: " + line.indexOf("\t"));
 
 			Matcher sheetMatcher = sheetLinePattern.matcher(line);
 			if(sheetMatcher.find()){
@@ -152,16 +154,19 @@ public class TikaShredder {
 				book.getSheets().add(currentSheet);
 				continue;
 			}
+			if(currentSheet == null){
+				logger.error("Current sheet is null.  Check the workbook format.");
+				continue;
+			}
+
 			Matcher lineMatcher = rowLinePattern.matcher(line);
 			if(lineMatcher.find()){
-				if(currentSheet == null){
-					logger.error("Current sheet is null.  Check the workbook format.");
-				}
 				RowType row = new RowType();
-				if(hasColumnLabels == false || currentSheetRows > 0) currentSheet.getRows().add(row);
-				else if(hasColumnLabels && currentSheetRows == 0) labels = row;
+				if(hasColumnLabels == false || currentSheetRows > 0)
+					currentSheet.getRows().add(row);
+				else if(hasColumnLabels && currentSheetRows == 0)
+					labels = row;
 
-				//line = line.replaceAll("^\\t{1}","");
 				String[] cells = line.split("\\t");
 				for(int c = 0; c < cells.length; c++){
 					CellType cell = new CellType();
@@ -172,7 +177,7 @@ public class TikaShredder {
 					row.getCells().add(cell);
 				}
 				currentSheetRows++;
-				//logger.info(currentSheet.getSheetName() + ": cells: " + cells.length + " : Trim line '" + line + "'");
+
 			}
 		}
 		return book;

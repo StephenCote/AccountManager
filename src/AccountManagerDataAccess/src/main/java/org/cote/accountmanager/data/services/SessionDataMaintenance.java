@@ -23,7 +23,6 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
-import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.services.ThreadService;
 
 public class SessionDataMaintenance extends ThreadService {

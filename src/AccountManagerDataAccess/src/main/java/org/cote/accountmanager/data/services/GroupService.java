@@ -37,9 +37,8 @@ import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.PersonGroupType;
 import org.cote.accountmanager.objects.PersonParticipantType;
 import org.cote.accountmanager.objects.PersonType;
-import org.cote.accountmanager.objects.UserParticipantType;
-import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserGroupType;
+import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 

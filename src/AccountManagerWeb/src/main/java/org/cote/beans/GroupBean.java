@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 
 

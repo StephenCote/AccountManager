@@ -9,8 +9,6 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.security.ApiClientConfigurationBean;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
-import org.cote.accountmanager.objects.ApiClientConfigurationType;
-import org.cote.accountmanager.objects.ApiServiceEnumType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.OrganizationType;

@@ -27,7 +27,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;

@@ -23,13 +23,14 @@
  *******************************************************************************/
 package org.cote.rest.services;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -41,12 +42,10 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
-import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.services.BlogServiceImpl;
 import org.cote.util.ArticleUtil;
-
-import java.util.List;
 
 @Path("/blog")
 public class BlogService{

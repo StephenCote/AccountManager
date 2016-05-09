@@ -22,7 +22,6 @@ import org.cote.accountmanager.objects.ControlActionEnumType;
 import org.cote.accountmanager.objects.ControlEnumType;
 import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;

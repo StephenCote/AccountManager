@@ -48,7 +48,6 @@ import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
-import org.cote.accountmanager.util.SecurityUtil;
 
 public class FactoryDefaults {
 	

@@ -1,47 +1,13 @@
 package org.cote.accountmanager.data;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.UUID;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.cote.accountmanager.beans.SecurityBean;
-import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
-import org.cote.accountmanager.data.factory.ContactInformationFactory;
-import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.services.AuthorizationService;
-import org.cote.accountmanager.data.services.FactoryService;
-import org.cote.accountmanager.data.factory.OrganizationFactory;
-import org.cote.accountmanager.factory.SecurityFactory;
-import org.cote.accountmanager.objects.AccountRoleType;
-import org.cote.accountmanager.objects.ContactInformationType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.SecuritySpoolType;
-import org.cote.accountmanager.objects.OrganizationType;
-import org.cote.accountmanager.objects.UserRoleType;
-import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.AffectEnumType;
-import org.cote.accountmanager.objects.types.SpoolNameEnumType;
-import org.cote.accountmanager.objects.types.UserEnumType;
-import org.cote.accountmanager.objects.types.UserStatusEnumType;
-import org.cote.accountmanager.objects.types.ValueEnumType;
-import org.cote.accountmanager.util.BinaryUtil;
-import org.cote.accountmanager.util.CalendarUtil;
-import org.cote.accountmanager.util.SecurityUtil;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
 public class TestSecuritySpool extends BaseDataAccessTest {
 	public static final Logger logger = Logger.getLogger(TestSecuritySpool.class.getName());

@@ -1,5 +1,11 @@
 package org.cote.accountmanager.util;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.security.Security;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.cote.accountmanager.beans.SecurityBean;
@@ -9,22 +15,6 @@ import org.cote.accountmanager.objects.DataType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
-import static org.junit.Assert.*;
-
-import java.math.BigInteger;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Security;
-import java.util.Properties;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 
 public class TestDataUtil {
 	public static final Logger logger = Logger.getLogger(TestDataUtil.class.getName());

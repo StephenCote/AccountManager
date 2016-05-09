@@ -1,25 +1,18 @@
 package org.cote.accountmanager.data;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.cote.accountmanager.objects.DataColumnType;
+import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.DBFactory;
-import org.cote.accountmanager.objects.DataColumnType;
-import org.cote.accountmanager.objects.DataTableType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class TestDataRow{
 	public static final Logger logger = Logger.getLogger(TestDataRow.class.getName());

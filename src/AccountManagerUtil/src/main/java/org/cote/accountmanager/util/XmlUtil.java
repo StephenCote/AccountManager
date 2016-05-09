@@ -57,32 +57,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
 public class XmlUtil {
 	public static final Logger logger = Logger.getLogger(XmlUtil.class.getName());
 	private static TransformerFactory transFactory = null;
 	private static TransformerFactory getTransformerFactory(){
-		//return TransformerFactory.newInstance("org.apache.xalan.processor.TransformerFactoryImpl",null);
-		
 		if(transFactory == null){
-			//transFactory = TransformerFactory.newInstance("org.apache.xalan.processor.TransformerFactoryImpl",null);
 			transFactory = TransformerFactory.newInstance();
-			/*
-			try {
-				
-				transFactory.setFeature("http://xml.org/sax/features/validation", false);
-				transFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-				transFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-			} catch (TransformerConfigurationException e) {
-				// TODO Auto-generated catch block
-				logger.error(e.getMessage());
-				e.printStackTrace();
-			}
-			*/
-
 		}
 		return transFactory;
 		
@@ -95,18 +77,8 @@ public class XmlUtil {
 			ByteArrayInputStream bais=new ByteArrayInputStream(data);
 			InputStreamReader isr=new InputStreamReader(bais);
 			StreamSource source=new StreamSource(isr);
-			
 			transformer=getTransformerFactory().newTransformer(source);
-			
 			transformer.setOutputProperty(javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION,"yes");
-			/*
-			// Sax
-			dbf.setFeature("http://xml.org/sax/features/validation", false);
-
-			// Xerces: to disable Internet searching...
-			dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-			dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-			*/
 			bais.close();
 			isr.close();
 		}
@@ -135,15 +107,10 @@ public class XmlUtil {
 		
 			baos.close();
 		}
-		catch(TransformerException te){
-			String err=new String(te.toString());
-			returnData=err.getBytes();
-			te.printStackTrace();
-		}
-		catch(IOException ie){
-			String err=new String(ie.toString());
-			returnData=err.getBytes();
-			ie.printStackTrace();
+		catch(TransformerException | IOException e){
+			logger.error(e.getMessage());
+			returnData=e.toString().getBytes();
+			e.printStackTrace();
 		}
 		return returnData;
 	}
@@ -154,7 +121,7 @@ public class XmlUtil {
 		try {
 			outNode = (Node)xPath.compile(expression).evaluate(refNode, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return outNode;
@@ -165,7 +132,7 @@ public class XmlUtil {
 		try {
 			outNode = (Node)xPath.compile(expression).evaluate(refNode, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return outNode;
@@ -177,7 +144,7 @@ public class XmlUtil {
 		try {
 			outNodes = (NodeList)xPath.compile(expression).evaluate(refNode, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return outNodes;
@@ -188,7 +155,7 @@ public class XmlUtil {
 		try {
 			outNodes = (NodeList)xPath.compile(expression).evaluate(refNode, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return outNodes;
@@ -198,27 +165,20 @@ public class XmlUtil {
 	///
 
 	public static String GetStringFromDoc(Document d)    {
-		/*
-	    DOMImplementationLS domImplementation = (DOMImplementationLS) d.getImplementation();
-	    LSSerializer lsSerializer = domImplementation.createLSSerializer();
-
-	    return lsSerializer.writeToString(d);
-	    */
 	    StringWriter output = new StringWriter();
 
 	    
 		try {
-			//Transformer transformer = TransformerFactory.newInstance("org.apache.xalan.processor.TransformerFactoryImpl",null).newTransformer();
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
 			transformer.transform(new DOMSource(d.getDocumentElement()), new StreamResult(output));
 		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (TransformerFactoryConfigurationError e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 	    
@@ -227,7 +187,7 @@ public class XmlUtil {
 	}
 	
 	public static Document GetDocumentFromBytes(byte[] data){
-		//DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance("org.apache.xerces.jaxp.DocumentBuilderFactoryImpl",null);
+
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 		DocumentBuilder db = null;
@@ -239,13 +199,13 @@ public class XmlUtil {
 			doc = db.parse(bais);
 		}
 		catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		finally{
@@ -263,25 +223,30 @@ public class XmlUtil {
 	}
 	public static Element FindElement(Element parent_element, String element_name, String child_element_name){
 		NodeList match= parent_element.getElementsByTagName(element_name);
-		if(match.getLength() == 0) return null;
+		if(match.getLength() == 0)
+			return null;
 		Element m = (Element)match.item(0);
-		if(child_element_name != null) m = FindElement(m, child_element_name, null);
+		if(child_element_name != null)
+			m = FindElement(m, child_element_name, null);
 		return m;
 	}
 	public static String FindElementText(Element parent_element, String element_name, String node_name){
 		Element match = FindElement(parent_element, element_name);
-		if(match == null) return null;
+		if(match == null)
+			return null;
 		return GetElementText(match, node_name);
 	}
 	public static String GetElementText(Element parent, String node_name)
 	{
 		NodeList match = parent.getElementsByTagName(node_name);
-		if (match.getLength() == 0) return null;
+		if (match.getLength() == 0)
+			return null;
 		Node m = match.item(0);
 		return getNodeText(m);
 	}
 	public static String getNodeText(Node node){
-		if(node == null) return null;
+		if(node == null)
+			return null;
 		StringBuffer buff = new StringBuffer();
 		for(int c = 0; c < node.getChildNodes().getLength();c++){
 			Node cn = node.getChildNodes().item(c);

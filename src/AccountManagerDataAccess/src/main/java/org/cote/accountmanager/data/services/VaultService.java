@@ -40,7 +40,6 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
-import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.CredentialEnumType;

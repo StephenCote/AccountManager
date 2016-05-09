@@ -1,6 +1,6 @@
 package org.cote.accountmanager.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.security.Security;
 

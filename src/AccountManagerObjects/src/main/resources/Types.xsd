@@ -312,6 +312,7 @@
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
     		<enumeration value="GENERAL"></enumeration>
+    		<enumeration value="AUTHORIZATION"></enumeration>
     		<enumeration value="STATE"></enumeration>
     		<enumeration value="MESSAGE"></enumeration>
     		<enumeration value="QUEUE"></enumeration>

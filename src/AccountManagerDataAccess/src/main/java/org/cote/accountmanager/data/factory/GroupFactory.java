@@ -24,37 +24,27 @@
 package org.cote.accountmanager.data.factory;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
-import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.BaseGroupType;
-import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BucketGroupType;
-import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonGroupType;
-import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;

@@ -25,7 +25,6 @@ package org.cote.accountmanager.data.factory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,20 +40,15 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountType;
-import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ContactInformationType;
-import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ContactInformationEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-import org.cote.accountmanager.util.CalendarUtil;
 
 public class ContactInformationFactory extends NameIdFactory {
 	

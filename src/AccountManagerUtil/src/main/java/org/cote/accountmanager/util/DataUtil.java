@@ -25,6 +25,7 @@ package org.cote.accountmanager.util;
 
 import java.io.UnsupportedEncodingException;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
@@ -32,6 +33,7 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
 
 public class DataUtil {
+	public static final Logger logger = Logger.getLogger(DataUtil.class.getName());
 	public static void clearCipher(DataType data){
 		data.setEncipher(false);
 		data.setCipherKey(null);
@@ -50,7 +52,6 @@ public class DataUtil {
 			SecurityBean useBean =  bean;
 			if(bean.getEncryptCipherKey()){
 				useBean = new SecurityBean();
-				///System.out.println("KEY LENGTH: " + bean.getCipherKey().length + "::" + bean.getCipherIV().length);
 				SecurityFactory.getSecurityFactory().setSecretKey(useBean, bean.getCipherKey(), bean.getCipherIV(), false);
 			}
 			data.setCipherKey(SecurityUtil.serializeToXml(useBean, false, false, true).getBytes());
@@ -67,7 +68,6 @@ public class DataUtil {
 		}
 		else{
 			SecurityBean bean = new SecurityBean();
-			//byte[] passKey = SecurityUtil.getPassphraseBytes(password);
 			SecurityFactory.getSecurityFactory().setPassKey(bean, password, false);
 			updatePassword(data, bean);
 		}
@@ -89,7 +89,7 @@ public class DataUtil {
 			try {
 				setValue(d, value.getBytes("UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 			d.setShortData(null);
@@ -110,7 +110,7 @@ public class DataUtil {
 			try {
 				return (new String(getValue(d),"UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -178,11 +178,8 @@ public class DataUtil {
 		}
 
 		d.setSize(value.length);
-		/// this.size = data_bytes.Length;
-		//d.Size = value.Length;
 		d.setDataBytesStore(value);
 		d.setBlob(true);
-		///d.blob_data = new System.IO.MemoryStream(value);
 	}
 
 	public static byte[] getValue(DataType d) throws DataException
@@ -197,9 +194,7 @@ public class DataUtil {
 			{
 				if (d.getPointer())
 				{
-					//throw new DataException("IO Read not implemented");
 					ret = FileUtil.getFile(d.getShortData());
-					///ret = Core.Util.IO.FileUtil.GetFileBytes(d.short_data);
 				}
 				else
 				{
@@ -254,8 +249,6 @@ public class DataUtil {
 			if (d.getPointer() && d.getVaulted() == false)
 			{
 				return FileUtil.getFile(new String(d.getDataBytesStore()));
-				//throw new DataException("Pointer derference not implemented");
-				//return Core.Util.IO.FileUtil.GetFileBytes(Core.Util.Lang.LangUtil.ByteArrayToString(d.data_bytes_store));
 			}
 			return d.getDataBytesStore();
 		}

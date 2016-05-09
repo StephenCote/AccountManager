@@ -1,10 +1,11 @@
 package org.cote.accountmanager.data;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
-import java.util.UUID;
 
 import org.cote.accountmanager.data.factory.FactoryBase;
-import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.AuthorizationService;
@@ -13,10 +14,8 @@ import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
-import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ConditionEnumType;
-import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
@@ -43,11 +42,7 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class TestPolicyService extends BaseDataAccessTest{
 	

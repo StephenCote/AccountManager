@@ -4,14 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
@@ -23,7 +21,6 @@ import java.util.Enumeration;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
-import javax.net.ssl.TrustManagerFactory;
 import javax.security.auth.x500.X500Principal;
 
 import org.apache.log4j.Logger;
@@ -43,7 +40,6 @@ public class KeyStoreUtil {
 		store.store(baos,password);
 		outByte = baos.toByteArray();
 		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
@@ -62,7 +58,6 @@ public class KeyStoreUtil {
 	    	store =  KeyStore.getInstance(PREFERRED_KEYSTORE_PROVIDER);
 			store.load(new ByteArrayInputStream(keystoreBytes), password);
 		} catch (NoSuchAlgorithmException | CertificateException | IOException | KeyStoreException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 			store = null;
@@ -136,7 +131,7 @@ public class KeyStoreUtil {
 				newStore.store(fos, password);
 				fos.close();
 			} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
-				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -153,7 +148,6 @@ public class KeyStoreUtil {
 		}
 		 catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
 			 logger.error(e.getMessage());
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			}
 		return saved;
@@ -166,7 +160,7 @@ public class KeyStoreUtil {
 			return null;
 		}
 		KeyStore keystore = null;
-		//logger.info("Test: " + KeyStore.getDefaultType());
+
 		try{
 			
 		  FileInputStream is = new FileInputStream(path);
@@ -190,35 +184,10 @@ public class KeyStoreUtil {
 		    try {
 				cert = store.getCertificate(keyAlias);
 			} catch (KeyStoreException e) {
-				// TODO Auto-generated catch block
 				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 
-				//key = store.getKey(keyAlias, (keyPassword == null ? password : keyPassword).toCharArray());
-				//store.getKey(keyAlias, new KeyStore.PasswordProtection(keyPassword));
-				
-/*
-		    	TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-		    	tmf.init(serverKeyStore);
-		    	KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-		    	kmf.init(serverKeyStore, keyphrase.toCharArray());
-		    	*/
-		          //KeyStore.PrivateKeyEntry keyEnt = (KeyStore.PrivateKeyEntry)ks.getEntry("business2", new KeyStore.PasswordProtection(passwd));   // -> ERROR IN THIS ROW
-
-
-		    /*
-		    if (key instanceof PrivateKey) {
-		      // Get certificate of public key
-		      Certificate cert = keystore.getCertificate(keyAlias);
-
-		      // Get public key
-		      PublicKey publicKey = cert.getPublicKey();
-
-		      // Return a key pair
-		      new KeyPair(publicKey, (PrivateKey) key);
-		    }
-		    */
 		    return cert;
 	}
 	public static Key getKey(String path, char[] password, String keyAlias, char[] keyPassword){
@@ -238,36 +207,11 @@ public class KeyStoreUtil {
 					logger.info("Alias " + keyAlias + " chain: " + certs.length);
 				}
 			} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
 				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
-
-			//store.getKey(keyAlias, new KeyStore.PasswordProtection(keyPassword));
-			
-/*
-	    	TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-	    	tmf.init(serverKeyStore);
-	    	KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-	    	kmf.init(serverKeyStore, keyphrase.toCharArray());
-	    	*/
-	          //KeyStore.PrivateKeyEntry keyEnt = (KeyStore.PrivateKeyEntry)ks.getEntry("business2", new KeyStore.PasswordProtection(passwd));   // -> ERROR IN THIS ROW
-
-
-	    /*
-	    if (key instanceof PrivateKey) {
-	      // Get certificate of public key
-	      Certificate cert = keystore.getCertificate(keyAlias);
-
-	      // Get public key
-	      PublicKey publicKey = cert.getPublicKey();
-
-	      // Return a key pair
-	      new KeyPair(publicKey, (PrivateKey) key);
-	    }
-	    */
-	    return key;
-}
+		    return key;
+	}
 	public static void setPublicKey(PublicKey key, SecurityBean bean){
 		if(key == null || bean == null){
 			logger.error("Null arguments");
@@ -293,7 +237,7 @@ public class KeyStoreUtil {
 		try {
 			ldapDN = new LdapName(principal.getName(X500Principal.CANONICAL));
 		} catch (InvalidNameException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		if(ldapDN == null){

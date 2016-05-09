@@ -24,22 +24,15 @@
 package org.cote.accountmanager.data;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.net.ssl.SSLContext;
 import javax.sql.DataSource;
-
-import com.sun.xml.bind.v2.util.DataSourceSource;
 
 public class ConnectionFactory {
 	private String driverClassName = null;

@@ -34,7 +34,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
-import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.DataType;

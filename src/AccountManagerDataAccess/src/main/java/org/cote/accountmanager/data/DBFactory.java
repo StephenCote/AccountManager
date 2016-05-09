@@ -33,17 +33,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.ArrayList;
-
-import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
-import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.query.QueryField;
-import org.cote.accountmanager.objects.DataColumnType;
-import org.cote.accountmanager.objects.DataTableType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;

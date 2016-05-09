@@ -37,7 +37,6 @@ import org.cote.accountmanager.data.DataCell;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.factory.ParticipationFactory;
 import org.cote.accountmanager.objects.DataRowType;
 
 public class BulkInsertUtil {

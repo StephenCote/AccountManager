@@ -38,9 +38,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.services.AuditService;
-import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
-import org.cote.accountmanager.service.rest.SchemaBean;
-import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.AuthorizationPolicyType;
 import org.cote.accountmanager.objects.PolicyDefinitionType;
@@ -50,6 +47,9 @@ import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.services.PolicyServiceImpl;
 
 

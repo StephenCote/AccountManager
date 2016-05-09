@@ -24,7 +24,6 @@
 package org.cote.accountmanager.data;
 
 import org.cote.accountmanager.objects.DataRowType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class DataRow extends DataRowType {
 	private DataTable table = null;

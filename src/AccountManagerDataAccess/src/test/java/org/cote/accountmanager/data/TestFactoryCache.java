@@ -1,15 +1,10 @@
 package org.cote.accountmanager.data;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.exceptions.DataException;
@@ -20,15 +15,8 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
-import org.cote.accountmanager.objects.types.UserEnumType;
-import org.cote.accountmanager.objects.types.UserStatusEnumType;
-import org.cote.accountmanager.util.DataUtil;
-import org.cote.accountmanager.util.SecurityUtil;
-
-
 import org.cote.accountmanager.util.BeanUtil;
-import org.junit.After;
-import org.junit.Before;
+import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
 
 public class TestFactoryCache extends BaseDataAccessTest{

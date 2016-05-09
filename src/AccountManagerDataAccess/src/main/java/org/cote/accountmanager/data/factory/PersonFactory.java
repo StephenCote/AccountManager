@@ -23,8 +23,6 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -36,31 +34,25 @@ import java.util.Set;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
-import org.cote.accountmanager.data.factory.NameIdGroupFactory;
-import org.cote.accountmanager.data.query.QueryField;
-import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
-import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
-import org.cote.accountmanager.objects.types.ContactInformationEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;

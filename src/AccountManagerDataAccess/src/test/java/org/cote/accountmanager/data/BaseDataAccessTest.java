@@ -1,17 +1,14 @@
 package org.cote.accountmanager.data;
 
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.AuditService;

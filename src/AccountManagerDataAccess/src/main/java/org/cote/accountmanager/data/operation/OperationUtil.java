@@ -25,22 +25,8 @@ package org.cote.accountmanager.data.operation;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.factory.DataFactory;
-import org.cote.accountmanager.data.factory.GroupFactory;
-import org.cote.accountmanager.data.factory.NameIdFactory;
-import org.cote.accountmanager.data.factory.NameIdGroupFactory;
-import org.cote.accountmanager.data.factory.UserFactory;
-import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.FactEnumType;
-import org.cote.accountmanager.objects.FactType;
-import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.objects.types.GroupEnumType;
 ;
 
 public class OperationUtil {

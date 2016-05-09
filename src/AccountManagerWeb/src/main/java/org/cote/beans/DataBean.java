@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.types.CompressionEnumType;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -32,7 +32,6 @@ import javax.ws.rs.Path;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.util.XmlUtil;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

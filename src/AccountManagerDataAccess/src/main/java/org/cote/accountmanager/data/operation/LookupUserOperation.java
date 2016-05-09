@@ -24,9 +24,6 @@
 package org.cote.accountmanager.data.operation;
 
 import org.apache.log4j.Logger;
-import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.fact.FactUtil;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;

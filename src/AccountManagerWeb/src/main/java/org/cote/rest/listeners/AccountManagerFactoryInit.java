@@ -24,25 +24,20 @@
 package org.cote.rest.listeners;
 
 
-import java.io.IOException;
 import java.security.Security;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContextListener;
+import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.DatabaseMaintenance;

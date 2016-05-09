@@ -1,28 +1,27 @@
 package org.cote.accountmanager.data.services;
 
-import java.util.Properties;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.util.List;
-import java.util.Properties;
 import java.util.Date;
+import java.util.Properties;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
-import javax.mail.*;
-import javax.mail.internet.*;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
-import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.security.ApiClientConfigurationBean;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.CredentialEnumType;
-import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.types.ContactEnumType;
 
-import com.sun.mail.smtp.*;
+import com.sun.mail.smtp.SMTPTransport;
 public class EmailService {
 	
 	/// From http://stackoverflow.com/questions/8204680/java-regex-email/13013056#13013056

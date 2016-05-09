@@ -23,7 +23,6 @@
  *******************************************************************************/
 package org.cote.util;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -32,26 +31,18 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.SessionDataFactory;
-import org.cote.accountmanager.data.security.OrganizationSecurity;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.PersonService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.data.services.UserService;
-import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.ContactType;
-import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
-import org.cote.accountmanager.objects.types.ResponseEnumType;
-import org.cote.accountmanager.objects.types.RetentionEnumType;
-import org.cote.accountmanager.objects.types.UserEnumType;
-import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
-import org.cote.accountmanager.util.SecurityUtil;
 import org.cote.beans.SessionBean;
 
 public class RegistrationUtil {

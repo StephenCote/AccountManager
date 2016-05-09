@@ -7,7 +7,7 @@
 	<packaging>jar</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>AccountManagerWeb</name>
+	<name>AccountManagerConsole</name>
 	<url>http://maven.apache.org</url>
 
 	<pluginRepositories>
@@ -85,7 +85,6 @@
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
 			<version>1.54</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -138,6 +137,7 @@
 	<build>
 		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
 		<finalName>AccountManagerConsole</finalName>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -243,6 +243,12 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
+      <plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>3.0.1</version>
+      </plugin>
+
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>

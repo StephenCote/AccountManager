@@ -35,7 +35,10 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.util.JAXBSource;
 import javax.xml.namespace.QName;
 
+import org.apache.log4j.Logger;
+
 public class JAXBUtil {
+	public static final Logger logger = Logger.getLogger(JAXBUtil.class.getName());
 	public static <U,T> T clone(Class<T> tClass, U map){
 		return clone(tClass,map,new QName("http://www.cote.org/accountmanager/objects"));
 	}
@@ -52,27 +55,25 @@ public class JAXBUtil {
 	        bean = jaxbElementB.getValue();
 		}
 		catch(JAXBException je){
+			logger.error(je.getMessage());
 			je.printStackTrace();
-			System.out.println(je.getMessage());
 		}
 		return bean;
 	}
 	public static <T> T importObject(Class<T> tClass, String input){
 
 		T obj = null;
-		 // setup object mapper using the AppConfig class
 	    JAXBContext context;
 		try {
 			context = JAXBContext.newInstance(tClass);
 		    ByteArrayInputStream bais =new ByteArrayInputStream(input.getBytes("UTF-8"));
 		    obj = (T) context.createUnmarshaller().unmarshal(bais);
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-	    // parse the XML and return an instance of the AppConfig class
 		catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -81,7 +82,6 @@ public class JAXBUtil {
 	public static <T> String exportObject(Class<T> tClass, T obj){
 
 		String output = null;
-		 // setup object mapper using the AppConfig class
 	    JAXBContext context;
 		try {
 			context = JAXBContext.newInstance(tClass);
@@ -91,19 +91,16 @@ public class JAXBUtil {
 		    output = new String(baos.toByteArray(),"UTF-8");
 		    baos.close();
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-	    // parse the XML and return an instance of the AppConfig class
 		catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-
-	    		//unmarshal(createInput("config.xml"));
 	    return output;
 	}
 }

@@ -48,7 +48,6 @@ import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;

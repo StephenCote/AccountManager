@@ -1,14 +1,10 @@
 package org.cote.accountmanager.data;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.objects.AddressType;
@@ -28,7 +24,6 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.LocationEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
-import org.cote.accountmanager.util.SecurityUtil;
 import org.cote.parsers.excel.RowType;
 import org.cote.parsers.excel.SheetType;
 import org.cote.parsers.excel.TikaShredder;

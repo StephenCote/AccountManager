@@ -451,4 +451,21 @@
 		<attribute name="entitlementType" type="Q1:AffectEnumType"></attribute>
 		<attribute name="organizationId" type="long"></attribute>
 	</complexType>
+
+	<complexType name="AuthorizationType">
+		<sequence>
+			<element name="resources" type="tns:AuthorizationClaimType"
+				minOccurs="0" maxOccurs="unbounded">
+			</element>
+			<element name="signature" type="string"></element>
+		</sequence>
+		<attribute name="owner" type="string"></attribute>
+		<attribute name="client" type="string"></attribute>
+	</complexType>
+
+	<complexType name="AuthorizationClaimType">
+		<attribute name="resource" type="string"></attribute>
+		<attribute name="entitlement" type="string"></attribute>
+		<attribute name="grant" type="Q1:AffectEnumType"></attribute>
+	</complexType>
 </schema>

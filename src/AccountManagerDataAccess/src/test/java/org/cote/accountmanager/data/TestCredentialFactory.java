@@ -10,13 +10,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
-import org.cote.accountmanager.beans.SecurityBean;
-import org.cote.accountmanager.data.factory.ControlFactory;
-import org.cote.accountmanager.data.factory.CredentialFactory;
 import org.cote.accountmanager.data.security.ApiClientConfigurationBean;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
-import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.objects.ApiClientConfigurationType;
 import org.cote.accountmanager.objects.ApiServiceEnumType;
 import org.cote.accountmanager.objects.AttributeType;
@@ -25,7 +21,6 @@ import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.util.JSONUtil;
-import org.cote.accountmanager.util.SecurityUtil;
 import org.junit.Test;
 
 

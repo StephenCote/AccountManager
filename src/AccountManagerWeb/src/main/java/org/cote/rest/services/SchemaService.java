@@ -24,17 +24,14 @@
 package org.cote.rest.services;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
-import org.cote.accountmanager.service.rest.ServiceSchemaMethod;
 import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.beans.EntitySchema;
 
 @Path("/schema")

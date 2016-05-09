@@ -18,7 +18,6 @@ import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;

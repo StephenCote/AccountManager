@@ -24,30 +24,19 @@
 package org.cote.accountmanager.web;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
-import org.cote.accountmanager.service.rest.ServiceSchemaMethod;
 import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.util.StreamUtil;
-import org.cote.accountmanager.util.XmlUtil;
 import org.cote.beans.MessageBean;
 import org.cote.rest.services.GroupService;
-import org.cote.rest.services.MessageService;
-import org.cote.rest.services.SchemaService;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
 
 public class TestResources{
 	public static final Logger logger = Logger.getLogger(TestResources.class.getName());

@@ -33,15 +33,13 @@ import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AccountParticipantType;
-
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonParticipantType;
 import org.cote.accountmanager.objects.PersonType;
-import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;

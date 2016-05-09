@@ -31,32 +31,26 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
-import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonParticipantType;
 import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.RoleParticipantType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
-import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
-import org.cote.accountmanager.objects.RoleParticipantType;
 
 public class RoleParticipationFactory extends ParticipationFactory {
 	public RoleParticipationFactory(){

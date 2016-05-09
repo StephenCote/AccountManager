@@ -8,16 +8,12 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.security.CredentialService;
-import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.CredentialEnumType;
-import org.cote.accountmanager.objects.SecurityType;
-import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
-import org.cote.accountmanager.util.SecurityUtil;
 import org.junit.Test;
 
 public class TestBulkUser extends BaseDataAccessTest{

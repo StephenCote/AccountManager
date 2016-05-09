@@ -25,12 +25,9 @@ package org.cote.accountmanager.web;
 
 import static org.junit.Assert.assertNotNull;
 
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.cote.accountmanager.util.MimeUtil;
-
-
 import org.junit.Before;
 import org.junit.Test;
 

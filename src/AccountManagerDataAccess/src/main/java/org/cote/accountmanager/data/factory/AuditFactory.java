@@ -35,22 +35,20 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
+import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AuditType;
-
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.LevelEnumType;
 import org.cote.accountmanager.objects.types.ResponseEnumType;
 import org.cote.accountmanager.objects.types.RetentionEnumType;
-
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class AuditFactory extends FactoryBase {

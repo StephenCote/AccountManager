@@ -25,7 +25,6 @@ package org.cote.accountmanager.console;
 
 import java.security.Key;
 import java.security.KeyStore;
-
 import java.security.cert.Certificate;
 
 import org.apache.log4j.Logger;
@@ -43,8 +42,6 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 import org.cote.accountmanager.util.KeyStoreUtil;
-import org.cote.accountmanager.util.OpenSSLUtil;
-import org.cote.accountmanager.util.SecurityUtil;
 
 public class OrganizationCommand {
 	public static final Logger logger = Logger.getLogger(OrganizationCommand.class.getName());

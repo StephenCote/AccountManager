@@ -43,18 +43,16 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
-import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
-import org.cote.accountmanager.service.rest.SchemaBean;
-import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BasePermissionType;
-import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.services.PermissionServiceImpl;
-import org.cote.accountmanager.services.RoleServiceImpl;
 
 
 @Path("/permission")

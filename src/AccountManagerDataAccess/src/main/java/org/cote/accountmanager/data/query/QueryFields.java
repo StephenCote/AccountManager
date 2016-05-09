@@ -31,11 +31,8 @@ import java.util.Map;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.cote.accountmanager.data.factory.FactoryBase;
-import org.cote.accountmanager.objects.AccountType;
-import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
-import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ControlActionEnumType;

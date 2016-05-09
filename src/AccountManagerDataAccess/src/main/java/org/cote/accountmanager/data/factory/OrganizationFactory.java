@@ -29,32 +29,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
+import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.security.KeyService;
-import org.cote.accountmanager.data.security.OrganizationSecurity;
-import org.cote.accountmanager.data.util.UrnUtil;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
-import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class OrganizationFactory extends NameIdFactory {
 	/// private static final String buildDeleteQuery = "SELECT 'DELETE FROM ' || tablename || ' WHERE organizationid = ?;' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations';";

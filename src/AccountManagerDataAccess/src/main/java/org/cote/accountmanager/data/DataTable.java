@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.cote.accountmanager.objects.DataColumnType;
-import org.cote.accountmanager.objects.DataRowType;
 import org.cote.accountmanager.objects.DataTableType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 

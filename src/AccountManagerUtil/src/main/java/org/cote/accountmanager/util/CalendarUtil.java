@@ -33,11 +33,13 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.log4j.Logger;
+
 public class CalendarUtil {
 	private static DatatypeFactory dataTypeFactory = null;
 	private static String legacyDateFormat = "yyyy/MM/dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd:hh:mm:ss Z";
-
+	public static final Logger logger = Logger.getLogger(CalendarUtil.class.getName());
 	public static Date importDateFromLegacyString(String s){
 		return importDateFromString(s, legacyDateFormat);
 	}
@@ -50,7 +52,7 @@ public class CalendarUtil {
 		try {
 			d = parserSDF.parse(s);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return d;
@@ -78,11 +80,12 @@ public class CalendarUtil {
 		return new Date((cal.toGregorianCalendar().getTimeInMillis()));
 	}
 	public static DatatypeFactory getDatatypeFactory(){
-		if(dataTypeFactory != null) return dataTypeFactory;
+		if(dataTypeFactory != null)
+			return dataTypeFactory;
 		try {
 			dataTypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return dataTypeFactory;

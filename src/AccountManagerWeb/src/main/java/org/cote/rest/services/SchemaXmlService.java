@@ -23,29 +23,19 @@
  *******************************************************************************/
 package org.cote.rest.services;
 
+import java.util.UUID;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
-import org.cote.accountmanager.objects.types.*;
-import org.cote.accountmanager.objects.MessageType;
-import org.cote.accountmanager.objects.SchemaType;
-import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.beans.MessageBean;
 
 import com.sun.jersey.api.json.JSONConfiguration;
-
-import java.net.URLEncoder;
-import java.util.Iterator;
-import java.util.UUID;
 
 @Path("/schemaxml")
 public class SchemaXmlService{

@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.cote.beans.MediaOptions;
 import org.cote.util.ArticleUtil;
-import org.cote.util.MediaUtil;
 
 /**
  * Servlet implementation class BlogServlet

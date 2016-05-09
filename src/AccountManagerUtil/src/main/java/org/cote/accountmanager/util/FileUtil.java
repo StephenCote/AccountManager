@@ -32,7 +32,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+import org.apache.log4j.Logger;
+
 public class FileUtil {
+	public static final Logger logger = Logger.getLogger(FileUtil.class.getName());
 	public static String getFileAsString(String path){
 		return getFileAsString(new File(path));
 	}
@@ -42,7 +45,7 @@ public class FileUtil {
 		try {
 			out_str = new String(data,"UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return out_str;
@@ -53,7 +56,8 @@ public class FileUtil {
 	public static byte[] getFile(File f){
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		if(f.exists() == false) return new byte[0];
+		if(f.exists() == false)
+			return new byte[0];
 		
 		try{
 			FileInputStream fis = new FileInputStream(f);
@@ -61,6 +65,7 @@ public class FileUtil {
 			fis.close();
 		}
 		catch(IOException ie){
+			logger.error(ie.getMessage());
 			ie.printStackTrace();
 		}
 		return baos.toByteArray();
@@ -73,7 +78,8 @@ public class FileUtil {
 				int bytesRead=0;
 				while (bytesRead != -1) {
 					bytesRead = in.read(buffer);
-					if (bytesRead == -1) break;
+					if (bytesRead == -1)
+						break;
 					copied+=(long)bytesRead;
 					out.write(buffer, 0, bytesRead);
 				}
@@ -92,7 +98,7 @@ public class FileUtil {
 			cont = contents.getBytes(encoding);
 			out_bool = emitFile(path, cont);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -102,7 +108,8 @@ public class FileUtil {
 	public static boolean makePath(String path){
 		boolean out_bool = false;
 		File f = new File(path);
-		if(f.exists() == false) out_bool = f.mkdirs();
+		if(f.exists() == false)
+			out_bool = f.mkdirs();
 		else out_bool = true;
 		
 		return out_bool;
@@ -111,8 +118,10 @@ public class FileUtil {
 		boolean out_bool = false;
 		File f = new File(path);
 		File p = f.getParentFile();
-		if(p.exists() == false) p.mkdirs();
-		if(f.exists() == true) f.delete();
+		if(p.exists() == false)
+			p.mkdirs();
+		if(f.exists() == true)
+			f.delete();
 		try{
 			FileOutputStream fos = new FileOutputStream(f);
 			fos.write(contents);
@@ -121,6 +130,7 @@ public class FileUtil {
 			out_bool = true;
 		}
 		catch(IOException ie){
+			logger.error(ie.getMessage());
 			ie.printStackTrace();
 		}
 		return out_bool;

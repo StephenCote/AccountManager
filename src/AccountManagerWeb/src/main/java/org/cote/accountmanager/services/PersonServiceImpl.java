@@ -33,13 +33,13 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
-import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
+import org.cote.accountmanager.service.util.ServiceUtil;
 
 public class PersonServiceImpl  {
 	public static final Logger logger = Logger.getLogger(PersonServiceImpl.class.getName());

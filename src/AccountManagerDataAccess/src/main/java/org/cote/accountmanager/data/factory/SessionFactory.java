@@ -27,43 +27,33 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
+import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.objects.BaseSpoolType;
-import org.cote.accountmanager.objects.UserSessionType;
-import org.cote.accountmanager.objects.MessageSpoolType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserSessionDataType;
 import org.cote.accountmanager.objects.UserSessionType;
+import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.SessionStatusEnumType;
-import org.cote.accountmanager.objects.types.SpoolBucketEnumType;
-import org.cote.accountmanager.objects.types.SpoolNameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
-import org.cote.accountmanager.objects.types.ValueEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class SessionFactory extends FactoryBase {

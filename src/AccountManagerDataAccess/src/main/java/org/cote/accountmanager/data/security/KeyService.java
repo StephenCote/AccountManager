@@ -8,7 +8,6 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;

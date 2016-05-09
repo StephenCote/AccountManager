@@ -23,7 +23,6 @@
  *******************************************************************************/
 package org.cote.rest.servlets;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -37,15 +36,11 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
-import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.services.DataServiceImpl;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.MimeUtil;

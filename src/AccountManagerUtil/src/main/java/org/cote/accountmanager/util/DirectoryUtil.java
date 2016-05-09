@@ -22,10 +22,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 package org.cote.accountmanager.util;
-import java.io.*;
-import java.util.Date;
+import java.io.File;
 //import java.util.Vector;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;

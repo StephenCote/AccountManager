@@ -55,7 +55,6 @@ import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.beans.*;
 
 
 @XmlRootElement(name="EntitySchema")

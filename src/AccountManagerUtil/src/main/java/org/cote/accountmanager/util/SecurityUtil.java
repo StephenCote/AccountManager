@@ -23,14 +23,11 @@
  *******************************************************************************/
 package org.cote.accountmanager.util;
 
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -117,17 +114,10 @@ public class SecurityUtil {
 	}
 	public static byte[] getDigestOLDOLD(byte[] in_bytes, byte[] salt){
 		MessageDigest digest = getMessageDigest();
-		/*
-		 * TODO: For CredentialType update
-		digest.reset();
-		if(salt.length > 0){
-			digest.update(salt);
-		}
-		digest.digest(in_bytes);
-		*/
+		logger.warn("Refactor this method - it uses the old salt method");
 		digest.update(in_bytes,0,in_bytes.length);
-		byte[] out_bytes = digest.digest();
-		return out_bytes;
+		return digest.digest();
+
 	}
 	public static String getDigestAsString(byte[] in_bytes){
 		return new String(BinaryUtil.toBase64(getDigestOLDOLD(in_bytes,new byte[0])));
@@ -139,18 +129,6 @@ public class SecurityUtil {
 	public static SecurityBean getPasswordBean(String password, byte[] salt){
 		SecurityBean bean = new SecurityBean();
 		SecurityFactory.getSecurityFactory().setPassKey(bean, password, salt,false);
-		//SecurityBean bean = new SecurityBean();
-		//byte[] passKey = SecurityUtil.getPassphraseBytes(password);
-		//SecurityFactory.getSecurityFactory().setPassKey(bean, password, false);
-		/*
-		SecurityBean bean=null;
-		try {
-			bean = SecurityFactory.getSecurityFactory().createSecurityBean(getDigest(password.getBytes("UTF-8"),salt), false);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
 		return bean;
 	}
 	public static byte[] encipher(byte[] data, String password, byte[] salt){
@@ -162,7 +140,6 @@ public class SecurityUtil {
 	public static byte[] decipher(SecurityBean bean, byte[] data){
 		long start_enc = System.currentTimeMillis();
 		byte[] ret = new byte[0];
-		/// Cipher cipher = generateSecretCipherKey();
 		Cipher cipher = SecurityFactory.getSecurityFactory().getDecryptCipherKey(bean);;
 		SecretKey secret_key = bean.getSecretKey();
 		if(cipher == null || secret_key == null ){
@@ -173,11 +150,9 @@ public class SecurityUtil {
 			ret = cipher.doFinal(data);
 		}
 		catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error(e.getMessage());
 		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
@@ -188,15 +163,16 @@ public class SecurityUtil {
 		long start_enc = System.currentTimeMillis();
 		byte[] ret = new byte[0];
 		Cipher cipher = SecurityFactory.getSecurityFactory().getEncryptCipherKey(bean);;
-		if(cipher == null || bean.getSecretKey() == null ) return ret;
+		if(cipher == null || bean.getSecretKey() == null )
+			return ret;
 		try {
 			ret = cipher.doFinal(data);
 		}
 		catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} 
 		logger.debug("Enciphered in " + (System.currentTimeMillis() - start_enc) + "ms");
@@ -242,6 +218,7 @@ public class SecurityUtil {
 			ret = cipher.doFinal(data);
 		}
 		catch(Exception e){
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -262,30 +239,6 @@ public class SecurityUtil {
 		}
 		buff.append("</SecurityManager>\r\n");
 		return buff.toString();
-		
-		
-		/*
-		 StringBuilder buff = new StringBuilder();
-		buff.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<SecurityManager>\r\n");
-		if(include_public_key && security_type.getPublicKeyBytes() != null && security_type.getPublicKeyBytes().length > 0){
-			buff.append("<public><key><![CDATA[" + BinaryUtil.toBase64Str(security_type.getPublicKeyBytes()) + "]]></key></public>\r\n");
-		}
-		if(include_private_key && security_type.getPrivateKeyBytes() != null && security_type.getPrivateKeyBytes().length > 0){
-			buff.append("<private><key><![CDATA[" + BinaryUtil.toBase64Str(security_type.getPrivateKeyBytes()) + "]]></key></private>");
-		}
-		byte[] civ = (security_type.isEncryptCipherKey() ? security_type.getEncryptedCipherIV() : security_type.getCipherIV());
-		byte[] ckey = (security_type.isEncryptCipherKey() ? security_type.getEncryptedCipherKey() : security_type.getCipherKey());
-		if(include_secret_key && civ != null && civ.length > 0 && ckey != null && ckey.length > 0){
-			buff.append("<cipher>\r\n");
-			
-			buff.append("<key><![CDATA[" + BinaryUtil.toBase64Str(ckey) + "]]></key>");
-			buff.append("<iv><![CDATA[" + BinaryUtil.toBase64Str(civ) + "]]></iv>");
-			buff.append("</cipher>\r\n");
-		}
-		
-		buff.append("</SecurityManager>\r\n");
-		return buff.toString();
-		*/
 		
 	}
 

@@ -25,14 +25,14 @@ package org.cote.accountmanager.services;
 
 import org.apache.log4j.Logger;
 
-public abstract class ThreadService extends Thread {
+public abstract class ThreadService implements Runnable {
 	public static final Logger logger = Logger.getLogger(ThreadService.class.getName());
 	private int threadDelay = 1000;
 	private boolean stopRequested=false;
 	private Thread svcThread = null;
 	
 	public ThreadService(){
-		svcThread = new Thread(this);
+		svcThread = new Thread();
 		svcThread.setPriority(Thread.MIN_PRIORITY);
 		svcThread.start();
 	}
@@ -53,6 +53,7 @@ public abstract class ThreadService extends Thread {
 		
 	}
 	
+	@Override
 	public void run(){
 		while (!stopRequested){
 			try{

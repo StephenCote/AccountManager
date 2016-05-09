@@ -24,7 +24,6 @@
 package org.cote.accountmanager.data;
 
 import java.sql.Types;
-import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;

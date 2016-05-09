@@ -38,7 +38,6 @@ import org.cote.accountmanager.objects.PolicyRequestEnumType;
 import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
-import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 
 public class PolicyDefinitionUtil {

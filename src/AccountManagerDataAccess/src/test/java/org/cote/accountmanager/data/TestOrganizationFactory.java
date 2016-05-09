@@ -1,31 +1,20 @@
 package org.cote.accountmanager.data;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.cote.accountmanager.beans.SecurityBean;
-import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
-import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.KeyService;
-import org.cote.accountmanager.data.security.OrganizationSecurity;
-import org.cote.accountmanager.objects.DataTableType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.util.SecurityUtil;
+import org.junit.After;
+import org.junit.Test;
 
 public class TestOrganizationFactory{
 	private static String testOrgName = null;

@@ -33,7 +33,6 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
@@ -62,12 +61,13 @@ import org.w3c.dom.Document;
 public class SecurityFactory {
 	public static final Logger logger = Logger.getLogger(SecurityFactory.class.getName());
 
-	private final byte[] defaultSalt = new byte[]{
+	private final static byte[] defaultSalt = new byte[]{
 			110,41,-1,-64,-107,14,1,68,-127,-93,-110,-23,-73,-113,-98,-62
 	};
-	public static SecurityFactory securityFactory = null;
+	private static SecurityFactory securityFactory = null;
 	public static SecurityFactory getSecurityFactory(){
-		if(securityFactory != null) return securityFactory;
+		if(securityFactory != null)
+				return securityFactory;
 		long start = System.currentTimeMillis();
 		securityFactory = new SecurityFactory();
 		logger.debug("Initialized provider: " + (System.currentTimeMillis() - start) + "ms");
@@ -77,23 +77,7 @@ public class SecurityFactory {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		
 	}
-/*
-	public byte[] serialize(SecurityBean bean, boolean serialize_public_key, boolean serialize_private_key, boolean serialize_cipher){
-		StringBuilder buff = new StringBuilder();
-		buff.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<SecurityManager>");
-		if(serialize_public_key){
-			buff.append("<public><key>" + BinaryUtil.toBase64Str(serializePublicKeyToRSAXml(bean)) + "</key></public>");
-		}
-		if(serialize_private_key){
-			buff.append("<private><key>" + BinaryUtil.toBase64Str(serializePrivateKeyToRSAXml(bean)) + "</key></private>");
-		}
-		if(serialize_cipher){
-			buff.append("<cipher>" + BinaryUtil.toBase64Str(serializeCipher(bean)) + "</cipher>");
-		}
-		buff.append("</SecurityManager>\r\n");
-		return buff.toString().getBytes();
-	}
-*/
+
 	public byte[] serializeCipher(SecurityBean bean){
 		StringBuilder buff = new StringBuilder();
 		byte[] key = bean.getCipherKey();
@@ -111,74 +95,28 @@ public class SecurityFactory {
 	public byte[] serializePrivateKeyToRSAXml(SecurityBean bean){
 		StringBuilder buff = new StringBuilder();
 		buff.append("<RSAKeyValue>");
-		KeyFactory keyFactory;
-		try {
-			keyFactory = KeyFactory.getInstance("RSA");
-			///RSAKeyParameters privateKey = (RSAKeyParameters) bean.getPrivateKey();
-			RSAPrivateKey keySpec = (RSAPrivateKey) bean.getPrivateKey();
+
+		RSAPrivateKey keySpec = (RSAPrivateKey) bean.getPrivateKey();
+		buff.append("<Modulus>" + BinaryUtil.toBase64Str(keySpec.getModulus().toByteArray()) + "</Modulus>");
+		buff.append("<D>" + BinaryUtil.toBase64Str(keySpec.getPrivateExponent().toByteArray()) + "</D>");
 			
-			//keySpec.g
-			//RSAPrivateKeySpec keySpec = (RSAPrivateKeySpec)bean.getPrivateKey();
-			
-			//RSAKeyGenParameterSpec keySpec = (RSAKeyGenParameterSpec)bean.getPrivateKey();
-			//keySpec.
-			//bean.getPrivateKey()
-			///buff.append((new String(bean.getPrivateKey().getEncoded())));
-			//PKCS8EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(bean.getPrivateKey().getEncoded());
-			//privKeySpec.
-			
-			//RSAPrivateCrtKeySpec keySpec = keyFactory.getKeySpec(bean.getPrivateKey(), RSAPrivateCrtKeySpec.class);
-/*			
-			buff.append("<Modules>" + BinaryUtil.toBase64Str(privateKey.getModulus().toByteArray()) + "</Modulus>");
-			buff.append("<Exponent>" + BinaryUtil.toBase64Str(privateKey.getPublicExponent().toByteArray()) + "</Exponent>");
-			buff.append("<P>" + BinaryUtil.toBase64Str(privateKey.getP().toString().getBytes()) + "</P>");
-			buff.append("<Q>" + BinaryUtil.toBase64Str(privateKey.getQ().toString().getBytes()) + "</Q>");
-			buff.append("<DP>" + BinaryUtil.toBase64Str(privateKey.getDP().toString().getBytes()) + "</DP>");
-			buff.append("<DQ>" + BinaryUtil.toBase64Str(privateKey.getDQ().toString().getBytes()) + "</DQ>");
-			buff.append("<InverseQ>" + BinaryUtil.toBase64Str(privateKey.getQInv().toString().getBytes()) + "</InverseQ>");
-			buff.append("<D>" + BinaryUtil.toBase64Str(privateKey.getExponent().toString().getBytes()) + "</D>");
-*/
-			buff.append("<Modulus>" + BinaryUtil.toBase64Str(keySpec.getModulus().toByteArray()) + "</Modulus>");
-			/*
-			buff.append("<Exponent>" + BinaryUtil.toBase64Str(keySpec.getPublicExponent().toByteArray()) + "</Exponent>");
-			buff.append("<P>" + BinaryUtil.toBase64Str(keySpec.getPrimeP().toString().getBytes()) + "</P>");
-			buff.append("<Q>" + BinaryUtil.toBase64Str(keySpec.getPrimeQ().toString().getBytes()) + "</Q>");
-			buff.append("<DP>" + BinaryUtil.toBase64Str(keySpec.getPrimeExponentP().toString().getBytes()) + "</DP>");
-			buff.append("<DQ>" + BinaryUtil.toBase64Str(keySpec.getPrimeExponentQ().toString().getBytes()) + "</DQ>");
-			buff.append("<InverseQ>" + BinaryUtil.toBase64Str(keySpec.getCrtCoefficient().toString().getBytes()) + "</InverseQ>");
-			*/
-			buff.append("<D>" + BinaryUtil.toBase64Str(keySpec.getPrivateExponent().toByteArray()) + "</D>");
-			
-		} catch (NoSuchAlgorithmException e) {
-		
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		/*
-		catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
 		buff.append("</RSAKeyValue>\r\n");
 		return buff.toString().getBytes();
 	}
 	public byte[] serializePublicKeyToRSAXml(SecurityBean bean){
 		StringBuilder buff = new StringBuilder();
 		buff.append("<RSAKeyValue>");
-		KeyFactory keyFactory;
+		KeyFactory keyFactory = null;
 		try {
 			keyFactory = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
 			RSAPublicKeySpec keySpec = keyFactory.getKeySpec(bean.getPublicKey(), RSAPublicKeySpec.class);
-			//RSAPrivateCrtKeySpec keySpec = keyFactory.getKeySpec(bean.getPrivateKey(), RSAPrivateCrtKeySpec.class);
 			buff.append("<Modulus>" + BinaryUtil.toBase64Str(keySpec.getModulus().toByteArray()) + "</Modulus>");
 			buff.append("<Exponent>" + BinaryUtil.toBase64Str(keySpec.getPublicExponent().toByteArray()) + "</Exponent>");
-			
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		buff.append("</RSAKeyValue>\r\n");
@@ -188,63 +126,30 @@ public class SecurityFactory {
 	/// TODO: 2015/06/23 - Need to refactor to use a CredentialType
 	///
 	public void setPassKey(SecurityBean bean, String passKey, boolean encrypted_pass_key){
-	    //byte[] salt = getRandomSalt();
-		
+
+		logger.warn("Static default salt needs to be refactored");
 		setPassKey(bean, passKey, defaultSalt, encrypted_pass_key);
 	}
 	public void setPassKey(SecurityBean bean, String passKey, byte[] salt, boolean encrypted_pass_key){
 		long start = System.currentTimeMillis();
 		try{
 			// PBKDF2WithHmacSHA512
-			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512"); //"PBKDF2WithHmacSHA1");
+			// PBKDF2WithHmacSHA1
+			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+
 			KeySpec spec = new javax.crypto.spec.PBEKeySpec(passKey.toCharArray(),salt, 65536, 256);
 			SecretKey tmp = factory.generateSecret(spec);
 			SecretKey secret = new SecretKeySpec(tmp.getEncoded(), bean.getCipherKeySpec());
 
 			Cipher cipher = Cipher.getInstance(bean.getSymmetricCipherKeySpec());
-			//cipher.init(Cipher.ENCRYPT_MODE, secret);
 			cipher.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(salt, 0, 16));
-			//IvParameterSpec ivSpec = new IvParameterSpec(cipher.doFinal(salt, 3, 16));
 			AlgorithmParameters params = cipher.getParameters();
 			byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
 			setSecretKey(bean, secret.getEncoded(), iv, encrypted_pass_key);
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | InvalidParameterSpecException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}  catch (InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} 
-		/*
-		catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
-		*/
-		catch (InvalidParameterSpecException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} 
+		}  
 		logger.debug("Generate Pass Key: " + (System.currentTimeMillis() - start) + "ms");
 	}
 	public void setSecretKey(SecurityBean bean, byte[] key, byte iv[], boolean encrypted_cipher){
@@ -272,11 +177,8 @@ public class SecurityFactory {
 			KeyFactory factory = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
     	   	X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKey);
 			pubKey = factory.generatePublic(x509KeySpec);
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
+		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		bean.setPublicKey(pubKey);
@@ -286,9 +188,9 @@ public class SecurityFactory {
 	public void setPrivateKey(SecurityBean bean, byte[] privateKey){
 		PrivateKey privKey = null;
 		try{
-	        KeyFactory k_fact = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
+	        KeyFactory kFact = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
 			PKCS8EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(privateKey);
-			privKey = k_fact.generatePrivate(privKeySpec);		
+			privKey = kFact.generatePrivate(privKeySpec);		
 		}
 		catch(Exception e){
 			logger.error("DSAKeyUtil:: decodeX509PrivateKey: " + e.toString());
@@ -308,12 +210,7 @@ public class SecurityFactory {
 			
 			RSAPublicKeySpec pubSpec = new RSAPublicKeySpec(modules, exponent);
 			pubKey = factory.generatePublic(pubSpec);
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
+		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
@@ -344,16 +241,10 @@ public class SecurityFactory {
 		PrivateKey priKey = null;
 		try {
 			KeyFactory factory = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
-			///Cipher cipher = Cipher.getInstance(ASYMETRIC_CIPHER_KEY_SPEC);
-			///String input = "test";
-
 			RSAPrivateKeySpec privSpec = new RSAPrivateKeySpec(modulus, d);
 			priKey = factory.generatePrivate(privSpec);
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
+		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		bean.setPrivateKey(priKey);
@@ -366,7 +257,8 @@ public class SecurityFactory {
 	}
 	public void importSecurityBean(SecurityBean bean, byte[] keys, boolean encrypted_cipher){
 		Document d = XmlUtil.GetDocumentFromBytes(keys);
-		if(d == null) return;
+		if(d == null)
+			return;
 
 		String pubKey = XmlUtil.FindElementText(d.getDocumentElement(), "public", "key");
 		if(pubKey != null){
@@ -411,24 +303,20 @@ public class SecurityFactory {
 
        }
        catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
+
     	   logger.error(e.getMessage());
 			e.printStackTrace();
 		}
        catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
     	   logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (InvalidKeyException e) {
-		// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-       ///bean.setCipher(cipher_key);
        return cipher_key;
 	}
 	public boolean generateSecretKey(SecurityBean bean){
@@ -441,8 +329,9 @@ public class SecurityFactory {
 		KeyGenerator kgen;
 		SecretKey secret_key = null;
 		try {
-			/// was "AES"
 			kgen = KeyGenerator.getInstance(bean.getCipherKeySpec());
+
+			logger.warn("Key generation size is static at 128");
 			// TODO: Make key size configurable - 128 is only for dev/debug
 			//
 			kgen.init(128);
@@ -456,25 +345,12 @@ public class SecurityFactory {
 				bean.setEncryptedCipherKey(SecurityUtil.encrypt(bean, bean.getCipherKey()));
 				bean.setEncryptedCipherIV(SecurityUtil.encrypt(bean, bean.getCipherIV()));
 			}
-			/// generateSecretCipherKey(bean);
-			///bean.getCipher().init(Cipher.ENCRYPT_MODE, secret_key);
-			
-			//byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-
 			ret = true;
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			logger.error(e.getMessage());
-		}
-		
-		/*
-		 catch (InvalidKeyException e) {
-		 
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
 		}
-		*/
 		return ret;
 	}
 	public boolean generateKeyPair(SecurityBean bean){

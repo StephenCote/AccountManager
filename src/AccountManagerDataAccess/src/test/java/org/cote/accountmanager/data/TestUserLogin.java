@@ -7,18 +7,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.services.DataMaintenance;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.UserEnumType;
-import org.cote.accountmanager.objects.types.UserStatusEnumType;
-import org.cote.accountmanager.util.SecurityUtil;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestUserLogin extends BaseDataAccessTest {

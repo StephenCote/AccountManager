@@ -24,18 +24,13 @@
 package org.cote.accountmanager.web;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-
-
-
 import org.junit.Before;
 import org.junit.Test;
 

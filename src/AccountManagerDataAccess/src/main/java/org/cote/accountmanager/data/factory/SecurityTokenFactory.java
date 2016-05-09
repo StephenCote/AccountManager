@@ -27,34 +27,30 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.objects.DataRowType;
-import org.cote.accountmanager.objects.MessageSpoolType;
-import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.SecuritySpoolType;
-import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SpoolBucketEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
 import org.cote.accountmanager.objects.types.ValueEnumType;
-import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class SecurityTokenFactory extends SpoolFactory {
 	/// Expiry in hours
 	///
 	private int defaultTokenExpiry = 6;
+	public static int TOKEN_EXPIRY_10_MINUTES = 600;
+	public static int TOKEN_EXPIRY_1_HOUR = 3600;
+	public static int TOKEN_EXPIRY_6_HOURS = 21600;
 	public SecurityTokenFactory()
 	{
 		super();

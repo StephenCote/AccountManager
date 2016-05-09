@@ -19,7 +19,6 @@ import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
-import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.junit.Test;
 

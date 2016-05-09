@@ -30,10 +30,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.objects.BaseGroupType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserSessionType;
 
 @XmlRootElement

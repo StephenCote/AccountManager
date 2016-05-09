@@ -1,9 +1,7 @@
 package org.cote.accountmanager.util;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,14 +62,12 @@ public class OpenSSLUtil {
 		return out_bool;
 	}
 	public boolean exportPrivateKey(String alias, char[] password){
-		//openssl rsa -passin pass:$3 -passout pass:$3 -in keys/private/$1.pem -out keys/private/$1.key
 		String checkFilePath = sslPath + KEY_PRIVATE_PATH + "/" + alias + ".pem";
 		File checkFile = new File(checkFilePath);
 		if(checkFile.exists() == false){
 			logger.error("Key " + checkFilePath + " does not exist");
 			return false;
 		}
-		//List<String> commands = new ArrayList<String>();
 		String[] commands = new String[]{
 			openSSL,"rsa",
 			"-passin","pass:" + String.valueOf(password),
@@ -80,7 +76,7 @@ public class OpenSSLUtil {
 			"-out",KEY_PRIVATE_PATH + "/" + alias + ".key"
 		};
 		
-		List<String> cmd = ProcessUtil.runProcess(sslPath,commands);
+		ProcessUtil.runProcess(sslPath,commands);
 		
 		checkFilePath = sslPath + KEY_PRIVATE_PATH + "/" + alias + ".key";
 		checkFile = new File(checkFilePath);
@@ -88,14 +84,12 @@ public class OpenSSLUtil {
 
 	}
 	public boolean exportPublicKey(String alias, char[] password){
-			//openssl rsa -passin pass:$3 -passout pass:$3 -in keys/private/$1.pem -pubout -outform DER -out keys/public/$1.der
 		String checkFilePath = sslPath + KEY_PRIVATE_PATH + "/" + alias + ".pem";
 		File checkFile = new File(checkFilePath);
 		if(checkFile.exists() == false){
 			logger.error("Key " + checkFilePath + " does not exist");
 			return false;
 		}
-		//List<String> commands = new ArrayList<String>();
 		String[] commands = new String[]{
 			openSSL,"rsa",
 			"-passin","pass:" + String.valueOf(password),
@@ -105,7 +99,7 @@ public class OpenSSLUtil {
 			"-out",KEY_PUBLIC_PATH + "/" + alias + ".der"
 		};
 		
-		List<String> cmd = ProcessUtil.runProcess(sslPath,commands);
+		ProcessUtil.runProcess(sslPath,commands);
 		checkFilePath = sslPath + KEY_PUBLIC_PATH + "/" + alias + ".der";
 		checkFile = new File(checkFilePath);
 		return checkFile.exists();
@@ -129,8 +123,6 @@ public class OpenSSLUtil {
 		return FileUtil.emitFile(sslPath + CERTIFICATE_SIGNED_PATH + "/" + alias + ".chain.cert", chainStr + certStr);
 	}
 	public boolean exportPKCS12PublicCertificate(String alias, char[] password){
-		/// openssl pkcs12 -export -nokeys -in certificates/signed/$1.cert -out certificates/signed/$1.p12 -passin pass:$3 -passout pass:$3
-		
 		String checkFilePath = sslPath + CERTIFICATE_SIGNED_PATH + "/" + alias + ".cert";
 		File checkFile = new File(checkFilePath);
 		if(checkFile.exists() == false){
@@ -148,12 +140,10 @@ public class OpenSSLUtil {
 			"-name",alias
 		};
 		
-		List<String> cmd = ProcessUtil.runProcess(sslPath,commands);
+		ProcessUtil.runProcess(sslPath,commands);
 		return (new File(sslPath + CERTIFICATE_PRIVATE_PATH + "/" + alias + ".p12")).exists();
 	}
 	public boolean exportPKCS12PrivateCertificate(String alias, char[] password, String signerAlias){
-		/// openssl pkcs12 $CHAIN -clcerts -passin pass:$3 -passout pass:$3 -export -inkey keys/private/$1.key -in certificates/signed/$1.cert -out certificates/private/$1.p12 -descert
-		// CHAIN="-chain -CAfile $CHAINCERT"
 		
 		String checkFilePath = sslPath + KEY_PRIVATE_PATH + "/" + alias + ".key";
 		File checkFile = new File(checkFilePath);
@@ -183,7 +173,7 @@ public class OpenSSLUtil {
 		}
 
 		
-		List<String> commands = new ArrayList<String>();
+		List<String> commands = new ArrayList<>();
 		commands.add(openSSL);
 		commands.add("pkcs12");
 		if(signerAlias != null){
@@ -207,17 +197,10 @@ public class OpenSSLUtil {
 		commands.add("-name");
 		commands.add(alias);
 		
-		List<String> cmd = ProcessUtil.runProcess(sslPath,commands.toArray(new String[0]));
+		ProcessUtil.runProcess(sslPath,commands.toArray(new String[0]));
 		return (new File(sslPath + CERTIFICATE_PRIVATE_PATH + "/" + alias + ".p12")).exists();
 	}
 	public boolean generateCertificateRequest(String alias, char[] password, String dn, int expiryDays){
-		/*
-		 *   
-   
-   echo Amending Chain: certificates/signed/$1.cert $CHAINCERT to $1.chain.cert
-
-   cat certificates/signed/$1.cert $CHAINCERT > certificates/signed/$1.chain.cert
-		 */
 		if(!generateKeyPair(alias, password) || !exportPrivateKey(alias, password) || !exportPublicKey(alias, password)){
 			logger.error("Failed to generate keys");
 			return false;
@@ -238,15 +221,11 @@ public class OpenSSLUtil {
 				"-out",CERTIFICATE_REQUEST_PATH + "/" + alias + ".csr"
 			};
 			
-			List<String> cmd = ProcessUtil.runProcess(sslPath,commands);
+			ProcessUtil.runProcess(sslPath,commands);
 			return (new File(sslPath + CERTIFICATE_REQUEST_PATH + "/" + alias + ".csr")).exists();
 	}
 	
 	public boolean signCertificate(String requestAlias, String signerAlias, int expiryDays){
-		//openssl x509 -req -in certificates/requests/$1.csr -days 720 -CA certificates/signed/$4.cert -CAkey keys/private/$4.key -out certificates/signed/$1.cert -CAcreateserial
-		
-
-
 		String checkFilePath = sslPath + CERTIFICATE_REQUEST_PATH + "/" + requestAlias + ".csr";
 		File checkFile = new File(checkFilePath);
 		if(checkFile.exists() == false){
@@ -264,7 +243,7 @@ public class OpenSSLUtil {
 				"-CAcreateserial"
 			};
 			
-			List<String> cmd = ProcessUtil.runProcess(sslPath,commands);
+			ProcessUtil.runProcess(sslPath,commands);
 			return (new File(sslPath + CERTIFICATE_SIGNED_PATH + "/" + requestAlias + ".cert")).exists();
 		
 	}
@@ -283,9 +262,7 @@ public class OpenSSLUtil {
 			logger.error("Key " + checkFilePath + " does not exist");
 			return false;
 		}
-		///    openssl req -x509 -new -passin pass:$3 -key keys/private/$1.key -days 720 -nodes -subj "/C=US/ST=WA/L=Mukilteo/O=AM5.2/CN=$2" -out certificates/root/$1.cert
-		
-		//List<String> commands = new ArrayList<String>();
+
 		String[] commands = new String[]{
 			openSSL,"req","-x509","-new",
 			"-passin","pass:" + String.valueOf(password),
@@ -296,7 +273,7 @@ public class OpenSSLUtil {
 		};
 		
 		boolean out_bool = false;
-		List<String> cmd = ProcessUtil.runProcess(sslPath,commands);
+		ProcessUtil.runProcess(sslPath,commands);
 		checkFilePath = sslPath + CERTIFICATE_ROOT_PATH + "/" + alias + ".cert";
 		checkFile = new File(checkFilePath);
 		if(checkFile.exists()){
@@ -304,7 +281,7 @@ public class OpenSSLUtil {
 				Files.copy(checkFile, new File(sslPath + CERTIFICATE_SIGNED_PATH + "/" + alias + ".cert"));
 				out_bool = true;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -313,7 +290,7 @@ public class OpenSSLUtil {
 		return out_bool;
 	}
 	public boolean generateKeyPair(String alias, char[] password){
-		/// openssl genrsa -aes256 -passout pass:$3 -out keys/private/$1.pem 2048
+
 		String checkFilePath = sslPath + KEY_PRIVATE_PATH + "/" + alias + ".pem";
 		
 		List<String> commands = new ArrayList<String>();
@@ -324,7 +301,7 @@ public class OpenSSLUtil {
 		commands.add("pass:" + String.valueOf(password));
 		commands.add("-out");
 		commands.add(KEY_PRIVATE_PATH + "/" + alias + ".pem");
-		List<String> cmd = ProcessUtil.runProcess(sslPath,commands.toArray(new String[0]));
+		ProcessUtil.runProcess(sslPath,commands.toArray(new String[0]));
 		File checkFile = new File(checkFilePath);
 		return checkFile.exists();
 	}

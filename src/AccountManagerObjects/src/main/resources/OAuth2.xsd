@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/accountmanager/objects" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.cote.org/accountmanager/objects">
+
+    <complexType name="OAuth2AuthorizationRequestType">
+    	<attribute name="response_type" type="string" default="code"></attribute>
+    	<attribute name="client_id" type="string"></attribute>
+    	<attribute name="redirect_uri" type="string"></attribute>
+    	<attribute name="scope" type="string"></attribute>
+    	<attribute name="state" type="string"></attribute>
+    </complexType>
+
+    <complexType name="OAuth2AuthorizationResponseType">
+    			<attribute name="code" type="string"></attribute>
+    			<attribute name="state" type="string"></attribute>
+    </complexType>
+    
+
+    <complexType name="OAuth2ErrorResponseType">
+    	<sequence></sequence>
+    	<attribute name="error" type="tns:OAuth2ErrorEnumType"
+    		fixed="access_denied">
+    	</attribute>
+    	<attribute name="error_description" type="string"></attribute>
+    	<attribute name="error_uri" type="string"></attribute>
+    </complexType>
+
+
+    <simpleType name="OAuth2ErrorEnumType">
+    	<restriction base="string">
+    				<enumeration value="invalid_request"></enumeration>
+    				<enumeration value="unauthorized_client"></enumeration>
+    				<enumeration value="access_denied"></enumeration>
+    				<enumeration value="unsupported_response_type"></enumeration>
+    				<enumeration value="invalid_scope"></enumeration>
+    				<enumeration value="server_error"></enumeration>
+    				<enumeration value="temporily_unavailable"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <complexType name="OAuth2AccessTokenRequestType">
+    	<attribute name="grant_type" type="string"
+    		default="authorization_code">
+    	</attribute>
+    	<attribute name="code" type="string"></attribute>
+    	<attribute name="redirect_uri" type="string"></attribute>
+    	<attribute name="client_id" type="string"></attribute>
+    </complexType>
+</schema>

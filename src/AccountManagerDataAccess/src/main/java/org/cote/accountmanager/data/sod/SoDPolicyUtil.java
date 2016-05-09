@@ -23,11 +23,6 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.sod;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,18 +33,13 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.factory.NameIdFactory;
-import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 
 

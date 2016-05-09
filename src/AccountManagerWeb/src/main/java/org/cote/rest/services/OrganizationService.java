@@ -24,21 +24,12 @@
 package org.cote.rest.services;
 
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -47,14 +38,9 @@ import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.objects.DataType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
-import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.rest.SchemaBean;
-import org.cote.accountmanager.services.DataServiceImpl;
-//import org.cote.beans.UserBean;
-import org.cote.util.BeanUtil;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 
 
 @Path("/organization")

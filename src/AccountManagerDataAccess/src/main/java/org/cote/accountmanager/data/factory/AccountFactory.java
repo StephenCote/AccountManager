@@ -43,7 +43,6 @@ import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.StatisticsType;
 import org.cote.accountmanager.objects.UserType;

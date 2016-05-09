@@ -16,7 +16,6 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
-import org.cote.accountmanager.util.SecurityUtil;
 import org.junit.Test;
 
 

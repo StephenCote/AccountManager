@@ -24,22 +24,17 @@
 package org.cote.accountmanager.data.services;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.query.QueryField;
-import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.StatisticsType;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;

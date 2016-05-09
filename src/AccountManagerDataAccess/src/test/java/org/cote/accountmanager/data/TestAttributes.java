@@ -1,13 +1,13 @@
 package org.cote.accountmanager.data;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.UUID;
 
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
 
 public class TestAttributes extends BaseDataAccessTest{
 	@Test

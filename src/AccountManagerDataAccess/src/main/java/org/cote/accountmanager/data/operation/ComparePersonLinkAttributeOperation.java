@@ -23,22 +23,17 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.operation;
 
-import java.util.regex.Pattern;
-
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.fact.FactUtil;
-import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.rule.RuleUtil;
-import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonType;
-import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 

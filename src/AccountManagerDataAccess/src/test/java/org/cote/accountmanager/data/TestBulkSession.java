@@ -1,25 +1,10 @@
 package org.cote.accountmanager.data;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
-import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.services.AuthorizationService;
-import org.cote.accountmanager.data.services.RoleService;
-import org.cote.accountmanager.exceptions.DataException;
-import org.cote.accountmanager.objects.BaseRoleType;
-import org.cote.accountmanager.objects.DataType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
 
 public class TestBulkSession extends BaseDataAccessTest{

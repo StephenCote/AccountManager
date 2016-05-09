@@ -23,15 +23,12 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountType;
@@ -50,7 +47,6 @@ import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.RoleParticipantType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserParticipantType;
-import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;

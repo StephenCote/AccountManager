@@ -34,21 +34,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
+import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.io.BulkInsertUtil;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.objects.DataColumnType;
-import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;

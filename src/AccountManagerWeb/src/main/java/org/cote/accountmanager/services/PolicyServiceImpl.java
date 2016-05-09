@@ -36,10 +36,8 @@ import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
-import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.AuthorizationPolicyType;
-import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PolicyDefinitionType;
 import org.cote.accountmanager.objects.PolicyRequestType;
@@ -52,6 +50,7 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SessionStatusEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
+import org.cote.accountmanager.service.util.ServiceUtil;
 
 public class PolicyServiceImpl  {
 	

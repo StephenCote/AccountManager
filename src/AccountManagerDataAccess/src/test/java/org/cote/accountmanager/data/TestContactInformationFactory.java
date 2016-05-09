@@ -1,29 +1,22 @@
 package org.cote.accountmanager.data;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Random;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.ContactInformationFactory;
-import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
 public class TestContactInformationFactory extends BaseDataAccessTest{
 	//public static final Logger logger = Logger.getLogger(TestContactInformationFactory.class.getName());

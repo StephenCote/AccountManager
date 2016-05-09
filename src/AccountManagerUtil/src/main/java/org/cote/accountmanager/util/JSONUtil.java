@@ -18,15 +18,12 @@ public class JSONUtil {
 		try {
 			outObj = mapper.readValue(s, cls);
 		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
@@ -39,15 +36,12 @@ public class JSONUtil {
 		try {
 			outStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
 		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}

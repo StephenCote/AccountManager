@@ -1,13 +1,8 @@
 package org.cote.accountmanager.data;
 
-import java.util.Random;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
-import org.cote.accountmanager.data.factory.ContactInformationFactory;
-import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.AuthorizationService;
@@ -16,18 +11,13 @@ import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
-import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
-import org.cote.accountmanager.objects.ConditionEnumType;
-import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternType;
-import org.cote.accountmanager.objects.PersonParticipantType;
 import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.PolicyDefinitionType;
@@ -40,19 +30,11 @@ import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
-import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
 public class TestSoD extends BaseDataAccessTest{
 	//

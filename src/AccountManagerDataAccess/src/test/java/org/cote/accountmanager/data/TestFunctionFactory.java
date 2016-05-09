@@ -9,14 +9,11 @@ import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.BshService;
-import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
-import org.cote.accountmanager.objects.FunctionEnumType;
 import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.OperationEnumType;
-import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternType;
@@ -27,7 +24,6 @@ import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
 
 public class TestFunctionFactory extends BaseDataAccessTest{

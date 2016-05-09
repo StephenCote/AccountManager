@@ -33,9 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.SessionSecurity;
-import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.service.util.ServiceUtil;
 
 /**
  * Servlet implementation class AccountManagerLogoutServlet

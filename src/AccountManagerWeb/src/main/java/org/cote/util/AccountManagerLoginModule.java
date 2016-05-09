@@ -33,25 +33,22 @@ import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.TextInputCallback;
 import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 import javax.security.jacc.PolicyContext;
 import javax.security.jacc.PolicyContextException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.SessionSecurity;
-import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.util.SecurityUtil;
+import org.cote.accountmanager.service.util.ServiceUtil;
 
 public class AccountManagerLoginModule implements LoginModule {
 

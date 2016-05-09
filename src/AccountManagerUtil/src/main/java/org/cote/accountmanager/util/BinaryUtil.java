@@ -26,8 +26,11 @@ package org.cote.accountmanager.util;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
+import org.cote.accountmanager.factory.SecurityFactory;
 
 public class BinaryUtil {
+	public static final Logger logger = Logger.getLogger(BinaryUtil.class.getName());
 	public static String fromBase64Str(String in_base64){
 		return fromBase64Str(in_base64.getBytes());
 	}
@@ -36,7 +39,7 @@ public class BinaryUtil {
 		try {
 			out_str = (new String(fromBase64(in_base64),"UTF-8"));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return out_str;
@@ -50,7 +53,7 @@ public class BinaryUtil {
 		try {
 			b = in_str.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return toBase64Str(b);
@@ -60,11 +63,10 @@ public class BinaryUtil {
 		try {
 			out_str = new String(toBase64(in_str),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return out_str;
-		//return (new String(toBase64(in_str)));
 	}
 	public static byte[] toBase64(byte[] in_str){
 		return Base64.encodeBase64(in_str);
