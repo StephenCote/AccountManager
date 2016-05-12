@@ -61,11 +61,8 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public abstract class NameIdFactory extends FactoryBase {
 	public static final Logger logger = Logger.getLogger(NameIdFactory.class.getName());
-	/// id :: name
 	private Map<Long, String> typeNameIdMap = null;
-	/// cacheKey :: index
 	private Map<String,Integer> typeNameMap = null;
-	/// id :: index
 	private Map<Long,Integer> typeIdMap = null;
 	private List<NameIdType> typeMap = null;
 	private long cacheExpires = 0;
@@ -155,20 +152,23 @@ public abstract class NameIdFactory extends FactoryBase {
 		if((obj.getNameType() != NameEnumType.ORGANIZATION && obj.getOrganizationId().compareTo(0L) == 0) || obj.getNameType() == NameEnumType.UNKNOWN){
 			throw new ArgumentException("Invalid object organization or type");	
 		}
-		if(obj.getOrganizationPath() != null) return;
-		if(obj.getNameType() == NameEnumType.ORGANIZATION){
-			obj.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(obj.getId()));
-		}
-		else{
-			obj.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(obj.getOrganizationId()));
+		if(obj.getOrganizationPath() == null){
+
+			if(obj.getNameType() == NameEnumType.ORGANIZATION){
+				obj.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(obj.getId()));
+			}
+			else{
+				obj.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(obj.getOrganizationId()));
+			}
 		}
 	}
 	public <T> void populate(T object) throws FactoryException,ArgumentException{
 		logger.debug("Populate method should be overriden for " + this.factoryType.toString() + ".  Yes, this could be abstract, but not every factory needs it.");
 		NameIdType obj = (NameIdType)object;
-		if(obj.getPopulated() == true) return;
-		obj.setPopulated(true);
-		updateToCache(obj);
+		if(obj.getPopulated() == false){
+			obj.setPopulated(true);
+			updateToCache(obj);
+		}
 	}
 	public <T> void depopulate(T object) throws FactoryException,ArgumentException{
 		logger.debug("Depopulate method should be overriden for " + this.factoryType.toString() + ".  Yes, this could be abstract, but not every factory needs it.");
@@ -177,23 +177,18 @@ public abstract class NameIdFactory extends FactoryBase {
 		updateToCache(obj);
 	}	
 	public void mapBulkIds(NameIdType map){
-		long tmpId = 0;
+		long tmpId = 0L;
 		if(hasOwnerId && map.getOwnerId() < 0L){
 			tmpId = BulkFactories.getBulkFactory().getMappedId(map.getOwnerId());
-			if(tmpId > 0) map.setOwnerId(tmpId);
+			if(tmpId > 0L) map.setOwnerId(tmpId);
 		}
 		if(hasParentId && map.getParentId() < 0L){
 			tmpId = BulkFactories.getBulkFactory().getMappedId(map.getParentId());
 			logger.debug("Map parentId " + map.getParentId() + " to " + tmpId);
-			if(tmpId > 0) map.setParentId(tmpId);
+			if(tmpId > 0L) map.setParentId(tmpId);
 		}
 	}
 
-	/*
-	public String getUpdateTemplate(DataTable table, ProcessingInstructionType instruction){
-		return table.getUpdateFullTemplate();
-	}
-	*/
 	public boolean update(NameIdType map) throws FactoryException
 	{
 		return update(map, null);
@@ -202,22 +197,18 @@ public abstract class NameIdFactory extends FactoryBase {
 	public boolean update(NameIdType map, ProcessingInstructionType instruction) throws FactoryException
 	{
 		if(this.bulkMode == true){
-			///logger.info("Deferring update to bulk operation");
 			return true;
 		}
 		DataTable table = dataTables.get(0);
-		if(instruction == null) instruction = new ProcessingInstructionType();
-		boolean out_bool = false;
+		if(instruction == null)
+			instruction = new ProcessingInstructionType();
+
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		
 		List<QueryField> queryFields = new ArrayList<QueryField>();
 		List<QueryField> updateFields = new ArrayList<QueryField>();
-		
-		//+ " WHERE id = " + token
-		//		+ (scopeToOrganization ? " AND organizationid = " + token : "")
-		//;
-		
+
 		queryFields.add(QueryFields.getFieldId(map));
 		if(scopeToOrganization){
 			queryFields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
@@ -225,8 +216,6 @@ public abstract class NameIdFactory extends FactoryBase {
 		setNameIdFields(updateFields, map);
 		setFactoryFields(updateFields, map, instruction);
 		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(queryFields.toArray(new QueryField[0]), token);
-
-		//logger.info("Update String = " + sql);
 		
 		updateFields.addAll(queryFields);
 		
@@ -238,15 +227,15 @@ public abstract class NameIdFactory extends FactoryBase {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error("Trace",sqe);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error("Trace",e);
 			}
 		}		
 		return (updated > 0);
@@ -260,10 +249,10 @@ public abstract class NameIdFactory extends FactoryBase {
 		if(this.bulkMode == false) throw new FactoryException("Factory is not configured for bulk operation");
 		DataTable table = dataTables.get(0);
 		if(instruction == null) instruction = new ProcessingInstructionType();
-		if(map.size() == 0){
+		if(map.isEmpty()){
 			return false;
 		}
-		boolean out_bool = false;
+
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		
@@ -326,15 +315,15 @@ public abstract class NameIdFactory extends FactoryBase {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error("Trace",sqe);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error("Trace",e);
 			}
 		}		
 		return (updated > 0);
@@ -463,9 +452,9 @@ public abstract class NameIdFactory extends FactoryBase {
 			rset.close();
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -473,8 +462,8 @@ public abstract class NameIdFactory extends FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error("Trace",e);
 			}
 		}
 		
@@ -508,20 +497,16 @@ public abstract class NameIdFactory extends FactoryBase {
 
 		return obj;
 	}
-	/*
-	protected List<NameIdType> getById(long id, long organization_id) throws FactoryException, ArgumentException
-	{
-		return getByField(QueryFields.getFieldId(id), organization_id);
-	}
-	*/
+
 	public <T> T getById(long id, long organizationId) throws FactoryException, ArgumentException
 	{
 		T out_obj = readCache(id);
-		if (out_obj != null) return out_obj;
+		if (out_obj != null)
+			return out_obj;
 
 		List<NameIdType> obj_list = getByField(new QueryField[] { QueryFields.getFieldId(id) }, organizationId);
 
-		if (obj_list.size() > 0)
+		if (obj_list.isEmpty() == false)
 		{
 			
 			String key_name = getCacheKeyName(obj_list.get(0));
@@ -533,7 +518,7 @@ public abstract class NameIdFactory extends FactoryBase {
 	public List<QueryField> buildSearchQuery(String searchValue, long organizationId) throws FactoryException{
 		searchValue = searchValue.replaceAll("\\*","%");
 		
-		List<QueryField> filters = new ArrayList<QueryField>();
+		List<QueryField> filters = new ArrayList<>();
 		QueryField search_filters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
 		search_filters.setComparator(ComparatorEnumType.GROUP_OR);
 		QueryField name_filter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
@@ -558,9 +543,9 @@ public abstract class NameIdFactory extends FactoryBase {
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String sqlQuery = assembleQueryString("SELECT " + idCol + " FROM " + viewName, filters, connectionType, instruction, organizationId);
-		//logger.debug("Query=" + sqlQuery);
-		List<Long> ids = new ArrayList<Long>();
-		List<T> objs = new ArrayList<T>();
+
+		List<Long> ids = new ArrayList<>();
+		List<T> objs = new ArrayList<>();
 		
 		try{
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
@@ -584,15 +569,15 @@ public abstract class NameIdFactory extends FactoryBase {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error("Trace",sqe);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		finally{
 			
@@ -600,11 +585,10 @@ public abstract class NameIdFactory extends FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error("Trace",e);
 			}
 		}
-		//return search(fields, instruction, organizationId);
 		return objs;
 	}
 	public <T> List<T> getList(QueryField[] fields, ProcessingInstructionType pi, long organizationId) throws FactoryException, ArgumentException
@@ -672,19 +656,19 @@ public abstract class NameIdFactory extends FactoryBase {
 			//long organizationId = UrnUtil.getOrganization(urn);
 			//List<T> objs = convertList(getByField(new QueryField[]{QueryFields.getFieldUrn(urn)},organizationId));
 			List<T> objs = convertList(getByField(new QueryField[]{QueryFields.getFieldUrn(urn)},0L));
-			if(objs.size() >= 1){
+			if(objs.isEmpty() == false){
 				obj = objs.get(0);
 				addToCache((NameIdType)obj, getUrnCacheKey(obj));
 				addToCache((NameIdType)obj);
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return obj;
 	}
@@ -718,11 +702,11 @@ public abstract class NameIdFactory extends FactoryBase {
 			NameIdType parent = getById(obj.getParentId(),obj.getOrganizationId());
 			if(parent != null) removeBranchFromCache(parent);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error("Trace",e);
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error("Trace",e);
 		}
 	}
 	public void removeFromCache(NameIdType obj){
@@ -782,19 +766,16 @@ public abstract class NameIdFactory extends FactoryBase {
 	
 	public <T> T readCache(String name){
 		checkCacheExpires();
-		//logger.debug("Check cache for key '" + name + "'");
 		if(typeNameMap.containsKey(name)){
-			//logger.debug("Found cache for key '" + name + "'");
 			return (T)typeMap.get(typeNameMap.get(name));
 		}
 		return null;
 	}
 
 	public <T> T readCache(long id){
-		//logger.debug("Check cache for id '" + id + "'");
+
 		checkCacheExpires();
 		if(typeIdMap.containsKey(id)){
-			//logger.debug("Found cache for " + this.factoryType + " id " + id);
 			return (T)typeMap.get(typeIdMap.get(id));
 		}
 		return null;
@@ -814,7 +795,7 @@ public abstract class NameIdFactory extends FactoryBase {
 	}
 
 	public boolean addToCache(NameIdType map) throws ArgumentException{
-		//return addToCache(map, map.getName());
+
 		return addToCache(map,getCacheKeyName(map));
 	}
 	public synchronized boolean addToCache(NameIdType map, String key_name) throws ArgumentException{
@@ -823,31 +804,15 @@ public abstract class NameIdFactory extends FactoryBase {
 			logger.error("Map with key '" + key_name + "' is null");
 			return false;
 		}
-		//checkCacheExpires();
-		//logger.debug("Add to cache: " + (map == null ? "NULL" : map.getNameType() + " " + map.getName()) + " AT " + key_name);
-		//synchronized(typeMap){
-			int length = typeMap.size();
-			if(typeNameMap.containsKey(key_name) || typeIdMap.containsKey(map.getId())){
-				//logger.warn("Map " + map.getNameType().toString() + " with id '" + map.getId() + "' and key '" + key_name + "' already exists in organization " + map.getOrganizationId() + ". This is a known issue with the UserType cache key.");
-				/*
-				if(typeIdMap.containsKey(map.getId())){
-					int mark = typeIdMap.get(map.getId());
-					logger.warn("Conflict map " + typeMap.get(mark).getNameType().toString() + " " + typeMap.get(mark).getId() + " " + typeMap.get(mark).getName() + " " + typeMap.get(mark).getOrganizationId());
-				}
-				if(typeNameMap.containsKey(map.getId())){
-					int mark = typeNameMap.get(map.getId());
-					logger.warn("Conflict map " + typeMap.get(mark).getNameType().toString() + " " + typeMap.get(mark).getId() + " " + typeMap.get(mark).getName() + " " + typeMap.get(mark).getOrganizationId());
-				}
-				*/
-				//throw new ArgumentException("Object already cached");
-				return false;
-			}
-			//logger.debug("Cached " + map.getNameType() + " " + map.getName() + " (#" + map.getId() + ") with key '" + key_name + "'");
-			typeMap.add(map);
-			typeNameMap.put(key_name, length);
-			typeIdMap.put(map.getId(), length);
-			typeNameIdMap.put(map.getId(), map.getName());
-		//}
+		int length = typeMap.size();
+		if(typeNameMap.containsKey(key_name) || typeIdMap.containsKey(map.getId())){
+			return false;
+		}
+		typeMap.add(map);
+		typeNameMap.put(key_name, length);
+		typeIdMap.put(map.getId(), length);
+		typeNameIdMap.put(map.getId(), map.getName());
+
 		return true;
 	}
 	protected boolean isValid(NameIdType map)

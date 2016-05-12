@@ -82,17 +82,15 @@ public class AttributeFactory extends NameIdFactory{
 		populateAttributes(obj);
 	}
 	public void populateAttributes(NameIdType obj){
-		if(obj.getAttributesPopulated()) return;
+		if(obj.getAttributesPopulated())
+			return;
 		try {
 			obj.getAttributes().clear();
 			obj.getAttributes().addAll(getAttributes(obj));
 			obj.setAttributesPopulated(true);
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (FactoryException  | ArgumentException e) {
+
+			logger.error("Trace",e);
 		}
 	}
 	public boolean hasAttribute(NameIdType obj, String name, String value){
@@ -119,7 +117,8 @@ public class AttributeFactory extends NameIdFactory{
 	}
 	public String getAttributeValueByName(List<AttributeType> attrs, String name){
 		AttributeType attr = getAttributeByName(attrs, name);
-		if(attr == null || attr.getValues().size() == 0) return null;
+		if(attr == null || attr.getValues().isEmpty())
+			return null;
 		return attr.getValues().get(0);
 	}
 
@@ -146,7 +145,6 @@ public class AttributeFactory extends NameIdFactory{
 	}
 	public boolean addAttributes(NameIdType obj){
 		return addAttributes(new NameIdType[]{obj});
-		//DataTable table = getDataTable("attribute");
 	}
 
 	public boolean addAttributes(NameIdType[] objs){
@@ -165,7 +163,6 @@ public class AttributeFactory extends NameIdFactory{
 				for(int a = 0; a < obj.getAttributes().size();a++){
 					AttributeType attr = obj.getAttributes().get(a);
 					for(int v = 0; v < attr.getValues().size();v++){
-						/// logger.info("Adding attribute " + attr.getName());
 						psa.setLong(1, obj.getId());
 						psa.setString(2, obj.getNameType().toString());
 						psa.setString(3,attr.getName());
@@ -193,7 +190,7 @@ public class AttributeFactory extends NameIdFactory{
 				out_bool = true;
 			}
 			catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
 				if(e.getNextException() != null) logger.error(e.getNextException().getMessage());
 			}
@@ -202,7 +199,7 @@ public class AttributeFactory extends NameIdFactory{
 				if(connection != null) connection.close();
 			}
 			catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
 			}
 		}
@@ -211,22 +208,23 @@ public class AttributeFactory extends NameIdFactory{
 	}
 
 	public List<AttributeType> getAttributes(NameIdType obj) throws FactoryException, ArgumentException{
-		List<AttributeType> attributes = new ArrayList<AttributeType>();
-		List<QueryField> fieldList = new ArrayList<QueryField>();
+		List<AttributeType> attributes = new ArrayList<>();
+		List<QueryField> fieldList = new ArrayList<>();
 		fieldList.add(QueryFields.getFieldReferenceId(obj.getId()));
 		fieldList.add(QueryFields.getFieldReferenceType(obj.getNameType()));
 		QueryField[] fields = fieldList.toArray(new QueryField[0]);
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("NAME ASC");
-		List<AttributeType> out_list = new ArrayList<AttributeType>();
+		List<AttributeType> out_list = new ArrayList<>();
 
-		if(this.dataTables.size() > 1) throw new FactoryException("Multiple table select statements not yet supported");
+		if(this.dataTables.size() > 1)
+			throw new FactoryException("Multiple table select statements not yet supported");
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		DataTable table = this.dataTables.get(0);
 		String selectString = getSelectTemplate(table, instruction);
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, obj.getOrganizationId());
-		//logger.debug(sqlQuery);
+
 		try {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
@@ -255,9 +253,9 @@ public class AttributeFactory extends NameIdFactory{
 			rset.close();
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -265,8 +263,8 @@ public class AttributeFactory extends NameIdFactory{
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error("Trace",e);
 			}
 		}
 
@@ -277,7 +275,7 @@ public class AttributeFactory extends NameIdFactory{
 		return deleteAttributes(object,false);
 	}
 	public boolean deleteAttributes(NameIdType object, boolean preserveValues){
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldReferenceId(object.getId()));
 		fields.add(QueryFields.getFieldReferenceType(object.getNameType()));
 
@@ -287,8 +285,8 @@ public class AttributeFactory extends NameIdFactory{
 			out_bool = (delCount > 0);
 			if(!preserveValues) object.getAttributes().clear();
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error("Trace",e);
 		}
 		return out_bool;
 	}
@@ -311,7 +309,7 @@ public class AttributeFactory extends NameIdFactory{
 	}	
 
 	public boolean deleteAttribute(AttributeType attribute){
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldReferenceId(attribute.getReferenceId()));
 		fields.add(QueryFields.getFieldReferenceType(attribute.getReferenceType()));
 		fields.add(QueryFields.getFieldName(attribute.getName()));
@@ -320,14 +318,15 @@ public class AttributeFactory extends NameIdFactory{
 			int delCount = deleteByField(fields.toArray(new QueryField[0]),attribute.getOrganizationId());
 			out_bool = (delCount > 0);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error("Trace",e);
 		}
 		return out_bool;
 	}
 	protected int deleteByReferenceId(long[] ids, NameEnumType nType, long organization_id)
 	{
-		if (ids.length == 0) return 0;
+		if (ids.length == 0)
+			return 0;
 		
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		DataTable table = this.dataTables.get(0);
@@ -343,22 +342,23 @@ public class AttributeFactory extends NameIdFactory{
 				statement.addBatch();
 				if((i > 0 || ids.length ==1 ) && ((i % 250 == 0) || i == ids.length - 1)){
 					int[] del = statement.executeBatch();
-					for(int d = 0; d < del.length; d++) deleted_records += del[d];
+					for(int d = 0; d < del.length; d++)
+						deleted_records += del[d];
 				}
 			}
 			statement.close();
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error("Trace",e);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error("Trace",e);
 			}
 		}
 

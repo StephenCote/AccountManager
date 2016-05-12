@@ -67,7 +67,8 @@ public class DBFactory {
 		int len = fields.length;
 		int paramMarker = startMarker;
 		for(int i = 0; i < len; i++){
-			if(fields[i] == null) continue;
+			if(fields[i] == null)
+				continue;
 			if(fields[i].getComparator() == ComparatorEnumType.GROUP_AND || fields[i].getComparator() == ComparatorEnumType.GROUP_OR){
 				paramMarker = setStatementParameters(fields[i].getFields().toArray(new QueryField[0]), paramMarker, statement);
 			}
@@ -81,7 +82,6 @@ public class DBFactory {
 				|| fields[i].getComparator() == ComparatorEnumType.LIKE
 
 			){
-				//logger.debug(fields[i].getDataType() + ":" + fields[i].getValue());
 				setStatementParameter(statement, fields[i].getDataType(), fields[i].getValue(), paramMarker++);
 			}
 		}
@@ -98,12 +98,14 @@ public class DBFactory {
 					break;
 				case TEXT:
 				case VARCHAR:
-					//System.out.println("Str=" + (String)value);
-					if(value == null) statement.setNull(index, Types.VARCHAR);
-					else statement.setString(index,  (String)value);
+					if(value == null)
+						statement.setNull(index, Types.VARCHAR);
+					else
+						statement.setString(index,  (String)value);
 					break;
 				case INTEGER:
-					if(value != null) statement.setInt(index,  ((Integer)value).intValue());
+					if(value != null)
+						statement.setInt(index,  ((Integer)value).intValue());
 					else{
 						logger.warn("Null int detected.  If this is for an id field, the probable cause is that a bulk insert session includes both bulk and dirty writes of the same factory type");
 						statement.setNull(index, Types.BIGINT);
@@ -112,7 +114,8 @@ public class DBFactory {
 					break;
 				case BIGINT:
 					
-					if(value != null) statement.setLong(index,  ((Long)value).longValue());
+					if(value != null)
+						statement.setLong(index,  ((Long)value).longValue());
 					else{
 						
 						logger.warn("Null bigint detected.  If this is for an id field, the probable cause is that a bulk insert session includes both bulk and dirty writes of the same factory type");
@@ -137,9 +140,8 @@ public class DBFactory {
 			}
 		}
 		catch (SQLException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 			throw new FactoryException(e.getMessage());
 		}
 	}
@@ -149,22 +151,27 @@ public class DBFactory {
 			if(cell.getValue() == null && cell.getDataType().equals(SqlDataEnumType.INTEGER)){
 				logger.warn("Null integer value detected for cell " + cell.getColumnName());
 			}
-		//	System.out.println(cell.getColumnName() + ":" + cell.getDataType() + ":" + cell.getValue());
 			setStatementParameter(ps, cell.getDataType(), cell.getValue(), index);
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 
 	}
 	
 	public static boolean isInstructionReadyForPagination(ProcessingInstructionType instruction)
 	{
-		return (instruction != null && instruction.getPaginate() && instruction.getOrderClause() != null && instruction.getStartIndex().compareTo(0L) >= 0 && instruction.getRecordCount() > 0);
+		return (
+				instruction != null
+				&& instruction.getPaginate()
+				&& instruction.getOrderClause() != null
+				&& instruction.getStartIndex().compareTo(0L) >= 0
+				&& instruction.getRecordCount() > 0
+			);
 	}
 	public static String getPaginationPrefix(ProcessingInstructionType instruction, CONNECTION_TYPE connectionType)
 	{
-		if (!isInstructionReadyForPagination(instruction)) return "";
+		if (!isInstructionReadyForPagination(instruction))
+			return "";
 
 		String out_prefix = "";
 		switch (connectionType)
@@ -181,7 +188,8 @@ public class DBFactory {
 	}
 	public static String getPaginationField(ProcessingInstructionType instruction, CONNECTION_TYPE connectionType)
 	{
-		if (!isInstructionReadyForPagination(instruction)) return "";
+		if (!isInstructionReadyForPagination(instruction))
+			return "";
 		String out_field = "";
 		switch (connectionType)
 		{
@@ -198,7 +206,8 @@ public class DBFactory {
 	public static String getPaginationSuffix(ProcessingInstructionType instruction, CONNECTION_TYPE connectionType)
 	{
 		String order_clause = (instruction != null && instruction.getOrderClause() != null ? " ORDER BY " + instruction.getOrderClause() : "");
-		if (!isInstructionReadyForPagination(instruction)) return order_clause;
+		if (!isInstructionReadyForPagination(instruction))
+			return order_clause;
 		String out_suffix = "";
 		switch (connectionType)
 		{
@@ -215,23 +224,28 @@ public class DBFactory {
 	}
 	public static long getAdjustedStartRecord(long startRecord, CONNECTION_TYPE connectionType)
 	{
-		if (connectionType == CONNECTION_TYPE.SQL) return (startRecord + 1);
+		if (connectionType == CONNECTION_TYPE.SQL)
+			return (startRecord + 1);
 		return startRecord;
 	}
 	
 	public static String getParamToken(CONNECTION_TYPE connection_type)
 	{
 
-		if (connection_type == CONNECTION_TYPE.SQL) return "@";
-		else if(connection_type == CONNECTION_TYPE.POSTGRES || connection_type == CONNECTION_TYPE.MYSQL || connection_type == CONNECTION_TYPE.ORACLE) return "?";
+		if (connection_type == CONNECTION_TYPE.SQL)
+			return "@";
+		else if(connection_type == CONNECTION_TYPE.POSTGRES || connection_type == CONNECTION_TYPE.MYSQL || connection_type == CONNECTION_TYPE.ORACLE)
+			return "?";
 		return "";
 		
 	}
 	public static String getNoLockHint(CONNECTION_TYPE connection_type)
 	{
 
-		if (connection_type == CONNECTION_TYPE.SQL) return " with (nolock) ";
-		else if (connection_type == CONNECTION_TYPE.MYSQL || connection_type == CONNECTION_TYPE.ORACLE) return "";
+		if (connection_type == CONNECTION_TYPE.SQL)
+			return " with (nolock) ";
+		else if (connection_type == CONNECTION_TYPE.MYSQL || connection_type == CONNECTION_TYPE.ORACLE)
+			return "";
 		return "";
 
 	}
@@ -241,11 +255,11 @@ public class DBFactory {
 		try {
 			dbName = connection.getMetaData().getDatabaseProductName();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			logger.error("Trace",e);
 		}
-		if(dbName != null && dbName.matches("^(?i)postgresql$")) out_type = CONNECTION_TYPE.POSTGRES;
-		//System.out.println("DBName: " + dbName + ":" + out_type);
+		if(dbName != null && dbName.matches("^(?i)postgresql$"))
+			out_type = CONNECTION_TYPE.POSTGRES;
 		return out_type;
 	}
 
@@ -263,7 +277,7 @@ public class DBFactory {
 			stat.close();
 		}
 		catch(SQLException sqe){
-			sqe.printStackTrace();
+			logger.error("Trace",sqe);
 		}
 		return (update != 0);
 	}
@@ -294,7 +308,7 @@ public class DBFactory {
 			rset.close();
 		}
 		catch(SQLException sqe){
-			System.out.println(sqe.toString());
+			logger.error("Trace:",sqe);
 		}
 		return exists;
 	}
@@ -306,7 +320,7 @@ public class DBFactory {
 			stat.close();
 		}
 		catch(SQLException sqe){
-			sqe.printStackTrace();
+			logger.error("Trace",sqe);
 		}
 		return update;
 	}
@@ -320,23 +334,13 @@ public class DBFactory {
 			DatabaseMetaData meta = connection.getMetaData();
 			
 			ResultSet rset = meta.getColumns(null, null, tableName, null);
-			//logger.debug("Analyzing Table Schema: " + tableName);
 			while(rset.next()){
-				//DataColumnType col = new DataColumnType();
 				String colName = rset.getString("COLUMN_NAME");
 				String colType = rset.getString("TYPE_NAME");
 				int colSize = rset.getInt("COLUMN_SIZE");
 				
 				SqlDataEnumType dataType = SqlTypeUtil.translateSqlType(connectionType, colType);
-				//logger.debug("\tColumn name: " + colName + " / Column type: " + colType + "->" + dataType);
 				out_table.addColumn(colName,  colIndex++, colSize, dataType);
-				/*
-				col.setColumnName(colName);
-				col.setDataType(SqlDataEnumType.valueOf(colType));
-				col.setColumnSize(colSize);
-				col.setColumnIndex(colIndex++);
-				out_table.getColumns().add(col);
-				*/
 			}
 			rset.close();
 		}
@@ -345,7 +349,6 @@ public class DBFactory {
 		}
 		out_table.setColumnSize(colIndex);
 		return out_table;
-		///return columns.toArray(new String[]{});
 	}
 
 }

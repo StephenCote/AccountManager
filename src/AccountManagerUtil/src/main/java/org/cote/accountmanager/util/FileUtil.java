@@ -46,7 +46,7 @@ public class FileUtil {
 			out_str = new String(data,"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return out_str;
 	}
@@ -66,7 +66,7 @@ public class FileUtil {
 		}
 		catch(IOException ie){
 			logger.error(ie.getMessage());
-			ie.printStackTrace();
+			logger.error("Trace",ie);
 		}
 		return baos.toByteArray();
 	}
@@ -99,7 +99,7 @@ public class FileUtil {
 			out_bool = emitFile(path, cont);
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		
 		return out_bool;
@@ -131,7 +131,7 @@ public class FileUtil {
 		}
 		catch(IOException ie){
 			logger.error(ie.getMessage());
-			ie.printStackTrace();
+			logger.error("Trace",ie);
 		}
 		return out_bool;
 		

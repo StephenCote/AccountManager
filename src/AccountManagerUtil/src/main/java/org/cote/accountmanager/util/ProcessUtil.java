@@ -33,7 +33,7 @@ public class ProcessUtil {
 		}
 		catch(IOException e){
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		finally{
 			if(processCompleted == false){

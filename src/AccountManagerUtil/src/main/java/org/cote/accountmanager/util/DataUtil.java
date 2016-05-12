@@ -90,7 +90,7 @@ public class DataUtil {
 				setValue(d, value.getBytes("UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error("Trace",e);
 			}
 			d.setShortData(null);
 			if(d.getMimeType() == null || d.getMimeType().length() == 0){
@@ -111,7 +111,7 @@ public class DataUtil {
 				return (new String(getValue(d),"UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error("Trace",e);
 			}
 		}
 		return d.getShortData();

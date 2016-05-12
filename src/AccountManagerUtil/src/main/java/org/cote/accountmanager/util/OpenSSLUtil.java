@@ -282,7 +282,7 @@ public class OpenSSLUtil {
 				out_bool = true;
 			} catch (IOException e) {
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error("Trace",e);
 			}
 		}
 

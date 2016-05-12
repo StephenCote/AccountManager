@@ -67,7 +67,7 @@ public abstract class ThreadService implements Runnable {
 			}
 			catch(Exception e){
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error("Trace",e);
 			}
 		}
 	}

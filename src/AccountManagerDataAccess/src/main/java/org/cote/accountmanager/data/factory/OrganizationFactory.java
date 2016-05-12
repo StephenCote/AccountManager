@@ -49,7 +49,6 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 
 public class OrganizationFactory extends NameIdFactory {
-	/// private static final String buildDeleteQuery = "SELECT 'DELETE FROM ' || tablename || ' WHERE organizationid = ?;' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations';";
 	public OrganizationFactory(){
 		super();
 		this.scopeToOrganization = false;
@@ -57,18 +56,20 @@ public class OrganizationFactory extends NameIdFactory {
 		this.tableNames.add("organizations");
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase("organizations")){
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
 	
+	@Override
 	protected String getSelectTemplate(DataTable table, ProcessingInstructionType instruction){
 		return table.getSelectFullTemplate();
 	}
 	
 
-	
+	@Override
 	public void initialize(Connection connection) throws FactoryException{
 		super.initialize(connection);
 		
@@ -85,12 +86,10 @@ public class OrganizationFactory extends NameIdFactory {
 
 		if (deleted > 0)
 		{
-			//OrganizationSecurity.deleteSecurityKeys(organization);
 			KeyService.deleteKeys(organization.getId());
 			Connection conn = ConnectionFactory.getInstance().getConnection();
 			CONNECTION_TYPE connection_type = DBFactory.getConnectionType(conn);
 			try {
-				/// String buildDeleteQuery = (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM session WHERE sessionexpiration <= " + token  + (connection_type == CONNECTION_TYPE.MYSQL ? " LIMIT 200 " : "") + ";";
 				int delLimit = 1000;
 				String buildDeleteQuery = "SELECT '" + (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT " + 1000 + " " : "") + "DELETE FROM ' || tablename || ' WHERE organizationid = ?" + (connection_type == CONNECTION_TYPE.MYSQL ? " LIMIT " + delLimit + " " : "") + ";' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations';";
 				logger.debug(buildDeleteQuery);
@@ -109,17 +108,18 @@ public class OrganizationFactory extends NameIdFactory {
 					pstat.close();
 				}
 				rset.close();
+				stat.close();
 				//conn.commit();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Trace",e);
 			}
 			finally{
 				try {
 					conn.close();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Trace",e);
 				}
 			}
 			
@@ -143,15 +143,16 @@ public class OrganizationFactory extends NameIdFactory {
 	}
 	public OrganizationType getOrganizationByName(String name, long parent_id) throws FactoryException, ArgumentException
 	{
-		//OrganizationType out_org = null;
+
 		String key_name = name + "-" + parent_id ;
 
 		OrganizationType out_org = readCache(key_name);
-		if (out_org != null) return out_org;
+		if (out_org != null)
+			return out_org;
 
 		List<NameIdType> orgs = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldParent(parent_id) }, 0);
-			//GetByName(name);
-		if (orgs.size() > 0)
+
+		if (orgs.isEmpty() == false)
 		{
 			addToCache(orgs.get(0),key_name);
 			return (OrganizationType)orgs.get(0);
@@ -167,7 +168,7 @@ public class OrganizationFactory extends NameIdFactory {
 
 		List<NameIdType> orgs = getByField(new QueryField[] { QueryFields.getFieldId(id) }, 0);
 
-		if (orgs.size() > 0)
+		if (orgs.isEmpty() == false)
 		{
 			String key_name = id + "-" + orgs.get(0).getParentId();
 			addToCache(orgs.get(0),key_name);
@@ -179,7 +180,7 @@ public class OrganizationFactory extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		///System.out.println("impl base");
+
 		OrganizationType new_map = new OrganizationType();
 		new_map.setNameType(NameEnumType.ORGANIZATION);
 		new_map.setLogicalId(rset.getLong("logicalid"));
@@ -211,9 +212,7 @@ public class OrganizationFactory extends NameIdFactory {
 			row.setCellValue("logicalid", new_org.getLogicalId());
 			row.setCellValue("referenceid", new_org.getReferenceId());
 			if(insertRow(row)){
-				//System.out.println("Inserted row");
 				new_org = getOrganizationByName(new_org.getName(), new_org.getParentId());
-				//System.out.println("Got new org: " + (new_org == null ? "NULL" : new_org.getId()));
 				if(KeyService.newOrganizationAsymmetricKey(new_org.getId(), true) == null){
 					throw new FactoryException("Unable to generate organization security keys for " + new_org.getName() + "(#" + new_org.getId() + ")");
 				}
@@ -221,9 +220,9 @@ public class OrganizationFactory extends NameIdFactory {
 				return new_org;
 			}
 		}
-		catch(DataAccessException dae){
-			dae.printStackTrace();
-			throw new FactoryException(dae.getMessage());
+		catch(DataAccessException e){
+			logger.error("Trace",e);
+			throw new FactoryException(e.getMessage());
 		}
 		
 		return null;
@@ -233,7 +232,6 @@ public class OrganizationFactory extends NameIdFactory {
 		return getOrganizationPath(org);
 	}
 	public String getOrganizationPath(OrganizationType org) throws FactoryException, ArgumentException{
-		//if(org == null) throw new ArgumentException("Organization is null");
 		String path = "";
 		if(org == null){
 			logger.debug("Organization not found.  This may occur if a reference object is used to set the organization id, and that object is not scoped to organizations");
@@ -257,30 +255,29 @@ public class OrganizationFactory extends NameIdFactory {
 
 		OrganizationType nested_org = null;
 
-		String name = null;
 		if (paths.length == 0 || path.equals("/"))
 		{
-			System.out.println("Empty or root path, returning root");
+			logger.warn("Empty or root path, returning root");
 			return Factories.getRootOrganization();
 		}
 		if(paths.length == 0) throw new FactoryException("Invalid path list from '" + path + "'");
 
 		for (int i = 0; i < paths.length; i++)
 		{
-			name = paths[i];
+
 			
-			if (name.length() == 0 && i == 0)
+			if (paths[i].length() == 0 && i == 0)
 			{
 				nested_org = Factories.getRootOrganization();
 				if (paths.length == 1)
 				{
-					System.out.println("Returning root for single path pair with zero length");
+					logger.warn("Returning root for single path pair with zero length");
 					break;
 				}
-				name = paths[++i];
 			}
-			
-			nested_org = getOrganizationByName(paths[i], nested_org);
+			else{
+				nested_org = getOrganizationByName(paths[i], nested_org);
+			}
 		}
 		out_org = nested_org;
 

@@ -53,7 +53,7 @@ public class CalendarUtil {
 			d = parserSDF.parse(s);
 		} catch (ParseException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return d;
 		
@@ -86,7 +86,7 @@ public class CalendarUtil {
 			dataTypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return dataTypeFactory;
 	}

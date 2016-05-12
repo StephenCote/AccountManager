@@ -17,15 +17,9 @@ public class JSONUtil {
 		T outObj = null;
 		try {
 			outObj = mapper.readValue(s, cls);
-		} catch (JsonParseException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return outObj;
 		
@@ -35,15 +29,9 @@ public class JSONUtil {
 		 String outStr = null;
 		try {
 			outStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
-		} catch (JsonGenerationException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return outStr;
 	}

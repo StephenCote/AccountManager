@@ -114,10 +114,10 @@ public class SecurityFactory {
 			buff.append("<Exponent>" + BinaryUtil.toBase64Str(keySpec.getPublicExponent().toByteArray()) + "</Exponent>");
 		} catch (NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (InvalidKeySpecException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		buff.append("</RSAKeyValue>\r\n");
 		return buff.toString().getBytes();
@@ -148,7 +148,7 @@ public class SecurityFactory {
 			setSecretKey(bean, secret.getEncoded(), iv, encrypted_pass_key);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | InvalidParameterSpecException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}  
 		logger.debug("Generate Pass Key: " + (System.currentTimeMillis() - start) + "ms");
 	}
@@ -179,7 +179,7 @@ public class SecurityFactory {
 			pubKey = factory.generatePublic(x509KeySpec);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		bean.setPublicKey(pubKey);
 		
@@ -194,7 +194,7 @@ public class SecurityFactory {
 		}
 		catch(Exception e){
 			logger.error("DSAKeyUtil:: decodeX509PrivateKey: " + e.toString());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		bean.setPrivateKey(privKey);
 	}
@@ -212,7 +212,7 @@ public class SecurityFactory {
 			pubKey = factory.generatePublic(pubSpec);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		bean.setPublicKey(pubKey);
 	}
@@ -245,7 +245,7 @@ public class SecurityFactory {
 			priKey = factory.generatePrivate(privSpec);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		bean.setPrivateKey(priKey);
 
@@ -305,17 +305,17 @@ public class SecurityFactory {
        catch (NoSuchAlgorithmException e) {
 
     	   logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
        catch (NoSuchPaddingException e) {
     	   logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (InvalidKeyException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (InvalidAlgorithmParameterException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
        return cipher_key;
 	}
@@ -348,7 +348,7 @@ public class SecurityFactory {
 			ret = true;
 		} catch (NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 			
 		}
 		return ret;
@@ -369,7 +369,7 @@ public class SecurityFactory {
 			ret = true;
 		}
 		catch(Exception e){
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return ret;
 	}

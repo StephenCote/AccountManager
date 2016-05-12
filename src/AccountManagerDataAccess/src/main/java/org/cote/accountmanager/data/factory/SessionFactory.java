@@ -50,7 +50,6 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserSessionDataType;
 import org.cote.accountmanager.objects.UserSessionType;
-import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.SessionStatusEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;

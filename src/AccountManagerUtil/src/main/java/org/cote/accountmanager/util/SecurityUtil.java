@@ -93,8 +93,8 @@ public class SecurityUtil {
 		try{
 			digest = MessageDigest.getInstance(HASH_PROVIDER);
 		}
-		catch(NoSuchAlgorithmException nsae){
-			nsae.printStackTrace();
+		catch(NoSuchAlgorithmException e){
+			logger.error("Trace",e);
 		}
 		if(use_singleton && digest != null) hash_algorithm = digest;
 		return digest;
@@ -150,10 +150,10 @@ public class SecurityUtil {
 			ret = cipher.doFinal(data);
 		}
 		catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
+			logger.error("Trace",e);
 			logger.error(e.getMessage());
 		} catch (BadPaddingException e) {
-			e.printStackTrace();
+			logger.error("Trace",e);
 			logger.error(e.getMessage());
 		}
 		logger.debug("Deciphered in " + (System.currentTimeMillis() - start_enc) + "ms");
@@ -170,10 +170,10 @@ public class SecurityUtil {
 		}
 		catch (IllegalBlockSizeException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (BadPaddingException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} 
 		logger.debug("Enciphered in " + (System.currentTimeMillis() - start_enc) + "ms");
 		return ret;
@@ -199,7 +199,7 @@ public class SecurityUtil {
 		}
 		catch(Exception e){
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 
 		return ret;
@@ -219,7 +219,7 @@ public class SecurityUtil {
 		}
 		catch(Exception e){
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		
 		return ret;

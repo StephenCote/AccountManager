@@ -154,6 +154,8 @@ public class UrnUtil {
 				urn = urnPrefix + urnSeparator + object.getNameType().toString()
 					 + urnSeparator + getDotOrganizationPath(object.getOrganizationId())
 					 + urnSeparator + key;
+			}
+			if(urn != null){
 				urn = getNormalizedString(urn);
 			}
 		}

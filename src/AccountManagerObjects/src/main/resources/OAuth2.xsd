@@ -45,4 +45,20 @@
     	<attribute name="redirect_uri" type="string"></attribute>
     	<attribute name="client_id" type="string"></attribute>
     </complexType>
+
+    <complexType name="OAuth2AccessTokenResponseType">
+    	<attribute name="access_token" type="string"></attribute>
+    	<attribute name="token_type" type="string"></attribute>
+    	<attribute name="expires_in" type="int"></attribute>
+    	<attribute name="refresh_token" type="string"></attribute>
+    	<attribute name="scope" type="string"></attribute>
+    </complexType>
+
+    <complexType name="OAuth2AccessTokenRefreshType">
+    	<attribute name="grant_type" type="string"
+    		default="refresh_token">
+    	</attribute>
+    	<attribute name="refresh_token" type="string"></attribute>
+    	<attribute name="scope" type="string"></attribute>
+    </complexType>
 </schema>

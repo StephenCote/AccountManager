@@ -41,7 +41,7 @@ public class KeyStoreUtil {
 		outByte = baos.toByteArray();
 		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 
 	   return outByte;
@@ -59,7 +59,7 @@ public class KeyStoreUtil {
 			store.load(new ByteArrayInputStream(keystoreBytes), password);
 		} catch (NoSuchAlgorithmException | CertificateException | IOException | KeyStoreException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 			store = null;
 		} 
 	      return store;
@@ -76,7 +76,7 @@ public class KeyStoreUtil {
 		}
 		catch(CertificateException | KeyStoreException e){
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return out_bool;
 	}
@@ -111,7 +111,7 @@ public class KeyStoreUtil {
 		}
 		catch(KeyStoreException | UnrecoverableKeyException | NoSuchAlgorithmException e){
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 	    return out_bool;
 
@@ -132,7 +132,7 @@ public class KeyStoreUtil {
 				fos.close();
 			} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error("Trace",e);
 			}
 		}
 		return getKeyStore(path,password);
@@ -148,7 +148,7 @@ public class KeyStoreUtil {
 		}
 		 catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
 			 logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 			}
 		return saved;
 	}
@@ -169,7 +169,7 @@ public class KeyStoreUtil {
 		}
 		catch(KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e){
 			logger.info(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} 
 		  return keystore;
 	}
@@ -185,7 +185,7 @@ public class KeyStoreUtil {
 				cert = store.getCertificate(keyAlias);
 			} catch (KeyStoreException e) {
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error("Trace",e);
 			}
 
 		    return cert;
@@ -208,7 +208,7 @@ public class KeyStoreUtil {
 				}
 			} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error("Trace",e);
 			}
 		    return key;
 	}
@@ -238,7 +238,7 @@ public class KeyStoreUtil {
 			ldapDN = new LdapName(principal.getName(X500Principal.CANONICAL));
 		} catch (InvalidNameException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		if(ldapDN == null){
 			logger.error("Unable to parse DN from '" + principal.getName() + "'");

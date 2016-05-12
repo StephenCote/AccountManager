@@ -47,7 +47,7 @@ public class TextUtil {
 			outStr = new String(inStr.getBytes(),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return outStr;
 	}

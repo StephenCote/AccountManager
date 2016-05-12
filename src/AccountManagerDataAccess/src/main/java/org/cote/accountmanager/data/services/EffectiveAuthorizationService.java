@@ -145,7 +145,15 @@ public class EffectiveAuthorizationService {
 	public static int maximum_insert_size = 250;
 	
 	/// TODO - these individual caches coud be consolidated - though then it would be more difficult to unwind, and not sure about the perf savings
-	///
+	/// 2016/05/10 - Refactor this to use a TypeToType structure
+	/// Let the factories base register these types in
+	/// eg: TypeMapClass::instance{
+	///   xActor[NameIdType]
+	///   yObject[NameIdType]
+	///   Map<> map = ...
+	/// eg: RebuildMapType::instance
+	///   xObject[NameIdType]
+	///   Long[] ids
 	/// userRoleMap - caches users who participate in a role
 	private static Map<Long,Map<Long,Boolean>> userRoleMap = new HashMap<Long,Map<Long,Boolean>>();
 	private static Map<Long,Map<Long,Map<Long,Boolean>>> userGroupMap = new HashMap<Long,Map<Long,Map<Long,Boolean>>>();

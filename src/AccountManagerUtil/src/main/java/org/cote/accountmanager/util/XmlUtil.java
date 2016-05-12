@@ -84,12 +84,12 @@ public class XmlUtil {
 		}
 		catch(TransformerConfigurationException tce){
 			logger.error(tce.getMessage());
-			tce.printStackTrace();
+			logger.error("Trace",tce);
 	
 		}
 		catch(IOException e){
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return transformer;
 	}
@@ -110,7 +110,7 @@ public class XmlUtil {
 		catch(TransformerException | IOException e){
 			logger.error(e.getMessage());
 			returnData=e.toString().getBytes();
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return returnData;
 	}
@@ -122,7 +122,7 @@ public class XmlUtil {
 			outNode = (Node)xPath.compile(expression).evaluate(refNode, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return outNode;
 	}	
@@ -133,7 +133,7 @@ public class XmlUtil {
 			outNode = (Node)xPath.compile(expression).evaluate(refNode, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return outNode;
 	}
@@ -145,7 +145,7 @@ public class XmlUtil {
 			outNodes = (NodeList)xPath.compile(expression).evaluate(refNode, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return outNodes;
 	}	
@@ -156,7 +156,7 @@ public class XmlUtil {
 			outNodes = (NodeList)xPath.compile(expression).evaluate(refNode, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return outNodes;
 	}
@@ -173,13 +173,13 @@ public class XmlUtil {
 			transformer.transform(new DOMSource(d.getDocumentElement()), new StreamResult(output));
 		} catch (TransformerConfigurationException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (TransformerFactoryConfigurationError e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (TransformerException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 	    
 
@@ -200,20 +200,20 @@ public class XmlUtil {
 		}
 		catch (ParserConfigurationException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (SAXException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		finally{
 			try {
 				bais.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Trace",e);
 			}
 		}
 		return doc;

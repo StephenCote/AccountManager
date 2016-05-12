@@ -3,7 +3,6 @@ package org.cote.accountmanager.data.services;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
 import javax.mail.Message;

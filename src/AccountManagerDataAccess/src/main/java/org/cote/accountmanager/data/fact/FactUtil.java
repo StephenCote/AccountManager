@@ -66,23 +66,12 @@ public class FactUtil {
 	}
 	public static String getFactAttributeValue(FactType sourceFact, FactType matchFact){
 		setFactReference(sourceFact, matchFact);
-		if(sourceFact.getFactReference() == null) return null;
+		if(sourceFact.getFactReference() == null)
+			return null;
 		Factories.getAttributeFactory().populateAttributes(sourceFact.getFactReference());
 		return Factories.getAttributeFactory().getAttributeValueByName(sourceFact.getFactReference(), matchFact.getSourceUrn());
 	}
-	/*
-	public static <T> T getFactPropertyValue(FactType sourceFact, FactType matchFact){
-		setFactReference(sourceFact, matchFact);
-		if(sourceFact.getFactReference() == null) return null;
 	
-        Field field = Other.class.getDeclaredField(matchFact.getSourceUrn());
-        field.setAccessible(true);
-        T value = (T)field.get(t);
-	    
-		
-		return Factories.getAttributeFactory().getAttributeValueByName(sourceFact.getFactReference(), matchFact.getSourceUrn());
-	}
-	*/
 	public static String getFactValue(FactType sourceFact, FactType matchFact){
 		String out_val = null;
 		/// Fact value is driven by a combination of what the source fact has and what  the matchFact expects
@@ -95,11 +84,6 @@ public class FactUtil {
 			case ATTRIBUTE:
 				out_val = getFactAttributeValue(sourceFact, matchFact);
 				break;
-			/*
-			case PROPERTY:
-				out_val = getFactPropertyValue(sourceFact, matchFact);
-				break;
-			*/
 			default:
 				logger.error("Unhandled fact type: " + matchFact.getFactType());
 				break;
@@ -128,7 +112,8 @@ public class FactUtil {
 			return null;
 		}
 		DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, sourceFact.getSourceUrl(), referenceFact.getOrganizationId());
-		if(dir == null) throw new ArgumentException("Invalid group path " + sourceFact.getSourceUrl());
+		if(dir == null)
+			throw new ArgumentException("Invalid group path " + sourceFact.getSourceUrl());
 		return dir;
 	}
 	private static BasePermissionType getPermissionFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException, DataAccessException{
@@ -159,7 +144,6 @@ public class FactUtil {
 			return out_obj;
 		}
 		try {
-			//out_obj = (T)Factories.getUserFactory().getUserByName(sourceFact.getFactData(), referenceFact.getOrganization());
 			NameIdFactory fact = Factories.getFactory(useRef.getFactoryType());
 			DirectoryGroupType dir = null;
 			if(idPattern.matcher(sourceFact.getSourceUrn()).matches()){
@@ -236,18 +220,10 @@ public class FactUtil {
 						throw new ArgumentException("Unhandled factory type " + useRef.getFactoryType());
 				}
 			}
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
+
 			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return out_obj;
 	}

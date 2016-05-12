@@ -56,7 +56,7 @@ public class JAXBUtil {
 		}
 		catch(JAXBException je){
 			logger.error(je.getMessage());
-			je.printStackTrace();
+			logger.error("Trace",je);
 		}
 		return bean;
 	}
@@ -70,11 +70,11 @@ public class JAXBUtil {
 		    obj = (T) context.createUnmarshaller().unmarshal(bais);
 		} catch (JAXBException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 
 	   return obj;
@@ -92,14 +92,14 @@ public class JAXBUtil {
 		    baos.close();
 		} catch (JAXBException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 	    return output;
 	}

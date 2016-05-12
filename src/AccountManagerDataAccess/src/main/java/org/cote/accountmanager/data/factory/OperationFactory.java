@@ -43,7 +43,6 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OperationEnumType;
-import org.cote.accountmanager.objects.OperationEnumType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;

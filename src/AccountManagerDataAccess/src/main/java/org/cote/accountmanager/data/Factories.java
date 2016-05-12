@@ -142,12 +142,8 @@ public class Factories {
 		UserType user = null;
 		try {
 			user = Factories.getUserFactory().getUserByName(documentControlName, organizationId);
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (FactoryException | ArgumentException e) {
+			logger.error("Trace",e);
 		}
 		return user;
 	}
@@ -155,14 +151,9 @@ public class Factories {
 		UserType u = null;
 		try {
 			u = Factories.getUserFactory().getUserByName("Admin", organizationId);
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return u;
 	}
@@ -170,14 +161,9 @@ public class Factories {
 		UserType u = null;
 		try {
 			u = Factories.getUserFactory().getUserByName("Root", getSystemOrganization().getId());
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		return u;
 	}
@@ -502,16 +488,8 @@ public class Factories {
 				out_bool = true;
 				
 			}
-			catch(FactoryException fe){
-				fe.printStackTrace();
-				logger.error(fe.getMessage());
-				rootOrganization = null;
-				systemOrganization = null;
-				publicOrganization = null;
-				developmentOrganization = null;
-			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			catch(FactoryException | ArgumentException e) {
+				logger.error("Trace",e);
 				logger.error(e.getMessage());
 				rootOrganization = null;
 				systemOrganization = null;
@@ -529,14 +507,14 @@ public class Factories {
 			init = true;
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Trace",e);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Trace",e);
 			}
 		}
 		return init;
@@ -555,12 +533,9 @@ public class Factories {
 					logger.info("Organization not configured.  Could not find 'Admin' user in org " + organizationId);
 				}
 			}
-			catch(FactoryException fe){
-				logger.error(fe.getMessage());
-				fe.printStackTrace();
-			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			catch(FactoryException | ArgumentException e){
+				logger.error(e.getMessage());
+				logger.error("Trace",e);
 			}
 		}
 		else{
@@ -822,32 +797,9 @@ public class Factories {
 	
 	public static <T> void populate(FactoryEnumType factoryType, T object) throws FactoryException, ArgumentException{
 		NameIdFactory fact = Factories.getFactory(factoryType);
-		if(fact != null) fact.populate(object);
-		/*
-		switch(factoryType){
-			case ADDRESS:
-				getAddressFactory().populate((AddressType)object);
-				break;
-			case CONTACTINFORMATION:
-				getContactInformationFactory().populate((ContactInformationType)object);
-				break;
-			case USER:
-				getUserFactory().populate((UserType)object);
-				break;
-			case PERSON:
-				getPersonFactory().populate((PersonType)object);
-				break;
-			case GROUP:
-				getGroupFactory().populate((BaseGroupType)object);
-				break;
-			case ROLE:
-			case TAG:
-			case DATA:
-			default:
-				break;
+		if(fact != null)
+			fact.populate(object);
 		
-		}
-		*/
 	}
 	
 	public static boolean cleanupOrphans(){
@@ -855,18 +807,19 @@ public class Factories {
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		try {
 			Statement stat = connection.createStatement();
-			stat.executeQuery("SELECT * FROM cleanup_orphans();");
+			stat.execute("SELECT * FROM cleanup_orphans();");
+			stat.close();
 			out_bool = true;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			logger.error("Trace",e);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+				logger.error("Trace",e);
 			}
 		}
 		clearCaches();
