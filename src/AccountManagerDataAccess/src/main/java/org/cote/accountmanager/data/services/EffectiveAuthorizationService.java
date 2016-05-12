@@ -121,6 +121,8 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
  */
 public class EffectiveAuthorizationService {
 	
+
+	
 	public static final Logger logger = Logger.getLogger(EffectiveAuthorizationService.class.getName());
 
 	/// 2014/09/14 - in progress - creating generic cache mechanism
@@ -180,7 +182,38 @@ public class EffectiveAuthorizationService {
 	private static Map<Long,BaseRoleType> rebuildRoles = new HashMap<Long,BaseRoleType>();
 	private static Map<Long,DataType> rebuildData = new HashMap<Long,DataType>();
 	
+	/// 2016/05/11 - Refactor for generalized type - there's an implication here that the corresponding database functions will exist
+	/// DB Requirements
+	///   - cache_all_{objectType}_roles functions (there are 2)
+	///   - {objectType}rolecache table
+	///   - effective{objectType}Roles view
+	///   - effective{objectType}{actorType}RoleRights
+	///
+	private static Map<NameEnumType,Map<NameEnumType,AuthorizationMapType>> objectMap = new HashMap<>();
+	private static Map<NameEnumType,RebuildMap> rebuildMap = new HashMap<>();
+	
 	private static Object lockObject = new Object();
+	
+	public static boolean registerType(NameEnumType objectType, NameEnumType actorType){
+		
+		if(objectMap.containsKey(objectType) == false){
+			objectMap.put(objectType, new HashMap<NameEnumType,AuthorizationMapType>());
+		}
+		if(objectMap.get(objectType).containsKey(actorType) == true){
+			logger.error("Actor " + actorType + " already registered for " + objectType);
+			return false;
+		}
+		
+		if(rebuildMap.containsKey(objectType) == false){
+			RebuildMap rmap = new RebuildMap(objectType);
+			rebuildMap.put(objectType, rmap);
+		}
+		
+		AuthorizationMapType authZ = new AuthorizationMapType(objectType, actorType);
+		objectMap.get(objectType).put(actorType, authZ);
+		return true;
+	}
+	
 	/*
 	private static Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>> getActorMap(NameEnumType type){
 		return actorMap.get(type);
@@ -1564,7 +1597,8 @@ public class EffectiveAuthorizationService {
 		
 		return out_bool;
 	}
-	
+	/// TODO: Remove. Not currently used
+	///
 	public static boolean rebuildEntitlementsCache(){
 		boolean out_bool = false;
 		logger.warn("DEV DEV - Still Under Development");
@@ -1583,5 +1617,38 @@ public class EffectiveAuthorizationService {
 		return out_bool;
 	}
 
+	
+}
+class RebuildMap{
+	private NameEnumType object = NameEnumType.UNKNOWN;
+	private List<Long> map = new ArrayList<>();
+	public RebuildMap(NameEnumType objectType){
+		object = objectType;
+	}
+	public NameEnumType getObject() {
+		return object;
+	}
+	public List<Long> getMap() {
+		return map;
+	}
+	
+}
+class AuthorizationMapType{
+	private NameEnumType actor = NameEnumType.UNKNOWN;
+	private NameEnumType object = NameEnumType.UNKNOWN;
+	private Map<Long,Boolean> map = new HashMap<>();
+	public AuthorizationMapType(NameEnumType objectType, NameEnumType actorType){
+		actor = actorType;
+		object = objectType;
+	}
+	public NameEnumType getActor() {
+		return actor;
+	}
+	public NameEnumType getObject() {
+		return object;
+	}
+	public Map<Long, Boolean> getMap() {
+		return map;
+	}
 	
 }
