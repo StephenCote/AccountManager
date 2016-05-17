@@ -87,6 +87,7 @@ public class RuleFactory extends NameIdGroupFactory {
 		RuleType rule = (RuleType)obj;
 		if(rule.getPopulated()) return;
 		rule.getPatterns().addAll(Factories.getRuleParticipationFactory().getPatternsFromParticipation(rule));
+		rule.getRules().addAll(Factories.getRuleParticipationFactory().getRulesFromParticipation(rule));
 		Collections.sort(rule.getPatterns(),new LogicalTypeComparator());
 		rule.setPopulated(true);
 		updateToCache(rule);
@@ -124,7 +125,11 @@ public class RuleFactory extends NameIdGroupFactory {
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
 				BulkFactories.getBulkFactory().setDirty(factoryType);
 				BaseParticipantType part = null;
-
+				for(int i = 0; i < obj.getRules().size();i++){
+					part = Factories.getRuleParticipationFactory().newRuleParticipation(cobj,obj.getRules().get(i));
+					if(bulkMode) BulkFactories.getBulkRuleParticipationFactory().addParticipant(part);
+					else Factories.getRuleParticipationFactory().addParticipant(part);
+				}
 				for(int i = 0; i < obj.getPatterns().size();i++){
 					part = Factories.getRuleParticipationFactory().newPatternParticipation(cobj,obj.getPatterns().get(i));
 					if(bulkMode) BulkFactories.getBulkRuleParticipationFactory().addParticipant(part);
@@ -179,6 +184,20 @@ public class RuleFactory extends NameIdGroupFactory {
 						set.remove(data.getPatterns().get(i).getId());
 					}
 				}
+				
+				maps = Factories.getRuleParticipationFactory().getRuleParticipations(data).toArray(new BaseParticipantType[0]);
+				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
+				
+				for(int i = 0; i < data.getRules().size();i++){
+					if(set.contains(data.getRules().get(i).getId())== false){
+						Factories.getRuleParticipationFactory().addParticipant(Factories.getRuleParticipationFactory().newRuleParticipation(data,data.getRules().get(i)));
+					}
+					else{
+						set.remove(data.getRules().get(i).getId());
+					}
+				}
+
+				
 				Factories.getRuleParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				out_bool = true;
 			}
