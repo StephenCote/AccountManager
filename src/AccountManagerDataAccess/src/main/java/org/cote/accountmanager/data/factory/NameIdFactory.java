@@ -76,6 +76,10 @@ public abstract class NameIdFactory extends FactoryBase {
 	protected boolean aggressiveKeyFlush = true;
 	protected boolean useThreadSafeCollections = true;
 	
+	protected boolean hasAuthorization = false;
+	/*
+	protected NameEnumType[] authorizationActors = new NameEnumType[]{NameEnumType.ACCOUNT, NameEnumType.PERSON, NameEnumType.USER};
+	*/
 	/// 2014/12/26
 	/// bit indicating to use the urn from the database
 	/// this will be disabled because when tree structures are moved,
