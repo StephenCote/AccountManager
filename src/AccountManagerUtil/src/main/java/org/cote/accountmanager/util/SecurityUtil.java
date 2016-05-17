@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -45,7 +46,10 @@ public class SecurityUtil {
 	/// TODO: 2015/06/23 - Need to refactor salt references to use a CredentialType
 	///
 	private static int SALT_LENGTH = 16;
-	private static SecureRandom random = null;
+	private static SecureRandom secure_random = null;
+	private static Random random = null;
+	public static boolean USE_SECURE_RANDOM = true;
+	/*
 	static{
 		try{
 			long start = System.currentTimeMillis();
@@ -56,6 +60,7 @@ public class SecurityUtil {
 			logger.error(e.getMessage());
 		}
 	}
+	*/
 			//new SecureRandom("NativePRNG");
 	
 	private static MessageDigest hash_algorithm = null;
@@ -67,11 +72,36 @@ public class SecurityUtil {
 	/// TODO: For CredentialType update, this will go away
 	///
 	private static String HASH_SALT = "aostnh234stnh;qk234;2354!@#$%10";
-	
+	private static byte[] nextRandom(int length){
+		byte[] outByte = new byte[length];
+		if(USE_SECURE_RANDOM){
+			if(secure_random == null){
+				try{
+					long start = System.currentTimeMillis();
+					secure_random = SecureRandom.getInstance("SHA1PRNG");
+					logger.debug("Secure Random: " + (System.currentTimeMillis() - start) + "ms");
+				}
+				catch(NoSuchAlgorithmException e){
+					logger.error(e.getMessage());
+				}
+			}
+			secure_random.nextBytes(outByte);
+		}
+		else{
+			if(random == null){
+				random = new Random();
+			}
+			random.nextBytes(outByte);
+		}
+		return outByte;
+	}
 	public static byte[] getRandomSalt(){
+		/*
 		byte[] salt = new byte [SALT_LENGTH];
 	    random.nextBytes (salt);
 	    return salt;
+	    */
+		return nextRandom(SALT_LENGTH);
 	}
 	
 
