@@ -182,12 +182,15 @@ public class EffectiveAuthorizationService {
 	private static Map<Long,BaseRoleType> rebuildRoles = new HashMap<Long,BaseRoleType>();
 	private static Map<Long,DataType> rebuildData = new HashMap<Long,DataType>();
 	
-	/// 2016/05/11 - Refactor for generalized type - there's an implication here that the corresponding database functions will exist
+	/// 2016/05/11 - Refactor for generalized type - there's an implication here that the corresponding database functions and views will exist
 	/// DB Requirements
 	///   - cache_all_{objectType}_roles functions (there are 2)
 	///   - {objectType}rolecache table
 	///   - effective{objectType}Roles view
 	///   - effective{objectType}{actorType}RoleRights
+	///   - {objectType}rights
+	///   - {objectType}{actorType}Rights
+	///   - {
 	///
 	private static Map<NameEnumType,Map<NameEnumType,AuthorizationMapType>> objectMap = new HashMap<>();
 	private static Map<NameEnumType,RebuildMap> rebuildMap = new HashMap<>();
@@ -197,7 +200,7 @@ public class EffectiveAuthorizationService {
 	public static boolean registerType(NameEnumType objectType, NameEnumType actorType){
 		
 		if(objectMap.containsKey(objectType) == false){
-			objectMap.put(objectType, new HashMap<NameEnumType,AuthorizationMapType>());
+			objectMap.put(objectType, new HashMap<>());
 		}
 		if(objectMap.get(objectType).containsKey(actorType) == true){
 			logger.error("Actor " + actorType + " already registered for " + objectType);
@@ -208,7 +211,7 @@ public class EffectiveAuthorizationService {
 			RebuildMap rmap = new RebuildMap(objectType);
 			rebuildMap.put(objectType, rmap);
 		}
-		
+		logger.debug("Registering " + objectType.toString() + " <-> " + actorType.toString());
 		AuthorizationMapType authZ = new AuthorizationMapType(objectType, actorType);
 		objectMap.get(objectType).put(actorType, authZ);
 		return true;
@@ -249,6 +252,15 @@ public class EffectiveAuthorizationService {
 	
 	
 	public static void pendUpdate(NameIdType map){
+		if(rebuildMap.containsKey(map.getNameType())){
+			RebuildMap rMap = rebuildMap.get(map.getNameType());
+			if(rMap.getMap().contains(map.getId()) == false){
+				logger.debug("Pending update for " + map.getNameType().toString() + " #" + map.getId());
+				rMap.getMap().add(map.getId());
+			}
+			return;
+		}
+		logger.debug("OLD PEND SYSTEM " + map.getNameType() + " #" + map.getId());
 		switch(map.getNameType()){
 			case ACCOUNT: pendAccountUpdate((AccountType)map); break;
 			case USER: pendUserUpdate((UserType)map); break;
@@ -314,7 +326,17 @@ public class EffectiveAuthorizationService {
 		rebuildData.clear();
 	}
 	public static void clearCache(NameIdType object) throws ArgumentException{
-		//logger.debug("Clear Authorization Cache for " + object.getName());
+		logger.debug("Clear Authorization Cache for " + object.getNameType().toString() + " " + object.getName());
+		
+		if(objectMap.containsKey(object.getNameType())){
+			for(AuthorizationMapType aMap : objectMap.get(object.getNameType()).values()){
+				logger.debug("Clearing " + object.getNameType() + "<->" + aMap.getActor().toString() + " cache for object " + object.getUrn());
+				clearPerCache(aMap.getMap(),object);
+				rebuildMap.get(object.getNameType()).getMap().remove(object.getId());
+			}
+			return;
+		}
+		logger.debug("OLD CACHE SYSTEM");
 		switch(object.getNameType()){
 			case GROUP:
 				BaseGroupType group = (BaseGroupType)object;
@@ -361,7 +383,7 @@ public class EffectiveAuthorizationService {
 				clearPerCache(roleRoleMap,role);
 				break;
 			default:
-				throw new ArgumentException("Invalid name type for object " + object.getName() + " (" + object.getId() + ")");
+				throw new ArgumentException("Invalid name type " + object.getNameType() + " for object " + object.getName() + " (" + object.getId() + ")");
 		}
 	}
 
@@ -1420,6 +1442,29 @@ public class EffectiveAuthorizationService {
 		return out_bool;
 		
 	}
+	public static boolean rebuildCache(NameEnumType objectType, long organizationId){
+		if(objectMap.containsKey(objectType)){
+			String functionName = "cache_all_" + objectType.toString().toLowerCase() + "_roles";
+			return rebuildRoleCache(functionName,organizationId);
+		}
+		return false;
+
+	}
+	public static boolean rebuildCache(NameIdType object) throws ArgumentException{
+		return rebuildCache(Arrays.asList(object),object.getOrganizationId());
+	}
+	public static boolean rebuildCache(List<NameIdType> objects, long organizationId) throws ArgumentException{
+		boolean outBool = false;
+		NameIdType object = (objects.size() > 0 ? objects.get(0) : null);
+		if(object != null && objectMap.containsKey(object.getNameType())){
+			String functionName = "cache_" + object.getNameType().toString().toLowerCase() + "_roles";
+			return rebuildRoleCache(functionName, objects, organizationId);
+		}
+		else{
+			logger.error("Object type not registered or object is null");
+		}
+		return outBool;
+	}
 	public static boolean rebuildGroupRoleCache(BaseGroupType user) throws ArgumentException{
 		return rebuildRoleCache("cache_group_roles",Arrays.asList(user),user.getOrganizationId());
 	}
@@ -1636,7 +1681,13 @@ class RebuildMap{
 class AuthorizationMapType{
 	private NameEnumType actor = NameEnumType.UNKNOWN;
 	private NameEnumType object = NameEnumType.UNKNOWN;
-	private Map<Long,Boolean> map = new HashMap<>();
+	/*
+	 * 
+	 */
+	/// Using current format to be backwards compat : Actor<->Object<->Permission<->Granted
+	/// XXXXXX Object<->Actor<->Permission<->Granted
+	///
+	private Map<Long,Map<Long,Map<Long,Boolean>>> map = new HashMap<>();
 	public AuthorizationMapType(NameEnumType objectType, NameEnumType actorType){
 		actor = actorType;
 		object = objectType;
@@ -1647,7 +1698,7 @@ class AuthorizationMapType{
 	public NameEnumType getObject() {
 		return object;
 	}
-	public Map<Long, Boolean> getMap() {
+	public Map<Long,Map<Long,Map<Long,Boolean>>> getMap() {
 		return map;
 	}
 	
