@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -33,6 +34,7 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AccountRoleType;
@@ -45,6 +47,7 @@ import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
@@ -220,6 +223,8 @@ public class FactoryDefaults {
 					Factories.getPermissionFactory().newPermission(default_application_permissions[i], PermissionEnumType.APPLICATION, organization.getId())
 			);
 		}
+		
+		createPermissionsForAuthorizationFactories(organization.getId());
 
 		// Request the person roles to create them
 		//
@@ -293,6 +298,25 @@ public class FactoryDefaults {
 		UserType apiUser = ApiConnectionConfigurationService.getApiUser(organization.getId());
 		
 		return true;
+	}
+	
+	public static void createPermissionsForAuthorizationFactories(long organizationId){
+		Map<FactoryEnumType, ParticipationFactory> factories = AuthorizationService.getAuthorizationFactories();
+		for(FactoryEnumType factType : factories.keySet()){
+			ParticipationFactory fact = factories.get(factType);
+			String[] permissionNames = fact.getDefaultPermissions();
+			for (int i = 0; i < permissionNames.length; i++)
+			{
+				try{
+				Factories.getPermissionFactory().addPermission(
+						Factories.getPermissionFactory().newPermission(permissionNames[i], PermissionEnumType.OBJECT, organizationId)
+				);
+				}
+				catch(FactoryException | DataAccessException e){
+					logger.error(e.getMessage());
+				}
+			}
+		}
 	}
 
 	private static void setupOrganizations()
