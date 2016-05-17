@@ -49,6 +49,7 @@ import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 
 
 public class ConsoleMain {
@@ -80,6 +81,8 @@ public class ConsoleMain {
 		logger.info("\tNote: Slow startup time due in part to cryptographic libraries being loaded and initialized");
 		
 		Options options = new Options();
+		options.addOption("generate",false,"Generate DAL classes and schema for a particular type");
+		options.addOption("type",true,"Type of factory to generate");
 		options.addOption("organization",true,"AccountManager Organization Path");
 		options.addOption("username", true, "AccountManager user name");
 		options.addOption("password",true,"AccountManager password");
@@ -316,6 +319,9 @@ public class ConsoleMain {
 					e.printStackTrace();
 				}
 				
+			}
+			else if(cmd.hasOption("generate") && cmd.hasOption("type")){
+				GenerateAction.generate(NameEnumType.valueOf(cmd.getOptionValue("type")),cmd.hasOption("export"),cmd.getOptionValue("path"));
 			}
 			else{
 				logger.info("Syntax");
