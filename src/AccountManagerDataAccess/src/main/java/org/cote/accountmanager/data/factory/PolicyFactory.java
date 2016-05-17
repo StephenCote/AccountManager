@@ -51,6 +51,8 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.util.LogicalTypeComparator;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ConditionEnumType;
@@ -68,6 +70,14 @@ import org.cote.accountmanager.util.CalendarUtil;
 public class PolicyFactory extends NameIdGroupFactory {
 	private DatatypeFactory dtFactory = null;
 	
+	static{
+		AuthorizationService.registerAuthorizationProviders(
+				FactoryEnumType.POLICY,
+				NameEnumType.POLICY,
+				Factories.getPolicyParticipationFactory()
+			);
+	}
+	
 	public PolicyFactory(){
 		super();
 		this.tableNames.add("policy");
@@ -80,7 +90,6 @@ public class PolicyFactory extends NameIdGroupFactory {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
