@@ -67,6 +67,9 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	public static final Logger logger = Logger.getLogger(ParticipationFactory.class.getName());
 	protected ParticipationEnumType participationType = ParticipationEnumType.UNKNOWN;
 	protected boolean haveAffect = false;
+	protected static String[] permissionBase = new String[]{"Create","Delete","View","Edit","Execute"};
+	protected String permissionPrefix = null;
+
 
 	
 	public ParticipationFactory(ParticipationEnumType type, String table_name){
@@ -78,6 +81,27 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		this.participationType = type;
 		this.tableNames.add(table_name);
 	}
+	public String getPermissionPrefix(){
+		return permissionPrefix;
+	}
+	public String getReadersRoleName(){
+		return (permissionPrefix + "Administrators");
+	}
+	public String getAdministratorsRoleName(){
+		return (permissionPrefix + "Administrators");
+	}
+	public String[] getDefaultPermissions(){
+		if(permissionPrefix == null){
+			logger.warn("Permission prefix for " + participationType.toString() + " is not defined");
+			return new String[0];
+		}
+		String[] names = new String[permissionBase.length];
+		for(int i = 0; i < names.length;i++){
+			names[i] = permissionPrefix + permissionBase[i];
+		}
+		return names;
+	}
+
 
 	@Override
 	public <T> String getCacheKeyName(T obj){
