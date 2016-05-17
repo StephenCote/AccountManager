@@ -50,11 +50,10 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
 public abstract class BaseParticipationFactory extends ParticipationFactory {
 	public static final Logger logger = Logger.getLogger(BaseParticipationFactory.class.getName());
-	
+
 	public BaseParticipationFactory(ParticipationEnumType type, String tableName){
 		super(type, tableName);
 	}
-	
 	public <T> T newParticipation(
 			NameIdType cycle, 
 			NameIdType map,

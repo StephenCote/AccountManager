@@ -44,6 +44,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DataColumnType;
 import org.cote.accountmanager.objects.DataType;
@@ -63,7 +64,15 @@ public class DataFactory extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
 	
 	private long currentCacheSize = 0L;
-	
+	/*
+	static{
+		AuthorizationService.registerAuthorizationProviders(
+				FactoryEnumType.DATA,
+				NameEnumType.DATA,
+				Factories.getDataParticipationFactory()
+			);
+	}
+	*/
 	/// Max cache size = 50MB;
 	///
 	private long maximumCacheSize = 1048576L*100L;
