@@ -64,54 +64,28 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 
 public class AuthorizationService {
 	public static final Logger logger = Logger.getLogger(AuthorizationService.class.getName());
-	private static Map<FactoryEnumType,ParticipationFactory> partFactories = new HashMap<FactoryEnumType,ParticipationFactory>();
-	
+	private static Map<FactoryEnumType,ParticipationFactory> partFactories = new HashMap<>();
+	private static Map<NameEnumType, FactoryEnumType> factoryProviders = new HashMap<>();
+	private static final NameEnumType[] actors = new NameEnumType[]{NameEnumType.ACCOUNT, NameEnumType.PERSON, NameEnumType.USER, NameEnumType.ROLE}; 
+	public static void registerAuthorizationProviders(FactoryEnumType factType,NameEnumType objectType, ParticipationFactory fact){
+		registerParticipationFactory(factType, fact);
+		factoryProviders.put(objectType, factType);
+		for(int i = 0; i < actors.length; i++){
+			EffectiveAuthorizationService.registerType(objectType, actors[i]);	
+		}		
+	};
 	public static void registerParticipationFactory(FactoryEnumType factType,ParticipationFactory fact){
 		partFactories.put(factType, fact);
+
+	}
+	public static Map<FactoryEnumType, ParticipationFactory> getAuthorizationFactories(){
+		return partFactories;
 	}
 	/// Return true if the factor type has a corresponding participation table
 	///
 	public static boolean canBeAuthorized(FactoryEnumType factType){
 		boolean out_bool = false;
 		return partFactories.containsKey(factType);
-		/*
-		switch(factType){
-			case GROUP:
-			case DATA:
-			case FUNCTION:
-			case PERSON:
-			case CONTACTINFORMATION:
-			case POLICY:
-			case ROLE:
-			case RULE:
-			case TAG:
-			/// Rocket Factories
-			case CASE:
-			case FORMELEMENT:
-			case FORM:
-			case GOAL:
-			case LIFECYCLE:
-			case METHODOLOGY:
-			case MODEL:
-			case MODULE:
-			case PROCESS:
-			case PROCESSSTEP:
-			case PROJECT:
-			case SCHEDULE:
-			case TASK:
-			case TICKET:
-			case VALIDATIONRULE:
-			case WORK:
-				out_bool = true;
-				break;
-
-				
-			default:
-				logger.warn(factType.toString() + " does not have a participation factory");
-				break;
-		}
-		*/
-		//return out_bool;
 	}
 	
 	/// 2015/10/21
@@ -149,18 +123,12 @@ public class AuthorizationService {
 				return true;
 			}
 		}
-		boolean isCreate = isCreateAuthorization(permissions,object.getOrganizationId());
+		boolean isCreate = isCreateAuthorization(object.getNameType(), permissions,object.getOrganizationId());
 		if(isAuthorizedByTypeRule(object, member, permissions,isCreate)){
 			logger.warn("Authorized By Rule: " + authStr);
 			return true;
 		}
-    	/*
-		StringBuffer buff = new StringBuffer();
-    	for(int i = 0; i < permissions.length;i++){
-    		if(i > 0) buff.append(", ");
-    		buff.append(permissions[i].getUrn());
-    	}
-    	*/
+
 		if(isCreate && (object.getNameType() == NameEnumType.PERMISSION || object.getNameType() == NameEnumType.ROLE || FactoryService.isDirectoryType(object.getNameType()))){
 			/// Should have been authorized by 
 			logger.warn("Did Not Authorize By Rule For Create Permission on Qualifying Objects: " + authStr);
@@ -236,12 +204,21 @@ public class AuthorizationService {
 		}
 		return out_bool;
 	}
-	private static boolean isCreateAuthorization(BasePermissionType[] permissions,long organizationId) throws FactoryException, ArgumentException{
+	private static boolean isCreateAuthorization(NameEnumType objectType, BasePermissionType[] permissions,long organizationId) throws FactoryException, ArgumentException{
 		boolean out_bool = false;
+		BasePermissionType checkPer = null;
+		if(factoryProviders.containsKey(objectType)){
+			checkPer = getPermission(partFactories.get(factoryProviders.get(objectType)).getPermissionPrefix() + "Create", (objectType.equals(NameEnumType.DATA) ? PermissionEnumType.DATA : PermissionEnumType.OBJECT), organizationId);
+		}
+
 		if(
 			containsPermission(permissions,getCreateApplicationPermission(organizationId))
 			||
+			(checkPer != null && containsPermission(permissions,checkPer))
+			/*
+			||
 			containsPermission(permissions,getCreateDataPermission(organizationId))
+			*/
 			||
 			containsPermission(permissions,getCreateGroupPermission(organizationId))
 			||
@@ -749,10 +726,15 @@ public class AuthorizationService {
 	
 	public static BasePermissionType getDeletePermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType per = null;
+		if(factoryProviders.containsKey(type)){
+			return getPermission(partFactories.get(factoryProviders.get(type)).getPermissionPrefix() + "View", PermissionEnumType.OBJECT, organizationId);
+		}
 		switch(type){
+/*
 			case DATA:
 				per = getDeleteDataPermission(organizationId);
 				break;
+*/
 			case GROUP:
 				per = getDeleteGroupPermission(organizationId);
 				break;
@@ -767,10 +749,17 @@ public class AuthorizationService {
 	}
 	public static BasePermissionType getViewPermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType per = null;
+		if(factoryProviders.containsKey(type)){
+			return getPermission(partFactories.get(factoryProviders.get(type)).getPermissionPrefix() + "View", PermissionEnumType.OBJECT, organizationId);
+		}
+		/// Old method
+		///
 		switch(type){
+/*
 			case DATA:
 				per = getViewDataPermission(organizationId);
 				break;
+*/
 			case GROUP:
 				per = getViewGroupPermission(organizationId);
 				break;
@@ -783,12 +772,25 @@ public class AuthorizationService {
 		}
 		return per;
 	}
+	public static BasePermissionType getExecutePermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
+		BasePermissionType per = null;
+		if(factoryProviders.containsKey(type)){
+			per = getPermission(partFactories.get(factoryProviders.get(type)).getPermissionPrefix() + "Execute", PermissionEnumType.OBJECT, organizationId);
+		}
+		return per;
+		
+	}
 	public static BasePermissionType getCreatePermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType per = null;
+		if(factoryProviders.containsKey(type)){
+			return getPermission(partFactories.get(factoryProviders.get(type)).getPermissionPrefix() + "View", PermissionEnumType.OBJECT, organizationId);
+		}
 		switch(type){
+		/*
 			case DATA:
 				per = getCreateDataPermission(organizationId);
 				break;
+*/
 			case GROUP:
 				per = getCreateGroupPermission(organizationId);
 				break;
@@ -803,6 +805,9 @@ public class AuthorizationService {
 	}
 	public static BasePermissionType getEditPermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType per = null;
+		if(factoryProviders.containsKey(type)){
+			return getPermission(partFactories.get(factoryProviders.get(type)).getPermissionPrefix() + "View", PermissionEnumType.OBJECT, organizationId);
+		}
 		switch(type){
 			case DATA:
 				per = getEditDataPermission(organizationId);
@@ -1213,6 +1218,21 @@ public class AuthorizationService {
         );
 
 	}
+	/*
+	 * GENERAL REFACTOR
+	 *    Pattern - canViewType
+	 *    Rule
+	 *       (actor == TypeRole)
+	 *       AND
+	 *       	(actorRole == TypeAdminRole)
+	 *       	OR
+	 *       	(actorRole == TypeReaderRole)
+	 *       	OR
+	 *       	(actorRole HAS ViewType permission ON TypeObject Container)
+	 *       	OR
+	 *      	(actorRole HAS ViewType permission ON TypeObject)
+	 *    
+	 */
     public static boolean canViewData(BaseRoleType role, DataType data) throws FactoryException, ArgumentException
     {
 
@@ -1233,6 +1253,22 @@ public class AuthorizationService {
     		EffectiveAuthorizationService.getDataAuthorization(role,data, new BasePermissionType[] { getViewDataPermission(data.getOrganizationId())} )
         );
     }
+    /*
+     * GENERAL REFACTOR
+     * Pattern - canViewType (Combine with previous)
+     * Rule
+     *    (actorType == TypeUser)
+     *    AND
+     *       (actor == TypeObject Owner)
+     *       OR
+     *       (actor == TypeReaderRole member)
+     *       OR
+     *       (actor == TypeAdminRole member)
+     *       OR
+     *       (actor HAS ViewType permission ON TypeObject container)
+     *       OR
+     *       (actor HAS ViewType permission ON TypeObject)
+     */
     public static boolean canViewData(UserType user, DataType data) throws ArgumentException, FactoryException
     {
 
