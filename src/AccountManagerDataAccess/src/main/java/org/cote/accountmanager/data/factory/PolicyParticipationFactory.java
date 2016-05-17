@@ -31,6 +31,7 @@ public class PolicyParticipationFactory extends AuthorizationParticipationFactor
 		super(ParticipationEnumType.POLICY, "policyparticipation");
 		this.haveAffect = true;
 		factoryType = FactoryEnumType.POLICYPARTICIPATION;
+		permissionPrefix = "Policy";
 	}
 	
 
