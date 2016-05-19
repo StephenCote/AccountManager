@@ -1,0 +1,64 @@
+{
+  "name" : "Can View Type",
+  "rules" : [ {
+    "name" : "When Actor Is Role",
+    "rules" : [ {
+      "name" : "Compare Actor to Role",
+      "patterns" : [ {
+        "name" : "CompareNameType Actor Type to Role Type",
+        "fact" : { "name" : "PARAMETER Actor Type"},
+        "match" : {
+          "name" : "MATCH Role Name Type",
+          "factType" : "ROLE"
+        },
+        "operation" : {
+          "name" : "Compare Name Type",
+          "operation" : "CompareNameTypeOperation"
+        },
+        "patternType" : "OPERATION"
+      } ]
+
+    }, {
+       "name" : "Object Authorized To Role",
+       "patterns" : [ {
+         "name" : "Role Is TypeAdmin",
+         "fact" : {
+          "name" : "Actor Type Parameter",
+          "factType" : "PARAMETER"
+        },
+        "match" : {
+          "name" : "Role TypeAdmin",
+          "sourceUrn" : "DataAdministrators",
+          "factType" : "ROLE"
+        },
+        "operation" : {
+          "name" : "Match System Role",
+          "operation" : "MatchSystemRoleOperation"
+        },
+        "patternType" : "OPERATION"
+      }, {
+         "name" : "Role Is TypeReader",
+        "fact" : {
+          "name" : "Actor Type Parameter",
+          "factType" : "PARAMETER"
+        },
+        "match" : {
+          "name" : "Role TypeReader",
+          "sourceUrn" : "DataReaders",
+          "factType" : "ROLE"
+        },
+        "operation" : {
+          "name" : "Match System Role",
+          "operation" : "org.cote.accountmanager.data.operation.MatchSystemRoleOperation",
+          "operationType" : "INTERNAL"
+        },
+        "patternType" : "OPERATION"
+      } ],
+      "ruleType" : "PERMIT",
+      "condition" : "ANY"
+    } ],
+    "ruleType" : "PERMIT",
+    "condition" : "ALL"
+  } ]
+
+}

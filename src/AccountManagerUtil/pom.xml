@@ -59,14 +59,15 @@
 					<excludes>
 						<!--
 						
-						
-						<exclude>**/TestSecurityFactory.java</exclude>
+						<exclude>**/TestJSON.java</exclude>
+					
 						-->
+						<exclude>**/TestSecurityFactory.java</exclude>
 						<exclude>**/TestOpenSSLUtil.java</exclude>
 						<exclude>**/TestKeyStoreUtil.java</exclude>
 						
 						<exclude>**/TestDataUtil.java</exclude>
-						<exclude>**/TestJSON.java</exclude>
+						
 						<exclude>**/TestAMCode.java</exclude>
 						
 						<exclude>**/TestText.java</exclude>
