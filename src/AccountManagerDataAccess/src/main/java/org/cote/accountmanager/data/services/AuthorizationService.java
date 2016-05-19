@@ -50,6 +50,7 @@ import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonType;
@@ -67,6 +68,8 @@ public class AuthorizationService {
 	private static Map<FactoryEnumType,ParticipationFactory> partFactories = new HashMap<>();
 	private static Map<NameEnumType, FactoryEnumType> factoryProviders = new HashMap<>();
 	private static final NameEnumType[] actors = new NameEnumType[]{NameEnumType.ACCOUNT, NameEnumType.PERSON, NameEnumType.USER, NameEnumType.ROLE}; 
+	public static final String[] PERMISSION_BASE = new String[]{"Create","Delete","View","Edit","Execute"};
+
 	public static void registerAuthorizationProviders(FactoryEnumType factType,NameEnumType objectType, ParticipationFactory fact){
 		registerParticipationFactory(factType, fact);
 		factoryProviders.put(objectType, factType);
@@ -75,6 +78,7 @@ public class AuthorizationService {
 		}		
 	};
 	public static void registerParticipationFactory(FactoryEnumType factType,ParticipationFactory fact){
+		logger.debug("Register participation factory: " + factType.toString());
 		partFactories.put(factType, fact);
 
 	}
@@ -108,7 +112,8 @@ public class AuthorizationService {
 			return false;
 		}
 		String authStr = EffectiveAuthorizationService.getEntitlementCheckString(object, member, permissions);
-		if (member.getNameType() == NameEnumType.USER && isMapOwner(member, object))
+		//logger.debug("Effective Authorization: " + authStr);
+		if (isMapOwner(member, object))
 		{
 			logger.warn("Authorized As Object Owner: " + authStr);
 			return true;
@@ -261,6 +266,7 @@ public class AuthorizationService {
 		}
 		return out_bool;
 	}
+	/*
 	public static boolean authorizeToDelete(UserType admin, NameIdType object, NameIdType member, boolean enable) throws FactoryException, DataAccessException, ArgumentException
 	{
 		return authorize(admin, object, member, AuthorizationService.getDeletePermissionForMapType(object.getNameType(), object.getOrganizationId()),enable);
@@ -277,6 +283,7 @@ public class AuthorizationService {
 	{
 		return authorize(admin, object, member, AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId()),enable);
 	}
+	*/
 	public static boolean authorize(UserType admin, NameIdType object, NameIdType member, BasePermissionType permission, boolean enable) throws FactoryException, DataAccessException, ArgumentException
 	{
 		FactoryEnumType factType = FactoryEnumType.fromValue(object.getNameType().toString());
@@ -417,6 +424,9 @@ public class AuthorizationService {
 
 	public static boolean isMapOwner(NameIdType test_owner, NameIdType map)
 	{
+		if(test_owner.getNameType() != NameEnumType.USER){
+			return false;
+		}
 		//logger.debug("Map Owner == " + test_owner.getId() + "=" + map.getOwnerId() + " == (" + (test_owner.getId() == map.getOwnerId()) + ")");
 		return (test_owner.getId().compareTo(map.getOwnerId())==0);
 	}
@@ -750,7 +760,8 @@ public class AuthorizationService {
 	public static BasePermissionType getViewPermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType per = null;
 		if(factoryProviders.containsKey(type)){
-			return getPermission(partFactories.get(factoryProviders.get(type)).getPermissionPrefix() + "View", PermissionEnumType.OBJECT, organizationId);
+			ParticipationFactory partFact = partFactories.get(factoryProviders.get(type));
+			return getPermission(partFact.getPermissionPrefix() + "View", partFact.getDefaultPermissionType(), organizationId);
 		}
 		/// Old method
 		///
@@ -759,13 +770,14 @@ public class AuthorizationService {
 			case DATA:
 				per = getViewDataPermission(organizationId);
 				break;
-*/
+
 			case GROUP:
 				per = getViewGroupPermission(organizationId);
 				break;
 			case ROLE:
 				per = getViewRolePermission(organizationId);
 				break;
+*/
 			default:
 				per = getViewObjectPermission(organizationId);
 				break;
@@ -790,13 +802,14 @@ public class AuthorizationService {
 			case DATA:
 				per = getCreateDataPermission(organizationId);
 				break;
-*/
+
 			case GROUP:
 				per = getCreateGroupPermission(organizationId);
 				break;
 			case ROLE:
 				per = getCreateRolePermission(organizationId);
 				break;
+*/
 			default:
 				per = getCreateObjectPermission(organizationId);
 				break;
@@ -809,6 +822,7 @@ public class AuthorizationService {
 			return getPermission(partFactories.get(factoryProviders.get(type)).getPermissionPrefix() + "View", PermissionEnumType.OBJECT, organizationId);
 		}
 		switch(type){
+/*
 			case DATA:
 				per = getEditDataPermission(organizationId);
 				break;
@@ -818,6 +832,7 @@ public class AuthorizationService {
 			case ROLE:
 				per = getEditRolePermission(organizationId);
 				break;
+*/
 			default:
 				per = getEditObjectPermission(organizationId);
 				break;
@@ -1233,6 +1248,84 @@ public class AuthorizationService {
 	 *      	(actorRole HAS ViewType permission ON TypeObject)
 	 *    
 	 */
+	protected static boolean canDo(NameIdType actor, NameIdType object, String permissionBase, boolean checkReadAuthorization) throws ArgumentException, FactoryException{
+		
+		if(!factoryProviders.containsKey(object.getNameType())){
+			throw new ArgumentException(object.getNameType() + " is not from a registered authorization provider");
+		}
+		
+		if(isMapOwner(actor, object)){
+			logger.info("Authorizing as object owner");
+			return true;
+		}
+		
+		NameIdFactory fact = Factories.getFactory(factoryProviders.get(object.getNameType()));
+
+		if(
+			RoleService.isFactoryAdministrator(actor, fact)
+			||
+			(checkReadAuthorization && RoleService.isFactoryReader(actor, fact))
+		){
+			logger.info("Authorizing with system role privilege");
+			return true;
+		}
+
+		
+		if(!factoryProviders.containsKey(object.getNameType())){
+			throw new ArgumentException(object.getNameType() + " is not from a registered authorization provider");
+		}
+		FactoryEnumType factType = factoryProviders.get(object.getNameType());
+		if(!partFactories.containsKey(factType)){
+			throw new ArgumentException("Factory type " + factType.toString() + " does not have a registered participation factory");
+		}
+		ParticipationFactory pfact = partFactories.get(factType);
+
+		if(FactoryService.isDirectoryType(object.getNameType())){
+			NameIdDirectoryGroupType dObj = (NameIdDirectoryGroupType)object;
+			DirectoryGroupType dir = Factories.getGroupFactory().getDirectoryById(dObj.getGroupId(), object.getOrganizationId());
+			if(dir == null){
+				throw new ArgumentException("Directory for" + dObj.getGroupId() + " doesn't exist in organization #" + object.getOrganizationId());
+			}
+			String groupPermissionName = Factories.getGroupParticipationFactory().getPermissionPrefix() + permissionBase;
+			BasePermissionType groupPermission = getPermission(groupPermissionName, PermissionEnumType.GROUP, object.getOrganizationId());
+			if(groupPermission == null){
+				throw new ArgumentException(groupPermissionName + " permission does not exist in organization #" + object.getOrganizationId());
+			}
+			
+	    	if(EffectiveAuthorizationService.getAuthorization(actor, dObj,new BasePermissionType[]{groupPermission})){
+	    		logger.info("Authorized " + EffectiveAuthorizationService.getEntitlementCheckString(object, actor, new BasePermissionType[]{groupPermission}));
+	    		return true;
+	    	}
+		}
+		
+		String permissionName = pfact.getPermissionPrefix() + permissionBase;
+		BasePermissionType permission = getPermission(permissionName, PermissionEnumType.OBJECT, object.getOrganizationId());
+		if(permission == null){
+			throw new ArgumentException(permissionName + " permission does not exist in organization #" + object.getOrganizationId());
+		}
+
+    	if(EffectiveAuthorizationService.getAuthorization(actor, object,new BasePermissionType[]{permission})){
+    		logger.info("Authorized " + EffectiveAuthorizationService.getEntitlementCheckString(object, actor, new BasePermissionType[]{permission}));
+    		return true;
+    	}
+    	return false;
+    	
+	}
+	public static boolean canView(NameIdType actor, NameIdType object) throws ArgumentException, FactoryException{
+		return canDo(actor, object, "View", true);
+	}
+	public static boolean canExecute(NameIdType actor, NameIdType object) throws ArgumentException, FactoryException{
+		return canDo(actor, object, "Execute", true);
+	}
+	public static boolean canDelete(NameIdType actor, NameIdType object) throws ArgumentException, FactoryException{
+		return canDo(actor, object, "Delete", true);
+	}	
+	public static boolean canCreate(NameIdType actor, NameIdType object) throws ArgumentException, FactoryException{
+		return canDo(actor, object, "Create", true);
+	}
+	public static boolean canChange(NameIdType actor, NameIdType object) throws ArgumentException, FactoryException{
+		return canDo(actor, object, "Change", true);
+	}
     public static boolean canViewData(BaseRoleType role, DataType data) throws FactoryException, ArgumentException
     {
 
