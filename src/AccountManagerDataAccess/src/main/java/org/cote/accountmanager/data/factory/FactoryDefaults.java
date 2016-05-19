@@ -74,12 +74,14 @@ public class FactoryDefaults {
 		"AccountDelete",
 		"AccountCreate"
 	};
+	/*
 	protected static String[] default_person_permissions = new String[]{
 		"AccountView",
 		"AccountEdit",
 		"AccountDelete",
 		"AccountCreate"
 	};
+	
 	protected static String[] default_data_permissions = new String[]{
 			"DataView",
 			"DataEdit",
@@ -98,7 +100,7 @@ public class FactoryDefaults {
 			"GroupCreate",
 			"GroupDelete"
 	};
-	
+	*/
 	/// Changing this to be a random string
 	/// private static String DocumentControlPassword = "$%##@austh@#$09au$gks'<>";
 	
@@ -187,30 +189,7 @@ public class FactoryDefaults {
 				Factories.getPermissionFactory().newPermission(default_account_permissions[i], PermissionEnumType.ACCOUNT, organization.getId())
 			);
 		}
-		for (int i = 0; i < default_person_permissions.length; i++)
-		{
-			Factories.getPermissionFactory().addPermission(
-				Factories.getPermissionFactory().newPermission(default_person_permissions[i], PermissionEnumType.PERSON, organization.getId())
-			);
-		}
-		for (int i = 0; i < default_data_permissions.length; i++)
-		{
-			Factories.getPermissionFactory().addPermission(
-				Factories.getPermissionFactory().newPermission(default_data_permissions[i], PermissionEnumType.DATA, organization.getId())
-			);
-		}
-		for (int i = 0; i < default_group_permissions.length; i++)
-		{
-			Factories.getPermissionFactory().addPermission(
-					Factories.getPermissionFactory().newPermission(default_group_permissions[i], PermissionEnumType.GROUP, organization.getId())
-			);
-		}
-		for (int i = 0; i < default_role_permissions.length; i++)
-		{
-			Factories.getPermissionFactory().addPermission(
-					Factories.getPermissionFactory().newPermission(default_role_permissions[i], PermissionEnumType.ROLE, organization.getId())
-			);
-		}
+
 		for (int i = 0; i < default_object_permissions.length; i++)
 		{
 			Factories.getPermissionFactory().addPermission(
@@ -223,7 +202,9 @@ public class FactoryDefaults {
 					Factories.getPermissionFactory().newPermission(default_application_permissions[i], PermissionEnumType.APPLICATION, organization.getId())
 			);
 		}
-		
+		/// 2016/05/18 - Moved default permission construction into the Participation Factories
+		/// TODO: Account is left out at the moment
+		///
 		createPermissionsForAuthorizationFactories(organization.getId());
 
 		// Request the person roles to create them
@@ -302,15 +283,20 @@ public class FactoryDefaults {
 	
 	public static void createPermissionsForAuthorizationFactories(long organizationId){
 		Map<FactoryEnumType, ParticipationFactory> factories = AuthorizationService.getAuthorizationFactories();
+		if(factories.keySet().size() == 0){
+			logger.error("No factories registered with authorization service");
+		}
 		for(FactoryEnumType factType : factories.keySet()){
 			ParticipationFactory fact = factories.get(factType);
 			String[] permissionNames = fact.getDefaultPermissions();
+			logger.info("Processing " + permissionNames.length + " for " + fact.getFactoryType().toString() + " Factory");
 			for (int i = 0; i < permissionNames.length; i++)
 			{
 				try{
 				Factories.getPermissionFactory().addPermission(
-						Factories.getPermissionFactory().newPermission(permissionNames[i], PermissionEnumType.OBJECT, organizationId)
+						Factories.getPermissionFactory().newPermission(permissionNames[i], fact.getDefaultPermissionType(), organizationId)
 				);
+				logger.info("Added permission " + permissionNames[i] + " to organization #" + organizationId);
 				}
 				catch(FactoryException | DataAccessException e){
 					logger.error(e.getMessage());
