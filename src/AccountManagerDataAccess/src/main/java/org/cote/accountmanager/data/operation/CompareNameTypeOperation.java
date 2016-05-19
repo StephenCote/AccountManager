@@ -38,14 +38,15 @@ public class CompareNameTypeOperation implements IOperation {
 		return FactUtil.factoryRead(sourceFact, referenceFact);
 	}
 	public OperationResponseEnumType operate(final PatternType pattern, FactType sourceFact,final FactType referenceFact){
-		if(sourceFact.getFactType() == FactEnumType.UNKNOWN){
+		if(sourceFact.getFactReference() == null || sourceFact.getFactReference().getNameType() == NameEnumType.UNKNOWN){
 			logger.error("Invalid argument");
 			return OperationResponseEnumType.ERROR;
 		}
-		if(!sourceFact.getFactType().equals(referenceFact.getFactType())){
-			logger.warn("Source type " + sourceFact.getFactType().toString() + " doesn't match " + referenceFact.getFactType().toString());
+		if(!sourceFact.getFactReference().getNameType().equals(NameEnumType.valueOf(referenceFact.getFactoryType().toString()))){
+			logger.warn("Source type " + sourceFact.getFactReference().getNameType().toString() + " doesn't match " + referenceFact.getFactType().toString() + " / " + referenceFact.getFactoryType().toString());
 			return OperationResponseEnumType.FAILED;
 		}
+		logger.debug("Supplied fact reference matches type " + referenceFact.getFactoryType().toString());
 		return OperationResponseEnumType.SUCCEEDED;
 		
 	}
