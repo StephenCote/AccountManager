@@ -13,7 +13,8 @@ import org.cote.accountmanager.objects.UserType;
 import org.junit.Test;
 
 public class TestGroupAuthorization extends BaseDataAccessTest {
-	
+	/*
+	 * This test largely depends on a pre-populated dataset that isn't being setup in the test
 	@Test
 	public void testEncryptedData(){
 		OrganizationType org = null;
@@ -47,4 +48,5 @@ public class TestGroupAuthorization extends BaseDataAccessTest {
 		
 		
 	}
+	*/
 }
