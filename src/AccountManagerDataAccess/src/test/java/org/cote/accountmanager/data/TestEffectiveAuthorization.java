@@ -102,7 +102,10 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 		boolean isAuthZ = false;
 		boolean notAuthZ = false;
 		boolean deAuthZ = false;
-		
+		assertNotNull("Object is null",object);
+		assertNotNull("Set Member is null", setMember);
+		assertNotNull("Check member is null", checkMember);
+		assertNotNull("Permission is null",permission);
 		String authZStr = EffectiveAuthorizationService.getEntitlementCheckString(object, checkMember, new BasePermissionType[]{permission});
 		logger.info("TEST AUTHORIZATION " + authZStr);
 		try {
