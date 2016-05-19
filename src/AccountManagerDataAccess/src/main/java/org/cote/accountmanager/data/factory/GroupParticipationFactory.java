@@ -53,12 +53,15 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class GroupParticipationFactory extends ParticipationFactory {
 	public GroupParticipationFactory(){
 		super(ParticipationEnumType.GROUP, "groupparticipation");
 		this.haveAffect = true;
 		factoryType = FactoryEnumType.GROUPPARTICIPATION;
+		permissionPrefix = "Group";
+		defaultPermissionType = PermissionEnumType.GROUP;
 	}
 	
 	public boolean deleteRoleGroupParticipant(BaseGroupType group, BaseRoleType role) throws ArgumentException, FactoryException

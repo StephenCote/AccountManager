@@ -46,6 +46,7 @@ import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 
 public class PersonParticipationFactory extends ParticipationFactory {
@@ -53,7 +54,8 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		super(ParticipationEnumType.PERSON, "personparticipation");
 		this.haveAffect = true;
 		factoryType = FactoryEnumType.PERSONPARTICIPATION;
-		
+		permissionPrefix = "Person";
+		defaultPermissionType = PermissionEnumType.PERSON;
 	}
 	
 	public boolean deletePartnerPersonParticipant(PersonType person, PersonType account) throws ArgumentException, FactoryException

@@ -44,12 +44,15 @@ import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class DataParticipationFactory extends ParticipationFactory {
 	public DataParticipationFactory(){
 		super(ParticipationEnumType.DATA, "dataparticipation");
 		this.haveAffect = true;
 		factoryType = FactoryEnumType.DATAPARTICIPATION;
+		permissionPrefix = "Data";
+		defaultPermissionType = PermissionEnumType.DATA;
 	}
 	
 	public boolean deleteRoleDataParticipant(DataType data, BaseRoleType role) throws ArgumentException, FactoryException
