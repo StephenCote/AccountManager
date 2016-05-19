@@ -61,17 +61,22 @@
 					</includes>
 					<excludes>
 						<!-- 
-												
 						<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
-						
+
 						-->
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
+
+								<exclude>**/TestGroupAuthorization.java</exclude>
+
+							<exclude>**/TestDataAuthorization.java</exclude>
+		<exclude>**/TestPermissions.java</exclude>
+												
+						
 						<exclude>**/TestTokenService.java</exclude>
 						<exclude>**/TestVaultService.java</exclude>
 						<exclude>**/TestSoD.java</exclude>
-						<exclude>**/TestGroupAuthorization.java</exclude>
 						<exclude>**/TestCredentialFactory.java</exclude>
-						<exclude>**/TestPermissions.java</exclude>
+
 						<exclude>**/TestFactoryCache.java</exclude>
 						<exclude>**/TestOrganizationFactory.java</exclude>
 						<exclude>**/TestBaseService.java</exclude>
@@ -92,7 +97,7 @@
 						<exclude>**/TestDataFactory.java</exclude>
 						
 						<exclude>**/TestBulkAccount.java</exclude>
-						<exclude>**/TestDataAuthorization.java</exclude>	
+	
 						<exclude>**/TestAttributes.java</exclude>
 						<exclude>**/TestAuditFactory.java</exclude>
 						<exclude>**/TestUserRegistration.java</exclude>
