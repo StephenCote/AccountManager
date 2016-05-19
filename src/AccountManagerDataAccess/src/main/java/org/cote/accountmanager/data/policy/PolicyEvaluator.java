@@ -150,7 +150,7 @@ public class PolicyEvaluator {
 		boolean success = (
 				(pol.getCondition() == ConditionEnumType.ANY && pass > 0)
 				||
-				(pol.getCondition() == ConditionEnumType.ALL && pass == size)
+				(pol.getCondition() == ConditionEnumType.ALL && pass > 0 && pass == size)
 				||
 				(pol.getCondition() == ConditionEnumType.NONE && pass == 0)
 			);
@@ -166,8 +166,8 @@ public class PolicyEvaluator {
 		int pass = 0;
 
 		List<PatternType> patterns = rule.getPatterns();
-		
-		int size = patterns.size();
+		List<RuleType> rules = rule.getRules();
+		int size = (patterns.size() + rules.size());
 		/*
 		List<RuleType> rules = rule.getRules();
 		int rsize = rules.size();
@@ -177,6 +177,24 @@ public class PolicyEvaluator {
 			}
 		}
 		*/
+		for(int i = 0; i < rules.size(); i++){
+			RuleType crule = rules.get(i);
+			Factories.getRuleFactory().populate(crule);
+			boolean bRule = evaluateRule(crule, facts, prr);
+			if(bRule){
+				pass++;
+				if(rule.getCondition() == ConditionEnumType.ANY){
+					logger.info("Breaking on " + crule.getUrn() + " with rule " + rule.getRuleType() + " " + rule.getCondition());
+					break;
+				}
+			}
+			else if(rule.getCondition() == ConditionEnumType.ALL && !bRule){
+				logger.info("Breaking on " + crule.getUrn() + " with rule " + rule.getRuleType() + " " + rule.getCondition() + " failure");
+				break;
+				
+			
+			}
+		}
 		for(int i = 0; i < patterns.size(); i++){
 			PatternType pat = patterns.get(i);
 			Factories.getPatternFactory().populate(pat);
@@ -212,7 +230,7 @@ public class PolicyEvaluator {
 		boolean success = (
 				(rule.getCondition() == ConditionEnumType.ANY && pass > 0)
 				||
-				(rule.getCondition() == ConditionEnumType.ALL && pass == size)
+				(rule.getCondition() == ConditionEnumType.ALL && pass > 0 && pass == size)
 				||
 				(rule.getCondition() == ConditionEnumType.NONE && pass == 0)
 			);
