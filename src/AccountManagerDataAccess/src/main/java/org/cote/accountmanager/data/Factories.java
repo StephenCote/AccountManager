@@ -130,10 +130,15 @@ public class Factories {
 	
 	static{
 		getOrganizationFactory();
-		AuthorizationService.registerParticipationFactory(FactoryEnumType.DATA,getDataParticipationFactory());
-		AuthorizationService.registerParticipationFactory(FactoryEnumType.GROUP,getGroupParticipationFactory());
+		/*
+		 * 2016/05/17 - Warm up added because factories now support registering their own entitlement sets
+		 * 
+		 */
+		warmUp();
+		//AuthorizationService.registerParticipationFactory(FactoryEnumType.DATA,getDataParticipationFactory());
+		//AuthorizationService.registerParticipationFactory(FactoryEnumType.GROUP,getGroupParticipationFactory());
 		AuthorizationService.registerParticipationFactory(FactoryEnumType.PERSON,getPersonParticipationFactory());
-		AuthorizationService.registerParticipationFactory(FactoryEnumType.ROLE,getRoleParticipationFactory());
+		//AuthorizationService.registerParticipationFactory(FactoryEnumType.ROLE,getRoleParticipationFactory());
 	}
 	public static String getDocumentControlName(){
 		return documentControlName;
@@ -801,7 +806,14 @@ public class Factories {
 			fact.populate(object);
 		
 	}
-	
+	public static void warmUp(){
+		logger.info("Warming up factory instances");
+		long startWarmUp = System.currentTimeMillis();
+		for(FactoryEnumType f : FactoryEnumType.values()){
+			FactoryBase fact = getFactory(f);
+		}
+		logger.debug("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
+	}
 	public static boolean cleanupOrphans(){
 		boolean out_bool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
