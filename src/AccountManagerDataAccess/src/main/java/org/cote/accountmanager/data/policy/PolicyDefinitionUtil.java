@@ -38,6 +38,7 @@ import org.cote.accountmanager.objects.PolicyRequestEnumType;
 import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 
 
 public class PolicyDefinitionUtil {
@@ -144,6 +145,8 @@ public class PolicyDefinitionUtil {
 			}
 			logger.info(pdt.getUrn() + " Parameter " + pattern.getFactUrn());
 			FactType parmFact = new FactType();
+			parmFact.setName(pattern.getFact().getName());
+			parmFact.setNameType(NameEnumType.FACT);
 			parmFact.setUrn(pattern.getFactUrn());
 			parmFact.setFactoryType(pattern.getFact().getFactoryType());
 			parmFact.setFactType(pattern.getFact().getFactType());
