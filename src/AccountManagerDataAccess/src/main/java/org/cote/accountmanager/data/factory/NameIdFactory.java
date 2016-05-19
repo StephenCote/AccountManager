@@ -77,6 +77,10 @@ public abstract class NameIdFactory extends FactoryBase {
 	protected boolean useThreadSafeCollections = true;
 	
 	protected boolean hasAuthorization = false;
+	
+	protected String systemRoleNameReader = null;
+	protected String systemRoleNameAdministrator = null;
+	
 	/*
 	protected NameEnumType[] authorizationActors = new NameEnumType[]{NameEnumType.ACCOUNT, NameEnumType.PERSON, NameEnumType.USER};
 	*/
@@ -93,6 +97,17 @@ public abstract class NameIdFactory extends FactoryBase {
 		setUseThreadSafeCollections(true);
 	}
 	
+
+	public String getSystemRoleNameReader() {
+		return systemRoleNameReader;
+	}
+
+
+	public String getSystemRoleNameAdministrator() {
+		return systemRoleNameAdministrator;
+	}
+
+
 	public boolean isUseThreadSafeCollections() {
 		return useThreadSafeCollections;
 	}

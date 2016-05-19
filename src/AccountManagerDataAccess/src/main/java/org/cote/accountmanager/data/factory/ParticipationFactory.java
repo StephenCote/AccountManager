@@ -38,6 +38,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AddressParticipantType;
 import org.cote.accountmanager.objects.BaseParticipantType;
@@ -60,6 +61,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 
@@ -67,9 +69,8 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	public static final Logger logger = Logger.getLogger(ParticipationFactory.class.getName());
 	protected ParticipationEnumType participationType = ParticipationEnumType.UNKNOWN;
 	protected boolean haveAffect = false;
-	protected static String[] permissionBase = new String[]{"Create","Delete","View","Edit","Execute"};
 	protected String permissionPrefix = null;
-
+	protected PermissionEnumType defaultPermissionType = PermissionEnumType.OBJECT;
 
 	
 	public ParticipationFactory(ParticipationEnumType type, String table_name){
@@ -81,23 +82,30 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		this.participationType = type;
 		this.tableNames.add(table_name);
 	}
+	
+	public PermissionEnumType getDefaultPermissionType() {
+		return defaultPermissionType;
+	}
+
 	public String getPermissionPrefix(){
 		return permissionPrefix;
 	}
+	/*
 	public String getReadersRoleName(){
-		return (permissionPrefix + "Administrators");
+		return (permissionPrefix + "Readers");
 	}
 	public String getAdministratorsRoleName(){
 		return (permissionPrefix + "Administrators");
 	}
+	*/
 	public String[] getDefaultPermissions(){
 		if(permissionPrefix == null){
 			logger.warn("Permission prefix for " + participationType.toString() + " is not defined");
 			return new String[0];
 		}
-		String[] names = new String[permissionBase.length];
+		String[] names = new String[AuthorizationService.PERMISSION_BASE.length];
 		for(int i = 0; i < names.length;i++){
-			names[i] = permissionPrefix + permissionBase[i];
+			names[i] = permissionPrefix + AuthorizationService.PERMISSION_BASE[i];
 		}
 		return names;
 	}

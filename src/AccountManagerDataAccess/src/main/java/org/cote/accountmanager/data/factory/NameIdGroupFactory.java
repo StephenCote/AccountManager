@@ -35,6 +35,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
@@ -53,6 +54,8 @@ public class NameIdGroupFactory extends NameIdFactory{
 		this.hasParentId = false;
 		this.hasOwnerId = true;
 		this.hasUrn = true;
+		systemRoleNameAdministrator = RoleService.ROLE_DATA_ADMINISTRATOR;
+		systemRoleNameReader = RoleService.ROLE_DATA_READER;
 	}
 	
 	@Override
