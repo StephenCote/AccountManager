@@ -28,6 +28,7 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -44,10 +45,47 @@ import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.RoleEnumType;
 
 public class RoleService {
 	public static final Logger logger = Logger.getLogger(RoleService.class.getName());
+	
+	public static final String ROLE_SYSTEM_ADMINISTRATOR = "SystemAdministrators";
+	public static final String ROLE_DATA_ADMINISTRATOR = "DataAdministrators";
+	public static final String ROLE_DATA_READER = "DataReaders";
+	public static final String ROLE_ACCOUNT_ADMINISTRATOR = "AccountAdministrators";
+	public static final String ROLE_ACCOUNT_USERS_READER = "AccountUsersReaders";	
+	public static final String ROLE_ACCOUNT_USERS = "AccountUsers";
+	public static final String ROLE_API_USERS = "ApiUsers";
+	public static final String ROLE_PERMISSION_READERS = "PermissionReaders";
+	public static final String ROLE_ROLE_READERS = "RoleReaders";
+	public static final String ROLE_GROUP_READERS = "GroupReaders";
+	
+	private static boolean isFactoryRoleMember(NameIdType actor, String roleName) throws ArgumentException, FactoryException{
+		if(!isMemberActor(actor)){
+			logger.debug("Actor is null or not a valid member");
+			return false;
+		}
+		if(roleName == null){
+			logger.warn("Factory role is null");
+			return false;
+		}
+		
+		BaseRoleType role = Factories.getRoleFactory().getRoleByName(roleName, null, RoleEnumType.valueOf(actor.getNameType().toString()),actor.getOrganizationId());
+		if(role == null){
+			logger.warn("Role '" + roleName + "' does not exist for type " + actor.getNameType());
+			return false;
+		}
+		return getIsMemberInEffectiveRole(actor,role);
+	}
+	public static boolean isFactoryAdministrator(NameIdType actor, NameIdFactory factory) throws ArgumentException, FactoryException{
+		return isFactoryRoleMember(actor,factory.getSystemRoleNameAdministrator());
+	}
+	public static boolean isFactoryReader(NameIdType actor, NameIdFactory factory) throws ArgumentException, FactoryException{
+		return isFactoryRoleMember(actor,factory.getSystemRoleNameReader());
+	}
 
+	
 	public static boolean getIsMemberInEffectiveRole(NameIdType member,BaseRoleType role) throws ArgumentException, FactoryException{
 		boolean out_bool = false;
 		switch(member.getNameType()){
@@ -138,6 +176,7 @@ public class RoleService {
 				member.getNameType() == NameEnumType.PERSON
 				|| member.getNameType() == NameEnumType.ACCOUNT
 				|| member.getNameType() == NameEnumType.USER
+				// || member.getNameType() == NameEnumType.ROLE
 		){
 			out_bool = true;
 		}
