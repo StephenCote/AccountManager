@@ -66,6 +66,9 @@ public class UserFactory extends NameIdFactory {
 		this.hasUrn = true;
 		this.tableNames.add("users");
 		this.factoryType = FactoryEnumType.USER;
+		
+		systemRoleNameReader = "AccountUsersReaders";
+		systemRoleNameAdministrator = "AccountAdministrators";
 	}
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{

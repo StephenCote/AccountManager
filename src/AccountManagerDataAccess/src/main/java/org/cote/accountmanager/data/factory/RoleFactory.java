@@ -36,6 +36,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -53,6 +54,15 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class RoleFactory extends NameIdFactory {
+	static{
+		AuthorizationService.registerAuthorizationProviders(
+				FactoryEnumType.ROLE,
+				NameEnumType.ROLE,
+				Factories.getRoleParticipationFactory()
+			);
+	}
+	
+	
 	public RoleFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -62,6 +72,8 @@ public class RoleFactory extends NameIdFactory {
 		this.hasUrn = true;
 		this.tableNames.add("roles");
 		factoryType = FactoryEnumType.ROLE;
+		systemRoleNameReader = "RoleReaders";
+		systemRoleNameAdministrator = "RoleAdministrators";
 	}
 	
 	@Override

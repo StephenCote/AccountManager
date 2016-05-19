@@ -43,6 +43,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -60,7 +61,13 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 
 public class PersonFactory extends NameIdGroupFactory {
-	
+	static{
+		AuthorizationService.registerAuthorizationProviders(
+				FactoryEnumType.PERSON,
+				NameEnumType.PERSON,
+				Factories.getPersonParticipationFactory()
+			);
+	}
 	public PersonFactory(){
 		super();
 		this.hasParentId=true;

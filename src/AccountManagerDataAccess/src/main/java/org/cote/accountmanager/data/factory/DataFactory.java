@@ -64,7 +64,7 @@ public class DataFactory extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
 	
 	private long currentCacheSize = 0L;
-	/*
+
 	static{
 		AuthorizationService.registerAuthorizationProviders(
 				FactoryEnumType.DATA,
@@ -72,7 +72,7 @@ public class DataFactory extends NameIdFactory {
 				Factories.getDataParticipationFactory()
 			);
 	}
-	*/
+
 	/// Max cache size = 50MB;
 	///
 	private long maximumCacheSize = 1048576L*100L;
@@ -84,6 +84,8 @@ public class DataFactory extends NameIdFactory {
 		this.hasUrn = true;
 		this.tableNames.add("data");
 		factoryType = FactoryEnumType.DATA;
+		systemRoleNameReader = "DataReaders";
+		systemRoleNameAdministrator = "DataAdministrators";
 	}
 	@Override
 	protected void checkCacheExpires(){

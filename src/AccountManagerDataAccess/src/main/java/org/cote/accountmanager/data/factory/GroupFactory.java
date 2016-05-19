@@ -39,6 +39,8 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BucketGroupType;
@@ -53,12 +55,24 @@ import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class GroupFactory  extends NameIdFactory {
+	
+	static{
+		AuthorizationService.registerAuthorizationProviders(
+				FactoryEnumType.GROUP,
+				NameEnumType.GROUP,
+				Factories.getGroupParticipationFactory()
+			);
+	}
+	
 	public GroupFactory(){
 		super();
 		this.scopeToOrganization = true;
 		this.hasUrn = true;
 		this.tableNames.add("groups");
 		factoryType = FactoryEnumType.GROUP;
+		systemRoleNameAdministrator = RoleService.ROLE_DATA_ADMINISTRATOR;
+		systemRoleNameReader = RoleService.ROLE_GROUP_READERS;
+
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

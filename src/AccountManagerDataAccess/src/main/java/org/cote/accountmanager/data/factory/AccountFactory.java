@@ -64,7 +64,8 @@ public class AccountFactory extends NameIdGroupFactory {
 		this.hasUrn = true;
 		this.tableNames.add("accounts");
 		this.factoryType = FactoryEnumType.ACCOUNT;
-		
+		systemRoleNameAdministrator = "AccountAdministrators";
+ 
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
