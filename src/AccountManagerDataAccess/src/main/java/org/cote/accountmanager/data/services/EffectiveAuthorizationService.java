@@ -516,7 +516,23 @@ public class EffectiveAuthorizationService {
 		return map;
 	}
 	
+	protected static AuthorizationMapType getAuthorizationMap(NameEnumType objectType, NameEnumType actorType){
+		if(objectMap.containsKey(objectType) && objectMap.get(objectType).containsKey(actorType)){
+			return objectMap.get(objectType).get(actorType);
+		}
+		return null;
+	}
+	
 	protected static boolean hasPerCache(NameIdType actor, NameIdType object, BasePermissionType[] permission){
+		if(objectMap.containsKey(object.getNameType())){
+			AuthorizationMapType map = getAuthorizationMap(object.getNameType(),actor.getNameType());
+			if(map == null){
+				logger.error("Object map " + object.getNameType() + " doesn't include " + actor.getNameType() + " registered for authorization");
+				return false;
+			}
+			return hasPerCache(map.getMap(),actor,object,permission);
+		}
+		logger.debug("OLD OLD PER CACHE");
 		return hasPerCache(getActorMap(actor.getNameType(),object.getNameType()), actor, object, permission);
 	}
 
@@ -583,6 +599,16 @@ public class EffectiveAuthorizationService {
 	}
 
 	protected static void addToPerCache(NameIdType actor, NameIdType object, BasePermissionType[] permissions, boolean val){
+		if(objectMap.containsKey(object.getNameType())){
+			AuthorizationMapType map = getAuthorizationMap(object.getNameType(),actor.getNameType());
+			if(map == null){
+				logger.error("Object map " + object.getNameType() + " doesn't include " + actor.getNameType() + " registered for authorization");
+				return;
+			}
+			addToPerCache(map.getMap(),actor,object,permissions,val);
+			return;
+		}
+		logger.debug("OLD OLD PER CACHE");
 		addToPerCache(getActorMap(actor.getNameType(),object.getNameType()),actor,object,permissions,val);
 	}
 
@@ -887,7 +913,7 @@ public class EffectiveAuthorizationService {
 			}
 			
 			PreparedStatement stat = conn.prepareStatement(sql);
-			//logger.debug(sql);
+			logger.debug(sql);
 			stat.setLong(1, actor.getId());
 			stat.setLong(2,obj.getId());
 			stat.setLong(3, obj.getOrganizationId());
@@ -924,6 +950,37 @@ public class EffectiveAuthorizationService {
 				e.printStackTrace();
 			}
 		}
+		return out_bool;
+		
+	}
+	
+	/// TODO: These can all be refactored into three statements, but the cache lookup has to change where the actor type differs between user/account/person and role
+	///
+	public static boolean getAuthorization(NameIdType actor, NameIdType object, BasePermissionType[] permissions) throws ArgumentException, FactoryException
+	{
+		boolean out_bool = false;
+		if(permissions.length == 0){
+			throw new ArgumentException("At least one permission must be specified");
+		}
+		if(!objectMap.containsKey(object.getNameType())){
+			throw new ArgumentException("Object type " + object.getNameType() + " is not registered for authorization");
+		}
+		if(!objectMap.get(object.getNameType()).containsKey(actor.getNameType())){
+			throw new ArgumentException("Actor type " + actor.getNameType() + " is not registered with " + object.getNameType() + " for authorization");
+		}
+		if(hasPerCache(actor, object, permissions)){
+			//logger.debug("Cached match " + person.getNameType() + " " + person.getId() + " checking data " + data.getId() + " in org " + data.getOrganizationId());
+			//return getCacheValue(person,data,permissions);
+			return getPerCacheValue(getAuthorizationMap(object.getNameType(),actor.getNameType()).getMap(),actor,object,permissions);
+		}
+		String objType = object.getNameType().toString().toLowerCase();
+		if(actor.getNameType() == NameEnumType.ROLE){
+			out_bool = getAuthorization("effective" + objType + "roles","baseroleid",objType + "id",actor,false,object,permissions);
+		}
+		else{
+			out_bool = getAuthorization(objType + "rights","referenceid",objType + "id",actor,true,object,permissions);
+		}
+		addToPerCache(actor,object,permissions,out_bool);
 		return out_bool;
 		
 	}
@@ -1185,7 +1242,7 @@ public class EffectiveAuthorizationService {
 					+ " inner join personparticipation PU2 on ARC.accountid = PU2.participantid AND PU2.participanttype = 'ACCOUNT' AND PU2.participationid = " + token + " AND ARC.effectiveroleid = " + token + " AND ARC.organizationid = " + token;
 			}
 			PreparedStatement stat = conn.prepareStatement(sql);
-			logger.debug(sql);
+			// logger.debug(sql);
 
 			stat.setLong(1, actor.getId());
 			stat.setLong(2,role.getId());
@@ -1205,16 +1262,15 @@ public class EffectiveAuthorizationService {
 				/// TODO: Note, although deny's are stored at the datalevel, they are not currently being evaluated here
 				/// So a DENY will actually turn into a grant in the code
 				///
-				addToCache(actor,role,true);
 				out_bool = true;
 				logger.debug("Matched " + actor.getNameType() + " " + match_id + (linkPerson ? " (via person linkage)" : "") + " having role " + role.getId() + " in org " + role.getOrganizationId());
 			}
 			else{
-				addToCache(actor,role,false);
-				logger.warn("Failed to match " + actor.getNameType() + " " + actor.getName() + " (" + actor.getId() + ") with role " + role.getName() + " (" + role.getId() + ") in organization (" + role.getOrganizationId() + ")");
+				logger.warn("Did not match " + actor.getNameType() + " " + actor.getName() + " (" + actor.getId() + ") with role " + role.getName() + " (" + role.getId() + ") in organization (" + role.getOrganizationId() + ")");
 			}
 			rset.close();
 			stat.close();
+			addToCache(actor,role,out_bool);
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
