@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.cote.accountmanager.data.factory.FactoryDefaults;
+import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
+import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
@@ -24,6 +26,9 @@ import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.PolicyDefinitionType;
+import org.cote.accountmanager.objects.PolicyRequestType;
+import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleEnumType;
 import org.cote.accountmanager.objects.RuleType;
@@ -37,10 +42,11 @@ import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 
 public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTest {
-	// FactoryDefaults.createPermissionsForAuthorizationFactories(testUser.getOrganizationId());
-	
+	/*
 	@Test
 	public void TestPolicyBasedAuthorization(){
+		// FactoryDefaults.createPermissionsForAuthorizationFactories(testUser.getOrganizationId());
+
 		DirectoryGroupType odir = null;
 		DirectoryGroupType pdir = null;
 		DirectoryGroupType rdir = null;
@@ -50,12 +56,12 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		RuleType roleRule = null;
 		RuleType roleRule1 = null;
 		RuleType roleRule2 = null;
-		/*
+		
 		RuleType roleRule1 = null;
 		RuleType roleRule2 = null;
 		RuleType roleRule3 = null;
 		RuleType roleRule4 = null;
-		*/
+		
 		
 		PatternType pattern1 = null;
 		PatternType pattern2 = null;
@@ -63,18 +69,28 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		PatternType pattern4 = null;
 		
 		OperationType oper1 = null;
+		OperationType oper2 = null;
 		FactType fact1 = null;
 		FactType fact2 = null;
-		
+		FactType fact3 = null;
+		FactType fact4 = null;
+		FactType fact5 = null;
 		RuleType objectRule = null;
 		
 		String policyName = "Can View Type";
 		String operationName= "Compare Name Type";
+		String operationName2= "Match System Role";
 		String roleRuleName = "View Actor Is Role";
 		String roleRule1Name = "Actor is Role";
+		String roleRule2Name = "Object Authorized To Role";
 		String pattern1Name = "Actor is Role";
-		String fact1Name = "Name Type Parameter";
+		String pattern2Name = "Role Is TypeAdmin";
+		String pattern3Name = "Role Is TypeReader";
+		String fact1Name = "Actor Type Parameter";
 		String fact2Name = "Role Name Type";
+		String fact3Name = "Role TypeAdmin";
+		String fact5Name = "Role TypeReader";
+		String fact4Name = "Object Type Parameter";
 		
 		boolean cleanup = true;
 		try {
@@ -94,26 +110,89 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				oper1 = Factories.getOperationFactory().getByNameInGroup(operationName, odir);
 			}
 			
-
+			oper2 = Factories.getOperationFactory().getByNameInGroup(operationName2, odir);
+			if(oper2 == null){
+				oper2 = Factories.getOperationFactory().newOperation(testUser, odir.getId());
+				oper2.setOperationType(OperationEnumType.INTERNAL);
+				oper2.setOperation("org.cote.accountmanager.data.operation.MatchSystemRoleOperation");
+				oper2.setName(operationName2);
+				Factories.getOperationFactory().addOperation(oper2);
+				oper2 = Factories.getOperationFactory().getByNameInGroup(operationName2, odir);
+			}
+			
+			
 			fact1 = Factories.getFactFactory().getByNameInGroup(fact1Name,fdir);
+			if(cleanup && fact1 != null){
+				Factories.getFactFactory().deleteFact(fact1);
+				fact1 = null;
+			}
 			if(fact1 == null){
 				fact1 = Factories.getFactFactory().newFact(testUser, fdir.getId());
 				fact1.setFactType(FactEnumType.PARAMETER);
 				fact1.setFactoryType(FactoryEnumType.UNKNOWN);
 				fact1.setName(fact1Name);
+				fact1.setDescription("ActorType");
 				Factories.getFactFactory().addFact(fact1);
 				fact1 = Factories.getFactFactory().getByNameInGroup(fact1Name,fdir);
 			}
+			
 			fact2 = Factories.getFactFactory().getByNameInGroup(fact2Name,fdir);
+			if(cleanup && fact2 != null){
+				Factories.getFactFactory().deleteFact(fact2);
+				fact2 = null;
+			}
 			if(fact2 == null){
 				fact2 = Factories.getFactFactory().newFact(testUser, fdir.getId());
 				fact2.setFactType(FactEnumType.ROLE);
+				fact2.setFactoryType(FactoryEnumType.ROLE);
 				fact2.setName(fact2Name);
 				Factories.getFactFactory().addFact(fact2);
 				fact2 = Factories.getFactFactory().getByNameInGroup(fact2Name,fdir);
 			}
-
+			fact3 = Factories.getFactFactory().getByNameInGroup(fact3Name,fdir);
+			if(cleanup && fact3 != null){
+				Factories.getFactFactory().deleteFact(fact3);
+				fact3 = null;
+			}
+			if(fact3 == null){
+				fact3 = Factories.getFactFactory().newFact(testUser, fdir.getId());
+				fact3.setFactType(FactEnumType.ROLE);
+				fact3.setFactoryType(FactoryEnumType.UNKNOWN);
+				fact3.setSourceUrn("DataAdministrators");
+				fact3.setName(fact3Name);
+				Factories.getFactFactory().addFact(fact3);
+				fact3 = Factories.getFactFactory().getByNameInGroup(fact3Name,fdir);
+			}
 			
+			fact5 = Factories.getFactFactory().getByNameInGroup(fact5Name,fdir);
+			if(cleanup && fact5 != null){
+				Factories.getFactFactory().deleteFact(fact5);
+				fact5 = null;
+			}
+			if(fact5 == null){
+				fact5 = Factories.getFactFactory().newFact(testUser, fdir.getId());
+				fact5.setFactType(FactEnumType.ROLE);
+				fact5.setFactoryType(FactoryEnumType.UNKNOWN);
+				fact5.setSourceUrn("DataReaders");
+				fact5.setName(fact5Name);
+				Factories.getFactFactory().addFact(fact5);
+				fact5 = Factories.getFactFactory().getByNameInGroup(fact5Name,fdir);
+			}
+			
+			fact4 = Factories.getFactFactory().getByNameInGroup(fact4Name,fdir);
+			if(cleanup && fact4 != null){
+				Factories.getFactFactory().deleteFact(fact4);
+				fact4 = null;
+			}
+			if(fact4 == null){
+				fact4 = Factories.getFactFactory().newFact(testUser, fdir.getId());
+				fact4.setFactType(FactEnumType.PARAMETER);
+				fact4.setFactoryType(FactoryEnumType.UNKNOWN);
+				fact4.setName(fact4Name);
+				fact4.setDescription("ObjectType");
+				Factories.getFactFactory().addFact(fact4);
+				fact4 = Factories.getFactFactory().getByNameInGroup(fact4Name,fdir);
+			}
 			pattern1 = Factories.getPatternFactory().getByNameInGroup(pattern1Name, padir);
 			if(cleanup && pattern1 != null){
 				Factories.getPatternFactory().deletePattern(pattern1);
@@ -127,8 +206,47 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				pattern1.setComparator(ComparatorEnumType.EQUALS);
 				pattern1.setFactUrn(fact1.getUrn());
 				pattern1.setMatchUrn(fact2.getUrn());
+				pattern1.setLogicalOrder(1);
 				Factories.getPatternFactory().addPattern(pattern1);
 				pattern1 = Factories.getPatternFactory().getByNameInGroup(pattern1Name, padir);	
+
+			}
+			
+			pattern2 = Factories.getPatternFactory().getByNameInGroup(pattern2Name, padir);
+			if(cleanup && pattern2 != null){
+				Factories.getPatternFactory().deletePattern(pattern2);
+				pattern2 = null;
+			}
+			if(pattern2 == null){
+				pattern2 = Factories.getPatternFactory().newPattern(testUser, padir.getId());
+				pattern2.setName(pattern2Name);
+				pattern2.setPatternType(PatternEnumType.OPERATION);
+				pattern2.setOperationUrn(oper2.getUrn());
+				pattern2.setComparator(ComparatorEnumType.EQUALS);
+				pattern2.setFactUrn(fact1.getUrn());
+				pattern2.setMatchUrn(fact3.getUrn());
+				pattern2.setLogicalOrder(2);
+				Factories.getPatternFactory().addPattern(pattern2);
+				pattern2 = Factories.getPatternFactory().getByNameInGroup(pattern2Name, padir);	
+
+			}
+			
+			pattern3 = Factories.getPatternFactory().getByNameInGroup(pattern3Name, padir);
+			if(cleanup && pattern3 != null){
+				Factories.getPatternFactory().deletePattern(pattern3);
+				pattern3 = null;
+			}
+			if(pattern3 == null){
+				pattern3 = Factories.getPatternFactory().newPattern(testUser, padir.getId());
+				pattern3.setName(pattern3Name);
+				pattern3.setPatternType(PatternEnumType.OPERATION);
+				pattern3.setOperationUrn(oper2.getUrn());
+				pattern3.setComparator(ComparatorEnumType.EQUALS);
+				pattern3.setFactUrn(fact1.getUrn());
+				pattern3.setMatchUrn(fact5.getUrn());
+				pattern3.setLogicalOrder(3);
+				Factories.getPatternFactory().addPattern(pattern3);
+				pattern3 = Factories.getPatternFactory().getByNameInGroup(pattern3Name, padir);	
 
 			}
 			
@@ -142,11 +260,30 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				roleRule1.getPatterns().add(pattern1);
 				roleRule1.setCondition(ConditionEnumType.ANY);
 				roleRule1.setName(roleRule1Name);
+				roleRule1.setLogicalOrder(1);
 				roleRule1.setRuleType(RuleEnumType.PERMIT);
 				Factories.getRuleFactory().addRule(roleRule1);
 				roleRule1 = Factories.getRuleFactory().getByNameInGroup(roleRule1Name, rdir);	
 			}
 			Factories.getRuleFactory().populate(roleRule1);
+
+			roleRule2 = Factories.getRuleFactory().getByNameInGroup(roleRule2Name, rdir);
+			if(cleanup && roleRule2 != null){
+				Factories.getRuleFactory().deleteRule(roleRule2);
+				roleRule2 = null;
+			}
+			if(roleRule2 == null){
+				roleRule2 = Factories.getRuleFactory().newRule(testUser, rdir.getId());
+				roleRule2.getPatterns().add(pattern2);
+				roleRule2.getPatterns().add(pattern3);
+				roleRule2.setCondition(ConditionEnumType.ANY);
+				roleRule2.setName(roleRule2Name);
+				roleRule2.setLogicalOrder(2);
+				roleRule2.setRuleType(RuleEnumType.PERMIT);
+				Factories.getRuleFactory().addRule(roleRule2);
+				roleRule2 = Factories.getRuleFactory().getByNameInGroup(roleRule2Name, rdir);	
+			}
+			Factories.getRuleFactory().populate(roleRule2);
 			
 			roleRule = Factories.getRuleFactory().getByNameInGroup(roleRuleName, rdir);
 			if(cleanup && roleRule != null){
@@ -157,6 +294,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			if(roleRule == null){
 				roleRule = Factories.getRuleFactory().newRule(testUser, rdir.getId());
 				roleRule.getRules().add(roleRule1);
+				roleRule.getRules().add(roleRule2);
 				roleRule.setRuleType(RuleEnumType.PERMIT);
 				roleRule.setCondition(ConditionEnumType.ALL);
 				roleRule.setName(roleRuleName);
@@ -178,6 +316,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				policy.setEnabled(true);
 				policy.setName(policyName);
 				policy.getRules().add(roleRule);
+				//policy.getRules().add(roleRule1);
 				Factories.getPolicyFactory().addPolicy(policy);
 				policy = Factories.getPolicyFactory().getByNameInGroup(policyName, pdir);
 			}
@@ -186,26 +325,61 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				Factories.getRuleFactory().populate(policy.getRules().get(i));
 				for(int p = 0; p < policy.getRules().get(i).getRules().size(); p++){
 					Factories.getRuleFactory().populate(policy.getRules().get(i).getRules().get(p));
+					RuleType rule = policy.getRules().get(i).getRules().get(p);
+					for(int q = 0; q < rule.getPatterns().size();q++){
+						Factories.getPatternFactory().populate(rule.getPatterns().get(q));
+					}
 				}
 			}
 			
+			//logger.info(JSONUtil.exportObject(fact1));
+			//logger.info(JSONUtil.exportObject(fact2));
 			logger.info(JSONUtil.exportObject(policy));
 			
 			//roleRule2 = Factories.getRuleFactory().newRule(testUser, rdir.getId());
 			
-
+			PolicyDefinitionType pdef = PolicyDefinitionUtil.generatePolicyDefinition(policy);
+			PolicyRequestType prt = PolicyDefinitionUtil.generatePolicyRequest(pdef);
+			logger.info(JSONUtil.exportObject(pdef));
 			
+			DirectoryGroupType app1 = getApplication("AuthZ Application #1");
+			PersonType person1 = getApplicationPerson("Person #1",app1);
+			PersonType person3 = getApplicationPerson("Person #3",app1);
+			PersonRoleType perRole1 = getTestRole();
+			RoleService.addPersonToRole(person3, perRole1);
 			
+			assertTrue("Expected at least one parameter",prt.getFacts().size() > 0);
+			
+			prt.getFacts().get(0).setFactReference(perRole1);
+			PolicyResponseType prr = PolicyEvaluator.evaluatePolicyRequest(prt);
+			
+			logger.info(JSONUtil.exportObject(prr));
 			//roleRule.getPatterns()
-		} catch (FactoryException | ArgumentException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
+	private PersonRoleType getTestRole(){
+		PersonRoleType perRole1 = null;
+		try {
+			BaseRoleType baseRole = Factories.getRoleFactory().getUserRole(testUser,RoleEnumType.USER,testUser.getOrganizationId());
+			//assertNotNull("Base role is null", baseRole);
+			//acctRole1 = getRole(testUser,"Account Role 1",RoleEnumType.ACCOUNT,baseRole);
+			perRole1 = getRole(testUser,"Person Role 1",RoleEnumType.PERSON,baseRole);
+		} catch (FactoryException | ArgumentException | DataAccessException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		return perRole1;
+	}
+	*/
 	
 	@Test
 	public void TestExtensionService(){
+		//FactoryDefaults.createPermissionsForAuthorizationFactories(testUser.getOrganizationId());
+
 		logger.info("Testing Effective Authorization General/Extension Service");
 		DirectoryGroupType app1 = getApplication("AuthZ Application #1");
 		
@@ -262,23 +436,30 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			logger.info("Deauthorizing object");
 			AuthorizationService.deauthorize(testUser, policy);
 			
-			BasePermissionType permission = AuthorizationService.getViewPermissionForMapType(policy.getNameType(), policy.getOrganizationId());
+			BasePermissionType permissionR = AuthorizationService.getViewPermissionForMapType(policy.getNameType(), policy.getOrganizationId());
 			BasePermissionType permissionE = AuthorizationService.getExecutePermissionForMapType(policy.getNameType(), policy.getOrganizationId());
 			
-			assertNotNull("Permission was null", permission);
-			logger.info("Using permission " + permission.getUrn());
+			assertNotNull("Permission was null", permissionR);
 			
-			//testGenericAuthorization(testUser, policy, testUser2, )
-			
-			boolean authZ = AuthorizationService.authorize(testUser, policy, testUser2, permission, true);
+			boolean authZ = AuthorizationService.authorize(testUser, policy, testUser2, permissionR, true);
 			boolean authZ2 = AuthorizationService.authorize(testUser, policy, perRole1, permissionE, true);
 			assertTrue("Failed to authorize", authZ);
 			
 			
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
 			EffectiveAuthorizationService.rebuildCache(NameEnumType.POLICY, testUser.getOrganizationId());
-			boolean isAuthZ = AuthorizationService.isAuthorized(policy, testUser, new BasePermissionType[]{permission});
+			boolean isAuthZ = AuthorizationService.isAuthorized(policy, testUser, new BasePermissionType[]{permissionR});
 			assertTrue("Failed to identify expected authorization", isAuthZ);
+
+			boolean canView = AuthorizationService.canView(testUser2, policy);
+			logger.info("Can testUser2 View: (true) " + canView);
+			assertTrue("testUser2 should be able to view",canView);
+			boolean canView3 = AuthorizationService.canView(person3, policy);
+			logger.info("Can person3 View: (false) " + canView3);
+			assertFalse("person3 should not be able to view", canView3);
+			boolean canView4 = AuthorizationService.canExecute(perRole1, policy);
+			assertTrue("Role should be able to execute",canView4);
+		
 		} catch (ArgumentException | FactoryException | DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
