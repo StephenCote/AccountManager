@@ -40,6 +40,7 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.security.CredentialService;
@@ -102,7 +103,7 @@ public class ConsoleMain {
 		options.addOption("deleteOrganization",false,"Delete a new organization");
 		options.addOption("migrateData",false,"Migrate data from a pre-configured target");
 		options.addOption("ownerId",true,"Migrate data from a pre-configured target");
-		
+		options.addOption("execute",false,"Execute an action");
 		options.addOption("setup",false,"Setup Account Manager");
 		options.addOption("email",true,"Email address");
 		options.addOption("confirm",false,"Confirm the activity");
@@ -139,20 +140,29 @@ public class ConsoleMain {
 		// options.addOption("test",false,"Run Tests");
 		
 		
-		
-		
+			
 		CommandLineParser parser = new PosixParser();
 		try {
 			logger.debug("Setting up connection factory");
 			setupConnectionFactory(props);
-			
+			logger.debug("Warming up factories");
+			long startWarmUp = System.currentTimeMillis();
+			Factories.warmUp();
+			long stopWarmUp = System.currentTimeMillis();
+			logger.debug("Completed warm up in " + (stopWarmUp - startWarmUp) + "ms");
+
 			CommandLine cmd = parser.parse( options, args);
 			if(cmd.hasOption("patch") && cmd.hasOption("organization")){
 				logger.debug("Applying patch ...");
 				try {
 					OrganizationType org = Factories.getOrganizationFactory().findOrganization(cmd.getOptionValue("organization"));
+					logger.info("Patching " + org.getName());
+					logger.info("Updating permissions ...");
 					if(org != null){
-						logger.info("Patching " + org.getName());
+						FactoryDefaults.createPermissionsForAuthorizationFactories(org.getId());
+
+						/*
+						
 						SecurityBean asymmKey = KeyService.getPrimaryAsymmetricKey(org.getId());
 						if(asymmKey == null){
 							logger.info("Creating primary asymmetric key");
@@ -183,7 +193,7 @@ public class ConsoleMain {
 								}
 							}
 						}
-
+						*/
 					}
 					else{
 						logger.error("Organization does not exist");
@@ -321,7 +331,7 @@ public class ConsoleMain {
 				
 			}
 			else if(cmd.hasOption("generate") && cmd.hasOption("type")){
-				GenerateAction.generate(NameEnumType.valueOf(cmd.getOptionValue("type")),cmd.hasOption("export"),cmd.getOptionValue("path"));
+				GenerateAction.generate(NameEnumType.valueOf(cmd.getOptionValue("type")),cmd.hasOption("execute"), cmd.hasOption("export"),cmd.getOptionValue("path"));
 			}
 			else{
 				logger.info("Syntax");

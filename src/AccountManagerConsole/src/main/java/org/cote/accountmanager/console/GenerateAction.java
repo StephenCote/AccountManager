@@ -1,17 +1,55 @@
 package org.cote.accountmanager.console;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.apache.log4j.Logger;
+import org.cote.accountmanager.data.ConnectionFactory;
+import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.FileUtil;
 
 public class GenerateAction {
 	public static final Logger logger = Logger.getLogger(GenerateAction.class.getName());
-	
-	public static String generate(NameEnumType type, boolean export, String path){
+	private static boolean execute(String sql){
+		Connection connection = null;
+		boolean out_bool = false;
+		try{
+			connection = ConnectionFactory.getInstance().getConnection();
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			connection.close();
+			logger.info("Executed Update");
+			out_bool = true;
+		}
+		catch(SQLException sqe){
+			logger.error(sqe.getMessage());
+			sqe.printStackTrace();
+		}
+		finally{
+			if(connection != null){
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return true;
+	}
+	public static String generate(NameEnumType type, boolean exec, boolean export, String path){
 		if(type == null || type == NameEnumType.UNKNOWN){
 			logger.error("Invalid type: " + type);
 			return null;
+		}
+		FactoryEnumType typeFact = FactoryEnumType.valueOf(type.toString());
+		NameIdFactory fact = Factories.getFactory(typeFact);
+		if(fact == null){
+			logger.error("Null factory for type " + typeFact.toString());
 		}
 		FactoryEnumType typePart = FactoryEnumType.valueOf(type.toString() + "PARTICIPATION");
 		if(typePart == null || typePart == FactoryEnumType.UNKNOWN){
@@ -27,7 +65,11 @@ public class GenerateAction {
 		buff.append(generateObjectRightsViews(type.toString().toLowerCase()));
 		buff.append(generateEffectiveRightsView(type.toString().toLowerCase()));
 		buff.append(generateCacheFunctionSchema(type.toString().toLowerCase()));
-		logger.info("\n" + buff.toString());
+		
+		if(exec){
+			execute(buff.toString());
+		//logger.info("\n" + buff.toString());
+		}
 		if(export){
 			FileUtil.emitFile(path, buff.toString());
 		}
