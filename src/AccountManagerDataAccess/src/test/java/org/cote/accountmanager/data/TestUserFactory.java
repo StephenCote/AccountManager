@@ -13,6 +13,7 @@ import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.junit.Test;
@@ -139,17 +140,17 @@ public class TestUserFactory extends BaseDataAccessTest{
 			Factories.getUserFactory().populate(user1);
 			Factories.getUserFactory().populate(user2);
 			assertTrue("Did not populate user", user1.getPopulated() && user2.getPopulated());
-			assertTrue("User #1 should be able to change their group.", AuthorizationService.canChangeGroup(user1, user1.getHomeDirectory()));
-			assertTrue("User #2 should be able to change their group.", AuthorizationService.canChangeGroup(user2, user2.getHomeDirectory()));
-			assertFalse("User #1 should not be able to change User #2's group.", AuthorizationService.canChangeGroup(user1, user2.getHomeDirectory()));
+			assertTrue("User #1 should be able to change their group.", AuthorizationService.canChange(user1, user1.getHomeDirectory()));
+			assertTrue("User #2 should be able to change their group.", AuthorizationService.canChange(user2, user2.getHomeDirectory()));
+			assertFalse("User #1 should not be able to change User #2's group.", AuthorizationService.canChange(user1, user2.getHomeDirectory()));
 			
-			AuthorizationService.switchGroup(user2, user1, user2.getHomeDirectory(), AuthorizationService.getEditGroupPermission(user2.getOrganizationId()), true);
-			assertTrue("User #1 should now be able to change User #2's group.", AuthorizationService.canChangeGroup(user1, user2.getHomeDirectory()));
+			AuthorizationService.authorize(user2, user1, user2.getHomeDirectory(), AuthorizationService.getEditPermissionForMapType(NameEnumType.GROUP, user2.getOrganizationId()), true);
+			assertTrue("User #1 should now be able to change User #2's group.", AuthorizationService.canChange(user1, user2.getHomeDirectory()));
 
-			AuthorizationService.switchGroup(user2, user1, user2.getHomeDirectory(), AuthorizationService.getEditGroupPermission(user2.getOrganizationId()), false);
-			assertFalse("User #1 should no longer be able to change User #2's group.", AuthorizationService.canChangeGroup(user1, user2.getHomeDirectory()));
+			AuthorizationService.authorize(user2, user1, user2.getHomeDirectory(), AuthorizationService.getEditPermissionForMapType(NameEnumType.GROUP, user2.getOrganizationId()), false);
+			assertFalse("User #1 should no longer be able to change User #2's group.", AuthorizationService.canChange(user1, user2.getHomeDirectory()));
 
-			//assertTrue("Admin user should be able to change user #1 group.", AuthorizationService.canChangeGroup(admin, user1.getHomeDirectory()));
+			//assertTrue("Admin user should be able to change user #1 group.", AuthorizationService.canChange(admin, user1.getHomeDirectory()));
 			
 		}
 

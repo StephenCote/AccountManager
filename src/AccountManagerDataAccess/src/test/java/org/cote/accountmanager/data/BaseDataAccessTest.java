@@ -618,6 +618,7 @@ public class BaseDataAccessTest{
 		T role = null;
 		try {
 			Factories.getGroupFactory().populate(dir);
+			Factories.getGroupFactory().denormalize(dir);
 			String perPath = dir.getPath() + "/" + name;
 			role = Factories.getRoleFactory().makePath(testUser, type, perPath, dir.getOrganizationId());
 		} catch (FactoryException e) {

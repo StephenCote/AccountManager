@@ -169,13 +169,13 @@ public class TestFactoryCache extends BaseDataAccessTest{
 				return bean;
 			}
 				
-			if(!AuthorizationService.canViewGroup(user, cdir)){
+			if(!AuthorizationService.canView(user, cdir)){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is not authorized to view group " + cdir.getName() + " (#" + cdir.getId() + ")");
 				return bean;
 			}
 			Factories.getGroupFactory().populate(cdir);		
 			*/	
-			if(!AuthorizationService.canViewGroup(user, dir)){
+			if(!AuthorizationService.canView(user, dir)){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
 				return bean;
 			}
@@ -203,7 +203,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 				AuditService.denyResult(audit, "Invalid path");
 				return bean;
 			}
-			if(AuthorizationService.canViewGroup(user, dir) == false){
+			if(AuthorizationService.canView(user, dir) == false){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
 				return bean;
 			}

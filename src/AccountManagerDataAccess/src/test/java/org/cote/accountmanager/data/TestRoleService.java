@@ -3,6 +3,7 @@ package org.cote.accountmanager.data;
 import static org.junit.Assert.assertFalse;
 
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.junit.Test;
 
 
@@ -12,7 +13,7 @@ public class TestRoleService extends BaseDataAccessTest{
 	public void testSystemRoles(){
 		boolean isDataAdmin = false;
 		try {
-			isDataAdmin = AuthorizationService.isDataAdministratorInOrganization(testUser, testUser.getOrganizationId());
+			isDataAdmin =RoleService.isFactoryAdministrator(testUser, Factories.getDataFactory());
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

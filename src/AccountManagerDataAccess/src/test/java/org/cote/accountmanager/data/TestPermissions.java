@@ -86,13 +86,13 @@ public class TestPermissions extends BaseDataAccessTest{
 				Factories.getPersonFactory().updatePerson(acct5);
 			}
 
-			AuthorizationService.switchGroup(testUser, acct1, app1, per1, true);
+			AuthorizationService.authorize(testUser, acct1, app1, per1, true);
 			EffectiveAuthorizationService.rebuildCache();
 			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct1,app1, new BasePermissionType[] { per1 } );
 			assertTrue("Person #1 should have the permission",havePerm);
 			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct2,app1, new BasePermissionType[] { per1 } );
 			assertFalse("Person #2 should not have the permission", havePerm);
-			AuthorizationService.switchGroup(testUser, roleP, app1, per2, true);
+			AuthorizationService.authorize(testUser, roleP, app1, per2, true);
 			RoleService.addPersonToRole(acct3, roleP);
 			EffectiveAuthorizationService.rebuildCache();
 			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct3,app1, new BasePermissionType[] { per1 } );
@@ -100,12 +100,12 @@ public class TestPermissions extends BaseDataAccessTest{
 			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct3,app1, new BasePermissionType[] { per2 } );
 			assertTrue("Person #3 should have the permission", havePerm);
 			
-			AuthorizationService.switchGroup(testUser, pacct4, app1, per3, true);
+			AuthorizationService.authorize(testUser, pacct4, app1, per3, true);
 			EffectiveAuthorizationService.rebuildCache();
 			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct4,app1, new BasePermissionType[] { per3 } );
 			assertTrue("Person #4 should have the permission because their account has the permission",havePerm);
 			
-			AuthorizationService.switchGroup(testUser, roleP2, app1, per4, true);
+			AuthorizationService.authorize(testUser, roleP2, app1, per4, true);
 			RoleService.addAccountToRole(pacct5, roleP2);
 			EffectiveAuthorizationService.rebuildCache();
 			
@@ -154,13 +154,13 @@ public class TestPermissions extends BaseDataAccessTest{
 		boolean havePerm = false;
 		/// Try giving account #1 permission #1 to application #1 (a directory group in AM)
 		try {
-			AuthorizationService.switchGroup(testUser, acct1, app1, per1, true);
+			AuthorizationService.authorize(testUser, acct1, app1, per1, true);
 			EffectiveAuthorizationService.rebuildCache();
 			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct1,app1, new BasePermissionType[] { per1 } );
 			assertTrue("Account #1 should have the permission",havePerm);
 			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct2,app1, new BasePermissionType[] { per1 } );
 			assertFalse("Account #2 should not have the permission", havePerm);
-			AuthorizationService.switchGroup(testUser, roleP, app1, per2, true);
+			AuthorizationService.authorize(testUser, roleP, app1, per2, true);
 			RoleService.addAccountToRole(acct3, roleP);
 			EffectiveAuthorizationService.rebuildCache();
 			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct3,app1, new BasePermissionType[] { per1 } );

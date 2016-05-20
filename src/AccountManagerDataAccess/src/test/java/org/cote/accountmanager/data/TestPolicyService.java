@@ -786,7 +786,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 			
 			ApplicationPermissionType perm = getCreatePermission(testUser,"Entitlement1",PermissionEnumType.APPLICATION,testUser.getHomeDirectory());
 			DirectoryGroupType demoGroup = Factories.getGroupFactory().getCreateDirectory(testUser, "DemoGroup", testUser.getHomeDirectory(), testUser.getOrganizationId());
-			AuthorizationService.setPermission(testUser, account, demoGroup, perm, true);
+			AuthorizationService.authorize(testUser, account, demoGroup, perm, true);
 			RoleService.addAccountToRole(account, demoRole);
 			EffectiveAuthorizationService.rebuildCache();
 			

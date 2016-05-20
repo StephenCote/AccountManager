@@ -348,22 +348,22 @@ public class TestSoD extends BaseDataAccessTest{
 			RoleService.addAccountToRole(demoAccount2, (AccountRoleType)sodRole2);
 			
 			/// Assign the roles and permissions to the Applications
-			AuthorizationService.switchGroup(testUser,sodRole1,sodApplication1,sodPer2,true);
-			AuthorizationService.switchGroup(testUser,sodRole1,sodApplication1,sodPer3,true);
-			AuthorizationService.switchGroup(testUser,sodRole2,sodApplication1,sodPer5,true);
-			AuthorizationService.switchGroup(testUser,sodRole2,sodApplication1,sodPer6,true);
+			AuthorizationService.authorize(testUser,sodRole1,sodApplication1,sodPer2,true);
+			AuthorizationService.authorize(testUser,sodRole1,sodApplication1,sodPer3,true);
+			AuthorizationService.authorize(testUser,sodRole2,sodApplication1,sodPer5,true);
+			AuthorizationService.authorize(testUser,sodRole2,sodApplication1,sodPer6,true);
 			
 			/// Assign the roles and permissions to the SoD Activities
 			/// NOTE: This means that to be useful, at least for roles, the operation of attaching and detaching the role will have to replicate the current assignments over for that role
 			/// I need to double check this versus just giving it a dummy read permisson and then pulling straight off the source application which would probably make more sense
 			///
-			AuthorizationService.switchGroup(testUser, sodRole1, sodChildAct1, sodPer2, true);
-			AuthorizationService.switchGroup(testUser, sodRole1, sodChildAct1, sodPer3, true);
-			AuthorizationService.switchGroup(testUser, sodContextPer, sodGrandChildAct1, sodPer1, true);
+			AuthorizationService.authorize(testUser, sodRole1, sodChildAct1, sodPer2, true);
+			AuthorizationService.authorize(testUser, sodRole1, sodChildAct1, sodPer3, true);
+			AuthorizationService.authorize(testUser, sodContextPer, sodGrandChildAct1, sodPer1, true);
 			
-			AuthorizationService.switchGroup(testUser, sodRole2, sodChildAct2, sodPer5, true);
-			AuthorizationService.switchGroup(testUser, sodRole2, sodChildAct2, sodPer6, true);
-			AuthorizationService.switchGroup(testUser, sodContextPer, sodGrandChildAct2, sodPer4, true);
+			AuthorizationService.authorize(testUser, sodRole2, sodChildAct2, sodPer5, true);
+			AuthorizationService.authorize(testUser, sodRole2, sodChildAct2, sodPer6, true);
+			AuthorizationService.authorize(testUser, sodContextPer, sodGrandChildAct2, sodPer4, true);
 
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
 
@@ -469,13 +469,13 @@ public class TestSoD extends BaseDataAccessTest{
 		assertNotNull("Role 1 is null", sodRole1);
 		
 		try {
-			AuthorizationService.switchGroup(testUser, sodRole1, sodChildAct1, sodPer2, true);
-			AuthorizationService.switchGroup(testUser, sodRole1, sodChildAct1, sodPer3, true);
-			AuthorizationService.switchGroup(testUser, sodContextPer, sodGrandChildAct1, sodPer1, true);
+			AuthorizationService.authorize(testUser, sodRole1, sodChildAct1, sodPer2, true);
+			AuthorizationService.authorize(testUser, sodRole1, sodChildAct1, sodPer3, true);
+			AuthorizationService.authorize(testUser, sodContextPer, sodGrandChildAct1, sodPer1, true);
 			
-			AuthorizationService.switchGroup(testUser, sodRole2, sodChildAct2, sodPer5, true);
-			AuthorizationService.switchGroup(testUser, sodRole2, sodChildAct2, sodPer6, true);
-			AuthorizationService.switchGroup(testUser, sodContextPer, sodGrandChildAct2, sodPer4, true);
+			AuthorizationService.authorize(testUser, sodRole2, sodChildAct2, sodPer5, true);
+			AuthorizationService.authorize(testUser, sodRole2, sodChildAct2, sodPer6, true);
+			AuthorizationService.authorize(testUser, sodContextPer, sodGrandChildAct2, sodPer4, true);
 
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
 

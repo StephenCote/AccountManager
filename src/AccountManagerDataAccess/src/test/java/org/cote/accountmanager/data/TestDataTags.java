@@ -57,7 +57,7 @@ public class TestDataTags extends BaseDataAccessTest {
 			DataTagType tag1 = Factories.getTagFactory().getByNameInGroup("xx", tagDir);
 			DataTagType tag2 = Factories.getTagFactory().getByNameInGroup("xx", tagDir);
 			DataTagType tag3 = Factories.getTagFactory().getByNameInGroup("xx", tagDir);
-			boolean canRead = AuthorizationService.canViewGroup(user, Factories.getGroupFactory().getGroupById(tag1.getGroupId(),user.getOrganizationId()));
+			boolean canRead = AuthorizationService.canView(user, Factories.getGroupFactory().getGroupById(tag1.getGroupId(),user.getOrganizationId()));
 			//List<DataParticipantType> tagParts = Factories.getTagParticipationFactory().getTagParticipations(new DataTagType[]{tag1,tag2}, ParticipantEnumType.DATA);
 			int count = Factories.getTagParticipationFactory().countTagParticipations(new DataTagType[]{tag1,tag2}, ParticipantEnumType.DATA);
 			List<DataType> dataList = Factories.getTagFactory().getDataForTags(new DataTagType[]{tag1,tag2}, 10,10,org.getId());
@@ -269,11 +269,11 @@ public class TestDataTags extends BaseDataAccessTest {
 		DataTagType tag1 = getTag(user1,"tag1");
 		DataTagType tag2 = getTag(user1,"tag2");
 		try {
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user1, tag1, data1, true));
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user1, tag1, data2, true));
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user2, tag1, data3, true));
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user1, tag2, data1, true));
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user2, tag2, data3, true));
+			assertTrue("Unable to tag data", AuthorizationService.switchParticipant(user1, tag1, data1, true));
+			assertTrue("Unable to tag data", AuthorizationService.switchParticipant(user1, tag1, data2, true));
+			assertTrue("Unable to tag data", AuthorizationService.switchParticipant(user2, tag1, data3, true));
+			assertTrue("Unable to tag data", AuthorizationService.switchParticipant(user1, tag2, data1, true));
+			assertTrue("Unable to tag data", AuthorizationService.switchParticipant(user2, tag2, data3, true));
 			
 			List<DataParticipantType> parts = Factories.getTagParticipationFactory().convertList(Factories.getTagParticipationFactory().getParticipations(new DataTagType[]{tag1}, ParticipantEnumType.DATA));
 			assertTrue("Unexpected count", parts.size() == 3);
@@ -298,7 +298,7 @@ public class TestDataTags extends BaseDataAccessTest {
 			logger.info("Data for parts = " + data_list.size());
 			assertTrue("Unexpected count", data_list.size() == 2);
 
-			assertTrue("Unable to tag data", AuthorizationService.switchData(user2, tag2, data3, false));
+			assertTrue("Unable to tag data", AuthorizationService.switchParticipant(user2, tag2, data3, false));
 			data_list = Factories.getTagFactory().getDataForTags(new DataTagType[]{tag1,tag2}, 0,0,Factories.getDevelopmentOrganization().getId());
 			logger.info("Data for parts = " + data_list.size());
 			assertTrue("Unexpected count", data_list.size() == 1);	

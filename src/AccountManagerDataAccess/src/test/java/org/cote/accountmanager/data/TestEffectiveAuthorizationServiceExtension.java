@@ -441,14 +441,14 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			
 			assertNotNull("Permission was null", permissionR);
 			
-			boolean authZ = AuthorizationService.authorize(testUser, policy, testUser2, permissionR, true);
-			boolean authZ2 = AuthorizationService.authorize(testUser, policy, perRole1, permissionE, true);
+			boolean authZ = AuthorizationService.authorize(testUser, testUser2, policy, permissionR, true);
+			boolean authZ2 = AuthorizationService.authorize(testUser, perRole1, policy, permissionE, true);
 			assertTrue("Failed to authorize", authZ);
 			
 			
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
 			EffectiveAuthorizationService.rebuildCache(NameEnumType.POLICY, testUser.getOrganizationId());
-			boolean isAuthZ = AuthorizationService.isAuthorized(policy, testUser, new BasePermissionType[]{permissionR});
+			boolean isAuthZ = AuthorizationService.isAuthorized(testUser, policy, new BasePermissionType[]{permissionR});
 			assertTrue("Failed to identify expected authorization", isAuthZ);
 
 			boolean canView = AuthorizationService.canView(testUser2, policy);
@@ -478,9 +478,9 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			
 			//assertTrue("Owner cannot change permission",AuthorizationService.isAuthorized(permission, admin, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(permission.getNameType(), permission.getOrganizationId())}));
 			setAuthZ = AuthorizationService.authorize(admin, object, setMember, AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId()), true);
-			isAuthZ = AuthorizationService.isAuthorized(object, checkMember, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
+			isAuthZ = AuthorizationService.isAuthorized(checkMember, object, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
 			deAuthZ = AuthorizationService.authorize(admin, object, setMember, AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId()), false);
-			notAuthZ = AuthorizationService.isAuthorized(object, checkMember, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
+			notAuthZ = AuthorizationService.isAuthorized(checkMember, object, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

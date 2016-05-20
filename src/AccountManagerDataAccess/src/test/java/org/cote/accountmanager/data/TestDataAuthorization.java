@@ -16,30 +16,13 @@ import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
 
 public class TestDataAuthorization extends BaseDataAccessTest {
 	
 	
-
-	private void switchPermissions(UserType owner, UserType user, DataType data, boolean enabled){
-		try {
-			AuthorizationService.switchData(owner, user, data, AuthorizationService.getViewDataPermission(owner.getOrganizationId()),enabled);
-			AuthorizationService.switchData(owner, user, data, AuthorizationService.getEditDataPermission(owner.getOrganizationId()),enabled);
-			AuthorizationService.switchData(owner, user, data, AuthorizationService.getCreateDataPermission(owner.getOrganizationId()),enabled);
-			AuthorizationService.switchData(owner, user, data, AuthorizationService.getDeleteDataPermission(owner.getOrganizationId()),enabled);
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
 	@Test
 	public void testEncryptedData(){
@@ -246,24 +229,24 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			
 			 /// Cleanup any leftover permission checks
 			
-			AuthorizationService.switchData(user2, user1, data3, AuthorizationService.getEditDataPermission(data3.getOrganizationId()), false);
+			AuthorizationService.authorize(user2, user1, data3, AuthorizationService.getEditPermissionForMapType(NameEnumType.DATA, data3.getOrganizationId()), false);
 			EffectiveAuthorizationService.rebuildUserRoleCache(Arrays.asList(new UserType[]{user1,user2}), user1.getOrganizationId());
 			logger.info("Check default permissions - only owner and data admin can change data in a given org");
-			assertTrue(AuthorizationService.canChangeData(user1, data1));
-			assertTrue(AuthorizationService.canChangeData(user2, data3));
-			assertFalse(AuthorizationService.canChangeData(user1, data3));
+			assertTrue(AuthorizationService.canChange(user1, data1));
+			assertTrue(AuthorizationService.canChange(user2, data3));
+			assertFalse(AuthorizationService.canChange(user1, data3));
 			logger.info("Give user #1 permission to change user #2's data");
-			AuthorizationService.switchData(user2, user1, data3, AuthorizationService.getEditDataPermission(data3.getOrganizationId()), true);
+			AuthorizationService.authorize(user2, user1, data3, AuthorizationService.getEditPermissionForMapType(NameEnumType.DATA, data3.getOrganizationId()), true);
 			//EffectiveAuthorizationService.rebuildUserRoleCache(Arrays.asList(new UserType[]{user1,user2}), user1.getOrganization());
 			//EffectiveAuthorizationService.rebuildDataRoleCache(data3);
 			EffectiveAuthorizationService.clearCache(data3);
-			assertTrue(AuthorizationService.canChangeData(user1, data3));
+			assertTrue(AuthorizationService.canChange(user1, data3));
 			logger.info("Remove user #1 permission to change user #2's data");
-			AuthorizationService.switchData(user2, user1, data3, AuthorizationService.getEditDataPermission(data3.getOrganizationId()), false);
+			AuthorizationService.authorize(user2, user1, data3, AuthorizationService.getEditPermissionForMapType(NameEnumType.DATA, data3.getOrganizationId()), false);
 			//EffectiveAuthorizationService.rebuildUserRoleCache(Arrays.asList(new UserType[]{user1,user2}), user1.getOrganization());
 			//EffectiveAuthorizationService.rebuildDataRoleCache(data3);
 			EffectiveAuthorizationService.clearCache(data3);
-			assertFalse("User #1 can still read User #2's data",AuthorizationService.canChangeData(user1, data3));
+			assertFalse("User #1 can still read User #2's data",AuthorizationService.canChange(user1, data3));
 		}
 		catch(FactoryException fe){
 			fe.printStackTrace();
