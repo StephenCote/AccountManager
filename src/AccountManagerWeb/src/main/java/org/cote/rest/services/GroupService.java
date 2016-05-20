@@ -131,7 +131,7 @@ public class GroupService {
 				return 0;
 			}
 			AuditService.targetAudit(audit, AuditEnumType.GROUP, group.getUrn());
-			if(!AuthorizationService.canViewGroup(user, group)){
+			if(!AuthorizationService.canView(user, group)){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is not authorized to view group " + group.getName() + " (#" + group.getId() + ")");
 				return 0;
 			}
@@ -394,7 +394,7 @@ public class GroupService {
 				return bean;
 			}
 	
-			if(!AuthorizationService.canViewGroup(user, dir)){
+			if(!AuthorizationService.canView(user, dir)){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
 				return bean;
 			}

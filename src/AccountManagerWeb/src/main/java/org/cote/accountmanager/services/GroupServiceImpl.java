@@ -39,6 +39,7 @@ import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.GroupService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountType;
@@ -143,9 +144,9 @@ public class GroupServiceImpl  {
 		try {
 			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			if(
-				AuthorizationService.canViewGroup(user, parentGroup)
+				AuthorizationService.canView(user, parentGroup)
 				||
-				AuthorizationService.isGroupReaderInMapOrganization(user, parentGroup)
+				RoleService.isFactoryReader(user,Factories.getGroupFactory(),parentGroup.getOrganizationId())
 			){
 				AuditService.permitResult(audit, "Access authorized to list groups");
 				out_obj = getList(type,parentGroup,startRecord,recordCount,parentGroup.getOrganizationId() );
@@ -297,11 +298,11 @@ public class GroupServiceImpl  {
 			if(
 				AuthorizationService.isMapOwner(user, targGroup)
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user,targGroup.getOrganizationId())
+				RoleService.isFactoryAdministrator(user, Factories.getAccountFactory())
 				||
-				AuthorizationService.canViewGroup(user, targGroup)
+				AuthorizationService.canView(user, targGroup)
 				||
-				(AuthorizationService.isGroupReaderInOrganization(user, targGroup.getOrganizationId()) && AuthorizationService.isAccountReaderInOrganization(user, targGroup.getOrganizationId()))
+				RoleService.isFactoryReader(user, Factories.getGroupFactory())
 			){
 				AuditService.permitResult(audit, "Access authorized to list groups in group");
 				switch(memberType){

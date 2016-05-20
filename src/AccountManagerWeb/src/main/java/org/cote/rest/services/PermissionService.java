@@ -233,6 +233,8 @@ public class PermissionService{
 				logger.error("Invalid organization");
 				return permissions;
 			}
+			logger.error("TODO: Revise per new permission setup");
+			/*
 			permissions.add(AuthorizationService.getCreateDataPermission(organizationId));
 			permissions.add(AuthorizationService.getCreateGroupPermission(organizationId));
 			permissions.add(AuthorizationService.getCreateRolePermission(organizationId));
@@ -245,7 +247,7 @@ public class PermissionService{
 			permissions.add(AuthorizationService.getViewDataPermission(organizationId));
 			permissions.add(AuthorizationService.getViewGroupPermission(organizationId));
 			permissions.add(AuthorizationService.getViewRolePermission(organizationId));
-			
+			*/
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -287,7 +287,7 @@ public class MediaUtil {
 				DirectoryGroupType thumbGroup = null;
 				synchronized(Factories.getGroupFactory()){
 					thumbGroup = Factories.getGroupFactory().getDirectoryByName(".thumbnail", group, org.getId());
-					if(thumbGroup == null && AuthorizationService.canChangeGroup(user, group)){
+					if(thumbGroup == null && AuthorizationService.canChange(user, group)){
 						thumbGroup = Factories.getGroupFactory().getCreateDirectory(user, ".thumbnail", group, org.getId());
 					}
 				}
@@ -298,7 +298,7 @@ public class MediaUtil {
 					return;	
 				}
 
-				if(AuthorizationService.canViewGroup(user, thumbGroup) == false){
+				if(AuthorizationService.canView(user, thumbGroup) == false){
 					AuditService.denyResult(audit, "User " + user.getName() + " is not authorized to view the thumbnail group in " + group.getName());
 					response.sendError(404);
 					return;	
@@ -319,7 +319,7 @@ public class MediaUtil {
 								response.sendError(404);
 								return;
 						 }
-						if(AuthorizationService.canViewData(user, chkData)){
+						if(AuthorizationService.canView(user, chkData)){
 							chkData = Factories.getDataFactory().getDataByName(objName, false, group);
 							if(chkData == null || chkData.getDataBytesStore() == null || chkData.getDataBytesStore().length == 0){
 								AuditService.denyResult(audit, "Data '" + objName + " was not retrieved in a populated state");
@@ -381,7 +381,7 @@ public class MediaUtil {
 					return;
 				}
 			}
-			if(data != null && AuthorizationService.canViewData(user, data) == true){
+			if(data != null && AuthorizationService.canView(user, data) == true){
 				can_view = true;
 			}
 		}

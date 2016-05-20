@@ -244,7 +244,7 @@ public class ArticleUtil {
 			
 			/// Finally, make sure the requesting user has read access to the directory
 			///
-			if(AuthorizationService.canViewGroup(user, dir) == false){
+			if(AuthorizationService.canView(user, dir) == false){
 				AuditService.denyResult(audit, "User " + user.getName() + " is not authorized to view '" + dir.getName() + ".  NOTE: This may stem from an authenticated user other than the owner not having explicit rights, where the anonymous case does through Document Control.  Need to make sure the directory has rights for both public users as well as document control.");
 				response.sendError(404);
 				return;

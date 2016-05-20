@@ -222,7 +222,7 @@ public class DataServiceImpl  {
 				return out_obj;
 			}
 			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
-			if(AuthorizationService.canViewGroup(user, dir) == true){
+			if(AuthorizationService.canView(user, dir) == true){
 				AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 				out_obj = getListByGroup(dir,instruction,detailsOnly,startRecord,recordCount);
 				//out_Lifecycles = Factories.getLifecycleFactory().getListByGroup(dir, 0, 0, user.getOrganization());

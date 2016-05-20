@@ -329,8 +329,10 @@ public class CryptoService{
 			 *    The authenticated user must be an account administrator
 			 *    Or the current credential must be supplied
 			 */
-			boolean accountAdmin = AuthorizationService.isAccountAdministratorInOrganization(user, user.getOrganizationId());
-			boolean dataAdmin = AuthorizationService.isDataAdministratorInOrganization(user, user.getOrganizationId());
+			/// TODO: Address the class name duplication 
+			///
+			boolean accountAdmin = org.cote.accountmanager.data.services.RoleService.isFactoryAdministrator(user,Factories.getAccountFactory());
+			boolean dataAdmin = org.cote.accountmanager.data.services.RoleService.isFactoryAdministrator(user, Factories.getDataFactory());
 			if(authReq.getSubjectType() == NameEnumType.USER){
 				UserType updateUser = Factories.getUserFactory().getUserByName(authReq.getSubject(), user.getOrganizationId());
 				if(updateUser == null){
@@ -372,7 +374,7 @@ public class CryptoService{
 				}
 				AuditService.targetAudit(audit, AuditEnumType.GROUP, updateGroup.getName() + " (#" + updateGroup.getId() + ")");
 				/// If not account admin, then validate the current password
-				if(dataAdmin == false && AuthorizationService.canChangeGroup(user, updateGroup) == false){
+				if(dataAdmin == false && AuthorizationService.canChange(user, updateGroup) == false){
 
 					CredentialType currentCred = CredentialService.getPrimaryCredential(updateGroup);
 					if(authReq.getCheckCredential() == null || authReq.getCheckCredential().length == 0){

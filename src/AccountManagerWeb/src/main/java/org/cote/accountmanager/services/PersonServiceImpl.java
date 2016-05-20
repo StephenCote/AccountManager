@@ -33,6 +33,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
@@ -80,7 +81,7 @@ public class PersonServiceImpl  {
 		UserType contUser = ServiceUtil.getUserFromSession(audit, request);
 		if(contUser == null) return null;
 		try{
-			if(user.getId().compareTo(contUser.getId()) != 0 && AuthorizationService.isAccountAdministratorInOrganization(contUser, user.getOrganizationId()) == false){
+			if(user.getId().compareTo(contUser.getId()) != 0 && RoleService.isFactoryAdministrator(contUser, Factories.getAccountFactory(),user.getOrganizationId()) == false){
 				AuditService.denyResult(audit, "Not authorized to read user");
 			}
 			else{
@@ -89,7 +90,7 @@ public class PersonServiceImpl  {
 					AuditService.denyResult(audit, "Global person does not exist for user");
 					return person;
 				}
-				if(AuthorizationService.isMapOwner(contUser, person) == false && AuthorizationService.canViewGroup(contUser, Factories.getGroupFactory().getGroupById(person.getGroupId(),person.getOrganizationId())) == false){
+				if(AuthorizationService.isMapOwner(contUser, person) == false && AuthorizationService.canView(contUser, Factories.getGroupFactory().getGroupById(person.getGroupId(),person.getOrganizationId())) == false){
 					AuditService.denyResult(audit, "Not authorized to read person");
 					person = null;
 				}

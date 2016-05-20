@@ -369,10 +369,10 @@ public class RoleServiceImpl  {
 			if(
 				AuthorizationService.isMapOwner(user, type)
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user,type.getOrganizationId())
+				RoleService.isFactoryAdministrator(user,Factories.getAccountFactory(),type.getOrganizationId())
 				||
 				//(AuthorizationService.isRoleReaderInOrganization(user, type.getOrganizationId()) && AuthorizationService.isAccountReaderInOrganization(user, type.getOrganizationId()))
-				AuthorizationService.isRoleReaderInOrganization(user, type.getOrganizationId())
+				RoleService.isFactoryReader(user,Factories.getRoleFactory(), type.getOrganizationId())
 			){
 				AuditService.permitResult(audit, "Access authorized to list roles");
 				switch(type.getNameType()){
@@ -426,9 +426,9 @@ public class RoleServiceImpl  {
 			if(
 				AuthorizationService.isMapOwner(user, targRole)
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user,targRole.getOrganizationId())
+				RoleService.isFactoryAdministrator(user,Factories.getAccountFactory(),targRole.getOrganizationId())
 				||
-				(AuthorizationService.isRoleReaderInOrganization(user, targRole.getOrganizationId()) && AuthorizationService.isAccountReaderInOrganization(user, targRole.getOrganizationId()))
+				(RoleService.isFactoryReader(user,Factories.getRoleFactory(), targRole.getOrganizationId()) && RoleService.isFactoryReader(user,Factories.getAccountFactory(),targRole.getOrganizationId()))
 			){
 				AuditService.permitResult(audit, "Access authorized to list groups in role");
 				switch(memberType){
@@ -500,9 +500,9 @@ public class RoleServiceImpl  {
 			if(
 				(memberType == FactoryEnumType.USER && user.getId() == ((UserType)obj).getId())
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user,obj.getOrganizationId())
+				RoleService.isFactoryAdministrator(user,Factories.getAccountFactory(),obj.getOrganizationId())
 				||
-				AuthorizationService.isRoleReaderInOrganization(user, obj.getOrganizationId())
+				RoleService.isFactoryReader(user,Factories.getRoleFactory(), obj.getOrganizationId())
 			){
 				AuditService.permitResult(audit, "Access authorized to list roles");
 				switch(memberType){
@@ -597,11 +597,11 @@ public class RoleServiceImpl  {
 		try {
 			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			if(
-				(parentRole != null && AuthorizationService.canViewRole(user, parentRole))
+				(parentRole != null && AuthorizationService.canView(user, parentRole))
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user,user.getOrganizationId())
+				RoleService.isFactoryAdministrator(user,Factories.getAccountFactory(),user.getOrganizationId())
 				||
-				AuthorizationService.isRoleReaderInMapOrganization(user, user)
+				RoleService.isFactoryReader(user,Factories.getRoleFactory())
 			){
 				AuditService.permitResult(audit, "Access authorized to list roles");
 				out_obj = getList(type,parentRole,startRecord,recordCount,user.getOrganizationId() );

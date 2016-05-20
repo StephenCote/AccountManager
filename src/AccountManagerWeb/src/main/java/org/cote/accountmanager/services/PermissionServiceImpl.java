@@ -162,7 +162,7 @@ public class PermissionServiceImpl  {
 		try {
 			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			if(
-				AuthorizationService.canChangePermission(user, parentPermission)
+				AuthorizationService.canChange(user, parentPermission)
 			){
 				AuditService.permitResult(audit, "Access authorized to list permissions");
 				out_obj = getList(type,parentPermission,startRecord,recordCount,parentPermission.getOrganizationId() );
@@ -219,29 +219,29 @@ public class PermissionServiceImpl  {
 				&&
 				BaseService.canChangeType(targType, user, targ)
 				&&
-				AuthorizationService.canChangePermission(user, perm)
+				AuthorizationService.canChange(user, perm)
 			){
 				boolean set = false;
 				if(srcType == AuditEnumType.GROUP && targType == AuditEnumType.ROLE){
 					logger.info("Setting permission for role on group");
-					set = AuthorizationService.setPermission(user,(BaseRoleType)targ,(BaseGroupType)src,perm,enable);
+					set = AuthorizationService.authorize(user,(BaseRoleType)targ,(BaseGroupType)src,perm,enable);
 					
 				}
 				else if(srcType == AuditEnumType.DATA && targType == AuditEnumType.ROLE){
 					logger.info("Setting permission for role on data");
-					set = AuthorizationService.setPermission(user,(BaseRoleType)targ,(DataType)src,perm,enable);
+					set = AuthorizationService.authorize(user,(BaseRoleType)targ,(DataType)src,perm,enable);
 				}
 				else if(srcType == AuditEnumType.GROUP){
 					logger.info("Setting permission for entity on group");
-					set = AuthorizationService.setPermission(user,targ,(BaseGroupType)src,perm,enable);
+					set = AuthorizationService.authorize(user,targ,(BaseGroupType)src,perm,enable);
 				}
 				else if(srcType == AuditEnumType.ROLE){
 					logger.info("Setting permission for entity on role");
-					set = AuthorizationService.setPermission(user,targ,(BaseRoleType)src,perm,enable);
+					set = AuthorizationService.authorize(user,targ,(BaseRoleType)src,perm,enable);
 				}
 				else if(srcType == AuditEnumType.DATA){
 					logger.info("Setting permission for entity on data");
-					set = AuthorizationService.setPermission(user,targ,(DataType)src,perm,enable);
+					set = AuthorizationService.authorize(user,targ,(DataType)src,perm,enable);
 				}
 				else{
 					AuditService.denyResult(audit, "Unhandled type combination");

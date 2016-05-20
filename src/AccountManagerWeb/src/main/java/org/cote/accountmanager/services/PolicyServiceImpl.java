@@ -36,6 +36,7 @@ import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.AuthorizationPolicyType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -124,10 +125,10 @@ public class PolicyServiceImpl  {
 			AuditService.sourceAudit(audit,AuditEnumType.USER,user.getName() + " (#" + user.getId() + ") in Org " + " (#" + user.getOrganizationId() + ")");
 			pol.setAuthenticated(user.getSessionStatus() == SessionStatusEnumType.AUTHENTICATED);
 			try{
-				pol.setAccountAdministrator(AuthorizationService.isAccountAdministratorInOrganization(user, user.getOrganizationId()));
-				pol.setDataAdministrator(AuthorizationService.isDataAdministratorInOrganization(user, user.getOrganizationId()));
-				pol.setAccountReader(AuthorizationService.isAccountReaderInOrganization(user, user.getOrganizationId()));
-				pol.setRoleReader(AuthorizationService.isRoleReaderInOrganization(user, user.getOrganizationId()));
+				pol.setAccountAdministrator(RoleService.isFactoryAdministrator(user, Factories.getAccountFactory()));
+				pol.setDataAdministrator(RoleService.isFactoryAdministrator(user, Factories.getDataFactory()));
+				pol.setAccountReader(RoleService.isFactoryReader(user, Factories.getAccountFactory()));
+				pol.setRoleReader(RoleService.isFactoryReader(user, Factories.getRoleFactory()));
 				pol.getRoles().addAll(EffectiveAuthorizationService.getEffectiveRolesForUser(user));
 				pol.setAuthenticationId(ServiceUtil.getSessionId(request));
 				pol.setFactoryType(FactoryEnumType.USER);
@@ -166,7 +167,7 @@ public class PolicyServiceImpl  {
 				return def;
 			}
 			AuditService.targetAudit(audit, AuditEnumType.POLICY, pol.getUrn());
-			if(AuthorizationService.canViewGroup(user, Factories.getGroupFactory().getGroupById(pol.getGroupId(),pol.getOrganizationId())) == false){
+			if(AuthorizationService.canView(user, Factories.getGroupFactory().getGroupById(pol.getGroupId(),pol.getOrganizationId())) == false){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + " (#" + pol.getGroupId() + ")");
 				return def;
 			}

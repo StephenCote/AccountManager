@@ -33,6 +33,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.UserType;
@@ -92,9 +93,9 @@ public class UserServiceImpl  {
 		try {
 			//AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			if(
-				AuthorizationService.isAccountAdministratorInOrganization(user, organizationId) == true
+				RoleService.isFactoryAdministrator(user, Factories.getAccountFactory()) == true
 				||
-				AuthorizationService.isAccountReaderInOrganization(user, organizationId) == true
+				RoleService.isFactoryReader(user, Factories.getAccountFactory()) == true
 			){
 				AuditService.permitResult(audit, "Access authorized to list users");
 				out_obj = getList(startRecord,recordCount,organizationId);
