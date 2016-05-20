@@ -44,6 +44,7 @@ import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.FactoryService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
@@ -810,17 +811,17 @@ public class BaseService{
 			case PATTERN:
 			case POLICY:
 			case RULE:
-				out_bool = AuthorizationService.canViewGroup(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canView(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case ROLE:
-				out_bool = AuthorizationService.canViewRole(user, (BaseRoleType)obj);
+				out_bool = AuthorizationService.canView(user, (BaseRoleType)obj);
 				break;
 			case PERMISSION:
-				out_bool = AuthorizationService.canViewPermission(user, (BasePermissionType)obj);
+				out_bool = AuthorizationService.canView(user, (BasePermissionType)obj);
 				break;
 
 			case DATA:
-				out_bool = AuthorizationService.canViewData(user, (DataType)obj);
+				out_bool = AuthorizationService.canView(user, (DataType)obj);
 				break;
 			case USER:
 				// allow for user requesting self
@@ -828,11 +829,11 @@ public class BaseService{
 				//
 				out_bool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
 				if(!out_bool)  out_bool = AuthorizationService.isMapOwner(user, obj);
-				if(!out_bool) out_bool = AuthorizationService.isAccountAdministratorInMapOrganization(user, (UserType)obj);
-				if(!out_bool) out_bool = AuthorizationService.isAccountReaderInMapOrganization(user, (UserType)obj);
+				if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
+				if(!out_bool) out_bool = RoleService.isFactoryReader(user, Factories.getAccountFactory(),obj.getOrganizationId());
 				break;
 			case GROUP:
-				out_bool = AuthorizationService.canViewGroup(user, (BaseGroupType)obj);
+				out_bool = AuthorizationService.canView(user, (BaseGroupType)obj);
 				break;
 		}
 		return out_bool;
@@ -852,37 +853,37 @@ public class BaseService{
 			case PATTERN:
 			case POLICY:
 			case RULE:
-				out_bool = AuthorizationService.canChangeGroup(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canChange(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case PERMISSION:
 				if(obj.getParentId() > 0L){
 					BasePermissionType parent = Factories.getPermissionFactory().getById(obj.getParentId(),obj.getOrganizationId());
-					out_bool = AuthorizationService.canChangePermission(user, parent);
+					out_bool = AuthorizationService.canChange(user, parent);
 				}
 				if(!out_bool){
-					out_bool = AuthorizationService.isAccountAdministratorInMapOrganization(user, obj);
+					out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
 				}
 				break;
 			case ROLE:
 
 				if(obj.getParentId() > 0L){
 					BaseRoleType parent = Factories.getRoleFactory().getById(obj.getParentId(),obj.getOrganizationId());
-					out_bool = AuthorizationService.canChangeRole(user, parent);
+					out_bool = AuthorizationService.canChange(user, parent);
 				}
 				if(!out_bool){
-					out_bool = AuthorizationService.isAccountAdministratorInMapOrganization(user, obj);
+					out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
 				}
 				break;
 			case DATA:
-				out_bool = AuthorizationService.canChangeGroup(user, Factories.getGroupFactory().getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canChange(user, Factories.getGroupFactory().getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case USER:
-				out_bool = AuthorizationService.isAccountAdministratorInMapOrganization(user, obj);
+				out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
 				break;
 			case GROUP:
 				if(obj.getParentId() > 0L){
 					BaseGroupType parent = Factories.getGroupFactory().getById(obj.getParentId(),obj.getOrganizationId());
-					out_bool = AuthorizationService.canCreateGroup(user, parent);
+					out_bool = AuthorizationService.canCreate(user, parent);
 				}
 				break;
 		}
@@ -904,13 +905,13 @@ public class BaseService{
 			case PATTERN:
 			case POLICY:
 			case RULE:
-				out_bool = AuthorizationService.canChangeGroup(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canChange(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case PERMISSION:
-				out_bool = AuthorizationService.canChangePermission(user, (BasePermissionType)obj);
+				out_bool = AuthorizationService.canChange(user, (BasePermissionType)obj);
 				break;
 			case ROLE:
-				out_bool = AuthorizationService.canChangeRole(user, (BaseRoleType)obj);
+				out_bool = AuthorizationService.canChange(user, (BaseRoleType)obj);
 	
 				break;
 			case DATA:
@@ -921,7 +922,7 @@ public class BaseService{
 				/// 2015/06/22 - Relaxing the direct data constraint for general group constraint
 				/// This is temporary to fix an issue where data can be pushed into groups a user doesn't own
 				/// 
-				out_bool = AuthorizationService.canChangeGroup(user, Factories.getGroupFactory().getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canChange(user, Factories.getGroupFactory().getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case USER:
 				// allow for user requesting self
@@ -929,7 +930,7 @@ public class BaseService{
 				//
 				out_bool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
 				if(!out_bool)  out_bool = AuthorizationService.isMapOwner(user, obj);
-				if(!out_bool) out_bool = AuthorizationService.isAccountAdministratorInMapOrganization(user, (UserType)obj);
+				if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
 				break;
 			case GROUP:
 				BaseGroupType edir = Factories.getGroupFactory().getById(obj.getId(), user.getOrganizationId());
@@ -943,12 +944,12 @@ public class BaseService{
 					logger.error("Specified Parent group (#" + ((BaseGroupType)obj).getParentId()+ ") doesn't exist in organization " + user.getOrganizationId());
 					return false;
 				}
-				if(opdir.getId() != pdir.getId() && !AuthorizationService.canCreateGroup(user, pdir)){
+				if(opdir.getId() != pdir.getId() && !AuthorizationService.canCreate(user, pdir)){
 					logger.error("User " + user.getName() + " (#" + user.getId() + ") is not authorized to create in group " + pdir.getName() + " (#" + pdir.getId() + ")");
 					return false;
 				}
 
-				out_bool = AuthorizationService.canChangeGroup(user, (BaseGroupType)obj);
+				out_bool = AuthorizationService.canChange(user, (BaseGroupType)obj);
 				break;
 		}
 		return out_bool;
@@ -969,20 +970,20 @@ public class BaseService{
 			case PATTERN:
 			case POLICY:
 			case RULE:
-				out_bool = AuthorizationService.canChangeGroup(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canChange(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case PERMISSION:
-				out_bool = AuthorizationService.canDeletePermission(user, (BasePermissionType)obj);
+				out_bool = AuthorizationService.canDelete(user, (BasePermissionType)obj);
 				break;
 			case ROLE:
-				out_bool = AuthorizationService.canDeleteRole(user, (BaseRoleType)obj);
+				out_bool = AuthorizationService.canDelete(user, (BaseRoleType)obj);
 				break;
 			case GROUP:
-				out_bool = AuthorizationService.canDeleteGroup(user,(BaseGroupType)obj);
+				out_bool = AuthorizationService.canDelete(user,(BaseGroupType)obj);
 				break;
 			case DATA:
-				out_bool = AuthorizationService.canDeleteData(user, (DataType)obj);
-				//if(out_bool) out_bool = AuthorizationService.canChangeGroup(user, ((DataType)obj).getGroupId());
+				out_bool = AuthorizationService.canDelete(user, (DataType)obj);
+				//if(out_bool) out_bool = AuthorizationService.canChange(user, ((DataType)obj).getGroupId());
 				break;
 			case USER:
 				// allow for user deleting self
@@ -991,7 +992,7 @@ public class BaseService{
 				out_bool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
 				if(out_bool) throw new FactoryException("Self deletion not supported via Web interface");
 				if(!out_bool)  out_bool = AuthorizationService.isMapOwner(user, obj);
-				if(!out_bool) out_bool = AuthorizationService.isAccountAdministratorInMapOrganization(user, (UserType)obj);
+				if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
 				break;				
 		}
 		return out_bool;
@@ -1003,18 +1004,12 @@ public class BaseService{
 		switch(type){
 			case DATA:
 				DataType data = (DataType)bucket;
-				AuthorizationService.switchData(adminUser, targetRole, data, AuthorizationService.getViewDataPermission(data.getOrganizationId()), view);
-				AuthorizationService.switchData(adminUser, targetRole, data, AuthorizationService.getEditDataPermission(data.getOrganizationId()), edit);
-				AuthorizationService.switchData(adminUser, targetRole, data, AuthorizationService.getDeleteDataPermission(data.getOrganizationId()), delete);
-				AuthorizationService.switchData(adminUser, targetRole, data, AuthorizationService.getCreateDataPermission(data.getOrganizationId()), create);
+				AuthorizationService.authorizeType(adminUser, targetRole, data, view, edit, delete, create);
 				out_bool = true;
 				break;
 			case GROUP:
 				BaseGroupType group = (BaseGroupType)bucket;
-				AuthorizationService.switchGroup(adminUser, targetRole, group, AuthorizationService.getViewGroupPermission(group.getOrganizationId()), view);
-				AuthorizationService.switchGroup(adminUser, targetRole, group, AuthorizationService.getEditGroupPermission(group.getOrganizationId()), edit);
-				AuthorizationService.switchGroup(adminUser, targetRole, group, AuthorizationService.getDeleteGroupPermission(group.getOrganizationId()), delete);
-				AuthorizationService.switchGroup(adminUser, targetRole, group, AuthorizationService.getCreateGroupPermission(group.getOrganizationId()), create);
+				AuthorizationService.authorizeType(adminUser, targetRole, group, view, edit, delete, create);
 				out_bool = true;
 				break;
 		}
@@ -1026,27 +1021,21 @@ public class BaseService{
 		boolean out_bool = false;
 		switch(type){
 			case DATA:
-				DataType Data = (DataType)bucket;
-				AuthorizationService.switchData(adminUser, targetUser, Data, AuthorizationService.getViewDataPermission(Data.getOrganizationId()), view);
-				AuthorizationService.switchData(adminUser, targetUser, Data, AuthorizationService.getEditDataPermission(Data.getOrganizationId()), edit);
-				AuthorizationService.switchData(adminUser, targetUser, Data, AuthorizationService.getDeleteDataPermission(Data.getOrganizationId()), delete);
-				AuthorizationService.switchData(adminUser, targetUser, Data, AuthorizationService.getCreateDataPermission(Data.getOrganizationId()), create);
+				DataType data = (DataType)bucket;
 				out_bool = true;
+				AuthorizationService.authorizeType(adminUser, targetUser, data, view, edit, delete, create);
+
 				break;
 			case ROLE:
 				BaseRoleType role = (BaseRoleType)bucket;
-				AuthorizationService.switchRole(adminUser, targetUser, role, AuthorizationService.getViewRolePermission(role.getOrganizationId()), view);
-				AuthorizationService.switchRole(adminUser, targetUser, role, AuthorizationService.getEditRolePermission(role.getOrganizationId()), edit);
-				AuthorizationService.switchRole(adminUser, targetUser, role, AuthorizationService.getDeleteRolePermission(role.getOrganizationId()), delete);
-				AuthorizationService.switchRole(adminUser, targetUser, role, AuthorizationService.getCreateRolePermission(role.getOrganizationId()), create);
+				AuthorizationService.authorizeType(adminUser, targetUser, role, view, edit, delete, create);
+
 				out_bool = true;
 				break;
 			case GROUP:
 				BaseGroupType group = (BaseGroupType)bucket;
-				AuthorizationService.switchGroup(adminUser, targetUser, group, AuthorizationService.getViewGroupPermission(group.getOrganizationId()), view);
-				AuthorizationService.switchGroup(adminUser, targetUser, group, AuthorizationService.getEditGroupPermission(group.getOrganizationId()), edit);
-				AuthorizationService.switchGroup(adminUser, targetUser, group, AuthorizationService.getDeleteGroupPermission(group.getOrganizationId()), delete);
-				AuthorizationService.switchGroup(adminUser, targetUser, group, AuthorizationService.getCreateGroupPermission(group.getOrganizationId()), create);
+				AuthorizationService.authorizeType(adminUser, targetUser, group, view, edit, delete, create);
+
 				out_bool = true;
 				break;
 		}
@@ -1585,15 +1574,15 @@ public class BaseService{
 		int out_count = 0;
 		try {
 			if(
-				AuthorizationService.isDataAdministratorInOrganization(user, organizationId)
+					RoleService.isFactoryAdministrator(user, Factories.getDataFactory(),organizationId)
 				||
-				AuthorizationService.isAccountAdministratorInOrganization(user, organizationId)
+				RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),organizationId)
 				||
-				((type == AuditEnumType.USER || type == AuditEnumType.ACCOUNT) &&  AuthorizationService.isAccountReaderInOrganization(user, organizationId))
+				((type == AuditEnumType.USER || type == AuditEnumType.ACCOUNT) &&  RoleService.isFactoryReader(user, Factories.getAccountFactory(),organizationId))
 				||
-				(type == AuditEnumType.ROLE &&  AuthorizationService.isRoleReaderInOrganization(user, organizationId))
+				(type == AuditEnumType.ROLE && RoleService.isFactoryReader(user, Factories.getRoleFactory(),organizationId))
 				||
-				(type == AuditEnumType.GROUP && AuthorizationService.isGroupReaderInOrganization(user, organizationId))
+				(type == AuditEnumType.GROUP && RoleService.isFactoryReader(user, Factories.getGroupFactory(),organizationId))
 				
 			){
 				out_count = count(type, organizationId);
@@ -1700,7 +1689,7 @@ public class BaseService{
 				return out_obj;
 			}
 			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
-			if(AuthorizationService.canViewGroup(user, dir) == true){
+			if(AuthorizationService.canView(user, dir) == true){
 				AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 				out_obj = getListByGroup(type,dir,startRecord,recordCount);
 				/*
@@ -1742,7 +1731,7 @@ public class BaseService{
 				AuditService.denyResult(audit, "Invalid path: " + groupType.toString() + " " + path);
 				return bean;
 			}
-			if(AuthorizationService.canViewGroup(user, dir) == false){
+			if(AuthorizationService.canView(user, dir) == false){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
 				return bean;
 			}
