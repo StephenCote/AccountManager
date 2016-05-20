@@ -302,7 +302,15 @@ public class EffectiveAuthorizationService {
 
 	
 	public static void clearCache(){
-		logger.debug("Clear Authorization Cache");
+		logger.debug("Clearing Authorization Cache");
+		for(NameEnumType key : objectMap.keySet()){
+			//for(NameEnumType subKey : objectMap.get(key).keySet()){
+			for(AuthorizationMapType aMap : objectMap.get(key).values()){
+				aMap.getMap().clear();
+			}
+			return;
+		}
+		logger.debug("OLD OLD OLD Clear Authorization Cache");
 		accountRoleMap.clear();
 		accountRolePerMap.clear();
 		accountGroupMap.clear();
@@ -330,7 +338,7 @@ public class EffectiveAuthorizationService {
 		
 		if(objectMap.containsKey(object.getNameType())){
 			for(AuthorizationMapType aMap : objectMap.get(object.getNameType()).values()){
-				logger.debug("Clearing " + object.getNameType() + "<->" + aMap.getActor().toString() + " cache for object " + object.getUrn());
+				// logger.debug("Clearing " + object.getNameType() + "<->" + aMap.getActor().toString() + " cache for object " + object.getUrn());
 				clearPerCache(aMap.getMap(),object);
 				rebuildMap.get(object.getNameType()).getMap().remove(object.getId());
 			}
@@ -511,9 +519,15 @@ public class EffectiveAuthorizationService {
 	}
 
 	private static Map<Long,Map<Long,Map<Long,Boolean>>> getActorMap(NameEnumType actorType, NameEnumType objectType){
-		Map<Long,Map<Long,Map<Long,Boolean>>> map = null;
-		if(actorMap.containsKey(actorType) && actorMap.get(actorType).containsKey(objectType)) map = actorMap.get(actorType).get(objectType);
-		return map;
+		//Map<Long,Map<Long,Map<Long,Boolean>>> map = null;
+		if(objectMap.containsKey(objectType) && objectMap.get(objectType).containsKey(actorType)){
+			return objectMap.get(objectType).get(actorType).getMap();
+		}
+		if(actorMap.containsKey(actorType) && actorMap.get(actorType).containsKey(objectType)){
+			logger.info("OLD OLD getActorMap for " + actorType + " " + objectType);
+			return actorMap.get(actorType).get(objectType);
+		}
+		return null;
 	}
 	
 	protected static AuthorizationMapType getAuthorizationMap(NameEnumType objectType, NameEnumType actorType){
@@ -543,6 +557,7 @@ public class EffectiveAuthorizationService {
 			for(int p = 0; p < permissions.length;p++){
 				if(pmap.containsKey(permissions[p].getId())){
 					out_bool = pmap.get(permissions[p].getId());
+					//logger.debug("*** Per Cache Value == " + out_bool);
 					/// only break on a positive
 					/// this is setup to work as an OR case when fed a list of permissions
 					///
@@ -564,6 +579,7 @@ public class EffectiveAuthorizationService {
 			Map<Long,Boolean> pmap = map.get(actor.getId()).get(obj.getId());
 			for(int p = 0; p < permissions.length;p++){
 				if(pmap.containsKey(permissions[p].getId())){
+					//logger.debug("*** hasPerCache " + actor.getId() + " " + obj.getId() + " " + pmap.get(permissions[p].getId()));
 					out_bool = true;
 					//out_bool = pmap.get(permissions[p].getId());
 					break;
@@ -656,8 +672,10 @@ public class EffectiveAuthorizationService {
 		boolean cache = (isMemberCacheable(member) && isObjectCacheable(object));
 		String entChkStr = getEntitlementCheckString(object,member,permissions);
 		if(cache && hasPerCache(member, object, permissions)){
-			logger.debug("*** CACHED AUTHORIZATION: " + entChkStr);
-			return getPerCacheValue(getActorMap(member.getNameType(),object.getNameType()), member, object, permissions);
+			
+			boolean cachedAuth = getPerCacheValue(getActorMap(member.getNameType(),object.getNameType()), member, object, permissions);
+			logger.debug("*** CACHED AUTHORIZATION: " + entChkStr + " == " + cachedAuth);
+			return cachedAuth;
 		}
 		
 		List<EntitlementType> ents = getEffectiveMemberEntitlements(object, member, permissions,false);
@@ -685,14 +703,14 @@ public class EffectiveAuthorizationService {
 				//if(ents.size() > 0) break;
 			}
 		}
-		logger.info("*** AUTHORIZING: " + entChkStr);
+		//logger.info("*** AUTHORIZING: " + entChkStr);
 		/*
 		for(int i = 0; i < ents.size();i++){
 			logger.debug("*** AUTHORIZATION RELEVANCE: " + ents.get(i).getEntitlementType().toString() + " " + ents.get(i).getEntitlementId() + " to " + ents.get(i).getMemberType().toString() + " " + ents.get(i).getMemberId() + " for " + ents.get(i).getObjectType() + " " + ents.get(i).getObjectId());
 		}
 		*/
 		if(cache){
-			logger.debug("*** CACHING AUTHORIZATION: " + entChkStr);
+			//logger.debug("*** CACHING AUTHORIZATION: " + entChkStr);
 			addToPerCache(member,object,permissions,out_bool);
 		}
 		return out_bool;
@@ -720,7 +738,8 @@ public class EffectiveAuthorizationService {
 		for(int i = 0; i < permissions.length;i++){
 			//if(i > 0) buff.append(",");
 			//buff.append(permissions[i].getId());
-			permissionIds[i] = permissions[i].getId();
+			if(permissions[i]==null)permissionIds[i] = 0L;
+			else permissionIds[i] = permissions[i].getId();
 		}
 		return getEffectiveMemberEntitlements(object,member,permissionIds,exclusion);
 	}
@@ -776,13 +795,13 @@ public class EffectiveAuthorizationService {
 		
 		//logger.info(sqlQuery);
 		StringBuffer buff = new StringBuffer();
-		logger.info((exclusion ? "NOT " : "") + "Object: " + object.getId() + " / " + object.getUrn());
-		logger.info("Member: " + (member == null ? "null" : member.getId() + " / " + member.getUrn()));
+		//logger.info((exclusion ? "NOT " : "") + "Object: " + object.getId() + " / " + object.getUrn());
+		//logger.info("Member: " + (member == null ? "null" : member.getId() + " / " + member.getUrn()));
 		for(int i = 0; i < permissionIds.length;i++){
 			if(i > 0) buff.append(", ");
 			buff.append(Long.toString(permissionIds[i]));
 		}
-		logger.info("permissions: " + buff.toString());
+		//logger.info("permissions: " + buff.toString());
 		/*
 		 * PARAM ORDER
 		 
@@ -843,7 +862,6 @@ public class EffectiveAuthorizationService {
 			
 			ResultSet rset = statement.executeQuery();
 			while(rset.next()){
-				//long match_id = rset.getLong(1);
 				EntitlementType ent = new EntitlementType();
 				ent.setObjectId(objectId);
 				ent.setObjectType(objectType);
@@ -853,22 +871,21 @@ public class EffectiveAuthorizationService {
 				ent.setEntitlementType(AffectEnumType.valueOf(rset.getString(3)));
 				ent.setOrganizationId(object.getOrganizationId());
 				out_ents.add(ent);
-				//out_bool = true;
-				//logger.debug("Matched " + referenceType + " " + referenceId + " having at least one permission for " + object.getNameType() + " " + objectId);
 			}
+			/*
 			if(out_ents.size() > 0){
 				logger.debug("Matched " + referenceType + " " + referenceId + " having at least one permission for " + object.getNameType() + " " + objectId);
 			}
 			else{
 				logger.debug("Did not match " + referenceType + " " + referenceId + " having at least one permission for " + object.getNameType() + " " + objectId);
 			}
-			
+			*/
 			rset.close();
 			statement.close();
 			long stop_query = System.currentTimeMillis();
 			long diff = (stop_query - start_query);
 			//if(diff > 50L) 
-			logger.warn("*** QUERY TIME: " + (stop_query - start_query) + "ms");
+			logger.debug("*** QUERY TIME: " + (stop_query - start_query) + "ms");
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
@@ -1213,6 +1230,7 @@ public class EffectiveAuthorizationService {
 	private static boolean getIsActorInEffectiveRole(BaseRoleType role, NameIdType actor, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
 		{
 		if(affect_type != AffectEnumType.UNKNOWN) throw new ArgumentException("AffectType is not supported for checking role participation (at the moment)");
+		//logger.debug(getEffectiveMemberEntitlements(role, actor, new BasePermissionType[]{permission}, true));
 		if(hasCache(actor,role)){
 			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking role " + role.getId() + " in org " + role.getOrganizationId());
 			return getCacheValue(actor,role);
@@ -1242,7 +1260,7 @@ public class EffectiveAuthorizationService {
 					+ " inner join personparticipation PU2 on ARC.accountid = PU2.participantid AND PU2.participanttype = 'ACCOUNT' AND PU2.participationid = " + token + " AND ARC.effectiveroleid = " + token + " AND ARC.organizationid = " + token;
 			}
 			PreparedStatement stat = conn.prepareStatement(sql);
-			// logger.debug(sql);
+			logger.debug(sql);
 
 			stat.setLong(1, actor.getId());
 			stat.setLong(2,role.getId());
