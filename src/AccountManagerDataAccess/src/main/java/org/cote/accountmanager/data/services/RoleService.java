@@ -61,28 +61,35 @@ public class RoleService {
 	public static final String ROLE_ROLE_READERS = "RoleReaders";
 	public static final String ROLE_GROUP_READERS = "GroupReaders";
 	
-	private static boolean isFactoryRoleMember(NameIdType actor, String roleName) throws ArgumentException, FactoryException{
+	private static boolean isFactoryRoleMember(NameIdType actor, String roleName, long organizationId) throws ArgumentException, FactoryException{
 		if(!isMemberActor(actor)){
-			logger.debug("Actor is null or not a valid member");
+			logger.debug("Actor " + (actor == null ? " is null" : actor.getNameType() + " is not a valid member"));
 			return false;
 		}
 		if(roleName == null){
 			logger.warn("Factory role is null");
 			return false;
 		}
-		
-		BaseRoleType role = Factories.getRoleFactory().getRoleByName(roleName, null, RoleEnumType.valueOf(actor.getNameType().toString()),actor.getOrganizationId());
+
+		BaseRoleType role = Factories.getRoleFactory().getRoleByName(roleName, null, RoleEnumType.valueOf(actor.getNameType().toString()),organizationId);
 		if(role == null){
 			logger.warn("Role '" + roleName + "' does not exist for type " + actor.getNameType());
 			return false;
 		}
 		return getIsMemberInEffectiveRole(actor,role);
 	}
+	public static boolean isFactoryAdministrator(NameIdType actor, NameIdFactory factory, long organizationId) throws ArgumentException, FactoryException{
+		return isFactoryRoleMember(actor,factory.getSystemRoleNameAdministrator(),organizationId);
+	}
+	public static boolean isFactoryReader(NameIdType actor, NameIdFactory factory, long organizationId) throws ArgumentException, FactoryException{
+		return isFactoryRoleMember(actor,factory.getSystemRoleNameReader(),organizationId);
+	}
+
 	public static boolean isFactoryAdministrator(NameIdType actor, NameIdFactory factory) throws ArgumentException, FactoryException{
-		return isFactoryRoleMember(actor,factory.getSystemRoleNameAdministrator());
+		return isFactoryRoleMember(actor,factory.getSystemRoleNameAdministrator(),actor.getOrganizationId());
 	}
 	public static boolean isFactoryReader(NameIdType actor, NameIdFactory factory) throws ArgumentException, FactoryException{
-		return isFactoryRoleMember(actor,factory.getSystemRoleNameReader());
+		return isFactoryRoleMember(actor,factory.getSystemRoleNameReader(),actor.getOrganizationId());
 	}
 
 	
@@ -240,7 +247,8 @@ public class RoleService {
 			GroupParticipantType ap = Factories.getRoleParticipationFactory().newGroupRoleParticipation(role, account);
 			if (Factories.getRoleParticipationFactory().addParticipant(ap))
 			{
-				EffectiveAuthorizationService.pendGroupUpdate(account);
+				// EffectiveAuthorizationService.pendRoleUpdate(role);
+				EffectiveAuthorizationService.pendUpdate(account);
 				return true;
 			}
 		}
@@ -250,7 +258,8 @@ public class RoleService {
 	{
 		if (Factories.getRoleParticipationFactory().deleteGroupRoleParticipants(role, group))
 		{
-			EffectiveAuthorizationService.pendGroupUpdate(group);
+			// EffectiveAuthorizationService.pendRoleUpdate(role);
+			EffectiveAuthorizationService.pendUpdate(group);
 			return true;
 		}
 		return false;
