@@ -32,7 +32,7 @@ public abstract class ThreadService implements Runnable {
 	private Thread svcThread = null;
 	
 	public ThreadService(){
-		svcThread = new Thread();
+		svcThread = new Thread(this);
 		svcThread.setPriority(Thread.MIN_PRIORITY);
 		svcThread.start();
 	}
