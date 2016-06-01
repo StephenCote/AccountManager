@@ -3,14 +3,26 @@ package org.cote.accountmanager.util;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.security.Security;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.PolicyType;
+import org.cote.accountmanager.util.SimpleGeography.CountryType;
+import org.cote.accountmanager.util.SimpleGeography.RegionType;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class TestJSON {
 	public static final Logger logger = Logger.getLogger(TestJSON.class.getName());
@@ -37,6 +49,21 @@ public class TestJSON {
 			+ "]"
 			+ "}"
 		;
+	}
+	
+	@Test
+	public void testImportMap(){
+		//String fileStr = FileUtil.getFileAsString("/Users/Steve/Projects/workspace/Location/src/main/webapp/geo/countries.json");
+		String fileStr2 = FileUtil.getFileAsString("/Users/Steve/Projects/workspace/Location/src/main/webapp/geo/US.json");
+		Map<String,CountryType> countries = SimpleGeography.getCountries("/Users/Steve/Projects/workspace/Location/src/main/webapp/geo/countries.json");
+		SimpleGeography.populateCountry(countries, "US","/Users/Steve/Projects/workspace/Location/src/main/webapp/geo/US.json");
+		SimpleGeography.populateCountry(countries, "MX","/Users/Steve/Projects/workspace/Location/src/main/webapp/geo/MX.json");
+		SimpleGeography.populateCountry(countries, "CA","/Users/Steve/Projects/workspace/Location/src/main/webapp/geo/CA.json");
+		CountryType us = countries.get("US");
+		assertNotNull(us);
+		RegionType[] regions = us.getRegions().get("98275");
+		assertTrue(regions.length > 0);
+		logger.info(JSONUtil.exportObject(regions[0]));
 	}
 	
 	@Test
