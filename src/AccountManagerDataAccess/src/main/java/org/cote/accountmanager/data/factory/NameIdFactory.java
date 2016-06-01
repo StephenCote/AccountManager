@@ -73,7 +73,12 @@ public abstract class NameIdFactory extends FactoryBase {
 	protected boolean hasObjectId = false;
 	protected boolean hasUrn = false;
 	
-	protected boolean aggressiveKeyFlush = true;
+	/// 2016/05/31 - Switching the default of aggressive flush to 'false' until the reproduction is identified again
+	/// The cleanup routine wasn't actually doing anything for all the time it wasted.
+	/// If enabled, the performance hit is drastic on large collections.
+	///
+
+	protected boolean aggressiveKeyFlush = false;
 	protected boolean useThreadSafeCollections = true;
 	
 	protected boolean hasAuthorization = false;
@@ -203,7 +208,7 @@ public abstract class NameIdFactory extends FactoryBase {
 		}
 		if(hasParentId && map.getParentId() < 0L){
 			tmpId = BulkFactories.getBulkFactory().getMappedId(map.getParentId());
-			logger.debug("Map parentId " + map.getParentId() + " to " + tmpId);
+			//logger.debug("Map parentId " + map.getParentId() + " to " + tmpId);
 			if(tmpId > 0L) map.setParentId(tmpId);
 		}
 	}
@@ -747,7 +752,9 @@ public abstract class NameIdFactory extends FactoryBase {
 			/// so this can greatly slow down large operations.
 			///
 			/// 2015/01/13 - Why not just make a list of keys per object id and not loop through the whole array?
-			
+			/// 2016/05/31 - The actual use of the keyName isn't specified after finding it, so this whole section, for aggressive as it is, is a waste
+			///	The original issue persists, but the cleanup operation isn't right.  Switching the default to 'false' until the reproduction is identified again
+			///
 			if(aggressiveKeyFlush == true){
 				//Iterator<String> keys = typeNameMap.keySet().iterator();
 				
@@ -759,6 +766,7 @@ public abstract class NameIdFactory extends FactoryBase {
 					Integer index = entry.getValue();
 					
 					if((objC = typeMap.get(index)) != null && objC.getId() == obj.getId()){
+						typeNameMap.remove(key);
 						key_name = key;
 						break;
 					}
