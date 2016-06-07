@@ -63,6 +63,7 @@ public abstract class FactoryBase {
 	private DBFactory.CONNECTION_TYPE connectionType = DBFactory.CONNECTION_TYPE.UNKNOWN;
 	protected List<String> tableNames = null;
 	protected boolean scopeToOrganization = true;
+	protected boolean canJoinToAttribute = false;
 	///protected boolean spoolAdd = false;
 	private boolean initialized = false;
 	private int addCounter = 0;
@@ -172,10 +173,14 @@ public abstract class FactoryBase {
 		return scopeToOrganization;
 	}
 	protected String getSelectIdTemplate(DataTable table, ProcessingInstructionType instruction){
-		return table.getSelectIdTemplate();
+		return table.getSelectIdTemplate() + (instruction != null && instruction.getJoinAttribute() ? " INNER JOIN Attribute AT on AT.referenceId = id AND AT.referenceType = '" + this.factoryType.toString() + "'" : "");
 	}
 	protected String getSelectTemplate(DataTable table, ProcessingInstructionType instruction){
-		return table.getSelectFullTemplate();
+		//logger.info("**** getSelectTemplate **** " + table.getSelectFullTemplate() + (instruction != null ? instruction.getJoinAttribute() : "Null" ));
+		//logger.info("**** getSelectTemplate **** " + table.getSelectFullTemplate() + (instruction != null && instruction.getJoinAttribute() ? " INNER JOIN Attribute AT on AT.referenceId = id AND AT.referenceType = '" + this.factoryType.toString() + "'" : ""));
+		if(instruction != null && instruction.getJoinAttribute()) return table.getSelectFullAttributeTemplate();
+		else return table.getSelectFullTemplate();
+		//return table.getSelectFullTemplate() + (instruction != null && instruction.getJoinAttribute() ? " INNER JOIN Attribute AT on AT.referenceId = id AND AT.referenceType = '" + this.factoryType.toString() + "'" : "");
 	}
 	public void initialize(Connection connection) throws FactoryException{
 		dataTableMap.clear();
@@ -189,6 +194,7 @@ public abstract class FactoryBase {
 		
 		for(int i = 0; i < len; i++){
 			String tableName = tableNames.get(i);
+			
 			DataTable table = null;
 			try{
 				table = DBFactory.getDataTable(connection, tableName);
@@ -200,6 +206,8 @@ public abstract class FactoryBase {
 			if(error){
 				break;
 			}
+			String alias = tableName.substring(0, 1);
+			String tableAlias = tableName + " " + alias;
 			configureTableRestrictions(table);
 			dataTableMap.put(tableName, i);
 			dataTables.add(table);
@@ -208,35 +216,33 @@ public abstract class FactoryBase {
 			/// this should be a callout to a decorator here
 
 			StringBuffer buff = new StringBuffer();
-			//StringBuffer ubuff = new StringBuffer();
+			
+			StringBuffer aliasBuff = new StringBuffer();
 
 			String lock_hint = DBFactory.getNoLockHint(connectionType);
-			String token = DBFactory.getParamToken(connectionType);
 
 			buff.append("SELECT #TOP# ");
-			//ubuff.append("UPDATE " + tableName + " SET ");
-			int ucount = 0;
+			aliasBuff.append("SELECT #TOP# ");
 			int scount = 0;
 			for (int c = 0; c < table.getColumnSize(); c++)
 			{
 				DataColumnType column = table.getColumns().get(c);
 				if (table.getCanSelectColumn(column.getColumnName()))
 				{
-					if (scount > 0) buff.append(",");
+					if (scount > 0){
+						buff.append(",");
+						aliasBuff.append(",");
+					}
 					buff.append(column.getColumnName());
+					aliasBuff.append(alias + "." + column.getColumnName());
 					scount++;
 				}
-				/*
-				if (table.getCanUpdateColumn(column.getColumnName()))
-				{
-					if (ucount > 0) ubuff.append(",");
-					ubuff.append(column.getColumnName() + " = " + token + column.getColumnName());
-					ucount++;
-				}
-				*/
 			}
+
+			String attributeClause = " INNER JOIN Attribute ATR on ATR.referenceId = " + alias + ".id AND ATR.referenceType = '" + factoryType.toString() + "'";
 			String table_clause = " FROM " + tableName + lock_hint;
 			table.setSelectFullTemplate(buff.toString() + " #PAGE# " + table_clause);
+			table.setSelectFullAttributeTemplate(aliasBuff.toString() + " #PAGE# FROM " + tableName + " " + alias + " " + lock_hint + attributeClause);
 			table.setSelectIdTemplate("SELECT id" + table_clause);
 			table.setSelectAggregateTemplate("SELECT %AGGREGATE%" + table_clause);
 			table.setSelectNameTemplate("SELECT name" + table_clause);
@@ -444,59 +450,71 @@ public abstract class FactoryBase {
 	/// TODO: IS NULL not yet handled
 	///
 
-	public static String getQueryClause(QueryField[] fields, String paramToken){
-		return getQueryClause(fields, "AND", paramToken);
+	public static String getQueryClause(ProcessingInstructionType instruction, QueryField[] fields, String paramToken){
+		return getQueryClause(instruction, fields, "AND", paramToken);
 	}
-	public static String getQueryClause(QueryField[] fields, String joinType, String paramToken)
+	public static String getQueryClause(ProcessingInstructionType instruction, QueryField[] fields, String joinType, String paramToken)
 	{
 		StringBuffer match_buff = new StringBuffer();
 		int len = fields.length;
+		String alias = "";
+		boolean haveAlias = false;
+		if(instruction != null && instruction.getJoinAttribute()){
+			haveAlias = true;
+			alias = instruction.getTableAlias() + ".";
+		}
 		for (int i = 0; i < len; i++)
 		{
 			if(fields[i] == null) continue;
+			
+			String fieldName = fields[i].getName();
+			ComparatorEnumType fieldComp = fields[i].getComparator();
+			if(haveAlias && fieldName.indexOf(".") == -1){
+				fieldName = alias + fieldName;
+			}
 			///logger.info(i + ": " + fields[i].getName() + " " + fields[i].getComparator());
 			if (i > 0) match_buff.append(" " + joinType + " ");
-			if(fields[i].getComparator() == ComparatorEnumType.GROUP_AND || fields[i].getComparator() == ComparatorEnumType.GROUP_OR){
-				String useType = (fields[i].getComparator() == ComparatorEnumType.GROUP_AND ? "AND" : "OR");
+			if(fieldComp == ComparatorEnumType.GROUP_AND || fieldComp == ComparatorEnumType.GROUP_OR){
+				String useType = (fieldComp == ComparatorEnumType.GROUP_AND ? "AND" : "OR");
 				
 				if(fields[i].getFields().size() > 0){
-					match_buff.append("(" + getQueryClause(fields[i].getFields().toArray(new QueryField[0]),useType,paramToken) + ")");
+					match_buff.append("(" + getQueryClause(instruction, fields[i].getFields().toArray(new QueryField[0]),useType,paramToken) + ")");
 				}
 			}
-			else if (fields[i].getComparator() == ComparatorEnumType.EQUALS)
+			else if (fieldComp == ComparatorEnumType.EQUALS)
 			{
-				match_buff.append(fields[i].getName() + " = " + paramToken);
+				match_buff.append(fieldName + " = " + paramToken);
 			}
-			else if (fields[i].getComparator() == ComparatorEnumType.NOT_EQUALS)
+			else if (fieldComp == ComparatorEnumType.NOT_EQUALS)
 			{
-				match_buff.append("NOT " + fields[i].getName() + " = " + paramToken);
+				match_buff.append("NOT " + fieldName + " = " + paramToken);
 			}
-			else if (fields[i].getComparator() == ComparatorEnumType.LIKE)
+			else if (fieldComp == ComparatorEnumType.LIKE)
 			{
 				// TODO: This is a SQL Injection Point -- need to fix or be sure to restrict
 				// At the moment, assuming it's a string value
 				//
 				//match_buff.append(fields[i].getName() + " LIKE '" + fields[i].getValue() + "'");
-				match_buff.append(fields[i].getName() + " LIKE " + paramToken);
+				match_buff.append(fieldName + " LIKE " + paramToken);
 				continue;
 			}
-			else if (fields[i].getComparator() == ComparatorEnumType.IN || fields[i].getComparator() == ComparatorEnumType.NOT_IN)
+			else if (fieldComp == ComparatorEnumType.IN || fieldComp == ComparatorEnumType.NOT_IN)
 			{
 				// TODO: This is a SQL Injection Point -- need to fix or be sure to restrict
 				// At the moment, assuming it's a string value
 				//
 				//match_buff.Append(Fields[i].Name + " IN (" + GetQueryParam(Fields[i].Name) + ")");
-				String not_str = (fields[i].getComparator() == ComparatorEnumType.NOT_IN ? " NOT " : "");
-				match_buff.append(fields[i].getName() + " " + not_str + "IN (" + (String)fields[i].getValue() + ")");
+				String not_str = (fieldComp == ComparatorEnumType.NOT_IN ? " NOT " : "");
+				match_buff.append(fieldName + " " + not_str + "IN (" + (String)fields[i].getValue() + ")");
 				continue;
 			}
-			else if (fields[i].getComparator() == ComparatorEnumType.GREATER_THAN || fields[i].getComparator() == ComparatorEnumType.GREATER_THAN_OR_EQUALS)
+			else if (fieldComp == ComparatorEnumType.GREATER_THAN || fieldComp == ComparatorEnumType.GREATER_THAN_OR_EQUALS)
 			{
-				match_buff.append(fields[i].getName() + " >" + (fields[i].getComparator() == ComparatorEnumType.GREATER_THAN_OR_EQUALS ? "=" : "") + " " + paramToken);
+				match_buff.append(fieldName + " >" + (fieldComp == ComparatorEnumType.GREATER_THAN_OR_EQUALS ? "=" : "") + " " + paramToken);
 			}
-			else if (fields[i].getComparator() == ComparatorEnumType.LESS_THAN || fields[i].getComparator() == ComparatorEnumType.LESS_THAN_OR_EQUALS)
+			else if (fieldComp == ComparatorEnumType.LESS_THAN || fieldComp == ComparatorEnumType.LESS_THAN_OR_EQUALS)
 			{
-				match_buff.append(fields[i].getName() + " <" + (fields[i].getComparator() == ComparatorEnumType.LESS_THAN_OR_EQUALS ? "=" : "") + " " + paramToken);
+				match_buff.append(fieldName + " <" + (fieldComp == ComparatorEnumType.LESS_THAN_OR_EQUALS ? "=" : "") + " " + paramToken);
 			}
 			else{
 				logger.error("Unhandled Comparator: " + fields[i].getComparator());
@@ -538,17 +556,23 @@ public abstract class FactoryBase {
 		return outList;
 	}  
 	protected String assembleQueryString(String selectString, QueryField[] fields, CONNECTION_TYPE connectionType, ProcessingInstructionType instruction, long organization_id){
+		String tableAlias = "";
+		if(instruction != null && instruction.getJoinAttribute()){
+			instruction.setTableAlias(getDataTables().get(0).getName().substring(0, 1));
+			tableAlias = instruction.getTableAlias() + ".";
+		}
+		
 		String pagePrefix = DBFactory.getPaginationPrefix(instruction, connectionType);
 		String pageSuffix = DBFactory.getPaginationSuffix(instruction, connectionType);
 		String pageField = DBFactory.getPaginationField(instruction, connectionType);
 		String paramToken = DBFactory.getParamToken(connectionType);
-		String queryClause = getQueryClause(fields, paramToken);
-		
+		String queryClause = getQueryClause(instruction, fields, paramToken);
+
 		selectString = selectString.replaceAll("#TOP#", (instruction != null && instruction.getTopCount() > 0 ? "TOP " + instruction.getTopCount() : ""));
 		selectString = selectString.replaceAll("#PAGE#", pageField);
 		
 		String sqlQuery = pagePrefix + selectString + " WHERE " + queryClause
-			+ (scopeToOrganization && organization_id > 0L ? (queryClause.length() == 0 ? " " : " AND ") + "organizationid=" + organization_id : "")
+			+ (scopeToOrganization && organization_id > 0L ? (queryClause.length() == 0 ? " " : " AND ") + tableAlias + "organizationid=" + organization_id : "")
 			+ (instruction != null && instruction.getGroupClause() != null ? " GROUP BY " + instruction.getGroupClause() : "")
 			+ (instruction != null && instruction.getHavingClause() != null ? " HAVING " + instruction.getHavingClause() : "")
 			+ pageSuffix

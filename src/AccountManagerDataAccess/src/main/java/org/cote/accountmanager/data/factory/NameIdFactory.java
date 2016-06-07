@@ -239,7 +239,7 @@ public abstract class NameIdFactory extends FactoryBase {
 		}
 		setNameIdFields(updateFields, map);
 		setFactoryFields(updateFields, map, instruction);
-		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(queryFields.toArray(new QueryField[0]), token);
+		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(instruction,queryFields.toArray(new QueryField[0]), token);
 		
 		updateFields.addAll(queryFields);
 		
@@ -310,7 +310,7 @@ public abstract class NameIdFactory extends FactoryBase {
 				setNameIdFields(updateFields, (NameIdType)map.get(i));
 				setFactoryFields(updateFields, (NameIdType)map.get(i), instruction);
 				if(i == 0){
-					sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(queryFields.toArray(new QueryField[0]), token);
+					sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(instruction,queryFields.toArray(new QueryField[0]), token);
 					statement = connection.prepareStatement(sql);
 				}
 				updateFields.addAll(queryFields);
@@ -426,53 +426,34 @@ public abstract class NameIdFactory extends FactoryBase {
 		if (ids.length > 0) return ids[0];
 		return 0;
 	}
-	protected List<NameIdType> getByField(QueryField field, long organization_id) throws FactoryException, ArgumentException{
+	public List<NameIdType> getByField(QueryField field, long organization_id) throws FactoryException, ArgumentException{
 		return getByField(field, null, organization_id);
 	}
-	protected List<NameIdType> getByField(QueryField field, ProcessingInstructionType instruction, long organization_id) throws FactoryException, ArgumentException{
+	public List<NameIdType> getByField(QueryField field, ProcessingInstructionType instruction, long organization_id) throws FactoryException, ArgumentException{
 		return getByField(new QueryField[]{field}, instruction, organization_id);
 	}
-	protected List<NameIdType> getByField(QueryField[] fields, long organization_id) throws FactoryException, ArgumentException{
+	public List<NameIdType> getByField(QueryField[] fields, long organization_id) throws FactoryException, ArgumentException{
 		return getByField(fields, null, organization_id);
 	}
-	protected List<NameIdType> getByField(QueryField[] fields, ProcessingInstructionType instruction, long organization_id) throws FactoryException, ArgumentException{
+	public List<NameIdType> getByField(QueryField[] fields, ProcessingInstructionType instruction, long organization_id) throws FactoryException, ArgumentException{
 		List<NameIdType> out_list = new ArrayList<NameIdType>();
 
 		if(this.dataTables.size() > 1) throw new FactoryException("Multiple table select statements not yet supported");
+
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		DataTable table = this.dataTables.get(0);
 		String selectString = getSelectTemplate(table, instruction);
-		/*
-		String pagePrefix = DBFactory.getPaginationPrefix(instruction, connectionType);
-		String pageSuffix = DBFactory.getPaginationSuffix(instruction, connectionType);
-		String pageField = DBFactory.getPaginationField(instruction, connectionType);
-		String paramToken = DBFactory.getParamToken(connectionType);
-		String queryClause = getQueryClause(fields, paramToken);
-		
-		selectString = selectString.replaceAll("#TOP#", (instruction != null && instruction.getTopCount() > 0 ? "TOP " + instruction.getTopCount() : ""));
-		selectString = selectString.replaceAll("#PAGE#", pageField);
-		
-		String sqlQuery = pagePrefix + selectString + " WHERE " + queryClause
-			+ (scopeToOrganization ? (queryClause.length() == 0 ? " " : " AND ") + "organizationid=" + organization_id : "")
-			+ (instruction != null && instruction.getGroupClause() != null ? " GROUP BY " + instruction.getGroupClause() : "")
-			+ (instruction != null && instruction.getHavingClause() != null ? " HAVING " + instruction.getHavingClause() : "")
-			+ pageSuffix
-		;
-		*/
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, organization_id);
-		//logger.info("Query Clause=" + queryClause);
-		//logger.info("SQL=" + sqlQuery);
+
 		try {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
 			ResultSet rset = statement.executeQuery();
 			while(rset.next()){
 				NameIdType obj = this.read(rset, instruction);
-				//logger.info("Read object: " + (obj == null ? "NULL" : obj.getName()));
 				out_list.add(obj);
 			}
-			//logger.info("Out size = " + out_list.size());
 			rset.close();
 			
 		} catch (SQLException e) {

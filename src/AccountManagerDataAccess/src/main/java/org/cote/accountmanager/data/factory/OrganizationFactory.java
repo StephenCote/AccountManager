@@ -63,11 +63,12 @@ public class OrganizationFactory extends NameIdFactory {
 		}
 	}
 	
+	/*
 	@Override
 	protected String getSelectTemplate(DataTable table, ProcessingInstructionType instruction){
 		return table.getSelectFullTemplate();
 	}
-	
+	*/
 
 	@Override
 	public void initialize(Connection connection) throws FactoryException{

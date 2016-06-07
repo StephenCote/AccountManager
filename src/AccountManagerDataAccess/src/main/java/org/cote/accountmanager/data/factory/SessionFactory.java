@@ -148,7 +148,7 @@ public class SessionFactory extends FactoryBase {
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		if(session_id != null) fields.add(QueryFields.getFieldSessionId(session_id));
 		String sql = (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM sessiondata"
-				+ (fields.size() > 0 ? " WHERE  " +  getQueryClause(fields.toArray(new QueryField[0]), token) : "")
+				+ (fields.size() > 0 ? " WHERE  " +  getQueryClause(null,fields.toArray(new QueryField[0]), token) : "")
 				+ ((connection_type == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "") + ";"
 		;
 		///  || connection_type == CONNECTION_TYPE.POSTGRES
@@ -173,7 +173,7 @@ public class SessionFactory extends FactoryBase {
 		if(session_id != null) fields.add(QueryFields.getFieldSessionId(session_id));
 		
 		String sql = (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM session"
-				+ (fields.size() > 0 ? " WHERE  " +  getQueryClause(fields.toArray(new QueryField[0]), token) : "")
+				+ (fields.size() > 0 ? " WHERE  " +  getQueryClause(null,fields.toArray(new QueryField[0]), token) : "")
 				+ ((connection_type == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "") + ";"
 		///  || connection_type == CONNECTION_TYPE.POSTGRES
 		///	No limit with PG DELETE
@@ -304,7 +304,7 @@ public class SessionFactory extends FactoryBase {
 		queryFields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
 		setNameIdFields(updateFields, map);
 		setFactoryFields(updateFields, map, instruction);
-		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(queryFields.toArray(new QueryField[0]), token);
+		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(instruction,queryFields.toArray(new QueryField[0]), token);
 
 		//System.out.println("Update String = " + sql);
 		

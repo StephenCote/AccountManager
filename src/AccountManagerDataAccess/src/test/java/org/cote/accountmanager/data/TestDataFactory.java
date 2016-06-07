@@ -6,16 +6,21 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
 
@@ -25,7 +30,50 @@ public class TestDataFactory extends BaseDataAccessTest {
 	private static String testLongDataName = null;
 	private static String testEncLongDataName = null;
 
+	@Test
+	public void testSearchByAttribute(){
+		boolean error = false;
+		DirectoryGroupType dir = null;
+		try{
+			logger.info("Creating demo data with bunk attribute");
+			dir = Factories.getGroupFactory().getUserDirectory(testUser);
+			String dataName = UUID.randomUUID().toString();
+			DataType data = Factories.getDataFactory().newData(testUser, dir.getId());
+			data.setName(dataName);
+			data.setMimeType("text/plain");
+			DataUtil.setValue(data, "This is the test data".getBytes());
+			assertTrue(Factories.getDataFactory().addData(data));
+			
+			data = Factories.getDataFactory().getDataByName(dataName, dir);
+			data.getAttributes().add(Factories.getAttributeFactory().newAttribute(data, "demo", "value"));
+			Factories.getAttributeFactory().addAttributes(data);
 
+			logger.info("Finding demo data based on directory and attribute");
+			ProcessingInstructionType instruction = new ProcessingInstructionType();
+			instruction.setJoinAttribute(true);
+			List<QueryField> fields = new ArrayList<>();
+			fields.add(QueryFields.getFieldGroup(dir.getId()));
+			fields.add(QueryFields.getStringField("ATR.name", "demo"));
+			assertTrue(instruction.getJoinAttribute());
+			List<NameIdType> dataList = Factories.getDataFactory().getByField(fields.toArray(new QueryField[0]), instruction,testUser.getOrganizationId());
+			logger.info("Data: " + dataList.size());
+		}
+		catch(FactoryException fe){
+			fe.printStackTrace();
+			logger.error(fe.getMessage());
+			error = true;
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/// TODO: All of these tests need to be refactored - they are contingent on test order and the static names
+	/*
+	
 	@Test
 	public void testArtifacts(){
 		OrganizationFactory of = Factories.getOrganizationFactory();
@@ -99,10 +147,6 @@ public class TestDataFactory extends BaseDataAccessTest {
 		try{
 			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
 			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
-			/*
-			new_data = df.getDataByName(testShortDataName, dir);
-			if(new_data != null) df.deleteData(new_data);
-			*/
 			new_data = df.newData(testUser, dir.getId());
 			new_data.setName(data_name);
 			new_data.setMimeType("text/plain");
@@ -219,12 +263,6 @@ public class TestDataFactory extends BaseDataAccessTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-		/*
-		catch (DataException e) {
-			logger.error(e.getMessage());
-			error = true;
-			
-		}*/
 		assertFalse("An error occurred", error);
 		assertNotNull("Data is null", data);
 		
@@ -251,12 +289,6 @@ public class TestDataFactory extends BaseDataAccessTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-		/*
-		catch (DataException e) {
-			logger.error(e.getMessage());
-			error = true;
-			
-		}*/
 		assertFalse("An error occurred", error);
 		assertNotNull("Data is null", data);
 	}
@@ -301,6 +333,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
 			logger.info("Looking for " + testLongDataName + " in " + dir.getId());
 			data = df.getDataByName(testLongDataName, dir);
+			assertNotNull("Test data is null",data);
 			DataUtil.setValue(data,  "New Example Value".getBytes());
 			updated = df.updateData(data);
 			data = df.getDataByName(testLongDataName, dir);
@@ -322,12 +355,6 @@ public class TestDataFactory extends BaseDataAccessTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-		/*
-		catch (DataException e) {
-			logger.error(e.getMessage());
-			error = true;
-			
-		}*/
 		assertFalse("An error occurred", error);
 		assertTrue("Data not updated", updated);
 		assertTrue("Data value does not match", data.getSize() == 17);
@@ -374,12 +401,6 @@ public class TestDataFactory extends BaseDataAccessTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-		/*
-		catch (DataException e) {
-			logger.error(e.getMessage());
-			error = true;
-			
-		}*/
 		assertFalse("An error occurred", error);
 		assertTrue("Data not updated", updated);
 		assertTrue("Data value does not match", data.getShortData().equals("New Example Value"));
@@ -400,10 +421,6 @@ public class TestDataFactory extends BaseDataAccessTest {
 		try {
 			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());
 			dir = gf.getDirectoryByName("Test",rootDir, Factories.getDevelopmentOrganization().getId());
-/*
-			data = df.getDataByName(testShortDataName, dir);
-			assertTrue("Failed to delete short data", df.deleteData(data));
-*/
 			data = df.getDataByName(testLongDataName, dir);
 			assertTrue("Failed to delete long data", df.deleteData(data));
 			data = df.getDataByName(testEncLongDataName, dir);
@@ -421,4 +438,5 @@ public class TestDataFactory extends BaseDataAccessTest {
 		assertFalse("An error occurred", error);
 		
 	}
+	*/
 }

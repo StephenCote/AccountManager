@@ -86,10 +86,11 @@ public class GroupFactory  extends NameIdFactory {
 		BaseGroupType t = (BaseGroupType)obj;
 		return t.getName() + "-" + t.getGroupType().toString() + "-" + t.getParentId() + "-" + t.getOrganizationId();
 	}
-	
+	/*
 	protected String getSelectTemplate(DataTable table, ProcessingInstructionType instruction){
 		return table.getSelectFullTemplate();
 	}
+	*/
 	public void initialize(Connection connection) throws FactoryException{
 		super.initialize(connection);
 		

@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
@@ -146,7 +147,43 @@ public class AttributeFactory extends NameIdFactory{
 	public boolean addAttributes(NameIdType obj){
 		return addAttributes(new NameIdType[]{obj});
 	}
+	public long[] searchForReferenceId(QueryField[] fields, long organizationId) throws ArgumentException{
+		List<Long> ids = new ArrayList<>();
 
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
+		String token = DBFactory.getParamToken(connection_type);
+		String queryClause = getQueryClause(null,fields, token);
+		if(queryClause == null || queryClause.length() == 0){
+			throw new ArgumentException("Invalid query fields");
+		}
+		String sql = "SELECT referenceid FROM attribute WHERE " + queryClause + ";";
+
+		try{
+			PreparedStatement psa = connection.prepareStatement(sql);
+			DBFactory.setStatementParameters(fields, psa);
+			ResultSet rset = psa.executeQuery();
+			while(rset.next()){
+				ids.add(rset.getLong("referenceid"));
+			}
+			rset.close();
+			psa.close();
+			}
+			catch (SQLException | FactoryException e) {
+				logger.error(e.getMessage());
+			}
+		finally{
+			try{
+				if(connection != null) connection.close();
+			}
+			catch (SQLException e) {
+				
+				logger.error(e.getMessage());
+			}
+		}
+		//logger.info("Out Bool = " + out_bool);
+		return ArrayUtils.toPrimitive(ids.toArray(new Long[0]));
+	}
 	public boolean addAttributes(NameIdType[] objs){
 		boolean out_bool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();

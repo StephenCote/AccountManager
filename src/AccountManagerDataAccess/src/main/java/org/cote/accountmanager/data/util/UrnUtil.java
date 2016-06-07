@@ -171,7 +171,8 @@ public class UrnUtil {
 		return urn;
 	}
 	public static String getNormalizedString(String in){
-		return in.toLowerCase().replaceAll("[^A-Za-z0-9\\.\\:]+","");
+		String outStr = in.toLowerCase().replaceAll("[\\s\\-]",".");
+		return outStr.toLowerCase().replaceAll("[^A-Za-z0-9\\.\\:]+","");
 	}
 	private static String getDotGroupPath(BaseGroupType group) throws FactoryException, ArgumentException{
 		Factories.getGroupFactory().populate(group);

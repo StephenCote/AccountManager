@@ -248,7 +248,7 @@ public abstract class SpoolFactory extends FactoryBase {
 		queryFields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
 		setNameIdFields(updateFields, map);
 		setFactoryFields(updateFields, map, instruction);
-		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(queryFields.toArray(new QueryField[0]), token);
+		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(instruction,queryFields.toArray(new QueryField[0]), token);
 
 		// System.out.println("Update String = " + sql);
 		

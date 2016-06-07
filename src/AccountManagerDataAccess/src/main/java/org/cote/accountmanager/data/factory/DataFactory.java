@@ -79,6 +79,7 @@ public class DataFactory extends NameIdFactory {
 	public DataFactory(){
 		super();
 		this.scopeToOrganization = true;
+		this.canJoinToAttribute = true;
 		this.hasParentId = false;
 		this.hasOwnerId = true;
 		this.hasUrn = true;
@@ -163,11 +164,11 @@ public class DataFactory extends NameIdFactory {
 			/// table.setRestrictSelectColumn("logicalid", true);
 		}
 	}
-	
+	/*
 	protected String getSelectTemplate(DataTable table, ProcessingInstructionType instruction){
 		return table.getSelectFullTemplate();
 	}
-	
+	*/
 	/// Create alternate select strings for select/updateDetails
 	///
 	public void initialize(Connection connection) throws FactoryException{
