@@ -126,7 +126,7 @@ public class BulkFactory {
 		return out_sess;
 	}
 	public void close(String sessionId) throws ArgumentException{
-		logger.info("Closing bulk session " + sessionId);
+		logger.debug("Closing bulk session " + sessionId);
 		if(sessionId == null || sessionId.length() == 0){
 			logger.error("Session id is null");
 			throw new ArgumentException("Session id is null");
@@ -185,9 +185,8 @@ public class BulkFactory {
 				}
 				if(factoryIds.containsKey(entry.getFactoryType())==false){
 					long startFact = System.currentTimeMillis();
-					logger.info("Retrieving factory ids for " + entry.getFactoryType().toString());
 					factoryIds.put(entry.getFactoryType(), getFactoryIds(sessionId,entry.getFactoryType()));
-					logger.info("Retrieved factory ids in " + (System.currentTimeMillis() - startFact) + "ms");
+					logger.info("Retrieved factory ids for " + entry.getFactoryType().toString() + " in " + (System.currentTimeMillis() - startFact) + "ms");
 				}
 				List<Long> ids = factoryIds.get(entry.getFactoryType());
 				long id = ids.remove(ids.size()-1);
@@ -212,7 +211,7 @@ public class BulkFactory {
 				//writeObject(session, entry);
 				//eLen = session.getBulkEntries().size();
 			}
-			logger.info("Pass #1 in " + (System.currentTimeMillis() - startPass) + "ms");
+			logger.debug("Pass #1 in " + (System.currentTimeMillis() - startPass) + "ms");
 			startPass = System.currentTimeMillis();
 			/// 2013/06/26 - Second pass, map ids
 			///
@@ -252,7 +251,7 @@ public class BulkFactory {
 			//logger.info("Pass #3 in " + (System.currentTimeMillis() - startPass) + "ms");
 			//startPass = System.currentTimeMillis();
 
-			logger.info("Writing " + totalAttrs + " attributes for " + attrDump.size() + " objects");
+			logger.debug("Writing " + totalAttrs + " attributes for " + attrDump.size() + " objects");
 			Factories.getAttributeFactory().addAttributes(attrDump.toArray(new NameIdType[0]));
 			
 			//logger.info("Pass #4 in " + (System.currentTimeMillis() - startPass) + "ms");
@@ -292,7 +291,7 @@ public class BulkFactory {
 				for (Entry<FactoryEnumType,List<NameIdType>> entry : updateCache.get(sessionId).entrySet()) {
 					FactoryEnumType factoryType = entry.getKey();
 					List<NameIdType> objs = entry.getValue();
-					logger.info("Processing modification cache for " + factoryType.toString());
+					logger.debug("Processing modification cache for " + factoryType.toString());
 					
 					updateSpool(factoryType,objs);
 					NameIdFactory factory = getBulkFactory(factoryType);
@@ -301,11 +300,11 @@ public class BulkFactory {
 					count += objs.size();
 					
 				}
-				logger.info("Modified " + count + " objects");
+				logger.debug("Modified " + count + " objects");
 				updateCache.get(sessionId).clear();
 			}
 			else{
-				logger.info("Modification cache is empty");
+				logger.debug("Modification cache is empty");
 			}
 			//logger.info("Pass #6 in " + (System.currentTimeMillis() - startPass) + "ms");
 			//startPass = System.currentTimeMillis();
@@ -324,7 +323,7 @@ public class BulkFactory {
 		///
 		if(session.getBulkEntries().size() != eLen){
 			if(pass < maximumWritePasses){
-				logger.info("Bulk Session is dirty with " + (session.getBulkEntries().size() - eLen) + " entries.  Attempting pass #" + (pass + 1));
+				logger.debug("Bulk Session is dirty with " + (session.getBulkEntries().size() - eLen) + " entries.  Attempting pass #" + (pass + 1));
 				write(sessionId, pass+1,eLen);
 			}
 			else{
@@ -944,7 +943,7 @@ public class BulkFactory {
 		sess.setSessionExpires(CalendarUtil.getXmlGregorianCalendar(now.getTime()));
 		sessions.put(sessionId, sess);
 		//idScanMap.put(sessionId, new HashMap<NameEnumType,Integer>());
-		logger.info("Created Bulk Session '" + sessionId + "'.  Expires: " + sess.getSessionExpires().toString());
+		logger.debug("Created Bulk Session '" + sessionId + "'.  Expires: " + sess.getSessionExpires().toString());
 		return sessionId;
 	}
 	

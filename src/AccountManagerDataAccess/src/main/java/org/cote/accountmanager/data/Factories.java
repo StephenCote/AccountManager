@@ -817,6 +817,7 @@ public class Factories {
 	public static boolean cleanupOrphans(){
 		boolean out_bool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
+		logger.debug("Cleanup Orphans");
 		try {
 			Statement stat = connection.createStatement();
 			stat.execute("SELECT * FROM cleanup_orphans();");
