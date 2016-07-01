@@ -1,0 +1,112 @@
+INFO main org.cote.accountmanager.web.TestMimeUtil - Mimetype = 'application/pdf'
+INFO main org.cote.accountmanager.web.TestPatterns - Match for digit sequence: false
+INFO main org.cote.accountmanager.web.TestPatterns - Find: true
+INFO main org.cote.accountmanager.web.TestPatterns - Count: true
+INFO main org.cote.accountmanager.web.TestPatterns - Org = /Accelerant/Rocket
+INFO main org.cote.accountmanager.web.TestPatterns - Type = Data
+INFO main org.cote.accountmanager.web.TestPatterns - Path = /Home/steve/Data
+INFO main org.cote.accountmanager.web.TestPatterns - Name = The Data.ext
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: add
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: count
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: update
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: update
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: delete
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: setGroupForUser
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: flushCache
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: countInParent
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: authorizeRole
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: readById
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: deleteDirectory
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: getCreatePath
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: listInParent
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: home
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: listPersons
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: authorizeUser
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: readByPath
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: listAccounts
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: readByParentId
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: listUsers
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: getSmdSchema
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: listAuthorizedRoles
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: setGroupForAccount
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: setGroupForPerson
+INFO main org.cote.accountmanager.web.TestResources - add
+INFO main org.cote.accountmanager.web.TestResources - count
+INFO main org.cote.accountmanager.web.TestResources - update
+INFO main org.cote.accountmanager.web.TestResources - updateDirectory
+INFO main org.cote.accountmanager.web.TestResources - delete
+INFO main org.cote.accountmanager.web.TestResources - setGroupForUser
+INFO main org.cote.accountmanager.web.TestResources - clearCache
+INFO main org.cote.accountmanager.web.TestResources - countInParent
+INFO main org.cote.accountmanager.web.TestResources - authorizeRole
+INFO main org.cote.accountmanager.web.TestResources - readById
+INFO main org.cote.accountmanager.web.TestResources - deleteDirectory
+INFO main org.cote.accountmanager.web.TestResources - getCreatePath
+INFO main org.cote.accountmanager.web.TestResources - listInParent
+INFO main org.cote.accountmanager.web.TestResources - home
+INFO main org.cote.accountmanager.web.TestResources - listPersons
+INFO main org.cote.accountmanager.web.TestResources - authorizeUser
+INFO main org.cote.accountmanager.web.TestResources - readByPath
+INFO main org.cote.accountmanager.web.TestResources - listAccounts
+INFO main org.cote.accountmanager.web.TestResources - readByParentId
+INFO main org.cote.accountmanager.web.TestResources - listUsers
+INFO main org.cote.accountmanager.web.TestResources - smd
+INFO main org.cote.accountmanager.web.TestResources - listAuthorizedRoles
+INFO main org.cote.accountmanager.web.TestResources - setGroupForAccount
+INFO main org.cote.accountmanager.web.TestResources - setGroupForPerson
+INFO main org.cote.accountmanager.web.TestMimeUtil - Mimetype = 'application/pdf'
+INFO main org.cote.accountmanager.web.TestPatterns - Match for digit sequence: false
+INFO main org.cote.accountmanager.web.TestPatterns - Find: true
+INFO main org.cote.accountmanager.web.TestPatterns - Count: true
+INFO main org.cote.accountmanager.web.TestPatterns - Org = /Accelerant/Rocket
+INFO main org.cote.accountmanager.web.TestPatterns - Type = Data
+INFO main org.cote.accountmanager.web.TestPatterns - Path = /Home/steve/Data
+INFO main org.cote.accountmanager.web.TestPatterns - Name = The Data.ext
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: add
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: count
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: update
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: update
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: delete
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: listPersons
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: authorizeRole
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: listAccounts
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: listUsers
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: flushCache
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: countInParent
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: authorizeUser
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: readByParentId
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: home
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: readByPath
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: listInParent
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: setGroupForUser
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: getSmdSchema
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: readById
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: deleteDirectory
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: getCreatePath
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: setGroupForPerson
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: listAuthorizedRoles
+INFO main org.cote.accountmanager.service.rest.ServiceSchemaBuilder - Declared method: setGroupForAccount
+INFO main org.cote.accountmanager.web.TestResources - add
+INFO main org.cote.accountmanager.web.TestResources - count
+INFO main org.cote.accountmanager.web.TestResources - update
+INFO main org.cote.accountmanager.web.TestResources - updateDirectory
+INFO main org.cote.accountmanager.web.TestResources - delete
+INFO main org.cote.accountmanager.web.TestResources - listPersons
+INFO main org.cote.accountmanager.web.TestResources - authorizeRole
+INFO main org.cote.accountmanager.web.TestResources - listAccounts
+INFO main org.cote.accountmanager.web.TestResources - listUsers
+INFO main org.cote.accountmanager.web.TestResources - clearCache
+INFO main org.cote.accountmanager.web.TestResources - countInParent
+INFO main org.cote.accountmanager.web.TestResources - authorizeUser
+INFO main org.cote.accountmanager.web.TestResources - readByParentId
+INFO main org.cote.accountmanager.web.TestResources - home
+INFO main org.cote.accountmanager.web.TestResources - readByPath
+INFO main org.cote.accountmanager.web.TestResources - listInParent
+INFO main org.cote.accountmanager.web.TestResources - setGroupForUser
+INFO main org.cote.accountmanager.web.TestResources - smd
+INFO main org.cote.accountmanager.web.TestResources - readById
+INFO main org.cote.accountmanager.web.TestResources - deleteDirectory
+INFO main org.cote.accountmanager.web.TestResources - getCreatePath
+INFO main org.cote.accountmanager.web.TestResources - setGroupForPerson
+INFO main org.cote.accountmanager.web.TestResources - listAuthorizedRoles
+INFO main org.cote.accountmanager.web.TestResources - setGroupForAccount

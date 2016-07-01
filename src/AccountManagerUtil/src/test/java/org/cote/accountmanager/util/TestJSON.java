@@ -50,7 +50,9 @@ public class TestJSON {
 			+ "}"
 		;
 	}
+
 	
+
 	@Test
 	public void testImportMap(){
 		//String fileStr = FileUtil.getFileAsString("/Users/Steve/Projects/workspace/Location/src/main/webapp/geo/countries.json");
@@ -65,6 +67,7 @@ public class TestJSON {
 		assertTrue(regions.length > 0);
 		logger.info(JSONUtil.exportObject(regions[0]));
 	}
+
 	
 	@Test
 	public void testSimplifiedTypeImport(){

@@ -173,7 +173,8 @@ public abstract class FactoryBase {
 		return scopeToOrganization;
 	}
 	protected String getSelectIdTemplate(DataTable table, ProcessingInstructionType instruction){
-		return table.getSelectIdTemplate() + (instruction != null && instruction.getJoinAttribute() ? " INNER JOIN Attribute AT on AT.referenceId = id AND AT.referenceType = '" + this.factoryType.toString() + "'" : "");
+		// return table.getSelectIdTemplate() + (instruction != null && instruction.getJoinAttribute() ? " INNER JOIN Attribute ATR on ATR.referenceId = id AND ATR.referenceType = '" + this.factoryType.toString() + "' AND ATR.organizationId = " + alias + ".organizationId" : "");
+		return table.getSelectIdTemplate();
 	}
 	protected String getSelectTemplate(DataTable table, ProcessingInstructionType instruction){
 		//logger.info("**** getSelectTemplate **** " + table.getSelectFullTemplate() + (instruction != null ? instruction.getJoinAttribute() : "Null" ));
@@ -239,7 +240,7 @@ public abstract class FactoryBase {
 				}
 			}
 
-			String attributeClause = " INNER JOIN Attribute ATR on ATR.referenceId = " + alias + ".id AND ATR.referenceType = '" + factoryType.toString() + "'";
+			String attributeClause = " INNER JOIN Attribute ATR on ATR.referenceId = " + alias + ".id AND ATR.referenceType = '" + factoryType.toString() + "' AND ATR.organizationId = " + alias + ".organizationId";
 			String table_clause = " FROM " + tableName + lock_hint;
 			table.setSelectFullTemplate(buff.toString() + " #PAGE# " + table_clause);
 			table.setSelectFullAttributeTemplate(aliasBuff.toString() + " #PAGE# FROM " + tableName + " " + alias + " " + lock_hint + attributeClause);

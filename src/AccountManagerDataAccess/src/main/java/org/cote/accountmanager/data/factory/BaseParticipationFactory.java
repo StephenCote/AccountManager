@@ -35,16 +35,20 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AddressParticipantType;
 import org.cote.accountmanager.objects.AddressType;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.ContactParticipantType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdType;
+
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;
+
 
 
 
@@ -70,7 +74,9 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 	{
 		return super.newParticipant(type);
 	}
-	
+	public GroupParticipantType newGroupParticipation(NameIdType obj, BaseGroupType group) throws ArgumentException,FactoryException {
+		return newParticipation(obj, group, AuthorizationService.getViewObjectPermission(obj.getOrganizationId()),AffectEnumType.GRANT_PERMISSION,ParticipantEnumType.GROUP);
+	}
 	
 	public DataParticipantType newDataParticipation(NameIdType cycle, DataType sched) throws ArgumentException,FactoryException {
 		return newParticipation(cycle, sched, AuthorizationService.getViewObjectPermission(cycle.getOrganizationId()),AffectEnumType.GRANT_PERMISSION,ParticipantEnumType.DATA);

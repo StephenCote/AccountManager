@@ -50,7 +50,7 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>false</skipTests>
+  					<skipTests>true</skipTests>
 
 
   					<includes>
