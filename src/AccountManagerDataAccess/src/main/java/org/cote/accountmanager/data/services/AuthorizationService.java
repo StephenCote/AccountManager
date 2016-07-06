@@ -489,11 +489,11 @@ public class AuthorizationService {
 	 *    
 	 */
 	public static BasePermissionType getPermission(NameIdType actor, NameIdType object, String permissionBase) throws ArgumentException, FactoryException{
-		if(!factoryProviders.containsKey(object.getNameType())){
+		if(object.getNameType() != NameEnumType.PERMISSION && !factoryProviders.containsKey(object.getNameType())){
 			throw new ArgumentException(object.getNameType() + " is not from a registered authorization provider");
 		}
 
-		FactoryEnumType factType = factoryProviders.get(object.getNameType());
+		FactoryEnumType factType = (object.getNameType() != NameEnumType.PERMISSION ? factoryProviders.get(object.getNameType())  : FactoryEnumType.PERMISSION);
 		return getPermission(factType, permissionBase,object.getOrganizationId());
 	}
 	public static BasePermissionType getPermission(FactoryEnumType factType, String permissionBase, long organizationId) throws ArgumentException, FactoryException{

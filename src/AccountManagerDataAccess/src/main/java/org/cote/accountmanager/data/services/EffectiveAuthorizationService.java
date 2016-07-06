@@ -74,6 +74,9 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 /*
  
  Updates
+   
+    2016/05/10 - Introduced more generic mechanism for handling object level entitlements, rather than hard coding the maps into this class
+ 
  	2015/10/15 - Added database functions to unwind group and role hierarchies when evaluating entitlements.  The Effective Authorization service will still be used for computing effective roles, but the entitlement checks will be migrated from the *Rights views to use the
  	*_member_entitlement functions, because (a) it will make it more generic, and (b) will get used by the more generic authorize/unauthorize methods.
  
@@ -334,7 +337,7 @@ public class EffectiveAuthorizationService {
 		rebuildData.clear();
 	}
 	public static void clearCache(NameIdType object) throws ArgumentException{
-		logger.debug("Clear Authorization Cache for " + object.getNameType().toString() + " " + object.getName());
+		//logger.debug("Clear Authorization Cache for " + object.getNameType().toString() + " " + object.getName());
 		
 		if(objectMap.containsKey(object.getNameType())){
 			for(AuthorizationMapType aMap : objectMap.get(object.getNameType()).values()){

@@ -1661,6 +1661,10 @@ public class BaseService{
 		for(int i = 0; i < out_obj.size();i++){
 			NameIdDirectoryGroupType ngt = (NameIdDirectoryGroupType)out_obj.get(i);
 			denormalize(ngt);
+			if(enableExtendedAttributes){
+				Factories.getAttributeFactory().populateAttributes(ngt);
+			}
+		
 			/*
 			
 			if(ngt.getGroupId().getPopulated() == false || ngt.getGroupPath() == null){
