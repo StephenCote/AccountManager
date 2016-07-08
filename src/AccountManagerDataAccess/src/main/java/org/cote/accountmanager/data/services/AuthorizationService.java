@@ -106,8 +106,8 @@ public class AuthorizationService {
 	///
 	public static boolean isAuthorized(NameIdType actor, NameIdType object, BasePermissionType[] permissions) throws ArgumentException, FactoryException
 	{
-
-		if(object == null || actor == null || permissions== null || permissions.length == 0){
+		/// || permissions.length == 0
+		if(object == null || actor == null || permissions== null){
 			logger.error("Null reference");
 			return false;
 		}
@@ -497,11 +497,18 @@ public class AuthorizationService {
 		return getPermission(factType, permissionBase,object.getOrganizationId());
 	}
 	public static BasePermissionType getPermission(FactoryEnumType factType, String permissionBase, long organizationId) throws ArgumentException, FactoryException{
+
+		if(factType == FactoryEnumType.PERMISSION){
+			//permissionName = 
+			return null;
+		}
+
 		if(!partFactories.containsKey(factType)){
 			throw new ArgumentException("Factory type " + factType.toString() + " does not have a registered participation factory");
 		}
 		ParticipationFactory pfact = partFactories.get(factType);
 		String permissionName = pfact.getPermissionPrefix() + permissionBase;
+
 		BasePermissionType permission = getRootPermission(permissionName, pfact.getDefaultPermissionType(), organizationId);
 		if(permission == null){
 			logger.warn(permissionName + " permission does not exist in organization #" + organizationId);
@@ -513,7 +520,7 @@ public class AuthorizationService {
 		
 		BasePermissionType permission = getPermission(actor, object, permissionBase);
 		
-		return isAuthorized(actor, object, new BasePermissionType[]{permission});
+		return isAuthorized(actor, object, (permission == null ? new BasePermissionType[]{} : new BasePermissionType[]{permission}));
 
 	}
 	public static boolean canView(NameIdType actor, NameIdType object) throws ArgumentException, FactoryException{

@@ -85,7 +85,7 @@ public class TestPermissions extends BaseDataAccessTest{
 				acct5.getAccounts().add(pacct5);
 				Factories.getPersonFactory().updatePerson(acct5);
 			}
-
+			assertTrue("User can't view the permission", AuthorizationService.canView(testUser,per1));
 			AuthorizationService.authorize(testUser, acct1, app1, per1, true);
 			EffectiveAuthorizationService.rebuildCache();
 			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct1,app1, new BasePermissionType[] { per1 } );

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>  
 
 <jboss-web>  
+<!-- 
     <security-domain>accountmanager5</security-domain>  
 <disable-audit>false</disable-audit>  
      <security-role>
       <role-name>AuthorizedUser</role-name>
       <principal-name>AuthorizedUser</principal-name>
         </security-role>
+        -->
             <session-config>
        <cookie-config>
           <path>/</path>

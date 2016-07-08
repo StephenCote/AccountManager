@@ -66,15 +66,15 @@
 						<!-- 
 
 
-<exclude>**/TestDataFactory.java</exclude>
-							
+
+					<exclude>**/TestPermissions.java</exclude>				
 
 						-->
 <exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
-						
+						<exclude>**/TestDataFactory.java</exclude>
 						<exclude>**/TestGroupAuthorization.java</exclude>
-		<exclude>**/TestPermissions.java</exclude>
+
 <exclude>**/TestDataAuthorization.java</exclude>												
 						
 						<exclude>**/TestTokenService.java</exclude>

@@ -933,7 +933,7 @@ public class EffectiveAuthorizationService {
 			}
 			
 			PreparedStatement stat = conn.prepareStatement(sql);
-			logger.debug(sql);
+			//logger.debug(sql);
 			stat.setLong(1, actor.getId());
 			stat.setLong(2,obj.getId());
 			stat.setLong(3, obj.getOrganizationId());
@@ -1263,7 +1263,7 @@ public class EffectiveAuthorizationService {
 					+ " inner join personparticipation PU2 on ARC.accountid = PU2.participantid AND PU2.participanttype = 'ACCOUNT' AND PU2.participationid = " + token + " AND ARC.effectiveroleid = " + token + " AND ARC.organizationid = " + token;
 			}
 			PreparedStatement stat = conn.prepareStatement(sql);
-			logger.debug(sql);
+			//logger.debug(sql);
 
 			stat.setLong(1, actor.getId());
 			stat.setLong(2,role.getId());
@@ -1284,7 +1284,7 @@ public class EffectiveAuthorizationService {
 				/// So a DENY will actually turn into a grant in the code
 				///
 				out_bool = true;
-				logger.debug("Matched " + actor.getNameType() + " " + match_id + (linkPerson ? " (via person linkage)" : "") + " having role " + role.getId() + " in org " + role.getOrganizationId());
+				//logger.debug("Matched " + actor.getNameType() + " " + match_id + (linkPerson ? " (via person linkage)" : "") + " having role " + role.getId() + " in org " + role.getOrganizationId());
 			}
 			else{
 				logger.warn("Did not match " + actor.getNameType() + " " + actor.getName() + " (" + actor.getId() + ") with role " + role.getName() + " (" + role.getId() + ") in organization (" + role.getOrganizationId() + ")");
