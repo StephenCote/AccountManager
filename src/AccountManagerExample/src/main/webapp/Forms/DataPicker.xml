@@ -71,7 +71,7 @@
 		prepareSaveDatasList : function(o){
 			aP = this.getProperties().dataListProp;
 			o[aP] = [];
-			var aDatas = this.getDatasList().getItems();
+			var aDatas = this.getDataList().getItems();
 			for(var i = 0; i < aDatas.length;i++) o[aP].push(aDatas[i].data);
 		}
 		

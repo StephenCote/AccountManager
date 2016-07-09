@@ -253,7 +253,7 @@ public class PermissionFactory extends NameIdFactory {
 			if(user != null) per = getCreatePermission(user, seg, type, (T)parent, organizationId);
 			else per = getPermissionByName(seg,type,(BasePermissionType)parent,organizationId);
 			if(per == null){
-				logger.warn("Failed to find permission '" + seg + "' in " + (parent == null ? "Null Parent":parent.getName()) + " from " + pathBase);
+				logger.warn("Failed to find permission '" + seg + "' in " + (parent == null ? "Null Parent":parent.getName() + " " + parent.getPermissionType().toString()) + " from " + pathBase);
 				return null;
 			}
 			parent = (BasePermissionType)per;
