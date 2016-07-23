@@ -176,6 +176,10 @@ public abstract class FactoryBase {
 		// return table.getSelectIdTemplate() + (instruction != null && instruction.getJoinAttribute() ? " INNER JOIN Attribute ATR on ATR.referenceId = id AND ATR.referenceType = '" + this.factoryType.toString() + "' AND ATR.organizationId = " + alias + ".organizationId" : "");
 		return table.getSelectIdTemplate();
 	}
+	protected String getSelectNameTemplate(DataTable table, ProcessingInstructionType instruction){
+		return table.getSelectNameTemplate();
+	}
+
 	protected String getSelectTemplate(DataTable table, ProcessingInstructionType instruction){
 		//logger.info("**** getSelectTemplate **** " + table.getSelectFullTemplate() + (instruction != null ? instruction.getJoinAttribute() : "Null" ));
 		//logger.info("**** getSelectTemplate **** " + table.getSelectFullTemplate() + (instruction != null && instruction.getJoinAttribute() ? " INNER JOIN Attribute AT on AT.referenceId = id AND AT.referenceType = '" + this.factoryType.toString() + "'" : ""));
@@ -254,7 +258,6 @@ public abstract class FactoryBase {
 		
 		if(error == false) initialized = true;
 	}
-	
 	public String getUpdateTemplate(DataTable table, QueryField[] updateFields, String token) throws FactoryException {
 		if(updateFields.length == 0) throw new FactoryException("Empty field list");
 		StringBuffer buff = new StringBuffer();
@@ -265,6 +268,53 @@ public abstract class FactoryBase {
 		}
 		return buff.toString();
 	}
+	
+
+	protected String[] getNamesByField(QueryField[] fields, long organization_id) throws FactoryException
+	{
+		List<String> out_ints = new ArrayList<String>();
+
+		if(this.dataTables.size() > 1) throw new FactoryException("Multiple table select statements not yet supported");
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
+		DataTable table = this.dataTables.get(0);
+		
+		String selectString = getSelectNameTemplate(table, null);
+		String sqlQuery = assembleQueryString(selectString, fields, connectionType, null, organization_id);
+
+		//logger.info("SQL=" + sqlQuery);
+		try {
+			PreparedStatement statement = connection.prepareStatement(sqlQuery);
+			DBFactory.setStatementParameters(fields, statement);
+			ResultSet rset = statement.executeQuery();
+			while(rset.next()){
+				String name = rset.getString(1);
+				out_ints.add(name);
+			}
+			rset.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			throw new FactoryException(e.getMessage());
+		}
+		finally{
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return out_ints.toArray(new String[0]);
+
+		//return out_ints.toArray(new int[]);
+		//return new int[0];
+	}
+	
+	
 	protected <T> long[] getIdByField(String field_name, SqlDataEnumType field_type, T field_value, long organization_id) throws FactoryException
 	{
 		QueryField field = new QueryField(field_type, field_name, field_value);
