@@ -182,7 +182,9 @@ public class NameIdGroupFactory extends NameIdFactory{
 		}
 		return getCountByField(this.getDataTables().get(0), fields.toArray(new QueryField[0]), group.getOrganizationId());
 	}
-
+	public String[] getNamesInGroup(BaseGroupType group) throws FactoryException{
+		return getNamesByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
+	}
 	public <T> List<T>  getListByGroup(BaseGroupType group, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		List<QueryField> fields = new ArrayList<QueryField>();
