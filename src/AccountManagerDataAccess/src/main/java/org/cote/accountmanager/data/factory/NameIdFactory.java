@@ -353,6 +353,86 @@ public abstract class NameIdFactory extends FactoryBase {
 		return (updated > 0);
 	}
 
+	public <T> boolean deleteBulk(List<T> map, ProcessingInstructionType instruction) throws FactoryException
+	{
+		if(this.bulkMode == false) throw new FactoryException("Factory is not configured for bulk operation");
+		DataTable table = dataTables.get(0);
+		if(instruction == null) instruction = new ProcessingInstructionType();
+		if(map.isEmpty()){
+			return false;
+		}
+
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
+		
+		List<QueryField> queryFields = new ArrayList<QueryField>();
+		
+		int maxBatchSize = 500;
+		int batch = 0;
+		int deleted = 0;
+		try{
+			boolean lastCommit = connection.getAutoCommit();
+			connection.setAutoCommit(false);
+			/*
+			queryFields.add(QueryFields.getFieldId((NameIdType)map.get(0)));
+			if(scopeToOrganization){
+				queryFields.add(QueryFields.getFieldOrganization(((NameIdType)map.get(0)).getOrganizationId()));
+			}
+			*/
+			String sql = null;
+			PreparedStatement statement = null;
+			for(int i = 0; i < map.size(); i++){
+				
+				queryFields.clear();
+				queryFields.add(QueryFields.getFieldId((NameIdType)map.get(i)));
+				if(scopeToOrganization){
+					queryFields.add(QueryFields.getFieldOrganization(((NameIdType)map.get(i)).getOrganizationId()));
+				}
+				if(i == 0){
+					sql = "DELETE FROM " + table.getName() + " WHERE " + getQueryClause(instruction,queryFields.toArray(new QueryField[0]), token);
+					statement = connection.prepareStatement(sql);
+				}
+
+				DBFactory.setStatementParameters(queryFields.toArray(new QueryField[0]), statement);
+				statement.addBatch();
+				deleted++;
+				if(batch++ >= maxBatchSize){
+					logger.debug("Execute bulk update batch: " + batch);
+					statement.executeBatch();
+					statement.clearBatch();
+					batch=0;
+				}
+				
+
+				
+			}
+			if(batch > 0){
+				logger.debug("Execute last bulk update batch: " + batch);
+				statement.executeBatch();
+				statement.clearBatch();
+				batch=0;
+			}
+			connection.commit();
+			connection.setAutoCommit(lastCommit);
+			
+		}
+		catch(SQLException sqe){
+			logger.error(sqe.getMessage());
+			logger.error("Trace",sqe);
+		}
+		finally{
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+				
+				logger.error("Trace",e);
+			}
+		}		
+		return (deleted > 0);
+	}
+
+	
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		
 	}
@@ -445,7 +525,7 @@ public abstract class NameIdFactory extends FactoryBase {
 		DataTable table = this.dataTables.get(0);
 		String selectString = getSelectTemplate(table, instruction);
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, organization_id);
-
+		//logger.debug(sqlQuery);
 		try {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
