@@ -25,6 +25,8 @@ package org.cote.accountmanager.data.factory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -109,7 +111,10 @@ public class ContactInformationFactory extends NameIdFactory {
 			try{
 				/// Contacts
 				///
-			
+				BaseParticipantType part = null;
+				List<Long> delIds = new ArrayList<Long>();
+				if(bulkMode) BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION);
+
 				Set<Long> set = new HashSet<Long>();
 				BaseParticipantType[] maps = Factories.getContactInformationParticipationFactory().getContactParticipations(cinfo).toArray(new BaseParticipantType[0]);
 				//logger.info("Updating " + maps.length + " Contact References");
@@ -117,14 +122,16 @@ public class ContactInformationFactory extends NameIdFactory {
 				
 				for(int i = 0; i < cinfo.getContacts().size();i++){
 					if(set.contains(cinfo.getContacts().get(i).getId())== false){
-						Factories.getContactInformationParticipationFactory().addParticipant(Factories.getContactInformationParticipationFactory().newContactParticipation(cinfo,cinfo.getContacts().get(i)));
+						part = Factories.getContactInformationParticipationFactory().newContactParticipation(cinfo,cinfo.getContacts().get(i));
+						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.CONTACTINFORMATIONPARTICIPATION, part);
+						else Factories.getContactInformationParticipationFactory().addParticipant(part);
 					}
 					else{
 						set.remove(cinfo.getContacts().get(i).getId());
 					}
 				}
-				Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
-				
+				//Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
+				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				set.clear();
 				maps = Factories.getContactInformationParticipationFactory().getAddressParticipations(cinfo).toArray(new BaseParticipantType[0]);
 				//logger.info("Updating " + maps.length + " Address References");
@@ -132,14 +139,17 @@ public class ContactInformationFactory extends NameIdFactory {
 				
 				for(int i = 0; i < cinfo.getAddresses().size();i++){
 					if(set.contains(cinfo.getAddresses().get(i).getId())== false){
-						Factories.getContactInformationParticipationFactory().addParticipant(Factories.getContactInformationParticipationFactory().newAddressParticipation(cinfo,cinfo.getAddresses().get(i)));
+						part = Factories.getContactInformationParticipationFactory().newAddressParticipation(cinfo,cinfo.getAddresses().get(i));
+						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.CONTACTINFORMATIONPARTICIPATION, part);
+						else Factories.getContactInformationParticipationFactory().addParticipant(part);
 					}
 					else{
 						set.remove(cinfo.getAddresses().get(i).getId());
 					}
 				}
-				Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
-				
+				//Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
+				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
+				if(delIds.size() > 0) Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
 				out_bool = true;
 			}
 			catch(ArgumentException ae){
