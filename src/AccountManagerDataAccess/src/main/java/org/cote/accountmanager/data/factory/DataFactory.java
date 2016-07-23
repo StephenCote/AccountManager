@@ -346,6 +346,8 @@ public class DataFactory extends NameIdFactory {
 	public boolean deleteData(DataType data) throws FactoryException
 	{
 		removeFromCache(data);
+		if(bulkMode) return true;
+		
 		int deleted = deleteById(data.getId(), data.getOrganizationId());
 		/*
 		if (deleted > 0)

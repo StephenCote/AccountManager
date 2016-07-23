@@ -200,6 +200,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	}
 	public boolean deleteParticipant(BaseParticipantType participant) throws FactoryException
 	{
+		if(bulkMode) return true;
 		int deleted = deleteById(participant.getId(), participant.getOrganizationId());
 		removeParticipantFromCache(participant);
 		return (deleted > 0);

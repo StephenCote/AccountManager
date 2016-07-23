@@ -254,6 +254,8 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	public boolean deleteGroup(BaseGroupType group) throws FactoryException, ArgumentException
 	{
+		List<BaseGroupType> sub_groups = this.getListByParent(GroupEnumType.UNKNOWN, group, 0L, 0, group.getOrganizationId());
+		for(BaseGroupType sub_group : sub_groups) deleteGroup(sub_group); 
 		int deleted = deleteById(group.getId(), group.getOrganizationId());
 		clearGroupCache(group, true);
 		return (deleted > 0);
