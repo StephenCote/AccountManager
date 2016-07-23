@@ -67,9 +67,10 @@
 
 
 
-					<exclude>**/TestPermissions.java</exclude>				
+					<exclude>**/TestBulkDelete.java</exclude>				
 
 						-->
+						<exclude>**/TestPermissions.java</exclude>		
 <exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
 						<exclude>**/TestDataFactory.java</exclude>
