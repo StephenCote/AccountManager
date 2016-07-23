@@ -97,7 +97,6 @@ public class UrnUtil {
 					key = getEncodedGroupPath((BaseGroupType)object);
 					break;
 				case TRAIT:
-				case EVENT:
 				case ARTIFACT:
 				case BUDGET:
 				case CASE:
@@ -143,6 +142,7 @@ public class UrnUtil {
 					DataType data = (DataType)object;
 					key = getEncodedGroupPath(data.getGroupId(),data.getOrganizationId()) + urnSeparator + BinaryUtil.toBase64Str(object.getName());
 					break;
+				case EVENT:
 				case LOCATION:
 				case NOTE:
 				case TASK:
