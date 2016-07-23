@@ -86,6 +86,19 @@
 	</div>
 
 	<import-xml src = "/AccountManagerExample/Forms/ContactInformation.xml" id = "ContactInformation" />
+	<div class = "rocket-column-2" rid = "partnerPicker" style = "display:none;">
+		<p rid = "partnerPickerTitle">
+			<span rid = "partnerPickerToggle"></span> <span rid="partnerPickerLabel">Partners</span>:
+		</p>
+		<p rid = "partnerPickerContent">
+			<div component = "wideselect" rid = "partnersList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addPartner()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removePartner()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openPartner()" />
+		</p>
+	</div>
 	<import-xml src = "/AccountManagerExample/Forms/PersonPicker.xml" id = "PersonPicker" />
 	<import-xml src = "/AccountManagerExample/Forms/AccountPicker.xml" id = "AccountPicker" />
 	<import-xml src = "/AccountManagerExample/Forms/UserPicker.xml" id = "UserPicker" />
@@ -94,6 +107,10 @@
 	<embedded-script><![CDATA[
 		embedded_init : function(){
 			//this.GetElementByRID("pathCont").style.display = "none";
+			this.GetElementByRID("partnerPicker").style.display = "block";
+			this.toggleField("partnerPickerToggle","partnerPickerContent");
+			if(!this.getProperties().partnerListProp) this.getProperties().partnerListProp = "partners";
+			this.initPartnerPicker();
 			this.initUserPicker();
 			this.initAccountPicker();
 			this.initContactInformation();
@@ -101,6 +118,64 @@
 			this.setPersonPickerLabel("Deps");
 			this.initPersonPicker();
 		},
+		
+prepareSavePartnerPicker : function(o){
+			this.prepareSavePartnersList(o);
+		},
+		setPartnerPickerLabel : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("partnerPickerLabel"),s);
+		},
+		initPartnerPicker : function(){
+			/// Have to put a little extra logic here because partner information is optional for addresses
+			var _s = this.getProperties(),  o = this.getBean("rocketType");
+			_s.enablePartnerInformation = (o != null ? 1 : 0);
+			
+			if(_s.enablePartnerInformation){
+				//this.getProperties().partnerListProp = "partners";
+				this.GetComponentByRID("partnersList").setLoadHandler(this.scopeHandler("configPartnersList",0,1,1));
+			}
+		},
+
+		
+		openPartner : function(){
+			var oI = this.getPartnersList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Person");
+		},
+		addPartner : function(){
+			this.manageList("Person", this.getPartnersList().getObjectId());
+		},
+		removePartner : function(){
+			var oI = this.getPartnersList().getActiveItem();
+			if(oI) this.getPartnersList().clearItem(oI.index);
+		},
+
+		configPartnersList : function(s,v){
+			var oL = this.getPartnersList(),_s = this.getProperties();
+			if(!_s.enablePartnerInformation) return;
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshPartners();
+		},
+		refreshPartners : function(){
+			var oL = this.getPartnersList(), aP = this.getProperties().partnerListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getPartnersList : function(){
+			return this.GetComponentByRID("partnersList").GetWideSelect();
+		},
+		prepareSavePartnersList : function(o){
+			var _s = this.getProperties(), aP;
+			if(!_s.enablePartnerInformation) return;
+			aP = this.getProperties().partnerListProp;
+			o[aP] = [];
+			var aPartners = this.getPartnersList().getItems();
+			for(var i = 0; i < aPartners.length;i++) o[aP].push(aPartners[i].data);
+		},
+		
 		addType : function(o){
 			Hemi.log("Add person type: " + o.name );
 			var b = false;
@@ -112,6 +187,7 @@
 			this.prepareSaveAccountsList(o);
 			this.prepareSaveUsersList(o);
 			this.prepareSavePersonsList(o);
+			this.prepareSavePartnersList(o);
 			return 1;
 		}
 	]]></embedded-script>
