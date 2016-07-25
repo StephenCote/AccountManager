@@ -883,6 +883,7 @@ public class EffectiveAuthorizationService {
 				logger.debug("Did not match " + referenceType + " " + referenceId + " having at least one permission for " + object.getNameType() + " " + objectId);
 			}
 			*/
+
 			rset.close();
 			statement.close();
 			long stop_query = System.currentTimeMillis();

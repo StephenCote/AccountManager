@@ -507,7 +507,7 @@ public class BaseService{
 		if(enableExtendedAttributes){
 			out_bool = Factories.getAttributeFactory().deleteAttributes((NameIdType)in_obj);
 			if(out_bool == false){
-				logger.warn("No extended attributes deleted for for " + ((NameIdType)in_obj).getName());
+				logger.warn("No extended attributes deleted for " + ((NameIdType)in_obj).getName());
 			}
 		}
 		switch(type){
