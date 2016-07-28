@@ -92,7 +92,9 @@ public class BulkFactory {
 	///
 	protected static Map<String,Map<FactoryEnumType,List<NameIdType>>> updateCache = null;
 	protected static Map<String,Map<FactoryEnumType,List<NameIdType>>> deleteCache = null;
-	
+	protected static Map<String,Map<FactoryEnumType,Set<String>>> updateSet = null;
+	protected static Map<String,Map<FactoryEnumType,Set<String>>> deleteSet = null;
+
 	private Random rand = null;
 	public BulkFactory(){
 		rand = new Random();
@@ -101,6 +103,8 @@ public class BulkFactory {
 		if(sessionIdMap == null) sessionIdMap = new HashMap<>();
 		if(idMap == null) idMap = new HashMap<>();
 		if(updateCache == null) updateCache = new HashMap<>();
+		if(updateSet == null) updateSet = new HashMap<>();
+		if(deleteSet == null) deleteSet = new HashMap<>();
 		if(deleteCache == null) deleteCache = new HashMap<>();
 		if(globalLock == null) globalLock = new Object();
 	}
@@ -137,6 +141,8 @@ public class BulkFactory {
 		}
 		sessions.remove(sessionId);
 		updateCache.remove(sessionId);
+		updateSet.remove(sessionId);
+		deleteSet.remove(sessionId);
 		deleteCache.remove(sessionId);
 		//synchronized(sessionIdMap){
 			//while (persistentIdSessionMap.values().remove(sessionId));
@@ -298,12 +304,13 @@ public class BulkFactory {
 					logger.debug("Processing bulk modifications for " + factoryType.toString());
 					factory.deleteBulk(objs,null);
 					logger.debug("Processing bulk attribute modifications cache for " + factoryType.toString());
-					Factories.getAttributeFactory().updateAttributes(objs.toArray(new NameIdType[0]));
+					Factories.getAttributeFactory().deleteAttributesForObjects(objs.toArray(new NameIdType[0]));
 					count += objs.size();
 					
 				}
 				logger.debug("Deleted " + count + " objects");
 				deleteCache.get(sessionId).clear();
+				deleteSet.get(sessionId).clear();
 			}
 			else{
 				logger.debug("Delete cache is empty");
@@ -314,10 +321,14 @@ public class BulkFactory {
 				//Iterator<FactoryEnumType> keys = updateCache.get(sessionId).keySet().iterator();
 				int count = 0;
 				//while(keys.hasNext()){
+				/// 2016/07/27 - bug with the modify method where the updateCache gets multiple entries, even though the check catches it
+				///
+
 				for (Entry<FactoryEnumType,List<NameIdType>> entry : updateCache.get(sessionId).entrySet()) {
 					FactoryEnumType factoryType = entry.getKey();
 					List<NameIdType> objs = entry.getValue();
 					logger.debug("Processing modification cache for " + factoryType.toString() + " having " + objs.size() + " objects");
+					//if(factoryType == FactoryEnumType.LOCATION) for(NameIdType obj : objs) logger.info(obj.getId() + " " + obj.getName());
 					updateSpool(factoryType,objs);
 					NameIdFactory factory = getBulkFactory(factoryType);
 					logger.debug("Processing bulk modifications for " + factoryType.toString());
@@ -329,6 +340,7 @@ public class BulkFactory {
 				}
 				logger.debug("Modified " + count + " objects");
 				updateCache.get(sessionId).clear();
+				updateSet.get(sessionId).clear();
 			}
 			else{
 				logger.debug("Modification cache is empty");
@@ -960,6 +972,8 @@ public class BulkFactory {
 
 		if(deleteCache.containsKey(sessionId) == false) deleteCache.put(sessionId, new HashMap<FactoryEnumType,List<NameIdType>>());
 		if(deleteCache.get(sessionId).containsKey(factoryType) == false) deleteCache.get(sessionId).put(factoryType, new ArrayList<>());
+		if(deleteSet.containsKey(sessionId) == false) deleteSet.put(sessionId, new HashMap<FactoryEnumType,Set<String>>());
+		if(deleteSet.get(sessionId).containsKey(factoryType) == false) deleteSet.get(sessionId).put(factoryType, new HashSet<>());
 		
 		
 		NameIdFactory factory = getFactory(factoryType);
@@ -978,9 +992,14 @@ public class BulkFactory {
 		
 		/// drop from factory cache
 		///
-		factory.removeFromCache(object,factory.getCacheKeyName(object));
+		String key = factory.getCacheKeyName(object);
+		factory.removeFromCache(object,key);
+		if(deleteSet.get(sessionId).get(factoryType).contains(object)){
+			//logger.debug("Object '" + object.getName() + "' is already marked for deletion");
+			return;
+		}
 		deleteCache.get(sessionId).get(factoryType).add(object);
-
+		deleteSet.get(sessionId).get(factoryType).add(key);
 	}
 	public void modifyBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException{
 		if(object == null){
@@ -995,7 +1014,9 @@ public class BulkFactory {
 		if(object.getId() <= 0L) throw new ArgumentException("Object " + factoryType.toString() + " " + object.getName() + " #" + object.getId() + " does not have a valid id for an update operation");
 
 		if(updateCache.containsKey(sessionId) == false) updateCache.put(sessionId, new HashMap<FactoryEnumType,List<NameIdType>>());
+		if(updateSet.containsKey(sessionId)==false) updateSet.put(sessionId, new HashMap<FactoryEnumType,Set<String>>());
 		if(updateCache.get(sessionId).containsKey(factoryType) == false) updateCache.get(sessionId).put(factoryType, new ArrayList<NameIdType>());
+		if(updateSet.get(sessionId).containsKey(factoryType) == false) updateSet.get(sessionId).put(factoryType, new HashSet<String>());
 		
 		
 		NameIdFactory factory = getFactory(factoryType);
@@ -1014,13 +1035,22 @@ public class BulkFactory {
 		
 		/// rewrite factory cache in case the name was changed on the update
 		///
-		if(factory.updateToCache(object,factory.getCacheKeyName(object))==false){
+		String key = factory.getCacheKeyName(object);
+		if(factory.updateToCache(object,key)==false){
 			logger.warn("Failed to add object '" + object.getName() + "' to factory cache with key name " + factory.getCacheKeyName(object));
+		}
+		
+		//if(updateCache.get(sessionId).get(factoryType).contains(object)){
+		if(updateSet.get(sessionId).get(factoryType).contains(key)){
+			
+			//updateCache.get(sessionId).get(factoryType).remove(object);
+			//logger.debug("Object " + factoryType.toString() + " '" + object.getName() + "' is already marked for modification");
+			return;
 		}
 		//logger.info("Adding " + object.getName() + " as " + factoryType + " to modification cache");
 		/// Add the object to the updateCache
 		updateCache.get(sessionId).get(factoryType).add(object);
-
+		updateSet.get(sessionId).get(factoryType).add(key);
 	}
 	public void createBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException{
 		long bulkId = (long)(rand.nextDouble()*1000000000L) * -1;
@@ -1056,7 +1086,7 @@ public class BulkFactory {
 			throw new ArgumentException("Random id " + bulkId + " assigned to " + object.getName() + " already consumed");			
 		}
 		
-		if(object.getId() != 0){
+		if(object.getId() != 0L){
 			logger.error("Object id is already set");
 			throw new ArgumentException("Object id is already set");
 		}
