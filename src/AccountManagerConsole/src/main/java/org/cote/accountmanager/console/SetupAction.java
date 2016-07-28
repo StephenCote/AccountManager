@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DataAccessException;
+import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.util.StreamUtil;
@@ -87,8 +88,11 @@ public class SetupAction {
 		}
 
 		if(error == true) return out_bool;
-		
+		// 2016/07/27 - Bug: Because the factory starts automatically, it will throw an error
+		// it also means it has to be reset again before running setup or it will fail again because all the data was just nuked by reloading the database schema
+		// 
 		try {
+			Factories.recycleOrganizationFactory();
 			if(FactoryDefaults.setupAccountManager(rootPassword)){
 				out_bool = true;
 			}
