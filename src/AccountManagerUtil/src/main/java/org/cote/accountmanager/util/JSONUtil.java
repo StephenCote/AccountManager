@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -26,6 +27,7 @@ public class JSONUtil {
 	}
 	public static <T> String exportObject(T obj){
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_EMPTY);
 		 String outStr = null;
 		try {
 			outStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
