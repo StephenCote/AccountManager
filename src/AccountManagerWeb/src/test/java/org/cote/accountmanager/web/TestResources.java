@@ -27,16 +27,37 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.GenericType;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
+import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.ResponseEnumType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.StreamUtil;
+import org.cote.beans.EntitySchema;
 import org.cote.beans.MessageBean;
 import org.cote.rest.services.GroupService;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class TestResources{
 	public static final Logger logger = Logger.getLogger(TestResources.class.getName());
@@ -61,6 +82,219 @@ public class TestResources{
 		assertTrue("No methods found for " + this.getClass().getSimpleName(), m.length > 0);
 	}
 	*/
+	@Test
+	public void TestSerialization(){
+		EntitySchema bean = new EntitySchema();
+		DataType data = bean.getDataTypeSchema();
+		List<DataType> dataList = new ArrayList<>();
+		dataList.add(data);
+		Class dc = DataType.class;
+		//Type cc2 = List<DataType>.getClass().getGenericSuperclass();
+
+		TestRequest<List<?>> req = new TestRequest<>(ActionEnumType.READ, AuditEnumType.DATA, ResponseEnumType.INFO);
+		req.setRequest(dataList);
+		String json = JSONUtil.exportObject(req);
+		logger.info(json);
+		/*
+		TestRequest<?> req2 = null;
+
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				TypeFactory t = TypeFactory.defaultInstance();
+				req2 = mapper.readValue(json, t.constructType(TestRequest.class, NameIdType.class));
+				//GenericType<List<DataType>> gt = new GenericType<List<DataType>>();
+				List<DataType> duck = (List<DataType>)req2.getRequest();
+				List<DataType> ducks = new ArrayList<>();
+				for(DataType obj : duck){
+					ducks.add(obj);
+				}
+
+				//NameIdType chk1 = duck.get(0);
+				//DataType d1 = (DataType)chk1;
+				//logger.info("Restored: " + events.size() + " events");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		JSONUtil.importObject(json, TestRequest.class);
+		*/
+		
+	}
+	  public static Class<?> getClass(Type type) {
+		    if (type instanceof Class) {
+		      return (Class) type;
+		    }
+		    else if (type instanceof ParameterizedType) {
+		      return getClass(((ParameterizedType) type).getRawType());
+		    }
+		    else if (type instanceof GenericArrayType) {
+		      Type componentType = ((GenericArrayType) type).getGenericComponentType();
+		      Class<?> componentClass = getClass(componentType);
+		      if (componentClass != null ) {
+		        return Array.newInstance(componentClass, 0).getClass();
+		      }
+		      else {
+		    	  logger.error("Component class is null");
+		        return null;
+		      }
+		    }
+		    else {
+		    	logger.error("Don't know type instance: " + type);
+		      return null;
+		    }
+		  }
+	  public static <T> List<Class<?>> getTypeArguments(
+			    Class<T> baseClass, Class<? extends T> childClass) {
+			    Map<Type, Type> resolvedTypes = new HashMap<Type, Type>();
+			    Type type = childClass;
+			    // start walking up the inheritance hierarchy until we hit baseClass
+			    while (! getClass(type).equals(baseClass)) {
+			      if (type instanceof Class) {
+			        // there is no useful information for us in raw types, so just keep going.
+			        type = ((Class) type).getGenericSuperclass();
+			      }
+			      else {
+			        ParameterizedType parameterizedType = (ParameterizedType) type;
+			        Class<?> rawType = (Class) parameterizedType.getRawType();
+			  
+			        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+			        TypeVariable<?>[] typeParameters = rawType.getTypeParameters();
+			        for (int i = 0; i < actualTypeArguments.length; i++) {
+			          resolvedTypes.put(typeParameters[i], actualTypeArguments[i]);
+			        }
+			  
+			        if (!rawType.equals(baseClass)) {
+			          type = rawType.getGenericSuperclass();
+			        }
+			      }
+			    }
+			  
+			    // finally, for each actual type argument provided to baseClass, determine (if possible)
+			    // the raw class for that type argument.
+			    Type[] actualTypeArguments;
+			    if (type instanceof Class) {
+			      actualTypeArguments = ((Class) type).getTypeParameters();
+			    }
+			    else {
+			      actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
+			    }
+			    List<Class<?>> typeArgumentsAsClasses = new ArrayList<Class<?>>();
+			    // resolve types by chasing down type variables.
+			    for (Type baseType: actualTypeArguments) {
+			      while (resolvedTypes.containsKey(baseType)) {
+			        baseType = resolvedTypes.get(baseType);
+			      }
+			      typeArgumentsAsClasses.add(getClass(baseType));
+			    }
+			    return typeArgumentsAsClasses;
+			  }
+	
+	public static <T> GenericType<T> getType(Class<T> classZ){
+        ParameterizedType genericType = new ParameterizedType() {            
+            public Type[] getActualTypeArguments() {
+                return new Type[] {classZ};
+            }
+            public Type getRawType() {
+                return List.class;
+            }
+            public Type getOwnerType() {
+                return List.class;
+            }
+        };
+        
+        return new GenericType<T>(genericType) {};
+	}
+	/*
+	<T> List<T> getList(String path, List<String[]> params, final Class<T> clazz) {
+	    GenericType<List<T>> type = getListType(clazz);
+	    Response entity = getEntity(path, params);
+	    return entity.readEntity(type);
+	}
+
+	<T> T getObject(String path, List<String[]> params, final Class<T> type) {
+	    Response entity = getEntity(path, params);
+	    return (T)entity.readEntity(new GenericType(type) {});
+	}
+
+	private <T> GenericType<List<T>> getListType(final Class<T> clazz) {
+	    ParameterizedType genericType = new ParameterizedType() {
+	        public Type[] getActualTypeArguments() {
+	            return new Type[]{clazz};
+	        }
+
+	        public Type getRawType() {
+	            return List.class;
+	        }
+
+	        public Type getOwnerType() {
+	            return List.class;
+	        }
+	    };
+	    return new GenericType<List<T>>(genericType) { };
+	}
+	*/
+	public <T> TestRequest<T> getRequest(final Class<T> classZ){
+		return new TestRequest<T>();
+	}
+	public static class TestRequest<T>{
+		private Class classType = null;
+		private GenericType<T> genType = null;
+		private T request = null;
+		private ActionEnumType requestType;
+		private AuditEnumType objectType;
+		private ResponseEnumType responseType;
+		public TestRequest(ActionEnumType act, AuditEnumType obj, ResponseEnumType resp){
+			requestType = act;
+			objectType = obj;
+			responseType = resp;
+			//classType = (Class<T>)obj.getClass();
+		}
+		public TestRequest(){
+
+		}
+		
+		public GenericType<T> getGenType() {
+			return genType;
+		}
+		public void setGenType(GenericType<T> genType) {
+			this.genType = genType;
+		}
+		public Class getClassType() {
+			return classType;
+		}
+		public void setClassType(Class classType) {
+			this.classType = classType;
+		}
+		public void setRequestType(ActionEnumType requestType) {
+			this.requestType = requestType;
+		}
+		public void setObjectType(AuditEnumType objectType) {
+			this.objectType = objectType;
+		}
+		public void setResponseType(ResponseEnumType responseType) {
+			this.responseType = responseType;
+		}
+		public T getRequest() {
+			return request;
+		}
+		public void setRequest(T req) {
+			this.request = req;
+			//this.genType = getType((Class<T>)request.getClass().getSuperclass());
+			this.classType = getTypeArguments(TestRequest.class, getClass()).get(0);
+		}
+		public ActionEnumType getRequestType() {
+			return requestType;
+		}
+		public AuditEnumType getObjectType() {
+			return objectType;
+		}
+		public ResponseEnumType getResponseType() {
+			return responseType;
+		}
+		
+	}
+	
 	@Test
 	public void TestSchemaBean(){
 		SchemaBean bean = ServiceSchemaBuilder.modelRESTService(GroupService.class, "/group");

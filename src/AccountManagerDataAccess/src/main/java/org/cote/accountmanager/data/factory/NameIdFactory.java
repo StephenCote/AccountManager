@@ -697,7 +697,7 @@ public abstract class NameIdFactory extends FactoryBase {
 	}
 	public <T> List<T>  getPaginatedList(QueryField[] fields, ProcessingInstructionType instruction, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		if (instruction != null && startRecord >= 0 && recordCount > 0 && instruction.getPaginate() == false)
+		if (instruction != null && startRecord >= 0L && recordCount > 0 && instruction.getPaginate() == false)
 		{
 			instruction.setPaginate(true);
 			instruction.setStartIndex(startRecord);
