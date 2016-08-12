@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style type = "text/css">
+html
+{
+		overflow:auto;
+		height:100%;
+		min-height:100%;
+		background-color: #ffffff;
+}
+body{
+
+	color: #000000;
+	margin:0px;
+	padding:0px;
+	min-height:100%;
+}
+</style>
+<script type = "text/javascript">
+(function(){
+		if(!window.g_application_path) window.g_application_path = "/AccountManagerService";
+		if(!window.HemiConfig) window.HemiConfig = {};
+		if(!window.HemiConfig.hemi_base) window.HemiConfig.hemi_base = "/HemiFramework/Hemi/";
+})();
+</script>
+<script type = "text/javascript" src = "/HemiFramework/Hemi/hemi.comp.js"></script>
+</head>
+<body>
+<h1>Protected Account Manager Service</h1>
+<div template = "Templates/ToolBar.xml"></div>
+</body>
+</html>

@@ -32,7 +32,7 @@ public class GenericService {
 	public GenericType getType(@Context HttpServletRequest request){
 		// @PathParam("type") Class<T> classZ,
 		logger.info("Received request");
-		return new DataType();
+		return null;
 	}
 
 }

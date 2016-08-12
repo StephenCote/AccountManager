@@ -1,0 +1,40 @@
+<Context path = "" docBase = "ROOT" encoding = "UTF-8">
+ <Realm className="org.apache.catalina.realm.JAASRealm" 
+    appName="AccountManagerService"
+    userClassNames="org.cote.jaas.UserPrincipal"
+    roleClassNames="org.cote.jaas.RolePrincipal" />
+<Resource name="tomcat/datasources/postgresDS"
+          auth="Container"
+          type="javax.sql.DataSource"
+          factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+          testWhileIdle="true"
+          testOnBorrow="true"
+          testOnReturn="false"
+          validationQuery="SELECT 1"
+          validationInterval="30000"
+          timeBetweenEvictionRunsMillis="30000"
+          maxActive="100"
+          minIdle="10"
+          maxWait="10000"
+          initialSize="10"
+          removeAbandonedTimeout="60"
+          removeAbandoned="true"
+          logAbandoned="true"
+          minEvictableIdleTimeMillis="30000"
+          jmxEnabled="true"
+          jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
+            org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
+          username="devuser"
+          password="password"
+          driverClassName="org.postgresql.Driver"
+          url="jdbc:postgresql://localhost:5432/devdb"/>
+    <Resources
+        cachingAllowed="true"
+        cacheMaxSize="100000"
+    />
+    
+    <Manager className="org.apache.catalina.session.PersistentManager" maxIdleBackup="1">
+   <Store className="org.apache.catalina.session.FileStore" directory="c:/Projects/Sessions"/>
+</Manager>
+    
+</Context>
