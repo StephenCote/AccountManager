@@ -23,3 +23,7 @@ src/AccountManagerExample/.project
 src/AccountManagerExample/.classpath
 src/AccountManagerExample/.settings
 src/AccountManagerExample/target
+src/AccountManagerService/.project
+src/AccountManagerService/.classpath
+src/AccountManagerService/.settings
+src/AccountManagerService/target

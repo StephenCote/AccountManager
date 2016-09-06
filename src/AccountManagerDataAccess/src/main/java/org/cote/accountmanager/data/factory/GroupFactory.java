@@ -57,17 +57,21 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 public class GroupFactory  extends NameIdFactory {
 	
 	static{
+		//registerProvider();
+	}
+	@Override
+	public void registerProvider(){
 		AuthorizationService.registerAuthorizationProviders(
 				FactoryEnumType.GROUP,
 				NameEnumType.GROUP,
 				Factories.getGroupParticipationFactory()
 			);
 	}
-	
 	public GroupFactory(){
 		super();
 		this.scopeToOrganization = true;
 		this.hasUrn = true;
+		this.hasObjectId = true;
 		this.tableNames.add("groups");
 		factoryType = FactoryEnumType.GROUP;
 		systemRoleNameAdministrator = RoleService.ROLE_DATA_ADMINISTRATOR;

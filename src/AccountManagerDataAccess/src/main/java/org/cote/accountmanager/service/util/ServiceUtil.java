@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.service.util;
 
+import java.security.Principal;
 import java.util.Enumeration;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -36,12 +37,14 @@ import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.security.UserPrincipal;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+
 
 public class ServiceUtil {
 	public static final Logger logger = Logger.getLogger(ServiceUtil.class.getName());
@@ -154,12 +157,14 @@ public class ServiceUtil {
 		logger.info("Clearing cookie: " + name);
 	}
 	public static UserType getUserFromSession(AuditType audit, HttpServletRequest request){
+
 		UserType user = getUserFromSession(request);
 		if(SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit,  "Invalid user. " + (user == null ? "Null user" : "Status is " + user.getSession().getSessionStatus()));
-			System.out.println("User is null or not authenticated");
+			//System.out.println("User is null or not authenticated");
 			return null;
 		}
+
 		AuditService.sourceAudit(audit,AuditEnumType.USER,user.getUrn());
 		return user;
 	}
@@ -172,23 +177,29 @@ public class ServiceUtil {
 
 		UserType user = null;
 		OrganizationType org = null;
-		try {
-			org = ServiceUtil.getOrganizationFromRequest(request);
-			if(org != null){
-				user = SessionSecurity.getUserBySession(sessionId, org.getId());
+		Principal principal = request.getUserPrincipal();
+		if(principal != null){
+			user = SessionSecurity.authenticatePrincipal(principal,  sessionId);
+		}
+		else{
+			try {
+				org = ServiceUtil.getOrganizationFromRequest(request);
+				if(org != null){
+					user = SessionSecurity.getUserBySession(sessionId, org.getId());
+				}
+				else{
+					logger.error("Organization is null");
+				}
+	
+			} catch (FactoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				logger.error(e.getMessage());
+			} catch (ArgumentException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+				e.printStackTrace();
 			}
-			else{
-				logger.error("Organization is null");
-			}
-
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error(e.getMessage());
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
 		}
 		return user;
 	}

@@ -15,9 +15,10 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.security.UserPrincipal;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.jaas.UserPrincipal;
+
 
 @Path("/principal")
 public class PrincipalService {

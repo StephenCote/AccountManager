@@ -99,6 +99,10 @@ public abstract class FactoryBase {
 
 	}
 	
+	
+	public void registerProvider(){
+		
+	}
 
 	
 

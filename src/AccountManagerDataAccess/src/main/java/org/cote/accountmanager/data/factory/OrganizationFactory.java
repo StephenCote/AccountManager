@@ -53,6 +53,7 @@ public class OrganizationFactory extends NameIdFactory {
 		super();
 		this.scopeToOrganization = false;
 		this.hasUrn = true;
+		this.hasObjectId = true;
 		this.tableNames.add("organizations");
 	}
 	

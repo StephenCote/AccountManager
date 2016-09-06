@@ -470,10 +470,17 @@ public class BaseDataAccessTest{
 		try{
 			bsh = Factories.getDataFactory().getDataByName(name,false,dir);
 			DirectoryGroupType ddir = Factories.getGroupFactory().getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganizationId());
+			
 			if(bsh != null){
-				Factories.getDataFactory().deleteData(bsh);
-				bsh = null;
+				String cv = DataUtil.getValueString(bsh);
+				if(cv.equals(script)==false){
+					DataUtil.setValueString(bsh,script);
+					Factories.getDataFactory().updateData(bsh);
+				}
+				//Factories.getDataFactory().deleteData(bsh);
+				//bsh = null;
 			}
+			
 			if(bsh == null){
 				bsh = Factories.getDataFactory().newData(user, ddir.getId());
 				bsh.setName(name);
@@ -483,14 +490,9 @@ public class BaseDataAccessTest{
 				bsh = Factories.getDataFactory().getDataByName(name,false,ddir);
 			}
 		}
-		catch(FactoryException e){
-			logger.error(e.getMessage());
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException | DataException | DataAccessException e) {
 			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
 		return bsh;
 	}

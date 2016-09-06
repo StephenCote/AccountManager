@@ -10,9 +10,11 @@ CREATE TABLE organizations (
 	ReferenceId bigint not null default 0,
 	Urn text not null,
 	LogicalId bigint not null default 0,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 	);
 --CREATE UNIQUE INDEX organizations_Id ON organizations(Id);
+CREATE UNIQUE INDEX IdxOrganizationObjId ON organizations(ObjectId);
 CREATE UNIQUE INDEX IdxorganizationsName on organizations(Name,ParentId);
 CREATE UNIQUE INDEX idxorganizations_urn on organizations(Urn);
 
@@ -50,7 +52,7 @@ CREATE TABLE asymmetrickeys (
 	PrivateKey bytea,
 	SymmetricKeyId bigint not null default 0,
 	OwnerId bigint not null default 0,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 );
 
@@ -78,7 +80,7 @@ CREATE TABLE symmetrickeys (
 	CipherIV bytea,
 	AsymmetricKeyId bigint not null default 0,
 	OwnerId bigint not null default 0,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 );
 -- CREATE UNIQUE INDEX symmetrickeys_Id on symmetrickeys(Id);
@@ -97,11 +99,13 @@ CREATE TABLE groups (
 	ReferenceId bigint not null default 0,
 	OrganizationId bigint not null default 0,
 	Urn text not null,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 	);
 
 -- CREATE UNIQUE INDEX groups_group_id ON groups(Id);
 CREATE UNIQUE INDEX idxgroups_urn on groups(Urn);
+CREATE UNIQUE INDEX IdxGroupObjId ON groups(ObjectId);
 CREATE INDEX groups_group_name ON groups(Name,OrganizationId);
 CREATE UNIQUE INDEX IdxgroupsNameParent on groups(Name,ParentId,OrganizationId);
 
@@ -174,11 +178,13 @@ create table data (
 	DataString varchar(255),
 	OrganizationId bigint not null default 0,
 	Urn text not null,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 );
 --CREATE UNIQUE INDEX data_id ON data(Id);
 CREATE UNIQUE INDEX idxdata_urn on data(Urn);
-CREATE INDEX data_Name ON data(Name);
+--CREATE INDEX data_Name ON data(Name);
+CREATE UNIQUE INDEX IdxDataObjId ON data(ObjectId);
 CREATE UNIQUE INDEX IdxdataNameGroup on data(Name,GroupId,OrganizationId);
 CREATE UNIQUE INDEX IdxdataIdGroup on data(Id,GroupId,OrganizationId);
 
@@ -235,10 +241,12 @@ create table accounts (
 	AccountStatus varchar(16) not null,
 	AccountType varchar(16) not null,
 	Urn text not null,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 );
 -- CREATE UNIQUE INDEX accounts_acct_id ON accounts(Id);
 CREATE UNIQUE INDEX idxaccounts_urn on accounts(Urn);
+CREATE UNIQUE INDEX IdxAccountObjId ON accounts(ObjectId);
 CREATE INDEX accounts_org_id ON accounts(OrganizationId);
 CREATE UNIQUE INDEX IdxaccountsName on accounts(Name,ParentId,GroupId,OrganizationId);
 
@@ -267,10 +275,12 @@ create table users (
 	UserStatus varchar(16) not null,
 	UserType varchar(16) not null,
 	Urn text not null,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 );
 -- CREATE UNIQUE INDEX users_acct_id ON users(Id);
 CREATE UNIQUE INDEX users_urn ON users(Urn);
+CREATE UNIQUE INDEX IdxUserObjId ON users(ObjectId);
 CREATE INDEX users_org_id ON users(OrganizationId);
 CREATE UNIQUE INDEX IdxusersName on users(Name,AccountId,OrganizationId);
 
@@ -324,9 +334,11 @@ create table addresses (
 	OwnerId bigint not null,
 	OrganizationId bigint not null default 0,
 	Urn text not null,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 );
 --CREATE UNIQUE INDEX addresses_acct_id ON addresses(Id);
+CREATE UNIQUE INDEX IdxAddressObjId ON addresses(ObjectId);
 CREATE UNIQUE INDEX idxaddresses_urn on addresses(Urn);
 CREATE UNIQUE INDEX addresses_reftype ON addresses(Name,LocationType,GroupId,OrganizationId);
 
@@ -345,10 +357,12 @@ create table contacts (
 	OwnerId bigint not null,
 	OrganizationId bigint not null default 0,
 	Urn text not null,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 );
 --CREATE UNIQUE INDEX contacts_acct_id ON contacts(Id);
 CREATE UNIQUE INDEX idxcontacts_urn on contacts(Urn);
+CREATE UNIQUE INDEX IdxContactsObjId ON contacts(ObjectId);
 CREATE UNIQUE INDEX contacts_reftype ON contacts(Name,ContactType,LocationType,GroupId,OrganizationId);
 
 DROP TABLE IF EXISTS contactinformation CASCADE;
@@ -361,9 +375,11 @@ create table contactinformation (
 	ContactInformationType varchar(16) not null,
 	OwnerId bigint not null,
 	OrganizationId bigint not null default 0,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 );
 --CREATE UNIQUE INDEX contactinformation_acct_id ON contactinformation(Id);
+CREATE UNIQUE INDEX IdxContactInfoObjId ON contactinformation(ObjectId);
 CREATE UNIQUE INDEX contactinformation_reftype ON contactinformation(ReferenceId,ContactInformationType,OrganizationId);
 CREATE INDEX contactinformation_type ON contactinformation(ContactInformationType);
 
@@ -411,12 +427,14 @@ create table persons (
 	BirthDate timestamp not null,
 	Gender varchar(16) default 'UNKNOWN',
 	Urn text not null,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 );
 --CREATE UNIQUE INDEX persons_person_id ON persons(Id);
 CREATE UNIQUE INDEX idxpersons_urn on persons(Urn);
 CREATE INDEX persons_group_id ON persons(groupId);
-CREATE INDEX persons_parent_id ON persons(ParentId);
+--CREATE INDEX persons_parent_id ON persons(ParentId);
+CREATE UNIQUE INDEX IdxPersonObjId ON persons(ObjectId);
 CREATE UNIQUE INDEX persons_name ON persons(Name,ParentId,GroupId,OrganizationId);
 
 DROP TABLE IF EXISTS personrolecache CASCADE;
@@ -465,9 +483,11 @@ create table roles (
 	ReferenceId bigint not null default 0,
 	OrganizationId bigint not null default 0,
 	Urn text not null,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 );
 -- CREATE UNIQUE INDEX roles_role_id ON roles(Id);
+CREATE UNIQUE INDEX IdxRoleObjId ON roles(ObjectId);
 CREATE UNIQUE INDEX idxroles_urn ON roles(Urn);
 CREATE INDEX roles_parent_id ON roles(ParentId);
 CREATE UNIQUE INDEX roles_name ON roles(Name,ParentId,RoleType,OrganizationId);
@@ -521,9 +541,11 @@ create table permissions (
 	ReferenceId bigint not null default 0,
 	OrganizationId bigint not null default 0,
 	Urn text not null,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 	);
 --CREATE UNIQUE INDEX permissions_permission_id ON permissions(Id);
+CREATE UNIQUE INDEX IdxPermissionObjId ON permissions(ObjectId);
 CREATE UNIQUE INDEX idxpermissions_urn ON permissions(Urn);
 CREATE INDEX idxpermissionsparent_id ON roles(ParentId);
 CREATE UNIQUE INDEX IdxpermissionsName on permissions(Name,PermissionType,ParentId,OrganizationId);
@@ -540,10 +562,12 @@ CREATE TABLE tags (
 	GroupId bigint not null default 0,
 	OrganizationId bigint not null default 0,
 	Urn text not null,
+	ObjectId varchar(64) default uuid_generate_v4(),
 	primary key(Id)
 	);
 --CREATE UNIQUE INDEX tags_id ON tags(Id);
 CREATE UNIQUE INDEX idxtags_urn on tags(Urn);
+CREATE UNIQUE INDEX IdxTagObjId ON tags(ObjectId);
 CREATE UNIQUE INDEX IdxtagsName on tags(Name,TagType,GroupId,OrganizationId);
 
 DROP TABLE IF EXISTS tagparticipation CASCADE;
@@ -672,11 +696,12 @@ create table fact (
 	FactData varchar(255),
 	FactoryType varchar(64) not null,
 	GroupId bigint not null,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(),
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX fact_id ON fact(Id);
+CREATE UNIQUE INDEX IdxFactObjId ON fact(ObjectId);
 CREATE UNIQUE INDEX IdxfactNameGroup on fact(Name,GroupId,OrganizationId);
 CREATE UNIQUE INDEX IdxfactUrnGroup on fact(Urn);
 CREATE INDEX IdxfactIdGroup on fact(Id,OrganizationId);
@@ -695,11 +720,12 @@ create table functionfact (
 	FunctionUrn text,
 	FactUrn text,
 	GroupId bigint not null,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(),
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX functionfact_id ON functionfact(Id);
+CREATE UNIQUE INDEX IdxFunFactObjId ON functionfact(ObjectId);
 CREATE UNIQUE INDEX IdxfunctionfactNameGroup on functionfact(Name,GroupId,OrganizationId);
 CREATE UNIQUE INDEX IdxfunctionfactUrnGroup on functionfact(Urn);
 CREATE INDEX IdxfunctionfactIdGroup on functionfact(Id,OrganizationId);
@@ -719,11 +745,12 @@ create table function (
 	SourceUrn text,
 	SourceUrl varchar(2047),
 	GroupId bigint not null,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(),
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX function_id ON function(Id);
+CREATE UNIQUE INDEX IdxFunctionObjId ON function(ObjectId);
 CREATE UNIQUE INDEX IdxfunctionNameGroup on function(Name,GroupId,OrganizationId);
 CREATE UNIQUE INDEX IdxfunctionUrnGroup on function(Urn);
 CREATE INDEX IdxfunctionIdGroup on function(Id,OrganizationId);
@@ -761,11 +788,12 @@ create table operation (
 	OperationType varchar(64) not null,
 	Operation varchar(2047),
 	GroupId bigint not null,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(),
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX operation_id ON operation(Id);
+CREATE UNIQUE INDEX IdxOperationObjId ON operation(ObjectId);
 CREATE UNIQUE INDEX IdxoperationNameGroup on operation(Name,GroupId,OrganizationId);
 CREATE UNIQUE INDEX IdxoperationUrnGroup on operation(Urn);
 CREATE INDEX IdxoperationIdGroup on operation(Id,OrganizationId);
@@ -787,11 +815,12 @@ create table pattern (
 	MatchUrn text,
 	OperationUrn text,
 	GroupId bigint not null,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(),
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX pattern_id ON pattern(Id);
+CREATE UNIQUE INDEX IdxPatternObjId ON pattern(ObjectId);
 CREATE UNIQUE INDEX IdxpatternNameGroup on pattern(Name,GroupId,OrganizationId);
 CREATE UNIQUE INDEX IdxpatternUrnGroup on pattern(Urn);
 CREATE INDEX IdxpatternIdGroup on pattern(Id,OrganizationId);
@@ -814,11 +843,12 @@ create table policy (
 	DecisionAge bigint not null default 0,
 	Condition varchar(64) not null,
 	GroupId bigint not null,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(),
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX policy_id ON policy(Id);
+CREATE UNIQUE INDEX IdxPolicyObjId ON policy(ObjectId);
 CREATE UNIQUE INDEX IdxpolicyNameGroup on policy(Name,GroupId,OrganizationId);
 CREATE UNIQUE INDEX IdxpolicyUrnGroup on policy(Urn);
 CREATE INDEX IdxpolicyIdGroup on policy(Id,OrganizationId);
@@ -856,11 +886,12 @@ create table rule (
 	RuleType varchar(64) not null,
 	Condition varchar(64) not null,
 	GroupId bigint not null,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(),
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
 CREATE UNIQUE INDEX rule_id ON rule(Id);
+CREATE UNIQUE INDEX IdxRuleObjId ON rule(ObjectId);
 CREATE UNIQUE INDEX IdxruleNameGroup on rule(Name,GroupId,OrganizationId);
 CREATE UNIQUE INDEX IdxruleUrnGroup on rule(Urn);
 CREATE INDEX IdxruleIdGroup on rule(Id,OrganizationId);
@@ -906,7 +937,7 @@ create table credential (
 	NextCredentialId bigint not null default 0,
 	OwnerId bigint not null default 0,
 	CredentialType varchar(32) not null,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(), 
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
@@ -927,7 +958,7 @@ create table control (
 	ReferenceId bigint not null default 0,
 	ReferenceType varchar(64) not null default 0,
 	OwnerId bigint not null default 0,
-	ObjectId varchar(64),
+	ObjectId varchar(64) default uuid_generate_v4(),
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );

@@ -66,6 +66,11 @@ public class DataFactory extends NameIdFactory {
 	private long currentCacheSize = 0L;
 
 	static{
+		//registerProvider();
+	}
+	
+	@Override
+	public void registerProvider(){
 		AuthorizationService.registerAuthorizationProviders(
 				FactoryEnumType.DATA,
 				NameEnumType.DATA,
@@ -82,6 +87,7 @@ public class DataFactory extends NameIdFactory {
 		this.canJoinToAttribute = true;
 		this.hasParentId = false;
 		this.hasOwnerId = true;
+		this.hasObjectId = true;
 		this.hasUrn = true;
 		this.tableNames.add("data");
 		factoryType = FactoryEnumType.DATA;

@@ -58,12 +58,12 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 
-
 public abstract class NameIdFactory extends FactoryBase {
 	public static final Logger logger = Logger.getLogger(NameIdFactory.class.getName());
 	private Map<Long, String> typeNameIdMap = null;
 	private Map<String,Integer> typeNameMap = null;
 	private Map<Long,Integer> typeIdMap = null;
+	private Map<String,Integer> typeObjectIdMap = null;
 	private List<NameIdType> typeMap = null;
 	private long cacheExpires = 0;
 	private int cacheExpiry = 5;
@@ -131,12 +131,15 @@ public abstract class NameIdFactory extends FactoryBase {
 			typeNameIdMap = Collections.synchronizedMap(new HashMap<Long,String>());
 			typeNameMap = Collections.synchronizedMap(new HashMap<String,Integer>());
 			typeIdMap = Collections.synchronizedMap(new HashMap<Long,Integer>());
+			typeObjectIdMap = Collections.synchronizedMap(new HashMap<String,Integer>());
+
 			typeMap = Collections.synchronizedList(new ArrayList<NameIdType>());
 		}
 		else{
 			typeNameIdMap = new HashMap<Long,String>();
 			typeNameMap = new HashMap<String,Integer>();
 			typeIdMap = new HashMap<Long,Integer>();
+			typeObjectIdMap = new HashMap<String,Integer>();
 			typeMap = new ArrayList<NameIdType>();
 		}
 		/// Invoke clear cache to set the expiration
@@ -482,7 +485,7 @@ public abstract class NameIdFactory extends FactoryBase {
 			if (scopeToOrganization) row.setCellValue("organizationid", obj.getOrganizationId());
 		}
 		catch(DataAccessException dae){
-			logger.error(dae.getMessage());
+			logger.error(this.factoryType.toString() + ": " + dae.getMessage());
 			throw new FactoryException(dae.getMessage());
 		}
 		return row;
@@ -493,12 +496,13 @@ public abstract class NameIdFactory extends FactoryBase {
 		if (!hasName) throw new FactoryException("Table " + dataTables.get(0).getName() + " Does not define a Name");
 		return getByField(QueryFields.getFieldName(name), organization_id);
 	}
+	/*
 	protected List<NameIdType> getByObjectId(String id, long organization_id) throws FactoryException, ArgumentException
 	{
 		if (!hasObjectId) throw new FactoryException("Table " + dataTables.get(0).getName() + " Does not define a Name");
 		return getByField(QueryFields.getFieldObjectId(id), organization_id);
 	}
-
+	*/
 	protected long getIdByName(String name, long organization_id) throws FactoryException
 	{
 		if (!hasName) throw new FactoryException("Table " + dataTables.get(0).getName() + " does not define a Name");
@@ -582,7 +586,24 @@ public abstract class NameIdFactory extends FactoryBase {
 
 		return obj;
 	}
+	public <T> T getByObjectId(String id, long organizationId) throws FactoryException, ArgumentException
+	{
+		if(hasObjectId == false) throw new FactoryException("Factory does not support object id");
+		T out_obj = readCache(id);
+		if (out_obj != null)
+			return out_obj;
 
+		List<NameIdType> obj_list = getByField(new QueryField[] { QueryFields.getFieldObjectId(id) }, organizationId);
+
+		if (obj_list.isEmpty() == false)
+		{
+			
+			String key_name = getCacheKeyName(obj_list.get(0));
+			addToCache(obj_list.get(0),key_name);
+			out_obj = (T)obj_list.get(0);
+		}
+		return out_obj;
+	}
 	public <T> T getById(long id, long organizationId) throws FactoryException, ArgumentException
 	{
 		T out_obj = readCache(id);
@@ -767,6 +788,7 @@ public abstract class NameIdFactory extends FactoryBase {
 		typeNameIdMap.clear();
 		typeNameMap.clear();
 		typeIdMap.clear();
+		typeObjectIdMap.clear();
 		typeMap.clear();
 		cacheExpires = System.currentTimeMillis() + (cacheExpiry * 60000);
 	}
@@ -776,6 +798,9 @@ public abstract class NameIdFactory extends FactoryBase {
 			logger.debug("Expire cache");
 			clearCache();
 		}
+	}
+	public boolean haveCacheId(String id){
+		return typeObjectIdMap.containsKey(id);
 	}
 	public boolean haveCacheId(long id){
 		return typeIdMap.containsKey(id);
@@ -843,6 +868,7 @@ public abstract class NameIdFactory extends FactoryBase {
 				//typeNameMap.remove(key_name);
 				typeMap.set(indexId, null);
 				typeIdMap.remove(obj.getId());
+				if(hasObjectId) typeObjectIdMap.remove(obj.getObjectId());
 				typeNameIdMap.remove(obj.getId());
 			}
 		}
@@ -856,6 +882,9 @@ public abstract class NameIdFactory extends FactoryBase {
 		checkCacheExpires();
 		if(typeNameMap.containsKey(name)){
 			return (T)typeMap.get(typeNameMap.get(name));
+		}
+		else if(typeObjectIdMap.containsKey(name)){
+			return (T)typeMap.get(typeObjectIdMap.get(name));
 		}
 		return null;
 	}
@@ -899,6 +928,7 @@ public abstract class NameIdFactory extends FactoryBase {
 		typeMap.add(map);
 		typeNameMap.put(key_name, length);
 		typeIdMap.put(map.getId(), length);
+		if(hasObjectId) typeObjectIdMap.put(map.getObjectId(), length);
 		typeNameIdMap.put(map.getId(), map.getName());
 
 		return true;

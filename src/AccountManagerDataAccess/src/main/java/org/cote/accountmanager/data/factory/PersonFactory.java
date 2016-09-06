@@ -63,16 +63,21 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class PersonFactory extends NameIdGroupFactory {
 	static{
+		//registerProvider();
+	}
+	@Override
+	public void registerProvider(){
 		AuthorizationService.registerAuthorizationProviders(
 				FactoryEnumType.PERSON,
 				NameEnumType.PERSON,
 				Factories.getPersonParticipationFactory()
-			);
+			);	
 	}
 	public PersonFactory(){
 		super();
 		this.hasParentId=true;
 		this.hasUrn = true;
+		this.hasObjectId = true;
 		this.tableNames.add("persons");
 		factoryType = FactoryEnumType.PERSON;
 	}

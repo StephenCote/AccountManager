@@ -9,9 +9,12 @@ import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.BshService;
+import org.cote.accountmanager.data.services.ScriptService;
+import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
+import org.cote.accountmanager.objects.FunctionEnumType;
 import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.OperationEnumType;
 import org.cote.accountmanager.objects.OperationType;
@@ -24,13 +27,51 @@ import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
 
 public class TestFunctionFactory extends BaseDataAccessTest{
 	public static final Logger logger = Logger.getLogger(TestFunctionFactory.class.getName());
 	
+	private static String getDebugJavaScript(){
+		StringBuffer buff = new StringBuffer();
+		buff.append("print('test');\nvar dt = new Date().getTime();\n");
+		buff.append("var pub = org.cote.accountmanager.data.Factories.getPublicOrganization();");
+		buff.append("\nprint('name: ' + user.getName());");
+		buff.append("var u2 = org.cote.accountmanager.data.Factories.getUserFactory().getUserByName('RocketQAUser2',user.getOrganizationId());");
+		buff.append("dt;");
+		return buff.toString();
+	}
 	@Test
-	public void TestCRUD(){
+	public void TestJSCRUD(){
+		try{
+			Factories.getUserFactory().populate(testUser);
+			DirectoryGroupType ddir = Factories.getGroupFactory().getCreateDirectory(testUser, "Data", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			DataType js = getCreateTextData(testUser,"Test.js",getDebugJavaScript(),ddir); 
+			
+			DirectoryGroupType fdir = Factories.getGroupFactory().getCreateDirectory(testUser, "Functions", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			FunctionType func = getCreateFunction(testUser,"TestJS1",js,fdir);
+			if(func.getFunctionType() != FunctionEnumType.JAVASCRIPT){
+				func.setFunctionType(FunctionEnumType.JAVASCRIPT);
+				Factories.getFunctionFactory().updateFunction(func);
+			}
+			assertNotNull("Function is null",func);
+			Map<String,Object> params = new HashMap<String,Object>();
+			params.put("debug",testUser);
+
+			Double resp = (Double)ScriptService.run(testUser,params,func);
+			logger.info("Ran the script: " + resp.longValue());
+		}
+		catch(NullPointerException | FactoryException | ArgumentException | DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} 
+
+	}
+	/*
+	@Test
+	public void TestBSHCRUD(){
 		try{
 			Factories.getUserFactory().populate(testUser);
 			DirectoryGroupType ddir = Factories.getGroupFactory().getCreateDirectory(testUser, "Data", testUser.getHomeDirectory(), testUser.getOrganizationId());
@@ -52,7 +93,8 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		} 
 
 	}
-	
+	*/
+	/*
 	@Test
 	public void TestFunctionOperation(){
 		PolicyType policy = getCompuFuncPolicy(testUser);
@@ -74,7 +116,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			logger.error(e.getMessage());
 		} 
 	}
-	
+	*/
 	private PolicyType getCompuFuncPolicy(UserType user){
 		DirectoryGroupType pdir = null;
 		DirectoryGroupType rdir = null;

@@ -61,6 +61,7 @@ public class ContactInformationFactory extends NameIdFactory {
 		this.hasParentId = false;
 		this.hasName = false;
 		this.hasUrn = false;
+		this.hasObjectId = true;
 		this.tableNames.add("contactinformation");
 		this.factoryType = FactoryEnumType.CONTACTINFORMATION;
 	}

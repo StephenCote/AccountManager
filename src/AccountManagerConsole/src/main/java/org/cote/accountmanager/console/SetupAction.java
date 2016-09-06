@@ -92,7 +92,7 @@ public class SetupAction {
 		// it also means it has to be reset again before running setup or it will fail again because all the data was just nuked by reloading the database schema
 		// 
 		try {
-			Factories.recycleOrganizationFactory();
+			Factories.recycleFactories();
 			if(FactoryDefaults.setupAccountManager(rootPassword)){
 				out_bool = true;
 			}

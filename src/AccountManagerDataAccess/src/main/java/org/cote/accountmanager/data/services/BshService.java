@@ -59,7 +59,7 @@ public class BshService {
 	//private static Map<String,CompiledScript> jsCompiled = new HashMap<String,CompiledScript>();
 
 	public static Object run(UserType user,Map<String,Object> params,FunctionType func) throws ArgumentException{
-		byte[] value = null;
+		//byte[] value = null;
 		if(func.getFunctionType() != FunctionEnumType.JAVA) throw new ArgumentException("FunctionType '" + func.getFunctionType().toString() + "' is not applicable");
 		DataType data = func.getFunctionData();
 		if(data == null && func.getSourceUrn() != null){

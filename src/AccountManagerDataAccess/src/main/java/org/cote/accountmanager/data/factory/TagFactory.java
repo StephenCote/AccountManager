@@ -60,6 +60,7 @@ public class TagFactory extends NameIdGroupFactory {
 		this.hasParentId = false;
 		this.hasOwnerId = true;
 		this.hasName = true;
+		this.hasObjectId = true;
 		this.hasUrn = true;
 		this.tableNames.add("tags");
 		factoryType = FactoryEnumType.TAG;

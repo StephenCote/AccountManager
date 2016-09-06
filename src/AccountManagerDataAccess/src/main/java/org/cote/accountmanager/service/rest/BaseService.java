@@ -638,22 +638,24 @@ public class BaseService{
 		}
 		return out_obj;
 	}
-	private static <T> T getById(AuditEnumType type, long id, long organizationId) throws ArgumentException, FactoryException {
+	private static <T> T getByObjectId(AuditEnumType type, String id, long organizationId) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
-		T out_obj = factory.getById(id, organizationId);
+		T out_obj = factory.getByObjectId(id, organizationId);
 		
 		if(out_obj == null) return null;
-		
-		populate(type, out_obj);
-		denormalize(out_obj);
+		return postFetchObject(type, out_obj);
+	}
+	private static <T> T postFetchObject(AuditEnumType type, T obj) throws ArgumentException, FactoryException{
+		populate(type, obj);
+		denormalize(obj);
 
 		if(enableExtendedAttributes){
-			Factories.getAttributeFactory().populateAttributes((NameIdType)out_obj);
+			Factories.getAttributeFactory().populateAttributes((NameIdType)obj);
 		}
 		
 		switch(type){
 			case DATA:
-				DataType d = (DataType)out_obj;
+				DataType d = (DataType)obj;
 				if(d.getDetailsOnly()){
 					logger.error("Data is details only.  Was expecting full data");
 				}
@@ -667,7 +669,7 @@ public class BaseService{
 						//d.setPointer(false);
 						d.setDataBytesStore(data);
 						d.setReadDataBytes(false);
-						out_obj = (T)d;
+						obj = (T)d;
 					} catch (DataException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -676,7 +678,15 @@ public class BaseService{
 				}
 				break;
 		}
-		return out_obj;		
+		return obj;		
+	}
+	private static <T> T getById(AuditEnumType type, long id, long organizationId) throws ArgumentException, FactoryException {
+		NameIdFactory factory = getFactory(type);
+		T out_obj = factory.getById(id, organizationId);
+		
+		if(out_obj == null) return null;
+		
+		return postFetchObject(type, out_obj);
 	}
 	private static <T> T getByNameInParent(AuditEnumType type, String name, String otype, NameIdType parent) throws ArgumentException, FactoryException {
 		
@@ -1280,6 +1290,46 @@ public class BaseService{
 
 		return out_bool;
 	}
+	public static <T> T readByObjectId(AuditEnumType type, String id,HttpServletRequest request){
+		T out_obj = null;
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByObjectId",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
+		AuditService.targetAudit(audit, type, id);
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null) return out_obj;
+		
+		try {
+			
+			NameIdType dirType = getByObjectId(type,id, user.getOrganizationId());
+			if(dirType == null){
+				AuditService.denyResult(audit, "#" + id + " (" + type + ") doesn't exist in organization " + user.getOrganizationId());
+				return null;
+			}		
+			AuditService.targetAudit(audit, type, ((NameIdType)dirType).getUrn());
+			if(canViewType(type, user, dirType) == true){
+				out_obj = (T)dirType;
+				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)out_obj).getPointer() && isAllowDataPointers(request) == false){
+					AuditService.denyResult(audit, "#" + id + " (" + type + ") is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
+					out_obj = null;
+				}
+				else{
+					AuditService.permitResult(audit, "Read " + dirType.getName() + " (#" + dirType.getId() + ")");
+				}
+			}
+			else{
+				AuditService.denyResult(audit,"User is not authorized to view object '" + dirType.getName() + "' #" + dirType.getId());
+			}
+
+		} catch (ArgumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (FactoryException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+
+		return out_obj;
+	}	
 	public static <T> T readById(AuditEnumType type, long id,HttpServletRequest request){
 		T out_obj = null;
 

@@ -70,6 +70,11 @@ public class AuthorizationService {
 	private static final NameEnumType[] actors = new NameEnumType[]{NameEnumType.ACCOUNT, NameEnumType.PERSON, NameEnumType.USER, NameEnumType.ROLE}; 
 	public static final String[] PERMISSION_BASE = new String[]{"Create","Delete","View","Edit","Execute"};
 
+	public static void clearProviders(){
+		partFactories.clear();
+		factoryProviders.clear();
+	}
+	
 	public static void registerAuthorizationProviders(FactoryEnumType factType,NameEnumType objectType, ParticipationFactory fact){
 		registerParticipationFactory(factType, fact);
 		factoryProviders.put(objectType, factType);

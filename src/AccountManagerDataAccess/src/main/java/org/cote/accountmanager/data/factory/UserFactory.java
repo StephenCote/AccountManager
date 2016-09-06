@@ -63,6 +63,7 @@ public class UserFactory extends NameIdFactory {
 		this.hasParentId = false;
 		this.hasOwnerId = false;
 		this.hasName = true;
+		this.hasObjectId = true;
 		this.hasUrn = true;
 		this.tableNames.add("users");
 		this.factoryType = FactoryEnumType.USER;

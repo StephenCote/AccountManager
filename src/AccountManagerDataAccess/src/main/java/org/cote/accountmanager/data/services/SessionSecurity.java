@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
+import java.security.Principal;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -32,9 +33,11 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.data.security.UserPrincipal;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.StatisticsType;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
@@ -219,10 +222,6 @@ public class SessionSecurity {
 	///
 	private static UserType authenticateSession(String sessionId, UserType user, CredentialType credential, String suppliedCredential, long organizationId) throws FactoryException, ArgumentException{
 
-		UserSessionType session = Factories.getSessionFactory().getCreateSession(sessionId, organizationId);
-		if (session == null){
-			throw new FactoryException("New session was not allocated.");
-		}
 		if(user == null || credential == null){
 			throw new ArgumentException("User object or credential was null");
 		}
@@ -235,7 +234,34 @@ public class SessionSecurity {
 				throw new FactoryException("Failed to validate user");
 			}
 		}
-		
+		else{
+			throw new FactoryException("Unsupported authentication option");
+		}
+		authenticateUser(user, sessionId);
+		return user;
+	}
+	public static UserType authenticatePrincipal(Principal principal, String sessionId){
+		UserType user = null;
+		if(principal != null && principal instanceof UserPrincipal){
+			UserPrincipal userp = (UserPrincipal)principal;
+			try {
+				OrganizationType org = Factories.getOrganizationFactory().findOrganization(userp.getOrganizationPath());
+				user = Factories.getUserFactory().getById(userp.getId(), org.getId());
+				if(user != null){
+					authenticateUser(user, sessionId);
+				}
+			} catch (FactoryException | ArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return user;
+	}
+	private static void authenticateUser(UserType user, String sessionId) throws FactoryException, ArgumentException{
+		UserSessionType session = Factories.getSessionFactory().getCreateSession(sessionId, user.getOrganizationId());
+		if (session == null){
+			throw new FactoryException("New session was not allocated.");
+		}
 		session.setUserId(user.getId());
 		session.setOrganizationId(user.getOrganizationId());
 		user.setSession(session);
@@ -262,7 +288,6 @@ public class SessionSecurity {
 			throw new FactoryException("Error updating session " + session.getSessionId() + " in organization id " + session.getOrganizationId());
 		}
 
-		return user;
 	}
 	
 	public static boolean logout(UserType user) throws FactoryException{

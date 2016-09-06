@@ -129,7 +129,7 @@ public class Factories {
 	private static String documentControlName = "Document Control";
 	
 	static{
-		getOrganizationFactory();
+		//getOrganizationFactory();
 		/*
 		 * 2016/05/17 - Warm up added because factories now support registering their own entitlement sets
 		 * 
@@ -137,7 +137,7 @@ public class Factories {
 		warmUp();
 		//AuthorizationService.registerParticipationFactory(FactoryEnumType.DATA,getDataParticipationFactory());
 		//AuthorizationService.registerParticipationFactory(FactoryEnumType.GROUP,getGroupParticipationFactory());
-		AuthorizationService.registerParticipationFactory(FactoryEnumType.PERSON,getPersonParticipationFactory());
+		//AuthorizationService.registerParticipationFactory(FactoryEnumType.PERSON,getPersonParticipationFactory());
 		//AuthorizationService.registerParticipationFactory(FactoryEnumType.ROLE,getRoleParticipationFactory());
 	}
 	public static String getDocumentControlName(){
@@ -455,7 +455,14 @@ public class Factories {
 		}
 		return groupFactory;
 	}
-	
+	/// Recycle factories for development and new setups
+	/// When the schema is nuked during setup, cached values may be null or invalid
+	///
+	public static void recycleFactories(){
+		coolDown();
+		recycleOrganizationFactory();
+		warmUp();
+	}
 	/// Recycle organization factories for use in development environments
 	/// This is primarily used when deleting and recreating the dev, system, root, and/or public organizations
 	/// Otherwise, just delete/add/clearCache through the org factory
@@ -465,7 +472,7 @@ public class Factories {
 		systemOrganization = null;
 		publicOrganization = null;
 		developmentOrganization = null;
-		orgFactory.clearCache();
+		if(orgFactory != null) orgFactory.clearCache();
 		orgFactory = null;
 		getOrganizationFactory();
 	}
@@ -494,7 +501,7 @@ public class Factories {
 				
 			}
 			catch(FactoryException | ArgumentException e) {
-				logger.error("Trace",e);
+				//logger.error("Trace",e);
 				logger.error(e.getMessage());
 				rootOrganization = null;
 				systemOrganization = null;
@@ -806,11 +813,62 @@ public class Factories {
 			fact.populate(object);
 		
 	}
+	
+	public static void coolDown(){
+		AuthorizationService.clearProviders();
+		rootOrganization = null;
+		developmentOrganization = null;
+		systemOrganization = null;
+		publicOrganization = null;
+		
+		asymmetricKeyFactory = null;
+		symmetricKeyFactory = null;
+		credentialFactory = null;
+		controlFactory = null;
+		factFactory = null;
+		functionFactory = null;
+		functionFactFactory = null;
+		functionParticipationFactory = null;
+		policyParticipationFactory = null;
+		ruleParticipationFactory = null;
+		operationFactory = null;
+		patternFactory = null;
+		policyFactory = null;
+		ruleFactory = null;
+		attributeFactory = null;
+		contactFactory = null;
+		addressFactory = null;
+		personFactory = null;
+		personParticipationFactory = null;
+		auditFactory = null;
+		tagFactory = null;
+		tagParticipationFactory = null;
+		permissionFactory = null;
+		roleFactory = null;
+		roleParticipationFactory = null;
+		userFactory = null;
+		accountFactory = null;
+		statisticsFactory = null;
+		contactInformationFactory = null;
+		contactInformationParticipationFactory = null;
+		orgFactory = null;
+		groupParticipationFactory = null;
+		groupFactory = null;
+		dataParticipationFactory = null;
+		dataFactory = null;
+		messageFactory = null;
+		securityTokenFactory = null;
+		sessionFactory = null;
+		sessionDataFactory = null;
+	}
+	
 	public static void warmUp(){
 		logger.info("Warming up factory instances");
 		long startWarmUp = System.currentTimeMillis();
+		getOrganizationFactory();
 		for(FactoryEnumType f : FactoryEnumType.values()){
 			FactoryBase fact = getFactory(f);
+			if(fact != null) fact.registerProvider();
 		}
 		logger.debug("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
 	}

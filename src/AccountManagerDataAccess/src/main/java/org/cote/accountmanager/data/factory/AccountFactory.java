@@ -62,6 +62,7 @@ public class AccountFactory extends NameIdGroupFactory {
 		this.hasOwnerId = true;
 		this.hasName = true;
 		this.hasUrn = true;
+		this.hasObjectId = true;
 		this.tableNames.add("accounts");
 		this.factoryType = FactoryEnumType.ACCOUNT;
 		systemRoleNameAdministrator = "AccountAdministrators";

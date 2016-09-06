@@ -67,6 +67,7 @@ public class RuleFactory extends NameIdGroupFactory {
 		super();
 		this.tableNames.add("rule");
 		this.hasObjectId = true;
+		
 		this.hasUrn = true;
 		factoryType = FactoryEnumType.RULE;
 	}

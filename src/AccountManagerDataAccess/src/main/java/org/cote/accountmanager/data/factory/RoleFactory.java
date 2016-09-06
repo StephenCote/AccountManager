@@ -55,13 +55,17 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class RoleFactory extends NameIdFactory {
 	static{
+		//registerProvider();
+	}
+	
+	@Override
+	public void registerProvider(){
 		AuthorizationService.registerAuthorizationProviders(
 				FactoryEnumType.ROLE,
 				NameEnumType.ROLE,
 				Factories.getRoleParticipationFactory()
 			);
 	}
-	
 	
 	public RoleFactory(){
 		super();
@@ -70,6 +74,7 @@ public class RoleFactory extends NameIdFactory {
 		this.hasOwnerId = true;
 		this.hasName = true;
 		this.hasUrn = true;
+		this.hasObjectId = true;
 		this.tableNames.add("roles");
 		factoryType = FactoryEnumType.ROLE;
 		systemRoleNameReader = "RoleReaders";
