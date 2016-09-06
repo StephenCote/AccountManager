@@ -260,7 +260,7 @@ public class SessionSecurity {
 	private static void authenticateUser(UserType user, String sessionId) throws FactoryException, ArgumentException{
 		UserSessionType session = Factories.getSessionFactory().getCreateSession(sessionId, user.getOrganizationId());
 		if (session == null){
-			throw new FactoryException("New session was not allocated.");
+			throw new FactoryException("New session '" + sessionId + "' was not allocated.");
 		}
 		session.setUserId(user.getId());
 		session.setOrganizationId(user.getOrganizationId());

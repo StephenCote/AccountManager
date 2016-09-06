@@ -19,6 +19,7 @@ import org.cote.accountmanager.data.services.SessionDataMaintenance;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.service.rest.BaseService;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.spi.AbstractContainerLifecycleListener;
@@ -27,6 +28,7 @@ import org.glassfish.jersey.server.spi.Container;
 public class RestServiceConfig extends ResourceConfig{
 	private static final Logger logger = LogManager.getLogger(RestServiceConfig.class);
 	public RestServiceConfig(@Context ServletContext servletContext){
+		ServiceUtil.useAccountManagerSession = false;
 		register(StartupHandler.class);
 		packages("org.cote.rest.services");
 		register(RolesAllowedDynamicFeature.class);

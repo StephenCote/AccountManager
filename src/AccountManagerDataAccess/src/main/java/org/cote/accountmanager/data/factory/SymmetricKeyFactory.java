@@ -145,9 +145,10 @@ public class SymmetricKeyFactory extends NameIdFactory {
 		return update(data, null);
 	}
 	public SecurityType getKeyByObjectId(String id, long org) throws FactoryException, ArgumentException{
-		List<NameIdType> sec = getByObjectId(id, org);
-		if(sec.size() > 0) return (SecurityType)sec.get(0);
-		return null;
+		return getByObjectId(id, org);
+		//List<NameIdType> sec = getByObjectId(id, org);
+		//if(sec.size() > 0) return (SecurityType)sec.get(0);
+		//return null;
 	}
 	public SecurityType getPrimaryPersonalKey(UserType user) throws FactoryException, ArgumentException{
 		List<QueryField> fields = new ArrayList<QueryField>();

@@ -1,17 +1,32 @@
 package org.cote.accountmanager.util;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class JSONUtil {
 	public static final Logger logger = Logger.getLogger(JSONUtil.class.getName());
+	public static <T> Map<String,T> getMap(byte[] data, Class keyClass, Class mapClass){
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,T> map = null;
+		try {
+			TypeFactory t = TypeFactory.defaultInstance();
+			map = mapper.readValue(data, t.constructMapType(Map.class, keyClass, mapClass));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return map;
+		
+	}
+	public static <T> Map<String,T> getMap(String path, Class keyClass,Class mapClass){
+		return getMap(FileUtil.getFile(path),keyClass,mapClass);
+	}
 	
 	public static <T> T importObject(String s,Class<T>  cls){
 		ObjectMapper mapper = new ObjectMapper();

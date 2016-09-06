@@ -25,7 +25,10 @@ package org.cote.jaas;
 
 import java.security.Principal;
 import java.security.acl.Group;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,8 +53,10 @@ import org.cote.accountmanager.data.security.AccountManagerGroup;
 import org.cote.accountmanager.data.security.RolePrincipal;
 import org.cote.accountmanager.data.security.UserPrincipal;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.service.util.ServiceUtil;
 
@@ -81,7 +86,21 @@ public class AM5LoginModule implements LoginModule {
  
     protected Principal[] _authPrincipals;
  
- 
+    protected Map<String, String> _roleMap = null;
+    protected String authenticatedRole = "AccountUsers";
+    /// TODO: Read this from the JSON file
+    ///
+    public Map<String, String> getRoleMap(){
+    	if(_roleMap != null) return _roleMap;
+    	_roleMap = new HashMap<>();
+    	_roleMap.put("SystemAdministrators", "admin");
+    	_roleMap.put("DataAdministrators", "admin");
+    	_roleMap.put("AccountAdministrators", "admin");
+    	_roleMap.put("ApiUsers", "api");
+    	_roleMap.put("AccountUsers", "user");
+    	return _roleMap;
+    }
+    
     /**
      * Initialize this <code>LoginModule</code>.
      * <p/>
@@ -267,13 +286,12 @@ public class AM5LoginModule implements LoginModule {
 
             if (getAuthPrincipals() != null) {
                 for (int i = 0; i < getAuthPrincipals().length; i++) {
-                    if(!_subject.getPrincipals().contains(getAuthPrincipals()[i]))
-{
+                    if(!_subject.getPrincipals().contains(getAuthPrincipals()[i])){
                     	logger.info("Adding principle to subject: '" + getAuthPrincipals()[i].getName());
                   
                         _subject.getPrincipals().add(getAuthPrincipals()[i]);
                         /// debug test
-                        _subject.getPrincipals().add(getRoleSets()[0]);
+                        _subject.getPrincipals().addAll(getRoleSets((UserPrincipal)getAuthPrincipals()[0]));
                     }
                     else{
                     	logger.info("Don't add principle to subject: '" + getAuthPrincipals()[i].getName());
@@ -300,18 +318,28 @@ public class AM5LoginModule implements LoginModule {
     }
  
 
-    protected Group[] getRoleSets() throws LoginException
+    protected List<RolePrincipal> getRoleSets(UserPrincipal uprince) throws LoginException, FactoryException, ArgumentException
     {
-            String[] roles = new String[]{"AuthorizedUser"};
-            Group[] groups = {new AccountManagerGroup("Roles")};
-            
-            for(int r = 0; r < roles.length; r ++) {
-                RolePrincipal role = new RolePrincipal(roles[r]);
-                groups[0].addMember(role);
+            //String[] roles = new String[]{"admin"};
+            //Group[] groups = {new AccountManagerGroup("Roles")};
+    		Map<String,String> map = getRoleMap();
+    		List<RolePrincipal> oroles = new ArrayList<>();
+    		List<UserRoleType> roles = Factories.getRoleParticipationFactory().getUserRoles(uprince);
+    		logger.info("Retrieved " + roles.size() + " roles");
+            for(BaseRoleType brole : roles) {
+            	if(map.containsKey(brole.getName())){
+            		RolePrincipal role = new RolePrincipal(map.get(brole.getName()));
+            		oroles.add(role);
+            	}
+                //groups[0].addMember(role);
+            }
+            if(authenticatedRole != null && map.containsKey(authenticatedRole)){
+            	oroles.add(new RolePrincipal(map.get(authenticatedRole)));
             }
             //if(true) throw new LoginException("Whatever");
-            logger.info("Returning " + groups.length + " groups");
-            return groups;
+            logger.info("Returning " + oroles.size() + " roles");
+            return oroles;
+            //.toArray(new RolePrincipal[0]);
     }
 
     /**
@@ -428,13 +456,13 @@ public class AM5LoginModule implements LoginModule {
             }
             Set s = subject.getPrincipals();
             if ((s != null) && (s.size() != 0)) {
-                logger.info("\t\t[SampleLoginModule] added the following Principals:");
+                logger.info("\t\t[AM5LoginModule] added the following Principals:");
                 printSet(s);
             }
  
             s = subject.getPublicCredentials();
             if ((s != null) && (s.size() != 0)) {
-                logger.info("\t\t[SampleLoginModule] added the following Public Credentials:");
+                logger.info("\t\t[AM5LoginModule] added the following Public Credentials:");
                 printSet(s);
             }
         } catch (Throwable t) {

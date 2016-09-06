@@ -1,8 +1,8 @@
 <Context path = "" docBase = "ROOT" encoding = "UTF-8">
  <Realm className="org.apache.catalina.realm.JAASRealm" 
     appName="AccountManagerService"
-    userClassNames="org.cote.jaas.UserPrincipal"
-    roleClassNames="org.cote.jaas.RolePrincipal" />
+    userClassNames="org.cote.accountmanager.data.security.UserPrincipal"
+    roleClassNames="org.cote.accountmanager.data.security.RolePrincipal" />
 <Resource name="tomcat/datasources/postgresDS"
           auth="Container"
           type="javax.sql.DataSource"
@@ -13,7 +13,7 @@
           validationQuery="SELECT 1"
           validationInterval="30000"
           timeBetweenEvictionRunsMillis="30000"
-          maxActive="100"
+          maxActive="20"
           minIdle="10"
           maxWait="10000"
           initialSize="10"
@@ -34,7 +34,7 @@
     />
     
     <Manager className="org.apache.catalina.session.PersistentManager" maxIdleBackup="1">
-   <Store className="org.apache.catalina.session.FileStore" directory="c:/Projects/Sessions"/>
+   <Store className="org.apache.catalina.session.FileStore" directory="/Users/Steve/Projects/Sessions"/>
 </Manager>
     
 </Context>

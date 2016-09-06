@@ -3,14 +3,17 @@ package org.cote.accountmanager.data;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.BshService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.ScriptService;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
@@ -25,9 +28,12 @@ import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
+import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.util.DataUtil;
+import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 
 public class TestFunctionFactory extends BaseDataAccessTest{
@@ -43,8 +49,24 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		return buff.toString();
 	}
 	@Test
-	public void TestJSCRUD(){
+	public void TestJSCRUDShouldFail(){
+		
+		Map<String,String> roleMap = JSONUtil.getMap("/Users/Steve/Projects/workspace/AccountManagerService/src/main/webapp/WEB-INF/resource/roleMap.json", String.class, String.class);
+		assertNotNull("Map is null", roleMap);
 		try{
+			//AccountRoleType role1 = RoleService.getAccountAdministratorAccountRole(testUser.getOrganizationId());
+			//assertNotNull("Role is null",role1);
+			//Factories.getRoleFactory().denormalize(role1);
+			//logger.info("ROLE: " + role1.getParentPath());
+			//AccountRoleType role1c = Factories.getRoleFactory().findRole(RoleEnumType.ACCOUNT, "/AccountAdministrators", testUser.getOrganizationId());
+			//logger.info("Got role? " + (role1c != null));
+			
+			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", testUser.getOrganizationId());
+			List<UserRoleType> roles = Factories.getRoleParticipationFactory().getUserRoles(adminUser);
+			logger.info("ROLES: " + roles.size());
+			for(int i = 0; i < roles.size(); i++){
+				logger.info("\t" + roles.get(i).getName());
+			}
 			Factories.getUserFactory().populate(testUser);
 			DirectoryGroupType ddir = Factories.getGroupFactory().getCreateDirectory(testUser, "Data", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			DataType js = getCreateTextData(testUser,"Test.js",getDebugJavaScript(),ddir); 
@@ -58,11 +80,12 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			assertNotNull("Function is null",func);
 			Map<String,Object> params = new HashMap<String,Object>();
 			params.put("debug",testUser);
-
+			/// Expecting an error here because the namespace is blocked
+			///
 			Double resp = (Double)ScriptService.run(testUser,params,func);
 			logger.info("Ran the script: " + resp.longValue());
 		}
-		catch(NullPointerException | FactoryException | ArgumentException | DataAccessException e) {
+		catch(RuntimeException | FactoryException | ArgumentException | DataAccessException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();

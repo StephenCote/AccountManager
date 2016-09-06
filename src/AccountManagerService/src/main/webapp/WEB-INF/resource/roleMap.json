@@ -1,0 +1,7 @@
+{
+	"SystemAdministrators":"admin",
+	"DataAdministrators":"admin",
+	"AccountAdministrators":"admin",
+	"ApiUsers":"api",
+	"AccountUsers":"user"
+}

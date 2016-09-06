@@ -32,17 +32,17 @@ public class RolePrincipal extends BaseRoleType implements Principal,Serializabl
 		private static final long serialVersionUID = 11110L;  
 	 
 	    public RolePrincipal(String name){
-	    	name = name;
+	    	this.name = name;
 	    	organizationPath = "/Public";
 	    }
 	    public RolePrincipal(String name, String organizationPath) {
-	        name = name;
-	        organizationPath = organizationPath;
+	        this.name = name;
+	        this.organizationPath = organizationPath;
 	    }
 	    public RolePrincipal(long id, String name, String organizationPath) {
-	        name = name;
-	        organizationPath = organizationPath;
-	        id = id;
+	        this.name = name;
+	        this.organizationPath = organizationPath;
+	        this.id = id;
 	    }
 	 
 
