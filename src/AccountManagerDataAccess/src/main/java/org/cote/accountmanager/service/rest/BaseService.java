@@ -1704,6 +1704,92 @@ public class BaseService{
 		return factory.getCountInParent(parent);
 	}
 	
+	public static <T> List<T> listByParentObjectId(AuditEnumType type, String parentType, String parentId, long startRecord, int recordCount, HttpServletRequest request){
+		///return BaseService.getGroupList(AuditEnumType.ROLE, user, path, startRecord, recordCount);
+		List<T> out_obj = new ArrayList<>();
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listByParentObjectId",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
+		AuditService.targetAudit(audit, type, parentId);
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null) return out_obj;
+
+		//AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All " + type.toString() + " objects",AuditEnumType.GROUP,(user == null ? "Null" : user.getName()));
+		NameIdType parentObj = BaseService.readByObjectId(type, parentId, request);
+		if(parentObj == null){
+			AuditService.denyResult(audit, "Null parent id");
+			return out_obj;
+		}
+		
+		AuditService.targetAudit(audit, type, parentObj.getUrn());
+		
+		/// This is duplicative if the REST service is enforcing this
+		///
+		if(SessionSecurity.isAuthenticated(user) == false){
+			AuditService.denyResult(audit, "User is null or not authenticated");
+			return null;
+		}
+
+		try {
+			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
+			if(
+				AuthorizationService.canView(user, parentObj)
+				||
+				RoleService.isFactoryReader(user,Factories.getGroupFactory(),parentObj.getOrganizationId())
+			){
+				AuditService.permitResult(audit, "Access authorized to list objects");
+				out_obj = getListByParent(type,parentType,parentObj,startRecord,recordCount,parentObj.getOrganizationId() );
+			}
+			else{
+				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
+				return out_obj;
+			}
+		} catch (ArgumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (FactoryException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+
+		return out_obj;
+	}
+	
+	private static <T> List<T> getListByParent(AuditEnumType type,String parentType, NameIdType parentObj, long startIndex, int recordCount, long organizationId){
+		//BaseGroupType dir = findGroup(groupType, path, request);
+		List<T> dirs = new ArrayList<>();
+		//GroupEnumType groupType = GroupEnumType.valueOf(type);
+		if(parentObj == null) return dirs;
+		try {
+			switch(type){
+				case GROUP:
+					dirs = Factories.getGroupFactory().getListByParent(GroupEnumType.valueOf(parentType), (BaseGroupType)parentObj,  startIndex, recordCount, parentObj.getOrganizationId());
+					break;
+				case ROLE:
+					dirs = Factories.getRoleFactory().getRoleList(RoleEnumType.valueOf(parentType), (BaseRoleType)parentObj,  startIndex, recordCount, parentObj.getOrganizationId());
+					break;
+				case PERMISSION:
+					/// TODO: Inconsistent method calls
+					///
+					dirs = Factories.getPermissionFactory().getPermissionList((BasePermissionType)parentObj, PermissionEnumType.valueOf(parentType),  startIndex, recordCount, parentObj.getOrganizationId());
+					break;
+			}
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		if(BaseService.enableExtendedAttributes){
+			for(int i = 0; i < dirs.size(); i++){
+				Factories.getAttributeFactory().populateAttributes((NameIdType)dirs.get(i));
+			}
+		}
+		return dirs;
+	}
+	
+	
 	private static <T> List<T> getListByGroup(AuditEnumType type, BaseGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
 		NameIdGroupFactory factory = getFactory(type);
 		List<T> out_obj = factory.getListByGroup(group, startRecord, recordCount, group.getOrganizationId());

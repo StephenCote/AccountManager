@@ -1,7 +1,9 @@
 package org.cote.rest.services;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.security.DeclareRoles;
@@ -62,15 +64,18 @@ public class GenericResourceService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response listObjects(@PathParam("type") String type, @PathParam("objectId") String objectId, @PathParam("startIndex") long startIndex, @PathParam("count") int recordCount, @Context HttpServletRequest request){
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		List<Object> objs = new ArrayList<>();
 		if(parentType.contains(auditType)){
-			NameIdType parentObj = BaseService.readByObjectId(auditType, objectId, request);
+			//NameIdType parentObj = BaseService.readByObjectId(auditType, objectId, request);
 			logger.error("REFACTOR LIST IN PARENT");
-			return Response.status(404).entity(null).build();
+			objs = BaseService.listByParentObjectId(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
+			//BaseService
+			//return Response.status(404).entity(objs).build();
 		}
 		else{
-			
+			//objs = BaseService.getGroupList(type, user, path, startRecord, recordCount)
 		}
-		return Response.status(200).entity(null).build();
+		return Response.status(200).entity(objs).build();
 		
 		
 	}
