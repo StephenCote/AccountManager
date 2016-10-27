@@ -31,7 +31,7 @@ public class BulkRuleParticipationFactory extends RuleParticipationFactory{
 	public BulkRuleParticipationFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "ruleparticipation_id_seq";
+		//sequenceName = "ruleparticipation_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

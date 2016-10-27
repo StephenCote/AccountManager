@@ -32,7 +32,7 @@ public class BulkAccountFactory extends AccountFactory{
 	public BulkAccountFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "accounts_id_seq";
+		//sequenceName = "accounts_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

@@ -30,7 +30,7 @@ public class BulkGroupFactory extends GroupFactory{
 	public BulkGroupFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "groups_id_seq";
+		//sequenceName = "groups_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

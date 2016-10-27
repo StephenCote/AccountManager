@@ -30,7 +30,7 @@ public class BulkPolicyFactory extends PolicyFactory{
 	public BulkPolicyFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "policy_id_seq";
+		//sequenceName = "policy_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

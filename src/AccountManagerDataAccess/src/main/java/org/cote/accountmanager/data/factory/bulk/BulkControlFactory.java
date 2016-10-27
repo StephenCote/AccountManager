@@ -30,7 +30,7 @@ public class BulkControlFactory extends ControlFactory{
 	public BulkControlFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "control_id_seq";
+		//sequenceName = "control_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

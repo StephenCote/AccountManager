@@ -32,7 +32,7 @@ public class BulkAsymmetricKeyFactory extends AsymmetricKeyFactory{
 	public BulkAsymmetricKeyFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "asymmetrickeys_id_seq";
+		//sequenceName = "asymmetrickeys_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

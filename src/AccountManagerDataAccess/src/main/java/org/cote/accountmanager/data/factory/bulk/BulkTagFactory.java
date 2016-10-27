@@ -30,7 +30,7 @@ public class BulkTagFactory extends TagFactory{
 	public BulkTagFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "tags_id_seq";
+		//sequenceName = "tags_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

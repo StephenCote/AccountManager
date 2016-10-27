@@ -187,11 +187,14 @@ public class CredentialFactory extends NameIdFactory {
 		fields.add(QueryFields.getFieldSalt(use_map.getSalt()));
 		fields.add(QueryFields.getFieldCredential(use_map.getCredential()));
 	}
+	/*
 	public CredentialType getCredentialByObjectId(String id, long organizationId) throws FactoryException, ArgumentException{
+		
 		List<NameIdType> sec = getByObjectId(id, organizationId);
 		if(sec.size() > 0) return (CredentialType)sec.get(0);
 		return null;
 	}
+	*/
 	public boolean updateCredential(CredentialType data) throws FactoryException, DataAccessException
 	{	
 		removeFromCache(data);

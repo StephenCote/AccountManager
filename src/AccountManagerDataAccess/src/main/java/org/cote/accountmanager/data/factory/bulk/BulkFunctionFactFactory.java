@@ -30,7 +30,7 @@ public class BulkFunctionFactFactory extends FunctionFactFactory{
 	public BulkFunctionFactFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "functionfact_id_seq";
+		//sequenceName = "functionfact_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

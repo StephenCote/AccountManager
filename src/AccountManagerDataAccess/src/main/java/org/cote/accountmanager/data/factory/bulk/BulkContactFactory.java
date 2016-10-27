@@ -30,7 +30,7 @@ public class BulkContactFactory extends ContactFactory{
 	public BulkContactFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "contacts_id_seq";
+		//sequenceName = "contacts_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

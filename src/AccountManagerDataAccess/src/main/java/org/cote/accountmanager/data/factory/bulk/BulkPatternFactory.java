@@ -30,7 +30,7 @@ public class BulkPatternFactory extends PatternFactory{
 	public BulkPatternFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "pattern_id_seq";
+		//sequenceName = "pattern_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

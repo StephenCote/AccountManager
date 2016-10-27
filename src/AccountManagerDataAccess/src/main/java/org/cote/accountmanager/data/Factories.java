@@ -503,6 +503,7 @@ public class Factories {
 			catch(FactoryException | ArgumentException e) {
 				//logger.error("Trace",e);
 				logger.error(e.getMessage());
+				logger.error("Trace",e);
 				rootOrganization = null;
 				systemOrganization = null;
 				publicOrganization = null;

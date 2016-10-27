@@ -30,7 +30,7 @@ public class BulkPermissionFactory extends PermissionFactory{
 	public BulkPermissionFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "permissions_id_seq";
+		//sequenceName = "permissions_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

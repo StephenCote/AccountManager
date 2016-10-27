@@ -30,7 +30,7 @@ public class BulkTagParticipationFactory extends TagParticipationFactory{
 	public BulkTagParticipationFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "tagparticipation_id_seq";
+		//sequenceName = "tagparticipation_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

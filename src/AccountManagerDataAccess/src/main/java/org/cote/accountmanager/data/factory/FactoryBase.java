@@ -72,7 +72,7 @@ public abstract class FactoryBase {
 	
 	/// PostGres sequence name
 	///
-	protected String sequenceName = null;
+	protected String sequenceName = "orgid_id_seq";
 	
 	private Map<String,List<Long>> bulkMap = null;
 	

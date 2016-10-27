@@ -1,75 +1,81 @@
 -- create extension "uuid-ossp";
 -- select uuid_generate_v4();
-DROP TABLE IF EXISTS nameid CASCADE;
-DROP SEQUENCE IF EXISTS nameid_id_seq;
-CREATE SEQUENCE nameid_id_seq;
-CREATE TABLE nameid (
-	Id bigint not null default nextval('organizations_id_seq'),
+
+DROP TABLE IF EXISTS orgid CASCADE;
+DROP SEQUENCE IF EXISTS orgid_id_seq;
+CREATE SEQUENCE orgid_id_seq;
+CREATE TABLE orgid(
+	Id bigint not null default nextval('orgid_id_seq'),
 	OwnerId bigint not null default 0,
-	Name varchar(512) not null,
-	ParentId bigint not null default 0,
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
+	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
+CREATE INDEX idxorgidowner on orgid(OwnerId);
+
+DROP TABLE IF EXISTS objorgid CASCADE;
+CREATE TABLE objorgid(
+	ObjectId varchar(64) default uuid_generate_v4()
+) inherits (orgid);
+CREATE UNIQUE INDEX idxnobjorgidobjectid on objorgid(ObjectId);
+
+DROP TABLE IF EXISTS nameid CASCADE;
+CREATE TABLE nameid (
+	Name varchar(512) not null,
+	ParentId bigint not null default 0,
+	Urn text not null
+) inherits (objorgid);
 CREATE UNIQUE INDEX idxnameidurn on nameid(Urn);
 CREATE UNIQUE INDEX idxnameidobjectid on nameid(ObjectId);
 
-DROP TABLE IF EXISTS orgnameid CASCADE;
-CREATE TABLE orgnameid (
-	OrganizationId bigint not null default 0
+DROP TABLE IF EXISTS uniquenameid CASCADE;
+CREATE TABLE uniquenameid(
 ) inherits (nameid);
+CREATE UNIQUE INDEX idxnameid on uniquenameid(Name,OrganizationId);
+
+DROP TABLE IF EXISTS objectreference;
+CREATE TABLE objectreference(
+	ReferenceId bigint not null default 0,
+	ReferenceType varchar(64)
+);
 
 DROP TABLE IF EXISTS logicalnameid CASCADE;
 CREATE TABLE logicalnameid (
-	ReferenceId bigint not null default 0,
-	ReferenceType varchar(64) not null,
 	LogicalId bigint not null default 0
-) inherits (orgnameid);
-
---- OLD REFACTOR MARK
+) inherits (nameid,objectreference);
+CREATE INDEX idxlogicalrefid ON logicalnameid(ReferenceId,ReferenceType,OrganizationId);
 
 DROP TABLE IF EXISTS organizations CASCADE;
-DROP SEQUENCE IF EXISTS organizations_id_seq;
-CREATE SEQUENCE organizations_id_seq;
 CREATE TABLE organizations (
-	Id bigint not null default nextval('organizations_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(128) not null,
-	OrganizationType varchar(16) not null,
-	ParentId bigint not null default 0,
-	ReferenceId bigint not null default 0,
-	Urn text not null,
-	LogicalId bigint not null default 0,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-	);
---CREATE UNIQUE INDEX organizations_Id ON organizations(Id);
-CREATE UNIQUE INDEX IdxOrganizationObjId ON organizations(ObjectId);
-CREATE UNIQUE INDEX IdxorganizationsName on organizations(Name,ParentId);
-CREATE UNIQUE INDEX idxorganizations_urn on organizations(Urn);
+	OrganizationType varchar(16) not null
+) inherits (logicalnameid);
 
 DROP TABLE IF EXISTS attribute CASCADE;
 CREATE TABLE attribute (
-	ReferenceId bigint not null default 0,
-	ReferenceType varchar(32) not null,
-	Name varchar(510) not null,
 	DataType varchar(32) not null,
 	ValueIndex int not null default 0,
-	Value text not null,
-	OrganizationId bigint not null default 0
+	Value text not null
 
-	);
-CREATE INDEX idxattributerefid_Id ON attribute(ReferenceId,ReferenceType,OrganizationId);
---CREATE INDEX idxattributelookup ON attribute(ReferenceId,ReferenceType,Name);
+	) inherits (logicalnameid);
+
 CREATE UNIQUE INDEX Idxattributes on attribute(ReferenceId,ReferenceType,Name,ValueIndex,OrganizationId);
 
+
+DROP TABLE IF EXISTS objectlocation CASCADE;
+create table objectlocation(
+	LocationType varchar(16)
+);
+
+DROP TABLE IF EXISTS objectdescription CASCADE;
+create table objectdescription(
+	Description varchar(255)
+);
+DROP TABLE IF EXISTS objectorderscore;
+create table objectorderscore(
+	LogicalOrder int not null default 0,
+	Score int not null default 0
+);
 DROP TABLE IF EXISTS asymmetrickeys CASCADE;
-DROP SEQUENCE IF EXISTS asymmetrickeys_id_seq;
-CREATE SEQUENCE asymmetrickeys_id_seq;
 CREATE TABLE asymmetrickeys (
-	Id bigint not null default nextval('asymmetrickeys_id_seq'),
-	OrganizationId bigint not null default 0,
 	OrganizationKey boolean not null default false,
 	CipherProvider varchar(32) not null,
 	CipherKeySpec varchar(32) not null,
@@ -81,22 +87,12 @@ CREATE TABLE asymmetrickeys (
 	PreviousKeyId bigint not null default 0,
 	PublicKey bytea,
 	PrivateKey bytea,
-	SymmetricKeyId bigint not null default 0,
-	OwnerId bigint not null default 0,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-);
+	SymmetricKeyId bigint not null default 0
+) inherits (objorgid);
 
---CREATE UNIQUE INDEX asymmetrickeys_Id on asymmetrickeys(Id);
-CREATE INDEX asymmetrickeys_OwnId ON asymmetrickeys(OwnerId);
-CREATE UNIQUE INDEX asymmetrickeys_ObjId ON asymmetrickeys(ObjectId);
 
 DROP TABLE IF EXISTS symmetrickeys CASCADE;
-DROP SEQUENCE IF EXISTS symmetrickeys_id_seq;
-CREATE SEQUENCE symmetrickeys_id_seq;
 CREATE TABLE symmetrickeys (
-	Id bigint not null default nextval('symmetrickeys_id_seq'),
-	OrganizationId bigint not null,
 	OrganizationKey boolean not null default false,
 	CipherProvider varchar(32) not null,
 	CipherKeySpec varchar(32) not null,
@@ -109,532 +105,259 @@ CREATE TABLE symmetrickeys (
 	PreviousKeyId bigint not null default 0,
 	CipherKey bytea,
 	CipherIV bytea,
-	AsymmetricKeyId bigint not null default 0,
-	OwnerId bigint not null default 0,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-);
--- CREATE UNIQUE INDEX symmetrickeys_Id on symmetrickeys(Id);
-CREATE INDEX symmetrickeys_OrgId ON symmetrickeys(OwnerId);
-CREATE UNIQUE INDEX symmetrickeys_ObjId ON symmetrickeys(ObjectId);
+	AsymmetricKeyId bigint not null default 0
+) inherits (objorgid);
+
+DROP TABLE IF EXISTS uniqueparent CASCADE;
+CREATE TABLE uniqueparent (
+) inherits (nameid);
+CREATE UNIQUE INDEX idxuniqueparentname on uniqueparent(Name,ParentId,OrganizationId);
 
 DROP TABLE IF EXISTS groups CASCADE;
-DROP SEQUENCE IF EXISTS groups_id_seq;
-CREATE SEQUENCE groups_id_seq;
 CREATE TABLE groups (
-	Id bigint not null default nextval('groups_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(511) not null,
 	GroupType varchar(16) not null,
-	ParentId bigint not null default 0,
-	ReferenceId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-	);
-
--- CREATE UNIQUE INDEX groups_group_id ON groups(Id);
-CREATE UNIQUE INDEX idxgroups_urn on groups(Urn);
-CREATE UNIQUE INDEX IdxGroupObjId ON groups(ObjectId);
-CREATE INDEX groups_group_name ON groups(Name,OrganizationId);
-CREATE UNIQUE INDEX IdxgroupsNameParent on groups(Name,ParentId,OrganizationId);
+	-- TODO: Remove
+	ReferenceId bigint not null default 0
+	) inherits (uniqueparent);
 
 
-DROP TABLE IF EXISTS groupparticipation CASCADE;
-DROP SEQUENCE IF EXISTS groupparticipation_id_seq;
-CREATE SEQUENCE groupparticipation_id_seq;
-CREATE TABLE groupparticipation (
-	Id bigint not null default nextval('groupparticipation_id_seq'),
-	OwnerId bigint not null,
+DROP TABLE IF EXISTS participation CASCADE;
+DROP SEQUENCE IF EXISTS participation_id_seq;
+CREATE SEQUENCE participation_id_seq;
+CREATE TABLE participation (
 	ParticipationId bigint not null default 0,
 	ParticipantType varchar(16) not null,
 	ParticipantId bigint not null default 0,
 	AffectType varchar(16) not null,
-	AffectId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-	);
--- CREATE UNIQUE INDEX groupparticipation_id ON groupparticipation(Id);
---CREATE INDEX groupparticipation_parttype ON groupparticipation(ParticipantId,ParticipantType,AffectId);
-CREATE INDEX groupparticipation_pid ON groupparticipation(ParticipationId);
---CREATE INDEX groupparticipant_pid ON groupparticipation(ParticipantId);
---CREATE INDEX groupptype_pid ON groupparticipation(ParticipantType);
---CREATE UNIQUE INDEX IdxgroupparticipationCbo on groupparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
+	AffectId bigint not null default 0
 
+) inherits (orgid);
 
-DROP TABLE IF EXISTS grouprolecache CASCADE;
-CREATE TABLE grouprolecache (
-	GroupId bigint not null default 0,
-	AffectType varchar(16) not null,
+CREATE INDEX participation_pid ON participation(ParticipationId);
+CREATE INDEX participant_pid ON participation(ParticipantId);
+CREATE INDEX participanttype_pid ON participation(ParticipantType);
+
+DROP TABLE IF EXISTS groupparticipation CASCADE;
+CREATE TABLE groupparticipation (
+) inherits (participation);
+
+DROP TABLE IF EXISTS dataparticipation CASCADE;
+CREATE TABLE dataparticipation (
+) inherits (participation);
+
+DROP TABLE IF EXISTS rolecache CASCADE;
+CREATE TABLE rolecache (
+	ObjectId bigint not null default 0,
+	AffectType varchar(16) not null default 'UNKNOWN',
 	AffectId bigint not null default 0,
 	EffectiveRoleId bigint not null default 0,
 	BaseRoleId bigint not null default 0,
-	     OrganizationId bigint not null default 0
-	);
-	
-CREATE INDEX grouprolecache_id ON grouprolecache(groupId);
-CREATE INDEX grouprolecache_role_id ON grouprolecache(EffectiveRoleId);
-CREATE INDEX grouprolecache_aff_id ON grouprolecache(AffectType,AffectId);
-CREATE INDEX grouprolecache_dorg ON grouprolecache(groupId,OrganizationId);
+	OrganizationId bigint not null default 0
+);
+CREATE INDEX rolecache_aff_id ON rolecache(AffectType,AffectId);
+CREATE INDEX rolecache_dorg ON rolecache(ObjectId,OrganizationId);
 
+DROP TABLE IF EXISTS grouprolecache CASCADE;
+CREATE TABLE grouprolecache (
+
+) inherits (rolecache);
+
+DROP TABLE IF EXISTS vaultkey CASCADE;
+CREATE TABLE vaultkey(
+	KeyId varchar(64),
+	VaultId varchar(64),
+	IsVaulted boolean not null default false,
+	IsEnciphered boolean not null default false
+
+);
+
+DROP TABLE IF EXISTS namegroup CASCADE;
+CREATE TABLE namegroup (
+   GroupId bigint not null
+) inherits (nameid);
+
+DROP TABLE IF EXISTS uniquenamegroup CASCADE;
+CREATE TABLE uniquenamegroup (
+
+) inherits (namegroup);
+CREATE UNIQUE INDEX idxuniquenamegroup on uniquenamegroup(Name,GroupId,OrganizationId);
+
+DROP TABLE IF EXISTS uniquenameparentgroup CASCADE;
+CREATE TABLE uniquenameparentgroup (
+
+) inherits (uniquenamegroup);
+CREATE UNIQUE INDEX idxuniquenameparentgroup on uniquenameparentgroup(Name,ParentId,GroupId,OrganizationId);
+
+DROP TABLE IF EXISTS objectdate CASCADE;
+create table objectdate (
+	CreatedDate timestamp not null,
+	ModifiedDate timestamp not null,
+	ExpirationDate timestamp not null
+);
 
 DROP TABLE IF EXISTS data CASCADE;
-DROP SEQUENCE IF EXISTS data_id_seq;
-CREATE SEQUENCE data_id_seq;
 create table data (
-	Id bigint not null default nextval('data_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(255) not null,
 	MimeType varchar(127) not null,
-	VaultId varchar(64),
-	KeyId varchar(64),
-	IsVaulted boolean not null default false,
-	IsEnciphered boolean not null default false,
 	IsPasswordProtected boolean not null default false,
 	IsCompressed boolean not null default false,
 	CompressionType varchar(16) not null,
-	Description varchar(255),
-	Dimensions varchar(9),
+	Dimensions varchar(9),	
 	Size int not null default 0,
 	Rating double precision not null default 0,
 	IsPointer boolean not null default false,
 	Hash varchar(64),
-	GroupId bigint not null,
-	CreatedDate timestamp not null,
-	ModifiedDate timestamp not null,
-	ExpirationDate timestamp not null,
 	IsBlob boolean not null,
 	DataBlob bytea,
-	DataString varchar(255),
-	OrganizationId bigint not null default 0,
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-);
---CREATE UNIQUE INDEX data_id ON data(Id);
-CREATE UNIQUE INDEX idxdata_urn on data(Urn);
---CREATE INDEX data_Name ON data(Name);
-CREATE UNIQUE INDEX IdxDataObjId ON data(ObjectId);
-CREATE UNIQUE INDEX IdxdataNameGroup on data(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxdataIdGroup on data(Id,GroupId,OrganizationId);
+	DataString varchar(255)
 
-DROP TABLE IF EXISTS dataparticipation CASCADE;
-DROP SEQUENCE IF EXISTS dataparticipation_id_seq;
-CREATE SEQUENCE dataparticipation_id_seq;
-CREATE TABLE dataparticipation (
-	Id bigint not null default nextval('dataparticipation_id_seq'),
-	OwnerId bigint not null,
-	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null,
-	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null,
-	AffectId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-	);
---CREATE UNIQUE INDEX dataparticipation_id ON dataparticipation(Id);
---CREATE INDEX dataparticipation_parttype ON dataparticipation(ParticipantId,ParticipantType,AffectId);
-CREATE INDEX dataptype_pid ON dataparticipation(ParticipantType);
-CREATE INDEX dataparticipation_pid ON dataparticipation(ParticipationId);
-CREATE INDEX dataparticipant_pid ON dataparticipation(ParticipantId);
--- CREATE UNIQUE INDEX IdxdataparticipationCbo on dataparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
-
-
+) inherits (uniquenamegroup,vaultkey,objectdate,objectdescription);
 
 DROP TABLE IF EXISTS datarolecache CASCADE;
 CREATE TABLE datarolecache (
-	DataId bigint not null default 0,
-	AffectType varchar(16) not null,
-	AffectId bigint not null default 0,
-	EffectiveRoleId bigint not null default 0,
-	BaseRoleId bigint not null default 0,
-	     OrganizationId bigint not null default 0
-	);
-	
-CREATE INDEX datarolecache_id ON datarolecache(DataId);
-CREATE INDEX datarolecache_role_id ON datarolecache(EffectiveRoleId);
-CREATE INDEX datarolecache_aff_id ON datarolecache(AffectType,AffectId);
-CREATE INDEX datarolecache_dorg ON datarolecache(DataId,OrganizationId);
+) inherits (rolecache);
 
 DROP TABLE IF EXISTS accounts CASCADE;
-DROP SEQUENCE IF EXISTS accounts_id_seq;
-CREATE SEQUENCE accounts_id_seq;
 create table accounts (
-	Id bigint not null default nextval('accounts_id_seq'),
 	AccountId varchar(64) not null,
-	ReferenceId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	OwnerId bigint not null default 0,
-	ParentId bigint not null default 0,
-	GroupId bigint not null,
-	Name varchar(511) not null,
 	AccountStatus varchar(16) not null,
 	AccountType varchar(16) not null,
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-);
--- CREATE UNIQUE INDEX accounts_acct_id ON accounts(Id);
-CREATE UNIQUE INDEX idxaccounts_urn on accounts(Urn);
-CREATE UNIQUE INDEX IdxAccountObjId ON accounts(ObjectId);
-CREATE INDEX accounts_org_id ON accounts(OrganizationId);
-CREATE UNIQUE INDEX IdxaccountsName on accounts(Name,ParentId,GroupId,OrganizationId);
+	-- TODO: Remove
+	ReferenceId bigint not null default 0
+) inherits (uniquenameparentgroup);
+
 
 DROP TABLE IF EXISTS accountrolecache CASCADE;
 CREATE TABLE accountrolecache (
-	AccountId bigint not null default 0,
-	EffectiveRoleId bigint not null default 0,
-	BaseRoleId bigint not null default 0,
-	OrganizationId bigint not null default 0
-	);
-CREATE INDEX accountrolecache_id ON accountrolecache(AccountId);
-CREATE INDEX accountrolecache_role_id ON accountrolecache(EffectiveRoleId);
-CREATE INDEX accountrolecache_uorg_id ON accountrolecache(AccountId,OrganizationId);
+) inherits (rolecache);
 
 
 DROP TABLE IF EXISTS users CASCADE;
-DROP SEQUENCE IF EXISTS users_id_seq;
-CREATE SEQUENCE users_id_seq;
 create table users (
-	Id bigint not null default nextval('users_id_seq'),
-	OrganizationId bigint not null default 0,
 	AccountId bigint not null default 0,
 	UserId varchar(64) not null,
-	Name varchar(511) not null,
---	Password varchar(128),
 	UserStatus varchar(16) not null,
-	UserType varchar(16) not null,
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-);
--- CREATE UNIQUE INDEX users_acct_id ON users(Id);
-CREATE UNIQUE INDEX users_urn ON users(Urn);
-CREATE UNIQUE INDEX IdxUserObjId ON users(ObjectId);
-CREATE INDEX users_org_id ON users(OrganizationId);
-CREATE UNIQUE INDEX IdxusersName on users(Name,AccountId,OrganizationId);
+	UserType varchar(16) not null
+
+) inherits (uniquenameid);
 
 DROP TABLE IF EXISTS userrolecache CASCADE;
 CREATE TABLE userrolecache (
-	UserId bigint not null default 0,
-	EffectiveRoleId bigint not null default 0,
-	BaseRoleId bigint not null default 0,
-	OrganizationId bigint not null default 0
-	);
-CREATE INDEX userrolecache_id ON userrolecache(UserId);
-CREATE INDEX userrolecache_role_id ON userrolecache(EffectiveRoleId);
-CREATE INDEX userrolecache_uorg_id ON userrolecache(UserId,OrganizationId);
+) inherits (rolecache);
 
 DROP TABLE IF EXISTS statistics CASCADE;
-DROP SEQUENCE IF EXISTS statistics_id_seq;
-CREATE SEQUENCE statistics_id_seq;
 create table statistics (
-	Id bigint not null default nextval('statistics_id_seq'),
-	ReferenceId bigint not null default 0,
+	ReferenceId bigint not null,
 	StatisticsType varchar(16) not null,
-	CreatedDate timestamp not null,
-	AccessedDate timestamp not null,
-	ModifiedDate timestamp not null,
-	ExpirationDate timestamp not null,
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-);
---CREATE UNIQUE INDEX statistics_acct_id ON statistics(Id);
+	AccessedDate timestamp not null
+) inherits (orgid,objectdate);
 CREATE UNIQUE INDEX IdxstatisticsRefOrg on statistics(ReferenceId,StatisticsType,OrganizationId);
 
 
-
 DROP TABLE IF EXISTS addresses CASCADE;
-DROP SEQUENCE IF EXISTS addresses_id_seq;
-CREATE SEQUENCE addresses_id_seq;
 create table addresses (
-	Id bigint not null default nextval('addresses_id_seq'),
-	Name varchar(255) not null,
-	GroupId bigint not null,
-	Description varchar(255),
 	Preferred boolean not null default false,
-	LocationType varchar(16) not null,
 	AddressLine1 varchar(255),
 	AddressLine2 varchar(255),
 	City varchar(255),
 	State varchar(255),
 	Region varchar(255),
 	PostalCode varchar(255),
-	Country varchar(255),
-	OwnerId bigint not null,
-	OrganizationId bigint not null default 0,
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-);
---CREATE UNIQUE INDEX addresses_acct_id ON addresses(Id);
-CREATE UNIQUE INDEX IdxAddressObjId ON addresses(ObjectId);
-CREATE UNIQUE INDEX idxaddresses_urn on addresses(Urn);
+	Country varchar(255)
+) inherits (namegroup,objectlocation,objectdescription);
 CREATE UNIQUE INDEX addresses_reftype ON addresses(Name,LocationType,GroupId,OrganizationId);
 
+
 DROP TABLE IF EXISTS contacts CASCADE;
-DROP SEQUENCE IF EXISTS contacts_id_seq;
-CREATE SEQUENCE contacts_id_seq;
 create table contacts (
-	Id bigint not null default nextval('contacts_id_seq'),
-	Name varchar(255) not null,
-	GroupId bigint not null,
-	Description varchar(255),
 	Preferred boolean not null default false,
 	ContactType varchar(16) not null,
-	LocationType varchar(16) not null,
-	ContactValue text,
-	OwnerId bigint not null,
-	OrganizationId bigint not null default 0,
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-);
---CREATE UNIQUE INDEX contacts_acct_id ON contacts(Id);
-CREATE UNIQUE INDEX idxcontacts_urn on contacts(Urn);
-CREATE UNIQUE INDEX IdxContactsObjId ON contacts(ObjectId);
+	ContactValue text
+) inherits (namegroup,objectlocation,objectdescription);
 CREATE UNIQUE INDEX contacts_reftype ON contacts(Name,ContactType,LocationType,GroupId,OrganizationId);
 
 DROP TABLE IF EXISTS contactinformation CASCADE;
-DROP SEQUENCE IF EXISTS contactinformation_id_seq;
-CREATE SEQUENCE contactinformation_id_seq;
 create table contactinformation (
-	Id bigint not null default nextval('contactinformation_id_seq'),
 	ReferenceId bigint not null,
-	Description varchar(255),
-	ContactInformationType varchar(16) not null,
-	OwnerId bigint not null,
-	OrganizationId bigint not null default 0,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-);
---CREATE UNIQUE INDEX contactinformation_acct_id ON contactinformation(Id);
-CREATE UNIQUE INDEX IdxContactInfoObjId ON contactinformation(ObjectId);
+	ContactInformationType varchar(16) not null
+) inherits (objorgid,objectdescription);
 CREATE UNIQUE INDEX contactinformation_reftype ON contactinformation(ReferenceId,ContactInformationType,OrganizationId);
-CREATE INDEX contactinformation_type ON contactinformation(ContactInformationType);
 
 DROP TABLE IF EXISTS contactinformationparticipation CASCADE;
-DROP SEQUENCE IF EXISTS contactinformationparticipation_id_seq;
-CREATE SEQUENCE contactinformationparticipation_id_seq;
 CREATE TABLE contactinformationparticipation (
-	Id bigint not null default nextval('contactinformationparticipation_id_seq'),
-	OwnerId bigint not null,
-	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null,
-	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null,
-	AffectId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-	);
---CREATE UNIQUE INDEX contactinformationparticipation_id ON contactinformationparticipation(Id);
--- CREATE INDEX contactinformationparticipation_parttype ON contactinformationparticipation(ParticipantId,ParticipantType,AffectId,AffectType);
-CREATE INDEX contactinformationparticipation_pid ON contactinformationparticipation(ParticipationId);
-CREATE INDEX contactinformationparticipant_pid ON contactinformationparticipation(ParticipantId);
-CREATE INDEX contactinformationptype_pid ON contactinformationparticipation(ParticipantType);
--- CREATE UNIQUE INDEX IdxcontactinformationparticipationCbo on contactinformationparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
 
+) inherits (participation);
 
 DROP TABLE IF EXISTS persons CASCADE;
-DROP SEQUENCE IF EXISTS persons_id_seq;
-CREATE SEQUENCE persons_id_seq;
 create table persons (
-	Id bigint not null default nextval('persons_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(511) not null,
-	ParentId bigint not null default 0,
-	GroupId bigint not null default 0,
-	OrganizationId bigint not null default 0,
 	ContactInformationId bigint not null default 0,
 	Title varchar(128),
 	Prefix varchar(64),
 	Suffix varchar(64),
-	Description varchar(255),
 	FirstName varchar(128),
 	MiddleName varchar(128),
 	LastName varchar(128),
 	Alias varchar(64),
 	BirthDate timestamp not null,
-	Gender varchar(16) default 'UNKNOWN',
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-);
---CREATE UNIQUE INDEX persons_person_id ON persons(Id);
-CREATE UNIQUE INDEX idxpersons_urn on persons(Urn);
-CREATE INDEX persons_group_id ON persons(groupId);
---CREATE INDEX persons_parent_id ON persons(ParentId);
-CREATE UNIQUE INDEX IdxPersonObjId ON persons(ObjectId);
-CREATE UNIQUE INDEX persons_name ON persons(Name,ParentId,GroupId,OrganizationId);
+	Gender varchar(16) default 'UNKNOWN'
+) inherits (uniquenameparentgroup,objectdescription);
 
 DROP TABLE IF EXISTS personrolecache CASCADE;
 CREATE TABLE personrolecache (
-	PersonId bigint not null default 0,
-	EffectiveRoleId bigint not null default 0,
-	BaseRoleId bigint not null default 0,
-	OrganizationId bigint not null default 0
-	);
-CREATE INDEX personrolecache_id ON personrolecache(PersonId);
-CREATE INDEX personrolecache_role_id ON personrolecache(EffectiveRoleId);
-CREATE INDEX personrolecache_org_id ON personrolecache(PersonId,OrganizationId);
+
+) inherits (rolecache);
+
 
 DROP TABLE IF EXISTS personparticipation CASCADE;
-DROP SEQUENCE IF EXISTS personparticipation_id_seq;
-CREATE SEQUENCE personparticipation_id_seq;
 CREATE TABLE personparticipation (
-	Id bigint not null default nextval('personparticipation_id_seq'),
-	OwnerId bigint not null,
-	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null,
-	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null,
-	AffectId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-	);
---CREATE UNIQUE INDEX personparticipation_id ON personparticipation(Id);
---CREATE INDEX personparticipation_parttype ON personparticipation(ParticipantId,ParticipantType,AffectId,AffectType);
-CREATE INDEX personparticipationtype_pid ON personparticipation(ParticipationId,ParticipantType);
-CREATE INDEX personparticipation_pid ON personparticipation(ParticipationId);
-CREATE INDEX personparticipant_pid ON personparticipation(ParticipantId);
-CREATE INDEX personptype_pid ON personparticipation(ParticipantType);
---CREATE UNIQUE INDEX IdxpersonparticipationCbo on personparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
+) inherits (participation);
+
+
+
 
 
 DROP TABLE IF EXISTS roles CASCADE;
-DROP SEQUENCE IF EXISTS roles_id_seq;
-CREATE SEQUENCE roles_id_seq;
 create table roles (
-	Id bigint not null default nextval('roles_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(511) not null,
 	RoleType varchar(16) not null,
-	ParentId bigint not null default 0,
-	ReferenceId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-);
--- CREATE UNIQUE INDEX roles_role_id ON roles(Id);
-CREATE UNIQUE INDEX IdxRoleObjId ON roles(ObjectId);
-CREATE UNIQUE INDEX idxroles_urn ON roles(Urn);
-CREATE INDEX roles_parent_id ON roles(ParentId);
-CREATE UNIQUE INDEX roles_name ON roles(Name,ParentId,RoleType,OrganizationId);
+	ReferenceId bigint not null default 0
+) inherits (nameid);
+CREATE UNIQUE INDEX roles_name ON roles(Name,RoleType,ParentId,OrganizationId);
 
 DROP TABLE IF EXISTS roleparticipation CASCADE;
-DROP SEQUENCE IF EXISTS roleparticipation_id_seq;
-CREATE SEQUENCE roleparticipation_id_seq;
 CREATE TABLE roleparticipation (
-	Id bigint not null default nextval('roleparticipation_id_seq'),
-	OwnerId bigint not null,
-	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null,
-	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null,
-	AffectId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-	);
--- CREATE UNIQUE INDEX roleparticipation_id ON roleparticipation(Id);
-CREATE INDEX roleparticipation_parttype ON roleparticipation(ParticipantId,ParticipantType,AffectId,AffectType);
-CREATE INDEX roleparticipation_pid ON roleparticipation(ParticipationId);
-CREATE INDEX roleparticipant_pid ON roleparticipation(ParticipantId);
-CREATE INDEX roleptype_pid ON roleparticipation(ParticipantType);
---CREATE UNIQUE INDEX IdxroleparticipationCbo on roleparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,AffectType,OrganizationId);
-
+) inherits (participation);
 
 DROP TABLE IF EXISTS rolerolecache CASCADE;
 CREATE TABLE rolerolecache (
-	roleId bigint not null default 0,
-	AffectType varchar(16) not null,
-	AffectId bigint not null default 0,
-	EffectiveRoleId bigint not null default 0,
-	BaseRoleId bigint not null default 0,
-	     OrganizationId bigint not null default 0
-	);
-	
-CREATE INDEX rolerolecache_id ON rolerolecache(roleId);
-CREATE INDEX rolerolecache_role_id ON rolerolecache(EffectiveRoleId);
-CREATE INDEX rolerolecache_aff_id ON rolerolecache(AffectType,AffectId);
-CREATE INDEX rolerolecache_dorg ON rolerolecache(roleId,OrganizationId);
+) inherits (rolecache);
 
 DROP TABLE IF EXISTS permissions CASCADE;
-DROP SEQUENCE IF EXISTS permissions_id_seq;
-CREATE SEQUENCE permissions_id_seq;
 create table permissions (
-	Id bigint not null default nextval('permissions_id_seq'),
-	OwnerId bigint not null,
 	PermissionType varchar(16) not null,
-	Name varchar(511) not null,
-	ParentId bigint not null default 0,
-	ReferenceId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-	);
---CREATE UNIQUE INDEX permissions_permission_id ON permissions(Id);
-CREATE UNIQUE INDEX IdxPermissionObjId ON permissions(ObjectId);
-CREATE UNIQUE INDEX idxpermissions_urn ON permissions(Urn);
-CREATE INDEX idxpermissionsparent_id ON roles(ParentId);
+	ReferenceId bigint not null default 0
+) inherits (nameid);
 CREATE UNIQUE INDEX IdxpermissionsName on permissions(Name,PermissionType,ParentId,OrganizationId);
 
-
 DROP TABLE IF EXISTS tags CASCADE;
-DROP SEQUENCE IF EXISTS tags_id_seq;
-CREATE SEQUENCE tags_id_seq;
 CREATE TABLE tags (
-	Id bigint not null default nextval('tags_id_seq'),
-	OwnerId bigint not null,
-	TagType varchar(16) not null,
-	Name varchar(255) not null,
-	GroupId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	Urn text not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	primary key(Id)
-	);
---CREATE UNIQUE INDEX tags_id ON tags(Id);
-CREATE UNIQUE INDEX idxtags_urn on tags(Urn);
-CREATE UNIQUE INDEX IdxTagObjId ON tags(ObjectId);
+	TagType varchar(16) not null
+) inherits (namegroup);
 CREATE UNIQUE INDEX IdxtagsName on tags(Name,TagType,GroupId,OrganizationId);
 
 DROP TABLE IF EXISTS tagparticipation CASCADE;
-DROP SEQUENCE IF EXISTS tagparticipation_id_seq;
-CREATE SEQUENCE tagparticipation_id_seq;
 CREATE TABLE tagparticipation (
-	Id bigint not null default nextval('tagparticipation_id_seq'),
-	OwnerId bigint not null,
-	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null,
-	ParticipantId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-	);
---CREATE UNIQUE INDEX tagparticipation_id ON tagparticipation(Id);
-CREATE INDEX tagparticipation_parttype ON tagparticipation(ParticipantId,ParticipantType);
-CREATE INDEX tagparticipation_pid ON tagparticipation(ParticipationId);
---CREATE UNIQUE INDEX IdxtagparticipationCbo on tagparticipation(ParticipationId,ParticipantId,ParticipantType,OrganizationId);
+) inherits (participation);
 
 DROP TABLE IF EXISTS spool CASCADE;
 CREATE TABLE spool (
 	Guid varchar(42) not null,
-	OwnerId bigint not null default 0,
 	ParentGuid varchar(42),
-
 	SpoolBucketName varchar(64) not null,
 	SpoolBucketType varchar(16) not null,
 	SpoolValueType varchar(32) not null,
 	SpoolData bytea,
 	SpoolStatus varchar(32) not null,
-
-	CreatedDate timestamp not null,
-	ExpirationDate timestamp not null,
 	Expires boolean not null default false,
 	Classification varchar(64),
-	Name varchar(511) not null,
 	CurrentLevel int not null default 0,
 	EndLevel int not null default 0,
 	ReferenceId bigint not null default 0,
@@ -644,14 +367,13 @@ CREATE TABLE spool (
 	TransportId bigint not null default 0,
 	TransportType varchar(64) not null,
 	CredentialId bigint not null default 0,
-	GroupId bigint not null default 0,
-	OrganizationId bigint not null default 0
-);
+	Name varchar(511) not null,
+	GroupId bigint not null default 0
+) inherits (orgid,objectdate);
 CREATE UNIQUE INDEX spool_spool_guid ON spool(Guid);
 CREATE INDEX spool_spool_expiry ON spool(Expires,ExpirationDate);
 CREATE INDEX spool_spool_group ON spool(GroupId,OrganizationId);
- CREATE INDEX spool_spool_bucknametype ON spool(SpoolBucketName,SpoolBucketType,OrganizationId);
-
+CREATE INDEX spool_spool_bucknametype ON spool(SpoolBucketName,SpoolBucketType,OrganizationId);
 
 DROP TABLE IF EXISTS session CASCADE;
 CREATE TABLE session (
@@ -667,7 +389,7 @@ CREATE TABLE session (
 );
 CREATE INDEX session_user_id ON session(UserId);
 CREATE INDEX session_sesid ON session(SessionId);
-	      CREATE UNIQUE INDEX session_sesorgid ON session(SessionId,OrganizationId);
+CREATE UNIQUE INDEX session_sesorgid ON session(SessionId,OrganizationId);
 
 DROP TABLE IF EXISTS sessiondata CASCADE;
 CREATE TABLE sessiondata (
@@ -688,7 +410,7 @@ CREATE SEQUENCE audit_id_seq;
 CREATE TABLE audit (
 	Id bigint not null default nextval('audit_id_seq'),
 	AuditDate timestamp not null,
-      AuditResultDate timestamp not null,
+    AuditResultDate timestamp not null,
 	AuditLevelType varchar(32) not null,
 	AuditExpiresDate timestamp not null,
 	AuditRetentionType varchar(32) not null,
@@ -701,300 +423,121 @@ CREATE TABLE audit (
 	AuditResultData text,
 	AuditActionSource text
 );
---CREATE UNIQUE INDEX audit_id ON audit(Id);
+
 CREATE INDEX audit_source ON audit(AuditSourceType,AuditSourceData);
 CREATE INDEX audit_target ON audit(AuditTargetType,AuditTargetData);
 CREATE INDEX audit_retention ON audit(AuditRetentionType);
 CREATE INDEX audit_exptype on audit(AuditExpiresDate,AuditRetentionType);
 
-
 DROP TABLE IF EXISTS fact CASCADE;
-DROP SEQUENCE IF EXISTS fact_id_seq;
-CREATE SEQUENCE fact_id_seq;
 create table fact (
-	Id bigint not null default nextval('fact_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(255) not null,
-	Description varchar(255),
-	LogicalOrder int not null default 0,
-	Score int not null default 0,
-	Urn text not null,
 	FactType varchar(64) not null,
 	SourceType varchar(255),
 	SourceUrn text,
 	SourceUrl varchar(2047),
 	SourceDataType varchar(64),
 	FactData varchar(255),
-	FactoryType varchar(64) not null,
-	GroupId bigint not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-);
-CREATE UNIQUE INDEX fact_id ON fact(Id);
-CREATE UNIQUE INDEX IdxFactObjId ON fact(ObjectId);
-CREATE UNIQUE INDEX IdxfactNameGroup on fact(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxfactUrnGroup on fact(Urn);
-CREATE INDEX IdxfactIdGroup on fact(Id,OrganizationId);
+	FactoryType varchar(64) not null
+
+) inherits (uniquenamegroup,objectdescription,objectorderscore);
 
 
 DROP TABLE IF EXISTS functionfact CASCADE;
-DROP SEQUENCE IF EXISTS functionfact_id_seq;
-CREATE SEQUENCE functionfact_id_seq;
 create table functionfact (
-	Id bigint not null default nextval('functionfact_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(255) not null,
-	Description varchar(255),
-	LogicalOrder int not null default 0,
-	Urn text not null,
 	FunctionUrn text,
-	FactUrn text,
-	GroupId bigint not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-);
-CREATE UNIQUE INDEX functionfact_id ON functionfact(Id);
-CREATE UNIQUE INDEX IdxFunFactObjId ON functionfact(ObjectId);
-CREATE UNIQUE INDEX IdxfunctionfactNameGroup on functionfact(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxfunctionfactUrnGroup on functionfact(Urn);
-CREATE INDEX IdxfunctionfactIdGroup on functionfact(Id,OrganizationId);
+	FactUrn text
+) inherits (uniquenamegroup,objectdescription,objectorderscore);
+
 
 DROP TABLE IF EXISTS function CASCADE;
-DROP SEQUENCE IF EXISTS function_id_seq;
-CREATE SEQUENCE function_id_seq;
 create table function (
-	Id bigint not null default nextval('function_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(255) not null,
-	Description varchar(255),
-	LogicalOrder int not null default 0,
-	Score int not null default 0,
-	Urn text not null,
 	FunctionType varchar(64) not null,
 	SourceUrn text,
-	SourceUrl varchar(2047),
-	GroupId bigint not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-);
-CREATE UNIQUE INDEX function_id ON function(Id);
-CREATE UNIQUE INDEX IdxFunctionObjId ON function(ObjectId);
-CREATE UNIQUE INDEX IdxfunctionNameGroup on function(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxfunctionUrnGroup on function(Urn);
-CREATE INDEX IdxfunctionIdGroup on function(Id,OrganizationId);
+	SourceUrl text
+) inherits (uniquenamegroup,objectdescription,objectorderscore);
+
 
 DROP TABLE IF EXISTS functionparticipation CASCADE;
-DROP SEQUENCE IF EXISTS functionparticipation_id_seq;
-CREATE SEQUENCE functionparticipation_id_seq;
 CREATE TABLE functionparticipation (
-	Id bigint not null default nextval('functionparticipation_id_seq'),
-	OwnerId bigint not null,
-	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null,
-	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null,
-	AffectId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-	);
-CREATE UNIQUE INDEX functionparticipation_id ON functionparticipation(Id);
-CREATE INDEX functionparticipation_parttype ON functionparticipation(ParticipantId,ParticipantType,AffectId);
-CREATE INDEX functionparticipation_pid ON functionparticipation(ParticipationId);
-CREATE UNIQUE INDEX IdxfunctionparticipationCbo on functionparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
+) inherits (participation);
+
 
 DROP TABLE IF EXISTS operation CASCADE;
-DROP SEQUENCE IF EXISTS operation_id_seq;
-CREATE SEQUENCE operation_id_seq;
 create table operation (
-	Id bigint not null default nextval('operation_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(255) not null,
-	Description varchar(255),
-	LogicalOrder int not null default 0,
-	Score int not null default 0,
-	Urn text not null,
 	OperationType varchar(64) not null,
-	Operation varchar(2047),
-	GroupId bigint not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-);
-CREATE UNIQUE INDEX operation_id ON operation(Id);
-CREATE UNIQUE INDEX IdxOperationObjId ON operation(ObjectId);
-CREATE UNIQUE INDEX IdxoperationNameGroup on operation(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxoperationUrnGroup on operation(Urn);
-CREATE INDEX IdxoperationIdGroup on operation(Id,OrganizationId);
+	Operation text
+) inherits (uniquenamegroup,objectdescription,objectorderscore);
+
 
 DROP TABLE IF EXISTS pattern CASCADE;
-DROP SEQUENCE IF EXISTS pattern_id_seq;
-CREATE SEQUENCE pattern_id_seq;
 create table pattern (
-	Id bigint not null default nextval('pattern_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(255) not null,
-	Description varchar(255),
-	LogicalOrder int not null default 0,
-	Score int not null default 0,
-	Urn text not null,
 	FactUrn text,
 	Comparator varchar(32),
 	PatternType varchar(64) not null,
 	MatchUrn text,
-	OperationUrn text,
-	GroupId bigint not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-);
-CREATE UNIQUE INDEX pattern_id ON pattern(Id);
-CREATE UNIQUE INDEX IdxPatternObjId ON pattern(ObjectId);
-CREATE UNIQUE INDEX IdxpatternNameGroup on pattern(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxpatternUrnGroup on pattern(Urn);
-CREATE INDEX IdxpatternIdGroup on pattern(Id,OrganizationId);
+	OperationUrn text
+) inherits (uniquenamegroup,objectdescription,objectorderscore);
+
 
 DROP TABLE IF EXISTS policy CASCADE;
 DROP SEQUENCE IF EXISTS policy_id_seq;
 CREATE SEQUENCE policy_id_seq;
 create table policy (
-	Id bigint not null default nextval('policy_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(255) not null,
-	Description varchar(255),
-	LogicalOrder int not null default 0,
-	Score int not null default 0,
 	Enabled boolean not null default false,
-	Urn text not null,
-	CreatedDate timestamp not null,
-	ModifiedDate timestamp not null,
-	ExpirationDate timestamp not null,
 	DecisionAge bigint not null default 0,
-	Condition varchar(64) not null,
-	GroupId bigint not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-);
-CREATE UNIQUE INDEX policy_id ON policy(Id);
-CREATE UNIQUE INDEX IdxPolicyObjId ON policy(ObjectId);
-CREATE UNIQUE INDEX IdxpolicyNameGroup on policy(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxpolicyUrnGroup on policy(Urn);
-CREATE INDEX IdxpolicyIdGroup on policy(Id,OrganizationId);
+	Condition varchar(64) not null
+) inherits (uniquenamegroup,objectdescription,objectorderscore,objectdate);
 
 DROP TABLE IF EXISTS policyparticipation CASCADE;
-DROP SEQUENCE IF EXISTS policyparticipation_id_seq;
-CREATE SEQUENCE policyparticipation_id_seq;
 CREATE TABLE policyparticipation (
-	Id bigint not null default nextval('policyparticipation_id_seq'),
-	OwnerId bigint not null,
-	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null,
-	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null,
-	AffectId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-	);
-CREATE UNIQUE INDEX policyparticipation_id ON policyparticipation(Id);
-CREATE INDEX policyparticipation_parttype ON policyparticipation(ParticipantId,ParticipantType,AffectId);
-CREATE INDEX policyparticipation_pid ON policyparticipation(ParticipationId);
-CREATE UNIQUE INDEX IdxpolicyparticipationCbo on policyparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
+) inherits (participation);
 
 DROP TABLE IF EXISTS rule CASCADE;
 DROP SEQUENCE IF EXISTS rule_id_seq;
 CREATE SEQUENCE rule_id_seq;
 create table rule (
-	Id bigint not null default nextval('rule_id_seq'),
-	OwnerId bigint not null default 0,
-	Name varchar(255) not null,
-	Description varchar(255),
-	LogicalOrder int not null default 0,
-	Score int not null default 0,
-	Urn text not null,
 	RuleType varchar(64) not null,
-	Condition varchar(64) not null,
-	GroupId bigint not null,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-);
-CREATE UNIQUE INDEX rule_id ON rule(Id);
-CREATE UNIQUE INDEX IdxRuleObjId ON rule(ObjectId);
-CREATE UNIQUE INDEX IdxruleNameGroup on rule(Name,GroupId,OrganizationId);
-CREATE UNIQUE INDEX IdxruleUrnGroup on rule(Urn);
-CREATE INDEX IdxruleIdGroup on rule(Id,OrganizationId);
+	Condition varchar(64) not null
+
+) inherits (uniquenamegroup,objectdescription,objectorderscore);
 
 DROP TABLE IF EXISTS ruleparticipation CASCADE;
-DROP SEQUENCE IF EXISTS ruleparticipation_id_seq;
-CREATE SEQUENCE ruleparticipation_id_seq;
 CREATE TABLE ruleparticipation (
-	Id bigint not null default nextval('ruleparticipation_id_seq'),
-	OwnerId bigint not null,
-	ParticipationId bigint not null default 0,
-	ParticipantType varchar(16) not null,
-	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null,
-	AffectId bigint not null default 0,
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-	);
+) inherits (participation);
 CREATE UNIQUE INDEX ruleparticipation_id ON ruleparticipation(Id);
-CREATE INDEX ruleparticipation_parttype ON ruleparticipation(ParticipantId,ParticipantType,AffectId);
-CREATE INDEX ruleparticipation_pid ON ruleparticipation(ParticipationId);
-CREATE UNIQUE INDEX IdxruleparticipationCbo on ruleparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
+
+
+
+
+
 
 DROP TABLE IF EXISTS credential CASCADE;
-DROP SEQUENCE IF EXISTS credential_id_seq;
-CREATE SEQUENCE credential_id_seq;
+
 create table credential (
-	Id bigint not null default nextval('credential_id_seq'),
-	VaultId varchar(64),
-	KeyId varchar(64),
-	IsVaulted boolean not null default false,
-	IsEnciphered boolean not null default false,
-	CreatedDate timestamp not null,
-	ModifiedDate timestamp not null,
-	ExpirationDate timestamp not null,
 	HashProvider varchar(32) not null,
 	Credential bytea,
 	Salt bytea,
-	ReferenceId bigint not null default 0,
-	ReferenceType varchar(64) not null default 0,
 	PrimaryCredential boolean not null default false,
 	PreviousCredentialId bigint not null default 0,
 	NextCredentialId bigint not null default 0,
-	OwnerId bigint not null default 0,
-	CredentialType varchar(32) not null,
-	ObjectId varchar(64) default uuid_generate_v4(), 
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-);
-CREATE INDEX IdxCredentialReference on credential(ReferenceId,ReferenceType);
-CREATE UNIQUE INDEX IdxCredentialObjId ON credential(ObjectId);
+	CredentialType varchar(32) not null
+
+) inherits(objorgid,objectdate,vaultkey,objectreference);
 
 DROP TABLE IF EXISTS control CASCADE;
-DROP SEQUENCE IF EXISTS control_id_seq;
-CREATE SEQUENCE control_id_seq;
+
 create table control (
-	Id bigint not null default nextval('control_id_seq'),
 	ControlType varchar(64) not null,
 	ControlAction varchar(32) not null,
-	CreatedDate timestamp not null,
-	ModifiedDate timestamp not null,
-	ExpirationDate timestamp not null,
-	ControlId bigint not null default 0,
-	ReferenceId bigint not null default 0,
-	ReferenceType varchar(64) not null default 0,
-	OwnerId bigint not null default 0,
-	ObjectId varchar(64) default uuid_generate_v4(),
-	OrganizationId bigint not null default 0,
-	primary key(Id)
-);
-CREATE UNIQUE INDEX IdxControlReference on control(ControlType,ControlAction,ReferenceId,ReferenceType);
-CREATE UNIQUE INDEX IdxControlObjId ON control(ObjectId);
+	ControlId bigint not null default 0
+) inherits(objorgid,objectdate,objectreference);
+
+
+-- REWORK
+
+
+
+
 
 create or replace view rolePersonRights as
 select U.id as personid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
@@ -1249,6 +792,7 @@ CREATE OR REPLACE FUNCTION group_membership(IN root_id bigint)
 	select * from group_membership;
 	$$ LANGUAGE 'sql';
 
+DROP VIEW IF EXISTS effectiveDataRoles CASCADE;
 create or replace view effectiveDataRoles as
 WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
@@ -1258,6 +802,7 @@ select DP.participationid as dataid,(R.ats).leafid as effectiveRoleId,(R.ats).ro
 JOIN dataparticipation DP ON DP.participantid = (R.ats).leafid and DP.participanttype = 'ROLE'
 ;
 
+DROP VIEW IF EXISTS effectiveGroupRoles CASCADE;
 create or replace view effectiveGroupRoles as
 WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
@@ -1267,6 +812,7 @@ select GP.participationid as groupid,(R.ats).leafid as effectiveRoleId,(R.ats).r
 JOIN groupparticipation GP ON GP.participantid = (R.ats).leafid and GP.participanttype = 'ROLE'
 ;
 
+DROP VIEW IF EXISTS effectiveRoleRoles CASCADE;
 create or replace view effectiveRoleRoles as
 WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
@@ -1276,6 +822,7 @@ select RP.participationid as roleid,(R.ats).leafid as effectiveRoleId,(R.ats).ro
 JOIN roleparticipation RP ON RP.participantid = (R.ats).leafid and RP.participanttype = 'ROLE'
 ;
 
+DROP VIEW IF EXISTS effectivePersonRoles CASCADE;
 create or replace view effectivePersonRoles as
 WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
@@ -1287,7 +834,7 @@ LEFT JOIN persons U1 on U1.id = RP.participantid and RP.participanttype = 'PERSO
 LEFT JOIN groupparticipation gp2 on gp2.participationid = RP.participantid and RP.participanttype = 'GROUP' and gp2.participanttype = 'PERSON'
 LEFT JOIN persons U2 on U2.id = gp2.participantid AND U2.organizationid = gp2.organizationid
 ;
-
+DROP VIEW IF EXISTS effectiveUserRoles CASCADE;
 create or replace view effectiveUserRoles as
 WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
@@ -1300,6 +847,7 @@ LEFT JOIN groupparticipation gp2 on gp2.participationid = RP.participantid and R
 LEFT JOIN users U2 on U2.id = gp2.participantid AND U2.organizationid = gp2.organizationid
 ;
 
+DROP VIEW IF EXISTS effectiveAccountRoles CASCADE;
 create or replace view effectiveAccountRoles as
 WITH result AS(
 select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
@@ -1315,9 +863,9 @@ LEFT JOIN accounts U2 on U2.id = gp2.participantid AND U2.organizationid = gp2.o
 CREATE OR REPLACE FUNCTION cache_person_roles(person_id BIGINT[],organizationid BIGINT) 
         RETURNS BOOLEAN
         AS $$
-	DELETE FROM personrolecache where personid = ANY($1);
+	DELETE FROM personrolecache where objectid = ANY($1);
 	--AND organizationid = $2;
-	INSERT INTO personrolecache (personid,effectiveroleid,baseroleid,organizationid) select * from effectivepersonRoles where personid = ANY($1) AND personid > 0;
+	INSERT INTO personrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectivepersonRoles where personid = ANY($1) AND personid > 0;
 	--and organizationid = $2;
 	SELECT true;
         $$ LANGUAGE 'sql';
@@ -1328,8 +876,8 @@ CREATE OR REPLACE FUNCTION cache_all_person_roles(orgId BIGINT)
         AS $BODY$
         DECLARE ids BIGINT[] = ARRAY(SELECT id FROM persons WHERE organizationid = $1);
         BEGIN
-	DELETE FROM personrolecache WHERE personid = ANY(ids);
-	INSERT INTO personrolecache (personid,effectiveroleid,baseroleid,organizationid) select * from effectivepersonRoles where personid = ANY(ids) AND personid > 0;
+	DELETE FROM personrolecache WHERE objectid = ANY(ids);
+	INSERT INTO personrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectivepersonRoles where personid = ANY(ids) AND personid > 0;
 	RETURN true;
 	END
 
@@ -1338,9 +886,9 @@ CREATE OR REPLACE FUNCTION cache_all_person_roles(orgId BIGINT)
 CREATE OR REPLACE FUNCTION cache_user_roles(user_id BIGINT[],organizationid BIGINT) 
         RETURNS BOOLEAN
         AS $$
-	DELETE FROM userrolecache where userid = ANY($1);
+	DELETE FROM userrolecache where objectid = ANY($1);
 	--AND organizationid = $2;
-	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid = ANY($1) AND userid > 0;
+	INSERT INTO userrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid = ANY($1) AND userid > 0;
 	--and organizationid = $2;
 	SELECT true;
         $$ LANGUAGE 'sql';
@@ -1351,8 +899,8 @@ CREATE OR REPLACE FUNCTION cache_all_user_roles(orgId BIGINT)
         AS $BODY$
         DECLARE ids BIGINT[] = ARRAY(SELECT id FROM users WHERE organizationid = $1);
         BEGIN
-	DELETE FROM userrolecache WHERE userid = ANY(ids);
-	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid = ANY(ids) AND userid > 0;
+	DELETE FROM userrolecache WHERE objectid = ANY(ids);
+	INSERT INTO userrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid = ANY(ids) AND userid> 0;
 	RETURN true;
 	END
 
@@ -1362,9 +910,9 @@ CREATE OR REPLACE FUNCTION cache_all_user_roles(orgId BIGINT)
 CREATE OR REPLACE FUNCTION cache_account_roles(account_id BIGINT[],organizationid BIGINT) 
         RETURNS BOOLEAN
         AS $$
-	DELETE FROM accountrolecache where accountid = ANY($1);
+	DELETE FROM accountrolecache where objectid = ANY($1);
 	--AND organizationid = $2;
-	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid = ANY($1) AND accountid > 0;
+	INSERT INTO accountrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid = ANY($1) AND accountid > 0;
 	--and organizationid = $2;
 	SELECT true;
         $$ LANGUAGE 'sql';
@@ -1375,8 +923,8 @@ CREATE OR REPLACE FUNCTION cache_all_account_roles(orgId BIGINT)
         AS $BODY$
         DECLARE ids BIGINT[] = ARRAY(SELECT id FROM accounts WHERE organizationid = $1);
         BEGIN
-	DELETE FROM accountrolecache WHERE accountid = ANY(ids);
-	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid = ANY(ids) AND accountid > 0;
+	DELETE FROM accountrolecache WHERE objectid = ANY(ids);
+	INSERT INTO accountrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectiveaccountRoles where accountid = ANY(ids) AND accountid > 0;
 	RETURN true;
 	END
 
@@ -1387,8 +935,8 @@ CREATE OR REPLACE FUNCTION cache_all_data_roles(orgId BIGINT)
         AS $BODY$
         DECLARE ids BIGINT[] = ARRAY(SELECT id FROM data WHERE organizationid = $1);
         BEGIN
-	DELETE FROM datarolecache WHERE dataid = ANY(ids);
-	INSERT INTO datarolecache (dataid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveDataRoles where dataid=ANY(ids);
+	DELETE FROM datarolecache WHERE objectid = ANY(ids);
+	INSERT INTO datarolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveDataRoles where dataid=ANY(ids);
 	RETURN true;
 	END
 
@@ -1398,8 +946,8 @@ CREATE OR REPLACE FUNCTION cache_data_roles(data_id BIGINT[],organizationid BIGI
         RETURNS BOOLEAN
         AS $$
         BEGIN
-	DELETE FROM datarolecache where dataid = ANY($1);
-	INSERT INTO datarolecache (dataid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveDataRoles where dataid=ANY($1);
+	DELETE FROM datarolecache where objectid = ANY($1);
+	INSERT INTO datarolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveDataRoles where dataid=ANY($1);
 	RETURN true;
 	END
         $$ LANGUAGE 'plpgsql';
@@ -1409,8 +957,8 @@ CREATE OR REPLACE FUNCTION cache_all_role_roles(orgId BIGINT)
         AS $BODY$
         DECLARE ids BIGINT[] = ARRAY(SELECT id FROM roles WHERE organizationid = $1);
         BEGIN
-	DELETE FROM rolerolecache WHERE roleid = ANY(ids);
-	INSERT INTO rolerolecache (roleid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveRoleRoles where roleid=ANY(ids);
+	DELETE FROM rolerolecache WHERE objectid = ANY(ids);
+	INSERT INTO rolerolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveRoleRoles where roleid=ANY(ids);
 	RETURN true;
 	END
 
@@ -1420,8 +968,8 @@ CREATE OR REPLACE FUNCTION cache_role_roles(role_id BIGINT[],organizationid BIGI
         RETURNS BOOLEAN
         AS $$
         BEGIN
-	DELETE FROM rolerolecache where roleid = ANY($1);
-	INSERT INTO rolerolecache (roleid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveRoleRoles where roleid=ANY($1);
+	DELETE FROM rolerolecache where objectid = ANY($1);
+	INSERT INTO rolerolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveRoleRoles where roleid=ANY($1);
 	RETURN true;
 	END
         $$ LANGUAGE 'plpgsql';
@@ -1431,8 +979,8 @@ CREATE OR REPLACE FUNCTION cache_all_group_roles(orgId BIGINT)
         AS $BODY$
         DECLARE ids BIGINT[] = ARRAY(SELECT id FROM groups WHERE organizationid = $1);
         BEGIN
-	DELETE FROM grouprolecache WHERE groupid = ANY(ids);
-	INSERT INTO grouprolecache (groupid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveGroupRoles where groupid=ANY(ids);
+	DELETE FROM grouprolecache WHERE objectid = ANY(ids);
+	INSERT INTO grouprolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveGroupRoles where groupid=ANY(ids);
 	RETURN true;
 	END
 
@@ -1442,8 +990,8 @@ CREATE OR REPLACE FUNCTION cache_group_roles(group_id BIGINT[],organizationid BI
         RETURNS BOOLEAN
         AS $$
         BEGIN
-	DELETE FROM grouprolecache where groupid = ANY($1);
-	INSERT INTO grouprolecache (groupid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveGroupRoles where groupid=ANY($1);
+	DELETE FROM grouprolecache where objectid = ANY($1);
+	INSERT INTO grouprolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveGroupRoles where groupid=ANY($1);
 	RETURN true;
 	END
         $$ LANGUAGE 'plpgsql';
@@ -1453,48 +1001,48 @@ CREATE OR REPLACE FUNCTION cache_group_roles(group_id BIGINT[],organizationid BI
 --;
 
 create or replace view effectiveGroupPersonRoleRights as
-select distinct GC.groupid,GC.affectId,GC.affectType,ER.personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER
+select distinct GC.objectid as groupid,GC.affectId,GC.affectType,ER.objectid as personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER
 join groupRoleCache GC on GC.effectiveRoleId=ER.effectiveRoleId 
 ;
 
 
 create or replace view effectiveGroupUserRoleRights as
-select distinct GC.groupid,GC.affectId,GC.affectType,ER.userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
+select distinct GC.objectid as groupid,GC.affectId,GC.affectType,ER.objectid as userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
 join groupRoleCache GC on GC.effectiveRoleId=ER.effectiveRoleId 
 ;
 
 create or replace view effectiveGroupAccountRoleRights as
-select distinct GC.groupid,GC.affectId,GC.affectType,ER.accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
+select distinct GC.objectid as groupid,GC.affectId,GC.affectType,ER.objectid as accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
 join groupRoleCache GC on GC.effectiveRoleId=ER.effectiveRoleId 
 ;
 
 create or replace view effectiveDataPersonRoleRights as
-select distinct DRC.dataid,DRC.affectId,DRC.affectType,ER.personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER
+select distinct DRC.objectid as dataid,DRC.affectId,DRC.affectType,ER.objectid as personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER
 join dataRoleCache DRC on DRC.effectiveRoleId=ER.effectiveRoleId
 ;
 
 create or replace view effectiveDataUserRoleRights as
-select distinct DRC.dataid,DRC.affectId,DRC.affectType,ER.userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
+select distinct DRC.objectid as dataid,DRC.affectId,DRC.affectType,ER.objectid as userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
 join dataRoleCache DRC on DRC.effectiveRoleId=ER.effectiveRoleId
 ;
 
 create or replace view effectiveDataAccountRoleRights as
-select distinct DRC.dataid,DRC.affectId,DRC.affectType,ER.accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
+select distinct DRC.objectid as dataid,DRC.affectId,DRC.affectType,ER.objectid as accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
 join dataRoleCache DRC on DRC.effectiveRoleId=ER.effectiveRoleId
 ;
 
 create or replace view effectiveRolePersonRoleRights as
-select distinct RRC.roleid as sourceroleid,RRC.affectId,RRC.affectType,ER.personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER
+select distinct RRC.objectid as sourceroleid,RRC.affectId,RRC.affectType,ER.objectid as personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER
 join roleRoleCache RRC on RRC.effectiveRoleId=ER.effectiveRoleId
 ;
 
 create or replace view effectiveRoleUserRoleRights as
-select distinct RRC.roleid as sourceroleid,RRC.affectId,RRC.affectType,ER.userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
+select distinct RRC.objectid as sourceroleid,RRC.affectId,RRC.affectType,ER.objectid as userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
 join roleRoleCache RRC on RRC.effectiveRoleId=ER.effectiveRoleId
 ;
 
 create or replace view effectiveRoleAccountRoleRights as
-select distinct RRC.roleid as sourceroleid,RRC.affectId,RRC.affectType,ER.accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
+select distinct RRC.objectid as sourceroleid,RRC.affectId,RRC.affectType,ER.objectid as accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
 join roleRoleCache RRC on RRC.effectiveRoleId=ER.effectiveRoleId
 ;
 
@@ -1505,17 +1053,17 @@ CREATE OR REPLACE FUNCTION cache_roles()
         RETURNS BOOLEAN
         AS $$
 	truncate dataRoleCache;
-	insert into datarolecache (dataid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveDataRoles;
+	insert into datarolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveDataRoles;
 	truncate roleRoleCache;
-	insert into rolerolecache (roleid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveRoleRoles;
+	insert into rolerolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveRoleRoles;
 	truncate groupRoleCache;
-	insert into grouprolecache (groupid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveGroupRoles;
+	insert into grouprolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveGroupRoles;
 	truncate personRoleCache;
-	INSERT INTO personrolecache (personid,effectiveroleid,baseroleid,organizationid) select * from effectivePersonRoles where personid > 0;
+	INSERT INTO personrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectivePersonRoles where personid > 0;
 	truncate userRoleCache;
-	INSERT INTO userrolecache (userid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid > 0;
+	INSERT INTO userrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid > 0;
 	truncate accountRoleCache;
-	INSERT INTO accountrolecache (accountid,effectiveroleid,baseroleid,organizationid) select * from effectiveAccountRoles where accountid > 0;
+	INSERT INTO accountrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectiveAccountRoles where accountid > 0;
 	SELECT true;
         $$ LANGUAGE 'sql';
 

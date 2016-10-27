@@ -206,7 +206,7 @@ public class EffectiveAuthorizationService {
 			objectMap.put(objectType, new HashMap<>());
 		}
 		if(objectMap.get(objectType).containsKey(actorType) == true){
-			logger.error("Actor " + actorType + " already registered for " + objectType);
+			logger.warn("Actor " + actorType + " already registered for " + objectType);
 			return false;
 		}
 		
@@ -1254,14 +1254,14 @@ public class EffectiveAuthorizationService {
 		CONNECTION_TYPE connType = DBFactory.getConnectionType(conn);
 		String token = DBFactory.getParamToken(connType);
 		try{
-			String sql = "SELECT distinct " + prefix + "id FROM " + prefix + "rolecache WHERE " + prefix + "id = " + token + " AND effectiveroleid = " + token + " and organizationid = " + token;
+			String sql = "SELECT distinct objectid FROM " + prefix + "rolecache WHERE objectid = " + token + " AND effectiveroleid = " + token + " and organizationid = " + token;
 			if(linkPerson){
 				sql += " UNION ALL "
 					+ " SELECT distinct participantid FROM userrolecache URC "
-					+ " inner join personparticipation PU on URC.userid = PU.participantid AND PU.participanttype = 'USER' AND PU.participationid = " + token + " AND URC.effectiveroleid = " + token + " AND URC.organizationid = " + token
+					+ " inner join personparticipation PU on URC.objectid = PU.participantid AND PU.participanttype = 'USER' AND PU.participationid = " + token + " AND URC.effectiveroleid = " + token + " AND URC.organizationid = " + token
 					+ " UNION ALL "
 					+ " SELECT distinct participantid FROM accountrolecache ARC "
-					+ " inner join personparticipation PU2 on ARC.accountid = PU2.participantid AND PU2.participanttype = 'ACCOUNT' AND PU2.participationid = " + token + " AND ARC.effectiveroleid = " + token + " AND ARC.organizationid = " + token;
+					+ " inner join personparticipation PU2 on ARC.objectid = PU2.participantid AND PU2.participanttype = 'ACCOUNT' AND PU2.participationid = " + token + " AND ARC.effectiveroleid = " + token + " AND ARC.organizationid = " + token;
 			}
 			PreparedStatement stat = conn.prepareStatement(sql);
 			//logger.debug(sql);
@@ -1342,14 +1342,14 @@ public class EffectiveAuthorizationService {
 		CONNECTION_TYPE connType = DBFactory.getConnectionType(conn);
 		String token = DBFactory.getParamToken(connType);
 		try{
-			String sql = "SELECT distinct effectiveroleid FROM " + prefix + "rolecache WHERE " + prefix + "id = " + token + " and organizationid = " + token;
+			String sql = "SELECT distinct effectiveroleid FROM " + prefix + "rolecache WHERE objectid = " + token + " and organizationid = " + token;
 			if(linkPerson){
 				sql += " UNION ALL "
 					+ " SELECT distinct effectiveroleid FROM userrolecache URC "
-					+ " inner join personparticipation PU on URC.userid = PU.participantid AND PU.participanttype = 'USER' AND PU.participationid = " + token + " AND URC.organizationid = " + token
+					+ " inner join personparticipation PU on URC.objectid = PU.participantid AND PU.participanttype = 'USER' AND PU.participationid = " + token + " AND URC.organizationid = " + token
 					+ " UNION ALL "
 					+ " SELECT distinct effectiverole FROM accountrolecache ARC "
-					+ " inner join personparticipation PU2 on ARC.accountid = PU2.participantid AND PU2.participanttype = 'ACCOUNT' AND PU2.participationid = " + token + " AND ARC.organizationid = " + token;
+					+ " inner join personparticipation PU2 on ARC.objectid = PU2.participantid AND PU2.participanttype = 'ACCOUNT' AND PU2.participationid = " + token + " AND ARC.organizationid = " + token;
 			}
 			PreparedStatement stat = conn.prepareStatement(sql);
 			logger.debug(sql);

@@ -30,7 +30,7 @@ public class BulkStatisticsFactory extends StatisticsFactory{
 	public BulkStatisticsFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "statistics_id_seq";
+		//sequenceName = "statistics_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

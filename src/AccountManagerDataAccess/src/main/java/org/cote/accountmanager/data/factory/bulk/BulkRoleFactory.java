@@ -30,7 +30,7 @@ public class BulkRoleFactory extends RoleFactory{
 	public BulkRoleFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "roles_id_seq";
+		//sequenceName = "roles_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

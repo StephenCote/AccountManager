@@ -1811,6 +1811,37 @@ public class BaseService{
 
 		return out_obj;			
 	}
+	public static <T> List<T> listByGroup(AuditEnumType type, String groupType, String groupId, long startRecord, int recordCount, HttpServletRequest request){
+		List<T> out_obj = new ArrayList<>();
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listByGroup",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
+		AuditService.targetAudit(audit, type, groupId);
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null) return out_obj;
+
+		//AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All " + type.toString() + " objects",AuditEnumType.GROUP,(user == null ? "Null" : user.getName()));
+		NameIdType parentObj = BaseService.readByObjectId(type, groupId, request);
+		if(parentObj == null){
+			AuditService.denyResult(audit, "Null parent id");
+			return out_obj;
+		}
+		
+		AuditService.targetAudit(audit, type, parentObj.getUrn());
+		try{
+		if(AuthorizationService.canView(user, parentObj) == true){
+			AuditService.permitResult(audit, "Access authorized to group " + parentObj.getName());
+			out_obj = getListByGroup(type,(BaseGroupType)parentObj,startRecord,recordCount);
+		}
+		else{
+			AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + parentObj.getName() + " (#" + parentObj.getId() + ")");
+			return out_obj;
+		}
+		}
+		catch(ArgumentException | FactoryException e){
+			logger.error(e.getMessage());
+			AuditService.denyResult(audit, e.getMessage());
+		}
+		return out_obj;
+	}
 	public static <T> List<T> getGroupList(AuditEnumType type, UserType user, String path, long startRecord, int recordCount){
 		List<T> out_obj = new ArrayList<T>();
 

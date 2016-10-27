@@ -270,7 +270,7 @@ public class CredentialService {
 			
 			if(bulkSessionId != null) BulkFactories.getBulkFactory().createBulkEntry(bulkSessionId, FactoryEnumType.CREDENTIAL, cred);
 			else if(Factories.getCredentialFactory().addCredential(cred)){
-				cred = Factories.getCredentialFactory().getCredentialByObjectId(cred.getObjectId(),cred.getOrganizationId());
+				cred = Factories.getCredentialFactory().getByObjectId(cred.getObjectId(),cred.getOrganizationId());
 			}
 			else{
 				logger.error("Failed to add credential");

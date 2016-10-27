@@ -30,7 +30,7 @@ public class BulkCredentialFactory extends CredentialFactory{
 	public BulkCredentialFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "credential_id_seq";
+		//sequenceName = "credential_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

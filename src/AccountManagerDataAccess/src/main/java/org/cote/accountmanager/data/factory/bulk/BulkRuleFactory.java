@@ -30,7 +30,7 @@ public class BulkRuleFactory extends RuleFactory{
 	public BulkRuleFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "rule_id_seq";
+		//sequenceName = "rule_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

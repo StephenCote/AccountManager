@@ -30,7 +30,7 @@ public class BulkGroupParticipationFactory extends GroupParticipationFactory{
 	public BulkGroupParticipationFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "groupparticipation_id_seq";
+		//sequenceName = "groupparticipation_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

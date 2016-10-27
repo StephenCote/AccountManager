@@ -32,7 +32,7 @@ public class BulkSymmetricKeyFactory extends SymmetricKeyFactory{
 	public BulkSymmetricKeyFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "symmetrickeys_id_seq";
+		//sequenceName = "symmetrickeys_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

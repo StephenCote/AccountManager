@@ -32,7 +32,7 @@ public class BulkDataFactory extends DataFactory{
 	public BulkDataFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "data_id_seq";
+		//sequenceName = "data_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

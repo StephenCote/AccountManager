@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 
 /*
@@ -66,18 +67,13 @@ public class GenericResourceService {
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
 		List<Object> objs = new ArrayList<>();
 		if(parentType.contains(auditType)){
-			//NameIdType parentObj = BaseService.readByObjectId(auditType, objectId, request);
 			logger.error("REFACTOR LIST IN PARENT");
 			objs = BaseService.listByParentObjectId(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
-			//BaseService
-			//return Response.status(404).entity(objs).build();
 		}
 		else{
-			//objs = BaseService.getGroupList(type, user, path, startRecord, recordCount)
+			objs = BaseService.listByGroup(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
 		}
 		return Response.status(200).entity(objs).build();
-		
-		
 	}
 	
 }

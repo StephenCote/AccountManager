@@ -32,7 +32,7 @@ public class BulkContactInformationParticipationFactory extends ContactInformati
 	public BulkContactInformationParticipationFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "contactinformationparticipation_id_seq";
+		//sequenceName = "contactinformationparticipation_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

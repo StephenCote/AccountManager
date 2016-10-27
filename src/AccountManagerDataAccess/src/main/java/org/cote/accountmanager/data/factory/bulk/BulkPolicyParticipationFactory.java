@@ -31,7 +31,7 @@ public class BulkPolicyParticipationFactory extends PolicyParticipationFactory{
 	public BulkPolicyParticipationFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "policyparticipation_id_seq";
+		//sequenceName = "policyparticipation_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

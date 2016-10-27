@@ -30,7 +30,7 @@ public class BulkOperationFactory extends OperationFactory{
 	public BulkOperationFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "operation_id_seq";
+		//sequenceName = "operation_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

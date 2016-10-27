@@ -31,7 +31,7 @@ public class BulkFunctionParticipationFactory extends FunctionParticipationFacto
 	public BulkFunctionParticipationFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "functionparticipation_id_seq";
+		//sequenceName = "functionparticipation_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){

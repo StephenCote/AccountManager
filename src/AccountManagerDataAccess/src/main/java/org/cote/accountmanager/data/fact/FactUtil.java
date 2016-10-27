@@ -157,7 +157,7 @@ public class FactUtil {
 						out_obj = (T)((UserFactory)fact).getUserByName(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;
 					case CREDENTIAL:
-						out_obj = (T)((CredentialFactory)fact).getCredentialByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
+						out_obj = (T)((CredentialFactory)fact).getByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;
 					case CONTROL:
 						out_obj = (T)((ControlFactory)fact).getControlByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());

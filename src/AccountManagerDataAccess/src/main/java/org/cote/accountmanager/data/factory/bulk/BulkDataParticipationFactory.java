@@ -32,7 +32,7 @@ public class BulkDataParticipationFactory extends DataParticipationFactory{
 	public BulkDataParticipationFactory(){
 		super();
 		bulkMode = true;
-		sequenceName = "dataparticipation_id_seq";
+		//sequenceName = "dataparticipation_id_seq";
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
