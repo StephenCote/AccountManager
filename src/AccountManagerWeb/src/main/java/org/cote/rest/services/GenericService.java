@@ -8,7 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericType;
+//import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -27,12 +27,13 @@ public class GenericService {
 	}
 	
 	*/
-
+	/*
 	@GET @Path("/get/{type: [a-zA-Z0-9]+}") @Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public GenericType getType(@Context HttpServletRequest request){
 		// @PathParam("type") Class<T> classZ,
 		logger.info("Received request");
 		return null;
 	}
+	*/
 
 }

@@ -51,11 +51,12 @@ CREATE TABLE organizations (
 
 DROP TABLE IF EXISTS attribute CASCADE;
 CREATE TABLE attribute (
+	Name varchar(512) not null,
 	DataType varchar(32) not null,
 	ValueIndex int not null default 0,
 	Value text not null
 
-	) inherits (logicalnameid);
+	) inherits (orgid,objectreference);
 
 CREATE UNIQUE INDEX Idxattributes on attribute(ReferenceId,ReferenceType,Name,ValueIndex,OrganizationId);
 
@@ -128,7 +129,7 @@ CREATE TABLE participation (
 	ParticipationId bigint not null default 0,
 	ParticipantType varchar(16) not null,
 	ParticipantId bigint not null default 0,
-	AffectType varchar(16) not null,
+	AffectType varchar(16) not null default 'UNKNOWN',
 	AffectId bigint not null default 0
 
 ) inherits (orgid);
@@ -480,8 +481,6 @@ create table pattern (
 
 
 DROP TABLE IF EXISTS policy CASCADE;
-DROP SEQUENCE IF EXISTS policy_id_seq;
-CREATE SEQUENCE policy_id_seq;
 create table policy (
 	Enabled boolean not null default false,
 	DecisionAge bigint not null default 0,
@@ -493,8 +492,6 @@ CREATE TABLE policyparticipation (
 ) inherits (participation);
 
 DROP TABLE IF EXISTS rule CASCADE;
-DROP SEQUENCE IF EXISTS rule_id_seq;
-CREATE SEQUENCE rule_id_seq;
 create table rule (
 	RuleType varchar(64) not null,
 	Condition varchar(64) not null
