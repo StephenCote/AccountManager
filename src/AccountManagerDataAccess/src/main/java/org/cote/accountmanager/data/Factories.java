@@ -143,6 +143,8 @@ public class Factories {
 	public static String getDocumentControlName(){
 		return documentControlName;
 	}
+	
+	
 	public static UserType getDocumentControl(long organizationId){
 		UserType user = null;
 		try {

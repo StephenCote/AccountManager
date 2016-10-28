@@ -194,7 +194,7 @@ public class UserFactory extends NameIdFactory {
 		if(session.getUserId() == null || session.getUserId() <= 0) throw new FactoryException("Invalid user id");
 		UserType out_type = readCache(session.getUserId());
 		if(out_type != null){
-			System.out.println("*** getUserBySession: " + session.getUserId());
+			logger.debug("Session " + session.getSessionId() + " --> user #" + session.getUserId());
 			return out_type;
 		}
 		return getById(session.getUserId(), session.getOrganizationId());

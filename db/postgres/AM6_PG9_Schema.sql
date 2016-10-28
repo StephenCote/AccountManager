@@ -25,7 +25,7 @@ CREATE TABLE nameid (
 	Urn text not null
 ) inherits (objorgid);
 CREATE UNIQUE INDEX idxnameidurn on nameid(Urn);
-CREATE UNIQUE INDEX idxnameidobjectid on nameid(ObjectId);
+-- CREATE UNIQUE INDEX idxnameidobjectid on nameid(ObjectId);
 
 DROP TABLE IF EXISTS uniquenameid CASCADE;
 CREATE TABLE uniquenameid(
@@ -37,12 +37,13 @@ CREATE TABLE objectreference(
 	ReferenceId bigint not null default 0,
 	ReferenceType varchar(64)
 );
+CREATE INDEX idxlogicalrefid ON objectreference(ReferenceId,ReferenceType);
 
 DROP TABLE IF EXISTS logicalnameid CASCADE;
 CREATE TABLE logicalnameid (
 	LogicalId bigint not null default 0
 ) inherits (nameid,objectreference);
-CREATE INDEX idxlogicalrefid ON logicalnameid(ReferenceId,ReferenceType,OrganizationId);
+--CREATE INDEX idxlogicalrefid ON logicalnameid(ReferenceId,ReferenceType,OrganizationId);
 
 DROP TABLE IF EXISTS organizations CASCADE;
 CREATE TABLE organizations (
@@ -59,7 +60,8 @@ CREATE TABLE attribute (
 	) inherits (orgid,objectreference);
 
 CREATE UNIQUE INDEX Idxattributes on attribute(ReferenceId,ReferenceType,Name,ValueIndex,OrganizationId);
-
+-- OPTIONAL value index, for when performing broader queries based on attribute value
+CREATE INDEX idxattributeval on attribute(value);
 
 DROP TABLE IF EXISTS objectlocation CASCADE;
 create table objectlocation(
@@ -134,9 +136,10 @@ CREATE TABLE participation (
 
 ) inherits (orgid);
 
-CREATE INDEX participation_pid ON participation(ParticipationId);
-CREATE INDEX participant_pid ON participation(ParticipantId);
-CREATE INDEX participanttype_pid ON participation(ParticipantType);
+CREATE INDEX participationtype_pid ON participation(ParticipationId,ParticipantType);
+-- CREATE INDEX participation_pid ON participation(ParticipationId);
+-- CREATE INDEX participant_pid ON participation(ParticipantId);
+-- CREATE INDEX participanttype_pid ON participation(ParticipantType);
 
 DROP TABLE IF EXISTS groupparticipation CASCADE;
 CREATE TABLE groupparticipation (
@@ -191,9 +194,9 @@ CREATE UNIQUE INDEX idxuniquenameparentgroup on uniquenameparentgroup(Name,Paren
 
 DROP TABLE IF EXISTS objectdate CASCADE;
 create table objectdate (
-	CreatedDate timestamp not null,
-	ModifiedDate timestamp not null,
-	ExpirationDate timestamp not null
+	CreatedDate timestamp not null default now(),
+	ModifiedDate timestamp not null default now(),
+	ExpirationDate timestamp not null default now()
 );
 
 DROP TABLE IF EXISTS data CASCADE;
@@ -501,10 +504,6 @@ create table rule (
 DROP TABLE IF EXISTS ruleparticipation CASCADE;
 CREATE TABLE ruleparticipation (
 ) inherits (participation);
-CREATE UNIQUE INDEX ruleparticipation_id ON ruleparticipation(Id);
-
-
-
 
 
 
@@ -1522,5 +1521,78 @@ inner join accountEntitlements AE on AE.accountid = PA.accountid
 ;
 
 -- select ((EXTRACT(EPOCH FROM AuditResultDate)*1000) - (EXTRACT(EPOCH FROM AuditDate)) * 1000) as PerfInMS from Audit order by AuditResultDate DESC limit 100
+
+
+-- ***** PG9 INHERITENCE LIMITATION FIX - ADD UNIQUE CONSTRAINTS PER TABLE
+
+CREATE UNIQUE INDEX IdxOrganizationObjId ON organizations(ObjectId);
+CREATE UNIQUE INDEX IdxorganizationsName on organizations(Name,ParentId);
+CREATE UNIQUE INDEX idxorganizations_urn on organizations(Urn);
+CREATE UNIQUE INDEX asymmetrickeys_ObjId ON asymmetrickeys(ObjectId);
+CREATE UNIQUE INDEX symmetrickeys_ObjId ON symmetrickeys(ObjectId);
+CREATE UNIQUE INDEX idxgroups_urn on groups(Urn);
+CREATE UNIQUE INDEX IdxGroupObjId ON groups(ObjectId);
+CREATE UNIQUE INDEX IdxgroupsNameParent on groups(Name,ParentId,OrganizationId);
+CREATE UNIQUE INDEX idxdata_urn on data(Urn);
+CREATE UNIQUE INDEX IdxDataObjId ON data(ObjectId);
+CREATE UNIQUE INDEX IdxdataNameGroup on data(Name,GroupId,OrganizationId);
+CREATE UNIQUE INDEX IdxdataIdGroup on data(Id,GroupId,OrganizationId);
+CREATE UNIQUE INDEX idxaccounts_urn on accounts(Urn);
+CREATE UNIQUE INDEX IdxAccountObjId ON accounts(ObjectId);
+CREATE UNIQUE INDEX IdxaccountsName on accounts(Name,ParentId,GroupId,OrganizationId);
+CREATE UNIQUE INDEX users_urn ON users(Urn);
+CREATE UNIQUE INDEX IdxUserObjId ON users(ObjectId);
+CREATE UNIQUE INDEX IdxusersName on users(Name,AccountId,OrganizationId);
+CREATE UNIQUE INDEX IdxAddressObjId ON addresses(ObjectId);
+CREATE UNIQUE INDEX idxaddresses_urn on addresses(Urn);
+CREATE UNIQUE INDEX idxcontacts_urn on contacts(Urn);
+CREATE UNIQUE INDEX IdxContactsObjId ON contacts(ObjectId);
+CREATE UNIQUE INDEX IdxContactInfoObjId ON contactinformation(ObjectId);
+CREATE UNIQUE INDEX idxpersons_urn on persons(Urn);
+CREATE UNIQUE INDEX IdxPersonObjId ON persons(ObjectId);
+CREATE UNIQUE INDEX persons_name ON persons(Name,ParentId,GroupId,OrganizationId);
+CREATE UNIQUE INDEX IdxRoleObjId ON roles(ObjectId);
+CREATE UNIQUE INDEX idxroles_urn ON roles(Urn);
+CREATE UNIQUE INDEX IdxPermissionObjId ON permissions(ObjectId);
+CREATE UNIQUE INDEX idxpermissions_urn ON permissions(Urn);
+CREATE UNIQUE INDEX idxtags_urn on tags(Urn);
+CREATE UNIQUE INDEX IdxTagObjId ON tags(ObjectId);
+CREATE UNIQUE INDEX fact_id ON fact(Id);
+CREATE UNIQUE INDEX IdxFactObjId ON fact(ObjectId);
+CREATE UNIQUE INDEX IdxfactNameGroup on fact(Name,GroupId,OrganizationId);
+CREATE UNIQUE INDEX IdxfactUrnGroup on fact(Urn);
+CREATE UNIQUE INDEX functionfact_id ON functionfact(Id);
+CREATE UNIQUE INDEX IdxFunFactObjId ON functionfact(ObjectId);
+CREATE UNIQUE INDEX IdxfunctionfactNameGroup on functionfact(Name,GroupId,OrganizationId);
+CREATE UNIQUE INDEX IdxfunctionfactUrnGroup on functionfact(Urn);
+CREATE UNIQUE INDEX function_id ON function(Id);
+CREATE UNIQUE INDEX IdxFunctionObjId ON function(ObjectId);
+CREATE UNIQUE INDEX IdxfunctionNameGroup on function(Name,GroupId,OrganizationId);
+CREATE UNIQUE INDEX IdxfunctionUrnGroup on function(Urn);
+CREATE UNIQUE INDEX functionparticipation_id ON functionparticipation(Id);
+CREATE UNIQUE INDEX IdxfunctionparticipationCbo on functionparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
+CREATE UNIQUE INDEX operation_id ON operation(Id);
+CREATE UNIQUE INDEX IdxOperationObjId ON operation(ObjectId);
+CREATE UNIQUE INDEX IdxoperationNameGroup on operation(Name,GroupId,OrganizationId);
+CREATE UNIQUE INDEX IdxoperationUrnGroup on operation(Urn);
+CREATE UNIQUE INDEX pattern_id ON pattern(Id);
+CREATE UNIQUE INDEX IdxPatternObjId ON pattern(ObjectId);
+CREATE UNIQUE INDEX IdxpatternNameGroup on pattern(Name,GroupId,OrganizationId);
+CREATE UNIQUE INDEX IdxpatternUrnGroup on pattern(Urn);
+CREATE UNIQUE INDEX policy_id ON policy(Id);
+CREATE UNIQUE INDEX IdxPolicyObjId ON policy(ObjectId);
+CREATE UNIQUE INDEX IdxpolicyNameGroup on policy(Name,GroupId,OrganizationId);
+CREATE UNIQUE INDEX IdxpolicyUrnGroup on policy(Urn);
+CREATE UNIQUE INDEX policyparticipation_id ON policyparticipation(Id);
+CREATE UNIQUE INDEX IdxpolicyparticipationCbo on policyparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
+CREATE UNIQUE INDEX rule_id ON rule(Id);
+CREATE UNIQUE INDEX IdxRuleObjId ON rule(ObjectId);
+CREATE UNIQUE INDEX IdxruleNameGroup on rule(Name,GroupId,OrganizationId);
+CREATE UNIQUE INDEX IdxruleUrnGroup on rule(Urn);
+CREATE UNIQUE INDEX IdxruleparticipationCbo on ruleparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
+CREATE UNIQUE INDEX IdxCredentialObjId ON credential(ObjectId);
+CREATE UNIQUE INDEX IdxControlReference on control(ControlType,ControlAction,ReferenceId,ReferenceType);
+CREATE UNIQUE INDEX IdxControlObjId ON control(ObjectId);
+
 
 

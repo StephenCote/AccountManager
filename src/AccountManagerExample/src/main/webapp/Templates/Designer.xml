@@ -72,37 +72,37 @@
 		</select>
 		</div>
 		<div class = "buttons_bar" rid = "buttons-bar">
-		<input type="button" class = "designer_button" button-action = "Save" style = "background-image: url(/Media/Icons/save_ico.gif);" />
+		<input type="button" class = "designer_button" button-action = "Save" style = "background-image: url(/AccountManagerExample/Media/Icons/save_ico.gif);" />
 		<input type = "text" placeholder = "${property.defaultPath}" rid = "path" style = "margin-top: 6px;float:left; width: 100px !important;" class = "rocket-text rocket-text-short" />
 		<input type = "hidden" rid = "id" bind = "${bean.rocketType}" />
 		<input type = "hidden" rid = "mimeType" bind = "${bean.rocketType}" />
 		<input type = "text" rid = "name" placeholder = "Untitled" bind = "${bean.rocketType}" style = "margin-top: 6px;float:left; width: 100px !important;" class = "rocket-text" />
 		<div type="button" class = "designer_button_spacer"></div>
-		<input type="button" class = "designer_button" button-action = "Bold" style = "background-image: url(/Media/Icons/bold.gif);" />
-		<input type="button" class = "designer_button" button-action = "Italic" style = "background-image: url(/Media/Icons/italic.gif);" />
-		<input type="button" class = "designer_button" button-action = "Underline" style = "background-image: url(/Media/Icons/underline.gif);" />
+		<input type="button" class = "designer_button" button-action = "Bold" style = "background-image: url(/AccountManagerExample/Media/Icons/bold.gif);" />
+		<input type="button" class = "designer_button" button-action = "Italic" style = "background-image: url(/AccountManagerExample/Media/Icons/italic.gif);" />
+		<input type="button" class = "designer_button" button-action = "Underline" style = "background-image: url(/AccountManagerExample/Media/Icons/underline.gif);" />
 		
 		<div type="button" class = "designer_button_spacer"></div>
 		
-		<input type="button" class = "designer_button" button-action = "JustifyLeft" style = "background-image: url(/Media/Icons/left_just.gif);" />
-		<input type="button" class = "designer_button" button-action = "JustifyCenter" style = "background-image: url(/Media/Icons/centre.gif);" />
-		<input type="button" class = "designer_button" button-action = "JustifyRight" style = "background-image: url(/Media/Icons/right_just.gif);" />
+		<input type="button" class = "designer_button" button-action = "JustifyLeft" style = "background-image: url(/AccountManagerExample/Media/Icons/left_just.gif);" />
+		<input type="button" class = "designer_button" button-action = "JustifyCenter" style = "background-image: url(/AccountManagerExample/Media/Icons/centre.gif);" />
+		<input type="button" class = "designer_button" button-action = "JustifyRight" style = "background-image: url(/AccountManagerExample/Media/Icons/right_just.gif);" />
 		
 		<div type="button" class = "designer_button_spacer"></div>
 		
-		<input type="button" class = "designer_button" button-action = "InsertUnorderedList" style = "background-image: url(/Media/Icons/list.gif);" />
-		<input type="button" class = "designer_button" button-action = "InsertOrderedList" style = "background-image: url(/Media/Icons/numbered_list.gif);" />
+		<input type="button" class = "designer_button" button-action = "InsertUnorderedList" style = "background-image: url(/AccountManagerExample/Media/Icons/list.gif);" />
+		<input type="button" class = "designer_button" button-action = "InsertOrderedList" style = "background-image: url(/AccountManagerExample/Media/Icons/numbered_list.gif);" />
 		
 		<div type="button" class = "designer_button_spacer"></div>
 		
-		<input type="button" class = "designer_button" button-action = "Indent" style = "background-image: url(/Media/Icons/indent.gif);" />
-		<input type="button" class = "designer_button" button-action = "Outdent" style = "background-image: url(/Media/Icons/outdent.gif);" />
+		<input type="button" class = "designer_button" button-action = "Indent" style = "background-image: url(/AccountManagerExample/Media/Icons/indent.gif);" />
+		<input type="button" class = "designer_button" button-action = "Outdent" style = "background-image: url(/AccountManagerExample/Media/Icons/outdent.gif);" />
 		
 		<div type="button" class = "designer_button_spacer"></div>
 		
-		<input type="button" class = "designer_button" button-action = "InsertHorizontalRule" style = "background-image: url(/Media/Icons/hr.gif);" />
-		<input type="button" class = "designer_button" button-action = "CreateLink" style = "background-image: url(/Media/Icons/hyperlink.gif);" />
-		<input type="button" class = "designer_button" button-action = "ImageLink" style = "background-image: url(/Media/Icons/blankdoc2_ico.gif);" />
+		<input type="button" class = "designer_button" button-action = "InsertHorizontalRule" style = "background-image: url(/AccountManagerExample/Media/Icons/hr.gif);" />
+		<input type="button" class = "designer_button" button-action = "CreateLink" style = "background-image: url(/AccountManagerExample/Media/Icons/hyperlink.gif);" />
+		<input type="button" class = "designer_button" button-action = "ImageLink" style = "background-image: url(/AccountManagerExample/Media/Icons/blankdoc2_ico.gif);" />
 		<div style = "clear:both;"></div>	
 	</div>
 	
@@ -398,7 +398,7 @@
 			var oA = d.document.createElement("a");
 			var oI = d.document.createElement("img");
 			oA.appendChild(oI);
-			var sOrg = accountManager.getOrganizationDotPath(oG.organizationId);
+			var sOrg = accountManager.getOrganizationDotPath(o.organizationId);
 			var sThumbUrl = "/AccountManager/Thumbnail/" + sOrg + "/Data" + o.groupPath + "/" + o.name + "/" + w + "x" + h;
 			//Hemi.log(sThumbUrl);
 			
@@ -611,7 +611,7 @@
 						this.setStatus("Deferring Preparation ...");
 						return;
 					}
-					var sCSS = "<link rel=\"stylesheet\" href=\"/Style/uwm.css\" type=\"text/css\" title = \"uwm\" /><link rel=\"stylesheet\" href=\"/Style/rocket.css\" type=\"text/css\" />";
+					var sCSS = "<link rel=\"stylesheet\" href=\"/AccountManagerExample/Style/uwm.css\" type=\"text/css\" title = \"uwm\" /><link rel=\"stylesheet\" href=\"/AccountManagerExample/Style/rocket.css\" type=\"text/css\" />";
  					if(o && o.dataBytesStore){
  						///alert("Org: " + uwm.base64Decode(o.dataBytesStore));
 
