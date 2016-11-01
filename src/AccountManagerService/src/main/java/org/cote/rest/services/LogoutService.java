@@ -8,9 +8,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @Path("/logout")
 public class LogoutService {
-
+	private static final Logger logger = LogManager.getLogger(LogoutService.class);
 	@GET
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)

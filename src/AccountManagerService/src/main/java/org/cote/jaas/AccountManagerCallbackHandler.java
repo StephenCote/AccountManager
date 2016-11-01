@@ -31,19 +31,35 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-public class AccountManagerCallbackHandler implements CallbackHandler {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.CredentialType;
+import org.cote.accountmanager.util.BinaryUtil;
 
+public class AccountManagerCallbackHandler implements CallbackHandler {
+	private static final Logger logger = LogManager.getLogger(AccountManagerCallbackHandler.class);
 	String name;
 	String password;
 
+	public AccountManagerCallbackHandler(CredentialType credential){
+		if(credential != null && (credential.getCredentialType().equals(CredentialEnumType.ENCRYPTED_PASSWORD) || credential.getCredentialType().equals(CredentialEnumType.HASHED_PASSWORD))){
+			logger.info("CREDENTIALTYPE");
+			name = credential.getOrganizationPath() + "/" + credential.getName();
+			password = new String(credential.getCredential());
+		}
+		else{
+			logger.error("Invalid credential");
+		}
+	}
 	public AccountManagerCallbackHandler(String name, String password) {
-		System.out.println("Callback Handler - constructor called");
+		logger.info("BASIC FORM");
 		this.name = name;
 		this.password = password;
 	}
 
 	public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-		System.out.println("Callback Handler - handle called");
+		System.out.println("Callback Handler - handle called: " + name + " / " + password);
 		for (int i = 0; i < callbacks.length; i++) {
 			if (callbacks[i] instanceof NameCallback) {
 				NameCallback nameCallback = (NameCallback) callbacks[i];
@@ -52,6 +68,7 @@ public class AccountManagerCallbackHandler implements CallbackHandler {
 				PasswordCallback passwordCallback = (PasswordCallback) callbacks[i];
 				passwordCallback.setPassword(password.toCharArray());
 			} else {
+				System.out.println("Unsupported callback at " + i);
 				throw new UnsupportedCallbackException(callbacks[i], "The submitted Callback is unsupported");
 			}
 		}

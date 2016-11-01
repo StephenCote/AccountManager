@@ -156,7 +156,7 @@ public class AM5LoginModule implements LoginModule {
      */
     public boolean login() throws LoginException {
         if (debug())
-            logger.info("\t\t[SampleLoginModule] login");
+            logger.info("\t\t[AM5LoginModule] login");
  
         if (_callbackHandler == null)
             throw new LoginException("Error: no CallbackHandler available " +
@@ -223,7 +223,7 @@ public class AM5LoginModule implements LoginModule {
 
         if (debug())
         {
-            logger.info("\t\t[SampleLoginModule] username : " + username);
+            logger.info("\t\t[AM5LoginModule] username : " + username);
         }
         if(user != null){
         	_succeeded = true;
@@ -238,7 +238,7 @@ public class AM5LoginModule implements LoginModule {
  
         if (debug())
         {
-            logger.info("\t\t[SampleLoginModule] success : " + _succeeded);
+            logger.info("\t\t[AM5LoginModule] success : " + _succeeded);
         }
  
         if (!_succeeded)
@@ -362,7 +362,7 @@ public class AM5LoginModule implements LoginModule {
     public boolean abort() throws LoginException {
         if (debug()) {
             logger.info
-                     ("\t\t[SampleLoginModule] aborted authentication attempt.");
+                     ("\t\t[AM5LoginModule] aborted authentication attempt.");
         }
  
         if (_succeeded == false) {
@@ -430,7 +430,7 @@ public class AM5LoginModule implements LoginModule {
         if (slm == null) {
             return;
         }
-        logger.info("\t\t[SampleLoginModule] configuration options:");
+        logger.info("\t\t[AM5LoginModule] configuration options:");
         if (slm.debug()) {
             logger.info("\t\t\tdebug = " + slm.debug());
         }
