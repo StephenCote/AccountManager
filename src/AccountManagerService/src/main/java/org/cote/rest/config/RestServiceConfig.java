@@ -1,7 +1,11 @@
 package org.cote.rest.config;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
@@ -20,6 +24,9 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.accountmanager.util.JSONUtil;
+import org.cote.accountmanager.util.StreamUtil;
+import org.cote.jaas.AM5LoginModule;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.spi.AbstractContainerLifecycleListener;
@@ -69,9 +76,9 @@ public class RestServiceConfig extends ResourceConfig{
 
 		private void initializeAccountManager(){
 			logger.info("Initializing Account Manager");
-			System.out.println("******");
+			//System.out.println("******");
 			String dsName = context.getInitParameter("database.dsname");
-			logger.debug("DS Name: " + dsName);
+			//logger.debug("DS Name: " + dsName);
 			ConnectionFactory cf = ConnectionFactory.getInstance();
 			cf.setConnectionType(CONNECTION_TYPE.DS);
 			cf.setJndiDataSource(dsName);
@@ -110,8 +117,33 @@ public class RestServiceConfig extends ResourceConfig{
 			BaseService.enableExtendedAttributes = Boolean.parseBoolean(context.getInitParameter("extended.attributes.enabled"));
 			logger.info("Extended attributes enabled: " + BaseService.enableExtendedAttributes);
 
+			String roleAuth = context.getInitParameter("amauthrole");
+			if(roleAuth != null && roleAuth.length() > 0){
+				AM5LoginModule.setAuthenticatedRole(roleAuth);
+			}
 			
-			
+			String roleMapPath = context.getInitParameter("amrolemap");
+			InputStream resourceContent = null;
+			Map<String,String> roleMap = new HashMap<>();
+			try {
+				resourceContent = context.getResourceAsStream(roleMapPath);
+				roleMap = JSONUtil.getMap(StreamUtil.getStreamBytes(resourceContent), String.class, String.class);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			finally{
+				if(resourceContent != null)
+					try {
+						resourceContent.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+			AM5LoginModule.setRoleMap(roleMap);
+			//System.out.println("**** Loaded " + roleMap.toString() + " role maps");
+
 		}
     }
 }

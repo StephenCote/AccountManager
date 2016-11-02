@@ -480,6 +480,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		}
 		return person;
 	}
+	/*
 	@Override
 	public <T> List<T> search(String searchValue, long startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException{
 	
@@ -496,7 +497,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldGroup(dir.getId()));
 		return search(fields.toArray(new QueryField[0]), instruction, dir.getOrganizationId());
 	}
-	
+	*/
 	
 	/// Person search uses a different query to join in contact information
 	/// Otherwise, this could be the getPaginatedList method

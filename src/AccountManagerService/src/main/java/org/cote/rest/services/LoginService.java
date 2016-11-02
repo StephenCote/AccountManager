@@ -16,24 +16,47 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.CredentialType;
+import org.cote.accountmanager.service.rest.SchemaBean;
+import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.jaas.AccountManagerCallbackHandler;
 
 @Path("/login")
 public class LoginService {
 	private static final Logger logger = LogManager.getLogger(LoginService.class);
+	private static SchemaBean schemaBean = null;
+	@GET @Path("/smd") @Produces(MediaType.APPLICATION_JSON)
+	 public SchemaBean getSmdSchema(@Context UriInfo uri){
+		 if(schemaBean != null) return schemaBean;
+		 schemaBean = ServiceSchemaBuilder.modelRESTService(this.getClass(),uri.getAbsolutePath().getRawPath().replaceAll("/smd$", ""));
+		 return schemaBean;
+	 }
+	
 	@POST
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(CredentialType credential, @Context HttpServletRequest request, @Context HttpServletResponse response){
 		boolean out_bool = false;
+		boolean loginSuccess = true;
+		
+
+		try {
+			request.getSession();
+			request.login(credential.getOrganizationPath() + "/" + credential.getName(), new String(credential.getCredential()));
+		} catch (ServletException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			loginSuccess = false;
+		}
+		/*
 		AccountManagerCallbackHandler callback = new AccountManagerCallbackHandler(credential);
 
 		//LoginContext lcontext = null;
-        boolean loginSuccess = true;
+        
 	      try{
 				//request.getSession(true);
 	    	  LoginContext lc = new LoginContext("AccountManagerService", callback);
@@ -50,7 +73,10 @@ public class LoginService {
 	    	  logger.error("TRACE", lge.getStackTrace());
 	          loginSuccess = false;
 	      }
+	    
 		return Response.status(200).cookie( new NewCookie( "JSESSIONID", request.getSession().getId() + ";path=/AccountManagerService;HttpOnly")).entity(loginSuccess).build();
+		*/
+		return Response.status(200).entity(loginSuccess).build();
 	}
 	
 }

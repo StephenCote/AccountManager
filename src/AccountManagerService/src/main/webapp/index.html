@@ -37,8 +37,8 @@ function doLogin(){
 	cred.organizationPath = "/Public";
 	cred.credentialType = "HASHED_PASSWORD";
 	Hemi.xml.postJSON("/AccountManagerService/rest/login",cred,function(s,v){
-		alert(v);
-		//doGoLogin();
+		//alert(v);
+		doGoLogin();
 	},1);
 }
 (function(){
@@ -53,7 +53,27 @@ function doLogin(){
 			true,
 			false
 		);
-
+	uwmServices.addService(
+			"Principal",
+			"/AccountManagerService/rest/principal/smd",
+			true,
+			true,
+			false
+		);
+	uwmServices.addService(
+			"Logout",
+			"/AccountManagerService/rest/logout/smd",
+			true,
+			true,
+			false
+		);
+	uwmServices.addService(
+			"Login",
+			"/AccountManagerService/rest/login/smd",
+			true,
+			true,
+			false
+		);
 }());
 </script>
 <!-- 

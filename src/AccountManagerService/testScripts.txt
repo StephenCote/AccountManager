@@ -1,0 +1,5 @@
+var sGroupId = "ad79f5bc-2d9c-4a60-abb5-2c65c56d2d4b";
+var iCount = Hemi.xml.getJSON("/AccountManagerService/rest/resources/GROUP/" + sGroupId + "/count");
+var aList = Hemi.xml.getJSON("/AccountManagerService/rest/resources/GROUP/" + sGroupId + "/0/10");
+
+/AccountManagerService/rest/resources/GROUP/ad79f5bc-2d9c-4a60-abb5-2c65c56d2d4b/0/10

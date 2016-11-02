@@ -1550,6 +1550,16 @@ public class BaseService{
 		return out_obj;
 	}
 	
+	public static int countByGroup(AuditEnumType type, BaseGroupType parentGroup, HttpServletRequest request){
+		BaseGroupType dir = null;
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "count",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
+		AuditService.targetAudit(audit, type, parentGroup.getUrn());
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null) return 0;
+		return count(audit,type, user, dir, request);
+	}
+
 	public static int countByGroup(AuditEnumType type, String path, HttpServletRequest request){
 		BaseGroupType dir = null;
 
@@ -1616,7 +1626,7 @@ public class BaseService{
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "countByParent",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, type, UrnUtil.getUrn(parent));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		if(user==null) return 0;
+		if(user == null) return 0;
 
 		return countInParent(audit,type, user, parent, request);
 	}
@@ -1772,6 +1782,12 @@ public class BaseService{
 					dirs = Factories.getPermissionFactory().getPermissionList((BasePermissionType)parentObj, PermissionEnumType.valueOf(parentType),  startIndex, recordCount, parentObj.getOrganizationId());
 					break;
 			}
+			for(int i = 0; i < dirs.size(); i++){
+				denormalize(dirs.get(i));
+				if(BaseService.enableExtendedAttributes){
+					Factories.getAttributeFactory().populateAttributes((NameIdType)dirs.get(i));
+				}
+			}
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
@@ -1781,11 +1797,8 @@ public class BaseService{
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		if(BaseService.enableExtendedAttributes){
-			for(int i = 0; i < dirs.size(); i++){
-				Factories.getAttributeFactory().populateAttributes((NameIdType)dirs.get(i));
-			}
-		}
+
+
 		return dirs;
 	}
 	

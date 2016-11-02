@@ -124,7 +124,7 @@ public class NameIdGroupFactory extends NameIdFactory{
 		///logger.info("CKN: " + t.getParentId() + (t.getGroup() == null ? "NULL GROUP" : t.getGroup().getId()));
 		return t.getName() + "-" + t.getParentId() + "-" + (t.getGroupId().compareTo(0L) == 0 ? "ORPHAN" : t.getGroupId());
 	}
-	
+
 	public <T> List<T> search(String searchValue, long startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException, ArgumentException{
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){
@@ -139,7 +139,7 @@ public class NameIdGroupFactory extends NameIdFactory{
 		fields.add(QueryFields.getFieldGroup(dir.getId()));
 		return search(fields.toArray(new QueryField[0]), instruction, dir.getOrganizationId());
 	}
-	
+
 	public <T> T getByNameInGroup(String name, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
 		return getByNameInGroup(name, 0, parentGroup);
 	}

@@ -4,3 +4,6 @@ select uuid_generate_v4();
 select 'drop table if exists "' || tablename || '" cascade;' 
   from pg_tables
  where schemaname = 'public';
+ 
+ SELECT 'drop sequence if exists ' || c.relname || ' CASCADE;' FROM pg_class c WHERE
+(c.relkind = 'S');

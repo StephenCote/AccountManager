@@ -18,6 +18,10 @@
  	<param-name>log4jConfiguration</param-name>
  	<param-value>WEB-INF/resource/AccountManagerServiceLogging.xml</param-value>
  	</context-param>
+ 	<context-param>
+ 	<param-name>amauthrole</param-name>
+ 	<param-value>AccountUsers</param-value>
+ 	</context-param>
  	 	<context-param>
  	<param-name>amrolemap</param-name>
  	<param-value>WEB-INF/resource/roleMap.json</param-value>

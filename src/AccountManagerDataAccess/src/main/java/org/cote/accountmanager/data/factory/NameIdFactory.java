@@ -58,7 +58,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 
-public abstract class NameIdFactory extends FactoryBase {
+public abstract class NameIdFactory extends FactoryBase implements IFactory{
 	public static final Logger logger = Logger.getLogger(NameIdFactory.class.getName());
 	private Map<Long, String> typeNameIdMap = null;
 	private Map<String,Integer> typeNameMap = null;
@@ -455,7 +455,7 @@ public abstract class NameIdFactory extends FactoryBase {
 				//fields.add(QueryFields.getFieldUrn(map));
 			if(scopeToOrganization) fields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
 	}
-	public DataRow prepareAdd(NameIdType obj, String tableName) throws FactoryException{
+	protected DataRow prepareAdd(NameIdType obj, String tableName) throws FactoryException{
 		DataTable table = getDataTable(tableName);
 		if(table == null) throw new FactoryException("Table doesn't exist:" + tableName);
 		/// If the factory specifies the object should have an object id, then auto generate it if it doesn't exist

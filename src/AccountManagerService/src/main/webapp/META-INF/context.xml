@@ -1,4 +1,4 @@
-<Context path = "" docBase = "ROOT" encoding = "UTF-8">
+<Context encoding = "UTF-8">
  <Realm className="org.apache.catalina.realm.JAASRealm" 
     appName="AccountManagerService"
     userClassNames="org.cote.accountmanager.data.security.UserPrincipal"
@@ -34,7 +34,7 @@
     />
     
     <Manager className="org.apache.catalina.session.PersistentManager" maxIdleBackup="1">
-   <Store className="org.apache.catalina.session.FileStore" directory="/Users/Steve/Projects/Sessions"/>
+   <Store className="org.apache.catalina.session.FileStore" directory="c:/Projects/Sessions"/>
 </Manager>
     
 </Context>

@@ -3,5 +3,6 @@
 	"DataAdministrators":"admin",
 	"AccountAdministrators":"admin",
 	"ApiUsers":"api",
+	"DebugUsers":"debug",
 	"AccountUsers":"user"
 }

@@ -86,21 +86,29 @@ public class AM5LoginModule implements LoginModule {
  
     protected Principal[] _authPrincipals;
  
-    protected Map<String, String> _roleMap = null;
-    protected String authenticatedRole = "AccountUsers";
+    protected static Map<String, String> _roleMap = null;
+    protected static String authenticatedRole = null;
+    public static void setAuthenticatedRole(String s){
+    	authenticatedRole = s;
+    }
     /// TODO: Read this from the JSON file
     ///
-    public Map<String, String> getRoleMap(){
+    public static Map<String, String> getRoleMap(){
     	if(_roleMap != null) return _roleMap;
     	_roleMap = new HashMap<>();
+    	/*
     	_roleMap.put("SystemAdministrators", "admin");
     	_roleMap.put("DataAdministrators", "admin");
     	_roleMap.put("AccountAdministrators", "admin");
     	_roleMap.put("ApiUsers", "api");
     	_roleMap.put("AccountUsers", "user");
+    	*/
     	return _roleMap;
     }
     
+    public static void setRoleMap(Map<String,String> map){
+    	_roleMap = map;
+    }
     /**
      * Initialize this <code>LoginModule</code>.
      * <p/>
@@ -337,7 +345,7 @@ public class AM5LoginModule implements LoginModule {
             	oroles.add(new RolePrincipal(map.get(authenticatedRole)));
             }
             //if(true) throw new LoginException("Whatever");
-            logger.info("Returning " + oroles.size() + " roles");
+            logger.info("Returning " + oroles.size() + " roles mapped against " + _roleMap.size());
             return oroles;
             //.toArray(new RolePrincipal[0]);
     }
