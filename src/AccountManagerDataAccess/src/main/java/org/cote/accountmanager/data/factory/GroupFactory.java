@@ -44,6 +44,8 @@ import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BucketGroupType;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonGroupType;
@@ -73,6 +75,7 @@ public class GroupFactory  extends NameIdFactory {
 		this.hasUrn = true;
 		this.hasObjectId = true;
 		this.tableNames.add("groups");
+		this.clusterByParent = true;
 		factoryType = FactoryEnumType.GROUP;
 		systemRoleNameAdministrator = RoleService.ROLE_DATA_ADMINISTRATOR;
 		systemRoleNameReader = RoleService.ROLE_GROUP_READERS;
@@ -110,7 +113,7 @@ public class GroupFactory  extends NameIdFactory {
 		for(int i = 0; i < dirNames.length;i++){
 			DirectoryGroupType ddir = newDirectoryGroup(user,dirNames[i],hDir,user.getOrganizationId());
 			if(isBulk) BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, ddir);
-			else addGroup(ddir);
+			else add(ddir);
 		}
 		
 	}
@@ -121,13 +124,13 @@ public class GroupFactory  extends NameIdFactory {
 		
 		//System.out.println(root_dir.getName() + ":" + root_dir.getGroupType() + ":" + root_dir.getParentId() + ":" + root_dir.getReferenceId());
 		
-		addGroup(root_dir);
+		add(root_dir);
 		root_dir = getDirectoryByName("Root", organizationId);
 
 		DirectoryGroupType home_dir = newDirectoryGroup("Home", root_dir, organizationId);
-		addGroup(home_dir);
+		add(home_dir);
 		DirectoryGroupType persons_dir = newDirectoryGroup("Persons", root_dir, organizationId);
-		addGroup(persons_dir);
+		add(persons_dir);
 
 	}
 	public UserGroupType newUserGroup(String group_name, BaseGroupType parent, long organizationId) throws ArgumentException
@@ -213,8 +216,10 @@ public class GroupFactory  extends NameIdFactory {
 		return new_group;
 	}
 	
-	public boolean addGroup(BaseGroupType group) throws FactoryException, ArgumentException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		BaseGroupType group = (BaseGroupType)object;
 		if (group.getOrganizationId() == null || group.getOrganizationId() <= 0) throw new FactoryException("Cannot add group without Organization.");
 		if(group.getName().equals("Lifecycles") && group.getParentId().compareTo(0L) == 0) throw new ArgumentException("Invalid parent id");
 		try{
@@ -254,12 +259,20 @@ public class GroupFactory  extends NameIdFactory {
 		DirectoryGroupType[] sub_dirs = getDirectoryGroups(directory).toArray(new DirectoryGroupType[0]);
 		for (int i = sub_dirs.length - 1; i >= 0; i--) deleteDirectoryGroup(sub_dirs[i]);
 		Factories.getDataFactory().deleteDataInGroup(directory);
-		return deleteGroup(directory);
+		return delete(directory);
 	}
-	public boolean deleteGroup(BaseGroupType group) throws FactoryException, ArgumentException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
-		List<BaseGroupType> sub_groups = this.getListByParent(GroupEnumType.UNKNOWN, group, 0L, 0, group.getOrganizationId());
-		for(BaseGroupType sub_group : sub_groups) deleteGroup(sub_group); 
+		BaseGroupType group = (BaseGroupType)object;
+		List<BaseGroupType> sub_groups = new ArrayList<>();
+		try {
+			sub_groups = this.getListByParent(GroupEnumType.UNKNOWN, group, 0L, 0, group.getOrganizationId());
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for(BaseGroupType sub_group : sub_groups) delete(sub_group); 
 		int deleted = deleteById(group.getId(), group.getOrganizationId());
 		clearGroupCache(group, true);
 		return (deleted > 0);
@@ -455,9 +468,15 @@ public class GroupFactory  extends NameIdFactory {
 			clearGroupCache(getGroupById(group.getParentId(), group.getOrganizationId()), false);
 		}
 	}
-	protected void clearGroupCache(BaseGroupType group, boolean clear_parent) throws ArgumentException{
+	protected void clearGroupCache(BaseGroupType group, boolean clear_parent) {
 		if (group == null) return;
-		if (clear_parent) clearGroupParentCache(group);
+		if (clear_parent)
+			try {
+				clearGroupParentCache(group);
+			} catch (ArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		String key_name = group.getName() + "-" + group.getGroupType().toString() + "-" + group.getParentId() + "-" + group.getOrganizationId();
 		/*
 		switch (group.getGroupType())
@@ -481,10 +500,17 @@ public class GroupFactory  extends NameIdFactory {
 		group.setReadData(false);
 	}
 	*/
-	public boolean updateGroup(BaseGroupType group) throws FactoryException, ArgumentException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
-		clearGroupParentCache(group);
-		return update(group);
+		BaseGroupType group = (BaseGroupType)object;
+		try {
+			clearGroupParentCache(group);
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getStackTrace());
+		}
+		return super.update(group);
 	}
 	
 	@Override
@@ -581,7 +607,7 @@ public class GroupFactory  extends NameIdFactory {
 		if (vdir == null)
 		{
 			vdir = newDirectoryGroup(owner, directory_name, parent, organizationId);
-			if (addGroup(vdir))
+			if (add(vdir))
 			{
 				vdir = getDirectoryByName(directory_name, parent, organizationId);
 			}
@@ -595,7 +621,7 @@ public class GroupFactory  extends NameIdFactory {
 		if (vdir == null)
 		{
 			vdir = newUserGroup(owner, directory_name, parent, organizationId);
-			if (addGroup(vdir))
+			if (add(vdir))
 			{
 				vdir = getUserGroupByName(directory_name, parent, organizationId);
 			}
@@ -739,7 +765,7 @@ public class GroupFactory  extends NameIdFactory {
 			if (nested_group == null)
 			{
 				nested_group = newDirectoryGroup(user, name, ref_group, organizationId);
-				if (addGroup(nested_group))
+				if (add(nested_group))
 				{
 					nested_group = getDirectoryByName(name, ref_group, organizationId);
 					ref_group = nested_group;

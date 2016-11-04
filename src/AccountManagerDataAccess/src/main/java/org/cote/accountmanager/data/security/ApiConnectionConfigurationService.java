@@ -57,11 +57,11 @@ public class ApiConnectionConfigurationService {
 
 	public static UserType getApiUser(long organizationId) throws FactoryException, ArgumentException{
 		if(apiUser != null) return apiUser;
-		UserType chkUser = Factories.getUserFactory().getUserByName(apiUserName, organizationId);
+		UserType chkUser = Factories.getUserFactory().getByName(apiUserName, organizationId);
 		if(chkUser == null){
 			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "ApiConnectionConfigurationService", AuditEnumType.USER, apiUserName);
 			PersonService.createUserAsPerson(audit, apiUserName, UUID.randomUUID().toString(), "ApiUser@example.com", UserEnumType.SYSTEM,UserStatusEnumType.RESTRICTED , organizationId);
-			chkUser = Factories.getUserFactory().getUserByName(apiUserName, organizationId);
+			chkUser = Factories.getUserFactory().getByName(apiUserName, organizationId);
 		}
 		apiUser = chkUser;
 		return apiUser;
@@ -171,7 +171,7 @@ public class ApiConnectionConfigurationService {
 			byte[] conf = JAXBUtil.exportObject(ApiClientConfigurationBean.class, apiConfig).getBytes("UTF-8");
 			
 			DataUtil.setValue(newData, conf);
-			if(Factories.getDataFactory().addData(newData) == true){
+			if(Factories.getDataFactory().add(newData) == true){
 				newData = Factories.getDataFactory().getDataByName(dataName, true, dir);
 				if(CredentialService.newCredential(CredentialEnumType.ENCRYPTED_IDENTITY, null, owner, newData, identity, true, true, false) != null
 					&&

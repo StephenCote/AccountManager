@@ -23,8 +23,8 @@ public class TestGroupAuthorization extends BaseDataAccessTest {
 		try {
 			org = Factories.getOrganizationFactory().findOrganization("/Accelerant/Rocket");
 			assertNotNull("Organization is null");
-			user = Factories.getUserFactory().getUserByName("TestUser1", org.getId());
-			user2 = Factories.getUserFactory().getUserByName("TestUser2", org.getId());
+			user = Factories.getUserFactory().getByName("TestUser1", org.getId());
+			user2 = Factories.getUserFactory().getByName("TestUser2", org.getId());
 			assertNotNull("User 1 is null",user);
 			assertNotNull("User 2 is null",user2);
 			

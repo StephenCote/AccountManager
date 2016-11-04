@@ -84,7 +84,7 @@ public class DataService{
 			AuditService.denyResult(audit, "Profile data is not the right name, owner, or in the right group");
 			return false;
 		}
-		if(Factories.getDataFactory().updateData(data) && Factories.getAttributeFactory().updateAttributes(data)){
+		if(Factories.getDataFactory().update(data) && Factories.getAttributeFactory().updateAttributes(data)){
 			AuditService.permitResult(audit, "Updated profile information with " + data.getAttributes().size() + " attributes");
 			out_bool = true;
 		}
@@ -96,12 +96,7 @@ public class DataService{
 			logger.error(e.getMessage());
 			AuditService.denyResult(audit,e.getMessage());
 
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			AuditService.denyResult(audit,e.getMessage());
-
-		} catch (ArgumentException e) {
+		}  catch (ArgumentException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			AuditService.denyResult(audit,e.getMessage());

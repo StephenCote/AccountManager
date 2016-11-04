@@ -136,7 +136,12 @@ public abstract class FactoryBase {
 		}
 		return out_bool;
 	}
-
+	public String getDataTable(){
+		return getDataTables().get(0).getName();
+	}
+	public void writeSpool(){
+		writeSpool(getDataTable());
+	}
 	public void writeSpool(String tableName)
 	{
 		DataTable table = getDataTable(tableName);

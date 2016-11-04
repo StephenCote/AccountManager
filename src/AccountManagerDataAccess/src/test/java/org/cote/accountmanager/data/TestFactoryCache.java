@@ -74,15 +74,12 @@ public class TestFactoryCache extends BaseDataAccessTest{
 		List<DataType> datas = new ArrayList<DataType>();
 		try {
 			DataUtil.setValueString(data, UUID.randomUUID().toString());
-			Factories.getDataFactory().updateData(data);
+			Factories.getDataFactory().update(data);
 			datas = Factories.getDataFactory().getDataListByGroup(sessionUser.getHomeDirectory(), true, 0, 10, sessionUser.getOrganizationId());
 		} catch (DataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ArgumentException e) {
@@ -104,7 +101,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 				data.setName(name);
 				data.setMimeType("text/plain");
 				DataUtil.setValueString(data, "Example data");
-				Factories.getDataFactory().addData(data);
+				Factories.getDataFactory().add(data);
 				data = Factories.getDataFactory().getDataByName(name,dir);
 			}
 		}

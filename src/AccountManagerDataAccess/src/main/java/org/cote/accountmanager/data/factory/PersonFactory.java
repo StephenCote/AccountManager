@@ -47,6 +47,8 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ContactInformationType;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -147,8 +149,10 @@ public class PersonFactory extends NameIdGroupFactory {
 		return obj;
 	}
 	
-	public boolean addPerson(PersonType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		PersonType obj = (PersonType)object;
 
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Person without a group");
 
@@ -182,7 +186,7 @@ public class PersonFactory extends NameIdGroupFactory {
 						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(cobj);
 						cinfo.setOwnerId(cobj.getOwnerId());
 						cobj.setContactInformation(cinfo);
-						BulkFactories.getBulkContactInformationFactory().addContactInformation(cobj.getContactInformation());
+						BulkFactories.getBulkContactInformationFactory().add(cobj.getContactInformation());
 						BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATION);
 					}
 
@@ -199,10 +203,10 @@ public class PersonFactory extends NameIdGroupFactory {
 					/// And trying to keep the foreign key on the person means it winds up with two references: Contact Id on the Person, and Person Id on the Contact
 					/// At the moment it's being automatically added/created when the person is created
 					///
-					if(Factories.getContactInformationFactory().addContactInformation(cobj.getContactInformation()) == false) throw new FactoryException("Failed to assign contact information for user #" + cobj.getId());
+					if(Factories.getContactInformationFactory().add(cobj.getContactInformation()) == false) throw new FactoryException("Failed to assign contact information for user #" + cobj.getId());
 					cobj.setContactInformation(Factories.getContactInformationFactory().getContactInformationForPerson(cobj));
 					if(cobj.getContactInformation() == null) throw new FactoryException("Failed to retrieve contact information for user #" + cobj.getId());
-					if(updatePerson(cobj) == false) throw new FactoryException("Failed to update person cobject");
+					if(update(cobj) == false) throw new FactoryException("Failed to update person cobject");
 					
 					/// TODO: Deprecate the contactinformationid field, which makes this unnecessary
 					///
@@ -213,28 +217,28 @@ public class PersonFactory extends NameIdGroupFactory {
 
 				for(int i = 0; i < obj.getPartners().size();i++){
 					part = Factories.getPersonParticipationFactory().newPartnerPersonParticipation(cobj,obj.getPartners().get(i));
-					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().addParticipant(part);
-					else Factories.getPersonParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().add(part);
+					else Factories.getPersonParticipationFactory().add(part);
 				}
 				for(int i = 0; i < obj.getDependents().size();i++){
 					part = Factories.getPersonParticipationFactory().newDependentPersonParticipation(cobj,obj.getDependents().get(i));
-					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().addParticipant(part);
-					else Factories.getPersonParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().add(part);
+					else Factories.getPersonParticipationFactory().add(part);
 				}
 				for(int i = 0; i < obj.getNotes().size();i++){
 					part = Factories.getPersonParticipationFactory().newDataPersonParticipation(cobj,obj.getNotes().get(i));
-					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().addParticipant(part);
-					else Factories.getPersonParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().add(part);
+					else Factories.getPersonParticipationFactory().add(part);
 				}
 				for(int i = 0; i < obj.getAccounts().size();i++){
 					part = Factories.getPersonParticipationFactory().newAccountPersonParticipation(cobj,obj.getAccounts().get(i));
-					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().addParticipant(part);
-					else Factories.getPersonParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().add(part);
+					else Factories.getPersonParticipationFactory().add(part);
 				}
 				for(int i = 0; i < obj.getUsers().size();i++){
 					part = Factories.getPersonParticipationFactory().newUserPersonParticipation(cobj,obj.getUsers().get(i));
-					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().addParticipant(part);
-					else Factories.getPersonParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().add(part);
+					else Factories.getPersonParticipationFactory().add(part);
 				}
 				return true;
 			}
@@ -273,11 +277,13 @@ public class PersonFactory extends NameIdGroupFactory {
 		
 		return new_obj;
 	}
-	public boolean updatePerson(PersonType data) throws FactoryException, DataAccessException
-	{	
+	@Override
+	public <T> boolean update(T object) throws FactoryException
+	{
+		PersonType data = (PersonType)object;
 		boolean out_bool = false;
 		removeFromCache(data);
-		if(update(data, null)){
+		if(super.update(data, null)){
 			try{
 				/// Partners
 				///
@@ -293,7 +299,7 @@ public class PersonFactory extends NameIdGroupFactory {
 					if(set.contains(data.getPartners().get(i).getId())== false){
 						part = Factories.getPersonParticipationFactory().newPartnerPersonParticipation(data,data.getPartners().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.PERSONPARTICIPATION, part);
-						else Factories.getPersonParticipationFactory().addParticipant(part);
+						else Factories.getPersonParticipationFactory().add(part);
 					}
 					else{
 						set.remove(data.getPartners().get(i).getId());
@@ -311,7 +317,7 @@ public class PersonFactory extends NameIdGroupFactory {
 					if(set.contains(data.getDependents().get(i).getId())== false){
 						part = Factories.getPersonParticipationFactory().newDependentPersonParticipation(data,data.getDependents().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.PERSONPARTICIPATION, part);
-						else Factories.getPersonParticipationFactory().addParticipant(part);
+						else Factories.getPersonParticipationFactory().add(part);
 					}
 					else{
 						set.remove(data.getDependents().get(i).getId());
@@ -330,7 +336,7 @@ public class PersonFactory extends NameIdGroupFactory {
 					if(set.contains(data.getNotes().get(i).getId())== false){
 						part = Factories.getPersonParticipationFactory().newDataPersonParticipation(data,data.getNotes().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.PERSONPARTICIPATION, part);
-						else Factories.getPersonParticipationFactory().addParticipant(part);
+						else Factories.getPersonParticipationFactory().add(part);
 					}
 					else{
 						set.remove(data.getNotes().get(i).getId());
@@ -349,7 +355,7 @@ public class PersonFactory extends NameIdGroupFactory {
 					if(set.contains(data.getAccounts().get(i).getId())== false){
 						part = Factories.getPersonParticipationFactory().newAccountPersonParticipation(data,data.getAccounts().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.PERSONPARTICIPATION, part);
-						else Factories.getPersonParticipationFactory().addParticipant(part);
+						else Factories.getPersonParticipationFactory().add(part);
 					}
 					else{
 						set.remove(data.getAccounts().get(i).getId());
@@ -368,7 +374,7 @@ public class PersonFactory extends NameIdGroupFactory {
 					if(set.contains(data.getUsers().get(i).getId())== false){
 						part = Factories.getPersonParticipationFactory().newUserPersonParticipation(data,data.getUsers().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.PERSONPARTICIPATION, part);
-						else Factories.getPersonParticipationFactory().addParticipant(part);
+						else Factories.getPersonParticipationFactory().add(part);
 					}
 					else{
 						set.remove(data.getUsers().get(i).getId());
@@ -380,7 +386,7 @@ public class PersonFactory extends NameIdGroupFactory {
 				/// 2014/09/10
 				/// Contact information is updated along with the parent object because it's a foreign-keyed object that is not otherwise easily referenced
 				///
-				out_bool = Factories.getContactInformationFactory().updateContactInformation(data.getContactInformation());
+				out_bool = Factories.getContactInformationFactory().update(data.getContactInformation());
 			
 			}
 			catch(ArgumentException ae){
@@ -412,8 +418,10 @@ public class PersonFactory extends NameIdGroupFactory {
 		return deletePersonsByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deletePerson(PersonType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		PersonType obj = (PersonType)object;
 		removeFromCache(obj);
 		if(bulkMode) return true;
 		
@@ -455,11 +463,11 @@ public class PersonFactory extends NameIdGroupFactory {
 	}
 	public List<PersonType>  getPersonList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<PersonType> getPersonListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 	public PersonType getPersonByUser(UserType user) throws FactoryException, ArgumentException{
@@ -500,7 +508,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	*/
 	
 	/// Person search uses a different query to join in contact information
-	/// Otherwise, this could be the getPaginatedList method
+	/// Otherwise, this could be the paginateList method
 	///
 	/// public List<PersonType> search(QueryField[] filters, long organizationId){
 	@Override
@@ -547,7 +555,7 @@ public class PersonFactory extends NameIdGroupFactory {
 			///
 			ProcessingInstructionType pi2 = new ProcessingInstructionType();
 			pi2.setOrderClause(instruction.getOrderClause());
-			persons = getListByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organizationId);
+			persons = listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organizationId);
 			logger.info("Retrieved " + persons.size() + " from " + ids.size() + " ids");
 		}
 		catch(SQLException sqe){

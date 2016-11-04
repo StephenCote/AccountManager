@@ -50,7 +50,9 @@ public class TestOrganizationFactory{
 		OrganizationType devOrg = Factories.getDevelopmentOrganization();
 		new_org.setParentId(devOrg.getId());
 		try {
-			new_org = org_factory.addOrganization(new_org);
+			if(org_factory.add(new_org)){
+				new_org = org_factory.getByNameInParent(testOrgName,devOrg.getId(), 0L);
+			}
 		} catch (FactoryException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -79,9 +81,14 @@ public class TestOrganizationFactory{
 		
 
 		try {
-			parentOrg = org_factory.getOrganizationByName(testOrgName, devOrg);
+			parentOrg = org_factory.getByNameInParent(testOrgName, devOrg.getId(),0L);
 			new_org.setParentId(parentOrg.getId());
-			new_org = org_factory.addOrganization(new_org);
+			if(org_factory.add(new_org)){
+				new_org = org_factory.getByNameInParent(testOrgName, parentOrg.getId(), 0L);
+			}
+			else{
+				new_org = null;
+			}
 		} catch (FactoryException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -102,13 +109,13 @@ public class TestOrganizationFactory{
 		OrganizationType new_org = null;
 		try{
 			logger.info("Read clean: " + testOrgName + " in " + Factories.getDevelopmentOrganization().getId());
-			new_org = Factories.getOrganizationFactory().getOrganizationByName(testOrgName, Factories.getDevelopmentOrganization().getId());
+			new_org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 			assertNotNull("Get organization " + testOrgName + "->" + Factories.getDevelopmentOrganization().getId() + " by name was null", new_org);
 			logger.info("Read from cache by id: " + new_org.getId());
 			new_org = Factories.getOrganizationFactory().getOrganizationById(new_org.getId());
 			assertNotNull("Get organization from cache by id was null", new_org);
 			logger.info("Read from cache by name and parent");
-			new_org = Factories.getOrganizationFactory().getOrganizationByName(testOrgName, Factories.getDevelopmentOrganization().getId());
+			new_org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 			assertNotNull("Get oranization from cache by name was null null", new_org);
 		}
 		catch(FactoryException fe){
@@ -134,7 +141,7 @@ public class TestOrganizationFactory{
 		OrganizationType new_org = null;
 		try{
 			logger.info("Read clean");
-			new_org = Factories.getOrganizationFactory().getOrganizationByName(testOrgName, Factories.getDevelopmentOrganization().getId());
+			new_org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -154,7 +161,7 @@ public class TestOrganizationFactory{
 
 		Factories.getOrganizationFactory().clearCache();
 		try{
-			new_org = Factories.getOrganizationFactory().getOrganizationByName(testOrgName, Factories.getDevelopmentOrganization().getId());
+			new_org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -176,7 +183,7 @@ public class TestOrganizationFactory{
 		boolean error = false;
 		String newName = "Updated Example - " + System.currentTimeMillis();
 		try{
-			OrganizationType org = Factories.getOrganizationFactory().getOrganizationByName(testOrgName, Factories.getDevelopmentOrganization().getId());
+			OrganizationType org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 			org.setName(newName);
 			updated = Factories.getOrganizationFactory().update(org);
 			if(updated){
@@ -200,9 +207,9 @@ public class TestOrganizationFactory{
 		boolean deleted = false;
 		boolean error = false;
 		try{
-			OrganizationType org = Factories.getOrganizationFactory().getOrganizationByName(testOrgName, Factories.getDevelopmentOrganization().getId());
+			OrganizationType org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 
-			deleted = Factories.getOrganizationFactory().deleteOrganization(org);
+			deleted = Factories.getOrganizationFactory().delete(org);
 		}
 		catch(FactoryException fe){
 			fe.printStackTrace();

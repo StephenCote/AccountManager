@@ -38,6 +38,8 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountPermissionType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
 import org.cote.accountmanager.objects.BasePermissionType;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DataPermissionType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -54,6 +56,7 @@ import org.cote.accountmanager.objects.types.PermissionEnumType;
 public class PermissionFactory extends NameIdFactory {
 	public PermissionFactory(){
 		super();
+		this.clusterByParent = true;
 		this.scopeToOrganization = true;
 		this.hasParentId = true;
 		this.hasOwnerId = true;
@@ -125,23 +128,35 @@ public class PermissionFactory extends NameIdFactory {
 		BasePermissionType t = (BasePermissionType)obj;
 		return t.getName() + "-" + t.getPermissionType().toString() + "-" + t.getParentId() + "-" + t.getOrganizationId();
 	}
-	public boolean deletePermission(BasePermissionType permission) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		BasePermissionType permission = (BasePermissionType)object;
 		removeFromCache(permission);
 		int deleted = deleteById(permission.getId(), permission.getOrganizationId());
 		return (deleted > 0);
 	}
-	public boolean updatePermission(BasePermissionType permission) throws FactoryException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		BasePermissionType permission = (BasePermissionType)object;
+		removeFromCache(permission);
 		return update(permission);
 	}
 
-	public boolean addPermission(BasePermissionType new_permission) throws DataAccessException, FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		BasePermissionType new_permission = (BasePermissionType)object;
 		if (new_permission.getOrganizationId() <= 0L) throw new FactoryException("Cannot add permission to invalid organization");
 		DataRow row = prepareAdd(new_permission, "permissions");
-		row.setCellValue("permissiontype",new_permission.getPermissionType().toString());
-		row.setCellValue("referenceid",new_permission.getReferenceId());
+		try{
+			row.setCellValue("permissiontype",new_permission.getPermissionType().toString());
+			row.setCellValue("referenceid",new_permission.getReferenceId());
+		}
+		catch(DataAccessException e){
+			throw new FactoryException(e.getMessage());
+		}
 		return insertRow(row);
 	}
 
@@ -208,7 +223,7 @@ public class PermissionFactory extends NameIdFactory {
 		T per = (T)getPermissionByName(name,type,(BasePermissionType)parent,organizationId);
 		if(per == null){
 			per = (T)newPermission(user,name,type,(BasePermissionType)parent,organizationId);
-			if(addPermission((BasePermissionType)per)){
+			if(add((BasePermissionType)per)){
 				per = (T)getPermissionByName(name,type,(BasePermissionType)parent,organizationId);
 			}
 		}

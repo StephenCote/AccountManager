@@ -49,6 +49,8 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.util.LogicalTypeComparator;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ConditionEnumType;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -108,8 +110,10 @@ public class RuleFactory extends NameIdGroupFactory {
 		return obj;
 	}
 	
-	public boolean addRule(RuleType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		RuleType obj = (RuleType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "rule");
@@ -128,13 +132,13 @@ public class RuleFactory extends NameIdGroupFactory {
 				BaseParticipantType part = null;
 				for(int i = 0; i < obj.getRules().size();i++){
 					part = Factories.getRuleParticipationFactory().newRuleParticipation(cobj,obj.getRules().get(i));
-					if(bulkMode) BulkFactories.getBulkRuleParticipationFactory().addParticipant(part);
-					else Factories.getRuleParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkRuleParticipationFactory().add(part);
+					else Factories.getRuleParticipationFactory().add(part);
 				}
 				for(int i = 0; i < obj.getPatterns().size();i++){
 					part = Factories.getRuleParticipationFactory().newPatternParticipation(cobj,obj.getPatterns().get(i));
-					if(bulkMode) BulkFactories.getBulkRuleParticipationFactory().addParticipant(part);
-					else Factories.getRuleParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkRuleParticipationFactory().add(part);
+					else Factories.getRuleParticipationFactory().add(part);
 				}
 				return true;
 			}
@@ -147,9 +151,6 @@ public class RuleFactory extends NameIdGroupFactory {
 		}
 		return false;
 	}
-	
-	
-
 	
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
@@ -166,8 +167,10 @@ public class RuleFactory extends NameIdGroupFactory {
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
 		return new_obj;
 	}
-	public boolean updateRule(RuleType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		RuleType data = (RuleType)object;
 		removeFromCache(data);
 		boolean out_bool = false;
 		if(update(data, null)){
@@ -179,7 +182,7 @@ public class RuleFactory extends NameIdGroupFactory {
 				
 				for(int i = 0; i < data.getPatterns().size();i++){
 					if(set.contains(data.getPatterns().get(i).getId())== false){
-						Factories.getRuleParticipationFactory().addParticipant(Factories.getRuleParticipationFactory().newPatternParticipation(data,data.getPatterns().get(i)));
+						Factories.getRuleParticipationFactory().add(Factories.getRuleParticipationFactory().newPatternParticipation(data,data.getPatterns().get(i)));
 					}
 					else{
 						set.remove(data.getPatterns().get(i).getId());
@@ -191,7 +194,7 @@ public class RuleFactory extends NameIdGroupFactory {
 				
 				for(int i = 0; i < data.getRules().size();i++){
 					if(set.contains(data.getRules().get(i).getId())== false){
-						Factories.getRuleParticipationFactory().addParticipant(Factories.getRuleParticipationFactory().newRuleParticipation(data,data.getRules().get(i)));
+						Factories.getRuleParticipationFactory().add(Factories.getRuleParticipationFactory().newRuleParticipation(data,data.getRules().get(i)));
 					}
 					else{
 						set.remove(data.getRules().get(i).getId());
@@ -202,7 +205,7 @@ public class RuleFactory extends NameIdGroupFactory {
 				Factories.getRuleParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				out_bool = true;
 			}
-			catch(ArgumentException ae){
+			catch(ArgumentException  ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
@@ -227,8 +230,10 @@ public class RuleFactory extends NameIdGroupFactory {
 		return deleteRulesByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deleteRule(RuleType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		RuleType obj = (RuleType)object;
 		removeFromCache(obj);
 		//int deleted = deleteById(obj.getId(), obj.getOrganizationId().getId());
 		int deleted = deleteRulesByIds(new long[]{obj.getId()},obj.getOrganizationId());
@@ -267,11 +272,11 @@ public class RuleFactory extends NameIdGroupFactory {
 	
 	public List<RuleType>  getRuleList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<RuleType> getRuleListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 }

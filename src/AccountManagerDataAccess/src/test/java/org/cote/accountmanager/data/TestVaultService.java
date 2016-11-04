@@ -62,7 +62,7 @@ public class TestVaultService extends BaseDataAccessTest{
 			
 			
 			assertNotNull("Vault data was null",data);
-			assertTrue("Failed to add data",Factories.getDataFactory().addData(data));
+			assertTrue("Failed to add data",Factories.getDataFactory().add(data));
 			
 			vs.clearCache();
 			
@@ -94,13 +94,13 @@ public class TestVaultService extends BaseDataAccessTest{
 			logger.info("Making sure a details-only data survives an update");
 			DataType dataCheck3 = Factories.getDataFactory().getDataByName(dataName, true, dir);
 			dataCheck3.setDescription("Updated description #2");
-			Factories.getDataFactory().updateData(dataCheck3);
+			Factories.getDataFactory().update(dataCheck3);
 
 			logger.info("Making sure an unread detailed data survives an update");
 			
 			dataCheck3 = Factories.getDataFactory().getDataByName(dataName, false, dir);
 			dataCheck3.setDescription("Updated description #3");
-			Factories.getDataFactory().updateData(dataCheck3);
+			Factories.getDataFactory().update(dataCheck3);
 			
 			dataCheck3 = Factories.getDataFactory().getDataByName(dataName, false, dir);
 			DataUtil.setPassword(dataCheck3, "data password");

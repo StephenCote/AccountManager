@@ -40,6 +40,8 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonRoleType;
@@ -69,6 +71,7 @@ public class RoleFactory extends NameIdFactory {
 	
 	public RoleFactory(){
 		super();
+		this.clusterByParent = true;
 		this.scopeToOrganization = true;
 		this.hasParentId = true;
 		this.hasOwnerId = true;
@@ -148,10 +151,10 @@ public class RoleFactory extends NameIdFactory {
 	}
 	public void addDefaultPersonRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getUserFactory().getUserByName("Admin", organizationId);
+		UserType admin = Factories.getUserFactory().getByName("Admin", organizationId);
 		
 		PersonRoleType root_role = newPersonRole(admin,"Root");
-		addRole(root_role);
+		add(root_role);
 		root_role = getPersonRoleByName("Root", organizationId);
 
 		PersonRoleType home_role = getCreatePersonRole(admin,"Home", root_role);
@@ -159,10 +162,10 @@ public class RoleFactory extends NameIdFactory {
 	}
 	public void addDefaultAccountRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getUserFactory().getUserByName("Admin", organizationId);
+		UserType admin = Factories.getUserFactory().getByName("Admin", organizationId);
 		
 		AccountRoleType root_role = newAccountRole(admin,"Root");
-		addRole(root_role);
+		add(root_role);
 		root_role = getAccountRoleByName("Root", organizationId);
 
 		AccountRoleType home_role = getCreateAccountRole(admin,"Home", root_role);
@@ -170,10 +173,10 @@ public class RoleFactory extends NameIdFactory {
 	}
 	public void addDefaultUserRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getUserFactory().getUserByName("Admin", organizationId);
+		UserType admin = Factories.getUserFactory().getByName("Admin", organizationId);
 		
 		UserRoleType root_role = newUserRole(admin,"Root");
-		addRole(root_role);
+		add(root_role);
 		root_role = getUserRoleByName("Root", organizationId);
 
 		UserRoleType home_role = getCreateUserRole(admin,"Home", root_role);
@@ -185,12 +188,20 @@ public class RoleFactory extends NameIdFactory {
 		String key_name = getCacheKeyName(role);
 		removeFromCache(role, key_name);
 	}
-	public boolean deleteRole(BaseRoleType role) throws FactoryException, ArgumentException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		BaseRoleType role = (BaseRoleType)object;
 		if(role == null) return false;
-		List<BaseRoleType> childRoles = getRoleList(new QueryField[]{QueryFields.getFieldParent(role.getId())}, null, 0, 0, role.getOrganizationId());
+		List<BaseRoleType> childRoles = new ArrayList<>();
+		try {
+			childRoles = getRoleList(new QueryField[]{QueryFields.getFieldParent(role.getId())}, null, 0, 0, role.getOrganizationId());
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//System.out.println("Remove " + childRoles.size() + " children of role #" + role.getId());
-		for(int i = childRoles.size() -1; i >=0; i--) deleteRole(childRoles.get(i));
+		for(int i = childRoles.size() -1; i >=0; i--) delete(childRoles.get(i));
 		removeRoleFromCache(role);
 		int deleted = deleteById(role.getId(), role.getOrganizationId());
 		Factories.getRoleParticipationFactory().deleteParticipations(role);
@@ -218,18 +229,27 @@ public class RoleFactory extends NameIdFactory {
 		}
 		return deleted;
 	}
-	public boolean updateRole(BaseRoleType role) throws FactoryException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		BaseRoleType role = (BaseRoleType)object;
 		removeFromCache(role, null);
 		return update(role);
 	}
 
-	public boolean addRole(BaseRoleType new_role) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		BaseRoleType new_role = (BaseRoleType)object;
 		if (new_role.getOrganizationId() == null || new_role.getOrganizationId() <= 0 || new_role.getOwnerId() <= 0) throw new FactoryException("Cannot add role to invalid organization, or without an OwnerId");
 		DataRow row = prepareAdd(new_role, "roles");
-		row.setCellValue("roletype", new_role.getRoleType().toString());
-		row.setCellValue("referenceid", new_role.getReferenceId());
+		try{
+			row.setCellValue("roletype", new_role.getRoleType().toString());
+			row.setCellValue("referenceid", new_role.getReferenceId());
+		}
+		catch(DataAccessException e){
+			throw new FactoryException(e.getMessage());
+		}
 		return insertRow(row);
 	}
 	
@@ -249,7 +269,7 @@ public class RoleFactory extends NameIdFactory {
 		if(per == null){
 			logger.info("Role " + type + " " + name + " doesn't exist.  Attempting to create.");
 			per = (T)newRoleType(type,user,name,(BaseRoleType)parent);
-			if(addRole((BaseRoleType)per)){
+			if(add((BaseRoleType)per)){
 				per = (T)getRoleByName(name,(BaseRoleType)parent,type,organizationId);
 			}
 		}
@@ -283,7 +303,7 @@ public class RoleFactory extends NameIdFactory {
 		if (role == null)
 		{
 			role = newPersonRole(role_owner, role_name, Parent);
-			if (addRole(role))
+			if (add(role))
 			{
 				role = getPersonRoleByName(role_name, Parent, role_owner.getOrganizationId());
 			}
@@ -312,7 +332,7 @@ public class RoleFactory extends NameIdFactory {
 		if (role == null)
 		{
 			role = newAccountRole(role_owner, role_name, Parent);
-			if (addRole(role))
+			if (add(role))
 			{
 				role = getAccountRoleByName(role_name, Parent, role_owner.getOrganizationId());
 			}
@@ -340,7 +360,7 @@ public class RoleFactory extends NameIdFactory {
 		if (role == null)
 		{
 			role = newUserRole(role_owner, role_name, Parent);
-			if (addRole(role))
+			if (add(role))
 			{
 				role = getUserRoleByName(role_name, Parent, role_owner.getOrganizationId());
 			}

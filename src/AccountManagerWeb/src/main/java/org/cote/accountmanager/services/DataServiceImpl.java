@@ -86,7 +86,7 @@ public class DataServiceImpl  {
 				data = Factories.getDataFactory().newData(user, user.getHomeDirectory().getId());
 				data.setMimeType("text/plain");
 				data.setName(".profile");
-				if(Factories.getDataFactory().addData(data)){
+				if(Factories.getDataFactory().add(data)){
 					data = Factories.getDataFactory().getDataByName(".profile",false,user.getHomeDirectory());
 					addDefaultProfileAttributes(data);
 				}
@@ -129,7 +129,7 @@ public class DataServiceImpl  {
 			}
 			usess.setValue("feedback.submitted", Integer.toString(subCount + 1));
 			Factories.getSessionFactory().updateData(usess);
-			UserType user = Factories.getUserFactory().getUserByName(feedbackUserName, org.getId());
+			UserType user = Factories.getUserFactory().getByName(feedbackUserName, org.getId());
 			if(user == null){
 				AuditService.denyResult(audit,"Feedback user '" + feedbackUserName + "' doesn't exist in organization " + org.getName());
 				return out_bool;
@@ -149,7 +149,7 @@ public class DataServiceImpl  {
 			AuditService.targetAudit(audit, AuditEnumType.USER, (subUser == null ? "Anonymous" : subUser.getUrn()));
 			feedback.setDescription(sDesc);
 			feedback.setName("Feedback - " + UUID.randomUUID().toString());
-			if(Factories.getDataFactory().addData(feedback)){
+			if(Factories.getDataFactory().add(feedback)){
 				feedback = Factories.getDataFactory().getDataByName(feedback.getName(), true, feedbackGroup);
 				if(feedback == null){
 					AuditService.denyResult(audit, "Failed to lookup feedback data");

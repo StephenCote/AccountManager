@@ -251,7 +251,7 @@ public class RoleService {
 		if (role.getId() < 0L || getIsGroupInRole(role, account) == false)
 		{
 			GroupParticipantType ap = Factories.getRoleParticipationFactory().newGroupRoleParticipation(role, account);
-			if (Factories.getRoleParticipationFactory().addParticipant(ap))
+			if (Factories.getRoleParticipationFactory().add(ap))
 			{
 				// EffectiveAuthorizationService.pendRoleUpdate(role);
 				EffectiveAuthorizationService.pendUpdate(account);
@@ -331,7 +331,7 @@ public class RoleService {
 		if (role.getId() < 0L || getIsUserInRole(role, account) == false)
 		{
 			UserParticipantType ap = Factories.getRoleParticipationFactory().newUserRoleParticipation(role, account);
-			if (Factories.getRoleParticipationFactory().addParticipant(ap))
+			if (Factories.getRoleParticipationFactory().add(ap))
 			{
 				EffectiveAuthorizationService.pendUserUpdate(account);
 				return true;
@@ -351,7 +351,7 @@ public class RoleService {
 	/*
 	public static boolean addUserRoleToGroup(UserRoleType role, BaseGroupType group, BasePermissionType permission, AffectEnumType affectType){
 		BaseParticipantType bp = Factories.getGroupParticipationFactory().newRoleGroupParticipation(group, role, permission, affectType);
-		Factories.getGroupParticipationFactory().addParticipant(bp);
+		Factories.getGroupParticipationFactory().add(bp);
 	}
 	*/
 	
@@ -482,7 +482,7 @@ public class RoleService {
 		if (getIsAccountInRole(role, account) == false)
 		{
 			AccountParticipantType ap = Factories.getRoleParticipationFactory().newAccountRoleParticipation(role, account);
-			if (Factories.getRoleParticipationFactory().addParticipant(ap))
+			if (Factories.getRoleParticipationFactory().add(ap))
 			{
 				EffectiveAuthorizationService.pendAccountUpdate(account);
 				return true;
@@ -506,7 +506,7 @@ public class RoleService {
 		if (getIsPersonInRole(role, person) == false)
 		{
 			PersonParticipantType ap = Factories.getRoleParticipationFactory().newPersonRoleParticipation(role, person);
-			if (Factories.getRoleParticipationFactory().addParticipant(ap))
+			if (Factories.getRoleParticipationFactory().add(ap))
 			{
 				EffectiveAuthorizationService.pendPersonUpdate(person);
 				return true;

@@ -69,8 +69,8 @@ public class KeyService {
 	public static boolean deleteKeys(long organizationId){
 		boolean out_bool = false;
 		try {
-			Factories.getSymmetricKeyFactory().deleteKeys(organizationId);
-			Factories.getAsymmetricKeyFactory().deleteKeys(organizationId);
+			Factories.getSymmetricKeyFactory().deleteByOrganization(organizationId);
+			Factories.getAsymmetricKeyFactory().deleteByOrganization(organizationId);
 			out_bool = true;
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
@@ -100,7 +100,7 @@ public class KeyService {
 	public static SecurityBean getSymmetricKeyByObjectId(String id,long organizationId){
 		SecurityBean bean = null;
 		try {
-			SecurityType sec = Factories.getSymmetricKeyFactory().getKeyByObjectId(id, organizationId);
+			SecurityType sec = Factories.getSymmetricKeyFactory().getByObjectId(id, organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
@@ -172,7 +172,7 @@ public class KeyService {
 	public static SecurityBean getAsymmetricKeyByObjectId(String id,long organizationId){
 		SecurityBean bean = null;
 		try {
-			SecurityType sec = Factories.getAsymmetricKeyFactory().getKeyByObjectId(id, organizationId);
+			SecurityType sec = Factories.getAsymmetricKeyFactory().getByObjectId(id, organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
@@ -259,8 +259,8 @@ public class KeyService {
 				SecurityFactory.getSecurityFactory().generateSecretKey(sec)
 			){
 				if(bulkSessionId != null) BulkFactories.getBulkFactory().createBulkEntry(bulkSessionId, FactoryEnumType.SYMMETRICKEY, sec);
-				else if(Factories.getSymmetricKeyFactory().addSymmetricKey(sec)){
-					SecurityType secm = Factories.getSymmetricKeyFactory().getKeyByObjectId(sec.getObjectId(), sec.getOrganizationId());
+				else if(Factories.getSymmetricKeyFactory().add(sec)){
+					SecurityType secm = Factories.getSymmetricKeyFactory().getByObjectId(sec.getObjectId(), sec.getOrganizationId());
 					if(secm != null) sec.setId(secm.getId());
 					else{
 						logger.error("Failed to retrieve key");
@@ -272,22 +272,14 @@ public class KeyService {
 				}
 				if(lastPrimary != null){
 					lastPrimary.setPrimaryKey(false);
-					Factories.getSymmetricKeyFactory().updateSymmetricKey(lastPrimary);
+					Factories.getSymmetricKeyFactory().update(lastPrimary);
 				}
 			}
 		}
-		catch(FactoryException e){
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
+		} 
 		//if(sec != null) sec.setPublicKey(null);
 		return sec;
 	}
@@ -323,8 +315,8 @@ public class KeyService {
 				if(bulkSessionId != null){
 					BulkFactories.getBulkFactory().createBulkEntry(bulkSessionId, FactoryEnumType.ASYMMETRICKEY, sec);
 				}
-				else if(Factories.getAsymmetricKeyFactory().addAsymmetricKey(sec)){
-					SecurityType secm = Factories.getAsymmetricKeyFactory().getKeyByObjectId(sec.getObjectId(), sec.getOrganizationId());
+				else if(Factories.getAsymmetricKeyFactory().add(sec)){
+					SecurityType secm = Factories.getAsymmetricKeyFactory().getByObjectId(sec.getObjectId(), sec.getOrganizationId());
 					if(secm != null) sec.setId(secm.getId());
 					else{
 						logger.error("Failed to retrieve key");
@@ -336,8 +328,8 @@ public class KeyService {
 				}
 				if(lastPrimary != null){
 					lastPrimary.setPrimaryKey(false);
-					if(bulkSessionId != null) BulkFactories.getBulkAsymmetricKeyFactory().updateAsymmetricKey(lastPrimary);
-					else Factories.getAsymmetricKeyFactory().updateAsymmetricKey(lastPrimary);
+					if(bulkSessionId != null) BulkFactories.getBulkAsymmetricKeyFactory().update(lastPrimary);
+					else Factories.getAsymmetricKeyFactory().update(lastPrimary);
 				}
 			}
 		}
@@ -348,11 +340,7 @@ public class KeyService {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
+		} 
 		//if(sec != null) sec.setPublicKey(null);
 		return sec;
 	}

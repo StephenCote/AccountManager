@@ -105,9 +105,10 @@ public class ContactFactory extends NameIdGroupFactory {
 		return obj;
 	}
 	
-	public boolean addContact(ContactType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws FactoryException
 	{
-
+		ContactType obj = (ContactType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Contact without a group");
 
 		DataRow row = prepareAdd(obj, "contacts");
@@ -146,10 +147,12 @@ public class ContactFactory extends NameIdGroupFactory {
 		
 		return new_obj;
 	}
-	public boolean updateContact(ContactType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{	
+		ContactType data = (ContactType)object;
 		removeFromCache(data);
-		return update(data, null);
+		return super.update(data, null);
 	}
 	
 	@Override
@@ -168,8 +171,10 @@ public class ContactFactory extends NameIdGroupFactory {
 		return deleteContactsByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deleteContact(ContactType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		ContactType obj = (ContactType)object;
 		removeFromCache(obj);
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
@@ -211,11 +216,11 @@ public class ContactFactory extends NameIdGroupFactory {
 */
 	public List<ContactType>  getContactList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<ContactType> getContactListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 	
@@ -237,7 +242,7 @@ public class ContactFactory extends NameIdGroupFactory {
 	
 	
 	/// Contact search uses a different query to join in contact information
-	/// Otherwise, this could be the getPaginatedList method
+	/// Otherwise, this could be the paginateList method
 	///
 	/// public List<ContactType> search(QueryField[] filters, long organizationId){
 	@Override
@@ -284,7 +289,7 @@ public class ContactFactory extends NameIdGroupFactory {
 			///
 			ProcessingInstructionType pi2 = new ProcessingInstructionType();
 			pi2.setOrderClause(instruction.getOrderClause());
-			persons = getListByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organization);
+			persons = listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organization);
 			logger.info("Retrieved " + persons.size() + " from " + ids.size() + " ids");
 		}
 		catch(SQLException sqe){

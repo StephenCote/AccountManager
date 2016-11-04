@@ -56,17 +56,19 @@ public class SymmetricKeyFactory extends NameIdFactory {
 
 		}
 	}
-	public boolean deleteSymmetricKey(SecurityType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		SecurityType obj = (SecurityType)object;
 		removeFromCache(obj);
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
 	}
 
-	
-	public boolean addSymmetricKey(SecurityType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws FactoryException
 	{
-
+		SecurityType obj = (SecurityType)object;
 		DataRow row = prepareAdd(obj, "symmetrickeys");
 
 
@@ -139,17 +141,14 @@ public class SymmetricKeyFactory extends NameIdFactory {
 		fields.add(QueryFields.getFieldPreviousKeyId(use_map.getPreviousKeyId()));
 	}
 	
-	public boolean updateSymmetricKey(SecurityType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{	
+		SecurityType data = (SecurityType)object;
 		removeFromCache(data);
-		return update(data, null);
+		return super.update(data, null);
 	}
-	public SecurityType getKeyByObjectId(String id, long org) throws FactoryException, ArgumentException{
-		return getByObjectId(id, org);
-		//List<NameIdType> sec = getByObjectId(id, org);
-		//if(sec.size() > 0) return (SecurityType)sec.get(0);
-		//return null;
-	}
+
 	public SecurityType getPrimaryPersonalKey(UserType user) throws FactoryException, ArgumentException{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldOrganizationKey(false));
@@ -171,28 +170,21 @@ public class SymmetricKeyFactory extends NameIdFactory {
 		return outsec;
 	}
 	public List<SecurityType> listOrganizationKeys(long org) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
-		fields.add(QueryFields.getFieldOrganizationKey(true));
-		return listKeys(fields,0L,0,org);
-	}
-	public List<SecurityType> listByOwner(UserType user) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
-		fields.add(QueryFields.getFieldOwner(user.getId()));
-		return listKeys(fields,0L,0,user.getOrganizationId());
+		return list(new QueryField[]{QueryFields.getFieldOrganizationKey(true)},org);
 	}
 
+/*
 	private List<SecurityType> listKeys(List<QueryField> fields, long start_record, int record_count, long org) throws FactoryException, ArgumentException{
 		ProcessingInstructionType pi = new ProcessingInstructionType();
 		pi.setPaginate(true);
 		pi.setStartIndex(start_record);
 		pi.setRecordCount(record_count);
 		
-		return getList(fields.toArray(new QueryField[0]), pi, org);
+		return list(fields.toArray(new QueryField[0]), pi, org);
 	}
-	
 	public boolean deleteKeys(long org) throws FactoryException, ArgumentException{
 		int del = this.deleteByField(new QueryField[0], org);
 		return true;
 	}
-	
+*/
 }

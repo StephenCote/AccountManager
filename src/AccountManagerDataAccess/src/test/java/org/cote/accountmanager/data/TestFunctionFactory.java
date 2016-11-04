@@ -44,15 +44,15 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		buff.append("print('test');\nvar dt = new Date().getTime();\n");
 		buff.append("var pub = org.cote.accountmanager.data.Factories.getPublicOrganization();");
 		buff.append("\nprint('name: ' + user.getName());");
-		buff.append("var u2 = org.cote.accountmanager.data.Factories.getUserFactory().getUserByName('RocketQAUser2',user.getOrganizationId());");
+		buff.append("var u2 = org.cote.accountmanager.data.Factories.getUserFactory().getByName('RocketQAUser2',user.getOrganizationId());");
 		buff.append("dt;");
 		return buff.toString();
 	}
 	@Test
 	public void TestJSCRUDShouldFail(){
 		
-		Map<String,String> roleMap = JSONUtil.getMap("/Users/Steve/Projects/workspace/AccountManagerService/src/main/webapp/WEB-INF/resource/roleMap.json", String.class, String.class);
-		assertNotNull("Map is null", roleMap);
+		//Map<String,String> roleMap = JSONUtil.getMap("/Users/Steve/Projects/workspace/AccountManagerService/src/main/webapp/WEB-INF/resource/roleMap.json", String.class, String.class);
+		//assertNotNull("Map is null", roleMap);
 		try{
 			//AccountRoleType role1 = RoleService.getAccountAdministratorAccountRole(testUser.getOrganizationId());
 			//assertNotNull("Role is null",role1);
@@ -61,7 +61,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			//AccountRoleType role1c = Factories.getRoleFactory().findRole(RoleEnumType.ACCOUNT, "/AccountAdministrators", testUser.getOrganizationId());
 			//logger.info("Got role? " + (role1c != null));
 			
-			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", testUser.getOrganizationId());
+			UserType adminUser = Factories.getUserFactory().getByName("Admin", testUser.getOrganizationId());
 			List<UserRoleType> roles = Factories.getRoleParticipationFactory().getUserRoles(adminUser);
 			logger.info("ROLES: " + roles.size());
 			for(int i = 0; i < roles.size(); i++){
@@ -75,7 +75,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			FunctionType func = getCreateFunction(testUser,"TestJS1",js,fdir);
 			if(func.getFunctionType() != FunctionEnumType.JAVASCRIPT){
 				func.setFunctionType(FunctionEnumType.JAVASCRIPT);
-				Factories.getFunctionFactory().updateFunction(func);
+				Factories.getFunctionFactory().update(func);
 			}
 			assertNotNull("Function is null",func);
 			Map<String,Object> params = new HashMap<String,Object>();
@@ -85,7 +85,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			Double resp = (Double)ScriptService.run(testUser,params,func);
 			logger.info("Ran the script: " + resp.longValue());
 		}
-		catch(RuntimeException | FactoryException | ArgumentException | DataAccessException e) {
+		catch(RuntimeException | FactoryException | ArgumentException  e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
@@ -170,7 +170,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			
 			FactType setCredParamFact = getCreateCredentialParamFact(user,"Set Credential Parameter",fdir);
 			setCredParamFact.setFactoryType(FactoryEnumType.CREDENTIAL);
-			Factories.getFactFactory().updateFact(setCredParamFact);
+			Factories.getFactFactory().update(setCredParamFact);
 			FactType strengthFact = getCreateStaticFact(user,"Password Strength Expression","^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{5,}$",fdir);
 
 			//FactType credParamFact = getCreateCredentialParamFact(user,"Credential Parameter",fdir);
@@ -179,7 +179,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			FunctionType func = getCreateFunction(user,"TestBshOperation",bsh,fudir);
 			OperationType rgOp = getCreateOperation(user,"Test Function Operation",func.getUrn(),odir);
 			rgOp.setOperationType(OperationEnumType.FUNCTION);
-			Factories.getOperationFactory().updateOperation(rgOp);
+			Factories.getOperationFactory().update(rgOp);
 			pol = getCreatePolicy(user,pname,podir);
 			pol.setEnabled(true);
 			useRule = getCreateRule(user,rname,rdir);
@@ -188,13 +188,13 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			pat.setFactUrn(setCredParamFact.getUrn());
 			pat.setMatchUrn(strengthFact.getUrn());
 			pat.setOperationUrn(rgOp.getUrn());
-			Factories.getPatternFactory().updatePattern(pat);
+			Factories.getPatternFactory().update(pat);
 			useRule.getPatterns().clear();
 			useRule.getPatterns().add(pat);
-			Factories.getRuleFactory().updateRule(useRule);
+			Factories.getRuleFactory().update(useRule);
 			pol.getRules().clear();
 			pol.getRules().add(useRule);
-			Factories.getPolicyFactory().updatePolicy(pol);
+			Factories.getPolicyFactory().update(pol);
 			pol = Factories.getPolicyFactory().getByNameInGroup(pname,podir);
 		}
 		catch(FactoryException e){
@@ -202,11 +202,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
-		} catch (DataAccessException e) {
-			logger.error(e.getMessage());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		return pol;
 	}
 	

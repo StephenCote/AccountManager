@@ -66,7 +66,7 @@ public class PersonService {
 
 			/// TODO - change this to just get the persons directory from the GroupFactory
 			///
-			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", organizationId);
+			UserType adminUser = Factories.getUserFactory().getByName("Admin", organizationId);
 			DirectoryGroupType pDir = Factories.getGroupFactory().getCreateDirectory(adminUser, "Persons", Factories.getGroupFactory().getRootDirectory(organizationId), organizationId);
 			DirectoryGroupType cDir = Factories.getGroupFactory().getCreateDirectory(adminUser, "Contacts", Factories.getGroupFactory().getRootDirectory(organizationId), organizationId);
 			

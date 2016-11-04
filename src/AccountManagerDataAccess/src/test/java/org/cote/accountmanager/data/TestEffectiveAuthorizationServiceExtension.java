@@ -1,5 +1,9 @@
 package org.cote.accountmanager.data;
 
+
+/*
+ * In order for this unit test to work, the authorization extension for POLICY must be configured with AccountManagerConsole
+ */
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -42,6 +46,8 @@ import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 
 public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTest {
+	
+	
 	/*
 	@Test
 	public void TestPolicyBasedAuthorization(){
@@ -408,8 +414,8 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		if(person1.getAccounts().size() == 0){
 			person1.getAccounts().add(account1);
 			try {
-				Factories.getPersonFactory().updatePerson(person1);
-			} catch (FactoryException | DataAccessException e) {
+				Factories.getPersonFactory().update(person1);
+			} catch (FactoryException  e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -417,8 +423,8 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		if(person2.getAccounts().size() == 0){
 			person2.getAccounts().add(account2);
 			try {
-				Factories.getPersonFactory().updatePerson(person2);
-			} catch (FactoryException | DataAccessException e) {
+				Factories.getPersonFactory().update(person2);
+			} catch (FactoryException  e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -433,6 +439,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 
 			PolicyType policy = getCreatePolicy(testUser, "Test Policy", dir);
 			assertNotNull("Policy is null", policy);
+			assertNotNull("Userr is null", testUser);
 			logger.info("Deauthorizing object");
 			AuthorizationService.deauthorize(testUser, policy);
 			
@@ -460,7 +467,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			boolean canView4 = AuthorizationService.canExecute(perRole1, policy);
 			assertTrue("Role should be able to execute",canView4);
 		
-		} catch (ArgumentException | FactoryException | DataAccessException e) {
+		} catch (NullPointerException | ArgumentException | FactoryException | DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

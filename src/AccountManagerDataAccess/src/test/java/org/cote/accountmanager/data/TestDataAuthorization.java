@@ -43,7 +43,7 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			
 			DataUtil.setValue(data, "This is the example short text".getBytes());
 			data.setName(d1name);
-			Factories.getDataFactory().addData(data);
+			Factories.getDataFactory().add(data);
 			
 			DataType cdata = Factories.getDataFactory().getDataByName(d1name, dir);
 			assertNotNull("Data is null",cdata);
@@ -71,7 +71,7 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		DataType data = null;
 		boolean auth = false;
 		try {
-			user2 = Factories.getUserFactory().getUserByName("TestUser2", Factories.getPublicOrganization());
+			user2 = Factories.getUserFactory().getByName("TestUser2", Factories.getPublicOrganization());
 			EffectiveAuthorizationService.rebuildGroupRoleCache(Factories.getPublicOrganization());
 			assertNotNull("User is null",user2);
 			dir = Factories.getGroupFactory().findGroup(null, "/Home/TestUser1/GalleryHome/.thumbnail", Factories.getPublicOrganization());

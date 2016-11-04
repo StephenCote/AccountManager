@@ -3,11 +3,16 @@ package org.cote.accountmanager.console;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.NameIdFactory;
+import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.FileUtil;
@@ -15,6 +20,16 @@ import org.cote.accountmanager.util.FileUtil;
 public class GenerateAction {
 	public static final Logger logger = Logger.getLogger(GenerateAction.class.getName());
 	private static boolean execute(String sql){
+		/*
+		try {
+			List<OrganizationType> orgs = Factories.getOrganizationFactory().list(new QueryField[]{}, 0L);
+
+		} catch (FactoryException | ArgumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		*/
+		
 		Connection connection = null;
 		boolean out_bool = false;
 		try{
@@ -71,6 +86,7 @@ public class GenerateAction {
 		//logger.info("\n" + buff.toString());
 		}
 		if(export){
+			logger.info("Exporting schema (" + buff.length() + " bytes) to '" + path + "'");
 			FileUtil.emitFile(path, buff.toString());
 		}
 		return buff.toString();
@@ -79,19 +95,10 @@ public class GenerateAction {
 	public static String generateCacheTableSchema(String name){
 		String lowName = name.toLowerCase();
 		String initUC = lowName.substring(0, 1).toUpperCase() + lowName.substring(1,lowName.length());
-		return "DROP TABLE IF EXISTS " + lowName + "rolecache CASCADE;" + System.lineSeparator()
+		return 
+			"DROP TABLE IF EXISTS " + lowName + "rolecache CASCADE;" + System.lineSeparator()
 			+ "CREATE TABLE " + lowName + "rolecache (" + System.lineSeparator()
-			+ "" + initUC + "Id bigint not null default 0," + System.lineSeparator()
-			+ "AffectType varchar(16) not null," + System.lineSeparator()
-			+ "AffectId bigint not null default 0," + System.lineSeparator()
-			+ "EffectiveRoleId bigint not null default 0," + System.lineSeparator()
-			+ "BaseRoleId bigint not null default 0," + System.lineSeparator()
-			+ "OrganizationId bigint not null default 0" + System.lineSeparator()
-			+ ");" + System.lineSeparator()
-			+ "CREATE INDEX " + lowName + "rolecache_id ON " + lowName + "rolecache(" + initUC + "Id);" + System.lineSeparator()
-			+ "CREATE INDEX " + lowName + "rolecache_role_id ON " + lowName + "rolecache(EffectiveRoleId);" + System.lineSeparator()
-			+ "CREATE INDEX " + lowName + "rolecache_aff_id ON " + lowName + "rolecache(AffectType,AffectId);" + System.lineSeparator()
-			+ "CREATE INDEX " + lowName + "rolecache_dorg ON " + lowName + "rolecache(" + initUC + "Id,OrganizationId);" + System.lineSeparator()
+			+ ") inherits (rolecache);" + System.lineSeparator()
 			+ System.lineSeparator();
 	}
 	public static String generateObjectRightsViews(String name){
@@ -158,15 +165,15 @@ public class GenerateAction {
 		String initUC = lowName.substring(0, 1).toUpperCase() + lowName.substring(1,lowName.length());
 
 		return "create or replace view effective" + initUC + "PersonRoleRights as" + System.lineSeparator()
-		+ "select distinct DRC." + lowName + "id,DRC.affectId,DRC.affectType,ER.personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER" + System.lineSeparator()
+		+ "select distinct DRC.objectid as " + lowName + "id,DRC.affectId,DRC.affectType,ER.objectid as personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER" + System.lineSeparator()
 		+ "join " + lowName + "RoleCache DRC on DRC.effectiveRoleId=ER.effectiveRoleId;" + System.lineSeparator()
 		+ System.lineSeparator()
 		+ "create or replace view effective" + initUC + "UserRoleRights as" + System.lineSeparator()
-		+ "select distinct DRC." + lowName + "id,DRC.affectId,DRC.affectType,ER.userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER" + System.lineSeparator()
+		+ "select distinct DRC.objectid as " + lowName + "id,DRC.affectId,DRC.affectType,ER.objectid as userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER" + System.lineSeparator()
 		+ "join " + lowName + "RoleCache DRC on DRC.effectiveRoleId=ER.effectiveRoleId;" + System.lineSeparator()
 		+ System.lineSeparator()
 		+ "create or replace view effective" + initUC + "AccountRoleRights as" + System.lineSeparator()
-		+ "select distinct DRC." + lowName + "id,DRC.affectId,DRC.affectType,ER.accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER" + System.lineSeparator()
+		+ "select distinct DRC.objectid as " + lowName + "id,DRC.affectId,DRC.affectType,ER.objectid as accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER" + System.lineSeparator()
 		+ "join " + lowName + "RoleCache DRC on DRC.effectiveRoleId=ER.effectiveRoleId;" + System.lineSeparator()
 		+ System.lineSeparator()
 		;
@@ -212,8 +219,8 @@ public class GenerateAction {
 			+ "AS $BODY$" + System.lineSeparator()
 			+ "DECLARE ids BIGINT[] = ARRAY(SELECT id FROM " + lowName + " WHERE organizationid = $1);" + System.lineSeparator()
 			+ "BEGIN" + System.lineSeparator()
-			+ "DELETE FROM " + lowName + "rolecache WHERE " + lowName + "id = ANY(ids);" + System.lineSeparator()
-			+ "INSERT INTO " + lowName + "rolecache (" + lowName + "id,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effective" + initUC + "Roles where " + lowName + "id=ANY(ids);" + System.lineSeparator()
+			+ "DELETE FROM " + lowName + "rolecache WHERE objectid = ANY(ids);" + System.lineSeparator()
+			+ "INSERT INTO " + lowName + "rolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effective" + initUC + "Roles where " + lowName + "id=ANY(ids);" + System.lineSeparator()
 			+ "RETURN true;" + System.lineSeparator()
 			+ "END" + System.lineSeparator()
 			+ "$BODY$ LANGUAGE 'plpgsql';" + System.lineSeparator()
@@ -222,8 +229,8 @@ public class GenerateAction {
 			+ "RETURNS BOOLEAN" + System.lineSeparator()
 			+ "AS $$" + System.lineSeparator()
 			+ "BEGIN" + System.lineSeparator()
-			+ "DELETE FROM " + lowName + "rolecache where " + lowName + "id = ANY($1);" + System.lineSeparator()
-			+ "INSERT INTO " + lowName + "rolecache (" + lowName + "id,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effective" + initUC + "Roles where " + lowName + "id=ANY($1);" + System.lineSeparator()
+			+ "DELETE FROM " + lowName + "rolecache where objectid = ANY($1);" + System.lineSeparator()
+			+ "INSERT INTO " + lowName + "rolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effective" + initUC + "Roles where " + lowName + "id=ANY($1);" + System.lineSeparator()
 			+ "RETURN true;" + System.lineSeparator()
 			+ "END" + System.lineSeparator()
 			+ "$$ LANGUAGE 'plpgsql';" + System.lineSeparator()

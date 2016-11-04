@@ -38,6 +38,7 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
@@ -220,7 +221,7 @@ public class BaseService{
 				///
 				new_tag.setOwnerId(user.getId());
 				MapUtil.shallowCloneNameIdDirectoryType(vtbean, new_tag);
-				out_bool = Factories.getTagFactory().addTag(new_tag);
+				out_bool = Factories.getTagFactory().add(new_tag);
 				break;
 			case ACCOUNT:
 				AccountType v1bean = (AccountType)in_obj;
@@ -229,7 +230,7 @@ public class BaseService{
 				///
 				new_acct.setOwnerId(user.getId());
 				MapUtil.shallowCloneNameIdDirectoryType(v1bean, new_acct);
-				out_bool = Factories.getAccountFactory().addAccount(new_acct,true);
+				out_bool = Factories.getAccountFactory().add(new_acct,true);
 				break;
 			case CONTACT:
 				ContactType v2bean = (ContactType)in_obj;
@@ -241,7 +242,7 @@ public class BaseService{
 				new_ct.setLocationType(v2bean.getLocationType());
 				new_ct.setContactValue(v2bean.getContactValue());
 				new_ct.setPreferred(v2bean.getPreferred());
-				out_bool = Factories.getContactFactory().addContact(new_ct);
+				out_bool = Factories.getContactFactory().add(new_ct);
 				break;
 				/*
 			case CONTACTINFORMATION:
@@ -265,7 +266,7 @@ public class BaseService{
 				new_fa.setSourceDataType(v4bean.getSourceDataType());
 				new_fa.setSourceUrl(v4bean.getSourceUrl());
 				new_fa.setSourceUrn(v4bean.getSourceUrn());
-				out_bool = Factories.getFactFactory().addFact(new_fa);
+				out_bool = Factories.getFactFactory().add(new_fa);
 				break;
 			case FUNCTION:
 				FunctionType v5bean = (FunctionType)in_obj;
@@ -276,7 +277,7 @@ public class BaseService{
 				new_fu.setFunctionData(v5bean.getFunctionData());
 				new_fu.setSourceUrl(v5bean.getSourceUrl());
 				new_fu.setSourceUrn(v5bean.getSourceUrn());
-				out_bool = Factories.getFunctionFactory().addFunction(new_fu);
+				out_bool = Factories.getFunctionFactory().add(new_fu);
 				break;
 			case FUNCTIONFACT:
 				FunctionFactType v6bean = (FunctionFactType)in_obj;
@@ -285,7 +286,7 @@ public class BaseService{
 				MapUtil.shallowCloneAznType(v6bean, new_fuf);
 				new_fuf.setFactUrn(v6bean.getFactUrn());
 				new_fuf.setFunctionUrn(v6bean.getFunctionUrn());
-				out_bool = Factories.getFunctionFactFactory().addFunctionFact(new_fuf);
+				out_bool = Factories.getFunctionFactFactory().add(new_fuf);
 				break;
 			case OPERATION:
 				OperationType v7bean = (OperationType)in_obj;
@@ -294,7 +295,7 @@ public class BaseService{
 				MapUtil.shallowCloneAznType(v7bean, new_op);
 				new_op.setOperationType(v7bean.getOperationType());
 				new_op.setOperation(v7bean.getOperation());
-				out_bool = Factories.getOperationFactory().addOperation(new_op);
+				out_bool = Factories.getOperationFactory().add(new_op);
 				break;
 			case PATTERN:
 				PatternType v8bean = (PatternType)in_obj;
@@ -306,7 +307,7 @@ public class BaseService{
 				new_pa.setFactUrn(v8bean.getFactUrn());
 				new_pa.setMatchUrn(v8bean.getMatchUrn());
 				new_pa.setOperationUrn(v8bean.getOperationUrn());
-				out_bool = Factories.getPatternFactory().addPattern(new_pa);
+				out_bool = Factories.getPatternFactory().add(new_pa);
 				break;
 			case POLICY:
 				PolicyType v9bean = (PolicyType)in_obj;
@@ -322,7 +323,7 @@ public class BaseService{
 				//new_po.setCreated(v9bean.getCreated());
 				//new_po.setModified(v9bean.getModified());
 				//logger.info("PD: " + new_po.getCreatedDate() + " / " + new_po.getModifiedDate() + " / " + new_po.getExpiresDate());
-				out_bool = Factories.getPolicyFactory().addPolicy(new_po);
+				out_bool = Factories.getPolicyFactory().add(new_po);
 				break;
 			case RULE:
 				RuleType v10bean = (RuleType)in_obj;
@@ -333,7 +334,7 @@ public class BaseService{
 				new_ru.setCondition(v10bean.getCondition());
 				new_ru.getRules().addAll(v10bean.getRules());
 				new_ru.getPatterns().addAll(v10bean.getPatterns());
-				out_bool = Factories.getRuleFactory().addRule(new_ru);
+				out_bool = Factories.getRuleFactory().add(new_ru);
 				break;
 			case PERSON:
 				PersonType v11bean = (PersonType)in_obj;
@@ -357,7 +358,7 @@ public class BaseService{
 				new_per.getDependents().addAll(v11bean.getDependents());
 				new_per.getPartners().addAll(v11bean.getPartners());
 				new_per.getUsers().addAll(v11bean.getUsers());
-				out_bool = Factories.getPersonFactory().addPerson(new_per);
+				out_bool = Factories.getPersonFactory().add(new_per);
 				break;
 			case ADDRESS:
 				AddressType v12bean = (AddressType)in_obj;
@@ -373,7 +374,7 @@ public class BaseService{
 				new_addr.setPreferred(v12bean.getPreferred());
 				new_addr.setRegion(v12bean.getRegion());
 				new_addr.setState(v12bean.getState());
-				out_bool = Factories.getAddressFactory().addAddress(new_addr);
+				out_bool = Factories.getAddressFactory().add(new_addr);
 				break;
 			case ROLE:
 				BaseRoleType rlbean = (BaseRoleType)in_obj;
@@ -383,7 +384,7 @@ public class BaseService{
 					if(parentRole == null) throw new ArgumentException("Role parent #" + rlbean.getParentId() + " is invalid");
 				}
 				BaseRoleType new_role = Factories.getRoleFactory().newRoleType(rlbean.getRoleType(),user, rlbean.getName(), parentRole);
-				out_bool = Factories.getRoleFactory().addRole(new_role);
+				out_bool = Factories.getRoleFactory().add(new_role);
 				break;
 				
 			case PERMISSION:
@@ -394,7 +395,7 @@ public class BaseService{
 					if(parentPermission == null) throw new ArgumentException("Permission parent #" + perbean.getParentId() + " is invalid");
 				}
 				BasePermissionType new_per2 = Factories.getPermissionFactory().newPermission(user, perbean.getName(), perbean.getPermissionType(), parentPermission, perbean.getOrganizationId());
-				out_bool = Factories.getPermissionFactory().addPermission(new_per2);
+				out_bool = Factories.getPermissionFactory().add(new_per2);
 				break;
 				
 			case GROUP:
@@ -404,14 +405,14 @@ public class BaseService{
 					parentGroup = Factories.getGroupFactory().getById(gbean.getParentId(), gbean.getOrganizationId());
 				}
 				BaseGroupType new_group = Factories.getGroupFactory().newGroup(user, gbean.getName(), gbean.getGroupType(), parentGroup, gbean.getOrganizationId());
-				out_bool = Factories.getGroupFactory().addGroup(new_group);
+				out_bool = Factories.getGroupFactory().add(new_group);
 				break;
 				
 			case USER:
 				UserType ubean = (UserType)in_obj;
 				UserType new_user = Factories.getUserFactory().newUser(ubean.getName(), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, ubean.getOrganizationId());
 				//new_user.setContactInformation(ubean.getContactInformation());
-				out_bool = Factories.getUserFactory().addUser(new_user,true);
+				out_bool = Factories.getUserFactory().add(new_user,true);
 				break;
 			case DATA:
 				DataType rbean = (DataType)in_obj;
@@ -428,13 +429,16 @@ public class BaseService{
 					logger.error("Creating data pointers from the web FE is forbidden regardless of configuration");
 					return false;
 				}
-				out_bool = Factories.getDataFactory().addData(new_rec);
+				out_bool = Factories.getDataFactory().add(new_rec);
 				break;				
 		}
 		return out_bool;
 	}
 	private static <T> boolean updateObject(AuditEnumType type, T in_obj) throws ArgumentException, FactoryException, DataAccessException {
 		boolean out_bool = false;
+		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
+		out_bool = iFact.update(in_obj);
+		/*
 		switch(type){
 			case ACCOUNT:
 				out_bool = Factories.getAccountFactory().updateAccount((AccountType)in_obj);
@@ -456,11 +460,11 @@ public class BaseService{
 			case PERMISSION:
 				out_bool = Factories.getPermissionFactory().updatePermission((BasePermissionType)in_obj);
 				break;
-			/*
+			/ *
 			case CONTACTINFORMATION:
 				out_bool = Factories.getContactInformationFactory().updateContactInformation((ContactInformationType)in_obj);
 				break;
-			*/
+			* /
 			case FACT:
 				out_bool = Factories.getFactFactory().updateFact((FactType)in_obj);
 				break;
@@ -496,6 +500,7 @@ public class BaseService{
 				out_bool = Factories.getGroupFactory().updateGroup((BaseGroupType)in_obj);
 				break;
 		}
+		*/
 		if(out_bool && enableExtendedAttributes){
 			out_bool = Factories.getAttributeFactory().updateAttributes((NameIdType)in_obj);
 		}
@@ -510,6 +515,14 @@ public class BaseService{
 				logger.warn("No extended attributes deleted for " + ((NameIdType)in_obj).getName());
 			}
 		}
+		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
+		if(type.equals(AuditEnumType.GROUP) && ((BaseGroupType)in_obj).getGroupType().equals(GroupEnumType.DATA)){
+			out_bool = Factories.getGroupFactory().deleteDirectoryGroup((DirectoryGroupType)in_obj);
+		}
+		else{
+			out_bool = iFact.delete(in_obj);
+		}
+		/*
 		switch(type){
 			case ACCOUNT:
 				out_bool = Factories.getAccountFactory().deleteAccount((AccountType)in_obj);
@@ -527,11 +540,11 @@ public class BaseService{
 			case CONTACT:
 				out_bool = Factories.getContactFactory().deleteContact((ContactType)in_obj);
 				break;
-			/*
+			/ *
 			case CONTACTINFORMATION:
 				out_bool = Factories.getContactInformationFactory().deleteContactInformation((ContactInformationType)in_obj);
 				break;
-			*/
+			* /
 			case FACT:
 				out_bool = Factories.getFactFactory().deleteFact((FactType)in_obj);
 				break;
@@ -572,9 +585,12 @@ public class BaseService{
 				break;
 
 		}
+		*/
 		return out_bool;
 	}
 	public static <T> T getFactory(AuditEnumType type){
+		return Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
+		/*
 		T out_obj = null;
 		switch(type){
 			case PERMISSION:
@@ -596,11 +612,11 @@ public class BaseService{
 			case CONTACT:
 				out_obj = (T)Factories.getContactFactory();
 				break;
-				/*
+				/ *
 			case CONTACTINFORMATION:
 				out_obj = (T)Factories.getContactInformationFactory();
 				break;
-				*/
+				* /
 			case FACT:
 				out_obj = (T)Factories.getFactFactory();
 				break;
@@ -637,6 +653,7 @@ public class BaseService{
 			
 		}
 		return out_obj;
+		*/
 	}
 	private static <T> T getByObjectId(AuditEnumType type, String id, long organizationId) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
@@ -777,7 +794,7 @@ public class BaseService{
 				out_obj = (T)Factories.getRoleFactory().getRoleByName(name, organizationId);
 				break;
 			case USER:
-				out_obj = (T)Factories.getUserFactory().getUserByName(name, organizationId);
+				out_obj = (T)Factories.getUserFactory().getByName(name, organizationId);
 				break;
 		}
 		if(out_obj != null){
@@ -1611,7 +1628,7 @@ public class BaseService{
 		
 		NameIdFactory factory = getFactory(type);
 		if(type == AuditEnumType.DATA) return ((DataFactory)factory).getCount((DirectoryGroupType)group);
-		return ((NameIdGroupFactory)factory).getCount(group);		
+		return ((NameIdGroupFactory)factory).countInGroup(group);		
 	}
 	
 	public static int countByOrganization(AuditEnumType type, long organizationId, HttpServletRequest request){
@@ -1707,11 +1724,11 @@ public class BaseService{
 	*/
 	private static int count(AuditEnumType type, long organization_id) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
-		return factory.getCount(organization_id);
+		return factory.countInOrganization(organization_id);
 	}
 	private static int countInParent(AuditEnumType type, NameIdType parent) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
-		return factory.getCountInParent(parent);
+		return factory.countInParent(parent);
 	}
 	
 	public static <T> List<T> listByParentObjectId(AuditEnumType type, String parentType, String parentId, long startRecord, int recordCount, HttpServletRequest request){
@@ -1805,7 +1822,7 @@ public class BaseService{
 	
 	private static <T> List<T> getListByGroup(AuditEnumType type, BaseGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
 		NameIdGroupFactory factory = getFactory(type);
-		List<T> out_obj = factory.getListByGroup(group, startRecord, recordCount, group.getOrganizationId());
+		List<T> out_obj = factory.listInGroup(group, startRecord, recordCount, group.getOrganizationId());
 
 		for(int i = 0; i < out_obj.size();i++){
 			NameIdDirectoryGroupType ngt = (NameIdDirectoryGroupType)out_obj.get(i);

@@ -41,6 +41,8 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -104,8 +106,10 @@ public class PatternFactory extends NameIdGroupFactory {
 		return obj;
 	}
 	
-	public boolean addPattern(PatternType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		PatternType obj = (PatternType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "pattern");
@@ -150,8 +154,10 @@ public class PatternFactory extends NameIdGroupFactory {
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
 		return new_obj;
 	}
-	public boolean updatePattern(PatternType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		PatternType data = (PatternType)object;
 		removeFromCache(data);
 		return update(data, null);
 	}
@@ -176,8 +182,10 @@ public class PatternFactory extends NameIdGroupFactory {
 		return deletePatternsByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deletePattern(PatternType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		PatternType obj = (PatternType)object;
 		removeFromCache(obj);
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
@@ -214,11 +222,11 @@ public class PatternFactory extends NameIdGroupFactory {
 	
 	public List<PatternType>  getPatternList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<PatternType> getPatternListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 }

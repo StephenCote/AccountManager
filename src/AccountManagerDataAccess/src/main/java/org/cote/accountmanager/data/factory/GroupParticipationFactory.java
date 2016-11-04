@@ -76,7 +76,7 @@ public class GroupParticipationFactory extends ParticipationFactory {
 
 		removeFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deletePersonGroupParticipant(BaseGroupType group, PersonType person) throws FactoryException, ArgumentException
 	{
@@ -87,7 +87,7 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		PersonParticipantType dp = getGroupParticipant(group, person, ParticipantEnumType.PERSON, permission, affect_type);
 		if (dp == null) return true;
 		removeFromCache(dp);
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deleteAccountGroupParticipant(BaseGroupType group, AccountType account) throws FactoryException, ArgumentException
 	{
@@ -98,7 +98,7 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		AccountParticipantType dp = getGroupParticipant(group, account, ParticipantEnumType.ACCOUNT, permission, affect_type);
 		if (dp == null) return true;
 		removeFromCache(dp);
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deleteUserGroupParticipant(BaseGroupType group, UserType user) throws FactoryException, ArgumentException
 	{
@@ -109,7 +109,7 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		AccountParticipantType dp = getGroupParticipant(group, user, ParticipantEnumType.ACCOUNT, permission, affect_type);
 		if (dp == null) return true;
 		removeFromCache(dp);
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deleteRoleGroupParticipants(BaseGroupType group, BaseRoleType role) throws FactoryException, ArgumentException
 	{

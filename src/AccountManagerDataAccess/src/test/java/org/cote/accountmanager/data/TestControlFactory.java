@@ -54,8 +54,8 @@ public class TestControlFactory extends BaseDataAccessTest {
 			ct2.setControlAction(ControlActionEnumType.WRITE);
 			//ct1.setControlType(ControlEnumType.POLICY);
 			
-			Factories.getControlFactory().addControl(ct1);
-			Factories.getControlFactory().addControl(ct2);
+			Factories.getControlFactory().add(ct1);
+			Factories.getControlFactory().add(ct2);
 			/// direct only
 			List<ControlType> ctls = Factories.getControlFactory().getControlsForType(cred, false, false);
 			/// both direct and global
@@ -111,7 +111,7 @@ public class TestControlFactory extends BaseDataAccessTest {
 			
 			FactType setCredParamFact = getCreateCredentialParamFact(testUser,"Set Credential Parameter",fdir);
 			setCredParamFact.setFactoryType(FactoryEnumType.CREDENTIAL);
-			Factories.getFactFactory().updateFact(setCredParamFact);
+			Factories.getFactFactory().update(setCredParamFact);
 			/* Expression based on StackOverflow comment : http://stackoverflow.com/questions/5142103/regex-for-password-strength
 			^                         Start anchor
 			(?=.*[A-Z].*[A-Z])        Ensure string has two uppercase letters.
@@ -135,24 +135,20 @@ public class TestControlFactory extends BaseDataAccessTest {
 			pat.setFactUrn(setCredParamFact.getUrn());
 			pat.setMatchUrn(strengthFact.getUrn());
 			pat.setOperationUrn(rgOp.getUrn());
-			Factories.getPatternFactory().updatePattern(pat);
+			Factories.getPatternFactory().update(pat);
 			useRule.getPatterns().clear();
 			useRule.getPatterns().add(pat);
-			Factories.getRuleFactory().updateRule(useRule);
+			Factories.getRuleFactory().update(useRule);
 			pol.getRules().clear();
 			pol.getRules().add(useRule);
-			Factories.getPolicyFactory().updatePolicy(pol);
+			Factories.getPolicyFactory().update(pol);
 		}
 		catch(FactoryException e){
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
-		} catch (DataAccessException e) {
-			logger.error(e.getMessage());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		return pol;
 	}
 	

@@ -93,7 +93,6 @@ public class AuthorizationService {
 	/// Return true if the factor type has a corresponding participation table
 	///
 	public static boolean canBeAuthorized(FactoryEnumType factType){
-		boolean out_bool = false;
 		return partFactories.containsKey(factType);
 	}
 	
@@ -218,11 +217,13 @@ public class AuthorizationService {
 		return out_bool;
 	}
 	private static boolean isViewAuthorization(NameEnumType objectType, BasePermissionType[] permissions,long organizationId) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
 		BasePermissionType checkPer = null;
 		if(factoryProviders.containsKey(objectType)){
 			ParticipationFactory partFact = partFactories.get(factoryProviders.get(objectType));
 			checkPer = getRootPermission(partFact.getPermissionPrefix() + "View", partFact.getDefaultPermissionType(), organizationId);
+			if(checkPer == null){
+				logger.warn("Permission " + partFact.getPermissionPrefix() + "View was null");
+			}
 		}
 
 		return containsPermission(permissions, checkPer);
@@ -252,6 +253,10 @@ public class AuthorizationService {
 	}
 	private static boolean containsPermission(BasePermissionType[] permissions, BasePermissionType permission){
 		boolean incl = false;
+		if(permission == null){
+			logger.error("Check permission is null");
+			return incl;
+		}
 		for(int i = 0; i < permissions.length;i++){
 			if(permissions[i].getId().compareTo(permission.getId())==0L){
 				incl = true;
@@ -269,6 +274,10 @@ public class AuthorizationService {
 			return false;
 		}
 		ParticipationFactory partFactory = partFactories.get(factType);
+		if(partFactory == null){
+			logger.error("Participation factory for " + factType.toString() + " is not registered for authorization");
+			return false;
+		}
 		if(!isAuthorized(admin,object,new BasePermissionType[]{getEditPermissionForMapType(admin.getNameType(), object.getOrganizationId())})){
 			logger.warn("User " + admin.getName() + " (#" + admin.getId() + ")" + " is not authorized to change object " + object.getName() + " (#" + object.getId() + ")");
 			return false;
@@ -302,12 +311,12 @@ public class AuthorizationService {
 		{
 			if (bp != null) return true;
 			bp = partFactory.newParticipant(object, actor, part_type, permission, AffectEnumType.GRANT_PERMISSION);
-			out_boolean = partFactory.addParticipant(bp);
+			out_boolean = partFactory.add(bp);
 		}
 		else
 		{
 			if (bp == null) out_boolean = true;
-			else out_boolean = partFactory.deleteParticipant(bp);
+			else out_boolean = partFactory.delete(bp);
 		}
 		if(out_boolean){
 			/// Flag the object and actor for cache updates
@@ -582,12 +591,12 @@ public class AuthorizationService {
 		{
 			if (bp != null) return true;
 			 pfact.newParticipant(object, actor,part_type, null, null);
-			out_boolean = pfact.addParticipant(bp);
+			out_boolean = pfact.add(bp);
 		}
 		else
 		{
 			if (bp == null) out_boolean = true;
-			else out_boolean = pfact.deleteParticipant(bp);
+			else out_boolean = pfact.delete(bp);
 		}
 		return out_boolean;
 	}

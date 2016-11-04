@@ -40,6 +40,8 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
@@ -96,8 +98,10 @@ public class FactFactory extends NameIdGroupFactory {
 		return obj;
 	}
 	
-	public boolean addFact(FactType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		FactType obj = (FactType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "fact");
@@ -146,11 +150,13 @@ public class FactFactory extends NameIdGroupFactory {
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
 		return new_obj;
 	}
-	public boolean updateFact(FactType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		FactType data = (FactType)object;
 		removeFromCache(data);
 		removeFromCache(data,getUrnCacheKey(data));
-		return update(data, null);
+		return super.update(data, null);
 	}
 	
 	@Override
@@ -175,8 +181,10 @@ public class FactFactory extends NameIdGroupFactory {
 		return deleteFactsByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deleteFact(FactType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		FactType obj = (FactType)object;
 		removeFromCache(obj);
 		removeFromCache(obj,getUrnCacheKey(obj));
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
@@ -215,11 +223,11 @@ public class FactFactory extends NameIdGroupFactory {
 	}
 	public List<FactType>  getFactList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<FactType> getFactListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 }

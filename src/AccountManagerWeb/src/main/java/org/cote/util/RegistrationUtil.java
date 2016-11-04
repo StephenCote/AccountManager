@@ -114,7 +114,7 @@ public class RegistrationUtil {
 			/*
 			UserType newUser = Factories.getUserFactory().newUser(userName,  SecurityUtil.getSaltedDigest(decPassword), UserEnumType.NORMAL, UserStatusEnumType.REGISTERED, regOrg);
 			if(Factories.getUserFactory().addUser(newUser, true)){
-				newUser = Factories.getUserFactory().getUserByName(userName, regOrg);
+				newUser = Factories.getUserFactory().getByName(userName, regOrg);
 				Factories.getUserFactory().populate(newUser);
 				System.out.println("!!! REFACTOR EMAIL !!!");
 				

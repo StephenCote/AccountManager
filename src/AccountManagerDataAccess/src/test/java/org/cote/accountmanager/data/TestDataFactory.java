@@ -42,7 +42,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			data.setName(dataName);
 			data.setMimeType("text/plain");
 			DataUtil.setValue(data, "This is the test data".getBytes());
-			assertTrue(Factories.getDataFactory().addData(data));
+			assertTrue(Factories.getDataFactory().add(data));
 			
 			data = Factories.getDataFactory().getDataByName(dataName, dir);
 			data.getAttributes().add(Factories.getAttributeFactory().newAttribute(data, "demo", "value"));

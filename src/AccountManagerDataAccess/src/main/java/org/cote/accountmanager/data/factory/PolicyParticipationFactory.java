@@ -25,6 +25,7 @@ package org.cote.accountmanager.data.factory;
 
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class PolicyParticipationFactory extends AuthorizationParticipationFactory {
 	public PolicyParticipationFactory(){
@@ -32,6 +33,7 @@ public class PolicyParticipationFactory extends AuthorizationParticipationFactor
 		this.haveAffect = true;
 		factoryType = FactoryEnumType.POLICYPARTICIPATION;
 		permissionPrefix = "Policy";
+		defaultPermissionType = PermissionEnumType.OBJECT;
 	}
 	
 

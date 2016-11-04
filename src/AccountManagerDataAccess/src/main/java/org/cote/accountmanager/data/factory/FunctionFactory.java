@@ -48,6 +48,8 @@ import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.util.LogicalTypeComparator;
 import org.cote.accountmanager.objects.BaseParticipantType;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.FunctionEnumType;
@@ -103,8 +105,10 @@ public class FunctionFactory extends NameIdGroupFactory {
 		return obj;
 	}
 	
-	public boolean addFunction(FunctionType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		FunctionType obj = (FunctionType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "function");
@@ -131,8 +135,8 @@ public class FunctionFactory extends NameIdGroupFactory {
 
 				for(int i = 0; i < obj.getFacts().size();i++){
 					part = Factories.getFunctionParticipationFactory().newFunctionFactParticipation(cobj,obj.getFacts().get(i));
-					if(bulkMode) BulkFactories.getBulkFunctionParticipationFactory().addParticipant(part);
-					else Factories.getFunctionParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkFunctionParticipationFactory().add(part);
+					else Factories.getFunctionParticipationFactory().add(part);
 				}
 				return true;
 			}
@@ -165,11 +169,13 @@ public class FunctionFactory extends NameIdGroupFactory {
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
 		return new_obj;
 	}
-	public boolean updateFunction(FunctionType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		FunctionType data = (FunctionType)object;
 		removeFromCache(data);
 		boolean out_bool = false;
-		if(update(data, null)){
+		if(super.update(data, null)){
 			try{
 				
 				Set<Long> set = new HashSet<Long>();
@@ -178,7 +184,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 				
 				for(int i = 0; i < data.getFacts().size();i++){
 					if(set.contains(data.getFacts().get(i).getId())== false){
-						Factories.getFunctionParticipationFactory().addParticipant(Factories.getFunctionParticipationFactory().newFunctionFactParticipation(data,data.getFacts().get(i)));
+						Factories.getFunctionParticipationFactory().add(Factories.getFunctionParticipationFactory().newFunctionFactParticipation(data,data.getFacts().get(i)));
 					}
 					else{
 						set.remove(data.getFacts().get(i).getId());
@@ -212,8 +218,10 @@ public class FunctionFactory extends NameIdGroupFactory {
 		return deleteFunctionsByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deleteFunction(FunctionType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		FunctionType obj = (FunctionType)object;
 		removeFromCache(obj);
 		//int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		int deleted = deleteFunctionsByIds(new long[]{obj.getId()},obj.getOrganizationId());
@@ -252,11 +260,11 @@ public class FunctionFactory extends NameIdGroupFactory {
 	
 	public List<FunctionType>  getFunctionList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<FunctionType> getFunctionListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 }

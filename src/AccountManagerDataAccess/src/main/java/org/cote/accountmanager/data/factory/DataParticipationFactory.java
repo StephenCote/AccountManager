@@ -66,7 +66,7 @@ public class DataParticipationFactory extends ParticipationFactory {
 
 		removeFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 
 	public boolean deleteRoleParticipations(AccountRoleType role) throws FactoryException, ArgumentException
@@ -87,7 +87,7 @@ public class DataParticipationFactory extends ParticipationFactory {
 
 		removeFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 
 	public boolean deleteAccountParticipations(AccountType account) throws FactoryException, ArgumentException
@@ -108,7 +108,7 @@ public class DataParticipationFactory extends ParticipationFactory {
 
 		removeFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 
 	public boolean deleteUserParticipations(UserType account) throws FactoryException, ArgumentException

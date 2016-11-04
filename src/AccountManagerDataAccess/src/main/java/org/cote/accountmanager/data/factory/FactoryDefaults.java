@@ -122,11 +122,11 @@ public class FactoryDefaults {
 		AccountType root_account = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
 		if(root_account == null){
 			root_account = Factories.getAccountFactory().newAccount(null,"Root", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization().getId()).getId(),Factories.getSystemOrganization().getId());
-			if (!Factories.getAccountFactory().addAccount(root_account)) throw new FactoryException("Unable to add root account");
+			if (!Factories.getAccountFactory().add(root_account)) throw new FactoryException("Unable to add root account");
 	
 			UserType root_user = Factories.getUserFactory().newUserForAccount("Root", root_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
-			if (!Factories.getUserFactory().addUser(root_user)) throw new FactoryException("Unable to add root user");
-			root_user = Factories.getUserFactory().getUserByName("Root", root_account.getOrganizationId());
+			if (!Factories.getUserFactory().add(root_user)) throw new FactoryException("Unable to add root user");
+			root_user = Factories.getUserFactory().getByName("Root", root_account.getOrganizationId());
 			if (root_user == null) throw new FactoryException("Failed to retrieve to add root user");
 			/// 2015/06/23 - New Credential System
 			/// I intentionally left the credential operation decoupled from object creation
@@ -152,12 +152,12 @@ public class FactoryDefaults {
 		// Create administration user
 		//
 		AccountType admin_account = Factories.getAccountFactory().newAccount(null,"Admin", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, agroup.getId(),organization.getId());
-		if (!Factories.getAccountFactory().addAccount(admin_account)) throw new FactoryException("Unable to add admin account");
+		if (!Factories.getAccountFactory().add(admin_account)) throw new FactoryException("Unable to add admin account");
 		admin_account = Factories.getAccountFactory().getAccountByName("Admin", agroup);
 
 		UserType admin_user = Factories.getUserFactory().newUserForAccount("Admin", admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
-		if (!Factories.getUserFactory().addUser(admin_user)) throw new FactoryException("Unable to add admin user");
-		admin_user = Factories.getUserFactory().getUserByName("Admin", organization.getId());
+		if (!Factories.getUserFactory().add(admin_user)) throw new FactoryException("Unable to add admin user");
+		admin_user = Factories.getUserFactory().getByName("Admin", organization.getId());
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
 		///
@@ -167,8 +167,8 @@ public class FactoryDefaults {
 		// Create the document control user
 		//
 		UserType dc_user = Factories.getUserFactory().newUserForAccount("Document Control", admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
-		if (Factories.getUserFactory().addUser(dc_user) == false) return false;
-		dc_user = Factories.getUserFactory().getUserByName("Document Control", organization.getId());
+		if (Factories.getUserFactory().add(dc_user) == false) return false;
+		dc_user = Factories.getUserFactory().getByName("Document Control", organization.getId());
 
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
@@ -185,20 +185,20 @@ public class FactoryDefaults {
 		//
 		for (int i = 0; i < default_account_permissions.length; i++)
 		{
-			Factories.getPermissionFactory().addPermission(
+			Factories.getPermissionFactory().add(
 				Factories.getPermissionFactory().newPermission(default_account_permissions[i], PermissionEnumType.ACCOUNT, organization.getId())
 			);
 		}
 
 		for (int i = 0; i < default_object_permissions.length; i++)
 		{
-			Factories.getPermissionFactory().addPermission(
+			Factories.getPermissionFactory().add(
 					Factories.getPermissionFactory().newPermission(default_object_permissions[i], PermissionEnumType.OBJECT, organization.getId())
 			);
 		}
 		for (int i = 0; i < default_application_permissions.length; i++)
 		{
-			Factories.getPermissionFactory().addPermission(
+			Factories.getPermissionFactory().add(
 					Factories.getPermissionFactory().newPermission(default_application_permissions[i], PermissionEnumType.APPLICATION, organization.getId())
 			);
 		}
@@ -235,7 +235,7 @@ public class FactoryDefaults {
 		
 		// Add admin user and root user to Administrators and Users user roles
 		//
-		UserType root_user = Factories.getUserFactory().getUserByName("Root",Factories.getSystemOrganization().getId());
+		UserType root_user = Factories.getUserFactory().getByName("Root",Factories.getSystemOrganization().getId());
 		UserRoleType user_admin_role = RoleService.getAccountAdministratorUserRole(admin_user);
 		UserRoleType user_data_admin_role = RoleService.getDataAdministratorUserRole(admin_user);
 		UserRoleType user_obj_admin_role = RoleService.getObjectAdministratorUserRole(admin_user);
@@ -293,12 +293,12 @@ public class FactoryDefaults {
 			for (int i = 0; i < permissionNames.length; i++)
 			{
 				try{
-				Factories.getPermissionFactory().addPermission(
+				Factories.getPermissionFactory().add(
 						Factories.getPermissionFactory().newPermission(permissionNames[i], fact.getDefaultPermissionType(), organizationId)
 				);
 				logger.info("Added permission " + permissionNames[i] + " to organization #" + organizationId);
 				}
-				catch(FactoryException | DataAccessException e){
+				catch(FactoryException | ArgumentException e){
 					logger.error(e.getMessage());
 				}
 			}

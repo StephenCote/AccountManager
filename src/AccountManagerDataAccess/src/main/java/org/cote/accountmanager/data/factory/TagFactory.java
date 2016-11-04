@@ -37,6 +37,7 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountTagType;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataTagType;
@@ -73,20 +74,25 @@ public class TagFactory extends NameIdGroupFactory {
 		}
 
 	}
+	
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		BaseTagType t = (BaseTagType)obj;
 		return t.getName() + "-" + t.getTagType().toString() + "-" + t.getGroupId();
 	}
-	public boolean updateTag(BaseTagType tag) throws FactoryException
+	
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		BaseTagType tag = (BaseTagType)object;
 		removeFromCache(tag, null);
-		return update(tag);
+		return super.update(tag);
 	}
 
-	public boolean deleteTag(BaseTagType tag) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
-
+		BaseTagType tag = (BaseTagType)object;
 		removeFromCache(tag);
 		int deleted = deleteById(tag.getId(), tag.getOrganizationId());
 		Factories.getTagParticipationFactory().deleteParticipations(tag);
@@ -115,31 +121,23 @@ public class TagFactory extends NameIdGroupFactory {
 		}
 		return deleted;
 	}
-	public boolean addTag(BaseTagType new_tag) throws DataAccessException, FactoryException
+	
+	@Override
+	public <T> boolean add(T object) throws ArgumentException, FactoryException
 	{
+		BaseTagType new_tag = (BaseTagType)object;
 		if (new_tag.getOrganizationId() <= 0L) throw new FactoryException("Cannot add tag to invalid organization");
 		DataRow row = prepareAdd(new_tag, "tags");
+		try{
 		row.setCellValue("groupid", new_tag.getGroupId());
 		row.setCellValue("tagtype", new_tag.getTagType().toString());
+		}
+		catch(DataAccessException e){
+			throw new FactoryException(e.getMessage());
+		}
 		return insertRow(row);
 	}
-	/*
-	public <T> T getTagById(int id, long organizationId) throws FactoryException, ArgumentException
-	{
-		T out_tag = readCache(id);
-		if (out_tag != null) return out_tag;
 
-		List<NameIdType> tags = getById(id, organization.getId());
-		if (tags.size() > 0)
-		{
-			BaseTagType tag = (BaseTagType)tags.get(0);
-			String key_name = tag.getTagType() + "-" + tag.getName() + "-" + tag.getOrganizationId();
-			addToCache(tag,key_name);
-			return (T)tag;
-		}
-		return null;
-	}
-	*/
 	public DataTagType getPersonTagByName(String name, DirectoryGroupType group) throws FactoryException, ArgumentException
 	{
 		return getTagByName(name, TagEnumType.PERSON, group);
@@ -176,15 +174,16 @@ public class TagFactory extends NameIdGroupFactory {
 		return null;
 	}
 
-	public <T> List<T> listTags(DirectoryGroupType group, long startRecord, int recordCount,long organizationId) throws FactoryException, ArgumentException{
-		return listTags(group, TagEnumType.UNKNOWN, null,startRecord, recordCount,organizationId);
+	@Override
+	public <T> List<T> listInGroup(BaseGroupType group, long startRecord, int recordCount,long organizationId) throws FactoryException, ArgumentException{
+		return listInGroup(group, TagEnumType.UNKNOWN, null,startRecord, recordCount,organizationId);
 	}
-	public <T> List<T> listTags(DirectoryGroupType group, TagEnumType type, QueryField match, long startRecord, int recordCount,long organizationId) throws FactoryException, ArgumentException{
+	public <T> List<T> listInGroup(BaseGroupType group, TagEnumType type, QueryField match, long startRecord, int recordCount,long organizationId) throws FactoryException, ArgumentException{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		if(group != null) fields.add(QueryFields.getFieldGroup(group.getId()));
 		if(type != TagEnumType.UNKNOWN) fields.add(QueryFields.getFieldTagType(type));
 		if(match != null) fields.add(match);
-		return getPaginatedList(fields.toArray(new QueryField[0]),startRecord,recordCount,organizationId);
+		return paginateList(fields.toArray(new QueryField[0]),startRecord,recordCount,organizationId);
 	}
 
 	@Override
@@ -247,6 +246,7 @@ public class TagFactory extends NameIdGroupFactory {
 		new_tag.setTagType(Type);
 		return new_tag;
 	}
+	
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
@@ -275,12 +275,6 @@ public class TagFactory extends NameIdGroupFactory {
 		/// Don't apply pagination to the secondary query because it's already been paginated from the parts list
 		///
 		return Factories.getTagParticipationFactory().getDataListFromParticipations(parts.toArray(new DataParticipantType[0]), true, 0, 0, organizationId);
-
-		//Factories.getTagParticipationFactory().getTagParticipations(tags);
-		//List<Core.Tools.AccountManager.Map.DataParticipant> dps = Core.Tools.AccountManager.Factory.TagParticipationFactoryInstance.GetTagParticipations(tags.ToArray());
-
-		//if (dps.Count > 0) active_data_list = Core.Tools.AccountManager.Factory.TagParticipationFactoryInstance.GetDataFromParticipations(dps.ToArray(), true, 0, 0, product.Organization).ToArray();
-		//else active_data_list = new Core.Tools.AccountManager.Map.Data[0];
 	
 	}
 

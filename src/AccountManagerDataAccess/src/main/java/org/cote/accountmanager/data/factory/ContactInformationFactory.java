@@ -42,6 +42,7 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -96,19 +97,23 @@ public class ContactInformationFactory extends NameIdFactory {
 		int deleted = deleteByBigIntField("referenceid",ids,organizationId);
 		return (deleted > 0);
 	}
-	public boolean deleteContactInformation(ContactInformationType cinfo) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException, ArgumentException
 	{
+		ContactInformationType cinfo = (ContactInformationType)object;
 		int deleted = deleteById(cinfo.getId(), cinfo.getOrganizationId());
 		if(deleted > 0){
 			Factories.getContactInformationParticipationFactory().deleteParticipations(new long[]{cinfo.getId()},cinfo.getOrganizationId());
 		}
 		return (deleted > 0);
 	}
-	public boolean updateContactInformation(ContactInformationType cinfo) throws FactoryException, DataAccessException
-	{
+	@Override
+	public <T> boolean update(T object) throws FactoryException
+	{	
+		ContactInformationType cinfo = (ContactInformationType)object;
 		boolean out_bool = false;
 		removeFromCache(cinfo);
-		if(update(cinfo)){
+		if(super.update(cinfo)){
 			try{
 				/// Contacts
 				///
@@ -125,7 +130,7 @@ public class ContactInformationFactory extends NameIdFactory {
 					if(set.contains(cinfo.getContacts().get(i).getId())== false){
 						part = Factories.getContactInformationParticipationFactory().newContactParticipation(cinfo,cinfo.getContacts().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.CONTACTINFORMATIONPARTICIPATION, part);
-						else Factories.getContactInformationParticipationFactory().addParticipant(part);
+						else Factories.getContactInformationParticipationFactory().add(part);
 					}
 					else{
 						set.remove(cinfo.getContacts().get(i).getId());
@@ -142,7 +147,7 @@ public class ContactInformationFactory extends NameIdFactory {
 					if(set.contains(cinfo.getAddresses().get(i).getId())== false){
 						part = Factories.getContactInformationParticipationFactory().newAddressParticipation(cinfo,cinfo.getAddresses().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.CONTACTINFORMATIONPARTICIPATION, part);
-						else Factories.getContactInformationParticipationFactory().addParticipant(part);
+						else Factories.getContactInformationParticipationFactory().add(part);
 					}
 					else{
 						set.remove(cinfo.getAddresses().get(i).getId());
@@ -171,8 +176,10 @@ public class ContactInformationFactory extends NameIdFactory {
 			if(tmpId > 0) cit.setReferenceId(tmpId);
 		}
 	}
-	public boolean addContactInformation(ContactInformationType new_info) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		ContactInformationType new_info = (ContactInformationType)object;
 		if (new_info.getReferenceId().equals(0L)) throw new FactoryException("Cannot add information without a corresponding reference id");
 		if (new_info.getOrganizationId() == null || new_info.getOrganizationId() <= 0) throw new FactoryException("Cannot add contact information to invalid organization");
 		if(new_info.getOwnerId().equals(0L)) throw new FactoryException("Contact Information must now have an owner id");
@@ -190,14 +197,14 @@ public class ContactInformationFactory extends NameIdFactory {
 
 				for(int i = 0; i < new_info.getContacts().size();i++){
 					part = Factories.getContactInformationParticipationFactory().newContactParticipation(cobj,new_info.getContacts().get(i));
-					if(bulkMode) BulkFactories.getBulkContactInformationParticipationFactory().addParticipant(part);
-					else Factories.getContactInformationParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkContactInformationParticipationFactory().add(part);
+					else Factories.getContactInformationParticipationFactory().add(part);
 				}
 				
 				for(int i = 0; i < new_info.getAddresses().size();i++){
 					part = Factories.getContactInformationParticipationFactory().newAddressParticipation(cobj,new_info.getAddresses().get(i));
-					if(bulkMode) BulkFactories.getBulkContactInformationParticipationFactory().addParticipant(part);
-					else Factories.getContactInformationParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkContactInformationParticipationFactory().add(part);
+					else Factories.getContactInformationParticipationFactory().add(part);
 				}
 				
 				return true;

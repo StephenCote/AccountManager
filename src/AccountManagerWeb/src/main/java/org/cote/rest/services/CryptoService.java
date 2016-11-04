@@ -334,7 +334,7 @@ public class CryptoService{
 			boolean accountAdmin = org.cote.accountmanager.data.services.RoleService.isFactoryAdministrator(user,Factories.getAccountFactory());
 			boolean dataAdmin = org.cote.accountmanager.data.services.RoleService.isFactoryAdministrator(user, Factories.getDataFactory());
 			if(authReq.getSubjectType() == NameEnumType.USER){
-				UserType updateUser = Factories.getUserFactory().getUserByName(authReq.getSubject(), user.getOrganizationId());
+				UserType updateUser = Factories.getUserFactory().getByName(authReq.getSubject(), user.getOrganizationId());
 				if(updateUser == null){
 					AuditService.denyResult(audit, "Target user " + authReq.getSubject() + " does not exist");
 					return out_bool;

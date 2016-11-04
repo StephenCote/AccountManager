@@ -39,7 +39,9 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ContactInformationType;
+import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -94,20 +96,20 @@ public class AccountFactory extends NameIdGroupFactory {
 		NameIdDirectoryGroupType t = (NameIdDirectoryGroupType)obj;
 		return t.getName() + "-" + t.getParentId() + "-" + ((NameIdDirectoryGroupType)obj).getGroupId();
 	}
-	public boolean updateAccount(AccountType account) throws FactoryException{
+	@Override
+	public <T> boolean update(T object) throws FactoryException
+	{	
+		AccountType account = (AccountType)object;
+
 		removeAccountFromCache(account);
-		boolean b = update(account);
+		boolean b = super.update(account);
 		/// 2014/09/10
 		/// Contact information is updated along with the parent object because it's a foreign-keyed object that is not otherwise easily referenced
 		///
 		if(account.getContactInformation() != null){
-			try {
-				b = Factories.getContactInformationFactory().updateContactInformation(account.getContactInformation());
-			} catch (DataAccessException e) {
-				// TODO Auto-generated catch block
-				logger.error(e.getMessage());
-				b = false;
-			}
+
+				b = Factories.getContactInformationFactory().update(account.getContactInformation());
+
 		}
 		return b;
 	}
@@ -140,8 +142,10 @@ public class AccountFactory extends NameIdGroupFactory {
 		}
 		return deleted;
 	}
-	public boolean deleteAccount(AccountType account) throws FactoryException, ArgumentException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException, ArgumentException
 	{
+		AccountType account = (AccountType)object;
 		removeFromCache(account);
 		int deleted = deleteById(account.getId(), account.getOrganizationId());
 		if (deleted > 0)
@@ -221,12 +225,14 @@ public class AccountFactory extends NameIdGroupFactory {
 		}
 		return out_user;
 	}
-	public boolean addAccount(AccountType new_account) throws FactoryException, ArgumentException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
-		return addAccount(new_account, false);
+		return add(object, false);
 	}
-	public boolean addAccount(AccountType new_account, boolean allot_contact_info) throws FactoryException, ArgumentException
+	public <T> boolean add(T object, boolean allot_contact_info) throws FactoryException, ArgumentException
 	{
+		AccountType new_account = (AccountType)object;
 		if (new_account.getOrganizationId() == null || new_account.getOrganizationId() <= 0) throw new FactoryException("Cannot add contact information to invalid organization");
 		/*
 		if (!bulkMode && getAccountNameExists(new_account.getName(), (new_account.getParentId() != 0L ?  (AccountType)getById(new_account.getParentId(), new_account.getOrganizationId()) : null), new_account.getOrganizationId()))
@@ -248,12 +254,12 @@ public class AccountFactory extends NameIdGroupFactory {
 				StatisticsType stats = Factories.getStatisticsFactory().newStatistics(new_account);
 				if(bulkMode){
 					BulkFactories.getBulkFactory().setDirty(FactoryEnumType.STATISTICS);
-					BulkFactories.getBulkStatisticsFactory().addStatistics(stats);
+					BulkFactories.getBulkStatisticsFactory().add(stats);
 					if(allot_contact_info){
 						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_account);
 						if(new_account.getId() > 0){
 							BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATION);
-							BulkFactories.getBulkContactInformationFactory().addContactInformation(cinfo);
+							BulkFactories.getBulkContactInformationFactory().add(cinfo);
 						}
 						else{
 							if(this.factoryType == FactoryEnumType.UNKNOWN) throw new FactoryException("Invalid Factory Type for Bulk Identifiers");
@@ -269,14 +275,14 @@ public class AccountFactory extends NameIdGroupFactory {
 					}
 				}
 				else{
-					if(Factories.getStatisticsFactory().addStatistics(stats) == false) throw new FactoryException("Failed to add statistics to new account #" + new_account.getId());
+					if(Factories.getStatisticsFactory().add(stats) == false) throw new FactoryException("Failed to add statistics to new account #" + new_account.getId());
 					stats = Factories.getStatisticsFactory().getStatistics(new_account);
 					if(stats == null) throw new FactoryException("Failed to retrieve statistics for account #" + new_account.getId());
 					new_account.setStatistics(stats);
 					if(allot_contact_info){
 						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_account);
 						System.out.println("Adding cinfo for account in org " + new_account.getOrganizationId());
-						if(Factories.getContactInformationFactory().addContactInformation(cinfo) == false) throw new FactoryException("Failed to assign contact information for account #" + new_account.getId());
+						if(Factories.getContactInformationFactory().add(cinfo) == false) throw new FactoryException("Failed to assign contact information for account #" + new_account.getId());
 						cinfo = Factories.getContactInformationFactory().getContactInformationForAccount(new_account);
 						if(cinfo == null) throw new FactoryException("Failed to retrieve contact information for account #" + new_account.getId());
 						new_account.setContactInformation(cinfo);
@@ -336,11 +342,11 @@ public class AccountFactory extends NameIdGroupFactory {
 	}
 	public List<AccountType>  getAccountList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<AccountType> getAccountListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 }

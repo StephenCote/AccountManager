@@ -74,7 +74,7 @@ public class TestUrnUtil extends BaseDataAccessTest {
 			Factories.getUserFactory().populate(testUser);
 			/// force an update on the test group while migrating to include the new urn column, because the values for existing entries will be auto values
 			///
-			Factories.getGroupFactory().updateGroup(testUser.getHomeDirectory());
+			Factories.getGroupFactory().update(testUser.getHomeDirectory());
 
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block

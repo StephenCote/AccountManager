@@ -385,10 +385,13 @@ public class BulkFactory {
 		/// 1) Invoke the updateType for each object in the list
 		///		This will address any factory specific tweaks that are needed, and queue up dependencies
 		/// 2) Pass the entire list to the factory's updateBulk.
-		
+
+		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(factoryType);
 		for(int i = 0; i < objects.size();i++){
 			
 			NameIdType object = objects.get(i);
+			iFact.delete(object);
+			/*
 			switch(factoryType){
 				case ASYMMETRICKEY:
 					BulkFactories.getBulkAsymmetricKeyFactory().deleteAsymmetricKey((SecurityType)object);
@@ -413,13 +416,13 @@ public class BulkFactory {
 					BulkFactories.getBulkFunctionFactory().deleteFunction((FunctionType)object);
 					break;
 				case FUNCTIONPARTICIPATION:
-					BulkFactories.getBulkFunctionParticipationFactory().deleteParticipant((BaseParticipantType)object);
+					BulkFactories.getBulkFunctionParticipationFactory().delete((BaseParticipantType)object);
 					break;
 				case POLICYPARTICIPATION:
-					BulkFactories.getBulkPolicyParticipationFactory().deleteParticipant((BaseParticipantType)object);
+					BulkFactories.getBulkPolicyParticipationFactory().delete((BaseParticipantType)object);
 					break;
 				case RULEPARTICIPATION:
-					BulkFactories.getBulkRuleParticipationFactory().deleteParticipant((BaseParticipantType)object);
+					BulkFactories.getBulkRuleParticipationFactory().delete((BaseParticipantType)object);
 					break;
 	
 				case OPERATION:
@@ -445,13 +448,13 @@ public class BulkFactory {
 					BulkFactories.getBulkPersonFactory().deletePerson((PersonType)object);
 					break;
 				case PERSONPARTICIPATION:
-					BulkFactories.getBulkPersonParticipationFactory().deleteParticipant((BaseParticipantType)object);
+					BulkFactories.getBulkPersonParticipationFactory().delete((BaseParticipantType)object);
 					break;
 				case CONTACTINFORMATION:
 					BulkFactories.getBulkContactInformationFactory().deleteContactInformation((ContactInformationType)object);
 					break;
 				case CONTACTINFORMATIONPARTICIPATION:
-					BulkFactories.getBulkContactInformationParticipationFactory().deleteParticipant((BaseParticipantType)object);
+					BulkFactories.getBulkContactInformationParticipationFactory().delete((BaseParticipantType)object);
 					break;
 				case CONTACT:
 					BulkFactories.getBulkContactFactory().deleteContact((ContactType)object);
@@ -469,29 +472,30 @@ public class BulkFactory {
 					BulkFactories.getBulkDataFactory().deleteData((DataType)object);
 					break;
 				case DATAPARTICIPATION:
-					BulkFactories.getBulkDataParticipationFactory().deleteParticipant((BaseParticipantType)object);
+					BulkFactories.getBulkDataParticipationFactory().delete((BaseParticipantType)object);
 					break;
 				case GROUP:
 					BulkFactories.getBulkGroupFactory().deleteGroup((BaseGroupType)object);
 					break;
 				case GROUPPARTICIPATION:
-					BulkFactories.getBulkGroupParticipationFactory().deleteParticipant((BaseParticipantType)object);
+					BulkFactories.getBulkGroupParticipationFactory().delete((BaseParticipantType)object);
 					break;
 				case ROLE:
 					BulkFactories.getBulkRoleFactory().deleteRole((BaseRoleType)object);
 					break;
 				case ROLEPARTICIPATION:
-					BulkFactories.getBulkRoleParticipationFactory().deleteParticipant((BaseParticipantType)object);
+					BulkFactories.getBulkRoleParticipationFactory().delete((BaseParticipantType)object);
 					break;
 				case TAG:
 					BulkFactories.getBulkTagFactory().deleteTag((BaseTagType)object);
 					break;
 				case TAGPARTICIPATION:
-					BulkFactories.getBulkTagParticipationFactory().deleteParticipant((BaseParticipantType)object);
+					BulkFactories.getBulkTagParticipationFactory().delete((BaseParticipantType)object);
 					break;
 				default:
 					throw new FactoryException("Unhandled factory type: " + factoryType);
 			}
+			*/
 		}
 	}
 	
@@ -502,9 +506,12 @@ public class BulkFactory {
 		///		This will address any factory specific tweaks that are needed, and queue up dependencies
 		/// 2) Pass the entire list to the factory's updateBulk.
 		
+		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(factoryType);
+
 		for(int i = 0; i < objects.size();i++){
-			
 			NameIdType object = objects.get(i);
+			iFact.update(object);
+			/*
 			switch(factoryType){
 				case ASYMMETRICKEY:
 					BulkFactories.getBulkAsymmetricKeyFactory().updateAsymmetricKey((SecurityType)object);
@@ -579,11 +586,15 @@ public class BulkFactory {
 				default:
 					throw new FactoryException("Unhandled factory type: " + factoryType);
 			} // end switch
+			*/
 		} // end for
 		
 	}
 	
 	protected void writeSpool(FactoryEnumType factoryType) throws FactoryException{
+		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(factoryType);
+		iFact.writeSpool();
+		/*
 		switch(factoryType){
 			case ASYMMETRICKEY:
 				BulkFactories.getBulkAsymmetricKeyFactory().writeSpool(BulkFactories.getBulkAsymmetricKeyFactory().getDataTables().get(0).getName());
@@ -687,6 +698,7 @@ public class BulkFactory {
 			default:
 				throw new FactoryException("Unhandled factory type: " + factoryType);
 		}		
+		*/
 	}
 	protected void writeObject(BulkSessionType session, BulkEntryType entry) throws FactoryException, DataAccessException, ArgumentException{
 		writePreparedObject(session,entry);
@@ -695,7 +707,9 @@ public class BulkFactory {
 		/// TODO - Why is this not just looking up the factory type and invoking the method instead of the big switch here?
 		/// Note: Not all types are supported, and operations should gracefully fall through 
 		///
-		
+		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(entry.getFactoryType());
+		iFact.mapBulkIds(entry.getObject());
+		/*
 		switch(entry.getFactoryType()){
 			case ASYMMETRICKEY:
 				BulkFactories.getBulkAsymmetricKeyFactory().mapBulkIds(entry.getObject());
@@ -767,9 +781,23 @@ public class BulkFactory {
 				BulkFactories.getBulkTagFactory().mapBulkIds(entry.getObject());
 				break;
 		}
+		*/
 	}
 	protected void writePreparedObject(BulkSessionType session,BulkEntryType entry) throws FactoryException, ArgumentException, DataAccessException{
 		BaseParticipantType part = null;
+		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(entry.getFactoryType());
+		iFact.add(entry.getObject());
+		if(iFact.isParticipation()){
+			updateParticipantIds((BaseParticipantType)entry.getObject());
+		}
+		else if(entry.getFactoryType().equals(FactoryEnumType.USER)){
+			UserType user = (UserType)entry.getObject();
+			if(user.getContactInformation() == null){
+				ContactInformationType cit = Factories.getContactInformationFactory().newContactInformation((UserType)entry.getObject());
+				createBulkEntry(session.getSessionId(), FactoryEnumType.CONTACTINFORMATION, cit);
+			}
+		}
+		/*
 		switch(entry.getFactoryType()){
 			case ASYMMETRICKEY:
 				BulkFactories.getBulkAsymmetricKeyFactory().addAsymmetricKey((SecurityType)entry.getObject());
@@ -819,12 +847,12 @@ public class BulkFactory {
 				/// And this will cause unexpected results.
 				/// The same problem affects any other dirty entity writes
 				///
-				/*
+				/ *
 				if(account.getContactInformation() == null){
 					ContactInformationType cit = Factories.getContactInformationFactory().newContactInformation((UserType)entry.getObject());
 					createBulkEntry(session.getSessionId(), FactoryEnumType.CONTACTINFORMATION, cit);
 				}
-				*/
+				* /
 				break;
 			case CONTACT:
 				BulkFactories.getBulkContactFactory().addContact((ContactType)entry.getObject());
@@ -835,7 +863,7 @@ public class BulkFactory {
 			case PERSONPARTICIPATION:
 				part = (BaseParticipantType)entry.getObject();
 				updateParticipantIds(part);
-				BulkFactories.getBulkPersonParticipationFactory().addParticipant(part);
+				BulkFactories.getBulkPersonParticipationFactory().add(part);
 				break;
 
 			case STATISTICS:
@@ -847,7 +875,7 @@ public class BulkFactory {
 			case CONTACTINFORMATIONPARTICIPATION:
 				part = (BaseParticipantType)entry.getObject();
 				updateParticipantIds(part);
-				BulkFactories.getBulkContactInformationParticipationFactory().addParticipant(part);
+				BulkFactories.getBulkContactInformationParticipationFactory().add(part);
 				break;
 
 			case USER:
@@ -870,7 +898,7 @@ public class BulkFactory {
 			case DATAPARTICIPATION:
 				part = (BaseParticipantType)entry.getObject();
 				updateParticipantIds(part);
-				BulkFactories.getBulkDataParticipationFactory().addParticipant(part);
+				BulkFactories.getBulkDataParticipationFactory().add(part);
 				break;
 			case GROUP:
 				
@@ -879,7 +907,7 @@ public class BulkFactory {
 			case GROUPPARTICIPATION:
 				part = (BaseParticipantType)entry.getObject();
 				updateParticipantIds(part);
-				BulkFactories.getBulkGroupParticipationFactory().addParticipant(part);
+				BulkFactories.getBulkGroupParticipationFactory().add(part);
 				break;
 			case ROLE:
 				
@@ -888,19 +916,20 @@ public class BulkFactory {
 			case ROLEPARTICIPATION:
 				part = (BaseParticipantType)entry.getObject();
 				updateParticipantIds(part);
-				BulkFactories.getBulkRoleParticipationFactory().addParticipant(part);
+				BulkFactories.getBulkRoleParticipationFactory().add(part);
 				break;
 			case TAG:
-				BulkFactories.getBulkTagFactory().addTag((BaseTagType)entry.getObject());
+				BulkFactories.getBulkTagFactory().add((BaseTagType)entry.getObject());
 				break;
 			case TAGPARTICIPATION:
 				part = (BaseParticipantType)entry.getObject();
 				updateParticipantIds(part);
-				BulkFactories.getBulkTagParticipationFactory().addParticipant(part);
+				BulkFactories.getBulkTagParticipationFactory().add(part);
 				break;
 			default:
 				throw new FactoryException("Unhandled factory type: " + entry.getFactoryType());
 		}
+	*/
 	}
 	public long getMappedId(long temporaryId){
 		long out_id = 0;
@@ -994,7 +1023,7 @@ public class BulkFactory {
 		///
 		String key = factory.getCacheKeyName(object);
 		factory.removeFromCache(object,key);
-		if(deleteSet.get(sessionId).get(factoryType).contains(object)){
+		if(deleteSet.get(sessionId).get(factoryType).contains(key)){
 			//logger.debug("Object '" + object.getName() + "' is already marked for deletion");
 			return;
 		}

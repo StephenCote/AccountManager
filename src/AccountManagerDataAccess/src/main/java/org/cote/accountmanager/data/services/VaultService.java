@@ -352,7 +352,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			DirectoryGroupType vaultGroup = getVaultGroup();
 			if(vaultGroup != null){
 				DataType imp_data = Factories.getDataFactory().getDataByName(vaultName, true,vaultGroup);
-				if(imp_data != null && !Factories.getDataFactory().deleteData(imp_data)){
+				if(imp_data != null && !Factories.getDataFactory().delete(imp_data)){
 					logger.warn("Unable to delete improvement key");
 				}
 			}
@@ -441,7 +441,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			imp_data.setMimeType("text/xml");
 			DataUtil.setValue(imp_data, public_key_config);
 
-			Factories.getDataFactory().addData(imp_data);
+			Factories.getDataFactory().add(imp_data);
 			
 			haveVaultKey = true;
 
@@ -664,7 +664,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			new_key.setMimeType("text/xml");
 			new_key.setDescription("Improvement key for " + vaultName);
 			DataUtil.setValue(new_key, secret_key);
-			if(Factories.getDataFactory().addData(new_key)){
+			if(Factories.getDataFactory().add(new_key)){
 				activeKeyId = id;
 				return true;
 			}
@@ -697,7 +697,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			if (activeKey == null || activeKeyId == null) return false;
 			setVaultBytes(in_data, in_bytes);
 
-			return Factories.getDataFactory().updateData(in_data);
+			return Factories.getDataFactory().update(in_data);
 		}
 
 	}

@@ -148,7 +148,7 @@ public class Factories {
 	public static UserType getDocumentControl(long organizationId){
 		UserType user = null;
 		try {
-			user = Factories.getUserFactory().getUserByName(documentControlName, organizationId);
+			user = Factories.getUserFactory().getByName(documentControlName, organizationId);
 		} catch (FactoryException | ArgumentException e) {
 			logger.error("Trace",e);
 		}
@@ -157,7 +157,7 @@ public class Factories {
 	public static UserType getAdminUser(long organizationId){
 		UserType u = null;
 		try {
-			u = Factories.getUserFactory().getUserByName("Admin", organizationId);
+			u = Factories.getUserFactory().getByName("Admin", organizationId);
 		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 			logger.error("Trace",e);
@@ -167,7 +167,7 @@ public class Factories {
 	public static UserType getRootUser(){
 		UserType u = null;
 		try {
-			u = Factories.getUserFactory().getUserByName("Root", getSystemOrganization().getId());
+			u = Factories.getUserFactory().getByName("Root", getSystemOrganization().getId());
 		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 			logger.error("Trace",e);
@@ -540,7 +540,7 @@ public class Factories {
 
 		if(organizationId > 0L){
 			try{
-				UserType adminUser = Factories.getUserFactory().getUserByName("Admin", organizationId);
+				UserType adminUser = Factories.getUserFactory().getByName("Admin", organizationId);
 				if(adminUser != null){
 					out_bool = true;
 				}

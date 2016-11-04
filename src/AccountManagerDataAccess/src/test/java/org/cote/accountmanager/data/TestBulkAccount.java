@@ -26,7 +26,7 @@ public class TestBulkAccount extends BaseDataAccessTest{
 	
 			if(qaAccount == null){
 				qaAccount = Factories.getAccountFactory().newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir.getId());
-				Factories.getAccountFactory().addAccount(qaAccount);
+				Factories.getAccountFactory().add(qaAccount);
 				qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
 			}
 		}
@@ -67,7 +67,7 @@ public class TestBulkAccount extends BaseDataAccessTest{
 			writerRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Writer Role", readerRole);
 			deleterRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Deleter Role", writerRole);
 			adminRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Admin Role", deleterRole);
-			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", Factories.getDevelopmentOrganization().getId());
+			UserType adminUser = Factories.getUserFactory().getByName("Admin", Factories.getDevelopmentOrganization().getId());
 			
 			/// Put qaAccount1 in readerRole Role
 			AuthorizationService.authorizeType(adminUser, qaAccount1, readerRole, true, false, false, false);

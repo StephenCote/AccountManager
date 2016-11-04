@@ -111,7 +111,7 @@ public class CredentialService {
 		String passwordHash = new String(credential.getCredential());
 		logger.info("Hash = " + passwordHash);
 		try {
-			List<NameIdType> users = Factories.getUserFactory().getList(new QueryField[]{QueryFields.getFieldId(credential.getReferenceId()), QueryFields.getFieldPassword(passwordHash)}, credential.getOrganizationId());
+			List<NameIdType> users = Factories.getUserFactory().list(new QueryField[]{QueryFields.getFieldId(credential.getReferenceId()), QueryFields.getFieldPassword(passwordHash)}, credential.getOrganizationId());
 			if (users.size() == 1){
 				out_bool = true;
 			}
@@ -269,7 +269,7 @@ public class CredentialService {
 			cred.setCredential(useCredBytes);
 			
 			if(bulkSessionId != null) BulkFactories.getBulkFactory().createBulkEntry(bulkSessionId, FactoryEnumType.CREDENTIAL, cred);
-			else if(Factories.getCredentialFactory().addCredential(cred)){
+			else if(Factories.getCredentialFactory().add(cred)){
 				cred = Factories.getCredentialFactory().getByObjectId(cred.getObjectId(),cred.getOrganizationId());
 			}
 			else{
@@ -277,22 +277,12 @@ public class CredentialService {
 			}
 			if(lastPrimary != null){
 				lastPrimary.setPrimary(false);
-				Factories.getCredentialFactory().updateCredential(lastPrimary);
+				Factories.getCredentialFactory().update(lastPrimary);
 			}
 
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+		} catch (ArgumentException | FactoryException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
-		}  catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
+		} 
 		
 		return cred;
 

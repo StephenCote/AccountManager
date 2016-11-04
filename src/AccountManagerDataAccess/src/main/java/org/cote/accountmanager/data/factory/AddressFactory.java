@@ -35,6 +35,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
@@ -99,9 +100,10 @@ public class AddressFactory extends NameIdGroupFactory {
 		return obj;
 	}
 	
-	public boolean addAddress(AddressType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
-
+		AddressType obj = (AddressType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Address without a group");
 
 		DataRow row = prepareAdd(obj, "addresses");
@@ -150,10 +152,12 @@ public class AddressFactory extends NameIdGroupFactory {
 		new_obj.setLocationType(LocationEnumType.valueOf(rset.getString("locationtype")));
 		return new_obj;
 	}
-	public boolean updateAddress(AddressType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{	
+		AddressType data = (AddressType)object;
 		removeFromCache(data);
-		return update(data, null);
+		return super.update(data, null);
 	}
 	
 	@Override
@@ -177,8 +181,10 @@ public class AddressFactory extends NameIdGroupFactory {
 		return deleteAddresssByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deleteAddress(AddressType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException, ArgumentException
 	{
+		AddressType obj = (AddressType)object;
 		removeFromCache(obj);
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
@@ -220,11 +226,11 @@ public class AddressFactory extends NameIdGroupFactory {
 */
 	public List<AddressType>  getAddressList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<AddressType> getAddressListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 	
@@ -246,7 +252,7 @@ public class AddressFactory extends NameIdGroupFactory {
 	
 	
 	/// Address search uses a different query to join in contact information
-	/// Otherwise, this could be the getPaginatedList method
+	/// Otherwise, this could be the paginateList method
 	///
 	/// public List<AddressType> search(QueryField[] filters, long organizationId){
 	@Override
@@ -293,7 +299,7 @@ public class AddressFactory extends NameIdGroupFactory {
 			///
 			ProcessingInstructionType pi2 = new ProcessingInstructionType();
 			pi2.setOrderClause(instruction.getOrderClause());
-			persons = getListByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organizationId);
+			persons = listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organizationId);
 			logger.info("Retrieved " + persons.size() + " from " + ids.size() + " ids");
 		}
 		catch(SQLException sqe){

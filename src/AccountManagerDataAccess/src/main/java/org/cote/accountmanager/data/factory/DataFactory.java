@@ -46,6 +46,8 @@ import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DataColumnType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -255,8 +257,10 @@ public class DataFactory extends NameIdFactory {
 		return data;
 	}
 	
-	public boolean addData(DataType new_data) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		DataType new_data = (DataType)object;
 		if(new_data.getName() == null || new_data.getName().length() == 0) throw new FactoryException("Invalid object name");
 			
 
@@ -349,8 +353,10 @@ public class DataFactory extends NameIdFactory {
 		return deleteDataByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deleteData(DataType data) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		DataType data = (DataType)object;
 		removeFromCache(data);
 		if(bulkMode) return true;
 		
@@ -418,14 +424,18 @@ public class DataFactory extends NameIdFactory {
 		new_data.setGroupId(group_id);
 		return new_data;
 	}
-	public boolean updateData(DataType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		DataType data = (DataType)object;
 		removeFromCache(data);
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setAlternateQuery(data.getDetailsOnly());
-		if(!data.getDetailsOnly() && data.getBlob() && data.getReadDataBytes()) throw new DataAccessException("Cannot update data whose byte store has been read");
+		if(!data.getDetailsOnly() && data.getBlob() && data.getReadDataBytes()){
+			throw new FactoryException("Cannot update data whose byte store has been read");
+		}
         data.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(new Date()));
-		return update(data, instruction);
+		return super.update(data, instruction);
 	}
 	
 	@Override

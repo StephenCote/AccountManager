@@ -69,7 +69,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 
 		removeFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deletePersonParticipations(PersonType account) throws FactoryException, ArgumentException
 	{
@@ -89,7 +89,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 
 		removeFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deleteDependentParticipations(PersonType account) throws FactoryException, ArgumentException
 	{
@@ -109,7 +109,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 
 		removeFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deleteDataParticipations(DataType account) throws FactoryException, ArgumentException
 	{
@@ -129,7 +129,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 
 		removeFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deleteAccountParticipations(AccountType account) throws FactoryException, ArgumentException
 	{
@@ -149,7 +149,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 
 		removeFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 
 	public boolean deleteUserParticipations(UserType account) throws FactoryException, ArgumentException

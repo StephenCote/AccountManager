@@ -33,7 +33,7 @@ public class TestBulkUser extends BaseDataAccessTest{
 			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,new_user, new_user, "password1".getBytes("UTF-8"), true, true,false);
 
 			logger.info("Retrieving Bulk User");
-			UserType check = Factories.getUserFactory().getUserByName("BulkUser-" + guid, new_user.getOrganizationId());
+			UserType check = Factories.getUserFactory().getByName("BulkUser-" + guid, new_user.getOrganizationId());
 			assertNotNull("Failed user cache check",check);
 			
 			logger.info("Retrieving User By Id");

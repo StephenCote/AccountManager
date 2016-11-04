@@ -45,6 +45,8 @@ import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactParticipantType;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FactParticipantType;
@@ -75,6 +77,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	
 	public ParticipationFactory(ParticipationEnumType type, String table_name){
 		super();
+		this.isParticipation = true;
 		this.scopeToOrganization = true;
 		this.hasParentId = false;
 		this.hasOwnerId = true;
@@ -198,15 +201,19 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		}
 		return (deleteById(convertLongList(ids), organizationId) > 0);
 	}
-	public boolean deleteParticipant(BaseParticipantType participant) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		BaseParticipantType participant = (BaseParticipantType)object;
 		if(bulkMode) return true;
 		int deleted = deleteById(participant.getId(), participant.getOrganizationId());
 		removeParticipantFromCache(participant);
 		return (deleted > 0);
 	}
-	public boolean updateParticipant(BaseParticipantType participant)  throws FactoryException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		BaseParticipantType participant = (BaseParticipantType)object;
 		removeParticipantFromCache(participant);
 		return update(participant);
 	}
@@ -225,8 +232,10 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		
 		removeFromCache(participant, key_name);
 	}
-	public boolean addParticipant(BaseParticipantType participant) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		BaseParticipantType participant = (BaseParticipantType)object;
 		if (participant.getOrganizationId() <= 0L) throw new FactoryException("Cannot add participant to invalid organization");
 		if (participant.getParticipantId().compareTo(0L)==0 || participant.getParticipationId().compareTo(0L)==0 || participant.getOwnerId().compareTo(0L)==0)
 		{
@@ -280,15 +289,20 @@ public abstract class ParticipationFactory extends NameIdFactory {
 		}
 		DataTable dt = dataTables.get(0);
 		DataRow row = prepareAdd(participant, dt.getName());
-		row.setCellValue("participationid", participant.getParticipationId());
-		row.setCellValue("participantid", participant.getParticipantId());
-		row.setCellValue("participanttype", participant.getParticipantType().toString());
-		
-		if (haveAffect)
-		{
-			row.setCellValue("affecttype", participant.getAffectType().toString());
-			row.setCellValue("affectid", participant.getAffectId());
+		try{
+			row.setCellValue("participationid", participant.getParticipationId());
+			row.setCellValue("participantid", participant.getParticipantId());
+			row.setCellValue("participanttype", participant.getParticipantType().toString());
+			if (haveAffect)
+			{
+				row.setCellValue("affecttype", participant.getAffectType().toString());
+				row.setCellValue("affectid", participant.getAffectId());
+			}
 		}
+		catch(DataAccessException e){
+			throw new FactoryException(e.getMessage());
+		}
+
 		/// Bulk insert note: prepareAdd and insertRow won't add the row to the local table row cache, so it must be added manually
 		/// bulkMode is excluded because there is different behavior betweer using direct bulk insert and the bulk insert factory
 		///
@@ -317,31 +331,31 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getGroupFactory().getList(new QueryField[]{ field }, organizationId);
+		return Factories.getGroupFactory().list(new QueryField[]{ field }, organizationId);
 	}
 	protected <T> List<T> getUserListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getUserFactory().getList(new QueryField[]{ field }, organizationId);
+		return Factories.getUserFactory().list(new QueryField[]{ field }, organizationId);
 	}	
 	protected <T> List<T> getAccountListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getAccountFactory().getList(new QueryField[]{ field }, organizationId);
+		return Factories.getAccountFactory().list(new QueryField[]{ field }, organizationId);
 	}
 	protected <T> List<T> getPersonListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getPersonFactory().getList(new QueryField[]{ field }, organizationId);
+		return Factories.getPersonFactory().list(new QueryField[]{ field }, organizationId);
 	}
 /*
 	protected List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, long organizationId) throws FactoryException
 	{
 		QueryField field = QueryFields.getFieldParticipationList(list, organizationId);
-		return Factories.getAccountFactory().getList(new QueryField[]{ field }, organizationId);
+		return Factories.getAccountFactory().list(new QueryField[]{ field }, organizationId);
 	}
 */
 	public List<DataType> getDataListFromParticipations(DataParticipantType[] list, boolean detailsOnly, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException

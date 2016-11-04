@@ -65,7 +65,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		RoleParticipantType dp = getRoleRoleParticipant(role, child_role);
 		if (dp == null) return true;
-		return deleteParticipant(dp);
+		return delete(dp);
 
 	}
 	public boolean deleteRoleParticipations(BaseRoleType child_role) throws FactoryException, ArgumentException
@@ -147,7 +147,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 
 		removeParticipantFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deleteUserRoleParticipants(UserRoleType role, UserType account) throws FactoryException, ArgumentException
 	{
@@ -249,7 +249,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 
 		removeParticipantFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deletePersonRoleParticipants(PersonRoleType role, PersonType person) throws FactoryException, ArgumentException
 	{
@@ -350,7 +350,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 
 		removeParticipantFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deleteAccountRoleParticipants(AccountRoleType role, AccountType account) throws FactoryException, ArgumentException
 	{
@@ -449,7 +449,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 
 		removeParticipantFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deleteGroupRoleParticipants(BaseRoleType role, BaseGroupType account) throws FactoryException, ArgumentException
 	{

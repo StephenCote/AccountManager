@@ -33,7 +33,7 @@ public class TestAggregateCount extends BaseDataAccessTest{
 					data.setName("Test-" + (i + 1));
 					data.setMimeType("text/plain");
 					DataUtil.setValueString(data, "Example Data");
-					Factories.getDataFactory().addData(data);
+					Factories.getDataFactory().add(data);
 					data = Factories.getDataFactory().getDataByName("Test-" + (i + 1), dir1);
 				}
 				assertNotNull("Example data is null",data);

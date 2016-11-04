@@ -56,6 +56,8 @@ import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.util.LogicalTypeComparator;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ConditionEnumType;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PolicyType;
@@ -70,14 +72,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 public class PolicyFactory extends NameIdGroupFactory {
 	private DatatypeFactory dtFactory = null;
 	
-	static{
-		AuthorizationService.registerAuthorizationProviders(
-				FactoryEnumType.POLICY,
-				NameEnumType.POLICY,
-				Factories.getPolicyParticipationFactory()
-			);
-	}
-	
+
 	public PolicyFactory(){
 		super();
 		this.tableNames.add("policy");
@@ -90,6 +85,14 @@ public class PolicyFactory extends NameIdGroupFactory {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	@Override
+	public void registerProvider(){
+		AuthorizationService.registerAuthorizationProviders(
+				FactoryEnumType.POLICY,
+				NameEnumType.POLICY,
+				Factories.getPolicyParticipationFactory()
+			);
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
@@ -133,8 +136,10 @@ public class PolicyFactory extends NameIdGroupFactory {
 		return obj;
 	}
 	
-	public boolean addPolicy(PolicyType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		PolicyType obj = (PolicyType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "policy");
@@ -160,8 +165,8 @@ public class PolicyFactory extends NameIdGroupFactory {
 
 				for(int i = 0; i < obj.getRules().size();i++){
 					part = Factories.getPolicyParticipationFactory().newRuleParticipation(cobj,obj.getRules().get(i));
-					if(bulkMode) BulkFactories.getBulkPolicyParticipationFactory().addParticipant(part);
-					else Factories.getPolicyParticipationFactory().addParticipant(part);
+					if(bulkMode) BulkFactories.getBulkPolicyParticipationFactory().add(part);
+					else Factories.getPolicyParticipationFactory().add(part);
 				}
 				return true;
 			}
@@ -197,13 +202,15 @@ public class PolicyFactory extends NameIdGroupFactory {
 		new_obj.setCondition(ConditionEnumType.fromValue(rset.getString("condition")));
 		return new_obj;
 	}
-	public boolean updatePolicy(PolicyType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		PolicyType data = (PolicyType)object;
 		removeFromCache(data);
 		removeFromCache(data,getUrnCacheKey(data));
 		data.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(new Date()));
 		boolean out_bool = false;
-		if(update(data, null)){
+		if(super.update(data, null)){
 			try{
 				
 				Set<Long> set = new HashSet<Long>();
@@ -212,7 +219,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 				
 				for(int i = 0; i < data.getRules().size();i++){
 					if(set.contains(data.getRules().get(i).getId())== false){
-						Factories.getPolicyParticipationFactory().addParticipant(Factories.getPolicyParticipationFactory().newRuleParticipation(data,data.getRules().get(i)));
+						Factories.getPolicyParticipationFactory().add(Factories.getPolicyParticipationFactory().newRuleParticipation(data,data.getRules().get(i)));
 					}
 					else{
 						set.remove(data.getRules().get(i).getId());
@@ -250,8 +257,10 @@ public class PolicyFactory extends NameIdGroupFactory {
 		return deletePoliciesByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deletePolicy(PolicyType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		PolicyType obj = (PolicyType)object;
 		removeFromCache(obj);
 		removeFromCache(obj,getUrnCacheKey(obj));
 		//int deleted = deleteById(obj.getId(), obj.getOrganizationId());
@@ -292,11 +301,11 @@ public class PolicyFactory extends NameIdGroupFactory {
 	
 	public List<PolicyType>  getPolicyList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<PolicyType> getPolicyListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 }

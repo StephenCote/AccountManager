@@ -44,12 +44,12 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			DirectoryGroupType adir = Factories.getGroupFactory().getCreateDirectory(testUser, "Addresses", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			acct = Factories.getAccountFactory().getAccountByName(testAcctName, dir);
 			if(acct != null){
-				Factories.getAccountFactory().deleteAccount(acct);
+				Factories.getAccountFactory().delete(acct);
 				acct = null;
 			}
 			if(acct == null){
 				acct = Factories.getAccountFactory().newAccount(testUser, testAcctName, AccountEnumType.NORMAL,AccountStatusEnumType.NORMAL,dir.getId());
-				if(Factories.getAccountFactory().addAccount(acct,true)){
+				if(Factories.getAccountFactory().add(acct,true)){
 					logger.info("Clearing address factory cache to break the foreign key link");
 					Factories.getAccountFactory().clearCache();
 					acct = Factories.getAccountFactory().getAccountByName(testAcctName, dir);
@@ -67,14 +67,14 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			logger.info("Zero out cinfo references");
 			acct.getContactInformation().getAddresses().clear();
 			acct.getContactInformation().getContacts().clear();
-			Factories.getAccountFactory().updateAccount(acct);
+			Factories.getAccountFactory().update(acct);
 			//Factories.clearCaches();
 			
 			AddressType addr = Factories.getAddressFactory().getByNameInGroup("Test Address 1", adir);
 			if(addr == null){
 				addr = Factories.getAddressFactory().newAddress(testUser, adir.getId());
 				addr.setName("Test Address 1");
-				if(Factories.getAddressFactory().addAddress(addr)){
+				if(Factories.getAddressFactory().add(addr)){
 					//Factories.clearCaches();
 					addr = Factories.getAddressFactory().getByNameInGroup("Test Address 1", adir);
 				}
@@ -85,7 +85,7 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			assertNotNull("Address is null", addr);
 			
 			acct.getContactInformation().getAddresses().add(addr);
-			Factories.getAccountFactory().updateAccount(acct);
+			Factories.getAccountFactory().update(acct);
 			long acctId = acct.getId();
 			//Factories.clearCaches();
 			acct = Factories.getAccountFactory().getAccountByName(testAcctName, dir);
@@ -119,8 +119,8 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 		boolean add_cit = false;
 		boolean error = false;
 		try {
-			add_cit = cif.addContactInformation(cit);
-		} catch (FactoryException e) {
+			add_cit = cif.add(cit);
+		} catch (FactoryException | ArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			error = true;
@@ -166,7 +166,7 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			assertNotNull("Unable to get contact information", cit);
 			//cit.setEmail("wranlon@hotmail.com");
 			cit.setDescription("Updated description");
-			updated = cif.updateContactInformation(cit);
+			updated = cif.update(cit);
 			
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
@@ -174,10 +174,6 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			error = true;
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			error = true;
-		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			error = true;
@@ -197,7 +193,7 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 		try {
 			cit = cif.getContactInformationForUser(user);
 			assertNotNull("Unable to get contact information", cit);
-			deleted = cif.deleteContactInformation(cit);
+			deleted = cif.delete(cit);
 			
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block

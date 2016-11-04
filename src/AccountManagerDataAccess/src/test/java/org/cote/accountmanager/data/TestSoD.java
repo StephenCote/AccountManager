@@ -71,7 +71,7 @@ public class TestSoD extends BaseDataAccessTest{
 		if(per == null){
 			per = Factories.getPersonFactory().newPerson(user, getActivityBase(user).getId());
 			per.setName(name);
-			Factories.getPersonFactory().addPerson(per);
+			Factories.getPersonFactory().add(per);
 			per = Factories.getPersonFactory().getByNameInGroup(name, getActivityBase(user));
 		}
 		return per;
@@ -81,7 +81,7 @@ public class TestSoD extends BaseDataAccessTest{
 		if(per == null){
 			per = Factories.getAccountFactory().newAccount(user, name,AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL,getActivityBase(user).getId());
 
-			Factories.getAccountFactory().addAccount(per);
+			Factories.getAccountFactory().add(per);
 			per = Factories.getAccountFactory().getByNameInGroup(name, getActivityBase(user));
 		}
 		return per;
@@ -133,7 +133,7 @@ public class TestSoD extends BaseDataAccessTest{
 				pattern.setFactUrn(factUrn);
 				pattern.setMatchUrn(matchUrn);
 
-				if(Factories.getPatternFactory().addPattern(pattern)){
+				if(Factories.getPatternFactory().add(pattern)){
 					pattern = Factories.getPatternFactory().getByNameInGroup(name, dir);
 				}
 				else pattern = null;
@@ -189,7 +189,7 @@ public class TestSoD extends BaseDataAccessTest{
 				//fact.setSourceUrn(fDir.getName());
 				fact.setSourceUrn(fDir.getUrn());
 				//fact.setSourceUrl(Factories.getGroupFactory().getPath(Factories.getGroupFactory().getGroupById(fDir.getParentId(), fDir.getOrganizationId())));
-				if(Factories.getFactFactory().addFact(fact)){
+				if(Factories.getFactFactory().add(fact)){
 					fact = Factories.getFactFactory().getByNameInGroup(name, dir);
 				}
 				else fact = null;
@@ -215,7 +215,7 @@ public class TestSoD extends BaseDataAccessTest{
 				//fact.setUrn(urn);
 				fact.setFactType(FactEnumType.PARAMETER);
 				fact.setFactoryType(FactoryEnumType.ACCOUNT);
-				if(Factories.getFactFactory().addFact(fact)){
+				if(Factories.getFactFactory().add(fact)){
 					fact = Factories.getFactFactory().getByNameInGroup(name, dir);
 				}
 				else fact = null;
@@ -304,11 +304,11 @@ public class TestSoD extends BaseDataAccessTest{
 			demoAccount2 = getSoDContextAccount(testUser,"Demo Account 2");
 			demoPerson1.getAccounts().clear();
 			demoPerson1.getAccounts().add(demoAccount1);
-			Factories.getPersonFactory().updatePerson(demoPerson1);
+			Factories.getPersonFactory().update(demoPerson1);
 			
 			demoPerson2.getAccounts().clear();
 			demoPerson2.getAccounts().add(demoAccount2);
-			Factories.getPersonFactory().updatePerson(demoPerson2);
+			Factories.getPersonFactory().update(demoPerson2);
 			
 			sodApplication1 = Factories.getGroupFactory().getCreatePath(testUser, "~/Applications/Application 1", testUser.getOrganizationId());
 			
@@ -419,25 +419,25 @@ public class TestSoD extends BaseDataAccessTest{
 			sodPat2.setFactUrn(pFact.getUrn());
 			sodPat2.setMatchUrn(fact2.getUrn());
 			sodPat2.setLogicalOrder(2);
-			Factories.getPatternFactory().updatePattern(sodPat2);
+			Factories.getPatternFactory().update(sodPat2);
 			sodPat2 =  getCreateSoDPattern(testUser,"SoD Pattern 2",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId()));
 			
 			sodPat1.setFactUrn(pFact.getUrn());
 			sodPat1.setMatchUrn(fact1.getUrn());
 			sodPat1.setLogicalOrder(1);
-			Factories.getPatternFactory().updatePattern(sodPat1);
+			Factories.getPatternFactory().update(sodPat1);
 			sodPat1 =  getCreateSoDPattern(testUser,"SoD Pattern 1",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId()));
 			sodRule1.getPatterns().clear();
 			//sodRule1.getPatterns().add(sodPat0);
 			sodRule1.getPatterns().add(sodPat1);
 			sodRule1.getPatterns().add(sodPat2);
 			sodRule1.setRuleType(RuleEnumType.DENY);
-			Factories.getRuleFactory().updateRule(sodRule1);
+			Factories.getRuleFactory().update(sodRule1);
 			sodRule1 = getCreateRule(testUser,"SoD Rule 1",Factories.getGroupFactory().getCreatePath(testUser, "~/Rules", testUser.getOrganizationId()));
 			sodPol1.getRules().clear();
 			sodPol1.getRules().add(sodRule1);
 			sodPol1.setEnabled(true);
-			Factories.getPolicyFactory().updatePolicy(sodPol1);
+			Factories.getPolicyFactory().update(sodPol1);
 			sodPol1 = getCreatePolicy(testUser, "SoD Policy 1",Factories.getGroupFactory().getCreatePath(testUser, "~/Policies", testUser.getOrganizationId()));
 			
 			

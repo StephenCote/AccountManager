@@ -152,7 +152,7 @@ public class OrganizationCommand {
 				UserType adminUser = (allowNoAuth ? null : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org.getId()));
 				if(allowNoAuth || adminUser != null){
 					logger.warn("Deleting " + org.getName());
-					Factories.getOrganizationFactory().deleteOrganization(org);
+					Factories.getOrganizationFactory().delete(org);
 					SessionSecurity.logout(adminUser);
 				}
 				else{
@@ -180,7 +180,7 @@ public class OrganizationCommand {
 		if(org != null){
 			OrganizationType uOrg = org;
 			if(uOrg.getName().equals("Global") && uOrg.getParentId().equals(0L)) uOrg = Factories.getSystemOrganization();
-			UserType adminUser = (allowNoAuth ? Factories.getUserFactory().getUserByName("Admin", uOrg.getId()) : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,parentAdminPassword, uOrg.getId()));
+			UserType adminUser = (allowNoAuth ? Factories.getUserFactory().getByName("Admin", uOrg.getId()) : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,parentAdminPassword, uOrg.getId()));
 			if(adminUser != null){
 				OrganizationType newOrg = Factories.getOrganizationFactory().addOrganization(name,OrganizationEnumType.PUBLIC,org);
 				if(newOrg != null && FactoryDefaults.setupOrganization(newOrg, newPassword)){

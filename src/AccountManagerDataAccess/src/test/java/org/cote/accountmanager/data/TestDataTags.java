@@ -36,7 +36,7 @@ public class TestDataTags extends BaseDataAccessTest {
 			Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/\\~])",Pattern.MULTILINE);
 			OrganizationType org = Factories.getOrganizationFactory().findOrganization("/Accelerant/Rocket");
 			assertNotNull("Org is null",org);
-			UserType user = Factories.getUserFactory().getUserByName("TestUser1", org.getId());
+			UserType user = Factories.getUserFactory().getByName("TestUser1", org.getId());
 			Factories.getUserFactory().populate(user);
 			assertNotNull("User is null",user);
 			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org.getId());
@@ -90,7 +90,7 @@ public class TestDataTags extends BaseDataAccessTest {
 			Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/\\~])",Pattern.MULTILINE);
 			OrganizationType org = Factories.getOrganizationFactory().findOrganization("/Accelerant/Rocket");
 			assertNotNull("Org is null",org);
-			UserType user = Factories.getUserFactory().getUserByName("TestUser1", org.getId());
+			UserType user = Factories.getUserFactory().getByName("TestUser1", org.getId());
 			Factories.getUserFactory().populate(user);
 			assertNotNull("User is null",user);
 			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org.getId());
@@ -199,7 +199,7 @@ public class TestDataTags extends BaseDataAccessTest {
 			Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s])",Pattern.MULTILINE);
 			OrganizationType org = Factories.getOrganizationFactory().findOrganization("/Accelerant/Rocket");
 			assertNotNull("Org is null",org);
-			UserType user = Factories.getUserFactory().getUserByName("TestUser1", org.getId());
+			UserType user = Factories.getUserFactory().getByName("TestUser1", org.getId());
 			Factories.getUserFactory().populate(user);
 			assertNotNull("User is null",user);
 			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), org.getId());

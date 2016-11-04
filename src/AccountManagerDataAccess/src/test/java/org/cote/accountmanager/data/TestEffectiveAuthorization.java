@@ -54,8 +54,8 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 		if(person1.getAccounts().size() == 0){
 			person1.getAccounts().add(account1);
 			try {
-				Factories.getPersonFactory().updatePerson(person1);
-			} catch (FactoryException | DataAccessException e) {
+				Factories.getPersonFactory().update(person1);
+			} catch (FactoryException  e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -63,8 +63,8 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 		if(person2.getAccounts().size() == 0){
 			person2.getAccounts().add(account2);
 			try {
-				Factories.getPersonFactory().updatePerson(person2);
-			} catch (FactoryException | DataAccessException e) {
+				Factories.getPersonFactory().update(person2);
+			} catch (FactoryException  e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

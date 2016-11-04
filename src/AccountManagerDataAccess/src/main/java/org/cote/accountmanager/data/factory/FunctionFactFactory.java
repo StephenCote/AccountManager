@@ -40,6 +40,8 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.FunctionFactType;
@@ -92,8 +94,10 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 		return obj;
 	}
 	
-	public boolean addFunctionFact(FunctionFactType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		FunctionFactType obj = (FunctionFactType)object;
 		if (obj.getGroupId() != 0L) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "functionfact");
@@ -132,10 +136,12 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
 		return new_obj;
 	}
-	public boolean updateFunctionFact(FunctionFactType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		FunctionFactType data = (FunctionFactType)object;
 		removeFromCache(data);
-		return update(data, null);
+		return super.update(data, null);
 	}
 	
 	@Override
@@ -154,8 +160,10 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 		return deleteFunctionFactsByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deleteFunctionFact(FunctionFactType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		FunctionFactType obj = (FunctionFactType)object;
 		removeFromCache(obj);
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
@@ -192,11 +200,11 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 	}
 	public List<FunctionFactType>  getFunctionFactList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<FunctionFactType> getFunctionFactListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 }

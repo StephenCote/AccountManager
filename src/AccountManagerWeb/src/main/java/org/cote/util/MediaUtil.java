@@ -350,7 +350,7 @@ public class MediaUtil {
 							thumbData.setMimeType("image/jpg");
 							thumbData.setName(thumbName);
 							DataUtil.setValue(thumbData, thumbBytes);
-							if(Factories.getDataFactory().addData(thumbData) == false){
+							if(Factories.getDataFactory().add(thumbData) == false){
 								AuditService.denyResult(audit, "Data " + thumbName + " was not added to group " + thumbGroup.getName());
 								response.sendError(404);
 								return;

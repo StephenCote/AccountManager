@@ -98,7 +98,7 @@ public class BaseDataAccessTest{
 			
 			UserType new_user = Factories.getUserFactory().newUser(testUserName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
 			if(PersonService.createUserAsPerson(audit, testUserName, "password", testUserName + "@example.com", UserEnumType.DEVELOPMENT,UserStatusEnumType.RESTRICTED , Factories.getDevelopmentOrganization().getId())){
-				new_user = Factories.getUserFactory().getUserByName(testUserName, Factories.getDevelopmentOrganization().getId());
+				new_user = Factories.getUserFactory().getByName(testUserName, Factories.getDevelopmentOrganization().getId());
 				testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,"password", Factories.getDevelopmentOrganization().getId());
 			}
 		}
@@ -117,7 +117,7 @@ public class BaseDataAccessTest{
 			
 			UserType new_user = Factories.getUserFactory().newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
 			if(PersonService.createUserAsPerson(audit, testUserName2, "password", testUserName2 + "@example.com", UserEnumType.DEVELOPMENT,UserStatusEnumType.RESTRICTED , Factories.getDevelopmentOrganization().getId())){
-				new_user = Factories.getUserFactory().getUserByName(testUserName2, Factories.getDevelopmentOrganization().getId());
+				new_user = Factories.getUserFactory().getByName(testUserName2, Factories.getDevelopmentOrganization().getId());
 				testUser2 = SessionSecurity.login(sessionId2, testUserName2, CredentialEnumType.HASHED_PASSWORD,"password", Factories.getDevelopmentOrganization().getId());
 			}
 		
@@ -147,7 +147,7 @@ public class BaseDataAccessTest{
 			data.setName(name);
 			data.setMimeType("text/plain");
 			DataUtil.setValue(data, value.getBytes("UTF-8"));
-			Factories.getDataFactory().addData(data);
+			Factories.getDataFactory().add(data);
 			data = Factories.getDataFactory().getDataByName(name, dir);
 		}
 		catch(FactoryException fe){
@@ -181,7 +181,7 @@ public class BaseDataAccessTest{
 				data.setName(data_name);
 				data.setMimeType("text/plain");
 				DataUtil.setValueString(data, "Example Data");
-				Factories.getDataFactory().addData(data);
+				Factories.getDataFactory().add(data);
 				data = Factories.getDataFactory().getDataByName(data_name,  dir);
 			}
 		}
@@ -206,7 +206,7 @@ public class BaseDataAccessTest{
 			tag = Factories.getTagFactory().getDataTagByName(tag_name, dir);
 			if(tag == null){
 				tag = Factories.getTagFactory().newDataTag(user,tag_name, dir.getId());
-				Factories.getTagFactory().addTag(tag);
+				Factories.getTagFactory().add(tag);
 				tag = Factories.getTagFactory().getDataTagByName(tag_name, dir);
 			}
 		} catch (FactoryException e) {
@@ -215,10 +215,7 @@ public class BaseDataAccessTest{
 		} catch (ArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		
 		return tag;
 	}
@@ -229,13 +226,10 @@ public class BaseDataAccessTest{
 			role = Factories.getRoleFactory().getRoleByName(roleName, parent, owner.getOrganizationId());
 			if(role == null){
 				role = Factories.getRoleFactory().newUserRole(owner, roleName, parent);
-				Factories.getRoleFactory().addRole(role);
+				Factories.getRoleFactory().add(role);
 				role = Factories.getRoleFactory().getUserRoleByName(roleName,parent, owner.getOrganizationId());
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ArgumentException e) {
@@ -251,11 +245,11 @@ public class BaseDataAccessTest{
 		
 		UserType user = null;
 		try {
-			user = Factories.getUserFactory().getUserByName(user_name, Factories.getDevelopmentOrganization().getId());
+			user = Factories.getUserFactory().getByName(user_name, Factories.getDevelopmentOrganization().getId());
 			if(user == null){
 				user = Factories.getUserFactory().newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
-				Factories.getUserFactory().addUser(user);
-				user = Factories.getUserFactory().getUserByName(user_name, Factories.getDevelopmentOrganization().getId());
+				Factories.getUserFactory().add(user);
+				user = Factories.getUserFactory().getByName(user_name, Factories.getDevelopmentOrganization().getId());
 				CredentialService.newHashedPasswordCredential(user, user, password, true,false);
 			}
 			Factories.getUserFactory().populate(user);
@@ -275,7 +269,7 @@ public class BaseDataAccessTest{
 			per = (T)Factories.getPermissionFactory().getPermissionByName(name, type, (BasePermissionType)parent,org.getId());
 			if(per == null){
 				per = (T)Factories.getPermissionFactory().newPermission(user, name, type, (BasePermissionType)parent, org.getId());
-				if(Factories.getPermissionFactory().addPermission((BasePermissionType)per)){
+				if(Factories.getPermissionFactory().add((BasePermissionType)per)){
 					per = (T)Factories.getPermissionFactory().getPermissionByName(name, type, (BasePermissionType)parent,org.getId());
 				}
 			}
@@ -287,11 +281,7 @@ public class BaseDataAccessTest{
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
+		} 
 		
 		return per;
 	}
@@ -304,7 +294,7 @@ public class BaseDataAccessTest{
 		srcFact.setName(name);
 		srcFact.setFactType(FactEnumType.STATIC);
 		srcFact.setFactData(val);
-		Factories.getFactFactory().addFact(srcFact);
+		Factories.getFactFactory().add(srcFact);
 		return srcFact;
 	}
 	public PatternType getCreatePattern(UserType user, String name, String factUrn, String matchUrn, DirectoryGroupType dir){
@@ -327,7 +317,7 @@ public class BaseDataAccessTest{
 
 				pattern.setFactUrn(factUrn);
 				pattern.setMatchUrn(matchUrn);
-				if(Factories.getPatternFactory().addPattern(pattern)){
+				if(Factories.getPatternFactory().add(pattern)){
 					pattern = Factories.getPatternFactory().getByNameInGroup(name, dir);
 				}
 				else pattern = null;
@@ -361,7 +351,7 @@ public class BaseDataAccessTest{
 				rule.setName(name);
 				rule.setRuleType(ruleType);
 				rule.setCondition(ConditionEnumType.ALL);
-				if(Factories.getRuleFactory().addRule(rule)){
+				if(Factories.getRuleFactory().add(rule)){
 					rule = Factories.getRuleFactory().getByNameInGroup(name, dir);
 				}
 				else rule = null;
@@ -389,7 +379,7 @@ public class BaseDataAccessTest{
 			op.setName(name);
 			op.setOperationType(OperationEnumType.INTERNAL);
 			op.setOperation(className);
-			Factories.getOperationFactory().addOperation(op);
+			Factories.getOperationFactory().add(op);
 			op = Factories.getOperationFactory().getByNameInGroup(name, dir);
 		}
 		return op;
@@ -412,7 +402,7 @@ public class BaseDataAccessTest{
 				policy.setCondition(ConditionEnumType.ALL);
 				policy.setName(name);
 
-				if(Factories.getPolicyFactory().addPolicy(policy)){
+				if(Factories.getPolicyFactory().add(policy)){
 					policy = Factories.getPolicyFactory().getByNameInGroup(name, dir);
 				}
 				else policy = null;
@@ -434,7 +424,7 @@ public class BaseDataAccessTest{
 		srcFact.setName(name);
 		srcFact.setFactType(FactEnumType.PARAMETER);
 		srcFact.setFactoryType(FactoryEnumType.CREDENTIAL);
-		Factories.getFactFactory().addFact(srcFact);
+		Factories.getFactFactory().add(srcFact);
 		return srcFact;
 	}
 	public static FunctionType getCreateFunction(UserType user, String name, DataType data, DirectoryGroupType dir){
@@ -443,7 +433,7 @@ public class BaseDataAccessTest{
 			func = Factories.getFunctionFactory().getByNameInGroup(name, dir);
 			
 			if(func != null){
-				Factories.getFunctionFactory().deleteFunction(func);
+				Factories.getFunctionFactory().delete(func);
 				func = null;
 			}
 			
@@ -452,7 +442,7 @@ public class BaseDataAccessTest{
 				func.setName(name);
 				func.setFunctionType(FunctionEnumType.JAVA);
 				func.setFunctionData(data);
-				Factories.getFunctionFactory().addFunction(func);
+				Factories.getFunctionFactory().add(func);
 				func = Factories.getFunctionFactory().getByNameInGroup(name, dir);
 			}
 		}
@@ -475,7 +465,7 @@ public class BaseDataAccessTest{
 				String cv = DataUtil.getValueString(bsh);
 				if(cv.equals(script)==false){
 					DataUtil.setValueString(bsh,script);
-					Factories.getDataFactory().updateData(bsh);
+					Factories.getDataFactory().update(bsh);
 				}
 				//Factories.getDataFactory().deleteData(bsh);
 				//bsh = null;
@@ -486,11 +476,11 @@ public class BaseDataAccessTest{
 				bsh.setName(name);
 				bsh.setMimeType("text/plain");
 				DataUtil.setValueString(bsh,script);
-				Factories.getDataFactory().addData(bsh);
+				Factories.getDataFactory().add(bsh);
 				bsh = Factories.getDataFactory().getDataByName(name,false,ddir);
 			}
 		}
-		catch(FactoryException | ArgumentException | DataException | DataAccessException e) {
+		catch(FactoryException | ArgumentException | DataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -502,7 +492,7 @@ public class BaseDataAccessTest{
 			dir = (T)Factories.getRoleFactory().getRoleByName(name, parent, type, parent.getOrganizationId());
 			if(dir == null){
 				dir = (T)Factories.getRoleFactory().newRoleType(type, owner, name, parent);
-				if(Factories.getRoleFactory().addRole((BaseRoleType)dir)){
+				if(Factories.getRoleFactory().add((BaseRoleType)dir)){
 					dir = (T)Factories.getRoleFactory().getRoleByName(name, parent, type, parent.getOrganizationId());
 				}
 			}
@@ -510,9 +500,6 @@ public class BaseDataAccessTest{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -524,7 +511,7 @@ public class BaseDataAccessTest{
 			dir = (T)Factories.getGroupFactory().getGroupByName(name, type, parent, parent.getOrganizationId());
 			if(dir == null){
 				dir = (T)Factories.getGroupFactory().newGroup(owner, name, type, parent, parent.getOrganizationId());
-				if(Factories.getGroupFactory().addGroup((BaseGroupType)dir)){
+				if(Factories.getGroupFactory().add((BaseGroupType)dir)){
 					dir = (T)Factories.getGroupFactory().getGroupByName(name, type, parent, parent.getOrganizationId());
 				}
 			}
@@ -559,7 +546,7 @@ public class BaseDataAccessTest{
 			if(acct == null){
 				acct = Factories.getPersonFactory().newPerson(testUser, dir.getId());
 				acct.setName(name);
-				if(Factories.getPersonFactory().addPerson(acct)){
+				if(Factories.getPersonFactory().add(acct)){
 					acct = Factories.getPersonFactory().getByNameInGroup(name, dir);
 				}
 			}
@@ -580,7 +567,7 @@ public class BaseDataAccessTest{
 			acct = Factories.getAccountFactory().getAccountByName(name, dir);
 			if(acct == null){
 				acct = Factories.getAccountFactory().newAccount(testUser, name, AccountEnumType.DEVELOPMENT, AccountStatusEnumType.RESTRICTED, dir.getId());
-				if(Factories.getAccountFactory().addAccount(acct)){
+				if(Factories.getAccountFactory().add(acct)){
 					acct = Factories.getAccountFactory().getAccountByName(name, dir);
 				}
 			}

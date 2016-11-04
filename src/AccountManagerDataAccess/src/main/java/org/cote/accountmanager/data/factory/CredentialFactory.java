@@ -18,6 +18,8 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -76,8 +78,10 @@ public class CredentialFactory extends NameIdFactory {
 		}
 	}
 	
-	public boolean deleteCredential(CredentialType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException, ArgumentException
 	{
+		CredentialType obj = (CredentialType)object;
 		removeFromCache(obj);
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
@@ -108,8 +112,10 @@ public class CredentialFactory extends NameIdFactory {
 		return cred;
 	}
 	
-	public boolean addCredential(CredentialType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		CredentialType obj = (CredentialType)object;
 
 		DataRow row = prepareAdd(obj, "credential");
 
@@ -195,10 +201,12 @@ public class CredentialFactory extends NameIdFactory {
 		return null;
 	}
 	*/
-	public boolean updateCredential(CredentialType data) throws FactoryException, DataAccessException
-	{	
+	@Override
+	public <T> boolean update(T object) throws FactoryException
+	{
+		CredentialType data = (CredentialType)object;
 		removeFromCache(data);
-		return update(data, null);
+		return super.update(data, null);
 	}
 	
 	public List<CredentialType> getCredentialsForType(NameIdType obj) throws FactoryException, ArgumentException{
@@ -211,7 +219,7 @@ public class CredentialFactory extends NameIdFactory {
 		pi.setStartIndex(0L);
 		pi.setRecordCount(2);
 		
-		return getList(fields.toArray(new QueryField[0]), pi, obj.getOrganizationId());
+		return list(fields.toArray(new QueryField[0]), pi, obj.getOrganizationId());
 	}
 	
 	public CredentialType getActivePrimaryCredential(NameIdType obj,CredentialEnumType credType) throws FactoryException, ArgumentException{

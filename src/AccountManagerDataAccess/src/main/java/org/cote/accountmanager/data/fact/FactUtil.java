@@ -154,7 +154,7 @@ public class FactUtil {
 					/// User is one of the only organization level schemas with a unique constraint on just the name
 					///
 					case USER:
-						out_obj = (T)((UserFactory)fact).getUserByName(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
+						out_obj = (T)((UserFactory)fact).getByName(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;
 					case CREDENTIAL:
 						out_obj = (T)((CredentialFactory)fact).getByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());

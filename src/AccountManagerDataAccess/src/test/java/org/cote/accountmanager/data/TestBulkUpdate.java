@@ -30,7 +30,7 @@ public class TestBulkUpdate extends BaseDataAccessTest{
 	
 			if(qaAccount == null){
 				qaAccount = Factories.getAccountFactory().newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir.getId());
-				Factories.getAccountFactory().addAccount(qaAccount);
+				Factories.getAccountFactory().add(qaAccount);
 				qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
 			}
 		}

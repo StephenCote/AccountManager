@@ -138,7 +138,7 @@ public class ArticleUtil {
 		if(roles.containsKey(key)) return roles.get(key);
 		UserRoleType role = null;
 		try {
-			UserType adminUser = Factories.getUserFactory().getUserByName("Admin", organizationId);
+			UserType adminUser = Factories.getUserFactory().getByName("Admin", organizationId);
 			role = Factories.getRoleFactory().getCreateUserRole(adminUser, name, null);
 		} catch (FactoryException e) {
 			// TODO Auto-generated catch block
@@ -218,7 +218,7 @@ public class ArticleUtil {
 			user = ServiceUtil.getUserFromSession(request);
 			if(user == null) user = Factories.getDocumentControl(organizationId);
 			
-			targUser = Factories.getUserFactory().getUserByName(subPath[0], organizationId);
+			targUser = Factories.getUserFactory().getByName(subPath[0], organizationId);
 			if(targUser == null){
 				AuditService.denyResult(audit, "User is invalid: '" + subPath[0] + "'");
 				response.sendError(404);

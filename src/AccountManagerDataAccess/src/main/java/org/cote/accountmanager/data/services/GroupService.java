@@ -82,7 +82,7 @@ public class GroupService{
 		if (group.getId() < 0 || getIsUserInGroup(group, account) == false)
 		{
 			UserParticipantType ap = Factories.getGroupParticipationFactory().newUserGroupParticipation(group, account);
-			if (Factories.getGroupParticipationFactory().addParticipant(ap))
+			if (Factories.getGroupParticipationFactory().add(ap))
 			{
 				EffectiveAuthorizationService.pendUserUpdate(account);
 				return true;
@@ -138,7 +138,7 @@ public class GroupService{
 		if (group.getId() < 0 || getIsGroupInGroup(group, member) == false)
 		{
 			GroupParticipantType ap = Factories.getGroupParticipationFactory().newGroupGroupParticipation(group, member);
-			if (Factories.getGroupParticipationFactory().addParticipant(ap))
+			if (Factories.getGroupParticipationFactory().add(ap))
 			{
 				EffectiveAuthorizationService.pendGroupUpdate(member);
 				return true;
@@ -195,7 +195,7 @@ public class GroupService{
 		if (group.getId() < 0 || getIsAccountInGroup(group, account) == false)
 		{
 			AccountParticipantType ap = Factories.getGroupParticipationFactory().newAccountGroupParticipation(group, account);
-			if (Factories.getGroupParticipationFactory().addParticipant(ap))
+			if (Factories.getGroupParticipationFactory().add(ap))
 			{
 				EffectiveAuthorizationService.pendAccountUpdate(account);
 				return true;
@@ -249,7 +249,7 @@ public class GroupService{
 		if (group.getId() < 0 || getIsPersonInGroup(group, account) == false)
 		{
 			PersonParticipantType ap = Factories.getGroupParticipationFactory().newPersonGroupParticipation(group, account);
-			if (Factories.getGroupParticipationFactory().addParticipant(ap))
+			if (Factories.getGroupParticipationFactory().add(ap))
 			{
 				EffectiveAuthorizationService.pendPersonUpdate(account);
 				return true;

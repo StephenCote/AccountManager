@@ -35,9 +35,9 @@ public class TestUserFactory extends BaseDataAccessTest{
 		logger.info(testUserPassword + ":" + testUserPassword.length());
 		try{
 			add = (
-				Factories.getUserFactory().addUser(user1, true)
+				Factories.getUserFactory().add(user1, true)
 				&&
-				Factories.getUserFactory().addUser(user2, true)
+				Factories.getUserFactory().add(user2, true)
 			);
 		}
 		catch(ArgumentException fe){
@@ -60,7 +60,7 @@ public class TestUserFactory extends BaseDataAccessTest{
 		boolean error = false;
 
 		try{
-			user = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization().getId());
+			user = Factories.getUserFactory().getByName(testUserName1,Factories.getDevelopmentOrganization().getId());
 			Factories.getUserFactory().populate(user);
 			assertTrue(user.getPopulated());
 		}
@@ -87,11 +87,11 @@ public class TestUserFactory extends BaseDataAccessTest{
 		boolean error = false;
 
 		try{
-			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getDevelopmentOrganization().getId());
+			admin = Factories.getUserFactory().getByName("Admin", Factories.getDevelopmentOrganization().getId());
 			assertNotNull(admin);
 			devRole = RoleService.getCreateUserRole(admin, "Dev Role", null);
 			assertNotNull(devRole);
-			user1 = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization().getId());
+			user1 = Factories.getUserFactory().getByName(testUserName1,Factories.getDevelopmentOrganization().getId());
 			Factories.getUserFactory().populate(user1);
 			assertTrue("Did not populate user", user1.getPopulated());
 			/// moved addUserToRole outside of the FactoryService
@@ -128,15 +128,15 @@ public class TestUserFactory extends BaseDataAccessTest{
 		boolean error = false;
 
 		try{
-			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getDevelopmentOrganization().getId());
+			admin = Factories.getUserFactory().getByName("Admin", Factories.getDevelopmentOrganization().getId());
 			assertNotNull(admin);
 			AccountRoleType adminRole = RoleService.getDataAdministratorAccountRole(Factories.getDevelopmentOrganization().getId());
 			assertNotNull("Admin role is null", adminRole);
 			//assertTrue("Admin should be a data administrator in its own organization", AuthorizationService.isDataAdministratorInMapOrganization(admin, admin.getOrganization()));
 			devRole = RoleService.getCreateUserRole(admin, "Dev Role", null);
 			assertNotNull(devRole);
-			user1 = Factories.getUserFactory().getUserByName(testUserName1,Factories.getDevelopmentOrganization().getId());
-			user2 = Factories.getUserFactory().getUserByName(testUserName2,Factories.getDevelopmentOrganization().getId());
+			user1 = Factories.getUserFactory().getByName(testUserName1,Factories.getDevelopmentOrganization().getId());
+			user2 = Factories.getUserFactory().getByName(testUserName2,Factories.getDevelopmentOrganization().getId());
 			Factories.getUserFactory().populate(user1);
 			Factories.getUserFactory().populate(user2);
 			assertTrue("Did not populate user", user1.getPopulated() && user2.getPopulated());

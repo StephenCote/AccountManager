@@ -44,7 +44,7 @@ public class TestGroupFactory extends BaseDataAccessTest{
 			assertNotNull("Root dir is null", parentDir);
 			DirectoryGroupType dir = Factories.getGroupFactory().newDirectoryGroup(testDirGroupName, parentDir, dev.getId());
 			//DirectoryGroupType newDir = null;
-			addDir = Factories.getGroupFactory().addGroup(dir);
+			addDir = Factories.getGroupFactory().add(dir);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -72,7 +72,7 @@ public class TestGroupFactory extends BaseDataAccessTest{
 			DirectoryGroupType dir = Factories.getGroupFactory().getDirectoryByName(testDirGroupName, parentDir, parentDir.getOrganizationId());
 			assertNotNull("Directory is null", dir);
 			dir.setName(newTestDirGroupName);
-			editDir = Factories.getGroupFactory().updateGroup(dir);
+			editDir = Factories.getGroupFactory().update(dir);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());

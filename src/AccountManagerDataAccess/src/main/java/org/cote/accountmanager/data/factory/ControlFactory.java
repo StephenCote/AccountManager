@@ -18,6 +18,8 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ControlActionEnumType;
 import org.cote.accountmanager.objects.ControlEnumType;
 import org.cote.accountmanager.objects.ControlType;
@@ -75,8 +77,10 @@ public class ControlFactory extends NameIdFactory {
 		}
 	}
 
-	public boolean deleteControl(ControlType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException, ArgumentException
 	{
+		ControlType obj = (ControlType)object;
 		removeFromCache(obj);
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
@@ -109,12 +113,11 @@ public class ControlFactory extends NameIdFactory {
 		return cred;
 	}
 	
-	public boolean addControl(ControlType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
-
+		ControlType obj = (ControlType)object;
 		DataRow row = prepareAdd(obj, "control");
-
-
 		try{
 
 			row.setCellValue("controlid",obj.getControlId());
@@ -173,10 +176,12 @@ public class ControlFactory extends NameIdFactory {
 		if(sec.size() > 0) return (ControlType)sec.get(0);
 		return null;
 	}
-	public boolean updateControl(ControlType data) throws FactoryException, DataAccessException
-	{	
+	@Override
+	public <T> boolean update(T object) throws FactoryException
+	{
+		ControlType data = (ControlType)object;
 		removeFromCache(data);
-		return update(data, null);
+		return super.update(data, null);
 	}
 	
 	public List<ControlType> getControlsForType(NameIdType obj,boolean includeGlobal,boolean onlyGlobal) throws FactoryException, ArgumentException{
@@ -197,7 +202,7 @@ public class ControlFactory extends NameIdFactory {
 		pi.setStartIndex(0L);
 		pi.setRecordCount(2);
 		
-		return getList(fields.toArray(new QueryField[0]), pi, obj.getOrganizationId());
+		return list(fields.toArray(new QueryField[0]), pi, obj.getOrganizationId());
 	}
 	public boolean deleteControlsForType(NameIdType obj) throws FactoryException, ArgumentException{
 		List<QueryField> fields = new ArrayList<QueryField>();

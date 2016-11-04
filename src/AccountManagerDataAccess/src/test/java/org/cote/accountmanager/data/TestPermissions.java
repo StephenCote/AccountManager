@@ -40,10 +40,10 @@ public class TestPermissions extends BaseDataAccessTest{
 			try {
 				
 				Factories.getGroupFactory().deleteDirectoryGroup(app1);
-				Factories.getPermissionFactory().deletePermission(per1);
-				Factories.getPermissionFactory().deletePermission(per2);
-				Factories.getPermissionFactory().deletePermission(per3);
-				Factories.getPermissionFactory().deletePermission(per4);
+				Factories.getPermissionFactory().delete(per1);
+				Factories.getPermissionFactory().delete(per2);
+				Factories.getPermissionFactory().delete(per3);
+				Factories.getPermissionFactory().delete(per4);
 			} catch (FactoryException | ArgumentException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -59,12 +59,12 @@ public class TestPermissions extends BaseDataAccessTest{
 		try{
 			PersonPermissionType per5 = Factories.getPermissionFactory().getPermissionByName("Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
 			if(reset && per5 != null){
-				Factories.getPermissionFactory().deletePermission(per5);
+				Factories.getPermissionFactory().delete(per5);
 				per5 = null;
 			}
 			if(per5 == null){
 				per5 = (PersonPermissionType)Factories.getPermissionFactory().newPermission(testUser2, "Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
-				Factories.getPermissionFactory().addPermission(per5);
+				Factories.getPermissionFactory().add(per5);
 				per5 = Factories.getPermissionFactory().getPermissionByName("Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
 			}
 			Factories.getPermissionFactory().denormalize(per5);
@@ -86,11 +86,7 @@ public class TestPermissions extends BaseDataAccessTest{
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			e.printStackTrace();
-		} catch (DataAccessException e) {
-			logger.error(e.getMessage());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 
 		PersonType acct1 = getApplicationPerson("Person #1", app1);
 		PersonType acct2 = getApplicationPerson("Person #2", app1);
@@ -108,11 +104,11 @@ public class TestPermissions extends BaseDataAccessTest{
 			Factories.getPersonFactory().populate(acct5);
 			if(acct4.getAccounts().size() == 0){
 				acct4.getAccounts().add(pacct4);
-				Factories.getPersonFactory().updatePerson(acct4);
+				Factories.getPersonFactory().update(acct4);
 			}
 			if(acct5.getAccounts().size() == 0){
 				acct5.getAccounts().add(pacct5);
-				Factories.getPersonFactory().updatePerson(acct5);
+				Factories.getPersonFactory().update(acct5);
 			}
 			assertTrue("User can't view the permission", AuthorizationService.canView(testUser,per1));
 			AuthorizationService.authorize(testUser, acct1, app1, per1, true);

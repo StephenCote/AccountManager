@@ -177,7 +177,7 @@ public class SessionSecurity {
 	/// Rebranded API to reflect change in approach and actual intent of authenticating against a session using a user and a credential
 	///
 	private static UserType authenticateSession(String sessionId, String userName, CredentialEnumType credType, String suppliedCredential, long organizationId) throws FactoryException, ArgumentException{
-		UserType user = Factories.getUserFactory().getUserByName(userName, organizationId);
+		UserType user = Factories.getUserFactory().getByName(userName, organizationId);
 		if(user == null){
 			throw new ArgumentException("User does not exist");
 		}
@@ -270,18 +270,18 @@ public class SessionSecurity {
 
 		Factories.getUserFactory().normalize(user);
 
-		Factories.getUserFactory().updateUserToCache(user);
+		Factories.getUserFactory().updateToCache(user);
 
 		session.setSessionStatus(SessionStatusEnumType.AUTHENTICATED);
 		
 		StatisticsType stats = Factories.getStatisticsFactory().getStatistics(user);
 		if(stats == null){
 			stats = Factories.getStatisticsFactory().newStatistics(user);
-			if(Factories.getStatisticsFactory().addStatistics(stats) == false) throw new FactoryException("Failed to add statistics to user #" + user.getId());
+			if(Factories.getStatisticsFactory().add(stats) == false) throw new FactoryException("Failed to add statistics to user #" + user.getId());
 			stats = Factories.getStatisticsFactory().getStatistics(user);
 		}
 		stats.setAccessedDate(CalendarUtil.getXmlGregorianCalendar(Calendar.getInstance().getTime()));
-		if(Factories.getStatisticsFactory().updateStatistics(stats) == false){
+		if(Factories.getStatisticsFactory().update(stats) == false){
 			throw new FactoryException("Error updating statistics for " + session.getSessionId() + " in organization id " + session.getOrganizationId());
 		}
 		if(Factories.getSessionFactory().update(session) == false){

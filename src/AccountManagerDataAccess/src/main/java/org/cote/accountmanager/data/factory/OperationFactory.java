@@ -40,6 +40,8 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OperationEnumType;
@@ -93,8 +95,10 @@ public class OperationFactory extends NameIdGroupFactory {
 		return obj;
 	}
 	
-	public boolean addOperation(OperationType obj) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
+		OperationType obj = (OperationType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
 		DataRow row = prepareAdd(obj, "operation");
@@ -133,8 +137,10 @@ public class OperationFactory extends NameIdGroupFactory {
 		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
 		return new_obj;
 	}
-	public boolean updateOperation(OperationType data) throws FactoryException, DataAccessException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		OperationType data = (OperationType)object;
 		removeFromCache(data);
 		removeFromCache(data,getUrnCacheKey(data));
 		return update(data, null);
@@ -157,8 +163,10 @@ public class OperationFactory extends NameIdGroupFactory {
 		return deleteOperationsByIds(ids, user.getOrganizationId());
 	}
 
-	public boolean deleteOperation(OperationType obj) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		OperationType obj = (OperationType)object;
 		removeFromCache(obj);
 		removeFromCache(obj,getUrnCacheKey(obj));
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
@@ -202,11 +210,11 @@ public class OperationFactory extends NameIdGroupFactory {
 	}
 	public List<OperationType>  getOperationList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
-		return getPaginatedList(fields, startRecord, recordCount, organizationId);
+		return paginateList(fields, startRecord, recordCount, organizationId);
 	}
 	public List<OperationType> getOperationListByIds(long[] ids, long organizationId) throws FactoryException,ArgumentException
 	{
-		return getListByIds(ids, organizationId);
+		return listByIds(ids, organizationId);
 	}
 	
 }

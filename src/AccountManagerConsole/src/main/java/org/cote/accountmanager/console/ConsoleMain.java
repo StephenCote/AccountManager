@@ -289,7 +289,7 @@ public class ConsoleMain {
 								logger.info("Unauthenticated password reset capability is disabled");
 							}
 							else{
-								UserType user = Factories.getUserFactory().getUserByName(cmd.getOptionValue("username"),org.getId());
+								UserType user = Factories.getUserFactory().getByName(cmd.getOptionValue("username"),org.getId());
 								if(user != null){
 									if(password != null && password.length() > 5){
 										logger.info("Creating new primary credential");

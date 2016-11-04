@@ -70,18 +70,24 @@ public class StatisticsFactory extends NameIdFactory {
 		int deleted = deleteByBigIntField("referenceid",new long[]{map.getId()},map.getOrganizationId());
 		return (deleted > 0);
 	}
-	public boolean deleteStatistics(StatisticsType cinfo) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		StatisticsType cinfo = (StatisticsType)object;
 		int deleted = deleteById(cinfo.getId(), cinfo.getOrganizationId());
 		return (deleted > 0);
 	}
-	public boolean updateStatistics(StatisticsType cinfo) throws FactoryException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
-		return update(cinfo);
+		StatisticsType cinfo = (StatisticsType)object;
+		return super.update(cinfo);
 	}
 
-	public boolean addStatistics(StatisticsType new_info) throws FactoryException
+	@Override
+	public <T> boolean add(T object) throws ArgumentException, FactoryException
 	{
+		StatisticsType new_info = (StatisticsType)object;
 		if (new_info.getReferenceId().compareTo(0L) == 0) throw new FactoryException("Cannot add statistics without a corresponding reference id");
 		if (new_info.getOrganizationId() <= 0L) throw new FactoryException("Cannot add statistics to invalid organization");
 

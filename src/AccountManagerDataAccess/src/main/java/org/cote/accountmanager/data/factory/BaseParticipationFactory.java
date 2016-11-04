@@ -118,7 +118,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 	{
 		DataParticipantType dp = getDataParticipant(cycle, sched);
 		if (dp == null) return true;
-		return deleteParticipant(dp);
+		return delete(dp);
 
 	}	
 	public boolean deleteDataParticipations(DataType sched) throws FactoryException,ArgumentException
@@ -140,7 +140,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 
 		removeFromCache(dp);
 
-		return deleteParticipant(dp);
+		return delete(dp);
 	}
 	public boolean deleteContactParticipations(ContactType map) throws FactoryException, ArgumentException
 	{
@@ -238,7 +238,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 
 			removeFromCache(dp);
 
-			return deleteParticipant(dp);
+			return delete(dp);
 		}
 		public boolean deleteAddressParticipations(AddressType map) throws FactoryException, ArgumentException
 		{

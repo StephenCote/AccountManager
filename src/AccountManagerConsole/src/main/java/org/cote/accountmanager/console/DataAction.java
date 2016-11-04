@@ -336,7 +336,7 @@ public class DataAction {
 			DataUtil.setValue(data, f.getAbsolutePath().getBytes());
 		}
 		if(bulkSession == null){
-			if(Factories.getDataFactory().addData(data)){
+			if(Factories.getDataFactory().add(data)){
 				logger.info("Added " + fName + " to " + dir.getName());
 			}
 			else{

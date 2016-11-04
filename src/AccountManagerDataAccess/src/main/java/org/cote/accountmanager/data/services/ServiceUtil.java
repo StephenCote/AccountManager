@@ -54,7 +54,7 @@ public class ServiceUtil {
 				return out_bool;
 			}
 			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
-			root = Factories.getUserFactory().getUserByName("Root", Factories.getSystemOrganization().getId());
+			root = Factories.getUserFactory().getByName("Root", Factories.getSystemOrganization().getId());
 			if(rootAcct == null || root == null){
 				logger.error("Root account or root user is null");
 				return out_bool;
@@ -62,8 +62,8 @@ public class ServiceUtil {
 			
 			Factories.getUserFactory().populate(root);
 			
-			admin = Factories.getUserFactory().getUserByName("Admin", Factories.getPublicOrganization().getId());
-			doc = Factories.getUserFactory().getUserByName("Document Control", Factories.getPublicOrganization().getId());
+			admin = Factories.getUserFactory().getByName("Admin", Factories.getPublicOrganization().getId());
+			doc = Factories.getUserFactory().getByName("Document Control", Factories.getPublicOrganization().getId());
 			if(admin == null || doc == null){
 				logger.error("Admin or Document Control user in public org was null");
 				return out_bool;

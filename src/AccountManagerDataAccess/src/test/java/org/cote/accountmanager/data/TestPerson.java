@@ -103,7 +103,7 @@ public class TestPerson extends BaseDataAccessTest{
 			person.getDependents().add(child);
 			person.getPartners().add(partner);
 
-			assertTrue("Failed to add new person",Factories.getPersonFactory().addPerson(person));
+			assertTrue("Failed to add new person",Factories.getPersonFactory().add(person));
 			
 			person = Factories.getPersonFactory().getByNameInGroup(new_name, pDir);
 			addContactValues(person,new_name);
@@ -235,7 +235,7 @@ public class TestPerson extends BaseDataAccessTest{
 			if(address == null){
 				address = Factories.getAddressFactory().newAddress(testUser,pDir.getId());
 				address.setName(name);
-				assertTrue("Failed to add new address",Factories.getAddressFactory().addAddress(address));
+				assertTrue("Failed to add new address",Factories.getAddressFactory().add(address));
 				address = Factories.getAddressFactory().getByNameInGroup(name, pDir);
 				assertNotNull("Address is null",address);
 			}
@@ -257,7 +257,7 @@ public class TestPerson extends BaseDataAccessTest{
 			if(contact == null){
 				contact = Factories.getContactFactory().newContact(testUser,pDir.getId());
 				contact.setName(name);
-				assertTrue("Failed to add new contact",Factories.getContactFactory().addContact(contact));
+				assertTrue("Failed to add new contact",Factories.getContactFactory().add(contact));
 				contact = Factories.getContactFactory().getByNameInGroup(name, pDir);
 				assertNotNull("Contact is null",contact);
 			}
@@ -279,7 +279,7 @@ public class TestPerson extends BaseDataAccessTest{
 			if(person == null){
 				person = Factories.getPersonFactory().newPerson(testUser,pDir.getId());
 				person.setName(name);
-				assertTrue("Failed to add new person",Factories.getPersonFactory().addPerson(person));
+				assertTrue("Failed to add new person",Factories.getPersonFactory().add(person));
 				person = Factories.getPersonFactory().getByNameInGroup(name, pDir);
 				assertNotNull("Person is null",person);
 			}
@@ -300,29 +300,25 @@ public class TestPerson extends BaseDataAccessTest{
 			if(person.getContactInformation().getAddresses().size() == 0){
 				AddressType homeAddr = getCreateAddress(name,Factories.getGroupFactory().getDirectoryById(person.getGroupId(),person.getOrganizationId()));
 				setDemoAddressValues(homeAddr);
-				Factories.getAddressFactory().updateAddress(homeAddr);
+				Factories.getAddressFactory().update(homeAddr);
 				person.getContactInformation().getAddresses().add(homeAddr);
 				bUp = true;
 			}
 			if(person.getContactInformation().getContacts().size() == 0){
 				ContactType homeEmail = getCreateContact(name,Factories.getGroupFactory().getDirectoryById(person.getGroupId(),person.getOrganizationId()));
 				setHomeEmailValues(homeEmail);
-				Factories.getContactFactory().updateContact(homeEmail);
+				Factories.getContactFactory().update(homeEmail);
 				person.getContactInformation().getContacts().add(homeEmail);
 				bUp = true;
 			}
 			if(bUp){
-				Factories.getContactInformationFactory().updateContactInformation(person.getContactInformation());
+				Factories.getContactInformationFactory().update(person.getContactInformation());
 			}
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 			fe.printStackTrace();
-		} catch (DataAccessException e) {
-			logger.error(e.getMessage());
-
-			e.printStackTrace();
-		}
+		} 
 	}
 	private void setHomeEmailValues(ContactType ct){
 		ct.setContactType(ContactEnumType.EMAIL);

@@ -24,7 +24,7 @@ public class TestBulkDelete extends BaseDataAccessTest {
 			String uid = UUID.randomUUID().toString();
 			PersonType person = Factories.getPersonFactory().newPerson(testUser, pDir.getId());
 			person.setName(uid);
-			assertTrue("Failed to add person",Factories.getPersonFactory().addPerson(person));
+			assertTrue("Failed to add person",Factories.getPersonFactory().add(person));
 			person = Factories.getPersonFactory().getByNameInGroup(uid, pDir);
 			assertNotNull("Person is null",person);
 			

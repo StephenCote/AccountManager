@@ -1369,7 +1369,7 @@ public class EffectiveAuthorizationService {
 			}
 			rset.close();
 			stat.close();
-			roles = Factories.getRoleFactory().getListByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])), actor.getOrganizationId());
+			roles = Factories.getRoleFactory().listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])), actor.getOrganizationId());
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());

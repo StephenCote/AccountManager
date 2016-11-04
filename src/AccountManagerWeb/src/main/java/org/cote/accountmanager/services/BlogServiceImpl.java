@@ -55,7 +55,7 @@ public class BlogServiceImpl{
 				AuditService.denyResult(audit, "Organization #" + orgId + " does not exist");
 				return data;
 			}
-			UserType user = Factories.getUserFactory().getUserByName(userName, orgId);
+			UserType user = Factories.getUserFactory().getByName(userName, orgId);
 			if(user == null){
 				AuditService.denyResult(audit, "User " + userName + " does not exist in Organization #" + orgId);
 				return data;
@@ -89,7 +89,7 @@ public class BlogServiceImpl{
 				AuditService.denyResult(audit, "Organization #" + orgId + " does not exist");
 				return data;
 			}
-			UserType user = Factories.getUserFactory().getUserByName(userName, orgId);
+			UserType user = Factories.getUserFactory().getByName(userName, orgId);
 			if(user == null){
 				AuditService.denyResult(audit, "User " + userName + " does not exist in Organization #" + orgId);
 				return data;

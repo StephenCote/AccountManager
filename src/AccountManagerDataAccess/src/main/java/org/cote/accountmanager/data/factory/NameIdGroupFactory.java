@@ -46,10 +46,11 @@ import org.cote.accountmanager.objects.types.GroupEnumType;
 
 
 
-public class NameIdGroupFactory extends NameIdFactory{
+public abstract class NameIdGroupFactory extends NameIdFactory implements INameIdGroupFactory{
 	public static final Logger logger = Logger.getLogger(NameIdGroupFactory.class.getName());
 	public NameIdGroupFactory(){
 		super();
+		this.clusterByGroup = true;
 		this.scopeToOrganization = true;
 		this.hasParentId = false;
 		this.hasOwnerId = true;
@@ -173,7 +174,7 @@ public class NameIdGroupFactory extends NameIdFactory{
 		return out_data;
 	}
 	
-	public int getCount(BaseGroupType group) throws FactoryException
+	public int countInGroup(BaseGroupType group) throws FactoryException
 	{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldGroup(group.getId()));
@@ -185,14 +186,14 @@ public class NameIdGroupFactory extends NameIdFactory{
 	public String[] getNamesInGroup(BaseGroupType group) throws FactoryException{
 		return getNamesByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 	}
-	public <T> List<T>  getListByGroup(BaseGroupType group, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
+	public <T> List<T>  listInGroup(BaseGroupType group, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldGroup(group.getId()));
 		if(hasParentId){
 			fields.add(QueryFields.getFieldParent(0));
 		}
-		return getPaginatedList(fields.toArray(new QueryField[0]), startRecord, recordCount, organizationId);
+		return paginateList(fields.toArray(new QueryField[0]), startRecord, recordCount, organizationId);
 	}
 
 	

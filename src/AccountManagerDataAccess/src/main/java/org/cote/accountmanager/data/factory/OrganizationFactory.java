@@ -42,6 +42,7 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.security.KeyService;
+import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
@@ -76,13 +77,17 @@ public class OrganizationFactory extends NameIdFactory {
 		super.initialize(connection);
 		
 	}
-	public boolean updateOrganization(OrganizationType org) throws FactoryException
+	@Override
+	public <T> boolean update(T object) throws FactoryException
 	{
+		OrganizationType org = (OrganizationType)object;
 		removeFromCache(org);
 		return update(org);
 	}
-	public boolean deleteOrganization(OrganizationType organization) throws FactoryException
+	@Override
+	public <T> boolean delete(T object) throws FactoryException
 	{
+		OrganizationType organization = (OrganizationType)object;
 		removeFromCache(organization);
 		int deleted = deleteById(organization.getId());
 
@@ -142,26 +147,9 @@ public class OrganizationFactory extends NameIdFactory {
 
 	public OrganizationType getOrganizationByName(String name, OrganizationType parent) throws FactoryException, ArgumentException
 	{
-		return getOrganizationByName(name, (parent != null ? parent.getId() : 0));
+		return getByNameInParent(name, (parent != null ? parent.getId() : 0),0L);
 	}
-	public OrganizationType getOrganizationByName(String name, long parent_id) throws FactoryException, ArgumentException
-	{
 
-		String key_name = name + "-" + parent_id ;
-
-		OrganizationType out_org = readCache(key_name);
-		if (out_org != null)
-			return out_org;
-
-		List<NameIdType> orgs = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldParent(parent_id) }, 0);
-
-		if (orgs.isEmpty() == false)
-		{
-			addToCache(orgs.get(0),key_name);
-			return (OrganizationType)orgs.get(0);
-		}
-		return null;
-	}
 	
 	public OrganizationType getOrganizationById(long id) throws FactoryException, ArgumentException
 	{
@@ -194,33 +182,37 @@ public class OrganizationFactory extends NameIdFactory {
 	public OrganizationType addOrganization(String orgName, OrganizationEnumType orgType, OrganizationType orgParent) throws FactoryException, ArgumentException
 	{
 		long parentId = (orgParent != null ? orgParent.getId() : 0);
-		OrganizationType new_org = getOrganizationByName(orgName, parentId);
+		OrganizationType new_org = getByNameInParent(orgName, parentId,0L);
 		if(new_org == null){
 			new_org = new OrganizationType();
 			new_org.setNameType(NameEnumType.ORGANIZATION);
 			new_org.setOrganizationType(orgType);
 			new_org.setParentId(parentId);
 			new_org.setName(orgName);
-			new_org = addOrganization(new_org);
+			if(add(new_org)){
+				new_org = this.getByNameInParent(orgName, parentId, 0L);
+			}
 		}
 		return new_org;
 
 	}
-	public OrganizationType addOrganization(OrganizationType new_org) throws FactoryException, ArgumentException
+	@Override
+	public <T> boolean add(T object) throws FactoryException, ArgumentException
 	{
-		
+		boolean out_bool = false;
+		OrganizationType new_org = (OrganizationType)object;
 		DataRow row = prepareAdd(new_org, "organizations");
 		try{
 			row.setCellValue("organizationtype", new_org.getOrganizationType().toString());
 			row.setCellValue("logicalid", new_org.getLogicalId());
 			row.setCellValue("referenceid", new_org.getReferenceId());
 			if(insertRow(row)){
-				new_org = getOrganizationByName(new_org.getName(), new_org.getParentId());
+				new_org = getByNameInParent(new_org.getName(), new_org.getParentId(),0L);
 				if(KeyService.newOrganizationAsymmetricKey(new_org.getId(), true) == null){
 					throw new FactoryException("Unable to generate organization security keys for " + new_org.getName() + "(#" + new_org.getId() + ")");
 				}
 				Factories.getGroupFactory().addDefaultGroups(new_org.getId());
-				return new_org;
+				out_bool = true;
 			}
 		}
 		catch(DataAccessException e){
@@ -228,7 +220,7 @@ public class OrganizationFactory extends NameIdFactory {
 			throw new FactoryException(e.getMessage());
 		}
 		
-		return null;
+		return out_bool;
 	}
 	public String getOrganizationPath(long organizationId) throws FactoryException, ArgumentException{
 		OrganizationType org = getOrganizationById(organizationId);

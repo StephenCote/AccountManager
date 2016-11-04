@@ -53,12 +53,14 @@ import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.SecurityType;
+import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 
-public abstract class NameIdFactory extends FactoryBase implements IFactory{
+public abstract class NameIdFactory extends FactoryBase implements INameIdFactory{
 	public static final Logger logger = Logger.getLogger(NameIdFactory.class.getName());
 	private Map<Long, String> typeNameIdMap = null;
 	private Map<String,Integer> typeNameMap = null;
@@ -72,6 +74,9 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 	protected boolean hasName = true;
 	protected boolean hasObjectId = false;
 	protected boolean hasUrn = false;
+	protected boolean clusterByGroup = false;
+	protected boolean clusterByParent = false;
+	protected boolean isParticipation = false;
 	
 	/// 2016/05/31 - Switching the default of aggressive flush to 'false' until the reproduction is identified again
 	/// The cleanup routine wasn't actually doing anything for all the time it wasted.
@@ -103,10 +108,39 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 	}
 	
 
+	public boolean isClusterByGroup() {
+		return clusterByGroup;
+	}
+
+
+	public void setClusterByGroup(boolean clusterByGroup) {
+		this.clusterByGroup = clusterByGroup;
+	}
+
+
+	public boolean isClusterByParent() {
+		return clusterByParent;
+	}
+
+
+	public void setClusterByParent(boolean clusterByParent) {
+		this.clusterByParent = clusterByParent;
+	}
+
+
+	public boolean isParticipation() {
+		return isParticipation;
+	}
+
+
+	public void setParticipation(boolean isParticipation) {
+		this.isParticipation = isParticipation;
+	}
+
+
 	public String getSystemRoleNameReader() {
 		return systemRoleNameReader;
 	}
-
 
 	public String getSystemRoleNameAdministrator() {
 		return systemRoleNameAdministrator;
@@ -146,6 +180,27 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 		clearCache();
 	}
 
+	public <T> boolean add(T object) throws ArgumentException, FactoryException{
+		throw new FactoryException("Add method must be overriden for " + this.factoryType.toString() + ".");
+	}
+	
+	public <T> boolean delete(T object) throws ArgumentException, FactoryException{
+		throw new FactoryException("Delete method must be overriden for " + this.factoryType.toString() + ".");
+	}
+	
+	public int deleteByOrganization(long organizationId) throws FactoryException, ArgumentException
+	{
+		return deleteByField(new QueryField[] {  }, organizationId);
+	}
+	
+	public int deleteByOwner(UserType owner) throws FactoryException, ArgumentException
+	{
+		return deleteByField(new QueryField[] { QueryFields.getFieldOwner(owner.getId()) }, owner.getOrganizationId());
+	}
+	public <T> List<T> listByOwner(UserType user) throws FactoryException, ArgumentException
+	{
+		return list(new QueryField[]{QueryFields.getFieldOwner(user.getId())},user.getOrganizationId());
+	}
 	public <T> T clone(T source) throws FactoryException{
 		throw new FactoryException("Clone method must be overriden for " + this.factoryType.toString() + ".  Yes, this could be abstract, but not every factory needs it.");
 	}
@@ -216,16 +271,17 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 		}
 	}
 
-	public boolean update(NameIdType map) throws FactoryException
+	public <T >boolean update(T obj) throws FactoryException
 	{
-		return update(map, null);
+		return update(obj, null);
 	}
 	
-	public boolean update(NameIdType map, ProcessingInstructionType instruction) throws FactoryException
+	public <T> boolean update(T obj, ProcessingInstructionType instruction) throws FactoryException
 	{
 		if(this.bulkMode == true){
 			return true;
 		}
+		NameIdType map = (NameIdType)obj;
 		DataTable table = dataTables.get(0);
 		if(instruction == null)
 			instruction = new ProcessingInstructionType();
@@ -490,19 +546,48 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 		}
 		return row;
 	}
-	
-	protected List<NameIdType> getByName(String name, long organization_id) throws FactoryException, ArgumentException
+	public <T> T getByNameInParent(String name, long parent_id, long organization_id) throws FactoryException, ArgumentException
+	{
+
+		String key_name = name + "-" + parent_id ;
+
+		T obj = readCache(key_name);
+		if (obj != null)
+			return obj;
+
+		List<NameIdType> objs = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldParent(parent_id) }, organization_id);
+
+		if (objs.isEmpty() == false)
+		{
+			addToCache(objs.get(0),key_name);
+			obj = (T)objs.get(0);
+		}
+		return obj;
+	}
+	public <T> T getByName(String name, long organizationId) throws FactoryException, ArgumentException
+	{
+		if(hasName == false) throw new FactoryException("Factory does not support object name");
+		T out_obj = readCache(name);
+		if (out_obj != null)
+			return out_obj;
+
+		List<NameIdType> obj_list = getByField(new QueryField[] { QueryFields.getFieldName(name) }, organizationId);
+
+		if (obj_list.isEmpty() == false)
+		{
+			
+			String key_name = getCacheKeyName(obj_list.get(0));
+			addToCache(obj_list.get(0),key_name);
+			out_obj = (T)obj_list.get(0);
+		}
+		return out_obj;
+	}
+	public <T> List<T> listByName(String name, long organization_id) throws FactoryException, ArgumentException
 	{
 		if (!hasName) throw new FactoryException("Table " + dataTables.get(0).getName() + " Does not define a Name");
-		return getByField(QueryFields.getFieldName(name), organization_id);
+		return convertList(getByField(QueryFields.getFieldName(name), organization_id));
 	}
-	/*
-	protected List<NameIdType> getByObjectId(String id, long organization_id) throws FactoryException, ArgumentException
-	{
-		if (!hasObjectId) throw new FactoryException("Table " + dataTables.get(0).getName() + " Does not define a Name");
-		return getByField(QueryFields.getFieldObjectId(id), organization_id);
-	}
-	*/
+
 	protected long getIdByName(String name, long organization_id) throws FactoryException
 	{
 		if (!hasName) throw new FactoryException("Table " + dataTables.get(0).getName() + " does not define a Name");
@@ -510,12 +595,14 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 		if (ids.length > 0) return ids[0];
 		return 0;
 	}
+	
 	public List<NameIdType> getByField(QueryField field, long organization_id) throws FactoryException, ArgumentException{
 		return getByField(field, null, organization_id);
 	}
 	public List<NameIdType> getByField(QueryField field, ProcessingInstructionType instruction, long organization_id) throws FactoryException, ArgumentException{
 		return getByField(new QueryField[]{field}, instruction, organization_id);
 	}
+	
 	public List<NameIdType> getByField(QueryField[] fields, long organization_id) throws FactoryException, ArgumentException{
 		return getByField(fields, null, organization_id);
 	}
@@ -621,6 +708,7 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 		}
 		return out_obj;
 	}
+	
 	public List<QueryField> buildSearchQuery(String searchValue, long organizationId) throws FactoryException{
 		searchValue = searchValue.replaceAll("\\*","%");
 		
@@ -637,10 +725,24 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 		return filters;
 	}
 	
+	public <T> List<T> search(String searchValue, long startRecord, int recordCount, long org) throws FactoryException, ArgumentException{
+		ProcessingInstructionType instruction = null;
+		if(startRecord >= 0 && recordCount >= 0){
+			instruction = new ProcessingInstructionType();
+			instruction.setOrderClause("name ASC");
+			instruction.setPaginate(true);
+			instruction.setStartIndex(startRecord);
+			instruction.setRecordCount(recordCount);
+		}
+		List<QueryField> fields = buildSearchQuery(searchValue, org);
+		return search(fields.toArray(new QueryField[0]), instruction,org);
+	}
+
 	public <T> List<T> search(QueryField[] fields, ProcessingInstructionType pi, long organizationId) throws FactoryException, ArgumentException{
 
-		return getList(fields, pi, organizationId);
+		return list(fields, pi, organizationId);
 	}
+	
 	protected <T> List<T> searchByIdInView(String viewName, QueryField[] filters, ProcessingInstructionType instruction, long organizationId){
 		return searchByIdInView(viewName, "id", filters, instruction, organizationId);
 	}
@@ -670,7 +772,7 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 				pi2 = new ProcessingInstructionType();
 				pi2.setOrderClause(instruction.getOrderClause());
 			}
-			objs = getListByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organizationId);
+			objs = listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organizationId);
 			logger.info("Retrieved " + objs.size() + " from " + ids.size() + " ids");
 		}
 		catch(SQLException sqe){
@@ -697,26 +799,26 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 		}
 		return objs;
 	}
-	public <T> List<T> getList(QueryField[] fields, ProcessingInstructionType pi, long organizationId) throws FactoryException, ArgumentException
+	public <T> List<T> list(QueryField[] fields, ProcessingInstructionType pi, long organizationId) throws FactoryException, ArgumentException
 	{
 
 		List<NameIdType> user_list = getByField(fields,pi, organizationId);
 		return convertList(user_list);
 	}	
-	public <T> List<T> getList(QueryField[] fields, long organizationId) throws FactoryException, ArgumentException
+	public <T> List<T> list(QueryField[] fields, long organizationId) throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
-		return getList(fields, instruction, organizationId);
+		return list(fields, instruction, organizationId);
 	}
-	public <T> List<T>  getPaginatedList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
+	public <T> List<T>  paginateList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("name ASC");
 		instruction.setPaginate(false);
-		return getPaginatedList(fields, instruction, startRecord, recordCount, organizationId);
+		return paginateList(fields, instruction, startRecord, recordCount, organizationId);
 	}
-	public <T> List<T>  getPaginatedList(QueryField[] fields, ProcessingInstructionType instruction, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
+	public <T> List<T>  paginateList(QueryField[] fields, ProcessingInstructionType instruction, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		if (instruction != null && startRecord >= 0L && recordCount > 0 && instruction.getPaginate() == false)
 		{
@@ -724,13 +826,13 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 			instruction.setStartIndex(startRecord);
 			instruction.setRecordCount(recordCount);
 		}
-		return getList(fields, instruction, organizationId);
+		return list(fields, instruction, organizationId);
 	}
-	public <T> List<T> getListByIds(long[] ids, long organizationId) throws FactoryException, ArgumentException
+	public <T> List<T> listByIds(long[] ids, long organizationId) throws FactoryException, ArgumentException
 	{
-		return getListByIds(ids, null, organizationId);
+		return listByIds(ids, null, organizationId);
 	}
-	public <T> List<T> getListByIds(long[] ids, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException
+	public <T> List<T> listByIds(long[] ids, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException
 	{
 
 		StringBuffer buff = new StringBuffer();
@@ -903,10 +1005,10 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 	public <T> String getCacheKeyName(T obj){
 		return ((NameIdType)obj).getName();
 	}
-	protected boolean updateToCache(NameIdType obj) throws ArgumentException{
+	public boolean updateToCache(NameIdType obj) throws ArgumentException{
 		return updateToCache(obj, getCacheKeyName(obj));
 	}
-	protected boolean updateToCache(NameIdType obj,String key_name) throws ArgumentException{
+	public boolean updateToCache(NameIdType obj,String key_name) throws ArgumentException{
 		if(this.haveCacheId(obj.getId())) removeFromCache(obj,key_name);
 		return addToCache(obj, key_name);
 	}
@@ -915,7 +1017,7 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 
 		return addToCache(map,getCacheKeyName(map));
 	}
-	public synchronized boolean addToCache(NameIdType map, String key_name) throws ArgumentException{
+	public boolean addToCache(NameIdType map, String key_name) throws ArgumentException{
 		if(key_name == null) throw new ArgumentException("Key name is null");
 		if(map == null){
 			logger.error("Map with key '" + key_name + "' is null");
@@ -938,13 +1040,14 @@ public abstract class NameIdFactory extends FactoryBase implements IFactory{
 		if (map == null || map.getId() <= 0L || map.getOrganizationId() <= 0L) return false;
 		return true;
 	}
-	public int getCount(long organization_id) throws FactoryException
+	public int countInOrganization(long organization_id) throws FactoryException
 	{
 		return getCountByField(this.getDataTables().get(0), new QueryField[]{}, organization_id);
 	}
-	public int getCountInParent(NameIdType parent) throws FactoryException
+	public <T> int countInParent(T parent) throws FactoryException
 	{
-		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(parent.getId())}, parent.getOrganizationId());
+		NameIdType obj = (NameIdType)parent;
+		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(obj.getId())}, obj.getOrganizationId());
 	}
 	
 }
