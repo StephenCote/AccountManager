@@ -47,7 +47,7 @@ public class MediaServlet extends HttpServlet {
      */
     public MediaServlet() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
 
 	/**

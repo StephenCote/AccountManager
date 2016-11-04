@@ -33,10 +33,10 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("token was not added", add_token);
 	}
@@ -52,8 +52,8 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("Expected one token", token);
 	}
@@ -68,8 +68,8 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("Expected one token", token);
 		token.setData("Example data".getBytes());
@@ -115,7 +115,7 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 		catch(FactoryException fe){
 			error = true;
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}
 		assertFalse("An error occurred", error);
 	}

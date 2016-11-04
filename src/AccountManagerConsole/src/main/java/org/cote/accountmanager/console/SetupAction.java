@@ -74,15 +74,15 @@ public class SetupAction {
 		catch(SQLException sqe){
 			error = true;
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			if(connection != null){
 				try {
 					connection.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					logger.error(e.getStackTrace());
 				}
 			}
 		}
@@ -97,14 +97,14 @@ public class SetupAction {
 				out_bool = true;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		return out_bool;

@@ -165,7 +165,7 @@ public class UrnUtil {
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		}
 		return urn;

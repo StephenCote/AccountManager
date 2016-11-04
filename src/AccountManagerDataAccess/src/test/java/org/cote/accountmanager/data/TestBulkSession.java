@@ -55,16 +55,16 @@ public class TestBulkSession extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	*/
@@ -90,10 +90,10 @@ public class TestBulkSession extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().close(sessionId);
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}  catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	/*
@@ -146,13 +146,13 @@ public class TestBulkSession extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	*/

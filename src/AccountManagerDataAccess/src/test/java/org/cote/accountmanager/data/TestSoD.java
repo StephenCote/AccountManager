@@ -110,11 +110,11 @@ public class TestSoD extends BaseDataAccessTest{
 				else policy = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return policy;
 	}
@@ -139,11 +139,11 @@ public class TestSoD extends BaseDataAccessTest{
 				else pattern = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return pattern;
 	}
@@ -165,11 +165,11 @@ public class TestSoD extends BaseDataAccessTest{
 				else rule = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return rule;
 	}
@@ -195,10 +195,10 @@ public class TestSoD extends BaseDataAccessTest{
 				else fact = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		}
 		return fact;
@@ -221,10 +221,10 @@ public class TestSoD extends BaseDataAccessTest{
 				else fact = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		}
 		return fact;
@@ -259,11 +259,11 @@ public class TestSoD extends BaseDataAccessTest{
 			
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 
@@ -369,14 +369,14 @@ public class TestSoD extends BaseDataAccessTest{
 
 
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	public PolicyType getTestSoDPolicy1(){
@@ -443,14 +443,14 @@ public class TestSoD extends BaseDataAccessTest{
 			
 			//logger.info("Permission 1 " + Factories.getPermissionFactory().getPermissionPath(sodPer1));
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		/*
@@ -480,14 +480,14 @@ public class TestSoD extends BaseDataAccessTest{
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
 
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		*/
 		return sodPol1;

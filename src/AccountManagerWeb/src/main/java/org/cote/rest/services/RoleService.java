@@ -178,11 +178,11 @@ public class RoleService{
 			try {
 				if(role != null) path = Factories.getRoleFactory().getRolePath(role);
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		return path;
 	}
@@ -196,13 +196,13 @@ public class RoleService{
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		if(targRole != null) return RoleServiceImpl.getListOfGroups(user, targRole);
@@ -219,13 +219,13 @@ public class RoleService{
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		if(targRole != null) return RoleServiceImpl.getListOfPersons(user, targRole);
@@ -240,13 +240,13 @@ public class RoleService{
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(targOrg != null) targPerson = Factories.getPersonFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(targPerson == null){
 			logger.error("Null user specified for org id " + orgId + " and user id " + recordId);
@@ -263,13 +263,13 @@ public class RoleService{
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		if(targRole != null) return RoleServiceImpl.getListOfAccounts(user, targRole);
@@ -284,13 +284,13 @@ public class RoleService{
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(targOrg != null) targAccount = Factories.getAccountFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(targAccount == null){
 			logger.error("Null user specified for org id " + orgId + " and user id " + recordId);
@@ -308,13 +308,13 @@ public class RoleService{
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		if(targRole != null) return RoleServiceImpl.getListOfUsers(user, targRole);
@@ -330,13 +330,13 @@ public class RoleService{
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(targOrg != null) targUser = Factories.getUserFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(targUser == null){
 			logger.error("Null user specified for org id " + orgId + " and user id " + recordId);
@@ -360,13 +360,13 @@ public class RoleService{
 			org = Factories.getOrganizationFactory().getById(orgId, 0L);
 			if(org != null && parentId > 0L) parent =Factories.getRoleFactory().getById(parentId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		/*
 		if(parent == null){
@@ -387,13 +387,13 @@ public class RoleService{
 			org = Factories.getOrganizationFactory().getById(orgId, null);
 
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(org == null){
 			return new ArrayList<BaseRoleType>();

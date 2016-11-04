@@ -294,15 +294,15 @@ public class ContactFactory extends NameIdGroupFactory {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		finally{
 			
@@ -310,8 +310,8 @@ public class ContactFactory extends NameIdGroupFactory {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		//return search(fields, instruction, organization);

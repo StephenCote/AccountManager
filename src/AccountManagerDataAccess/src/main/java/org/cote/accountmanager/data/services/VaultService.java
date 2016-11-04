@@ -105,11 +105,11 @@ import org.cote.accountmanager.util.ZipUtil;
 			try {
 				this.organization = Factories.getOrganizationFactory().getOrganizationById(serviceUser.getOrganizationId());
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			this.vaultName = vaultName;
 			vaultNameHash = Hex.encodeHexString(vaultName.getBytes());//SecurityUtil.getDigestAsString(vaultName);
@@ -162,8 +162,8 @@ import org.cote.accountmanager.util.ZipUtil;
 			try {
 				dir = getVaultGroup();
 			} catch (FactoryException | ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			if(dir == null) return null;
 			return CredentialService.getPrimaryCredential(dir, CredentialEnumType.SALT, true);
@@ -456,17 +456,17 @@ import org.cote.accountmanager.util.ZipUtil;
 				List<DataType> dataList = Factories.getDataFactory().getDataListByGroup(getVaultInstanceGroup(), false, 0, 0, organization.getId());
 				for(int i = 0; i < dataList.size();i++) beans.add(getCipherFromData(dataList.get(i)));
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			} catch (DataException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 			
 			

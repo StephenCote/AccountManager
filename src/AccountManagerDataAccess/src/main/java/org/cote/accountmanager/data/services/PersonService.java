@@ -123,23 +123,23 @@ public class PersonService {
 		catch(ArgumentException e){
 			AuditService.denyResult(audit, "Failed to add user: " + e.getMessage());
 			logger.error("Error creating user " + userName + ": " + e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			AuditService.denyResult(audit, "Failed to add user: " + e.getMessage());
 			logger.error("Error creating user " + userName + ": " + e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
+			
 			AuditService.denyResult(audit, "Failed to add user: " + e.getMessage());
 			logger.error("Error creating user " + userName + ": " + e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return out_bool;
 	}

@@ -88,11 +88,11 @@ public class PermissionServiceImpl  {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(permission == null){
 			System.out.println("Invalid parentId reference: " + parentId);
@@ -110,11 +110,11 @@ public class PermissionServiceImpl  {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
 			
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		if(parent == null) return null;
 		return BaseService.readByNameInParent(AuditEnumType.PERMISSION, parent, name, type, request);
@@ -133,14 +133,14 @@ public class PermissionServiceImpl  {
 			per = Factories.getPermissionFactory().getUserPermission(user, ptype, user.getOrganizationId());
 			Factories.getPermissionFactory().denormalize(per);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return per;
 	}
@@ -175,11 +175,11 @@ public class PermissionServiceImpl  {
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -260,17 +260,17 @@ public class PermissionServiceImpl  {
 			}
 
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
+			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return out_bool;
 	}

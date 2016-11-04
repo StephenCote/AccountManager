@@ -37,8 +37,8 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 		try {
 			cred = CredentialService.newCredential(CredentialEnumType.TOKEN, null, testUser, dir, apiTokenValue.getBytes("UTF-8"), true, false);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		*/
 		assertNotNull("Credential is null",cred);
@@ -74,8 +74,8 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 			identity = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_IDENTITY),"UTF-8");
 			credential = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_PASSWORD),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("Identity is null",identity);
 		assertNotNull("Credential is null",credential);
@@ -103,8 +103,8 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 		try {
 			del = Factories.getCredentialFactory().deleteCredential(cred2);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		*/
 		//assertTrue("Failed to delete credential",del);
@@ -172,9 +172,9 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 			eOrgKey = KeyService.getSymmetricKeyByObjectId(eUserKey.getObjectId(), qaUser.getOrganization());
 			
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("New user security Key is null",userKey);
 		assertNotNull("New org security Key is null",orgKey);

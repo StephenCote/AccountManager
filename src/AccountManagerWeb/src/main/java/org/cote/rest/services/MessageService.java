@@ -34,6 +34,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
@@ -44,7 +45,7 @@ import org.cote.beans.MessageBean;
 @Path("/message")
 public class MessageService{
 	private static SchemaBean schemaBean = null;
-	
+	public static final Logger logger = Logger.getLogger(MessageService.class.getName());
 	public MessageService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 	}
@@ -66,9 +67,9 @@ public class MessageService{
 		try {
 			System.out.println("Received: " + bean.getName() + ":" + DataUtil.getValueString(bean));
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
+			
 			System.out.println(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			out_msg.setData(e.getMessage());
 			
 		}
@@ -83,8 +84,8 @@ public class MessageService{
 		try {
 			DataUtil.setValue(out_msg, "abc".getBytes());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return out_msg;

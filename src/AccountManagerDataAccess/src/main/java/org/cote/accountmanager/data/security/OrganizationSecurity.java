@@ -59,8 +59,8 @@ public class OrganizationSecurity {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			return null;
 		}
@@ -89,7 +89,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			System.out.println(sqe.getMessage());
 		}
 
@@ -109,15 +109,15 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			System.out.println(sqe.getMessage());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		///System.out.println(new String(public_key));
@@ -158,7 +158,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			System.out.println(sqe.getMessage());
 		}
 
@@ -187,15 +187,15 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			System.out.println(e.getMessage());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return ret;
@@ -223,8 +223,8 @@ public class OrganizationSecurity {
 		try {
 			connection.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		return ret;
@@ -275,7 +275,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			System.out.println(sqe.getMessage());
 		}
 
@@ -308,7 +308,7 @@ public class OrganizationSecurity {
 		}
 		catch (Exception sqe)
 		{
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			System.out.println(sqe.getMessage());
 		}
 

@@ -44,7 +44,7 @@ public class TestGraphics {
 			fos.close();
 		}
 		catch(IOException e){
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 		}
 		

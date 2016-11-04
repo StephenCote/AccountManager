@@ -56,8 +56,8 @@ public class EmailService {
 			logger.info("Email Server Id: " + identity);
 			logger.info("Email Server Cred: " + credential);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		return sendEmail(props, fromContact, contacts, apiConfig.getServiceUrl(),identity,credential,title, content);
@@ -116,13 +116,13 @@ public class EmailService {
 	        out_bool = true;
 		}
 		catch (AddressException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return out_bool;
 	}

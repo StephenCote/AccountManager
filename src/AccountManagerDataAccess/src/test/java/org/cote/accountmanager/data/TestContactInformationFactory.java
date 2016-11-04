@@ -96,11 +96,11 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 	}
@@ -121,8 +121,8 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 		try {
 			add_cit = cif.add(cit);
 		} catch (FactoryException | ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 			logger.error(e.getMessage());
 		}
@@ -140,13 +140,13 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 		try {
 			cit = cif.getContactInformationForUser(user);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error occurred", error);
 		assertNotNull("Unable to get contact information", cit);
@@ -169,13 +169,13 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			updated = cif.update(cit);
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 		}
 		assertFalse("Error occurred", error);
@@ -196,13 +196,13 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			deleted = cif.delete(cit);
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error occurred", error);
 		assertTrue("Unable to delete contact information", deleted);

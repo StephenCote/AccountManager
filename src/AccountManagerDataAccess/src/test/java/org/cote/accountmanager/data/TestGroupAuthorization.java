@@ -39,8 +39,8 @@ public class TestGroupAuthorization extends BaseDataAccessTest {
 			logger.info("Id count #1 = " + ids.size());
 			logger.info("Id count #2 = " + ids2.size());
 		} catch (FactoryException | ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		

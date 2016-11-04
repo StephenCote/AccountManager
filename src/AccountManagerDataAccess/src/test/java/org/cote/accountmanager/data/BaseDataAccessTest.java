@@ -152,16 +152,16 @@ public class BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return data;
 	}
@@ -186,13 +186,13 @@ public class BaseDataAccessTest{
 			}
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return data;
 	}
@@ -210,11 +210,11 @@ public class BaseDataAccessTest{
 				tag = Factories.getTagFactory().getDataTagByName(tag_name, dir);
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} 
 		
 		return tag;
@@ -230,11 +230,11 @@ public class BaseDataAccessTest{
 				role = Factories.getRoleFactory().getUserRoleByName(roleName,parent, owner.getOrganizationId());
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return role;
@@ -254,11 +254,11 @@ public class BaseDataAccessTest{
 			}
 			Factories.getUserFactory().populate(user);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return user;
 	}
@@ -274,13 +274,13 @@ public class BaseDataAccessTest{
 				}
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} 
 		
 		return per;
@@ -323,11 +323,11 @@ public class BaseDataAccessTest{
 				else pattern = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return pattern;
 	}
@@ -357,11 +357,11 @@ public class BaseDataAccessTest{
 				else rule = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return rule;
 	}
@@ -408,11 +408,11 @@ public class BaseDataAccessTest{
 				else policy = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return policy;
 	}
@@ -449,7 +449,7 @@ public class BaseDataAccessTest{
 		catch(FactoryException e){
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} 
 		return func;
@@ -481,8 +481,8 @@ public class BaseDataAccessTest{
 			}
 		}
 		catch(FactoryException | ArgumentException | DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return bsh;
 	}
@@ -497,11 +497,11 @@ public class BaseDataAccessTest{
 				}
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return dir;
 	}
@@ -516,11 +516,11 @@ public class BaseDataAccessTest{
 				}
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return dir;
 	}
@@ -530,11 +530,11 @@ public class BaseDataAccessTest{
 		try {
 			dir =Factories.getGroupFactory().getCreatePath(testUser, "~/Applications/" + name, testUser.getOrganizationId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return dir;
 	}
@@ -552,11 +552,11 @@ public class BaseDataAccessTest{
 			}
 			if(acct != null) Factories.getPersonFactory().populate(acct);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return acct;
 	}
@@ -573,11 +573,11 @@ public class BaseDataAccessTest{
 			}
 			if(acct != null) Factories.getAccountFactory().populate(acct);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return acct;
 	}
@@ -591,14 +591,14 @@ public class BaseDataAccessTest{
 			String perPath = dir.getPath() + "/" + name;
 			per = Factories.getPermissionFactory().makePath(testUser, type, perPath, dir.getOrganizationId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return per;
 	}
@@ -611,14 +611,14 @@ public class BaseDataAccessTest{
 			String perPath = dir.getPath() + "/" + name;
 			role = Factories.getRoleFactory().makePath(testUser, type, perPath, dir.getOrganizationId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return role;
 	}

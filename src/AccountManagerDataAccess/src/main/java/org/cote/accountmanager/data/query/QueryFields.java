@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -70,6 +71,7 @@ import org.cote.accountmanager.objects.types.TagEnumType;
 import org.cote.accountmanager.objects.types.ValueEnumType;
 
 public class QueryFields {
+	public static final Logger logger = Logger.getLogger(QueryFields.class.getName());
 	public QueryFields(){
 		
 	}

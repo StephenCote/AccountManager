@@ -53,14 +53,14 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	/*
@@ -81,11 +81,11 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			assertTrue("User not authorized to view data",AuthorizationService.canViewData(user2, data));
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	*/
@@ -105,8 +105,8 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		try {
 			EffectiveAuthorizationService.rebuildUserRoleCache(Arrays.asList(new UserType[]{user1,user2,user3}), user1.getOrganization());
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 			error = true;
 		}
 		assertFalse("There was an error",error);
@@ -199,14 +199,14 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			
 			//assertTrue("User 2 cann't view the data",AuthorizationService.canViewData(user2, data1));
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	*/
@@ -249,15 +249,15 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			assertFalse("User #1 can still read User #2's data",AuthorizationService.canChange(user1, data3));
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 		}
 		assertFalse("Error occurred", error);

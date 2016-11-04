@@ -59,15 +59,15 @@ public class TestDataFactory extends BaseDataAccessTest {
 			logger.info("Data: " + dataList.size());
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	
@@ -92,12 +92,12 @@ public class TestDataFactory extends BaseDataAccessTest {
 			}
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 	}
@@ -125,8 +125,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 	
@@ -160,8 +160,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 			logger.error(e.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		assertFalse("Factory error", error);
@@ -195,8 +195,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 			logger.error(e.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		assertFalse("Factory error", error);
@@ -234,8 +234,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 			logger.error(e.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		assertFalse("Factory error", error);
@@ -260,8 +260,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} 
 		assertFalse("An error occurred", error);
 		assertNotNull("Data is null", data);
@@ -286,8 +286,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} 
 		assertFalse("An error occurred", error);
 		assertNotNull("Data is null", data);
@@ -308,12 +308,12 @@ public class TestDataFactory extends BaseDataAccessTest {
 			data = df.getDataListByGroup(dir, true, 0, 0, Factories.getDevelopmentOrganization().getId());
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("An error occurred", error);
 		assertTrue("No data returned", data.size() > 0);
@@ -343,17 +343,17 @@ public class TestDataFactory extends BaseDataAccessTest {
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 			error = true;
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} 
 		assertFalse("An error occurred", error);
 		assertTrue("Data not updated", updated);
@@ -390,16 +390,16 @@ public class TestDataFactory extends BaseDataAccessTest {
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 			error = true;
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} 
 		assertFalse("An error occurred", error);
 		assertTrue("Data not updated", updated);
@@ -427,13 +427,13 @@ public class TestDataFactory extends BaseDataAccessTest {
 			assertTrue("Failed to delete long enc data", df.deleteData(data));
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("An error occurred", error);
 		

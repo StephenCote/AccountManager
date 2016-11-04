@@ -54,14 +54,14 @@ public class DatabaseMaintenance extends ThreadService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		logger.info("Cleaned up orphan data in " + (System.currentTimeMillis() - start_cleanup));

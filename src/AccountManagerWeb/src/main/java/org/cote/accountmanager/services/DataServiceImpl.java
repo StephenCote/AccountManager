@@ -96,7 +96,7 @@ public class DataServiceImpl  {
 			logger.error(fe.getMessage());
 			AuditService.denyResult(audit,fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 			AuditService.denyResult(audit,e.getMessage());
 		}
@@ -169,14 +169,14 @@ public class DataServiceImpl  {
 			
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return out_bool;
 	}
@@ -232,11 +232,11 @@ public class DataServiceImpl  {
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;

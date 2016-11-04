@@ -39,7 +39,7 @@ public class AccountManagerServletInit extends HttpServlet {
      */
     public AccountManagerServletInit() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
 
 	/**

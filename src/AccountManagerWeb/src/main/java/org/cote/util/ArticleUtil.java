@@ -107,8 +107,8 @@ public class ArticleUtil {
 			out_str = StreamUtil.streamToString(bis);
 			bis.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return out_str;
 	}
@@ -141,17 +141,17 @@ public class ArticleUtil {
 			UserType adminUser = Factories.getUserFactory().getByName("Admin", organizationId);
 			role = Factories.getRoleFactory().getCreateUserRole(adminUser, name, null);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(role != null){
 			roles.put(key, role);
@@ -254,10 +254,10 @@ public class ArticleUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		String name = null;
@@ -304,16 +304,16 @@ public class ArticleUtil {
 			try {
 				articleData = DataServiceImpl.getListByGroup(dir, instruction, false, startIndex, recordCount);
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
+				
 				AuditService.denyResult(audit, "Error: " + e.getMessage());
 				response.sendError(404);
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 				return;
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
+				
 				AuditService.denyResult(audit, "Error: " + e.getMessage());
 				response.sendError(404);
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 				return;
 			}
 		}
@@ -396,13 +396,13 @@ public class ArticleUtil {
 				section = section.replace("%META%", meta);
 				buff.append(section + "\n");
 			} catch (DataException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 			catch(Exception e){
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 				
 			}
 

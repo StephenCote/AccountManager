@@ -167,7 +167,7 @@ public class OrganizationCommand {
 		catch(ArgumentException ae){
 			logger.error(ae.getMessage());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		}
 	
@@ -208,10 +208,10 @@ public class OrganizationCommand {
 		catch(ArgumentException ae){
 			logger.error(ae.getMessage());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		}
 

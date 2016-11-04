@@ -44,8 +44,8 @@ public class TestCachePerformance extends BaseDataAccessTest {
 			logger.info("Time to randomly pull from cache: " + (System.currentTimeMillis() - start) + "ms");
 		}
 		catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 }

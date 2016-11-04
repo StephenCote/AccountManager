@@ -521,14 +521,14 @@ public class Factories {
 			factory.initialize(connection);
 			init = true;
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error("Trace",e);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error("Trace",e);
 			}
 		}

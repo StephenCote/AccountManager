@@ -60,7 +60,7 @@ public class TikaShredder {
 
 	            
 	        } catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 	        	logger.error(e.getMessage());
 				logger.error("Trace",e);
 			} finally {
@@ -68,7 +68,7 @@ public class TikaShredder {
 					try {
 						input.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						
 						logger.error(e.getMessage());
 						logger.error("Trace",e);
 					}
@@ -99,15 +99,15 @@ public class TikaShredder {
 
 	            
 	        } catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 	        	logger.error(e.getMessage());
 				logger.error("Trace",e);
 			} catch (SAXException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
 				logger.error("Trace",e);
 			} catch (TikaException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
 				logger.error("Trace",e);
 			} finally {
@@ -115,7 +115,7 @@ public class TikaShredder {
 					try {
 						input.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						
 						logger.error(e.getMessage());
 						logger.error("Trace",e);
 					}

@@ -126,7 +126,7 @@ public class AccountManagerFactoryInit implements ServletContextListener {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		
 		logger.info("Priming Factories");
@@ -150,11 +150,11 @@ public class AccountManagerFactoryInit implements ServletContextListener {
 			try {
 				org = Factories.getOrganizationFactory().findOrganization(context.getInitParameter("organization.default"));
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			for(int i = 0; i < ArticleUtil.ARTICLE_ROLES.length; i++){
 				UserRoleType role = ArticleUtil.getRoleByName(ArticleUtil.ARTICLE_ROLES[i], org.getId());

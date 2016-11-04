@@ -212,8 +212,8 @@ public class ContactInformationFactory extends NameIdFactory {
 		catch(DataAccessException dae){
 			throw new FactoryException(dae.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return false;
 	}

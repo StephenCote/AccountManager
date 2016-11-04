@@ -688,8 +688,8 @@ public class BaseService{
 						d.setReadDataBytes(false);
 						obj = (T)d;
 					} catch (DataException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						
+						logger.error(e.getStackTrace());
 					}
 					
 				}
@@ -770,8 +770,8 @@ public class BaseService{
 						d.setReadDataBytes(false);
 						out_obj = (T)d;
 					} catch (DataException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						
+						logger.error(e.getStackTrace());
 					}
 					
 				}
@@ -812,13 +812,13 @@ public class BaseService{
 		try {
 			Factories.populate(FactoryEnumType.valueOf(type.toString()), object);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 	
 	}
@@ -1094,16 +1094,16 @@ public class BaseService{
 				}
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		}
 		return out_bool;
@@ -1133,16 +1133,16 @@ public class BaseService{
 				}
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		}
 		return out_bool;
@@ -1174,12 +1174,12 @@ public class BaseService{
 				System.out.println("User is not authorized to delete the object object '" + typeBean.getName() + "' #" + typeBean.getId());
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 			AuditService.denyResult(audit, e1.getMessage());
 		}
 
@@ -1232,20 +1232,20 @@ public class BaseService{
 				System.out.println("User is not authorized to add the object  '" + dirBean.getName());
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		}
 
@@ -1292,16 +1292,16 @@ public class BaseService{
 				AuditService.denyResult(audit,"User is not authorized to change object '" + dirBean.getName() + "' #" + dirBean.getId());
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		}
 
@@ -1338,11 +1338,11 @@ public class BaseService{
 			}
 
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -1378,11 +1378,11 @@ public class BaseService{
 			}
 
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -1400,12 +1400,12 @@ public class BaseService{
 		}
 		 catch (FactoryException e1) {
 			 logger.error(e1.getMessage());
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} 
 		return readByName(audit,type, user, dir, name, request);
 	}
@@ -1421,13 +1421,13 @@ public class BaseService{
 			dir = Factories.getGroupFactory().getById(groupId, user.getOrganizationId());
 		}
 		 catch (FactoryException e1) {
-			// TODO Auto-generated catch block
+			
 			 logger.error(e1.getMessage());
-			e1.printStackTrace();
+			logger.error(e1.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} 
 		return readByName(audit,type, user, dir, name, request);
 	}
@@ -1469,11 +1469,11 @@ public class BaseService{
 				AuditService.denyResult(audit,"User is not authorized to view object '" + dir.getName() + "' #" + dir.getId());
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -1505,11 +1505,11 @@ public class BaseService{
 				AuditService.denyResult(audit,"User is not authorized to view object '" + parent.getName() + "' #" + parent.getId());
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -1555,12 +1555,12 @@ public class BaseService{
 				out_obj = null;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 			out_obj = null;
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 			out_obj = null;
 		} 
 
@@ -1590,13 +1590,13 @@ public class BaseService{
 			//dir = Factories.getGroupFactory().getById(groupId, user.getOrganizationId());
 		}
 		 catch (FactoryException e1) {
-			// TODO Auto-generated catch block
+			
 			 logger.error(e1.getMessage());
-			e1.printStackTrace();
+			logger.error(e1.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} 
 		if(dir == null){
 			AuditService.denyResult(audit, "Path '" + path + "' does not exist");
@@ -1615,11 +1615,11 @@ public class BaseService{
 				AuditService.denyResult(audit,"User is not authorized to view objects in the specified group '" + dir.getName() + "' #" + dir.getId());
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_count;
@@ -1669,11 +1669,11 @@ public class BaseService{
 				AuditService.denyResult(audit,"User is not authorized to count directly in organization " + organizationId);
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_count;
@@ -1689,11 +1689,11 @@ public class BaseService{
 				AuditService.denyResult(audit,"User is not authorized to count in parent '" + parent.getName() + "' #" + parent.getId());
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_count;
@@ -1712,11 +1712,11 @@ public class BaseService{
 				AuditService.denyResult(audit,"User is not authorized to view user lists in the specified organization '" + org.getName() + "' #" + organizationId);
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_count;
@@ -1770,11 +1770,11 @@ public class BaseService{
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -1806,13 +1806,13 @@ public class BaseService{
 				}
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 
 
@@ -1905,11 +1905,11 @@ public class BaseService{
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -1946,11 +1946,11 @@ public class BaseService{
 			
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return bean;
 	}

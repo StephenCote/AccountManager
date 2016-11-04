@@ -116,11 +116,11 @@ public class UserService{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return user;
 	}
@@ -174,20 +174,20 @@ public class UserService{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			//fe.printStackTrace();
+			//logger.error(fe.getStackTrace());
 			user = null;
 			AuditService.denyResult(audit, "Error: " + fe.getMessage());
 			authResponse.setMessage("An error occured.");
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			//e.printStackTrace();
+			//logger.error(e.getStackTrace());
 			user = null;
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			authResponse.setMessage("An error occured.");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			
+			//logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 		}
 		if(user != null){
@@ -235,13 +235,13 @@ public class UserService{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			AuditService.denyResult(audit, "Error: " + fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		ServiceUtil.clearCookie(response, "OrganizationId");
 		ServiceUtil.clearCookie(response, "OrganizationPath");
@@ -277,8 +277,8 @@ public class UserService{
 		try {
 			registered = RegistrationUtil.confirmUserRegistration(id,  regId, new String(authRequest.getCredential(),"UTF-8"),request.getRemoteAddr(), sessionId);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		/*
 		MessageBean bean = new MessageBean();
@@ -305,11 +305,11 @@ public class UserService{
 		try {
 			Factories.getUserFactory().normalize(user);
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		if(user.getOrganizationId().compareTo(0L) == 0) user.setOrganizationId(Factories.getPublicOrganization().getId());
 		
@@ -334,7 +334,7 @@ public class UserService{
 			}
 			catch(FactoryException fe){
 				logger.error(fe.getMessage());
-				fe.printStackTrace();
+				logger.error(fe.getStackTrace());
 			}
 		}
 		return BeanUtil.getSessionBean(session1, (session1 == null ? null : session1.getSessionId()));
@@ -387,13 +387,13 @@ public class UserService{
 		try {
 			org =Factories.getOrganizationFactory().getOrganizationById(orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(org == null){
 			return new ArrayList<UserType>();

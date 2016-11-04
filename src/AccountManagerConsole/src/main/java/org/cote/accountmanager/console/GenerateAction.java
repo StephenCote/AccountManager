@@ -20,8 +20,8 @@ public class GenerateAction {
 			List<OrganizationType> orgs = Factories.getOrganizationFactory().list(new QueryField[]{}, 0L);
 
 		} catch (FactoryException | ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		}
 		*/
 		
@@ -37,15 +37,15 @@ public class GenerateAction {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			if(connection != null){
 				try {
 					connection.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					logger.error(e.getStackTrace());
 				}
 			}
 		}

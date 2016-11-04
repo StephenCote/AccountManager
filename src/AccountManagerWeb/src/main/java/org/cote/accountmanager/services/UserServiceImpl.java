@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -43,7 +44,7 @@ import org.cote.accountmanager.service.rest.BaseService;
 
 
 public class UserServiceImpl  {
-	
+	public static final Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
 	public static final String defaultDirectory = "~/Users";
 
 	public static boolean delete(UserType bean,HttpServletRequest request){
@@ -104,11 +105,11 @@ public class UserServiceImpl  {
 			}
 			
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;

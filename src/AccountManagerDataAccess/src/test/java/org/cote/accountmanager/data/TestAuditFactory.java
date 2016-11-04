@@ -58,8 +58,8 @@ public class TestAuditFactory{
 		try {
 			audits = Factories.getAuditFactory().getAuditBySource(AuditEnumType.GROUP, id);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Failed to lookup audit", audits.length > 0);
 	}
@@ -79,8 +79,8 @@ public class TestAuditFactory{
 			success = Factories.getAuditFactory().addAudit(audit);
 			Factories.getAuditFactory().flushSpool();
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		remainingRows = Factories.getAuditFactory().getDataTable("audit").getRows().size();
 		assertTrue("Audit was not added",success);
@@ -93,8 +93,8 @@ public class TestAuditFactory{
 		try {
 			audits = Factories.getAuditFactory().getAuditBySource(AuditEnumType.INFO, "123");
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		logger.info("Retrieved " + audits.length + " audits");
 		assertTrue("Expected at least one audit type", audits.length > 0);

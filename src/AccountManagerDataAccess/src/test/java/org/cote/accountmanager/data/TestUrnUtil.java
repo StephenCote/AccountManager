@@ -23,7 +23,7 @@ public class TestUrnUtil extends BaseDataAccessTest {
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		}
 		logger.info("Urn=" + urn);
@@ -53,11 +53,11 @@ public class TestUrnUtil extends BaseDataAccessTest {
 		try {
 			org = UrnUtil.getOrganization(orgUrn);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("Org is null for path " + organizationPath,org);
 		
@@ -77,11 +77,11 @@ public class TestUrnUtil extends BaseDataAccessTest {
 			Factories.getGroupFactory().update(testUser.getHomeDirectory());
 
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		DirectoryGroupType dir = testUser.getHomeDirectory();
 

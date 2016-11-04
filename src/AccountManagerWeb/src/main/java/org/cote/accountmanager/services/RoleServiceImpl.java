@@ -77,13 +77,13 @@ public class RoleServiceImpl  {
 			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(org != null) role = Factories.getRoleFactory().getRoleById(roleId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(role != null) out_bool = BaseService.authorizeUser(AuditEnumType.ROLE, orgId, userId, role, view, edit, delete, create, request);
 		return out_bool;
@@ -152,15 +152,15 @@ public class RoleServiceImpl  {
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
 			logger.info(e.getMessage());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
 			logger.info(e.getMessage());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return targetRole;
 
@@ -192,15 +192,15 @@ public class RoleServiceImpl  {
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
 			logger.info(e.getMessage());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
 			logger.info(e.getMessage());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return targetRole;
 
@@ -269,14 +269,14 @@ public class RoleServiceImpl  {
 			}
 
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return out_bool;
 	}
@@ -295,11 +295,11 @@ public class RoleServiceImpl  {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
 			
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		/*
 
@@ -335,11 +335,11 @@ public class RoleServiceImpl  {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(role == null){
 			System.out.println("Invalid parentId reference: " + parentId);
@@ -391,11 +391,11 @@ public class RoleServiceImpl  {
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -451,11 +451,11 @@ public class RoleServiceImpl  {
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -528,11 +528,11 @@ public class RoleServiceImpl  {
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -568,11 +568,11 @@ public class RoleServiceImpl  {
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -610,11 +610,11 @@ public class RoleServiceImpl  {
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;

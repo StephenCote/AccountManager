@@ -24,11 +24,13 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 
 public class ServletRequestMock implements HttpServletRequest {
+	public static final Logger logger = Logger.getLogger(ServletRequestMock.class.getName());
 	HttpSessionMock session = null;
 	CookieMock[] cookies = null;
 	public ServletRequestMock(String url,String sessionId, long organizationId){
@@ -38,11 +40,11 @@ public class ServletRequestMock implements HttpServletRequest {
 		try {
 			cookies[0] = new CookieMock("OrganizationPath",Factories.getOrganizationFactory().getOrganizationPath(organizationId));
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	@Override

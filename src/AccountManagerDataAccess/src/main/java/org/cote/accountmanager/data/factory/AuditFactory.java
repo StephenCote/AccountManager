@@ -171,8 +171,8 @@ public class AuditFactory extends FactoryBase {
 			rset.close();
 			connection.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			throw new FactoryException(e.getMessage());
 		}
 		return out_list;

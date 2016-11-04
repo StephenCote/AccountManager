@@ -37,10 +37,10 @@ public class TestUserLogin extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNull("User #1 is null", user1);
 
@@ -62,10 +62,10 @@ public class TestUserLogin extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("User #1 is null", session1);
 		assertNotNull("Session #1 is null", session1.getSession());
@@ -88,11 +88,11 @@ public class TestUserLogin extends BaseDataAccessTest {
 			
 			user = SessionSecurity.getUserBySession(sessionId, Factories.getDevelopmentOrganization().getId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("User is null", user);
 		assertNotNull("User session is null", user.getSession());
@@ -111,8 +111,8 @@ public class TestUserLogin extends BaseDataAccessTest {
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue(updated);
 		
@@ -126,8 +126,8 @@ public class TestUserLogin extends BaseDataAccessTest {
 			logout = SessionSecurity.logout(sessionId, Factories.getDevelopmentOrganization().getId());
 			if(logout) logout = SessionSecurity.logout(sessionId2, Factories.getDevelopmentOrganization().getId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("User session '" + sessionId + "' was not logged out", logout);
 	}
@@ -146,10 +146,10 @@ public class TestUserLogin extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("User #1 is null", user1);
 		assertNotNull("Session #1 is null", session1);
@@ -159,8 +159,8 @@ public class TestUserLogin extends BaseDataAccessTest {
 		try {
 			logout = SessionSecurity.logout(sessionId, Factories.getDevelopmentOrganization().getId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("User session '" + sessionId + "' was not logged out", logout);
 		Factories.getSessionFactory().clearSessions();
@@ -178,10 +178,10 @@ public class TestUserLogin extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("User #1 is null", session1);
 		assertNotNull("Session #1 is null", session1.getSession());

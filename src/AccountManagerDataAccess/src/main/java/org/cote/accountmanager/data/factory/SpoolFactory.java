@@ -180,16 +180,16 @@ public abstract class SpoolFactory extends FactoryBase {
 			rset.close();
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return out_list;
@@ -261,14 +261,14 @@ public abstract class SpoolFactory extends FactoryBase {
 			updated = statement.executeUpdate();
 		}
 		catch(SQLException sqe){
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		
 		try {
 			connection.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return (updated > 0);

@@ -41,8 +41,8 @@ public class LoginService {
 			request.getSession();
 			request.login(credential.getOrganizationPath() + "/" + credential.getName(), new String(credential.getCredential()));
 		} catch (ServletException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			loginSuccess = false;
 		}
 		/*

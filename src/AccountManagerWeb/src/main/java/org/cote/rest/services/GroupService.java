@@ -144,11 +144,11 @@ public class GroupService {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			AuditService.denyResult(audit, fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		} 
 		return out_count;
@@ -167,13 +167,13 @@ public class GroupService {
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
 			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, organizationId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
 			
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		
@@ -191,13 +191,13 @@ public class GroupService {
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
 			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, organizationId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
 			
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(group != null) out_bool = BaseService.authorizeRole(AuditEnumType.GROUP, organizationId, roleId, group, view, edit, delete, create, request);
 		return out_bool;
@@ -213,13 +213,13 @@ public class GroupService {
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
 			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, organizationId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(group != null) out_bool = BaseService.authorizeUser(AuditEnumType.GROUP, organizationId, userId, group, view, edit, delete, create, request);
 		return out_bool;
@@ -246,12 +246,12 @@ public class GroupService {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			AuditService.denyResult(audit, fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return bean;
 	}
@@ -280,13 +280,13 @@ public class GroupService {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(targOrg != null) targGroup = Factories.getGroupFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		if(targGroup != null) return GroupServiceImpl.getListOfPersons(user, targGroup);
@@ -301,13 +301,13 @@ public class GroupService {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(targOrg != null) targGroup = Factories.getGroupFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		if(targGroup != null) return GroupServiceImpl.getListOfAccounts(user, targGroup);
@@ -322,13 +322,13 @@ public class GroupService {
 			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
 			if(targOrg != null) targGroup = Factories.getGroupFactory().getById(recordId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		if(targGroup != null) return GroupServiceImpl.getListOfUsers(user, targGroup);
@@ -359,13 +359,13 @@ public class GroupService {
 			org = Factories.getOrganizationFactory().getById(orgId, 0L);
 			if(org != null) parent =Factories.getGroupFactory().getById(parentId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(parent == null){
 			System.out.println("Null group for id " + parentId + " in org " + org);
@@ -407,11 +407,11 @@ public class GroupService {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			AuditService.denyResult(audit, fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, e.getMessage());
 		}
 		return bean;
@@ -447,13 +447,13 @@ public class GroupService {
 				AuditService.permitResult(audit, "GetCreate group " + bean.getName());
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			AuditService.denyResult(audit, "Failed to create path with error " + e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 			AuditService.denyResult(audit, "Failed to create path with error " + e.getMessage());
 		}

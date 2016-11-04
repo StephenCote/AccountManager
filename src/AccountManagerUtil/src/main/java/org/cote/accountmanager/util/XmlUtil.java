@@ -212,7 +212,7 @@ public class XmlUtil {
 			try {
 				bais.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error("Trace",e);
 			}
 		}

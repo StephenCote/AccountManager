@@ -63,17 +63,17 @@ public class TestImportContacts extends BaseDataAccessTest{
 		
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}  catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		catch(Exception e){
 			logger.error("Unknown Exception: " + e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		
@@ -158,17 +158,17 @@ public class TestImportContacts extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().close(sessionId);			
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	private void importPersonRow(String sessionId,DirectoryGroupType pDir, RowType row){
@@ -229,8 +229,8 @@ public class TestImportContacts extends BaseDataAccessTest{
 			cit.getContacts().add(contact);
 		}
 		catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		

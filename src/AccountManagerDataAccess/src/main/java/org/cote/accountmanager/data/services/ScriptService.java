@@ -93,7 +93,7 @@ public class ScriptService {
 		try {
 			value = DataUtil.getValueString(data);
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		}
 		return run(user,data.getUrn(),value,params);
@@ -120,7 +120,7 @@ public class ScriptService {
 				//logger.info("Evaluating: " + name);
 				resp = compScr.eval(bd);
 			} catch (ScriptException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
 			}
 		}
@@ -141,7 +141,7 @@ public class ScriptService {
 				out_scr = compEngine.compile(script);
 				jsCompiled.put(name, out_scr);
 			} catch (ScriptException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
 			}
 

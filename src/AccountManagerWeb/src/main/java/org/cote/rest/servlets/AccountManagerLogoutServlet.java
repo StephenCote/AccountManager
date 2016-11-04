@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.SessionSecurity;
@@ -41,6 +42,7 @@ import org.cote.accountmanager.service.util.ServiceUtil;
  * Servlet implementation class AccountManagerLogoutServlet
  */
 public class AccountManagerLogoutServlet extends HttpServlet {
+	public static final Logger logger = Logger.getLogger(AccountManagerLogoutServlet.class.getName());
 	private static final long serialVersionUID = 1L;
        
     /**
@@ -48,7 +50,7 @@ public class AccountManagerLogoutServlet extends HttpServlet {
      */
     public AccountManagerLogoutServlet() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
 
 	/**
@@ -62,11 +64,11 @@ public class AccountManagerLogoutServlet extends HttpServlet {
 			if(org != null) user = SessionSecurity.getUserBySession(ServiceUtil.getSessionId(request), org.getId());
 			if(user != null) SessionSecurity.logout(user);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		//logger.info("Invalidate the session because the JEE LoginModule was used.");		
 		request.getSession().invalidate();

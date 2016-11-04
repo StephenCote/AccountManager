@@ -95,7 +95,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}
 		return items;
 	}
@@ -184,7 +184,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}
 		return items;
 	}
@@ -282,7 +282,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 			}
 			catch(FactoryException fe){
 				logger.error(fe.getMessage());
-				fe.printStackTrace();
+				logger.error(fe.getStackTrace());
 			}
 			return items;
 		}

@@ -45,8 +45,8 @@ public class TestPermissions extends BaseDataAccessTest{
 				Factories.getPermissionFactory().delete(per3);
 				Factories.getPermissionFactory().delete(per4);
 			} catch (FactoryException | ArgumentException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				
+				logger.error(e1.getStackTrace());
 			}
 			Factories.cleanupOrphans();
 			app1 = getApplication("Application 1");
@@ -83,9 +83,9 @@ public class TestPermissions extends BaseDataAccessTest{
 		catch(FactoryException e){
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} 
 
 		PersonType acct1 = getApplicationPerson("Person #1", app1);
@@ -151,14 +151,14 @@ public class TestPermissions extends BaseDataAccessTest{
 			
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 
@@ -193,14 +193,14 @@ public class TestPermissions extends BaseDataAccessTest{
 			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct3,app1, new BasePermissionType[] { per2 } );
 			assertTrue("Account #3 should have the permission", havePerm);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 
@@ -226,14 +226,14 @@ public class TestPermissions extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().write(sess);
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	*/
@@ -258,11 +258,11 @@ public class TestPermissions extends BaseDataAccessTest{
 			per = Factories.getPermissionFactory().getPermissionList(PermissionEnumType.OBJECT, 0, 10, testUser.getOrganizationId());
 			per2 = Factories.getPermissionFactory().getPermissionList(rootPer, PermissionEnumType.OBJECT, 0, 10, testUser.getOrganizationId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		/// Just check greater than zero off the root since there are default permissions there
 		///

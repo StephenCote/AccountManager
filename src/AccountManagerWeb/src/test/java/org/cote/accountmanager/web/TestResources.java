@@ -113,8 +113,8 @@ public class TestResources{
 				//DataType d1 = (DataType)chk1;
 				//logger.info("Restored: " + events.size() + " events");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			
 		JSONUtil.importObject(json, TestRequest.class);
@@ -345,14 +345,14 @@ public class TestResources{
 		try {
 			b = StreamUtil.getStreamBytes(in);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		try {
 			in.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return b;
 	}

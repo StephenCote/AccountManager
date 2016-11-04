@@ -118,14 +118,14 @@ public class OrganizationFactory extends NameIdFactory {
 				stat.close();
 				//conn.commit();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error("Trace",e);
 			}
 			finally{
 				try {
 					conn.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
+					
 					logger.error("Trace",e);
 				}
 			}

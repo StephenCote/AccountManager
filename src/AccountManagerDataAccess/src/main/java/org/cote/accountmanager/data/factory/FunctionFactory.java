@@ -142,7 +142,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 		catch(DataAccessException dae){
 			throw new FactoryException(dae.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			throw new FactoryException(e.getMessage());
 		}
 		return false;

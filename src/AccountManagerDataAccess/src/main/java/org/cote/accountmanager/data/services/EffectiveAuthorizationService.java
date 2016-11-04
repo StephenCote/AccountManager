@@ -694,8 +694,8 @@ public class EffectiveAuthorizationService {
 			try {
 				Factories.getPersonFactory().populate(person);
 			} catch (FactoryException | ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			for(int i = 0; i < person.getAccounts().size();i++){
 				if(getEntitlementsGrantAccess(object, person.getAccounts().get(i),permissions)){
@@ -893,15 +893,15 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		return out_ents;
@@ -960,15 +960,15 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		return out_bool;
@@ -1296,15 +1296,15 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		return out_bool;
@@ -1373,15 +1373,15 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		return roles;
@@ -1626,15 +1626,15 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		logger.info("Rebuilt role cache with " + updated + " operations");
@@ -1693,15 +1693,15 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		return out_bool;
@@ -1714,8 +1714,8 @@ public class EffectiveAuthorizationService {
 			stat.executeQuery("SELECT * FROM cache_roles();");
 			out_bool = true;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return out_bool;
@@ -1733,8 +1733,8 @@ public class EffectiveAuthorizationService {
 			stat.executeQuery("SELECT * FROM cache_data_entitlements();");
 			out_bool = true;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		logger.info("Rebuilt Entitlements Cache in " + (System.currentTimeMillis() - start) + "ms");
 		return out_bool;

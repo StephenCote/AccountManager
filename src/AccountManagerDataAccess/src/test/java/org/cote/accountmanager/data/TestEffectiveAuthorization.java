@@ -36,8 +36,8 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 			acctRole1 = getRole(testUser,"Account Role 1",RoleEnumType.ACCOUNT,baseRole);
 			perRole1 = getRole(testUser,"Person Role 1",RoleEnumType.PERSON,baseRole);
 		} catch (FactoryException | ArgumentException | DataAccessException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			
+			logger.error(e2.getStackTrace());
 		}
 		
 		assertNotNull("Group is null", acctGrp1);
@@ -56,8 +56,8 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 			try {
 				Factories.getPersonFactory().update(person1);
 			} catch (FactoryException  e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		if(person2.getAccounts().size() == 0){
@@ -65,8 +65,8 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 			try {
 				Factories.getPersonFactory().update(person2);
 			} catch (FactoryException  e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		DataType data = newTextData("Data 1","This is the text data",testUser,app1);
@@ -90,8 +90,8 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 			logger.info("PASS #5: Test account group view data");
 			testGenericAuthorization(testUser,data2,acctGrp1,account4,AuthorizationService.getViewPermissionForMapType(data2.getNameType(), data2.getOrganizationId()));
 		} catch (FactoryException | ArgumentException | DataAccessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		}
 
 		
@@ -116,8 +116,8 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 			deAuthZ = AuthorizationService.authorize(admin, setMember, object, AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId()), false);
 			notAuthZ = AuthorizationService.isAuthorized(checkMember,object, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		assertTrue("Failed to set: " + authZStr,setAuthZ);

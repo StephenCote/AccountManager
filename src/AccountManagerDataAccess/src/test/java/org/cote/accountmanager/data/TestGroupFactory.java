@@ -23,11 +23,11 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		try {
 			dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(testUser, GroupEnumType.DATA, "~", testUser.getOrganizationId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("~ path is null",dir);
 	}
@@ -48,11 +48,11 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error occurred", error);
 		assertTrue("Directory not added", addDir);
@@ -76,11 +76,11 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error occurred", error);
 		assertTrue("Directory not changed", editDir);
@@ -105,11 +105,11 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error occurred", error);
 		assertNotNull("Path is null", path);
@@ -137,13 +137,13 @@ public class TestGroupFactory extends BaseDataAccessTest{
 			}
 			path = Factories.getGroupFactory().makePath(null, GroupEnumType.DATA,"/Example1/Example2/Example3/Example4", dev.getId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error occurred", error);
 		assertTrue("Directory path not made", path);

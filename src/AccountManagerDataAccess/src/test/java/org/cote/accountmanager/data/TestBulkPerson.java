@@ -47,13 +47,13 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			success = true;
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}  catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Success bit is false",success);
 	}
@@ -131,17 +131,17 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			success = true;
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}  catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		catch(Exception e){
 			logger.error("Unknown Exception: " + e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Success bit is false",success);
 	}
@@ -176,11 +176,11 @@ public class TestBulkPerson extends BaseDataAccessTest{
 
 		}
 		catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 */

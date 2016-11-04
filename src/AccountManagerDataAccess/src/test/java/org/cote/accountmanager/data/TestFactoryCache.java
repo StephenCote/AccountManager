@@ -57,8 +57,8 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			assertNotNull("Group org is null",dgt.getOrganization());
 			success = true;
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Bit not set", success);
 	}
@@ -77,14 +77,14 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			Factories.getDataFactory().update(data);
 			datas = Factories.getDataFactory().getDataListByGroup(sessionUser.getHomeDirectory(), true, 0, 10, sessionUser.getOrganizationId());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		data = getTestData("Test data",sessionUser.getHomeDirectory());
 		
@@ -106,13 +106,13 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			}
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return data;
 	}
@@ -133,11 +133,11 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			success = true;
 		}
 		 catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Bit not set", success);
 	}

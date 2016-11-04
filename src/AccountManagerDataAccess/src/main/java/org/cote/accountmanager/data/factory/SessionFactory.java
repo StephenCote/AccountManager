@@ -102,14 +102,14 @@ public class SessionFactory extends FactoryBase {
 		catch (Exception sqe)
 		{
 			System.out.println(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return out_bool;
@@ -130,14 +130,14 @@ public class SessionFactory extends FactoryBase {
 		catch (Exception sqe)
 		{
 			System.out.println(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return out_bool;
@@ -319,15 +319,15 @@ public class SessionFactory extends FactoryBase {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		if(recover == false && updated <= 0){
@@ -418,10 +418,10 @@ public class SessionFactory extends FactoryBase {
 			removeFromCache(map);
 		}
 		catch(SQLException sqe){
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		catch(DataAccessException de){
-			de.printStackTrace();
+			logger.error(de.getStackTrace());
 		}
 		
 		return true;
@@ -497,16 +497,16 @@ public class SessionFactory extends FactoryBase {
 			
 			out_bool = true;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 
@@ -532,16 +532,16 @@ public class SessionFactory extends FactoryBase {
 			rset.close();
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return out_list;

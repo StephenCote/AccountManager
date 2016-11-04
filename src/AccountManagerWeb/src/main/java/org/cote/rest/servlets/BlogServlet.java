@@ -46,7 +46,7 @@ public class BlogServlet extends HttpServlet {
      */
     public BlogServlet() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
 
 	/**

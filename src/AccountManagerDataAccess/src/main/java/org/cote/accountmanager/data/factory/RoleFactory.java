@@ -195,8 +195,8 @@ public class RoleFactory extends NameIdFactory {
 		try {
 			childRoles = getRoleList(new QueryField[]{QueryFields.getFieldParent(role.getId())}, null, 0, 0, role.getOrganizationId());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		//System.out.println("Remove " + childRoles.size() + " children of role #" + role.getId());
 		for(int i = childRoles.size() -1; i >=0; i--) delete(childRoles.get(i));

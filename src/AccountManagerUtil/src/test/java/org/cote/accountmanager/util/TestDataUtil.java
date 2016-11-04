@@ -126,7 +126,7 @@ public class TestDataUtil {
 		catch(DataException de){
 			error = true;
 			logger.error(de.getMessage());
-			de.printStackTrace();
+			logger.error(de.getStackTrace());
 			
 		}
 		logger.info("Completing test ...");

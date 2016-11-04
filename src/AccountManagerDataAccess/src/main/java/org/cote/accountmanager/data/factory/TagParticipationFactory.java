@@ -308,15 +308,15 @@ public class TagParticipationFactory extends ParticipationFactory {
 			
 		}
 		catch(SQLException sqe){
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			throw new FactoryException(sqe.getMessage());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 
@@ -365,15 +365,15 @@ public class TagParticipationFactory extends ParticipationFactory {
 			
 		}
 		catch(SQLException sqe){
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			throw new FactoryException(sqe.getMessage());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return count;

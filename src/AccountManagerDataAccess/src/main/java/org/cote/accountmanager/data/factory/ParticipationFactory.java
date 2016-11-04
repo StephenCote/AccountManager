@@ -254,8 +254,8 @@ public abstract class ParticipationFactory extends NameIdFactory {
 			try {
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, factoryType, participant);
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			return true;
 		}
@@ -275,9 +275,9 @@ public abstract class ParticipationFactory extends NameIdFactory {
 				//BulkFactories.getBulkFactory().setDirty(factoryType);
 				return true;
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			} 
 			return false;
 		}

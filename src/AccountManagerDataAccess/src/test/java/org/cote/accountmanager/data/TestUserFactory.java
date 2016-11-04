@@ -42,12 +42,12 @@ public class TestUserFactory extends BaseDataAccessTest{
 		}
 		catch(ArgumentException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			error = true;
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			error = true;
 		}
 		assertFalse("Error occurred", error);
@@ -67,11 +67,11 @@ public class TestUserFactory extends BaseDataAccessTest{
 
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error occurred", error);
 
@@ -103,17 +103,17 @@ public class TestUserFactory extends BaseDataAccessTest{
 
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			error = true;
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			error = true;
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error occurred", error);
 
@@ -156,17 +156,17 @@ public class TestUserFactory extends BaseDataAccessTest{
 
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			error = true;
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			error = true;
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error occurred", error);
 

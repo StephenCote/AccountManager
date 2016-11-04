@@ -72,15 +72,16 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class PolicyEvaluator {
 	private static DatatypeFactory dtFactory = null;
+	public static final Logger logger = Logger.getLogger(PolicyEvaluator.class.getName());
+
 	static{
 		try {
 			dtFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
-	public static final Logger logger = Logger.getLogger(PolicyEvaluator.class.getName());
 	public static PolicyType getPolicyFromRequest(PolicyRequestType prt) throws FactoryException, ArgumentException{
 		OrganizationType org = Factories.getOrganizationFactory().findOrganization(prt.getOrganizationPath());
 		if(org == null){

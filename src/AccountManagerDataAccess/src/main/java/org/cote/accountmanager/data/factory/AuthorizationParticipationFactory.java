@@ -103,7 +103,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}
 		return items;
 	}
@@ -127,7 +127,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}
 		return items;
 	}
@@ -152,7 +152,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}
 		return items;
 	}
@@ -177,7 +177,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}
 		return items;
 	}

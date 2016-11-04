@@ -45,7 +45,7 @@ public class ThumbnailServlet extends HttpServlet {
      */
     public ThumbnailServlet() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
 
 	/**

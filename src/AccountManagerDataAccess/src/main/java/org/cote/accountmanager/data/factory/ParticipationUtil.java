@@ -142,7 +142,7 @@ public class ParticipationUtil {
 		catch (SQLException sqe)
 		{
 			System.out.println(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			
 		}
 		finally
@@ -150,8 +150,8 @@ public class ParticipationUtil {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return ArrayUtils.toPrimitive(out_ids.toArray(new Long[out_ids.size()]));
@@ -249,7 +249,7 @@ public class ParticipationUtil {
 		catch (SQLException sqe)
 		{
 			System.out.println(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			
 		}
 		finally
@@ -257,8 +257,8 @@ public class ParticipationUtil {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return ArrayUtils.toPrimitive(out_ids.toArray(new Long[out_ids.size()]));

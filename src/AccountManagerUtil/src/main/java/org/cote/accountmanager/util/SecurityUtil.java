@@ -85,7 +85,8 @@ public class SecurityUtil {
 					logger.error(e.getMessage());
 				}
 			}
-			secure_random.nextBytes(outByte);
+			if(secure_random == null) return new byte[0];
+			else secure_random.nextBytes(outByte);
 		}
 		else{
 			if(random == null){

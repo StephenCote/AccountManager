@@ -18,8 +18,8 @@ public class JSONUtil {
 			TypeFactory t = TypeFactory.defaultInstance();
 			map = mapper.readValue(data, t.constructMapType(Map.class, keyClass, mapClass));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return map;
 		

@@ -119,7 +119,7 @@ public class BulkInsertUtil {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			throw new FactoryException(sqe.getMessage());
 		}
 		return ps;
@@ -145,9 +145,9 @@ public class BulkInsertUtil {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 				throw new FactoryException(e.getMessage());
 			}
 		}
@@ -218,31 +218,31 @@ public class BulkInsertUtil {
 		catch(NullPointerException npe){
 			if(insStatement != null) logger.error("Null pointer in: BULK INSERT - " + rLen + " : " + insStatement.getParameterCount() + " : " + insStatement.getInsertTemplate());
 			logger.error(npe.getMessage());
-			npe.printStackTrace();
+			logger.error(npe.getStackTrace());
 		}
 		catch(DataAccessException dae){
 			logger.error(dae.getMessage());
-			dae.printStackTrace();
+			logger.error(dae.getStackTrace());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}
 		catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			while(( e = e.getNextException()) != null){
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		//logger.info("Bulk Write Time: " + (System.currentTimeMillis() - startInsert));

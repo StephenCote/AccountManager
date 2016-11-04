@@ -72,7 +72,7 @@ public class TestFactorySetup {
 		catch(SQLException sqe){
 			error = true;
 			logger.error(sqe.getMessage());
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
 		assertFalse("Error occurred",error);
 		
@@ -87,16 +87,16 @@ public class TestFactorySetup {
 		try {
 			setup = FactoryDefaults.setupAccountManager("password1");
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			error = true;
 		}
 		assertFalse("Error occurred", error);
@@ -137,11 +137,11 @@ public class TestFactorySetup {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		

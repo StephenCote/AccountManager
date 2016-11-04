@@ -86,9 +86,9 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			logger.info("Ran the script: " + resp.longValue());
 		}
 		catch(RuntimeException | FactoryException | ArgumentException  e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} 
 
 	}
@@ -111,7 +111,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		catch(FactoryException e){
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} 
 
@@ -135,7 +135,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		catch(FactoryException e){
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} 
 	}
@@ -200,7 +200,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		catch(FactoryException e){
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} 
 		return pol;

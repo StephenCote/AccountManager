@@ -41,6 +41,7 @@ import javax.security.jacc.PolicyContext;
 import javax.security.jacc.PolicyContextException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -51,7 +52,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.service.util.ServiceUtil;
 
 public class AccountManagerLoginModule implements LoginModule {
-
+	public static final Logger logger = Logger.getLogger(AccountManagerLoginModule.class.getName());
 	//private static String EAI_PASSWORD = "debugdebug";
 	
     // initial state
@@ -156,8 +157,8 @@ public class AccountManagerLoginModule implements LoginModule {
         try {
 			request = (HttpServletRequest) PolicyContext.getContext("javax.servlet.http.HttpServletRequest");
 		} catch (PolicyContextException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			throw new LoginException("Unable to obtain request context");
 		}
         
@@ -180,11 +181,11 @@ public class AccountManagerLoginModule implements LoginModule {
 			user = SessionSecurity.login(ServiceUtil.getSessionId(request),username, CredentialEnumType.HASHED_PASSWORD,password, orgType.getId());
 
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
         if (debug())
@@ -281,7 +282,7 @@ public class AccountManagerLoginModule implements LoginModule {
         } catch (Throwable t) {
             if (debug()) {
                 System.out.println(t.getMessage());
-                t.printStackTrace();
+                logger.error(t.getStackTrace());
             }
             throw new LoginException(t.toString());
         }

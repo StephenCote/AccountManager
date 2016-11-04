@@ -34,7 +34,10 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.apache.log4j.Logger;
+
 public class ConnectionFactory {
+	public static final Logger logger = Logger.getLogger(ConnectionFactory.class.getName());
 	private String driverClassName = null;
 	private String userName = null;
 	private String userPassword = null;
@@ -149,9 +152,9 @@ public class ConnectionFactory {
 			Class.forName(driverClassName);
 			out_bool = true;
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			
 			System.out.println("Class Not Found for '" + driverClassName + '"');
-			/// e.printStackTrace();
+			/// logger.error(e.getStackTrace());
 		}
 	    driverCheck.put(driverClassName, out_bool);
 		return out_bool;
@@ -178,7 +181,7 @@ public class ConnectionFactory {
 		}
 		catch (SQLException e) {
  			System.out.println("Connection Failed! Check output console");
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return connection;
 	}
@@ -196,8 +199,8 @@ public class ConnectionFactory {
 				//System.out.println("AutoCommit=" + out_connection.getAutoCommit());
 			}
 			catch (NamingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		try{
@@ -205,7 +208,7 @@ public class ConnectionFactory {
 
 		}
 		catch(SQLException sqe){
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 		}
  
   

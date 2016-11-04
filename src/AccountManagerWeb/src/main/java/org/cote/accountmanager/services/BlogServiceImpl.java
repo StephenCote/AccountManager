@@ -72,7 +72,7 @@ public class BlogServiceImpl{
 			AuditService.denyResult(audit, ae.getMessage());
 			logger.error(ae.getMessage());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			AuditService.denyResult(audit, e.getMessage());
 			logger.error(e.getMessage());
 		}
@@ -112,7 +112,7 @@ public class BlogServiceImpl{
 			AuditService.denyResult(audit, ae.getMessage());
 			logger.error(ae.getMessage());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			AuditService.denyResult(audit, e.getMessage());
 			logger.error(e.getMessage());
 		}

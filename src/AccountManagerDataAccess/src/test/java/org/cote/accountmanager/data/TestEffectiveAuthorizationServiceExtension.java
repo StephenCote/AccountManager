@@ -362,8 +362,8 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			logger.info(JSONUtil.exportObject(prr));
 			//roleRule.getPatterns()
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 	}
@@ -375,8 +375,8 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			//acctRole1 = getRole(testUser,"Account Role 1",RoleEnumType.ACCOUNT,baseRole);
 			perRole1 = getRole(testUser,"Person Role 1",RoleEnumType.PERSON,baseRole);
 		} catch (FactoryException | ArgumentException | DataAccessException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			
+			logger.error(e2.getStackTrace());
 		}
 		return perRole1;
 	}
@@ -398,8 +398,8 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			acctRole1 = getRole(testUser,"Account Role 1",RoleEnumType.ACCOUNT,baseRole);
 			perRole1 = getRole(testUser,"Person Role 1",RoleEnumType.PERSON,baseRole);
 		} catch (FactoryException | ArgumentException | DataAccessException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			
+			logger.error(e2.getStackTrace());
 		}
 		
 		
@@ -416,8 +416,8 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			try {
 				Factories.getPersonFactory().update(person1);
 			} catch (FactoryException  e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		if(person2.getAccounts().size() == 0){
@@ -425,8 +425,8 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			try {
 				Factories.getPersonFactory().update(person2);
 			} catch (FactoryException  e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		
@@ -468,8 +468,8 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			assertTrue("Role should be able to execute",canView4);
 		
 		} catch (NullPointerException | ArgumentException | FactoryException | DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	
@@ -489,8 +489,8 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			deAuthZ = AuthorizationService.authorize(admin, object, setMember, AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId()), false);
 			notAuthZ = AuthorizationService.isAuthorized(checkMember, object, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		assertTrue("Failed to set: " + authZStr,setAuthZ);

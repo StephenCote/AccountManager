@@ -96,7 +96,7 @@ public class DataService{
 			AuditService.denyResult(audit,e.getMessage());
 
 		}  catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 			AuditService.denyResult(audit,e.getMessage());
 
@@ -148,13 +148,13 @@ public class DataService{
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
 			if(org != null) data = Factories.getDataFactory().getDataById(dataId, true, organizationId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
 			
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		
@@ -172,13 +172,13 @@ public class DataService{
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
 			if(org != null) data = Factories.getDataFactory().getDataById(dataId, organizationId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
 			
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(data != null) out_bool = BaseService.authorizeRole(AuditEnumType.DATA, org.getId(), roleId, data, view, edit, delete, create, request);
 		return out_bool;
@@ -194,13 +194,13 @@ public class DataService{
 			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
 			if(org != null) data = Factories.getDataFactory().getDataById(dataId, organizationId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(data != null) out_bool = BaseService.authorizeUser(AuditEnumType.DATA, org.getId(), userId, data, view, edit, delete, create, request);
 		return out_bool;

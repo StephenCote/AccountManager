@@ -80,28 +80,28 @@ public class TestSecurityFactory {
 				pass = true;
 			}
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 			logger.error(e.getStackTrace());
 		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 			logger.error(e.getStackTrace());
 		}
 
 		catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 			logger.error(e.getStackTrace());
 		} 
 
 		
 		catch (InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			logger.error(e.getMessage());
 			logger.error(e.getStackTrace());
 		}

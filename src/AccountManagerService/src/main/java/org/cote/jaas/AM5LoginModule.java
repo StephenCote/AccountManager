@@ -185,8 +185,8 @@ public class AM5LoginModule implements LoginModule {
         try {
 			request = (HttpServletRequest) PolicyContext.getContext("javax.servlet.http.HttpServletRequest");
 		} catch (PolicyContextException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			throw new LoginException("Unable to obtain request context");
 		}
         */
@@ -219,8 +219,8 @@ public class AM5LoginModule implements LoginModule {
 					//SessionSecurity.login(ServiceUtil.getSessionId(request),username, CredentialEnumType.HASHED_PASSWORD,password, orgType.getId());
 
 		} catch (FactoryException | ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
         if (debug())
@@ -313,7 +313,7 @@ public class AM5LoginModule implements LoginModule {
         } catch (Throwable t) {
             if (debug()) {
                 logger.info(t.getMessage());
-                t.printStackTrace();
+                logger.error(t.getStackTrace());
             }
             throw new LoginException(t.toString());
         }

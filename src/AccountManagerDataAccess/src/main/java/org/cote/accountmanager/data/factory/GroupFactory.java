@@ -267,8 +267,8 @@ public class GroupFactory  extends NameIdFactory {
 		try {
 			sub_groups = this.getListByParent(GroupEnumType.UNKNOWN, group, 0L, 0, group.getOrganizationId());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		for(BaseGroupType sub_group : sub_groups) delete(sub_group); 
 		int deleted = deleteById(group.getId(), group.getOrganizationId());
@@ -445,8 +445,8 @@ public class GroupFactory  extends NameIdFactory {
 		try {
 			groups = getByField(fields.toArray(new QueryField[0]), organizationId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		if (groups != null && groups.size() > 0)
 		{
@@ -472,8 +472,8 @@ public class GroupFactory  extends NameIdFactory {
 			try {
 				clearGroupParentCache(group);
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		String key_name = group.getName() + "-" + group.getGroupType().toString() + "-" + group.getParentId() + "-" + group.getOrganizationId();
 		/*
@@ -505,7 +505,7 @@ public class GroupFactory  extends NameIdFactory {
 		try {
 			clearGroupParentCache(group);
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getStackTrace());
 		}
 		return super.update(group);

@@ -49,11 +49,11 @@ public class OperationUtil {
 			operationInst.put(className, oper);
 
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return oper;
 	}
@@ -64,8 +64,8 @@ public class OperationUtil {
 			cls = Class.forName(className);
 			operations.put(className, cls);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return cls;
 	}

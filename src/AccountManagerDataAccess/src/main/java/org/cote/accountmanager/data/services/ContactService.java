@@ -50,11 +50,11 @@ public static final Logger logger = Logger.getLogger(ContactService.class.getNam
 			try {
 				Factories.getContactInformationFactory().populate(cinfo);
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		ContactType contact = null;

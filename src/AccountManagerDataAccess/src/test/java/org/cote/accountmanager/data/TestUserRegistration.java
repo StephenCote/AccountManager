@@ -98,7 +98,7 @@ public class TestUserRegistration{
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}
 	}
 	
@@ -134,11 +134,11 @@ public class TestUserRegistration{
 			boolean logout = SessionSecurity.logout(user);
 			assertTrue("Failed to logout", logout);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		

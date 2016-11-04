@@ -15,11 +15,11 @@ public class TestRoleService extends BaseDataAccessTest{
 		try {
 			isDataAdmin =RoleService.isFactoryAdministrator(testUser, Factories.getDataFactory());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("User should not be a data admin",isDataAdmin);
 	}

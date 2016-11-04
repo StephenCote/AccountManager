@@ -166,10 +166,10 @@ public class DataAction {
 			catch(FactoryException e){
 				logger.error(e.getMessage());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
 			} catch (DataAccessException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
 			}
 			
@@ -245,21 +245,21 @@ public class DataAction {
 			logger.error(e.getMessage());
 		    throw new RuntimeException("Cannot connect the database!", e);
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} finally {
 		    System.out.println("Closing the connection.");
 		    if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
@@ -284,16 +284,16 @@ public class DataAction {
 			}
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 	}

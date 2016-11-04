@@ -117,13 +117,13 @@ public class PermissionService{
 			try {
 				if(permission != null) path = Factories.getPermissionFactory().getPermissionPath(permission);
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		return path;
 	}
@@ -151,13 +151,13 @@ public class PermissionService{
 			org = Factories.getOrganizationFactory().getById(orgId, 0L);
 			if(org != null) parent =Factories.getPermissionFactory().getById(parentId, orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(parent == null){
 			System.out.println("Null permission for id " + parentId + " in org " + org);
@@ -248,11 +248,11 @@ public class PermissionService{
 			permissions.add(AuthorizationService.getViewRolePermission(organizationId));
 			*/
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		return permissions;

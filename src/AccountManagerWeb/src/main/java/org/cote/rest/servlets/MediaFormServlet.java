@@ -58,7 +58,7 @@ public class MediaFormServlet extends HttpServlet {
      */
     public MediaFormServlet() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
 
 	/**
@@ -127,7 +127,7 @@ public class MediaFormServlet extends HttpServlet {
 		}
 		catch(Exception e){
 			logger.error("Error: " + e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 
 		/*
@@ -160,9 +160,9 @@ public class MediaFormServlet extends HttpServlet {
 				bBit = DataServiceImpl.add(newData,request);
 			}
 			 catch (DataException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			} 
 		}
 		

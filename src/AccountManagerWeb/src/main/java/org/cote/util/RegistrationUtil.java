@@ -132,11 +132,11 @@ public class RegistrationUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} 
 		/// Regardless of the outcome, remove the request audit (to unlock the IP check), and the registration session
 		///
@@ -145,8 +145,8 @@ public class RegistrationUtil {
 			if(regSession != null) Factories.getSessionFactory().clearSession(regSession.getSessionId());
 			regSession = null;
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	
 		
@@ -249,7 +249,7 @@ public class RegistrationUtil {
 		}
 		catch(FactoryException fe){
 			System.out.println(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		}
 		return regSession;
 	}

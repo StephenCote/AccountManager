@@ -86,11 +86,11 @@ public class GroupServiceImpl  {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
 			
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		if(parent == null){
@@ -114,11 +114,11 @@ public class GroupServiceImpl  {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(group == null){
 			System.out.println("Invalid parentId reference: " + parentId);
@@ -156,11 +156,11 @@ public class GroupServiceImpl  {
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;
@@ -183,13 +183,13 @@ public class GroupServiceImpl  {
 		try {
 			dirs = Factories.getGroupFactory().getListByParent(groupType, parentGroup,  startIndex, recordCount, parentGroup.getOrganizationId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(BaseService.enableExtendedAttributes){
 			for(int i = 0; i < dirs.size(); i++){
@@ -258,14 +258,14 @@ public class GroupServiceImpl  {
 			}
 
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return out_bool;
 	}
@@ -325,11 +325,11 @@ public class GroupServiceImpl  {
 				return out_obj;
 			}
 		} catch (ArgumentException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
+			logger.error(e1.getStackTrace());
 		} 
 
 		return out_obj;

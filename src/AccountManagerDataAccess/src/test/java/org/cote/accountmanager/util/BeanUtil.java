@@ -7,9 +7,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.util.JAXBSource;
 import javax.xml.namespace.QName;
 
+import org.apache.log4j.Logger;
+
 
 
 public class BeanUtil {
+	public static final Logger logger = Logger.getLogger(BeanUtil.class.getName());
 	public static <U,T> T getBean(Class<T> tClass, U map){
 		 T bean = null;
 		try{
@@ -23,7 +26,7 @@ public class BeanUtil {
 	        bean = jaxbElementB.getValue();
 		}
 		catch(JAXBException je){
-			je.printStackTrace();
+			logger.error(je.getStackTrace());
 			System.out.println(je.getMessage());
 		}
 		return bean;

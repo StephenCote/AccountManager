@@ -93,7 +93,7 @@ public class RestServiceConfig extends ResourceConfig{
 			}
 			catch(SQLException sqe){
 				logger.error(sqe.getMessage());
-				sqe.printStackTrace();
+				logger.error(sqe.getStackTrace());
 			}
 			
 			logger.info("Priming Factories");
@@ -125,16 +125,16 @@ public class RestServiceConfig extends ResourceConfig{
 				resourceContent = context.getResourceAsStream(roleMapPath);
 				roleMap = JSONUtil.getMap(StreamUtil.getStreamBytes(resourceContent), String.class, String.class);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			finally{
 				if(resourceContent != null)
 					try {
 						resourceContent.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						
+						logger.error(e.getStackTrace());
 					}
 			}
 			AM5LoginModule.setRoleMap(roleMap);

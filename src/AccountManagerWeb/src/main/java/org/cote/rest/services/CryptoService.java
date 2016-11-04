@@ -122,7 +122,7 @@ public class CryptoService{
 		}
 		catch(FactoryException | ArgumentException e){
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return tokenType;
 	}
@@ -152,14 +152,14 @@ public class CryptoService{
 			session = SessionSecurity.getUserSession(sessionId, org.getId());
 			tokens = Factories.getSecurityTokenFactory().getSecurityTokens(sessionId, org.getId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage()); 
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage()); 
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		if(tokens.length > 0){
@@ -192,14 +192,14 @@ public class CryptoService{
 				}
 			}
 			catch(FactoryException fe){
-				fe.printStackTrace();
+				logger.error(fe.getStackTrace());
 				logger.error(fe.getMessage()); 
 				secs.clear();
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage()); 
 				secs.clear();
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		
@@ -304,11 +304,11 @@ public class CryptoService{
 			
 		}
 		catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		//CredentialService.validatePasswordCredential(updateUser, currentCred, new String(authReq.getCheckCredential(),"UTF-8"))==false
 		return out_bool;
@@ -400,12 +400,12 @@ public class CryptoService{
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		if(newCred != null){
 			AuditService.permitResult(audit, "Created a new primary credential");

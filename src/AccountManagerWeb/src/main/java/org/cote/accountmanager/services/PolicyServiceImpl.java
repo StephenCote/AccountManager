@@ -108,11 +108,11 @@ public class PolicyServiceImpl  {
 				AuditService.denyResult(audit, "Denying result with response " +  policyResponse.getResponse().toString());
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		logger.info("Policy evaluation response: " + policyResponse.getResponse());
 		return policyResponse;
@@ -137,11 +137,11 @@ public class PolicyServiceImpl  {
 			}
 			catch(FactoryException e){
 				AuditService.denyResult(audit, "Error: " + e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 				
 			} catch (ArgumentException e) {
 				AuditService.denyResult(audit, "Error: " + e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 		}
 		else{
@@ -178,7 +178,7 @@ public class PolicyServiceImpl  {
 		catch(FactoryException e){
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
 		return def;

@@ -42,11 +42,11 @@ public class TestBaseService extends BaseDataAccessTest{
 		try {
 			homeDir = Factories.getGroupFactory().getUserDirectory(testUser);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("Home directory is null",homeDir);
 		DirectoryGroupType dir = BaseService.readById(AuditEnumType.GROUP, homeDir.getId(), request);
@@ -90,14 +90,14 @@ public class TestBaseService extends BaseDataAccessTest{
 			assertNotNull("Path is null",role.getParentPath());
 			logger.info("Role parent path = '" + role.getParentPath() + "'");
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	
@@ -112,14 +112,14 @@ public class TestBaseService extends BaseDataAccessTest{
 			assertNotNull("Path is null",permission.getParentPath());
 			logger.info("Permission parent path = '" + permission.getParentPath() + "'");
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	

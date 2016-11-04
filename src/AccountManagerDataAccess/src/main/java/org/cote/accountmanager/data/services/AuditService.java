@@ -61,8 +61,8 @@ public class AuditService {
 			String auditStr = getAuditString(audit);
 			logger.info("*** Audit *** " + auditStr);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return added;
 	}

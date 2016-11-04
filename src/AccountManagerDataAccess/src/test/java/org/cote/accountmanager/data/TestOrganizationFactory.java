@@ -54,13 +54,13 @@ public class TestOrganizationFactory{
 				new_org = org_factory.getByNameInParent(testOrgName,devOrg.getId(), 0L);
 			}
 		} catch (FactoryException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			
+			logger.error(e2.getStackTrace());
 			logger.error(e2.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} 
 		logger.info("Added " + testOrgName + " as " + new_org.getId());
 		assertFalse("An error occurred", error);
@@ -90,13 +90,13 @@ public class TestOrganizationFactory{
 				new_org = null;
 			}
 		} catch (FactoryException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			
+			logger.error(e2.getStackTrace());
 			logger.error(e2.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} 
 		logger.info("Added " + testOrgName + " as " + new_org.getId());
 		assertFalse("An error occurred", error);
@@ -122,8 +122,8 @@ public class TestOrganizationFactory{
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error",error);
 
@@ -147,8 +147,8 @@ public class TestOrganizationFactory{
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("Error",error);
 		assertNotNull("Org is null", new_org);
@@ -167,8 +167,8 @@ public class TestOrganizationFactory{
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		bean = KeyService.getPrimaryAsymmetricKey(new_org.getId());
 				//OrganizationSecurity.getSecurityBean(new_org);
@@ -192,12 +192,12 @@ public class TestOrganizationFactory{
 
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("An error occurred", error);
 		assertTrue("Organization was not updated", updated);
@@ -212,12 +212,12 @@ public class TestOrganizationFactory{
 			deleted = Factories.getOrganizationFactory().delete(org);
 		}
 		catch(FactoryException fe){
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertFalse("An error occurred", error);
 		assertTrue("Did not delete org", deleted);

@@ -65,7 +65,7 @@ public static final Logger logger = Logger.getLogger(UserCommand.class.getName()
 		catch(ArgumentException ae){
 			logger.error(ae.getMessage());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} 
 

@@ -92,9 +92,9 @@ public class ControlService {
 				logger.error(e.getMessage());
 			}
 			catch (FactoryException e) {
-					// TODO Auto-generated catch block
+					
 					logger.error(e.getMessage());
-					e.printStackTrace();
+					logger.error(e.getStackTrace());
 				}
 			/*
 			

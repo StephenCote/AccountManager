@@ -70,7 +70,7 @@ public class TestDataTags extends BaseDataAccessTest {
 		catch(FactoryException e){
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} 
 	}
@@ -184,10 +184,10 @@ public class TestDataTags extends BaseDataAccessTest {
 			catch(FactoryException e){
 				logger.error(e.getMessage());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
 			} catch (DataAccessException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
 			}
 			
@@ -250,10 +250,10 @@ public class TestDataTags extends BaseDataAccessTest {
 		catch(FactoryException e){
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		}
 	}
@@ -307,14 +307,14 @@ public class TestDataTags extends BaseDataAccessTest {
 			
 			//Factories.getTagParticipationFactory().GetDataFromParticipations(list, detailsOnly, startRecord, recordCount, organization)
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 	}

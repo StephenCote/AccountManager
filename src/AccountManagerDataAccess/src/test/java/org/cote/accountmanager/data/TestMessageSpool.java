@@ -32,10 +32,10 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Message was not added", add_message);
 	}
@@ -50,8 +50,8 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Expected one or more messages", messages.size() > 0);
 	}
@@ -78,10 +78,10 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Expected 1 message, received " + messages.size() + " messages", messages.size() == 1);
 	}
@@ -96,8 +96,8 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Expected one or more messages", messages.size() > 0);
 		MessageSpoolType message = messages.get(0);
@@ -123,8 +123,8 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Failed to deleted", deleted);
 	}

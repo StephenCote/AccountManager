@@ -39,7 +39,7 @@ public class TokenService {
 		}
 		catch(FactoryException | ArgumentException e){
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return tokenType;
 	}
@@ -79,7 +79,7 @@ public class TokenService {
 		}
 		catch(FactoryException | UnsupportedEncodingException | ArgumentException e){
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return tokenType;
 	}

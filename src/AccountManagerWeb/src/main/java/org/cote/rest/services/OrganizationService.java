@@ -75,13 +75,13 @@ public class OrganizationService{
 			org = Factories.getOrganizationFactory().findOrganization(path);
 			if(org != null) Factories.getOrganizationFactory().denormalize(org);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return org;
 	}
@@ -102,13 +102,13 @@ public class OrganizationService{
 			}
 		
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 
 		return out_org;
@@ -121,13 +121,13 @@ public class OrganizationService{
 			out_org = Factories.getOrganizationFactory().getOrganizationById(id);
 			if(out_org != null) Factories.getOrganizationFactory().denormalize(out_org);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		return out_org;
 	}

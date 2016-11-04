@@ -46,7 +46,7 @@ public class EAIServlet extends HttpServlet {
      */
     public EAIServlet() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
 
 	/**
@@ -68,8 +68,8 @@ public class EAIServlet extends HttpServlet {
 			LoginContext ctx = new LoginContext("accountmanager5",new AccountManagerCallbackHandler("TestUser1","password"));
 			ctx.login();
 		} catch (LoginException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		boolean didLogin = false;
 		return didLogin;

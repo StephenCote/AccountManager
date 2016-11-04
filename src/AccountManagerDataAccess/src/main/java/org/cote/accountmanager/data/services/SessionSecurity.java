@@ -251,8 +251,8 @@ public class SessionSecurity {
 					authenticateUser(user, sessionId);
 				}
 			} catch (FactoryException | ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return user;

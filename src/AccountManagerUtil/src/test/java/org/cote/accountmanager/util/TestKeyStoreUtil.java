@@ -137,8 +137,8 @@ public class TestKeyStoreUtil {
 			ver = true;
 		} catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
 				| SignatureException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Certificate not verified",ver);
 	}

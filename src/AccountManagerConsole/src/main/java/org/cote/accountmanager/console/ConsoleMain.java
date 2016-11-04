@@ -68,8 +68,8 @@ public class ConsoleMain {
 			props.load(fis);
 			fis.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 			return;
 		}
 		
@@ -195,13 +195,13 @@ public class ConsoleMain {
 						logger.error("Organization does not exist");
 					}
 				} catch (FactoryException e) {
-					// TODO Auto-generated catch block
+					
 					logger.error(e.getMessage());
-					e.printStackTrace();
+					logger.error(e.getStackTrace());
 				} catch (ArgumentException e) {
-					// TODO Auto-generated catch block
+					
 					logger.error(e.getMessage());
-					e.printStackTrace();
+					logger.error(e.getStackTrace());
 				}
 			}
 			else if(cmd.hasOption("setup") && cmd.hasOption("rootPassword") && cmd.hasOption("schema")){
@@ -319,10 +319,10 @@ public class ConsoleMain {
 					}
 				}
 				catch(FactoryException fe){
-					fe.printStackTrace();
+					logger.error(fe.getStackTrace());
 				} catch (ArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					logger.error(e.getStackTrace());
 				}
 				
 			}
@@ -335,8 +335,8 @@ public class ConsoleMain {
 				
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		Factories.getAuditFactory().flushSpool();
@@ -355,8 +355,8 @@ public class ConsoleMain {
 					t.setName(random + "-" + i);
 					Factories.getTaskFactory().addTask(t);
 				} catch (ArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					logger.error(e.getStackTrace());
 				}
 				
 			}
@@ -365,10 +365,10 @@ public class ConsoleMain {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	*/
@@ -385,7 +385,7 @@ public class ConsoleMain {
 		    }
 		    catch(Throwable e)
 		    {
-		        e.printStackTrace();
+		        logger.error(e.getStackTrace());
 		    }
 	}
 	public static void processAction(UserType user, CommandLine cmd){
@@ -414,8 +414,8 @@ public class ConsoleMain {
 		try {
 			logProps.load(ClassLoader.getSystemResourceAsStream("logging.properties"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return logProps;
 	}

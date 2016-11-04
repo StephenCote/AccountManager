@@ -33,9 +33,9 @@ public class TestUserSession extends BaseDataAccessTest{
 			add_session = Factories.getSessionFactory().addSession(session);
 			if(add_session) add_session = Factories.getSessionFactory().addSession(session2);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		assertTrue(add_session);
 		logger.info("Session id: " + sessionId);
@@ -47,8 +47,8 @@ public class TestUserSession extends BaseDataAccessTest{
 		try {
 			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull(session);
 	}
@@ -63,8 +63,8 @@ public class TestUserSession extends BaseDataAccessTest{
 			session.setSessionStatus(SessionStatusEnumType.NOT_AUTHENTICATED);
 			updated = Factories.getSessionFactory().update(session);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue(updated);
 	}
@@ -106,8 +106,8 @@ public class TestUserSession extends BaseDataAccessTest{
 			
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	
@@ -118,8 +118,8 @@ public class TestUserSession extends BaseDataAccessTest{
 			Factories.getSessionFactory().clearSession(sessionId);
 			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNull(session);
 	}

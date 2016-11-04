@@ -72,11 +72,11 @@ public class KeyService {
 			Factories.getAsymmetricKeyFactory().deleteByOrganization(organizationId);
 			out_bool = true;
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return out_bool;
@@ -87,11 +87,11 @@ public class KeyService {
 			SecurityType sec = Factories.getSymmetricKeyFactory().getById(id, organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return bean;
@@ -102,11 +102,11 @@ public class KeyService {
 			SecurityType sec = Factories.getSymmetricKeyFactory().getByObjectId(id, organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return bean;
@@ -117,11 +117,11 @@ public class KeyService {
 			SecurityType sec = Factories.getSymmetricKeyFactory().getPrimaryOrganizationKey(organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		return bean;
@@ -132,11 +132,11 @@ public class KeyService {
 			SecurityType sec = Factories.getSymmetricKeyFactory().getPrimaryPersonalKey(user);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		return bean;
@@ -159,11 +159,11 @@ public class KeyService {
 			SecurityType sec = Factories.getAsymmetricKeyFactory().getById(id, organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return bean;
@@ -174,11 +174,11 @@ public class KeyService {
 			SecurityType sec = Factories.getAsymmetricKeyFactory().getByObjectId(id, organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return bean;
@@ -189,11 +189,11 @@ public class KeyService {
 			SecurityType sec = Factories.getAsymmetricKeyFactory().getPrimaryOrganizationKey(organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		return bean;
@@ -204,11 +204,11 @@ public class KeyService {
 			SecurityType sec = Factories.getAsymmetricKeyFactory().getPrimaryPersonalKey(user);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		return bean;
@@ -276,7 +276,7 @@ public class KeyService {
 			}
 		}
 		catch(FactoryException | ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} 
 		//if(sec != null) sec.setPublicKey(null);
@@ -334,11 +334,11 @@ public class KeyService {
 		}
 		catch(FactoryException e){
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} 
 		//if(sec != null) sec.setPublicKey(null);
 		return sec;

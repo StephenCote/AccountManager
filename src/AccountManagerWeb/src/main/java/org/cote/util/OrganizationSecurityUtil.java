@@ -25,13 +25,15 @@ package org.cote.util;
 
 import java.io.UnsupportedEncodingException;
 
+import org.apache.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.SecurityUtil;
 
-public class OrganizationSecurityUtil {
+public class OrganizationSecurityUtil { 
+	public static final Logger logger = Logger.getLogger(OrganizationSecurityUtil.class.getName());
 	public static String encipherString(String inStr, OrganizationType org){
 		return BinaryUtil.toBase64Str(encipherBytes(inStr.getBytes(), org));
 	}
@@ -41,8 +43,8 @@ public class OrganizationSecurityUtil {
 			out_str = new String(decipherBytes(BinaryUtil.fromBase64(inStr.getBytes()), org),"UTF-8");
 		}
 		catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return out_str;
 	}

@@ -47,11 +47,11 @@ public class TestFindOrganization{
 		try {
 			org = Factories.getOrganizationFactory().findOrganization(path);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		assertNotNull("Org is null",org);
@@ -67,11 +67,11 @@ public class TestFindOrganization{
 		try {
 			org = Factories.getOrganizationFactory().findOrganization(path);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		assertNotNull("Org is null",org);

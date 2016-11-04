@@ -75,10 +75,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 				fact = Factories.getFactFactory().getByNameInGroup(name, funcDir);
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		}
 		assertNotNull("Fact is null",fact);
@@ -105,14 +105,14 @@ public class TestPolicyService extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().write(sessionId);
 			wrote = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Failed to write bulk session",wrote);
 		logger.info("Wrote bulk session");
@@ -136,10 +136,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 				else fact = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
 		}
 		return fact;
@@ -162,11 +162,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 				}
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return ffact;
 	}
@@ -191,11 +191,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 				else func = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return func;
 	}
@@ -218,11 +218,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 				else policy = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return policy;
 	}
@@ -246,11 +246,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 				else pattern = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return pattern;
 	}
@@ -272,11 +272,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 				else rule = null;
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return rule;
 	}
@@ -387,14 +387,14 @@ public class TestPolicyService extends BaseDataAccessTest{
 			}
 			Factories.getRuleFactory().populate(rule);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return rule;
@@ -538,11 +538,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 			}
 			Factories.getRuleFactory().populate(rule);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return rule;
@@ -732,11 +732,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 			}
 			Factories.getRuleFactory().populate(rule);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		return rule;
@@ -830,14 +830,14 @@ public class TestPolicyService extends BaseDataAccessTest{
 			
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	
@@ -883,11 +883,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 
 			
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 	}
 	*/
@@ -896,11 +896,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 		try {
 			Factories.getPatternFactory().populate(pattern);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		FactType fact = pattern.getFact();
 		FactType mfact = pattern.getMatch();
@@ -989,11 +989,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 				
 				
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			//assertNotNull("Policy is null", pol);
 			//assertTrue("Policy is not populated",pol.getRules().size() > 0);		
@@ -1045,11 +1045,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 				
 				
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			//assertNotNull("Policy is null", pol);
 			//assertTrue("Policy is not populated",pol.getRules().size() > 0);		
@@ -1101,11 +1101,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 				
 				
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			} catch (ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			//assertNotNull("Policy is null", pol);
 			//assertTrue("Policy is not populated",pol.getRules().size() > 0);		
@@ -1121,11 +1121,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 		try {
 			dir = Factories.getGroupFactory().getCreatePath(testUser, "~/Rules", testUser.getOrganizationId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		String name = UUID.randomUUID().toString();
 		RuleType pol = getCreateRule(testUser,name,name,dir);
@@ -1143,11 +1143,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 			rdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Rules", testUser.getOrganizationId());
 			pdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		String name = UUID.randomUUID().toString();
 		String rname = UUID.randomUUID().toString();
@@ -1170,11 +1170,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 			Factories.getRuleFactory().updateRule(rule2);
 			up = Factories.getPolicyFactory().updatePolicy(pol);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Policy not updated",up);
 	}
@@ -1213,22 +1213,22 @@ public class TestPolicyService extends BaseDataAccessTest{
 				func = Factories.getFunctionFactory().getByNameInGroup(name, funcDir);
 			}
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertNotNull("Function is null",func);
 		logger.info("Created and retrieved function " + name);
 		try {
 			Factories.getFunctionFactory().populate(func);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Failed to populated expected facts.  Found " + func.getFacts().size(),func.getFacts().size() == 2);
 		logger.info("Populated " + func.getFacts().size() + " facts");
@@ -1256,14 +1256,14 @@ public class TestPolicyService extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().write(sessionId);
 			wrote = true;
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		assertTrue("Failed to write bulk session",wrote);
 		logger.info("Wrote bulk session");

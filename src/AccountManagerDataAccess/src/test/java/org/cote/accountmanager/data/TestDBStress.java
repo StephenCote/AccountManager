@@ -45,8 +45,8 @@ public class TestDBStress{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 	}
@@ -62,8 +62,8 @@ public class TestDBStress{
 			try {
 				Factories.getAuditFactory().addAudit(audit);
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 			Factories.getAuditFactory().flushSpool();
 		}

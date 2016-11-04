@@ -22,8 +22,8 @@ public class TestTokenService extends BaseDataAccessTest {
 		try {
 			Factories.getUserFactory().populate(testUser);
 		} catch (FactoryException | ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		String materialToken = null; //TokenService.newMaterializedToken(testUser, testUser.getHomeDirectory());
 		assertNotNull("Token is null", materialToken);

@@ -62,11 +62,11 @@ public class BlogService{
 		try {
 			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		if(org == null) return null;
 		return ArticleUtil.getRoleByType("Blog", orgId);

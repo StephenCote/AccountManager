@@ -7,7 +7,7 @@ public class CookieMock extends Cookie{
 		super(arg0, arg1);
 		name = arg0;
 		val = arg1;
-		// TODO Auto-generated constructor stub
+		
 	}
 
 

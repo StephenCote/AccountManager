@@ -54,8 +54,8 @@ public class PrincipalService {
 					outToken = user.getUrn();
 				}
 			} catch (FactoryException | ArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		else{

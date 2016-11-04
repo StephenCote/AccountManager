@@ -120,9 +120,9 @@ public abstract class FactoryBase {
 			try {
 				out_bool = BulkInsertUtil.insert(row);
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
+				
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				logger.error(e.getStackTrace());
 			}
 			/// If the table is individual updates, then dump any rows accumulated into the table row set
 			/// 
@@ -303,9 +303,9 @@ public abstract class FactoryBase {
 			rset.close();
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -313,8 +313,8 @@ public abstract class FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return out_ints.toArray(new String[0]);
@@ -355,9 +355,9 @@ public abstract class FactoryBase {
 			rset.close();
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -365,8 +365,8 @@ public abstract class FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return ArrayUtils.toPrimitive(out_ints.toArray(new Long[out_ints.size()]));
@@ -399,9 +399,9 @@ public abstract class FactoryBase {
 			rset.close();
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			throw new FactoryException(e.getMessage());
 		} 
 		finally{
@@ -409,8 +409,8 @@ public abstract class FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		
@@ -458,16 +458,16 @@ public abstract class FactoryBase {
 			statement.close();
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 
@@ -489,9 +489,9 @@ public abstract class FactoryBase {
 			statement.close();
 		}
 		catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -499,8 +499,8 @@ public abstract class FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		
@@ -610,7 +610,7 @@ public abstract class FactoryBase {
 	    } 
 		}
 		catch(ClassCastException cce){
-			cce.printStackTrace();
+			logger.error(cce.getStackTrace());
 			logger.error(cce.getMessage());
 		}
 		return outList;
@@ -655,15 +655,15 @@ public abstract class FactoryBase {
 			rset.close();
 			statement.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error(e.getStackTrace());
 			}
 		}
 		return ids;

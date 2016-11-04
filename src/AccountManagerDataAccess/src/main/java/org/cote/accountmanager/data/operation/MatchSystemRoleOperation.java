@@ -32,8 +32,8 @@ public class MatchSystemRoleOperation implements IOperation {
 				
 			
 		} catch (FactoryException | ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		
 		if(systemRole == null){

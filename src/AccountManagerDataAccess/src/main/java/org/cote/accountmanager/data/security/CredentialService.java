@@ -38,11 +38,11 @@ public class CredentialService {
 			cred = Factories.getCredentialFactory().getPrimaryCredential(obj,credType,requireActive);
 
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		return cred;
@@ -92,8 +92,8 @@ public class CredentialService {
 		try {
 			cred.setCredential((isPasswordHashed ? password.getBytes("UTF-8") : SecurityUtil.getSaltedDigest(password).getBytes("UTF-8")));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return cred;
 	}
@@ -115,11 +115,11 @@ public class CredentialService {
 				out_bool = true;
 			}
 		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 
 		return out_bool;
@@ -196,8 +196,8 @@ public class CredentialService {
 				out_bool = Arrays.areEqual(cred, pwdBytes);
 			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return out_bool;
 	}
@@ -210,8 +210,8 @@ public class CredentialService {
 		try {
 			pwdBytes = password.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return newCredential(CredentialEnumType.HASHED_PASSWORD, bulkSessionId, owner, targetObject, pwdBytes, primary, true, vaulted);
 	}
@@ -225,8 +225,8 @@ public class CredentialService {
 		try {
 			pwdBytes = token.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		return newCredential(CredentialEnumType.TOKEN, bulkSessionId, owner, targetObject, pwdBytes, primary, true, false);
 	}

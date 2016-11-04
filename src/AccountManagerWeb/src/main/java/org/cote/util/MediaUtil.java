@@ -170,12 +170,12 @@ public class MediaUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
 			
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(org == null){
 			AuditService.denyResult(audit, "Organization is invalid: '" + orgPath + "'");
@@ -206,11 +206,11 @@ public class MediaUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(dir == null){
 			AuditService.denyResult(audit, "Path '" + objPath + "' is invalid for " + (user == null ? "null user":user.getName()) + " in organization " + org.getName());
@@ -387,15 +387,15 @@ public class MediaUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			fe.printStackTrace();
+			logger.error(fe.getStackTrace());
 		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
+			
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		if(data == null){
 			AuditService.denyResult(audit, "Data is invalid: '" + objName + "'");
@@ -418,8 +418,8 @@ public class MediaUtil {
 				value = DataUtil.getValue(data);
 			}
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error(e.getStackTrace());
 		}
 		response.setContentLength(value.length);
 		response.getOutputStream().write(value); 

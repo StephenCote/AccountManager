@@ -72,7 +72,7 @@ public class TestDataAccess{
 			ps.close();
 		}
 		catch(SQLException sqe){
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			error = true;
 			logger.error(sqe.getMessage());
 		}
@@ -131,7 +131,7 @@ public class TestDataAccess{
 			ps.close();
 		}
 		catch(SQLException sqe){
-			sqe.printStackTrace();
+			logger.error(sqe.getStackTrace());
 			error = true;
 			logger.error(sqe.getMessage());
 		}
