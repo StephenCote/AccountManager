@@ -35,7 +35,6 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;

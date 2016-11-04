@@ -1,20 +1,8 @@
 package org.cote.rest.services;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-//import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.cote.accountmanager.objects.AccountType;
-import org.cote.accountmanager.objects.DataType;
-import org.cote.accountmanager.services.AccountServiceImpl;
 
 @Path("/generic")
 public class GenericService {

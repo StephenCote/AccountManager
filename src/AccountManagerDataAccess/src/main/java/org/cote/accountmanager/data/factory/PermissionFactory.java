@@ -38,8 +38,6 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountPermissionType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
 import org.cote.accountmanager.objects.BasePermissionType;
-import org.cote.accountmanager.objects.ContactType;
-import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DataPermissionType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;

@@ -3,16 +3,11 @@ package org.cote.accountmanager.console;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.NameIdFactory;
-import org.cote.accountmanager.data.query.QueryField;
-import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.FileUtil;

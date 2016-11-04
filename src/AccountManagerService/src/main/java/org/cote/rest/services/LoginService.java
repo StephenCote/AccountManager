@@ -1,10 +1,5 @@
 package org.cote.rest.services;
 
-import java.io.IOException;
-
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +9,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -23,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
-import org.cote.jaas.AccountManagerCallbackHandler;
 
 @Path("/login")
 public class LoginService {

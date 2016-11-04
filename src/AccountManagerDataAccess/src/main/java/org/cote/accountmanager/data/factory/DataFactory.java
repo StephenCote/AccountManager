@@ -46,8 +46,6 @@ import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.BaseGroupType;
-import org.cote.accountmanager.objects.ContactType;
-import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DataColumnType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;

@@ -42,7 +42,6 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.objects.AccountType;
-import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.NameIdType;

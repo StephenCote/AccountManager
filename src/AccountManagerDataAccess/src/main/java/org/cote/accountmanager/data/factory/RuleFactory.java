@@ -49,8 +49,6 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.util.LogicalTypeComparator;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.ConditionEnumType;
-import org.cote.accountmanager.objects.ContactType;
-import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;

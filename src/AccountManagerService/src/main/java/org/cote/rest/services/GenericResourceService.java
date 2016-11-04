@@ -26,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
-import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;

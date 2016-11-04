@@ -44,8 +44,6 @@ import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BucketGroupType;
-import org.cote.accountmanager.objects.ContactType;
-import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonGroupType;

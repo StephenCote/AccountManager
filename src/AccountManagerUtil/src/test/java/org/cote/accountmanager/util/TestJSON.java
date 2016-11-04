@@ -3,11 +3,7 @@ package org.cote.accountmanager.util;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.security.Security;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -16,13 +12,8 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.util.SimpleGeography.CountryType;
 import org.cote.accountmanager.util.SimpleGeography.RegionType;
-import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class TestJSON {
 	public static final Logger logger = Logger.getLogger(TestJSON.class.getName());

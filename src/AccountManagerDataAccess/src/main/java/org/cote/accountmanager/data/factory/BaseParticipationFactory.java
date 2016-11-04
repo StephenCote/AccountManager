@@ -44,7 +44,6 @@ import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdType;
-
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;

@@ -40,8 +40,6 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseRoleType;
-import org.cote.accountmanager.objects.ContactType;
-import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonRoleType;

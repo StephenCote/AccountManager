@@ -45,8 +45,6 @@ import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactParticipantType;
-import org.cote.accountmanager.objects.ContactType;
-import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FactParticipantType;

@@ -18,8 +18,6 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.objects.AccountType;
-import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ControlActionEnumType;
 import org.cote.accountmanager.objects.ControlEnumType;
 import org.cote.accountmanager.objects.ControlType;

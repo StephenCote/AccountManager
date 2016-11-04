@@ -10,7 +10,6 @@ import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-import org.cote.accountmanager.objects.types.RoleEnumType;
 
 public class MatchSystemRoleOperation implements IOperation {
 	public static final Logger logger = Logger.getLogger(MatchSystemRoleOperation.class.getName());

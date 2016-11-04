@@ -24,7 +24,6 @@
 package org.cote.jaas;
 
 import java.security.Principal;
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,16 +39,12 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
-import javax.security.jacc.PolicyContext;
-import javax.security.jacc.PolicyContextException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.security.AccountManagerGroup;
 import org.cote.accountmanager.data.security.RolePrincipal;
 import org.cote.accountmanager.data.security.UserPrincipal;
 import org.cote.accountmanager.data.services.SessionSecurity;
@@ -58,7 +53,6 @@ import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.service.util.ServiceUtil;
 
 public class AM5LoginModule implements LoginModule {
 

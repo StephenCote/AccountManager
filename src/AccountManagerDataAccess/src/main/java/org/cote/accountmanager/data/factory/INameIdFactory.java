@@ -1,10 +1,8 @@
 package org.cote.accountmanager.data.factory;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.objects.NameIdType;

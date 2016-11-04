@@ -12,16 +12,12 @@ import javax.ws.rs.core.Context;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.DatabaseMaintenance;
 import org.cote.accountmanager.data.services.SessionDataMaintenance;
-import org.cote.accountmanager.objects.OrganizationType;
-import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.util.JSONUtil;

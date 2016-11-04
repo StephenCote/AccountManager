@@ -46,7 +46,6 @@ import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseRoleType;
-import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
