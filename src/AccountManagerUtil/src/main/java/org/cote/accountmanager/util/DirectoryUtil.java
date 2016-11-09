@@ -28,10 +28,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DirectoryUtil{
-	public static final Logger logger = Logger.getLogger(DirectoryUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(DirectoryUtil.class);
 	private String path;
 	private File directory;
 	private boolean isOk=false;

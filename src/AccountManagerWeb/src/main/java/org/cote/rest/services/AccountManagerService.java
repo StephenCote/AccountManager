@@ -33,7 +33,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
@@ -49,7 +50,7 @@ import org.cote.accountmanager.service.util.ServiceUtil;
 @Path("/accountmanager")
 public class AccountManagerService{
 
-	public static final Logger logger = Logger.getLogger(AccountManagerService.class.getName());
+	public static final Logger logger = LogManager.getLogger(AccountManagerService.class);
 	private static SchemaBean schemaBean = null;
 	
 	public AccountManagerService(){

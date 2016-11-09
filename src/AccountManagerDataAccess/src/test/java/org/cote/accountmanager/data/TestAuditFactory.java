@@ -4,8 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.AuditService;
@@ -19,15 +19,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestAuditFactory{
-	public static final Logger logger = Logger.getLogger(TestAuditFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestAuditFactory.class);
 	public AuditDataMaintenance auditThread = null;
 	@Before
 	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
+
 		ConnectionFactory cf = ConnectionFactory.getInstance();
 		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
 		cf.setDriverClassName("org.postgresql.Driver");
@@ -59,7 +55,7 @@ public class TestAuditFactory{
 			audits = Factories.getAuditFactory().getAuditBySource(AuditEnumType.GROUP, id);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Failed to lookup audit", audits.length > 0);
 	}
@@ -80,7 +76,7 @@ public class TestAuditFactory{
 			Factories.getAuditFactory().flushSpool();
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		remainingRows = Factories.getAuditFactory().getDataTable("audit").getRows().size();
 		assertTrue("Audit was not added",success);
@@ -94,7 +90,7 @@ public class TestAuditFactory{
 			audits = Factories.getAuditFactory().getAuditBySource(AuditEnumType.INFO, "123");
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		logger.info("Retrieved " + audits.length + " audits");
 		assertTrue("Expected at least one audit type", audits.length > 0);

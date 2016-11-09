@@ -13,6 +13,14 @@
     <tracking-mode>COOKIE</tracking-mode>
   </session-config>
 
+ 	<context-param>
+ 	<param-name>log4jContextName</param-name>
+ 	<param-value>AccountManagerService</param-value>
+ 	</context-param>
+ 	 	<context-param>
+ 	<param-name>log4jConfiguration</param-name>
+ 	<param-value>WEB-INF/resource/AccountManagerWebLogging.xml</param-value>
+ 	</context-param>
 
   <context-param>
   	<description>Use AM5 Session</description>

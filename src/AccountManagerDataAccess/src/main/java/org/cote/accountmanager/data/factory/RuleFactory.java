@@ -63,6 +63,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class RuleFactory extends NameIdGroupFactory {
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.RULE, RuleFactory.class); }
 	public RuleFactory(){
 		super();
 		this.tableNames.add("rule");
@@ -87,8 +88,9 @@ public class RuleFactory extends NameIdGroupFactory {
 	{
 		RuleType rule = (RuleType)obj;
 		if(rule.getPopulated()) return;
-		rule.getPatterns().addAll(Factories.getRuleParticipationFactory().getPatternsFromParticipation(rule));
-		rule.getRules().addAll(Factories.getRuleParticipationFactory().getRulesFromParticipation(rule));
+		RuleParticipationFactory rpFact = Factories.getFactory(FactoryEnumType.RULEPARTICIPATION);
+		rule.getPatterns().addAll(rpFact.getPatternsFromParticipation(rule));
+		rule.getRules().addAll(rpFact.getRulesFromParticipation(rule));
 		Collections.sort(rule.getPatterns(),new LogicalTypeComparator());
 		rule.setPopulated(true);
 		updateToCache(rule);
@@ -124,19 +126,21 @@ public class RuleFactory extends NameIdGroupFactory {
 			row.setCellValue("score", obj.getScore());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			if (insertRow(row)){
+				
 				RuleType cobj = (bulkMode ? obj : (RuleType)getByNameInGroup(obj.getName(), obj.getGroupId(),obj.getOrganizationId()));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
 				BulkFactories.getBulkFactory().setDirty(factoryType);
 				BaseParticipantType part = null;
+				RuleParticipationFactory rpFact = Factories.getFactory(FactoryEnumType.RULEPARTICIPATION);
 				for(int i = 0; i < obj.getRules().size();i++){
-					part = Factories.getRuleParticipationFactory().newRuleParticipation(cobj,obj.getRules().get(i));
-					if(bulkMode) BulkFactories.getBulkRuleParticipationFactory().add(part);
-					else Factories.getRuleParticipationFactory().add(part);
+					part = rpFact.newRuleParticipation(cobj,obj.getRules().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.RULEPARTICIPATION)).add(part);
+					else rpFact.add(part);
 				}
 				for(int i = 0; i < obj.getPatterns().size();i++){
-					part = Factories.getRuleParticipationFactory().newPatternParticipation(cobj,obj.getPatterns().get(i));
-					if(bulkMode) BulkFactories.getBulkRuleParticipationFactory().add(part);
-					else Factories.getRuleParticipationFactory().add(part);
+					part = rpFact.newPatternParticipation(cobj,obj.getPatterns().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.RULEPARTICIPATION)).add(part);
+					else rpFact.add(part);
 				}
 				return true;
 			}
@@ -145,7 +149,7 @@ public class RuleFactory extends NameIdGroupFactory {
 			throw new FactoryException(dae.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return false;
 	}
@@ -173,26 +177,26 @@ public class RuleFactory extends NameIdGroupFactory {
 		boolean out_bool = false;
 		if(update(data, null)){
 			try{
-				
+				RuleParticipationFactory rpFact = Factories.getFactory(FactoryEnumType.RULEPARTICIPATION);
 				Set<Long> set = new HashSet<Long>();
-				BaseParticipantType[] maps = Factories.getRuleParticipationFactory().getPatternParticipations(data).toArray(new BaseParticipantType[0]);
+				BaseParticipantType[] maps = rpFact.getPatternParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getPatterns().size();i++){
 					if(set.contains(data.getPatterns().get(i).getId())== false){
-						Factories.getRuleParticipationFactory().add(Factories.getRuleParticipationFactory().newPatternParticipation(data,data.getPatterns().get(i)));
+						rpFact.add(rpFact.newPatternParticipation(data,data.getPatterns().get(i)));
 					}
 					else{
 						set.remove(data.getPatterns().get(i).getId());
 					}
 				}
 				
-				maps = Factories.getRuleParticipationFactory().getRuleParticipations(data).toArray(new BaseParticipantType[0]);
+				maps = rpFact.getRuleParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getRules().size();i++){
 					if(set.contains(data.getRules().get(i).getId())== false){
-						Factories.getRuleParticipationFactory().add(Factories.getRuleParticipationFactory().newRuleParticipation(data,data.getRules().get(i)));
+						rpFact.add(rpFact.newRuleParticipation(data,data.getRules().get(i)));
 					}
 					else{
 						set.remove(data.getRules().get(i).getId());
@@ -200,7 +204,7 @@ public class RuleFactory extends NameIdGroupFactory {
 				}
 
 				
-				Factories.getRuleParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
+				rpFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				out_bool = true;
 			}
 			catch(ArgumentException  ae){
@@ -242,7 +246,7 @@ public class RuleFactory extends NameIdGroupFactory {
 		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
-			Factories.getRuleParticipationFactory().deleteParticipations(ids, organizationId);
+			Factories.getParticipationFactory(FactoryEnumType.RULEPARTICIPATION).deleteParticipations(ids, organizationId);
 			/*
 			Factories.getRuleParticipationFactory().deleteParticipations(ids, organization);
 			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);

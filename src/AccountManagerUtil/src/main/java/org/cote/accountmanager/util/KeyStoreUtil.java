@@ -23,11 +23,12 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 
 public class KeyStoreUtil {
-	public static final Logger logger = Logger.getLogger(KeyStoreUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(KeyStoreUtil.class);
 	public static String PREFERRED_SSL_PROTOCOL = "TLS";
 	public static String PREFERRED_TRUSTSTORE_PROVIDER = "JKS";
 	public static String PREFERRED_KEYSTORE_PROVIDER = "JKS";

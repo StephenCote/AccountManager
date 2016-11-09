@@ -26,10 +26,13 @@ package org.cote.accountmanager.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.DataType;
@@ -39,30 +42,30 @@ import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
-
 public class BlogServiceImpl{
-	public static final Logger logger = Logger.getLogger(BlogServiceImpl.class.getName());
+	public static final Logger logger = LogManager.getLogger(BlogServiceImpl.class);
 	private static String blogPath = "Blog";
 	
 	public static DataType read(long orgId, String userName, String name){
 		DataType data = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, userName, AuditEnumType.USER, userName + " " + "/Home/" + userName + "/" + blogPath + " " + name);
 		try{
-			OrganizationType org = Factories.getOrganizationFactory().getOrganizationById(orgId);
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
 			if(org == null){
 				AuditService.denyResult(audit, "Organization #" + orgId + " does not exist");
 				return data;
 			}
-			UserType user = Factories.getUserFactory().getByName(userName, orgId);
+			UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(userName, orgId);
 			if(user == null){
 				AuditService.denyResult(audit, "User " + userName + " does not exist in Organization #" + orgId);
 				return data;
 				
 			}
 			UserType docUser = Factories.getDocumentControl(orgId);
-			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, "/Home/" + userName + "/" + blogPath, orgId);
+			DirectoryGroupType dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, "/Home/" + userName + "/" + blogPath, orgId);
 			if(dir != null){
 				AuditService.permitResult(audit, "Proxy anonymous request through document control user");
 				data = BaseService.readByName(audit,AuditEnumType.DATA,docUser,dir,name,null);
@@ -84,19 +87,19 @@ public class BlogServiceImpl{
 		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, userName, AuditEnumType.USER, "/Home/" + userName + "/" + blogPath);
 		try{
-			OrganizationType org = Factories.getOrganizationFactory().getOrganizationById(orgId);
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
 			if(org == null){
 				AuditService.denyResult(audit, "Organization #" + orgId + " does not exist");
 				return data;
 			}
-			UserType user = Factories.getUserFactory().getByName(userName, orgId);
+			UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(userName, orgId);
 			if(user == null){
 				AuditService.denyResult(audit, "User " + userName + " does not exist in Organization #" + orgId);
 				return data;
 				
 			}
 			UserType docUser = Factories.getDocumentControl(orgId);
-			//DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, blogPath, org);
+			//DirectoryGroupType dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, blogPath, org);
 			//if(dir != null){
 			//UserType user = ServiceUtil.getUserFromSession(request);
 				ProcessingInstructionType instruction = new ProcessingInstructionType();

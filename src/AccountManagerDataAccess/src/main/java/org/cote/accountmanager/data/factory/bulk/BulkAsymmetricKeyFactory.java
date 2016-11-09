@@ -29,6 +29,7 @@ import org.cote.accountmanager.data.factory.AsymmetricKeyFactory;
 
 
 public class BulkAsymmetricKeyFactory extends AsymmetricKeyFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.ASYMMETRICKEY, BulkAsymmetricKeyFactory.class); }
 	public BulkAsymmetricKeyFactory(){
 		super();
 		bulkMode = true;

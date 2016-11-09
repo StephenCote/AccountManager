@@ -7,10 +7,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ProcessUtil {
-	public static final Logger logger = Logger.getLogger(ProcessUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(ProcessUtil.class);
 	
 	public static List<String> runProcess(String basePath, String[] command){
 		List<String> output = new ArrayList<String>();

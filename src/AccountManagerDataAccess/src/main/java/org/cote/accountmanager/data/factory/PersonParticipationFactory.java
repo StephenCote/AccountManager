@@ -50,6 +50,7 @@ import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 
 public class PersonParticipationFactory extends ParticipationFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PERSONPARTICIPATION, PersonParticipationFactory.class); }
 	public PersonParticipationFactory(){
 		super(ParticipationEnumType.PERSON, "personparticipation");
 		this.haveAffect = true;
@@ -313,7 +314,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
@@ -327,7 +328,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
@@ -341,7 +342,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
@@ -355,7 +356,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
@@ -369,30 +370,30 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
 	public List<PersonType> getPersonsFromParticipations(PersonParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getPersonFactory().getPersonList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
+		return ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getPersonList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
 
 	public List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getAccountFactory().getAccountList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
+		return ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
 	public List<UserType> getUsersFromParticipations(UserParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getUserFactory().getUserList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
+		return ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getUserList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
 	public List<DataType> getDatasFromParticipations(DataParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getDataFactory().getDataList(new QueryField[]{ field }, true,startRecord, recordCount, organizationId);
+		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataList(new QueryField[]{ field }, true,startRecord, recordCount, organizationId);
 	}	
 	public List<NameIdType> getPersonParticipations(PersonType[] person, ParticipantEnumType participant_type) throws FactoryException, ArgumentException
 	{

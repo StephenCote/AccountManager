@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 
 public class BulkPermissionFactory extends PermissionFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.PERMISSION, BulkPermissionFactory.class); }
 	public BulkPermissionFactory(){
 		super();
 		bulkMode = true;

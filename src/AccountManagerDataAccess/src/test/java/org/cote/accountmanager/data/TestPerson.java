@@ -5,14 +5,19 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
+import org.cote.accountmanager.data.factory.AddressFactory;
+import org.cote.accountmanager.data.factory.ContactFactory;
+import org.cote.accountmanager.data.factory.ContactInformationFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.types.ContactEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.LocationEnumType;
 import org.junit.Test;
-
 
 public class TestPerson extends BaseDataAccessTest{
 	private static String test_person_name = "TestPerson";
@@ -25,16 +30,16 @@ public class TestPerson extends BaseDataAccessTest{
 		String new_name = UUID.randomUUID().toString();
 		PersonType person = null;
 		try {
-			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
+			pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
 			person = getCreatePerson(new_name,pDir);
 			assertNotNull("Contact information was not allotted",person.getContactInformation());
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		
@@ -47,16 +52,16 @@ public class TestPerson extends BaseDataAccessTest{
 		String new_name = UUID.randomUUID().toString();
 		ContactType contact = null;
 		try {
-			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Contacts", testUser.getHomeDirectory(), testUser.getOrganization());
+			pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Contacts", testUser.getHomeDirectory(), testUser.getOrganization());
 			contact = getCreateContact(new_name,pDir);
 			assertNotNull("Contact information was not allotted",contact);
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		
@@ -69,16 +74,16 @@ public class TestPerson extends BaseDataAccessTest{
 		String new_name = UUID.randomUUID().toString();
 		AddressType address = null;
 		try {
-			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Addresss", testUser.getHomeDirectory(), testUser.getOrganization());
+			pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Addresss", testUser.getHomeDirectory(), testUser.getOrganization());
 			address = getCreateAddress(new_name,pDir);
 			assertNotNull("Address information was not allotted",address);
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	*/
@@ -92,22 +97,22 @@ public class TestPerson extends BaseDataAccessTest{
 		PersonType person = null;
 		
 		try{
-			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			
 			PersonType child = getCreatePerson(new_child_name, pDir);
 			addContactValues(child, new_child_name);
 			PersonType partner = getCreatePerson(new_partner_name, pDir);
 			addContactValues(child, new_partner_name);
-			person = Factories.getPersonFactory().newPerson(testUser,pDir.getId());
+			person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(testUser,pDir.getId());
 			person.setName(new_name);
 			person.getDependents().add(child);
 			person.getPartners().add(partner);
 
-			assertTrue("Failed to add new person",Factories.getPersonFactory().add(person));
+			assertTrue("Failed to add new person",((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).add(person));
 			
-			person = Factories.getPersonFactory().getByNameInGroup(new_name, pDir);
+			person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getByNameInGroup(new_name, pDir);
 			addContactValues(person,new_name);
-			Factories.getPersonFactory().populate(person);
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(person);
 			assertNotNull("Person is null",person);
 			assertTrue("Partner not retrieved",person.getPartners().size() == 1);
 			assertTrue("Child not retrieved",person.getDependents().size() == 1);
@@ -115,10 +120,10 @@ public class TestPerson extends BaseDataAccessTest{
 		}
 		catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 /*
@@ -130,7 +135,7 @@ public class TestPerson extends BaseDataAccessTest{
 		PersonType person = null;
 		PersonType partner = null;
 		try {
-			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
+			pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
 			person = getCreatePerson(test_person_name,pDir);
 			partner = getCreatePerson(test_partner_name,pDir);
 			/// Once populated, it's possible to add in the same object more than once
@@ -138,19 +143,19 @@ public class TestPerson extends BaseDataAccessTest{
 			///
 			person.getPartners().clear();
 			person.getPartners().add(partner);
-			assertTrue("Failed to update person",Factories.getPersonFactory().updatePerson(person));
+			assertTrue("Failed to update person",((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).updatePerson(person));
 			person = getCreatePerson(test_person_name,pDir);
 
 			assertTrue("Partners not retrieved",person.getPartners().size() == 1);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		
@@ -164,7 +169,7 @@ public class TestPerson extends BaseDataAccessTest{
 		PersonType partner = null;
 		String testName = "DeletePerson-" + UUID.randomUUID().toString();
 		try {
-			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
+			pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
 			person = getCreatePerson(testName,pDir);
 			partner = getCreatePerson(test_partner_name,pDir);
 			/// Once populated, it's possible to add in the same object more than once
@@ -172,20 +177,20 @@ public class TestPerson extends BaseDataAccessTest{
 			///
 			person.getPartners().clear();
 			person.getPartners().add(partner);
-			assertTrue("Failed to update person",Factories.getPersonFactory().updatePerson(person));
+			assertTrue("Failed to update person",((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).updatePerson(person));
 			
-			boolean deleted = Factories.getPersonFactory().deletePerson(person);
+			boolean deleted = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).deletePerson(person);
 
 			assertTrue("Person not deleted",deleted);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		
@@ -196,24 +201,24 @@ public class TestPerson extends BaseDataAccessTest{
 	public void TestSearchPersons(){
 		DirectoryGroupType pDir = null;
 		try {
-			pDir = Factories.getGroupFactory().getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
+			pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganization());
 			for(int i = 0; i < 20;i++){
 				PersonType p = getCreatePerson("SearchPerson-" + (i + 1),pDir);
 				/ *
 				if(p.getContactInformation().getFirstName() == null){
 					p.getContactInformation().setFirstName("SearchPerson-" + (i + 1) + "First");
 					p.getContactInformation().setLastName("SearchPerson-" + (i + 1) + "Last");
-					Factories.getContactInformationFactory().updateContactInformation(p.getContactInformation());
+					((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).updateContactInformation(p.getContactInformation());
 				}
 				* /
 			}
 
-			List<PersonType> persons = Factories.getPersonFactory().searchPersons("SearchPerson*",0,10,pDir);
+			List<PersonType> persons = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).searchPersons("SearchPerson*",0,10,pDir);
 			assertTrue("Expected count is 10",persons.size() == 10);
 			for(int i = 0; i < persons.size();i++){
 				logger.info("Search Result " + (i + 1) + ":" + persons.get(i).getName());
 			}
-			persons = Factories.getPersonFactory().searchPersons("SearchPerson*",10,20,pDir);
+			persons = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).searchPersons("SearchPerson*",10,20,pDir);
 			assertTrue("Expected count is 10",persons.size() == 10);
 			for(int i = 0; i < persons.size();i++){
 				logger.info("Search Result " + (i + 1) + ":" + persons.get(i).getName());
@@ -221,76 +226,76 @@ public class TestPerson extends BaseDataAccessTest{
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	*/
 	private AddressType getCreateAddress(String name, DirectoryGroupType pDir){
 		AddressType address = null;
 		try{
-			address = Factories.getAddressFactory().getByNameInGroup(name, pDir);
+			address = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).getByNameInGroup(name, pDir);
 			if(address == null){
-				address = Factories.getAddressFactory().newAddress(testUser,pDir.getId());
+				address = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).newAddress(testUser,pDir.getId());
 				address.setName(name);
-				assertTrue("Failed to add new address",Factories.getAddressFactory().add(address));
-				address = Factories.getAddressFactory().getByNameInGroup(name, pDir);
+				assertTrue("Failed to add new address",((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).add(address));
+				address = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).getByNameInGroup(name, pDir);
 				assertNotNull("Address is null",address);
 			}
-			Factories.getAddressFactory().populate(address);
+			((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).populate(address);
 		}
 		catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return address;
 	}
 	private ContactType getCreateContact(String name, DirectoryGroupType pDir){
 		ContactType contact = null;
 		try{
-			contact = Factories.getContactFactory().getByNameInGroup(name, pDir);
+			contact = ((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).getByNameInGroup(name, pDir);
 			if(contact == null){
-				contact = Factories.getContactFactory().newContact(testUser,pDir.getId());
+				contact = ((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).newContact(testUser,pDir.getId());
 				contact.setName(name);
-				assertTrue("Failed to add new contact",Factories.getContactFactory().add(contact));
-				contact = Factories.getContactFactory().getByNameInGroup(name, pDir);
+				assertTrue("Failed to add new contact",((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).add(contact));
+				contact = ((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).getByNameInGroup(name, pDir);
 				assertNotNull("Contact is null",contact);
 			}
-			Factories.getContactFactory().populate(contact);
+			((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).populate(contact);
 		}
 		catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return contact;
 	}
 	private PersonType getCreatePerson(String name, DirectoryGroupType pDir){
 		PersonType person = null;
 		try{
-			person = Factories.getPersonFactory().getByNameInGroup(name, pDir);
+			person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getByNameInGroup(name, pDir);
 			if(person == null){
-				person = Factories.getPersonFactory().newPerson(testUser,pDir.getId());
+				person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(testUser,pDir.getId());
 				person.setName(name);
-				assertTrue("Failed to add new person",Factories.getPersonFactory().add(person));
-				person = Factories.getPersonFactory().getByNameInGroup(name, pDir);
+				assertTrue("Failed to add new person",((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).add(person));
+				person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getByNameInGroup(name, pDir);
 				assertNotNull("Person is null",person);
 			}
-			Factories.getPersonFactory().populate(person);
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(person);
 		}
 		catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return person;
 	}
@@ -298,26 +303,26 @@ public class TestPerson extends BaseDataAccessTest{
 		boolean bUp = false;
 		try{
 			if(person.getContactInformation().getAddresses().size() == 0){
-				AddressType homeAddr = getCreateAddress(name,Factories.getGroupFactory().getDirectoryById(person.getGroupId(),person.getOrganizationId()));
+				AddressType homeAddr = getCreateAddress(name,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(person.getGroupId(),person.getOrganizationId()));
 				setDemoAddressValues(homeAddr);
-				Factories.getAddressFactory().update(homeAddr);
+				((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).update(homeAddr);
 				person.getContactInformation().getAddresses().add(homeAddr);
 				bUp = true;
 			}
 			if(person.getContactInformation().getContacts().size() == 0){
-				ContactType homeEmail = getCreateContact(name,Factories.getGroupFactory().getDirectoryById(person.getGroupId(),person.getOrganizationId()));
+				ContactType homeEmail = getCreateContact(name,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(person.getGroupId(),person.getOrganizationId()));
 				setHomeEmailValues(homeEmail);
-				Factories.getContactFactory().update(homeEmail);
+				((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).update(homeEmail);
 				person.getContactInformation().getContacts().add(homeEmail);
 				bUp = true;
 			}
 			if(bUp){
-				Factories.getContactInformationFactory().update(person.getContactInformation());
+				((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).update(person.getContactInformation());
 			}
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} 
 	}
 	private void setHomeEmailValues(ContactType ct){

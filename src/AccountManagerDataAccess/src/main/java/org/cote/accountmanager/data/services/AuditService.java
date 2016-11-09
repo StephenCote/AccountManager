@@ -25,7 +25,8 @@ package org.cote.accountmanager.data.services;
 
 import java.util.Calendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
@@ -37,7 +38,7 @@ import org.cote.accountmanager.objects.types.RetentionEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class AuditService {
-	public static final Logger logger = Logger.getLogger(AuditService.class.getName());
+	public static final Logger logger = LogManager.getLogger(AuditService.class);
 	public static String getAuditString(AuditType audit){
 		return audit.getAuditResultType() + " (" + audit.getAuditResultData() + ") "
 				+ audit.getAuditSourceType() + " (" + audit.getAuditSourceData() + ") "
@@ -62,7 +63,7 @@ public class AuditService {
 			logger.info("*** Audit *** " + auditStr);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return added;
 	}

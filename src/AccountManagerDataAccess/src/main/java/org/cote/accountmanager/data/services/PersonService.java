@@ -25,12 +25,18 @@ package org.cote.accountmanager.data.services;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.ContactFactory;
+import org.cote.accountmanager.data.factory.ContactInformationFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.ContactInformationType;
@@ -46,7 +52,7 @@ import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 
 public class PersonService {
-	public static final Logger logger = Logger.getLogger(PersonService.class.getName());
+	public static final Logger logger = LogManager.getLogger(PersonService.class);
 	
 	public static ContactType getPreferredEmailContact(PersonType person){
 		return ContactService.getPreferredEmailContact(person.getContactInformation());
@@ -59,16 +65,16 @@ public class PersonService {
 	public static boolean createUserAsPerson(AuditType audit, String userName, String password, String email,UserEnumType userType,UserStatusEnumType userStatus,long organizationId){
 		boolean out_bool = false;
 		try{
-			if(Factories.getUserFactory().getUserNameExists(userName, organizationId)){
+			if(((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).getUserNameExists(userName, organizationId)){
 				logger.error("User name '" + userName + "' is already used in organization " + organizationId);
 				return false;
 			}
 
 			/// TODO - change this to just get the persons directory from the GroupFactory
 			///
-			UserType adminUser = Factories.getUserFactory().getByName("Admin", organizationId);
-			DirectoryGroupType pDir = Factories.getGroupFactory().getCreateDirectory(adminUser, "Persons", Factories.getGroupFactory().getRootDirectory(organizationId), organizationId);
-			DirectoryGroupType cDir = Factories.getGroupFactory().getCreateDirectory(adminUser, "Contacts", Factories.getGroupFactory().getRootDirectory(organizationId), organizationId);
+			UserType adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
+			DirectoryGroupType pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Persons", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organizationId), organizationId);
+			DirectoryGroupType cDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Contacts", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organizationId), organizationId);
 			
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			
@@ -81,7 +87,7 @@ public class PersonService {
 			/// I'm leaving it as-is for the moment.  If it's going to be any more robust, it may as well just be an LDAP,
 			/// And making an LDAP isn't the goal.
 			///
-			UserType newUser = Factories.getUserFactory().newUser(userName,  userType, userStatus, organizationId);
+			UserType newUser = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(userName,  userType, userStatus, organizationId);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, newUser);
 			
 			/// 2015/06/23 - New Credential System
@@ -89,19 +95,19 @@ public class PersonService {
 			///
 			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,newUser, newUser, password.getBytes("UTF-8"), true,true,false);
 
-			PersonType newPerson = Factories.getPersonFactory().newPerson(newUser,pDir.getId());
+			PersonType newPerson = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(newUser,pDir.getId());
 			newPerson.setName(userName);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, newPerson);
 			newPerson.getUsers().add(newUser);
 			
-			ContactInformationType cit = Factories.getContactInformationFactory().newContactInformation(newPerson);
+			ContactInformationType cit = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(newPerson);
 			cit.setOwnerId(newUser.getId());
 			
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
 			newPerson.setContactInformation(cit);
 			if(email != null){
 				logger.info("Adding email to user registration: '" + email + "'");
-				ContactType ct = Factories.getContactFactory().newContact(newUser, cDir.getId());
+				ContactType ct = ((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).newContact(newUser, cDir.getId());
 				ct.setName(newPerson.getName() + " Registration Email");
 				ct.setPreferred(true);
 				ct.setContactType(ContactEnumType.EMAIL);
@@ -120,26 +126,16 @@ public class PersonService {
 			out_bool = true;
 			AuditService.permitResult(audit, "Created user '" + userName + "' (#" + newUser.getId() + ")");
 		}
-		catch(ArgumentException e){
-			AuditService.denyResult(audit, "Failed to add user: " + e.getMessage());
-			logger.error("Error creating user " + userName + ": " + e.getMessage());
-			logger.error(e.getStackTrace());
-		} catch (FactoryException e) {
+		catch(ArgumentException | FactoryException | DataAccessException e) {
 			
 			AuditService.denyResult(audit, "Failed to add user: " + e.getMessage());
 			logger.error("Error creating user " + userName + ": " + e.getMessage());
-			logger.error(e.getStackTrace());
-
-		} catch (DataAccessException e) {
-			
-			AuditService.denyResult(audit, "Failed to add user: " + e.getMessage());
-			logger.error("Error creating user " + userName + ": " + e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 
 		} catch (UnsupportedEncodingException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return out_bool;
 	}

@@ -54,7 +54,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class AccountFactory extends NameIdGroupFactory {
 	
-	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ACCOUNT, AccountFactory.class); }
 	public AccountFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -81,9 +81,9 @@ public class AccountFactory extends NameIdGroupFactory {
 	{
 		AccountType account = (AccountType)obj;
 		if(account.getPopulated() == true || account.getDatabaseRecord() == false) return;
-		account.setContactInformation(Factories.getContactInformationFactory().getContactInformationForAccount(account));
-		if(account.getContactInformation() != null) Factories.getContactInformationFactory().populate(account.getContactInformation());
-		account.setStatistics(Factories.getStatisticsFactory().getStatistics(account));
+		account.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForAccount(account));
+		if(account.getContactInformation() != null) ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).populate(account.getContactInformation());
+		account.setStatistics(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(account));
 		account.setPopulated(true);
 		updateAccountToCache(account);
 		return;
@@ -106,7 +106,7 @@ public class AccountFactory extends NameIdGroupFactory {
 		///
 		if(account.getContactInformation() != null){
 
-				b = Factories.getContactInformationFactory().update(account.getContactInformation());
+				b = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).update(account.getContactInformation());
 
 		}
 		return b;
@@ -133,7 +133,7 @@ public class AccountFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			/*
-			Factories.getContactInformationFactory().deleteContactInformationByReferenceIds(ids,organizationId);
+			((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).deleteContactInformationByReferenceIds(ids,organizationId);
 			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
 			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
 			*/
@@ -151,16 +151,16 @@ public class AccountFactory extends NameIdGroupFactory {
 			/// TODO
 			/// Delete users for Account
 			///
-			Factories.getContactInformationFactory().deleteContactInformationByReferenceType(account);
+			((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).deleteContactInformationByReferenceType(account);
 
-			//Factories.getTagFactory().deleteTagsByAccount(account);
-			Factories.getTagParticipationFactory().deleteAccountParticipations(account);
-			/// Factories.getRoleFactory().deleteRolesByOwner(account);
-			//Factories.getGroupFactory().deleteGroupsByOwner(account);
-			Factories.getGroupParticipationFactory().deleteAccountGroupParticipations(account);
-			Factories.getRoleParticipationFactory().deleteAccountParticipations(account);
-			Factories.getDataParticipationFactory().deleteAccountParticipations(account);
-			//Factories.getGroupFactory();
+			//((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).deleteTagsByAccount(account);
+			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).deleteAccountParticipations(account);
+			/// ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).deleteRolesByOwner(account);
+			//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteGroupsByOwner(account);
+			((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteAccountGroupParticipations(account);
+			((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteAccountParticipations(account);
+			((DataParticipationFactory)Factories.getFactory(FactoryEnumType.DATAPARTICIPATION)).deleteAccountParticipations(account);
+			//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
 
 /*
 			Factory.DataFactoryInstance.DeleteDataByAccount(account);
@@ -247,17 +247,17 @@ public class AccountFactory extends NameIdGroupFactory {
 			row.setCellValue("groupid", new_account.getGroupId());
 			if (insertRow(row)){
 
-				new_account = (bulkMode ? new_account : getAccountByName(new_account.getName(), (DirectoryGroupType)Factories.getGroupFactory().getGroupById(new_account.getGroupId(),new_account.getOrganizationId()), (new_account.getParentId() != 0L ?  (AccountType)getById(new_account.getParentId(),new_account.getOrganizationId()) : null)));
+				new_account = (bulkMode ? new_account : getAccountByName(new_account.getName(), (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(new_account.getGroupId(),new_account.getOrganizationId()), (new_account.getParentId() != 0L ?  (AccountType)getById(new_account.getParentId(),new_account.getOrganizationId()) : null)));
 				if(new_account == null) throw new FactoryException("Failed to retrieve new account object");
-				StatisticsType stats = Factories.getStatisticsFactory().newStatistics(new_account);
+				StatisticsType stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).newStatistics(new_account);
 				if(bulkMode){
 					BulkFactories.getBulkFactory().setDirty(FactoryEnumType.STATISTICS);
-					BulkFactories.getBulkStatisticsFactory().add(stats);
+					((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.STATISTICS)).add(stats);
 					if(allot_contact_info){
-						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_account);
+						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(new_account);
 						if(new_account.getId() > 0){
 							BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATION);
-							BulkFactories.getBulkContactInformationFactory().add(cinfo);
+							((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.CONTACTINFORMATION)).add(cinfo);
 						}
 						else{
 							if(this.factoryType == FactoryEnumType.UNKNOWN) throw new FactoryException("Invalid Factory Type for Bulk Identifiers");
@@ -273,15 +273,15 @@ public class AccountFactory extends NameIdGroupFactory {
 					}
 				}
 				else{
-					if(Factories.getStatisticsFactory().add(stats) == false) throw new FactoryException("Failed to add statistics to new account #" + new_account.getId());
-					stats = Factories.getStatisticsFactory().getStatistics(new_account);
+					if(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).add(stats) == false) throw new FactoryException("Failed to add statistics to new account #" + new_account.getId());
+					stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(new_account);
 					if(stats == null) throw new FactoryException("Failed to retrieve statistics for account #" + new_account.getId());
 					new_account.setStatistics(stats);
 					if(allot_contact_info){
-						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_account);
+						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(new_account);
 						System.out.println("Adding cinfo for account in org " + new_account.getOrganizationId());
-						if(Factories.getContactInformationFactory().add(cinfo) == false) throw new FactoryException("Failed to assign contact information for account #" + new_account.getId());
-						cinfo = Factories.getContactInformationFactory().getContactInformationForAccount(new_account);
+						if(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).add(cinfo) == false) throw new FactoryException("Failed to assign contact information for account #" + new_account.getId());
+						cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForAccount(new_account);
 						if(cinfo == null) throw new FactoryException("Failed to retrieve contact information for account #" + new_account.getId());
 						new_account.setContactInformation(cinfo);
 					}

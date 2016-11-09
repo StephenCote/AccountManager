@@ -26,7 +26,8 @@ package org.cote.accountmanager.data.factory;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -45,6 +46,7 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
@@ -52,7 +54,7 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
 
 public abstract class BaseParticipationFactory extends ParticipationFactory {
-	public static final Logger logger = Logger.getLogger(BaseParticipationFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(BaseParticipationFactory.class);
 
 	public BaseParticipationFactory(ParticipationEnumType type, String tableName){
 		super(type, tableName);
@@ -83,7 +85,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 	public List<DataType> getDataFromParticipations(DataParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getDataFactory().getDataList(new QueryField[]{ field }, true, startRecord, recordCount, organizationId);
+		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataList(new QueryField[]{ field }, true, startRecord, recordCount, organizationId);
 	}
 	public List<DataType> getDataFromParticipation(NameIdType participation) throws ArgumentException{
 		List<DataType> items = new ArrayList<DataType>();
@@ -95,7 +97,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
@@ -184,14 +186,14 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
 	public List<ContactType> getContactsFromParticipations(ContactParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getContactFactory().getContactList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
+		return Factories.getNameIdFactory(FactoryEnumType.CONTACT).paginateList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
 	public List<ContactParticipantType> getContactParticipants(
 			NameIdType obj,
@@ -282,14 +284,14 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 			}
 			catch(FactoryException fe){
 				logger.error(fe.getMessage());
-				logger.error(fe.getStackTrace());
+				logger.error("Error",fe);
 			}
 			return items;
 		}
 		public List<AddressType> getAddressesFromParticipations(AddressParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 		{
 			QueryField field = QueryFields.getFieldParticipantIds(list);
-			return Factories.getAddressFactory().getAddressList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
+			return Factories.getNameIdFactory(FactoryEnumType.ADDRESS).paginateList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 		}
 		public List<AddressParticipantType> getAddressParticipants(
 				NameIdType obj,

@@ -14,8 +14,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.junit.After;
@@ -24,15 +25,11 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class TestSecurityFactory {
-	public static final Logger logger = Logger.getLogger(TestSecurityFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestSecurityFactory.class);
 	@Before
 	public void setUp() throws Exception {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
+
 	}
 
 	@After
@@ -81,29 +78,29 @@ public class TestSecurityFactory {
 			}
 		} catch (NoSuchAlgorithmException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (NoSuchPaddingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		catch (InvalidKeyException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 
 		
 		catch (InvalidAlgorithmParameterException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		assertTrue("Didn't pass", pass);

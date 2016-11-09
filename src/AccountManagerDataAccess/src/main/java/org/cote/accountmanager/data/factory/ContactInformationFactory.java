@@ -55,6 +55,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 public class ContactInformationFactory extends NameIdFactory {
 	
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.CONTACTINFORMATION, ContactInformationFactory.class); }
 	public ContactInformationFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -75,8 +76,8 @@ public class ContactInformationFactory extends NameIdFactory {
 	{
 		ContactInformationType cinfo = (ContactInformationType)obj;
 		if(cinfo.getPopulated() == true || cinfo.getId().equals(0L)) return;
-		cinfo.getContacts().addAll(Factories.getContactInformationParticipationFactory().getContactsFromParticipation(cinfo));
-		cinfo.getAddresses().addAll(Factories.getContactInformationParticipationFactory().getAddressesFromParticipation(cinfo));
+		cinfo.getContacts().addAll(((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).getContactsFromParticipation(cinfo));
+		cinfo.getAddresses().addAll(((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).getAddressesFromParticipation(cinfo));
 		cinfo.setPopulated(true);
 		
 		updateToCache(cinfo);
@@ -102,7 +103,7 @@ public class ContactInformationFactory extends NameIdFactory {
 		ContactInformationType cinfo = (ContactInformationType)object;
 		int deleted = deleteById(cinfo.getId(), cinfo.getOrganizationId());
 		if(deleted > 0){
-			Factories.getContactInformationParticipationFactory().deleteParticipations(new long[]{cinfo.getId()},cinfo.getOrganizationId());
+			((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).deleteParticipations(new long[]{cinfo.getId()},cinfo.getOrganizationId());
 		}
 		return (deleted > 0);
 	}
@@ -121,40 +122,40 @@ public class ContactInformationFactory extends NameIdFactory {
 				if(bulkMode) BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION);
 
 				Set<Long> set = new HashSet<Long>();
-				BaseParticipantType[] maps = Factories.getContactInformationParticipationFactory().getContactParticipations(cinfo).toArray(new BaseParticipantType[0]);
+				BaseParticipantType[] maps = ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).getContactParticipations(cinfo).toArray(new BaseParticipantType[0]);
 				//logger.info("Updating " + maps.length + " Contact References");
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < cinfo.getContacts().size();i++){
 					if(set.contains(cinfo.getContacts().get(i).getId())== false){
-						part = Factories.getContactInformationParticipationFactory().newContactParticipation(cinfo,cinfo.getContacts().get(i));
+						part = ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).newContactParticipation(cinfo,cinfo.getContacts().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.CONTACTINFORMATIONPARTICIPATION, part);
-						else Factories.getContactInformationParticipationFactory().add(part);
+						else ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).add(part);
 					}
 					else{
 						set.remove(cinfo.getContacts().get(i).getId());
 					}
 				}
-				//Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
+				//((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				set.clear();
-				maps = Factories.getContactInformationParticipationFactory().getAddressParticipations(cinfo).toArray(new BaseParticipantType[0]);
+				maps = ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).getAddressParticipations(cinfo).toArray(new BaseParticipantType[0]);
 				//logger.info("Updating " + maps.length + " Address References");
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < cinfo.getAddresses().size();i++){
 					if(set.contains(cinfo.getAddresses().get(i).getId())== false){
-						part = Factories.getContactInformationParticipationFactory().newAddressParticipation(cinfo,cinfo.getAddresses().get(i));
+						part = ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).newAddressParticipation(cinfo,cinfo.getAddresses().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.CONTACTINFORMATIONPARTICIPATION, part);
-						else Factories.getContactInformationParticipationFactory().add(part);
+						else ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).add(part);
 					}
 					else{
 						set.remove(cinfo.getAddresses().get(i).getId());
 					}
 				}
-				//Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
+				//((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-				if(delIds.size() > 0) Factories.getContactInformationParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
+				if(delIds.size() > 0) ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
 				out_bool = true;
 			}
 			catch(ArgumentException ae){
@@ -195,15 +196,15 @@ public class ContactInformationFactory extends NameIdFactory {
 				BaseParticipantType part = null;
 
 				for(int i = 0; i < new_info.getContacts().size();i++){
-					part = Factories.getContactInformationParticipationFactory().newContactParticipation(cobj,new_info.getContacts().get(i));
-					if(bulkMode) BulkFactories.getBulkContactInformationParticipationFactory().add(part);
-					else Factories.getContactInformationParticipationFactory().add(part);
+					part = ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).newContactParticipation(cobj,new_info.getContacts().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).add(part);
+					else ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).add(part);
 				}
 				
 				for(int i = 0; i < new_info.getAddresses().size();i++){
-					part = Factories.getContactInformationParticipationFactory().newAddressParticipation(cobj,new_info.getAddresses().get(i));
-					if(bulkMode) BulkFactories.getBulkContactInformationParticipationFactory().add(part);
-					else Factories.getContactInformationParticipationFactory().add(part);
+					part = ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).newAddressParticipation(cobj,new_info.getAddresses().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).add(part);
+					else ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).add(part);
 				}
 				
 				return true;
@@ -213,7 +214,7 @@ public class ContactInformationFactory extends NameIdFactory {
 			throw new FactoryException(dae.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return false;
 	}

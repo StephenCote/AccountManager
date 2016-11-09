@@ -26,10 +26,11 @@ package org.cote.accountmanager.util;
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TextUtil {
-	public static final Logger logger = Logger.getLogger(TextUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(TextUtil.class);
 	private static Pattern regLessThan = Pattern.compile("<");
 	private static Pattern regGreaterThan = Pattern.compile(">");
 	private static Pattern regAsciiCharactersOnly = Pattern.compile("[^\\x20-\\x7E]");

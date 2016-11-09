@@ -23,13 +23,14 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
 
 public class FactoryService {
-	public static final Logger logger = Logger.getLogger(FactoryService.class.getName());
+	public static final Logger logger = LogManager.getLogger(FactoryService.class);
 	
 	/// Directory Type is a specific object where it is scoped to a group
 	/// but it is NOT the group itself

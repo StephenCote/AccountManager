@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.RoleFactory;
 
 public class BulkRoleFactory extends RoleFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.ROLE, BulkRoleFactory.class); }
 	public BulkRoleFactory(){
 		super();
 		bulkMode = true;

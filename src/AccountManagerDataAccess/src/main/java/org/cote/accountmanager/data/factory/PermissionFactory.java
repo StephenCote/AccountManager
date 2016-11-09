@@ -52,6 +52,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class PermissionFactory extends NameIdFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PERMISSION, PermissionFactory.class); }
 	public PermissionFactory(){
 		super();
 		this.clusterByParent = true;
@@ -117,8 +118,8 @@ public class PermissionFactory extends NameIdFactory {
 			return;	
 		}
 		if(obj.getParentPath() != null) return;
-		BasePermissionType parent = Factories.getPermissionFactory().getPermissionById(obj.getParentId(), obj.getOrganizationId());
-		obj.setParentPath(Factories.getPermissionFactory().getPermissionPath(parent));
+		BasePermissionType parent = getById(obj.getParentId(), obj.getOrganizationId());
+		obj.setParentPath(getPermissionPath(parent));
 	}
 	
 	@Override
@@ -247,7 +248,7 @@ public class PermissionFactory extends NameIdFactory {
 		return makePath(null, type, pathBase,organizationId);
 	}
 	public <T> T makePath(UserType user, PermissionEnumType type, DirectoryGroupType group) throws FactoryException, ArgumentException, DataAccessException{
-		Factories.getGroupFactory().populate(group);
+		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(group);
 		return makePath(user, type, group.getPath(), group.getOrganizationId());
 	}
 	public <T> T makePath(UserType user, PermissionEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{

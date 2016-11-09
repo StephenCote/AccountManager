@@ -56,6 +56,7 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class GroupParticipationFactory extends ParticipationFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.GROUPPARTICIPATION, GroupParticipationFactory.class); }
 	public GroupParticipationFactory(){
 		super(ParticipationEnumType.GROUP, "groupparticipation");
 		this.haveAffect = true;
@@ -304,7 +305,7 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		long[] data_ids = ParticipationUtil.getDataFromGroupForPerson(group, person);
 		List<DataType> out_list = new ArrayList<DataType>();
 		if(data_ids.length == 0) return out_list;
-		return Factories.getDataFactory().getDataListByIds(data_ids, true, person.getOrganizationId());
+		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByIds(data_ids, true, person.getOrganizationId());
 
 	}
 	public List<DataType> getDataForAccount(BaseGroupType group, AccountType account) throws FactoryException, ArgumentException
@@ -312,7 +313,7 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		long[] data_ids = ParticipationUtil.getDataFromGroupForAccount(group, account);
 		List<DataType> out_list = new ArrayList<DataType>();
 		if(data_ids.length == 0) return out_list;
-		return Factories.getDataFactory().getDataListByIds(data_ids, true, account.getOrganizationId());
+		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByIds(data_ids, true, account.getOrganizationId());
 	}
 */
 	public boolean getIsDataInGroup(BaseGroupType group, DataType data) throws ArgumentException, FactoryException

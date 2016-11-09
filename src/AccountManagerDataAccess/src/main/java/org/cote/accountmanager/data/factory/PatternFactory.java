@@ -57,6 +57,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class PatternFactory extends NameIdGroupFactory {
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PATTERN, PatternFactory.class); }
 	public PatternFactory(){
 		super();
 		this.tableNames.add("pattern");
@@ -83,9 +84,9 @@ public class PatternFactory extends NameIdGroupFactory {
 		pattern.setFact(null);
 		pattern.setMatch(null);
 		pattern.setOperation(null);
-		if(pattern.getFactUrn() != null) pattern.setFact((FactType)Factories.getFactFactory().getByUrn(pattern.getFactUrn()));
-		if(pattern.getMatchUrn() != null) pattern.setMatch((FactType)Factories.getFactFactory().getByUrn(pattern.getMatchUrn()));
-		if(pattern.getOperationUrn() != null) pattern.setOperation((OperationType)Factories.getOperationFactory().getByUrn(pattern.getOperationUrn()));
+		if(pattern.getFactUrn() != null) pattern.setFact((FactType)Factories.getNameIdFactory(FactoryEnumType.FACT).getByUrn(pattern.getFactUrn()));
+		if(pattern.getMatchUrn() != null) pattern.setMatch((FactType)Factories.getNameIdFactory(FactoryEnumType.FACT).getByUrn(pattern.getMatchUrn()));
+		if(pattern.getOperationUrn() != null) pattern.setOperation((OperationType)Factories.getNameIdFactory(FactoryEnumType.OPERATION).getByUrn(pattern.getOperationUrn()));
 		pattern.setPopulated(true);
 		updateToCache(pattern);
 	}

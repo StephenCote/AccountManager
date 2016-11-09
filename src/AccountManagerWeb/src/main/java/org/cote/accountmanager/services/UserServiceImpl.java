@@ -28,10 +28,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
@@ -39,12 +42,13 @@ import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 
 
 
 public class UserServiceImpl  {
-	public static final Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
+	public static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 	public static final String defaultDirectory = "~/Users";
 
 	public static boolean delete(UserType bean,HttpServletRequest request){
@@ -92,9 +96,9 @@ public class UserServiceImpl  {
 		try {
 			//AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			if(
-				RoleService.isFactoryAdministrator(user, Factories.getAccountFactory()) == true
+				RoleService.isFactoryAdministrator(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == true
 				||
-				RoleService.isFactoryReader(user, Factories.getAccountFactory()) == true
+				RoleService.isFactoryReader(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == true
 			){
 				AuditService.permitResult(audit, "Access authorized to list users");
 				out_obj = getList(startRecord,recordCount,organizationId);
@@ -106,10 +110,10 @@ public class UserServiceImpl  {
 			
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;
@@ -117,7 +121,7 @@ public class UserServiceImpl  {
 	}
 	private static List<UserType> getList(long startRecord, int recordCount, long organizationId) throws ArgumentException, FactoryException {
 
-		return Factories.getUserFactory().getUserList(startRecord, recordCount, organizationId);
+		return ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).getUserList(startRecord, recordCount, organizationId);
 		
 	}
 	

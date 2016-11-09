@@ -54,6 +54,7 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class RoleParticipationFactory extends ParticipationFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ROLEPARTICIPATION, RoleParticipationFactory.class); }
 	public RoleParticipationFactory(){
 		super(ParticipationEnumType.ROLE, "roleparticipation");
 		this.haveAffect = true;
@@ -97,7 +98,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		match.setComparator(ComparatorEnumType.IN);
 */
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new RoleParticipantType[0]));
-		return Factories.getRoleFactory().getRoles(match, child_role.getOrganizationId());
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoles(match, child_role.getOrganizationId());
 	}
 	public List<BaseRoleType> getRolesInRole(BaseRoleType role)  throws FactoryException, ArgumentException
 	{
@@ -177,7 +178,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		List<UserParticipantType> list = getUserRoleParticipants(account);
 		if(list.size() == 0) return new ArrayList<UserRoleType>();
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new UserParticipantType[0]));
-		return Factories.getRoleFactory().getUserRoles(match, account.getOrganizationId());
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRoles(match, account.getOrganizationId());
 	}
 	public List<UserType> getUsersInRole(UserRoleType role) throws FactoryException, ArgumentException
 	{
@@ -278,7 +279,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		List<PersonParticipantType> list = getPersonRoleParticipants(person);
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new PersonParticipantType[0]));
-		return Factories.getRoleFactory().getPersonRoles(match, person.getOrganizationId());
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getPersonRoles(match, person.getOrganizationId());
 	}
 	public List<PersonType> getPersonsInRole(BaseRoleType role) throws FactoryException, ArgumentException
 	{
@@ -379,7 +380,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		List<AccountParticipantType> list = getAccountRoleParticipants(account);
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new AccountParticipantType[0]));
-		return Factories.getRoleFactory().getAccountRoles(match, account.getOrganizationId());
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getAccountRoles(match, account.getOrganizationId());
 	}
 	public List<AccountType> getAccountsInRole(BaseRoleType role) throws FactoryException, ArgumentException
 	{

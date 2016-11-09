@@ -26,11 +26,12 @@ package org.cote.accountmanager.data.operation;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 ;
 
 public class OperationUtil {
-	public static final Logger logger = Logger.getLogger(OperationUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(OperationUtil.class);
 
 	private static Map<String,Class> operations = new HashMap<String,Class>();
 	private static Map<String,IOperation> operationInst = new HashMap<String,IOperation>();
@@ -50,10 +51,10 @@ public class OperationUtil {
 
 		} catch (InstantiationException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (IllegalAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return oper;
 	}
@@ -65,7 +66,7 @@ public class OperationUtil {
 			operations.put(className, cls);
 		} catch (ClassNotFoundException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return cls;
 	}

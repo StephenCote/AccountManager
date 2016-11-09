@@ -1,31 +1,27 @@
 package org.cote.accountmanager.data;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
-import org.cote.accountmanager.beans.SecurityBean;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
-import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
-
 public class TestDataFactory extends BaseDataAccessTest {
-	public static final Logger logger = Logger.getLogger(TestDataFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestDataFactory.class);
 	private static String testShortDataName = null;
 	private static String testLongDataName = null;
 	private static String testEncLongDataName = null;
@@ -36,15 +32,15 @@ public class TestDataFactory extends BaseDataAccessTest {
 		DirectoryGroupType dir = null;
 		try{
 			logger.info("Creating demo data with bunk attribute");
-			dir = Factories.getGroupFactory().getUserDirectory(testUser);
+			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(testUser);
 			String dataName = UUID.randomUUID().toString();
-			DataType data = Factories.getDataFactory().newData(testUser, dir.getId());
+			DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(testUser, dir.getId());
 			data.setName(dataName);
 			data.setMimeType("text/plain");
 			DataUtil.setValue(data, "This is the test data".getBytes());
-			assertTrue(Factories.getDataFactory().add(data));
+			assertTrue(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data));
 			
-			data = Factories.getDataFactory().getDataByName(dataName, dir);
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, dir);
 			data.getAttributes().add(Factories.getAttributeFactory().newAttribute(data, "demo", "value"));
 			Factories.getAttributeFactory().addAttributes(data);
 
@@ -55,19 +51,19 @@ public class TestDataFactory extends BaseDataAccessTest {
 			fields.add(QueryFields.getFieldGroup(dir.getId()));
 			fields.add(QueryFields.getStringField("ATR.name", "demo"));
 			assertTrue(instruction.getJoinAttribute());
-			List<NameIdType> dataList = Factories.getDataFactory().getByField(fields.toArray(new QueryField[0]), instruction,testUser.getOrganizationId());
+			List<NameIdType> dataList = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByField(fields.toArray(new QueryField[0]), instruction,testUser.getOrganizationId());
 			logger.info("Data: " + dataList.size());
 		}
 		catch(FactoryException fe){
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	
@@ -76,8 +72,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	
 	@Test
 	public void testArtifacts(){
-		OrganizationFactory of = Factories.getOrganizationFactory();
-		GroupFactory gf = Factories.getGroupFactory();
+		OrganizationFactory of = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -92,12 +88,12 @@ public class TestDataFactory extends BaseDataAccessTest {
 			}
 		}
 		catch(FactoryException fe){
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 	}
@@ -105,8 +101,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	@Test
 	public void testDataType(){
 
-		GroupFactory gf = Factories.getGroupFactory();
-		DataFactory df = Factories.getDataFactory();
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
+		DataFactory df = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -126,7 +122,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 	
@@ -136,8 +132,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	@Test
 	public void testAddData(){
 		DataType new_data = null;
-		GroupFactory gf = Factories.getGroupFactory();
-		DataFactory df = Factories.getDataFactory();
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
+		DataFactory df = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -161,7 +157,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		assertFalse("Factory error", error);
@@ -172,8 +168,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	@Test
 	public void testAddByteData(){
 		DataType new_data = null;
-		GroupFactory gf = Factories.getGroupFactory();
-		DataFactory df = Factories.getDataFactory();
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
+		DataFactory df = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -196,7 +192,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		assertFalse("Factory error", error);
@@ -206,8 +202,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	@Test
 	public void testAddBigByteData(){
 		DataType new_data = null;
-		GroupFactory gf = Factories.getGroupFactory();
-		DataFactory df = Factories.getDataFactory();
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
+		DataFactory df = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -235,7 +231,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		assertFalse("Factory error", error);
@@ -244,8 +240,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	
 	@Test
 	public void testGetShortDataByName(){
-		GroupFactory gf = Factories.getGroupFactory();
-		DataFactory df = Factories.getDataFactory();
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
+		DataFactory df = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -261,7 +257,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		assertFalse("An error occurred", error);
 		assertNotNull("Data is null", data);
@@ -270,8 +266,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	
 	@Test
 	public void testGetLongEncDataByName(){
-		GroupFactory gf = Factories.getGroupFactory();
-		DataFactory df = Factories.getDataFactory();
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
+		DataFactory df = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -287,7 +283,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		assertFalse("An error occurred", error);
 		assertNotNull("Data is null", data);
@@ -295,8 +291,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	
 	@Test
 	public void testGetDataListByGroup(){
-		GroupFactory gf = Factories.getGroupFactory();
-		DataFactory df = Factories.getDataFactory();
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
+		DataFactory df = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -309,11 +305,11 @@ public class TestDataFactory extends BaseDataAccessTest {
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertFalse("An error occurred", error);
 		assertTrue("No data returned", data.size() > 0);
@@ -321,8 +317,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	}
 	@Test
 	public void testUpdateLongDataByName(){
-		GroupFactory gf = Factories.getGroupFactory();
-		DataFactory df = Factories.getDataFactory();
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
+		DataFactory df = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -344,16 +340,16 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			logger.error(e.getMessage());
 			error = true;
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		assertFalse("An error occurred", error);
 		assertTrue("Data not updated", updated);
@@ -364,8 +360,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	}
 	@Test
 	public void testUpdateShortDataByName(){
-		GroupFactory gf = Factories.getGroupFactory();
-		DataFactory df = Factories.getDataFactory();
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
+		DataFactory df = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -391,15 +387,15 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			logger.error(e.getMessage());
 			error = true;
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		assertFalse("An error occurred", error);
 		assertTrue("Data not updated", updated);
@@ -411,8 +407,8 @@ public class TestDataFactory extends BaseDataAccessTest {
 	
 	@Test
 	public void testDeleteData(){
-		GroupFactory gf = Factories.getGroupFactory();
-		DataFactory df = Factories.getDataFactory();
+		GroupFactory gf = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP));
+		DataFactory df = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA));
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
@@ -428,12 +424,12 @@ public class TestDataFactory extends BaseDataAccessTest {
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			logger.error(e.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertFalse("An error occurred", error);
 		

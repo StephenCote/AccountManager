@@ -29,6 +29,7 @@ import org.cote.accountmanager.data.factory.SymmetricKeyFactory;
 
 
 public class BulkSymmetricKeyFactory extends SymmetricKeyFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.SYMMETRICKEY, BulkSymmetricKeyFactory.class); }
 	public BulkSymmetricKeyFactory(){
 		super();
 		bulkMode = true;

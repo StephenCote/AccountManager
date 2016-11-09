@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.StatisticsFactory;
 
 public class BulkStatisticsFactory extends StatisticsFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.STATISTICS, BulkStatisticsFactory.class); }
 	public BulkStatisticsFactory(){
 		super();
 		bulkMode = true;

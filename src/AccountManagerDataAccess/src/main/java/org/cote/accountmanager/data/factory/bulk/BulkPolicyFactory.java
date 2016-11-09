@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.PolicyFactory;
 
 public class BulkPolicyFactory extends PolicyFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.POLICY, BulkPolicyFactory.class); }
 	public BulkPolicyFactory(){
 		super();
 		bulkMode = true;

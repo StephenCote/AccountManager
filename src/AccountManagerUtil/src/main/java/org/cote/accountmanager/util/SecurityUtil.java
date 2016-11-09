@@ -35,33 +35,21 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.factory.SecurityFactory;
 
 
 public class SecurityUtil {
 
-	public static final Logger logger = Logger.getLogger(SecurityUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(SecurityUtil.class);
 	/// TODO: 2015/06/23 - Need to refactor salt references to use a CredentialType
 	///
 	private static int SALT_LENGTH = 16;
 	private static SecureRandom secure_random = null;
 	private static Random random = null;
-	public static boolean USE_SECURE_RANDOM = true;
-	/*
-	static{
-		try{
-			long start = System.currentTimeMillis();
-			random = SecureRandom.getInstance("SHA1PRNG");
-			logger.debug("Secure Random: " + (System.currentTimeMillis() - start) + "ms");
-		}
-		catch(NoSuchAlgorithmException e){
-			logger.error(e.getMessage());
-		}
-	}
-	*/
-			//new SecureRandom("NativePRNG");
+	public static final boolean USE_SECURE_RANDOM = true;
 	
 	private static MessageDigest hash_algorithm = null;
 	

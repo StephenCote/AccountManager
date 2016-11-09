@@ -4,7 +4,14 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.factory.ControlFactory;
+import org.cote.accountmanager.data.factory.FactFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.PatternFactory;
+import org.cote.accountmanager.data.factory.PolicyFactory;
+import org.cote.accountmanager.data.factory.RuleFactory;
 import org.cote.accountmanager.data.security.ControlService;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.objects.ControlActionEnumType;
@@ -23,9 +30,8 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.junit.Test;
-
 public class TestControlFactory extends BaseDataAccessTest {
-	public static final Logger logger = Logger.getLogger(TestControlFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestControlFactory.class);
 	
 	@Test
 	public void TestControlCRUD(){
@@ -41,27 +47,27 @@ public class TestControlFactory extends BaseDataAccessTest {
 		ControlType ct1 = null;
 		ControlType ct2 = null;
 		try {
-			List<ControlType> ctls2 = Factories.getControlFactory().getControlsForType(cred, true, false);
+			List<ControlType> ctls2 = ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).getControlsForType(cred, true, false);
 			logger.info("All password controls: " + ctls2.size());
 			
-			logger.info("Deleting direct controls: " + Factories.getControlFactory().deleteControlsForType(cred));
-			logger.info("Deleting global controls: " + Factories.getControlFactory().deleteControlsForType(everyCred));
+			logger.info("Deleting direct controls: " + ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).deleteControlsForType(cred));
+			logger.info("Deleting global controls: " + ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).deleteControlsForType(everyCred));
 			
-			ct1 = Factories.getControlFactory().newControl(testUser, cred);
-			ct2 = Factories.getControlFactory().newControl(testUser, everyCred);
+			ct1 = ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).newControl(testUser, cred);
+			ct2 = ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).newControl(testUser, everyCred);
 			ct2.setControlId(pol.getId());
 			ct2.setControlType(ControlEnumType.POLICY);
 			ct2.setControlAction(ControlActionEnumType.WRITE);
 			//ct1.setControlType(ControlEnumType.POLICY);
 			
-			Factories.getControlFactory().add(ct1);
-			Factories.getControlFactory().add(ct2);
+			((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).add(ct1);
+			((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).add(ct2);
 			/// direct only
-			List<ControlType> ctls = Factories.getControlFactory().getControlsForType(cred, false, false);
+			List<ControlType> ctls = ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).getControlsForType(cred, false, false);
 			/// both direct and global
-			ctls2 = Factories.getControlFactory().getControlsForType(cred, true, false);
+			ctls2 = ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).getControlsForType(cred, true, false);
 			/// only global
-			List<ControlType> ctls3 = Factories.getControlFactory().getControlsForType(cred, false, true);
+			List<ControlType> ctls3 = ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).getControlsForType(cred, false, true);
 			logger.info("Direct: " + ctls.size() + ": Both: " + ctls2.size() + ": Global Only: " + ctls3.size());
 			
 			
@@ -81,10 +87,10 @@ public class TestControlFactory extends BaseDataAccessTest {
 			
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	
@@ -103,15 +109,15 @@ public class TestControlFactory extends BaseDataAccessTest {
 		String patName = "Password Strength Pattern";
 		String clsRegExClass = "org.cote.accountmanager.data.operation.RegexOperation";
 		try {
-			rdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Rules", testUser.getOrganizationId());
-			pdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId());
-			fdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Facts", testUser.getOrganizationId());
-			podir = Factories.getGroupFactory().getCreatePath(testUser, "~/Policies", testUser.getOrganizationId());
-			odir = Factories.getGroupFactory().getCreatePath(testUser, "~/Operations", testUser.getOrganizationId());
+			rdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Rules", testUser.getOrganizationId());
+			pdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId());
+			fdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Facts", testUser.getOrganizationId());
+			podir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Policies", testUser.getOrganizationId());
+			odir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Operations", testUser.getOrganizationId());
 			
 			FactType setCredParamFact = getCreateCredentialParamFact(testUser,"Set Credential Parameter",fdir);
 			setCredParamFact.setFactoryType(FactoryEnumType.CREDENTIAL);
-			Factories.getFactFactory().update(setCredParamFact);
+			((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).update(setCredParamFact);
 			/* Expression based on StackOverflow comment : http://stackoverflow.com/questions/5142103/regex-for-password-strength
 			^                         Start anchor
 			(?=.*[A-Z].*[A-Z])        Ensure string has two uppercase letters.
@@ -135,13 +141,13 @@ public class TestControlFactory extends BaseDataAccessTest {
 			pat.setFactUrn(setCredParamFact.getUrn());
 			pat.setMatchUrn(strengthFact.getUrn());
 			pat.setOperationUrn(rgOp.getUrn());
-			Factories.getPatternFactory().update(pat);
+			((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).update(pat);
 			useRule.getPatterns().clear();
 			useRule.getPatterns().add(pat);
-			Factories.getRuleFactory().update(useRule);
+			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).update(useRule);
 			pol.getRules().clear();
 			pol.getRules().add(useRule);
-			Factories.getPolicyFactory().update(pol);
+			((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).update(pol);
 		}
 		catch(FactoryException e){
 			logger.error(e.getMessage());

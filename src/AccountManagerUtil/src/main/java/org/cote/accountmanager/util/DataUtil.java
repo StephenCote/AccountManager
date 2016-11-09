@@ -25,7 +25,8 @@ package org.cote.accountmanager.util;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
@@ -33,7 +34,7 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
 
 public class DataUtil {
-	public static final Logger logger = Logger.getLogger(DataUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(DataUtil.class);
 	public static void clearCipher(DataType data){
 		data.setEncipher(false);
 		data.setCipherKey(null);

@@ -28,13 +28,16 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
@@ -49,13 +52,14 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 
 public class PermissionServiceImpl  {
 	
 	public static final String defaultDirectory = "~/Permissions";
-	public static final Logger logger = Logger.getLogger(PermissionServiceImpl.class.getName());
+	public static final Logger logger = LogManager.getLogger(PermissionServiceImpl.class);
 	
 	public static boolean delete(BasePermissionType bean,HttpServletRequest request){
 		
@@ -83,16 +87,16 @@ public class PermissionServiceImpl  {
 		OrganizationType org = null;
 		BasePermissionType permission = null;
 		try{
-			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(org != null) permission = Factories.getPermissionFactory().getById(parentId, orgId);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(org != null) permission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getById(parentId, orgId);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(permission == null){
 			System.out.println("Invalid parentId reference: " + parentId);
@@ -105,16 +109,16 @@ public class PermissionServiceImpl  {
 		OrganizationType org = null;
 		BasePermissionType parent = null;
 		try{
-			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(org != null) parent = Factories.getPermissionFactory().getById(parentId, orgId);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(org != null) parent = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getById(parentId, orgId);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(parent == null) return null;
 		return BaseService.readByNameInParent(AuditEnumType.PERMISSION, parent, name, type, request);
@@ -130,17 +134,17 @@ public class PermissionServiceImpl  {
 		BasePermissionType per = null;
 		try {
 			logger.warn("MISSING ENTITLEMENT CHECK");
-			per = Factories.getPermissionFactory().getUserPermission(user, ptype, user.getOrganizationId());
-			Factories.getPermissionFactory().denormalize(per);
+			per = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getUserPermission(user, ptype, user.getOrganizationId());
+			((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).denormalize(per);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return per;
 	}
@@ -167,7 +171,7 @@ public class PermissionServiceImpl  {
 				AuditService.permitResult(audit, "Access authorized to list permissions");
 				out_obj = getList(type,parentPermission,startRecord,recordCount,parentPermission.getOrganizationId() );
 				for(int i = 0; i < out_obj.size();i++){
-					Factories.getPermissionFactory().denormalize(out_obj.get(i));
+					((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).denormalize(out_obj.get(i));
 				}
 			}
 			else{
@@ -176,10 +180,10 @@ public class PermissionServiceImpl  {
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;
@@ -188,7 +192,7 @@ public class PermissionServiceImpl  {
 	private static List<BasePermissionType> getList(String type, BasePermissionType parentPermission, long startRecord, int recordCount, long organizationId) throws ArgumentException, FactoryException {
 
 		PermissionEnumType ptype = PermissionEnumType.fromValue(type);
-		return Factories.getPermissionFactory().getPermissionList(parentPermission,ptype,startRecord, recordCount, organizationId);
+		return ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionList(parentPermission,ptype,startRecord, recordCount, organizationId);
 		
 	}
 
@@ -203,7 +207,7 @@ public class PermissionServiceImpl  {
 			else src = ((DataFactory)BaseService.getFactory(srcType)).getDataById(srcId, true, user.getOrganizationId());
 			if(targType != AuditEnumType.DATA) targ = ((NameIdFactory)BaseService.getFactory(targType)).getById(targId, user.getOrganizationId());
 			else targ = ((DataFactory)BaseService.getFactory(srcType)).getDataById(targId, true, user.getOrganizationId());
-			perm = Factories.getPermissionFactory().getById(permissionId, user.getOrganizationId());
+			perm = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getById(permissionId, user.getOrganizationId());
 			if(src == null || targ == null || perm == null){
 				AuditService.denyResult(audit, "One or more reference ids were invalid: " + (src == null ? " " + srcType.toString() + " #" +srcId + " Source is null." : "") + (targ == null ? " " + targType.toString() + " #" +srcId + " Target is null." : "") + (perm == null ? " #" +srcId + " Permission is null." : ""));
 				return false;
@@ -262,15 +266,15 @@ public class PermissionServiceImpl  {
 		} catch (FactoryException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return out_bool;
 	}

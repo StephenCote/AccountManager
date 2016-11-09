@@ -3,8 +3,8 @@ package org.cote.accountmanager.data;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
@@ -16,14 +16,10 @@ import org.junit.Test;
 
 
 public class TestDBStress{
-	public static final Logger logger = Logger.getLogger(TestDBStress.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestDBStress.class);
 	@Before
 	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
+
 		ConnectionFactory cf = ConnectionFactory.getInstance();
 		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
 		cf.setDriverClassName("org.postgresql.Driver");
@@ -46,7 +42,7 @@ public class TestDBStress{
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 	}
@@ -63,7 +59,7 @@ public class TestDBStress{
 				Factories.getAuditFactory().addAudit(audit);
 			} catch (FactoryException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			Factories.getAuditFactory().flushSpool();
 		}

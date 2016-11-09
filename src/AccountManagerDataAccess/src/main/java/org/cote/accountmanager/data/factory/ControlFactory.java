@@ -32,6 +32,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class ControlFactory extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.CONTROL, ControlFactory.class); }
 	public ControlFactory(){
 		super();
 		this.hasOwnerId = true;
@@ -51,7 +52,7 @@ public class ControlFactory extends NameIdFactory {
 			dtFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	@Override

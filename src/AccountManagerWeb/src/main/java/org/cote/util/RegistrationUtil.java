@@ -26,11 +26,14 @@ package org.cote.util;
 import java.util.Calendar;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.SessionDataFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.PersonService;
 import org.cote.accountmanager.data.services.SessionSecurity;
@@ -42,12 +45,13 @@ import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.beans.SessionBean;
 
 public class RegistrationUtil {
 	private static int registrationExpiry = 1;
-	public static final Logger logger = Logger.getLogger(RegistrationUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(RegistrationUtil.class);
 	public static boolean confirmUserRegistration(String regSessId, String regId, String cred,String remoteAddr, String sessionId){
 		boolean out_bool = false;
 
@@ -74,7 +78,7 @@ public class RegistrationUtil {
 				logger.error(nfe.getMessage());
 				System.out.println(nfe.getMessage());
 			}
-			if(regOrgId > 0) regOrg = Factories.getOrganizationFactory().getOrganizationById( regOrgId);
+			if(regOrgId > 0) regOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById( regOrgId);
 			if(regOrg == null){
 				AuditService.denyResult(audit,"Invalid registration organization: " + regOrgId);
 				return false;
@@ -112,14 +116,14 @@ public class RegistrationUtil {
 			String email = regSession.getValue("email");
 			out_bool = PersonService.createRegisteredUserAsPerson(audit, userName, cred,email,regOrg.getId());
 			/*
-			UserType newUser = Factories.getUserFactory().newUser(userName,  SecurityUtil.getSaltedDigest(decPassword), UserEnumType.NORMAL, UserStatusEnumType.REGISTERED, regOrg);
-			if(Factories.getUserFactory().addUser(newUser, true)){
-				newUser = Factories.getUserFactory().getByName(userName, regOrg);
-				Factories.getUserFactory().populate(newUser);
+			UserType newUser = Factories.getNameIdFactory(FactoryEnumType.USER).newUser(userName,  SecurityUtil.getSaltedDigest(decPassword), UserEnumType.NORMAL, UserStatusEnumType.REGISTERED, regOrg);
+			if(Factories.getNameIdFactory(FactoryEnumType.USER).addUser(newUser, true)){
+				newUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(userName, regOrg);
+				Factories.getNameIdFactory(FactoryEnumType.USER).populate(newUser);
 				System.out.println("!!! REFACTOR EMAIL !!!");
 				
 				newUser.getContactInformation().setEmail("email");
-				Factories.getContactInformationFactory().update(newUser.getContactInformation());
+				((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).update(newUser.getContactInformation());
 				
 				AuditService.permitResult(audit, "Created user '" + userName + "' (#" + newUser.getId() + ")");
 				
@@ -132,11 +136,11 @@ public class RegistrationUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		/// Regardless of the outcome, remove the request audit (to unlock the IP check), and the registration session
 		///
@@ -146,7 +150,7 @@ public class RegistrationUtil {
 			regSession = null;
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	
 		
@@ -182,7 +186,7 @@ public class RegistrationUtil {
 				AuditService.denyResult(audit, "User name '" + user.getName() + "' is pending registeration in " + user.getOrganizationId() + " organization");
 				return null;				
 			}
-			if(Factories.getUserFactory().getUserNameExists(user.getName(), user.getOrganizationId())){
+			if(((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).getUserNameExists(user.getName(), user.getOrganizationId())){
 				AuditService.denyResult(audit, "User name '" + user.getName() + "' is already registered in " + user.getOrganizationId() + " organization");
 				return null;
 			}			
@@ -249,7 +253,7 @@ public class RegistrationUtil {
 		}
 		catch(FactoryException fe){
 			System.out.println(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return regSession;
 	}

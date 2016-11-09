@@ -52,7 +52,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -60,7 +61,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class XmlUtil {
-	public static final Logger logger = Logger.getLogger(XmlUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(XmlUtil.class);
 	private static TransformerFactory transFactory = null;
 	private static TransformerFactory getTransformerFactory(){
 		if(transFactory == null){

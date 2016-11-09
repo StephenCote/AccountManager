@@ -3,7 +3,8 @@ package org.cote.accountmanager.data.security;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -17,7 +18,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.JSONUtil;
 
 public class TokenService {
-	public static final Logger logger = Logger.getLogger(TokenService.class.getName());
+	public static final Logger logger = LogManager.getLogger(TokenService.class);
 	
 	
 	/*
@@ -39,7 +40,7 @@ public class TokenService {
 		}
 		catch(FactoryException | ArgumentException e){
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return tokenType;
 	}
@@ -79,7 +80,7 @@ public class TokenService {
 		}
 		catch(FactoryException | UnsupportedEncodingException | ArgumentException e){
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return tokenType;
 	}

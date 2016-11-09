@@ -27,10 +27,14 @@ import java.security.Principal;
 import java.util.Calendar;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.StatisticsFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.UserPrincipal;
@@ -41,11 +45,11 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.StatisticsType;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SessionStatusEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
-
 public class SessionSecurity {
-	public static final Logger logger = Logger.getLogger(SessionSecurity.class.getName());
+	public static final Logger logger = LogManager.getLogger(SessionSecurity.class);
 	// default expiry in hours
 	//
 	private static int defaultSessionExpiry = 1;
@@ -76,7 +80,9 @@ public class SessionSecurity {
 		UserSessionType session = getUserSession(session_id, organizationId);
 		if(session == null) return null;
 		verifySessionAuthentication(session);
-		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED)) user = Factories.getUserFactory().getUserBySession(session);
+		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED)){
+			user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).getUserBySession(session);
+		}
 		if(user == null) return null;
 		user.setSession(session);
 		user.setSessionStatus(session.getSessionStatus());
@@ -177,7 +183,7 @@ public class SessionSecurity {
 	/// Rebranded API to reflect change in approach and actual intent of authenticating against a session using a user and a credential
 	///
 	private static UserType authenticateSession(String sessionId, String userName, CredentialEnumType credType, String suppliedCredential, long organizationId) throws FactoryException, ArgumentException{
-		UserType user = Factories.getUserFactory().getByName(userName, organizationId);
+		UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(userName, organizationId);
 		if(user == null){
 			throw new ArgumentException("User does not exist");
 		}
@@ -245,14 +251,14 @@ public class SessionSecurity {
 		if(principal != null && principal instanceof UserPrincipal){
 			UserPrincipal userp = (UserPrincipal)principal;
 			try {
-				OrganizationType org = Factories.getOrganizationFactory().findOrganization(userp.getOrganizationPath());
-				user = Factories.getUserFactory().getById(userp.getId(), org.getId());
+				OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(userp.getOrganizationPath());
+				user = Factories.getNameIdFactory(FactoryEnumType.USER).getById(userp.getId(), org.getId());
 				if(user != null){
 					authenticateUser(user, sessionId);
 				}
 			} catch (FactoryException | ArgumentException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return user;
@@ -266,22 +272,22 @@ public class SessionSecurity {
 		session.setOrganizationId(user.getOrganizationId());
 		user.setSession(session);
 
-		Factories.getUserFactory().populate(user);
+		Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
 
-		Factories.getUserFactory().normalize(user);
+		Factories.getNameIdFactory(FactoryEnumType.USER).normalize(user);
 
-		Factories.getUserFactory().updateToCache(user);
+		Factories.getNameIdFactory(FactoryEnumType.USER).updateToCache(user);
 
 		session.setSessionStatus(SessionStatusEnumType.AUTHENTICATED);
 		
-		StatisticsType stats = Factories.getStatisticsFactory().getStatistics(user);
+		StatisticsType stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(user);
 		if(stats == null){
-			stats = Factories.getStatisticsFactory().newStatistics(user);
-			if(Factories.getStatisticsFactory().add(stats) == false) throw new FactoryException("Failed to add statistics to user #" + user.getId());
-			stats = Factories.getStatisticsFactory().getStatistics(user);
+			stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).newStatistics(user);
+			if(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).add(stats) == false) throw new FactoryException("Failed to add statistics to user #" + user.getId());
+			stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(user);
 		}
 		stats.setAccessedDate(CalendarUtil.getXmlGregorianCalendar(Calendar.getInstance().getTime()));
-		if(Factories.getStatisticsFactory().update(stats) == false){
+		if(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).update(stats) == false){
 			throw new FactoryException("Error updating statistics for " + session.getSessionId() + " in organization id " + session.getOrganizationId());
 		}
 		if(Factories.getSessionFactory().update(session) == false){

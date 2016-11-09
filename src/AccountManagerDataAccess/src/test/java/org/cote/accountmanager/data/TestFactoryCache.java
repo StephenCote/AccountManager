@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.exceptions.DataException;
@@ -14,14 +17,14 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.util.BeanUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
-
 public class TestFactoryCache extends BaseDataAccessTest{
 	
-	public static final Logger logger = Logger.getLogger(TestGroupFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestGroupFactory.class);
 	private static String testDirGroupName = null;
 	
 	private static String testUserName1 = "TestSessionUser";
@@ -38,27 +41,27 @@ public class TestFactoryCache extends BaseDataAccessTest{
 		
 		try {
 
-			Factories.getGroupFactory().clearCache();
-			//dgt = Factories.getGroupFactory().getDirectoryByName("CacheTest", sessionUser.getHomeDirectory(), sessionUser.getOrganization());
-			dgt = Factories.getGroupFactory().findGroup(sessionUser, "~/CacheTest", sessionUser.getOrganization());
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).clearCache();
+			//dgt = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("CacheTest", sessionUser.getHomeDirectory(), sessionUser.getOrganization());
+			dgt = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(sessionUser, "~/CacheTest", sessionUser.getOrganization());
 			assertNotNull("Group is null",dgt);
-			Factories.getGroupFactory().populate(dgt);
-			Factories.getGroupFactory().populateSubDirectories(dgt);
-			dgt = Factories.getGroupFactory().getDirectoryById(dgt.getId(), dgt.getOrganization());
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dgt);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populateSubDirectories(dgt);
+			dgt = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dgt.getId(), dgt.getOrganization());
 			assertNotNull("Group is null",dgt);
-			Factories.getGroupFactory().populate(dgt);
-			Factories.getGroupFactory().populateSubDirectories(dgt);
-			//dgt = Factories.getGroupFactory().getDirectoryByName("CacheTest", sessionUser.getHomeDirectory(), sessionUser.getOrganization());
-			dgt = Factories.getGroupFactory().findGroup(sessionUser, "~/CacheTest", sessionUser.getOrganization());
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dgt);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populateSubDirectories(dgt);
+			//dgt = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("CacheTest", sessionUser.getHomeDirectory(), sessionUser.getOrganization());
+			dgt = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(sessionUser, "~/CacheTest", sessionUser.getOrganization());
 			assertNotNull("Group is null",dgt);
-			Factories.getGroupFactory().populate(dgt);
-			Factories.getGroupFactory().populateSubDirectories(dgt);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dgt);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populateSubDirectories(dgt);
 			
 			assertNotNull("Group org is null",dgt.getOrganization());
 			success = true;
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Bit not set", success);
 	}
@@ -69,50 +72,50 @@ public class TestFactoryCache extends BaseDataAccessTest{
 		sessionUser = testUser;
 		DataType data = getTestData("Test data",sessionUser.getHomeDirectory());
 
-		logger.info("Data Cache Key Name #1 = " + Factories.getDataFactory().getCacheKeyName(data));
-		logger.info("Group Cache Key Name #1 = " + Factories.getGroupFactory().getCacheKeyName(sessionUser.getHomeDirectory()));
+		logger.info("Data Cache Key Name #1 = " + ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getCacheKeyName(data));
+		logger.info("Group Cache Key Name #1 = " + ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCacheKeyName(sessionUser.getHomeDirectory()));
 		List<DataType> datas = new ArrayList<DataType>();
 		try {
 			DataUtil.setValueString(data, UUID.randomUUID().toString());
-			Factories.getDataFactory().update(data);
-			datas = Factories.getDataFactory().getDataListByGroup(sessionUser.getHomeDirectory(), true, 0, 10, sessionUser.getOrganizationId());
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(data);
+			datas = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(sessionUser.getHomeDirectory(), true, 0, 10, sessionUser.getOrganizationId());
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		data = getTestData("Test data",sessionUser.getHomeDirectory());
 		
-		logger.info("Data Cache Key Name #2 = " + Factories.getDataFactory().getCacheKeyName(datas.get(0)));
+		logger.info("Data Cache Key Name #2 = " + ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getCacheKeyName(datas.get(0)));
 	}
 	
 	private DataType getTestData(String name, DirectoryGroupType dir){
 		DataType data = null;
 		sessionUser = testUser;
 		try{
-			data = Factories.getDataFactory().getDataByName(name,dir);
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,dir);
 			if(data == null){
-				data = Factories.getDataFactory().newData(sessionUser, dir.getId());
+				data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(sessionUser, dir.getId());
 				data.setName(name);
 				data.setMimeType("text/plain");
 				DataUtil.setValueString(data, "Example data");
-				Factories.getDataFactory().add(data);
-				data = Factories.getDataFactory().getDataByName(name,dir);
+				((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data);
+				data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,dir);
 			}
 		}
 		catch(FactoryException fe){
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return data;
 	}
@@ -134,10 +137,10 @@ public class TestFactoryCache extends BaseDataAccessTest{
 		}
 		 catch (FactoryException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Bit not set", success);
 	}
@@ -154,13 +157,13 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			return bean;
 		}
 
-			DirectoryGroupType dir = Factories.getGroupFactory().getById(parentId, user.getOrganizationId());
+			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(parentId, user.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Id " + parentId + " doesn't exist in org " + user.getOrganizationId());
 				return bean;
 			}
 			/*
-			DirectoryGroupType cdir = Factories.getGroupFactory().getDirectoryByName(name, dir, user.getOrganization());
+			DirectoryGroupType cdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(name, dir, user.getOrganization());
 			if(cdir == null){
 				AuditService.denyResult(audit, "Group  " + name + " doesn't exist in parent " + dir.getName() + " (#" + dir.getId() + ") in org " +  user.getOrganization().getId());
 				return bean;
@@ -170,14 +173,14 @@ public class TestFactoryCache extends BaseDataAccessTest{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is not authorized to view group " + cdir.getName() + " (#" + cdir.getId() + ")");
 				return bean;
 			}
-			Factories.getGroupFactory().populate(cdir);		
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(cdir);		
 			*/	
 			if(!AuthorizationService.canView(user, dir)){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
 				return bean;
 			}
-			Factories.getGroupFactory().populate(dir);
-			//for(int i = 0; i < dir.getSubDirectories().size();i++) Factories.getGroupFactory().populate(dir.getSubDirectories().get(i));
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir);
+			//for(int i = 0; i < dir.getSubDirectories().size();i++) ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir.getSubDirectories().get(i));
 			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 			//bean = BeanUtil.getSanitizedGroup(dir,false);
@@ -195,7 +198,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 		UserType user = sessionUser;
 		if(user == null) return bean;
 
-			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, path, user.getOrganizationId());
+			DirectoryGroupType dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, path, user.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Invalid path");
 				return bean;
@@ -204,13 +207,13 @@ public class TestFactoryCache extends BaseDataAccessTest{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
 				return bean;
 			}
-			Factories.getGroupFactory().populate(dir);	
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir);	
 			/// Work with a clone of the group because if it's cached, don't null out the cached copy's version
 			dir = BeanUtil.getBean(DirectoryGroupType.class,dir);
-			//Factories.getGroupFactory().populateSubDirectories(dir);
+			//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populateSubDirectories(dir);
 			/*
 			for(int i = 0; i < dir.getSubDirectories().size();i++){
-				Factories.getGroupFactory().populate(dir.getSubDirectories().get(i));
+				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir.getSubDirectories().get(i));
 			}
 			*/
 			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");

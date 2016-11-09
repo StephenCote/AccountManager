@@ -1,18 +1,21 @@
 package org.cote.accountmanager.data.operation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.fact.FactUtil;
+import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.PatternType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class MatchSystemRoleOperation implements IOperation {
-	public static final Logger logger = Logger.getLogger(MatchSystemRoleOperation.class.getName());
+	public static final Logger logger = LogManager.getLogger(MatchSystemRoleOperation.class);
 
 	public <T> T read(FactType sourceFact,final FactType referenceFact){
 		return FactUtil.factoryRead(sourceFact, referenceFact);
@@ -28,12 +31,12 @@ public class MatchSystemRoleOperation implements IOperation {
 		}
 		BaseRoleType systemRole = null;
 		try {
-			systemRole = Factories.getRoleFactory().getRoleByName(referenceFact.getSourceUrn(), null, ((BaseRoleType)sourceFact.getFactReference()).getRoleType(), referenceFact.getOrganizationId());
+			systemRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(referenceFact.getSourceUrn(), null, ((BaseRoleType)sourceFact.getFactReference()).getRoleType(), referenceFact.getOrganizationId());
 				
 			
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		if(systemRole == null){

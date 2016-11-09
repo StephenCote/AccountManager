@@ -20,6 +20,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class SymmetricKeyFactory extends NameIdFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.SYMMETRICKEY, SymmetricKeyFactory.class); }
 	public SymmetricKeyFactory(){
 		super();
 		this.hasOwnerId = true;

@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
 
 public class BulkGroupParticipationFactory extends GroupParticipationFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.GROUPPARTICIPATION, BulkGroupParticipationFactory.class); }
 	public BulkGroupParticipationFactory(){
 		super();
 		bulkMode = true;

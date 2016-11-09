@@ -6,8 +6,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.security.Security;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
@@ -17,15 +18,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestDataUtil {
-	public static final Logger logger = Logger.getLogger(TestDataUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestDataUtil.class);
 	@Before
 	public void setUp() throws Exception {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
 	}
 
 	@After
@@ -126,7 +122,7 @@ public class TestDataUtil {
 		catch(DataException de){
 			error = true;
 			logger.error(de.getMessage());
-			logger.error(de.getStackTrace());
+			logger.error("Error",de);
 			
 		}
 		logger.info("Completing test ...");

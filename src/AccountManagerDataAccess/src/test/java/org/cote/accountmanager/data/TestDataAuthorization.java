@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
@@ -16,10 +18,10 @@ import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
-
 public class TestDataAuthorization extends BaseDataAccessTest {
 	
 	
@@ -31,8 +33,8 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		SecurityBean bean = KeyService.getPrimarySymmetricKey(Factories.getDevelopmentOrganization().getId());
 		
 		try{
-			DirectoryGroupType dir = Factories.getGroupFactory().getCreateUserDirectory(user, "CryptoData");
-			DataType data = Factories.getDataFactory().newData(user, dir.getId());
+			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, "CryptoData");
+			DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, dir.getId());
 			String d1name = UUID.randomUUID().toString();
 			String d2name = UUID.randomUUID().toString();
 			DataUtil.setPassword(data, "My special password");
@@ -43,9 +45,9 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			
 			DataUtil.setValue(data, "This is the example short text".getBytes());
 			data.setName(d1name);
-			Factories.getDataFactory().add(data);
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data);
 			
-			DataType cdata = Factories.getDataFactory().getDataByName(d1name, dir);
+			DataType cdata = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(d1name, dir);
 			assertNotNull("Data is null",cdata);
 			DataUtil.setCipher(cdata,bean);
 			DataUtil.setPassword(cdata, "My special password");
@@ -53,14 +55,14 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	/*
@@ -71,21 +73,21 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		DataType data = null;
 		boolean auth = false;
 		try {
-			user2 = Factories.getUserFactory().getByName("TestUser2", Factories.getPublicOrganization());
+			user2 = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("TestUser2", Factories.getPublicOrganization());
 			EffectiveAuthorizationService.rebuildGroupRoleCache(Factories.getPublicOrganization());
 			assertNotNull("User is null",user2);
-			dir = Factories.getGroupFactory().findGroup(null, "/Home/TestUser1/GalleryHome/.thumbnail", Factories.getPublicOrganization());
+			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, "/Home/TestUser1/GalleryHome/.thumbnail", Factories.getPublicOrganization());
 			assertNotNull("Dir is null",dir);
-			data = Factories.getDataFactory().getDataByName("2355.jpg 128x128", dir);
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName("2355.jpg 128x128", dir);
 			assertNotNull("Data is null",data);
 			assertTrue("User not authorized to view data",AuthorizationService.canViewData(user2, data));
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	*/
@@ -106,7 +108,7 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			EffectiveAuthorizationService.rebuildUserRoleCache(Arrays.asList(new UserType[]{user1,user2,user3}), user1.getOrganization());
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 			error = true;
 		}
 		assertFalse("There was an error",error);
@@ -140,7 +142,7 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		UserGroupType ugroup = null;
 		
 		try {
-			ugroup = Factories.getGroupFactory().getCreateUserGroup(user1, "UnitAuthGroup", null, user1.getOrganization());
+			ugroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserGroup(user1, "UnitAuthGroup", null, user1.getOrganization());
 			GroupService.addUserToGroup(user3, ugroup);
 			RoleService.addGroupToRole(ugroup, roleChildAdd);
 			boolean switched = AuthorizationService.switchData(user1, rootRole, data1, AuthorizationService.getViewDataPermission(user1.getOrganization()), true);
@@ -200,13 +202,13 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			//assertTrue("User 2 cann't view the data",AuthorizationService.canViewData(user2, data1));
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	*/
@@ -249,15 +251,15 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			assertFalse("User #1 can still read User #2's data",AuthorizationService.canChange(user1, data3));
 		}
 		catch(FactoryException fe){
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error = true;
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error = true;
 		}
 		assertFalse("Error occurred", error);

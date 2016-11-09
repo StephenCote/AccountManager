@@ -53,6 +53,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class FunctionFactFactory extends NameIdGroupFactory {
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.FUNCTIONFACT, FunctionFactFactory.class); }
 	public FunctionFactFactory(){
 		super();
 		this.tableNames.add("functionfact");

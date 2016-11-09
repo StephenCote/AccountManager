@@ -38,10 +38,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.AccountGroupType;
@@ -58,6 +61,7 @@ import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
@@ -69,7 +73,7 @@ import org.cote.accountmanager.services.RoleServiceImpl;
 @Path("/group")
 public class GroupService {
 
-	public static final Logger logger = Logger.getLogger(GroupService.class.getName());
+	public static final Logger logger = LogManager.getLogger(GroupService.class);
 	private static SchemaBean schemaBean = null;	
 	public GroupService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
@@ -104,7 +108,7 @@ public class GroupService {
 			return false;
 		}
 		AuditService.targetAudit(audit, AuditEnumType.GROUP, "Group Factory");
-		Factories.getGroupFactory().clearCache();
+		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).clearCache();
 		AuditService.permitResult(audit,user.getName() + " flushed Group Factory cache");
 		return true;
 	}
@@ -125,7 +129,7 @@ public class GroupService {
 		if(user == null) return 0;
 
 		try{
-			BaseGroupType group = (BaseGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.UNKNOWN, path, user.getOrganizationId());
+			BaseGroupType group = (BaseGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.UNKNOWN, path, user.getOrganizationId());
 			if(group == null ){
 				AuditService.denyResult(audit, "Group not found");
 				return 0;
@@ -136,7 +140,7 @@ public class GroupService {
 				return 0;
 			}
 			
-			out_count = Factories.getGroupFactory().getCount(group);
+			out_count = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCount(group);
 
 			AuditService.permitResult(audit, "Count authorized for group " + group.getName());
 
@@ -144,11 +148,11 @@ public class GroupService {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 			AuditService.denyResult(audit, fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			AuditService.denyResult(audit, e.getMessage());
 		} 
 		return out_count;
@@ -164,16 +168,16 @@ public class GroupService {
 		BaseGroupType group = null;
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, organizationId);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(organizationId);
+			if(org != null) group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(groupId, organizationId);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		
@@ -188,16 +192,16 @@ public class GroupService {
 		NameIdType group = null;
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, organizationId);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(organizationId);
+			if(org != null) group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(groupId, organizationId);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(group != null) out_bool = BaseService.authorizeRole(AuditEnumType.GROUP, organizationId, roleId, group, view, edit, delete, create, request);
 		return out_bool;
@@ -210,16 +214,16 @@ public class GroupService {
 		NameIdType group = null;
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
-			if(org != null) group = Factories.getGroupFactory().getGroupById(groupId, organizationId);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(organizationId);
+			if(org != null) group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(groupId, organizationId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(group != null) out_bool = BaseService.authorizeUser(AuditEnumType.GROUP, organizationId, userId, group, view, edit, delete, create, request);
 		return out_bool;
@@ -234,11 +238,11 @@ public class GroupService {
 		if(user == null) return bean;
 
 		try{
-			Factories.getUserFactory().populate(user);
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
 			///DirectoryGroupType clone = BeanUtil.getBean(DirectoryGroupType.class, user.getHomeDirectory());
 			///user.setHomeDirectory(clone);
-			Factories.getGroupFactory().populate(user.getHomeDirectory());
-			Factories.getGroupFactory().denormalize(user.getHomeDirectory());
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(user.getHomeDirectory());
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(user.getHomeDirectory());
 
 			AuditService.targetAudit(audit, AuditEnumType.GROUP, user.getHomeDirectory().getUrn());
 			AuditService.permitResult(audit, "Access authenticated user's home group");
@@ -246,12 +250,12 @@ public class GroupService {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 			AuditService.denyResult(audit, fe.getMessage());
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return bean;
 	}
@@ -277,16 +281,16 @@ public class GroupService {
 		OrganizationType targOrg = null;
 		PersonGroupType targGroup = null;
 		try {
-			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targGroup = Factories.getGroupFactory().getById(recordId, orgId);
+			targOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(targOrg != null) targGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(recordId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		if(targGroup != null) return GroupServiceImpl.getListOfPersons(user, targGroup);
@@ -298,16 +302,16 @@ public class GroupService {
 		OrganizationType targOrg = null;
 		AccountGroupType targGroup = null;
 		try {
-			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targGroup = Factories.getGroupFactory().getById(recordId, orgId);
+			targOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(targOrg != null) targGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(recordId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		if(targGroup != null) return GroupServiceImpl.getListOfAccounts(user, targGroup);
@@ -319,16 +323,16 @@ public class GroupService {
 		OrganizationType targOrg = null;
 		UserGroupType targGroup = null;
 		try {
-			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targGroup = Factories.getGroupFactory().getById(recordId, orgId);
+			targOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(targOrg != null) targGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(recordId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		if(targGroup != null) return GroupServiceImpl.getListOfUsers(user, targGroup);
@@ -356,16 +360,16 @@ public class GroupService {
 		BaseGroupType parent = null;
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().getById(orgId, 0L);
-			if(org != null) parent =Factories.getGroupFactory().getById(parentId, orgId);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getById(orgId, 0L);
+			if(org != null) parent =((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(parentId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(parent == null){
 			System.out.println("Null group for id " + parentId + " in org " + org);
@@ -388,7 +392,7 @@ public class GroupService {
 			return bean;
 		}
 		try{
-			BaseGroupType dir = Factories.getGroupFactory().getById(parentId, user.getOrganizationId());
+			BaseGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(parentId, user.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Id " + parentId + " (Group) doesn't exist in org " + user.getOrganizationId());
 				return bean;
@@ -398,8 +402,8 @@ public class GroupService {
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") is not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
 				return bean;
 			}
-			Factories.getGroupFactory().populate(dir);	
-			Factories.getGroupFactory().denormalize(dir);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir);	
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(dir);
 			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getUrn());
 			AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 			bean = dir;
@@ -407,11 +411,11 @@ public class GroupService {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 			AuditService.denyResult(audit, fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			AuditService.denyResult(audit, e.getMessage());
 		}
 		return bean;
@@ -435,25 +439,25 @@ public class GroupService {
 			/// And it needs to include an AuthZ check so someone can't just go making directory groups all over the place
 			///
 			///
-			bean = (BaseGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.valueOf(type), path, user.getOrganizationId());
+			bean = (BaseGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.valueOf(type), path, user.getOrganizationId());
 			if(bean == null && path.startsWith("~") == false && path.startsWith("/Home/" + user.getName() + "/") == false){
 				AuditService.denyResult(audit, "Paths can only be created from the home directory");
 				return null;
 			}
-			if(bean == null) bean = Factories.getGroupFactory().getCreatePath(user, path, user.getOrganizationId());
+			if(bean == null) bean = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, path, user.getOrganizationId());
 			if(bean != null){
-				Factories.getGroupFactory().populate(bean);
-				Factories.getGroupFactory().denormalize(bean);
+				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(bean);
+				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(bean);
 				AuditService.permitResult(audit, "GetCreate group " + bean.getName());
 			}
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			AuditService.denyResult(audit, "Failed to create path with error " + e.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			logger.error(e.getMessage());
 			AuditService.denyResult(audit, "Failed to create path with error " + e.getMessage());
 		}

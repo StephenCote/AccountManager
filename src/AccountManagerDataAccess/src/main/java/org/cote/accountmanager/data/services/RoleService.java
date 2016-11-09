@@ -23,12 +23,15 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.NameIdFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -44,11 +47,12 @@ import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 
 public class RoleService {
-	public static final Logger logger = Logger.getLogger(RoleService.class.getName());
+	public static final Logger logger = LogManager.getLogger(RoleService.class);
 	
 	public static final String ROLE_SYSTEM_ADMINISTRATOR = "SystemAdministrators";
 	public static final String ROLE_DATA_ADMINISTRATOR = "DataAdministrators";
@@ -77,7 +81,7 @@ public class RoleService {
 			return false;
 		}
 
-		BaseRoleType role = Factories.getRoleFactory().getRoleByName(roleName, null, RoleEnumType.valueOf(actor.getNameType().toString()),organizationId);
+		BaseRoleType role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(roleName, null, RoleEnumType.valueOf(actor.getNameType().toString()),organizationId);
 		if(role == null){
 			logger.warn("Role '" + roleName + "' does not exist for type " + actor.getNameType());
 			return false;
@@ -237,7 +241,7 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id
 		///
 		if(role.getId() < 0L ) return true;
-		return Factories.getRoleParticipationFactory().getIsGroupInRole(role, group,permission,affect_type);
+		return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsGroupInRole(role, group,permission,affect_type);
 	}
 	public static boolean addGroupToRole(BaseGroupType group, BaseRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
@@ -250,8 +254,8 @@ public class RoleService {
 		///
 		if (role.getId() < 0L || getIsGroupInRole(role, account) == false)
 		{
-			GroupParticipantType ap = Factories.getRoleParticipationFactory().newGroupRoleParticipation(role, account);
-			if (Factories.getRoleParticipationFactory().add(ap))
+			GroupParticipantType ap = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).newGroupRoleParticipation(role, account);
+			if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).add(ap))
 			{
 				// EffectiveAuthorizationService.pendRoleUpdate(role);
 				EffectiveAuthorizationService.pendUpdate(account);
@@ -262,7 +266,7 @@ public class RoleService {
 	}
 	public static boolean removeGroupFromRole(BaseRoleType role, BaseGroupType group) throws FactoryException, ArgumentException
 	{
-		if (Factories.getRoleParticipationFactory().deleteGroupRoleParticipants(role, group))
+		if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteGroupRoleParticipants(role, group))
 		{
 			// EffectiveAuthorizationService.pendRoleUpdate(role);
 			EffectiveAuthorizationService.pendUpdate(group);
@@ -317,7 +321,7 @@ public class RoleService {
 		///
 		if(role.getId() < 0L ) return true;
 		return EffectiveAuthorizationService.getIsUserInEffectiveRole(role, user,permission,affect_type);
-		//return Factories.getRoleParticipationFactory().getIsUserInRole(role, user,permission,affect_type);
+		//return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsUserInRole(role, user,permission,affect_type);
 	}
 	public static boolean addUserToRole(UserType user, UserRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
@@ -330,8 +334,8 @@ public class RoleService {
 		///
 		if (role.getId() < 0L || getIsUserInRole(role, account) == false)
 		{
-			UserParticipantType ap = Factories.getRoleParticipationFactory().newUserRoleParticipation(role, account);
-			if (Factories.getRoleParticipationFactory().add(ap))
+			UserParticipantType ap = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).newUserRoleParticipation(role, account);
+			if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).add(ap))
 			{
 				EffectiveAuthorizationService.pendUserUpdate(account);
 				return true;
@@ -341,7 +345,7 @@ public class RoleService {
 	}
 	public static boolean removeUserFromRole(UserRoleType role, UserType account) throws FactoryException, ArgumentException
 	{
-		if (Factories.getRoleParticipationFactory().deleteUserRoleParticipants(role, account))
+		if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteUserRoleParticipants(role, account))
 		{
 			EffectiveAuthorizationService.pendUserUpdate(account);
 			return true;
@@ -350,23 +354,23 @@ public class RoleService {
 	}
 	/*
 	public static boolean addUserRoleToGroup(UserRoleType role, BaseGroupType group, BasePermissionType permission, AffectEnumType affectType){
-		BaseParticipantType bp = Factories.getGroupParticipationFactory().newRoleGroupParticipation(group, role, permission, affectType);
-		Factories.getGroupParticipationFactory().add(bp);
+		BaseParticipantType bp = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newRoleGroupParticipation(group, role, permission, affectType);
+		((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(bp);
 	}
 	*/
 	
 	public static PersonRoleType getCreatePersonRole(UserType role_owner, PersonType person, String role_name) throws DataAccessException, FactoryException, ArgumentException
 	{
-		PersonRoleType parent_role = Factories.getRoleFactory().getPersonRole(person);
+		PersonRoleType parent_role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getPersonRole(person);
 		return getCreatePersonRole(role_owner, role_name, parent_role);
 	}
 	public static PersonRoleType getCreatePersonRole(UserType role_owner, String role_name, PersonRoleType Parent) throws DataAccessException, FactoryException, ArgumentException
 	{
-		return Factories.getRoleFactory().getCreatePersonRole(role_owner, role_name, Parent);
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreatePersonRole(role_owner, role_name, Parent);
 	}
 
 	public static PersonRoleType getPersonRole(String role_name, PersonRoleType Parent, long organizationId) throws FactoryException, ArgumentException{
-		return Factories.getRoleFactory().getPersonRoleByName(role_name, Parent, organizationId);
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getPersonRoleByName(role_name, Parent, organizationId);
 	}
 	public static boolean getIsPersonInEffectiveRole(BaseRoleType role, PersonType user) throws ArgumentException, FactoryException{
 		if(role == null){
@@ -396,7 +400,7 @@ public class RoleService {
 	}
 	public static boolean getIsPersonInRole(BaseRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
 	{
-		return Factories.getRoleParticipationFactory().getIsPersonInRole(role, person,permission,affect_type);
+		return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsPersonInRole(role, person,permission,affect_type);
 	}
 	public static boolean addPersonToRole(PersonType person, PersonRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
@@ -404,22 +408,22 @@ public class RoleService {
 	}
 	public static UserRoleType getCreatePersonRole(UserType role_owner, String role_name) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserRoleType parent_role = Factories.getRoleFactory().getUserRole(role_owner);
+		UserRoleType parent_role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(role_owner);
 		return getCreateUserRole(role_owner, role_name, parent_role);
 	}
 	
 	public static AccountRoleType getCreateAccountRole(UserType role_owner, AccountType account, String role_name) throws DataAccessException, FactoryException, ArgumentException
 	{
-		AccountRoleType parent_role = Factories.getRoleFactory().getAccountRole(account);
+		AccountRoleType parent_role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getAccountRole(account);
 		return getCreateAccountRole(role_owner, role_name, parent_role);
 	}
 	public static AccountRoleType getCreateAccountRole(UserType role_owner, String role_name, AccountRoleType Parent) throws DataAccessException, FactoryException, ArgumentException
 	{
-		return Factories.getRoleFactory().getCreateAccountRole(role_owner, role_name, Parent);
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateAccountRole(role_owner, role_name, Parent);
 	}
 
 	public static AccountRoleType getAccountRole(String role_name, AccountRoleType Parent, long organizationId) throws FactoryException, ArgumentException{
-		return Factories.getRoleFactory().getAccountRoleByName(role_name, Parent, organizationId);
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getAccountRoleByName(role_name, Parent, organizationId);
 	}
 	public static boolean getIsAccountInEffectiveRole(BaseRoleType role, AccountType user) throws ArgumentException, FactoryException{
 		if(role == null){
@@ -449,7 +453,7 @@ public class RoleService {
 	}
 	public static boolean getIsAccountInRole(BaseRoleType role, AccountType account, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
 	{
-		return Factories.getRoleParticipationFactory().getIsAccountInRole(role, account,permission,affect_type);
+		return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsAccountInRole(role, account,permission,affect_type);
 	}
 	public static boolean addAccountToRole(AccountType account, AccountRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
@@ -457,16 +461,16 @@ public class RoleService {
 	}
 	public static UserRoleType getCreateAccountRole(UserType role_owner, String role_name) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserRoleType parent_role = Factories.getRoleFactory().getUserRole(role_owner);
+		UserRoleType parent_role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(role_owner);
 		return getCreateUserRole(role_owner, role_name, parent_role);
 	}
 	public static UserRoleType getCreateUserRole(UserType role_owner, String role_name, UserRoleType Parent) throws DataAccessException, FactoryException, ArgumentException
 	{
-		return Factories.getRoleFactory().getCreateUserRole(role_owner, role_name, Parent);
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateUserRole(role_owner, role_name, Parent);
 	}
 
 	public static UserRoleType getUserRole(String role_name, UserRoleType Parent, long organizationId) throws FactoryException, ArgumentException{
-		return Factories.getRoleFactory().getUserRoleByName(role_name, Parent, organizationId);
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRoleByName(role_name, Parent, organizationId);
 	}
 	/// <summary>
 	/// Adds an account participation to a role participation, with affect 
@@ -481,8 +485,8 @@ public class RoleService {
 	{
 		if (getIsAccountInRole(role, account) == false)
 		{
-			AccountParticipantType ap = Factories.getRoleParticipationFactory().newAccountRoleParticipation(role, account);
-			if (Factories.getRoleParticipationFactory().add(ap))
+			AccountParticipantType ap = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).newAccountRoleParticipation(role, account);
+			if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).add(ap))
 			{
 				EffectiveAuthorizationService.pendAccountUpdate(account);
 				return true;
@@ -493,7 +497,7 @@ public class RoleService {
 	}
 	public static boolean removeAccountFromRole(AccountRoleType role, AccountType account) throws FactoryException, ArgumentException
 	{
-		if (Factories.getRoleParticipationFactory().deleteAccountRoleParticipants(role, account))
+		if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteAccountRoleParticipants(role, account))
 		{
 			EffectiveAuthorizationService.pendAccountUpdate(account);
 			return true;
@@ -505,8 +509,8 @@ public class RoleService {
 	{
 		if (getIsPersonInRole(role, person) == false)
 		{
-			PersonParticipantType ap = Factories.getRoleParticipationFactory().newPersonRoleParticipation(role, person);
-			if (Factories.getRoleParticipationFactory().add(ap))
+			PersonParticipantType ap = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).newPersonRoleParticipation(role, person);
+			if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).add(ap))
 			{
 				EffectiveAuthorizationService.pendPersonUpdate(person);
 				return true;
@@ -516,7 +520,7 @@ public class RoleService {
 	}
 	public static boolean removePersonFromRole(PersonRoleType role, PersonType person) throws FactoryException, ArgumentException
 	{
-		if (Factories.getRoleParticipationFactory().deletePersonRoleParticipants(role, person))
+		if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deletePersonRoleParticipants(role, person))
 		{
 			EffectiveAuthorizationService.pendPersonUpdate(person);
 			return true;

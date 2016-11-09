@@ -26,8 +26,11 @@ package org.cote.accountmanager.data;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.AddressFactory;
 import org.cote.accountmanager.data.factory.AsymmetricKeyFactory;
@@ -47,6 +50,9 @@ import org.cote.accountmanager.data.factory.FunctionFactory;
 import org.cote.accountmanager.data.factory.FunctionParticipationFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.factory.INameIdGroupFactory;
+import org.cote.accountmanager.data.factory.IParticipationFactory;
 import org.cote.accountmanager.data.factory.MessageFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.OperationFactory;
@@ -79,54 +85,62 @@ import org.cote.accountmanager.objects.types.OrganizationEnumType;
 
 public class Factories {
 	
-	public static final Logger logger = Logger.getLogger(Factories.class.getName());
+	public static final Logger logger = LogManager.getLogger(Factories.class);
+	
+	private static Map<FactoryEnumType, Class> factoryClasses = new HashMap<>();
+	private static Map<FactoryEnumType, Object> factoryInstances = new HashMap<>();
+	static {
+	    Factories.registerClass(FactoryEnumType.ACCOUNT, AccountFactory.class); 
+	    Factories.registerClass(FactoryEnumType.ADDRESS, AddressFactory.class); 
+	    Factories.registerClass(FactoryEnumType.ASYMMETRICKEY, AsymmetricKeyFactory.class); 
+	    Factories.registerClass(FactoryEnumType.CONTACT, ContactFactory.class); 
+	    Factories.registerClass(FactoryEnumType.CONTACTINFORMATION, ContactInformationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION, ContactInformationParticipationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.CONTROL, ControlFactory.class); 
+	    Factories.registerClass(FactoryEnumType.CREDENTIAL, CredentialFactory.class); 
+	    Factories.registerClass(FactoryEnumType.DATA, DataFactory.class); 
+	    Factories.registerClass(FactoryEnumType.DATAPARTICIPATION, DataParticipationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.FACT, FactFactory.class); 
+	    Factories.registerClass(FactoryEnumType.FUNCTIONFACT, FunctionFactFactory.class); 
+	    Factories.registerClass(FactoryEnumType.FUNCTION, FunctionFactory.class); 
+	    Factories.registerClass(FactoryEnumType.FUNCTIONPARTICIPATION, FunctionParticipationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.GROUP, GroupFactory.class); 
+	    Factories.registerClass(FactoryEnumType.GROUPPARTICIPATION, GroupParticipationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.MESSAGE, MessageFactory.class); 
+	    Factories.registerClass(FactoryEnumType.OPERATION, OperationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.ORGANIZATION, OrganizationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.PATTERN, PatternFactory.class); 
+	    Factories.registerClass(FactoryEnumType.PERMISSION, PermissionFactory.class); 
+	    Factories.registerClass(FactoryEnumType.PERSON, PersonFactory.class); 
+	    Factories.registerClass(FactoryEnumType.PERSONPARTICIPATION, PersonParticipationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.POLICY, PolicyFactory.class); 
+	    Factories.registerClass(FactoryEnumType.POLICYPARTICIPATION, PolicyParticipationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.ROLE, RoleFactory.class); 
+	    Factories.registerClass(FactoryEnumType.ROLEPARTICIPATION, RoleParticipationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.RULE, RuleFactory.class); 
+	    Factories.registerClass(FactoryEnumType.RULEPARTICIPATION, RuleParticipationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.SECURITYTOKEN, SecurityTokenFactory.class); 
+	    Factories.registerClass(FactoryEnumType.STATISTICS, StatisticsFactory.class); 
+	    Factories.registerClass(FactoryEnumType.SYMMETRICKEY, SymmetricKeyFactory.class); 
+	    Factories.registerClass(FactoryEnumType.TAG, TagFactory.class); 
+	    Factories.registerClass(FactoryEnumType.TAGPARTICIPATION, TagParticipationFactory.class); 
+	    Factories.registerClass(FactoryEnumType.USER, UserFactory.class); 
+	}
+	
+	
+	private static String documentControlName = "Document Control";
 	
 	private static OrganizationType rootOrganization = null;
 	private static OrganizationType developmentOrganization = null;
 	private static OrganizationType systemOrganization = null;
 	private static OrganizationType publicOrganization = null;
 	
-	private static AsymmetricKeyFactory asymmetricKeyFactory = null;
-	private static SymmetricKeyFactory symmetricKeyFactory = null;
-	private static CredentialFactory credentialFactory = null;
-	private static ControlFactory controlFactory = null;
-	private static FactFactory factFactory = null;
-	private static FunctionFactory functionFactory = null;
-	private static FunctionFactFactory functionFactFactory = null;
-	private static FunctionParticipationFactory functionParticipationFactory = null;
-	private static PolicyParticipationFactory policyParticipationFactory = null;
-	private static RuleParticipationFactory ruleParticipationFactory = null;
-	private static OperationFactory operationFactory = null;
-	private static PatternFactory patternFactory = null;
-	private static PolicyFactory policyFactory = null;
-	private static RuleFactory ruleFactory = null;
-	
-	private static AttributeFactory attributeFactory = null;
-	private static ContactFactory contactFactory = null;
-	private static AddressFactory addressFactory = null;
-	private static PersonFactory personFactory = null;
-	private static PersonParticipationFactory personParticipationFactory = null;
 	private static AuditFactory auditFactory = null;
-	private static TagFactory tagFactory = null;
-	private static TagParticipationFactory tagParticipationFactory = null;
-	private static PermissionFactory permissionFactory = null;
-	private static RoleFactory roleFactory = null;
-	private static RoleParticipationFactory roleParticipationFactory = null;
-	private static UserFactory userFactory = null;
-	private static AccountFactory accountFactory = null;
-	private static StatisticsFactory statisticsFactory = null;
-	private static ContactInformationFactory contactInformationFactory = null;
-	private static ContactInformationParticipationFactory contactInformationParticipationFactory = null;
-	private static OrganizationFactory orgFactory = null;
-	private static GroupParticipationFactory groupParticipationFactory = null;
-	private static GroupFactory groupFactory = null;
-	private static DataParticipationFactory dataParticipationFactory = null;
-	private static DataFactory dataFactory = null;
-	private static MessageFactory messageFactory = null;
+	private static AttributeFactory attributeFactory = null;
 	private static SecurityTokenFactory securityTokenFactory = null;
 	private static SessionFactory sessionFactory = null;
 	private static SessionDataFactory sessionDataFactory = null;
-	private static String documentControlName = "Document Control";
+
 	
 	static{
 		//getOrganizationFactory();
@@ -134,12 +148,54 @@ public class Factories {
 		 * 2016/05/17 - Warm up added because factories now support registering their own entitlement sets
 		 * 
 		 */
-		warmUp();
+		
+		/// 2016/11/07 - Refactoring factory references/instances
+		
+		/// warmUp();
 		//AuthorizationService.registerParticipationFactory(FactoryEnumType.DATA,getDataParticipationFactory());
 		//AuthorizationService.registerParticipationFactory(FactoryEnumType.GROUP,getGroupParticipationFactory());
 		//AuthorizationService.registerParticipationFactory(FactoryEnumType.PERSON,getPersonParticipationFactory());
 		//AuthorizationService.registerParticipationFactory(FactoryEnumType.ROLE,getRoleParticipationFactory());
 	}
+	
+	protected static boolean registerClass(FactoryEnumType ftype, Class fClass){
+		if(factoryClasses.containsKey(ftype)){
+			logger.error("Factory " + ftype.toString() + " already registered");
+			return false;
+		}
+		factoryClasses.put(ftype, fClass);
+		return true;
+	}
+	
+	public static Map<FactoryEnumType, Class> getFactoryClasses() {
+		return factoryClasses;
+	}
+
+	public static Map<FactoryEnumType, Object> getFactoryInstances() {
+		return factoryInstances;
+	}
+
+	protected static <T> T getInstance(FactoryEnumType ftype){
+		T newObj = null;
+		if(factoryClasses.containsKey(ftype) == false){
+			logger.error("Factory type " + ftype.toString() + " not registered");
+			return newObj;
+		}
+		if(factoryInstances.containsKey(ftype) == true) return (T)factoryInstances.get(ftype);
+		try {
+			newObj = (T)factoryClasses.get(ftype).newInstance();
+			if(newObj != null){
+				initializeFactory((FactoryBase)newObj);
+				factoryInstances.put(ftype, newObj);
+			}
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error("Error",e);
+			newObj = null;
+		}
+		return newObj;
+	}
+	
 	public static String getDocumentControlName(){
 		return documentControlName;
 	}
@@ -148,7 +204,7 @@ public class Factories {
 	public static UserType getDocumentControl(long organizationId){
 		UserType user = null;
 		try {
-			user = Factories.getUserFactory().getByName(documentControlName, organizationId);
+			user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(documentControlName, organizationId);
 		} catch (FactoryException | ArgumentException e) {
 			logger.error("Trace",e);
 		}
@@ -157,7 +213,7 @@ public class Factories {
 	public static UserType getAdminUser(long organizationId){
 		UserType u = null;
 		try {
-			u = Factories.getUserFactory().getByName("Admin", organizationId);
+			u = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
 		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 			logger.error("Trace",e);
@@ -167,7 +223,7 @@ public class Factories {
 	public static UserType getRootUser(){
 		UserType u = null;
 		try {
-			u = Factories.getUserFactory().getByName("Root", getSystemOrganization().getId());
+			u = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Root", getSystemOrganization().getId());
 		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 			logger.error("Trace",e);
@@ -190,41 +246,7 @@ public class Factories {
 	public static OrganizationType getPublicOrganization() {
 		return publicOrganization;
 	}
-	public static AuditFactory getAuditFactory(){
-		if(auditFactory == null){
-			auditFactory = new AuditFactory();
-			initializeFactory(auditFactory);
-		}
-		return auditFactory;
-	}
-	public static AsymmetricKeyFactory getAsymmetricKeyFactory(){
-		if(asymmetricKeyFactory == null){
-			asymmetricKeyFactory = new AsymmetricKeyFactory();
-			initializeFactory(asymmetricKeyFactory);
-		}
-		return asymmetricKeyFactory;
-	}
-	public static SymmetricKeyFactory getSymmetricKeyFactory(){
-		if(symmetricKeyFactory == null){
-			symmetricKeyFactory = new SymmetricKeyFactory();
-			initializeFactory(symmetricKeyFactory);
-		}
-		return symmetricKeyFactory;
-	}
-	public static CredentialFactory getCredentialFactory(){
-		if(credentialFactory == null){
-			credentialFactory = new CredentialFactory();
-			initializeFactory(credentialFactory);
-		}
-		return credentialFactory;
-	}
-	public static ControlFactory getControlFactory(){
-		if(controlFactory == null){
-			controlFactory = new ControlFactory();
-			initializeFactory(controlFactory);
-		}
-		return controlFactory;
-	}
+
 	public static SessionDataFactory getSessionDataFactory(){
 		if(sessionDataFactory == null){
 			sessionDataFactory = new SessionDataFactory();
@@ -245,104 +267,14 @@ public class Factories {
 		}
 		return attributeFactory;
 	}
-	public static ContactFactory getContactFactory(){
-		if(contactFactory == null){
-			contactFactory = new ContactFactory();
-			initializeFactory(contactFactory);
+	public static AuditFactory getAuditFactory(){
+		if(auditFactory == null){
+			auditFactory = new AuditFactory();
+			initializeFactory(auditFactory);
 		}
-		return contactFactory;
+		return auditFactory;
 	}
-	public static FactFactory getFactFactory(){
-		if(factFactory == null){
-			factFactory = new FactFactory();
-			initializeFactory(factFactory);
-		}
-		return factFactory;
-	}
-	public static FunctionFactory getFunctionFactory(){
-		if(functionFactory == null){
-			functionFactory = new FunctionFactory();
-			initializeFactory(functionFactory);
-		}
-		return functionFactory;
-	}
-	public static FunctionFactFactory getFunctionFactFactory(){
-		if(functionFactFactory == null){
-			functionFactFactory = new FunctionFactFactory();
-			initializeFactory(functionFactFactory);
-		}
-		return functionFactFactory;
-	}
-	public static FunctionParticipationFactory getFunctionParticipationFactory(){
-		if(functionParticipationFactory == null){
-			functionParticipationFactory = new FunctionParticipationFactory();
-			initializeFactory(functionParticipationFactory);
-		}
-		return functionParticipationFactory;
-	}
-	public static PolicyParticipationFactory getPolicyParticipationFactory(){
-		if(policyParticipationFactory == null){
-			policyParticipationFactory = new PolicyParticipationFactory();
-			initializeFactory(policyParticipationFactory);
-		}
-		return policyParticipationFactory;
-	}
-	public static RuleParticipationFactory getRuleParticipationFactory(){
-		if(ruleParticipationFactory == null){
-			ruleParticipationFactory = new RuleParticipationFactory();
-			initializeFactory(ruleParticipationFactory);
-		}
-		return ruleParticipationFactory;
-	}
-	public static OperationFactory getOperationFactory(){
-		if(operationFactory == null){
-			operationFactory = new OperationFactory();
-			initializeFactory(operationFactory);
-		}
-		return operationFactory;
-	}
-	public static PatternFactory getPatternFactory(){
-		if(patternFactory == null){
-			patternFactory = new PatternFactory();
-			initializeFactory(patternFactory);
-		}
-		return patternFactory;
-	}
-	public static PolicyFactory getPolicyFactory(){
-		if(policyFactory == null){
-			policyFactory = new PolicyFactory();
-			initializeFactory(policyFactory);
-		}
-		return policyFactory;
-	}
-	public static RuleFactory getRuleFactory(){
-		if(ruleFactory == null){
-			ruleFactory = new RuleFactory();
-			initializeFactory(ruleFactory);
-		}
-		return ruleFactory;
-	}
-	public static AddressFactory getAddressFactory(){
-		if(addressFactory == null){
-			addressFactory = new AddressFactory();
-			initializeFactory(addressFactory);
-		}
-		return addressFactory;
-	}
-	public static PersonFactory getPersonFactory(){
-		if(personFactory == null){
-			personFactory = new PersonFactory();
-			initializeFactory(personFactory);
-		}
-		return personFactory;
-	}
-	public static PersonParticipationFactory getPersonParticipationFactory(){
-		if(personParticipationFactory == null){
-			personParticipationFactory = new PersonParticipationFactory();
-			initializeFactory(personParticipationFactory);
-		}
-		return personParticipationFactory;
-	}
+
 	public static SecurityTokenFactory getSecurityTokenFactory(){
 		if(securityTokenFactory == null){
 			securityTokenFactory = new SecurityTokenFactory();
@@ -350,113 +282,7 @@ public class Factories {
 		}
 		return securityTokenFactory;
 	}
-	public static MessageFactory getMessageFactory(){
-		if(messageFactory == null){
-			messageFactory = new MessageFactory();
-			initializeFactory(messageFactory);
-		}
-		return messageFactory;
-	}
-	public static TagParticipationFactory getTagParticipationFactory(){
-		if(tagParticipationFactory == null){
-			tagParticipationFactory = new TagParticipationFactory();
-			initializeFactory(tagParticipationFactory);
-		}
-		return tagParticipationFactory;
-	}
-	public static TagFactory getTagFactory(){
-		if(tagFactory == null){
-			tagFactory = new TagFactory();
-			initializeFactory(tagFactory);
-		}
-		return tagFactory;
-	}
-	public static PermissionFactory getPermissionFactory(){
-		if(permissionFactory == null){
-			permissionFactory = new PermissionFactory();
-			initializeFactory(permissionFactory);
-		}
-		return permissionFactory;
-	}
-	public static RoleFactory getRoleFactory(){
-		if(roleFactory == null){
-			roleFactory = new RoleFactory();
-			initializeFactory(roleFactory);
-		}
-		return roleFactory;
-	}
-	public static RoleParticipationFactory getRoleParticipationFactory(){
-		if(roleParticipationFactory == null){
-			roleParticipationFactory = new RoleParticipationFactory();
-			initializeFactory(roleParticipationFactory);
-		}
-		return roleParticipationFactory;
-	}
-	public static StatisticsFactory getStatisticsFactory(){
-		if(statisticsFactory == null){
-			statisticsFactory = new StatisticsFactory();
-			initializeFactory(statisticsFactory);
-		}
-		return statisticsFactory;
-	}
-	public static UserFactory getUserFactory(){
-		if(userFactory == null){
-			userFactory = new UserFactory();
-			initializeFactory(userFactory);
-		}
-		return userFactory;
-	}
-	public static AccountFactory getAccountFactory(){
-		if(accountFactory == null){
-			accountFactory = new AccountFactory();
-			initializeFactory(accountFactory);
-		}
-		return accountFactory;
-	}
-	public static ContactInformationParticipationFactory getContactInformationParticipationFactory(){
-		if(contactInformationParticipationFactory == null){
-			contactInformationParticipationFactory = new ContactInformationParticipationFactory();
-			initializeFactory(contactInformationParticipationFactory);
-		}
-		return contactInformationParticipationFactory;
-	}
-	public static ContactInformationFactory getContactInformationFactory(){
-		if(contactInformationFactory == null){
-			contactInformationFactory = new ContactInformationFactory();
-			initializeFactory(contactInformationFactory);
-		}
-		return contactInformationFactory;
-	}
-	public static DataFactory getDataFactory(){
-		if(dataFactory == null){
-			dataFactory = new DataFactory();
-			initializeFactory(dataFactory);
-			
-		}
-		return dataFactory;
-	}	
-	public static DataParticipationFactory getDataParticipationFactory(){
-		if(dataParticipationFactory == null){
-			dataParticipationFactory = new DataParticipationFactory();
-			initializeFactory(dataParticipationFactory);
-		}
-		return dataParticipationFactory;
-	}
-	public static GroupParticipationFactory getGroupParticipationFactory(){
-		if(groupParticipationFactory == null){
-			groupParticipationFactory = new GroupParticipationFactory();
-			initializeFactory(groupParticipationFactory);
-		}
-		return groupParticipationFactory;
-	}
-	public static GroupFactory getGroupFactory(){
-		if(groupFactory == null){
-			groupFactory = new GroupFactory();
-			initializeFactory(groupFactory);
-
-		}
-		return groupFactory;
-	}
+	
 	/// Recycle factories for development and new setups
 	/// When the schema is nuked during setup, cached values may be null or invalid
 	///
@@ -474,19 +300,15 @@ public class Factories {
 		systemOrganization = null;
 		publicOrganization = null;
 		developmentOrganization = null;
+		//factoryInstances.remove(FactoryEnumType.ORGANIZATION);
+		//populate(getFactory(FactoryEnumType.ORGANIZATION));
+		/*
 		if(orgFactory != null) orgFactory.clearCache();
 		orgFactory = null;
 		getOrganizationFactory();
+		*/
 	}
-	public static OrganizationFactory getOrganizationFactory(){
-		if(orgFactory == null){
-			orgFactory = new OrganizationFactory();
-			initializeFactory(orgFactory);
-			populate(orgFactory);
 
-		}
-		return orgFactory;
-	}
 	private static boolean populate(OrganizationFactory orgFactory){
 		boolean out_bool = false;
 		if(orgFactory.isInitialized()){
@@ -495,10 +317,10 @@ public class Factories {
 				systemOrganization = orgFactory.addOrganization("System", OrganizationEnumType.SYSTEM, rootOrganization);
 				publicOrganization = orgFactory.addOrganization("Public", OrganizationEnumType.PUBLIC, rootOrganization);
 				developmentOrganization = orgFactory.addOrganization("Development", OrganizationEnumType.DEVELOPMENT, rootOrganization);
-				Factories.getOrganizationFactory().denormalize(rootOrganization);
-				Factories.getOrganizationFactory().denormalize(systemOrganization);
-				Factories.getOrganizationFactory().denormalize(developmentOrganization);
-				Factories.getOrganizationFactory().denormalize(publicOrganization);
+				((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(rootOrganization);
+				((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(systemOrganization);
+				((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(developmentOrganization);
+				((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(publicOrganization);
 				out_bool = true;
 				
 			}
@@ -526,7 +348,7 @@ public class Factories {
 		}
 		finally{
 			try {
-				connection.close();
+				if(connection != null) connection.close();
 			} catch (SQLException e) {
 				
 				logger.error("Trace",e);
@@ -540,7 +362,7 @@ public class Factories {
 
 		if(organizationId > 0L){
 			try{
-				UserType adminUser = Factories.getUserFactory().getByName("Admin", organizationId);
+				UserType adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
 				if(adminUser != null){
 					out_bool = true;
 				}
@@ -560,254 +382,35 @@ public class Factories {
 	}
 	
 	public static boolean clearCaches(){
-		getSymmetricKeyFactory().clearCache();
-		getAsymmetricKeyFactory().clearCache();
-		getControlFactory().clearCache();
-		getCredentialFactory().clearCache();
-		getFactFactory().clearCache();
-		getFunctionFactory().clearCache();
-		getFunctionFactFactory().clearCache();
-		getPatternFactory().clearCache();
-		getPolicyFactory().clearCache();
-		getOperationFactory().clearCache();
-		getRuleFactory().clearCache();
-		getAddressFactory().clearCache();
-		getContactFactory().clearCache();
-		getPersonFactory().clearCache();
-		getContactInformationParticipationFactory().clearCache();
-		getAccountFactory().clearCache();
-		getContactInformationFactory().clearCache();
-		getDataFactory().clearCache();
-		getDataParticipationFactory().clearCache();
-		getGroupFactory().clearCache();
-		getGroupParticipationFactory().clearCache();
-		getMessageFactory().clearCache();
-		getPermissionFactory().clearCache();
-		getRoleFactory().clearCache();
-		getRoleParticipationFactory().clearCache();
-		getSecurityTokenFactory().clearCache();
-		getSessionFactory().clearCache();
-		getStatisticsFactory().clearCache();
-		getTagFactory().clearCache();
-		getTagParticipationFactory().clearCache();
-		getUserFactory().clearCache();
-		getOrganizationFactory().clearCache();
+
+		for(Object fact : factoryInstances.values()){
+			if(fact instanceof INameIdFactory){
+				((INameIdFactory)fact).clearCache();
+			}
+			else{
+				logger.debug(((FactoryBase)fact).getFactoryType().toString() + " doesn't support caching");
+			}
+			
+		}
+
 		EffectiveAuthorizationService.clearCache();
 		
 		return true;
 	}
 	public static <T> T getBulkFactory(FactoryEnumType factoryType){
-		T fact = null;
-		switch(factoryType){
-			case SYMMETRICKEY:
-				fact = (T)BulkFactories.getBulkSymmetricKeyFactory();
-				break;
-			case ASYMMETRICKEY:
-				fact = (T)BulkFactories.getBulkAsymmetricKeyFactory();
-				break;
-			
-			case CREDENTIAL:
-				fact = (T)BulkFactories.getBulkCredentialFactory();
-				break;
-			case CONTROL:
-				fact = (T)BulkFactories.getBulkControlFactory();
-				break;
-			case FACT:
-				fact = (T)BulkFactories.getBulkFactFactory();
-				break;
-			case FUNCTIONFACT:
-				fact = (T)BulkFactories.getBulkFunctionFactFactory();
-				break;
-			case FUNCTION:
-				fact = (T)BulkFactories.getBulkFunctionFactory();
-				break;
-			case FUNCTIONPARTICIPATION:
-				fact = (T)BulkFactories.getBulkFunctionParticipationFactory();
-				break;
-			case POLICYPARTICIPATION:
-				fact = (T)BulkFactories.getBulkPolicyParticipationFactory();
-				break;
-			case RULEPARTICIPATION:
-				fact = (T)BulkFactories.getBulkRuleParticipationFactory();
-				break;
-
-			case OPERATION:
-				fact = (T)BulkFactories.getBulkOperationFactory();
-				break;
-			case PATTERN:
-				fact = (T)BulkFactories.getBulkPatternFactory();
-				break;
-			case POLICY:
-				fact = (T)BulkFactories.getBulkPolicyFactory();
-				break;
-			case RULE:
-				fact = (T)BulkFactories.getBulkRuleFactory();
-				break;
-
-			case PERSON:
-				fact = (T)BulkFactories.getBulkPersonFactory();
-				break;
-			case ACCOUNT:
-				fact = (T)BulkFactories.getBulkAccountFactory();
-				break;
-			case CONTACT:
-				fact = (T)BulkFactories.getBulkContactFactory();
-				break;
-			case ADDRESS:
-				fact = (T)BulkFactories.getBulkAddressFactory();
-				break;
-			case PERSONPARTICIPATION:
-				fact = (T)BulkFactories.getBulkPersonParticipationFactory();
-				break;
-				
-			case CONTACTINFORMATION:
-				fact = (T)BulkFactories.getBulkContactInformationFactory();
-				break;
-			case CONTACTINFORMATIONPARTICIPATION:
-				fact = (T)BulkFactories.getBulkContactInformationParticipationFactory();
-				break;
-			case USER:
-				fact = (T)BulkFactories.getBulkUserFactory();
-				break;
-			case STATISTICS:
-				fact = (T)BulkFactories.getBulkStatisticsFactory();
-				break;
-			case ROLE:
-				fact = (T)BulkFactories.getBulkRoleFactory();
-				break;
-			case ROLEPARTICIPATION:
-				fact = (T)BulkFactories.getBulkRoleParticipationFactory();
-				break;
-			case GROUP:
-				fact = (T)BulkFactories.getBulkGroupFactory();
-				break;
-			case GROUPPARTICIPATION:
-				fact = (T)BulkFactories.getBulkGroupParticipationFactory();
-				break;
-			case TAG:
-				fact = (T)BulkFactories.getBulkTagFactory();
-				break;
-			case TAGPARTICIPATION:
-				fact = (T)BulkFactories.getBulkTagParticipationFactory();
-				break;
-			case DATA:
-				fact = (T)BulkFactories.getBulkDataFactory();
-				break;
-			case DATAPARTICIPATION:
-				fact = (T)BulkFactories.getBulkDataParticipationFactory();
-				break;
-			case PERMISSION:
-				fact = (T)BulkFactories.getBulkPermissionFactory();
-				break;
-		}
-		return fact;
+		return BulkFactories.getInstance(factoryType);
 	}	
 	public static <T> T getFactory(FactoryEnumType factoryType){
-		T fact = null;
-		switch(factoryType){
-			case ORGANIZATION:
-				fact = (T)Factories.getOrganizationFactory();
-				break;
-			case SYMMETRICKEY:
-				fact = (T)Factories.getSymmetricKeyFactory();
-				break;
-			case ASYMMETRICKEY:
-				fact = (T)Factories.getAsymmetricKeyFactory();
-				break;
-			case CREDENTIAL:
-				fact = (T)Factories.getCredentialFactory();
-				break;
-			case CONTROL:
-				fact = (T)Factories.getControlFactory();
-				break;
-			case FACT:
-				fact = (T)Factories.getFactFactory();
-				break;
-			case FUNCTIONFACT:
-				fact = (T)Factories.getFunctionFactFactory();
-				break;
-			case FUNCTION:
-				fact = (T)Factories.getFunctionFactory();
-				break;
-			case FUNCTIONPARTICIPATION:
-				fact = (T)Factories.getFunctionParticipationFactory();
-				break;
-			case POLICYPARTICIPATION:
-				fact = (T)Factories.getPolicyParticipationFactory();
-				break;
-			case RULEPARTICIPATION:
-				fact = (T)Factories.getRuleParticipationFactory();
-				break;
-
-			case OPERATION:
-				fact = (T)Factories.getOperationFactory();
-				break;
-			case PATTERN:
-				fact = (T)Factories.getPatternFactory();
-				break;
-			case POLICY:
-				fact = (T)Factories.getPolicyFactory();
-				break;
-			case RULE:
-				fact = (T)Factories.getRuleFactory();
-				break;
-
-			case ACCOUNT:
-				fact = (T)getAccountFactory();
-				break;
-			case PERSON:
-				fact = (T)getPersonFactory();
-				break;
-			case PERSONPARTICIPATION:
-				fact = (T)getPersonParticipationFactory();
-				break;
-			case ADDRESS:
-				fact = (T)getAddressFactory();
-				break;
-			case CONTACT:
-				fact = (T)getContactFactory();
-				break;
-			case CONTACTINFORMATIONPARTICIPATION:
-				fact = (T)getContactInformationParticipationFactory();
-				break;
-			case CONTACTINFORMATION:
-				fact = (T)getContactInformationFactory();
-				break;
-			case USER:
-				fact = (T)getUserFactory();
-				break;
-			case STATISTICS:
-				fact = (T)getStatisticsFactory();
-				break;
-			case ROLE:
-				fact = (T)getRoleFactory();
-				break;
-			case ROLEPARTICIPATION:
-				fact = (T)getRoleParticipationFactory();
-				break;
-			case GROUP:
-				fact = (T)getGroupFactory();
-				break;
-			case GROUPPARTICIPATION:
-				fact = (T)getGroupParticipationFactory();
-				break;
-			case TAG:
-				fact = (T)getTagFactory();
-				break;
-			case TAGPARTICIPATION:
-				fact = (T)getTagParticipationFactory();
-				break;
-			case DATA:
-				fact = (T)getDataFactory();
-				break;
-			case DATAPARTICIPATION:
-				fact = (T)getDataParticipationFactory();
-				break;
-			case PERMISSION:
-				fact = (T)Factories.getPermissionFactory();
-				break;
-		}
-		return fact;
+		return getInstance(factoryType);
+	}
+	public static INameIdFactory getNameIdFactory(FactoryEnumType factoryType){
+		return getInstance(factoryType);
+	}
+	public static INameIdGroupFactory getNameIdGroupFactory(FactoryEnumType factoryType){
+		return getInstance(factoryType);
+	}
+	public static IParticipationFactory getParticipationFactory(FactoryEnumType factoryType){
+		return getInstance(factoryType);
 	}
 	
 	public static <T> void populate(FactoryEnumType factoryType, T object) throws FactoryException, ArgumentException{
@@ -823,55 +426,42 @@ public class Factories {
 		developmentOrganization = null;
 		systemOrganization = null;
 		publicOrganization = null;
-		
-		asymmetricKeyFactory = null;
-		symmetricKeyFactory = null;
-		credentialFactory = null;
-		controlFactory = null;
-		factFactory = null;
-		functionFactory = null;
-		functionFactFactory = null;
-		functionParticipationFactory = null;
-		policyParticipationFactory = null;
-		ruleParticipationFactory = null;
-		operationFactory = null;
-		patternFactory = null;
-		policyFactory = null;
-		ruleFactory = null;
+
+
+		for(Object o : factoryInstances.values()){
+			if(o instanceof INameIdFactory){
+				INameIdFactory iFact = (INameIdFactory)o;
+				iFact.clearCache();
+			}
+		}
+		factoryInstances.clear();
 		attributeFactory = null;
-		contactFactory = null;
-		addressFactory = null;
-		personFactory = null;
-		personParticipationFactory = null;
 		auditFactory = null;
-		tagFactory = null;
-		tagParticipationFactory = null;
-		permissionFactory = null;
-		roleFactory = null;
-		roleParticipationFactory = null;
-		userFactory = null;
-		accountFactory = null;
-		statisticsFactory = null;
-		contactInformationFactory = null;
-		contactInformationParticipationFactory = null;
-		orgFactory = null;
-		groupParticipationFactory = null;
-		groupFactory = null;
-		dataParticipationFactory = null;
-		dataFactory = null;
-		messageFactory = null;
 		securityTokenFactory = null;
 		sessionFactory = null;
 		sessionDataFactory = null;
+
 	}
-	
+    public static void prepare(){
+    	logger.info("Touch Rocket to initialize static registration");
+    	BulkFactories.prepare();
+    }
 	public static void warmUp(){
-		logger.info("Warming up factory instances");
+		logger.info("Warming up factory " + factoryClasses.size() + " factory instances");
+		prepare();
 		long startWarmUp = System.currentTimeMillis();
-		getOrganizationFactory();
-		for(FactoryEnumType f : FactoryEnumType.values()){
-			FactoryBase fact = getFactory(f);
-			if(fact != null) fact.registerProvider();
+		//getOrganizationFactory();
+		//getFactory(FactoryEnumType.ORGANIZATION);
+		
+		if(factoryInstances.containsKey(FactoryEnumType.ORGANIZATION) == false){
+			populate(getFactory(FactoryEnumType.ORGANIZATION));
+		}
+		
+		for(FactoryEnumType f : factoryClasses.keySet()){
+			if(factoryInstances.containsKey(f) || f.equals(FactoryEnumType.ORGANIZATION)) continue;
+			FactoryBase bFact = getFactory(f);
+			//if()
+			bFact.registerProvider();
 		}
 		logger.debug("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
 	}

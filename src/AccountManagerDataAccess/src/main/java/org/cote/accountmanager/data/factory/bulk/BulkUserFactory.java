@@ -29,6 +29,7 @@ import org.cote.accountmanager.data.factory.UserFactory;
 
 
 public class BulkUserFactory extends UserFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.USER, BulkUserFactory.class); }
 	public BulkUserFactory(){
 		super();
 		bulkMode = true;

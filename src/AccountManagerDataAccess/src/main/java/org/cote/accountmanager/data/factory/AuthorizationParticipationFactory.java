@@ -26,7 +26,8 @@ package org.cote.accountmanager.data.factory;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -44,6 +45,7 @@ import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.RuleParticipantType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
@@ -51,7 +53,7 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
 
 public abstract class AuthorizationParticipationFactory extends BaseParticipationFactory {
-	public static final Logger logger = Logger.getLogger(AuthorizationParticipationFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(AuthorizationParticipationFactory.class);
 	public AuthorizationParticipationFactory(ParticipationEnumType type, String tableName){
 		super(type, tableName);
 	}
@@ -103,7 +105,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
@@ -114,7 +116,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 	public List<PatternType> getPatternsFromParticipations(PatternParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getPatternFactory().getPatternList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
+		return Factories.getNameIdFactory(FactoryEnumType.PATTERN).paginateList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
 
 	public List<RuleType> getRulesFromParticipation(NameIdType participation) throws ArgumentException{
@@ -127,7 +129,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
@@ -138,7 +140,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 	public List<RuleType> getRulesFromParticipations(RuleParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getRuleFactory().getRuleList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
+		return Factories.getNameIdFactory(FactoryEnumType.RULE).paginateList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
 
 	
@@ -152,7 +154,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
@@ -163,7 +165,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 	public List<FactType> getFactsFromParticipations(FactParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getFactFactory().getFactList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
+		return Factories.getNameIdFactory(FactoryEnumType.FACT).paginateList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
 
 	
@@ -177,7 +179,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		return items;
 	}
@@ -188,7 +190,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 	public List<FunctionFactType> getFunctionFactsFromParticipations(FunctionFactParticipantType[] list, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getFunctionFactFactory().getFunctionFactList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
+		return Factories.getNameIdFactory(FactoryEnumType.FUNCTIONFACT).paginateList(new QueryField[]{ field }, startRecord, recordCount, organizationId);
 	}
 
 }

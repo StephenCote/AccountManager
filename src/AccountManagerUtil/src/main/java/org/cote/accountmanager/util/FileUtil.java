@@ -32,10 +32,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FileUtil {
-	public static final Logger logger = Logger.getLogger(FileUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(FileUtil.class);
 	public static String getFileAsString(String path){
 		return getFileAsString(new File(path));
 	}

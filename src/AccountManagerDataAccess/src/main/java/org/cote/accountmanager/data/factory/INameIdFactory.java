@@ -8,16 +8,18 @@ import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public interface INameIdFactory {
 	//public String getDataTable();
 	//public void writeSpool(String tableName);
-	
-
+	public void setBatchSize(int batchSize);
+	public boolean getBulkMode();
+	public void registerProvider();
 	public boolean isClusterByGroup();
 	public boolean isClusterByParent();
 	public boolean isParticipation();
-
+	public FactoryEnumType getFactoryType();
 	
 	public void writeSpool();
 	public <T> void normalize(T object) throws ArgumentException, FactoryException;
@@ -64,7 +66,7 @@ public interface INameIdFactory {
 	public <T> int countInParent(T parent) throws FactoryException;
 	
 	public void clearCache();
-	/*
+	
 	public void removeBranchFromCache(NameIdType obj);
 	public void removeFromCache(NameIdType obj);
 	public void removeFromCache(NameIdType obj, String key_name);
@@ -74,5 +76,5 @@ public interface INameIdFactory {
 	public boolean updateToCache(NameIdType obj,String key_name) throws ArgumentException;
 	public boolean addToCache(NameIdType map) throws ArgumentException;
 	public boolean addToCache(NameIdType map, String key_name) throws ArgumentException;
-	*/
+	
 }

@@ -34,11 +34,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 
@@ -46,7 +49,7 @@ import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 @Path("/organization")
 public class OrganizationService{
 
-	public static final Logger logger = Logger.getLogger(OrganizationService.class.getName());
+	public static final Logger logger = LogManager.getLogger(OrganizationService.class);
 	private static SchemaBean schemaBean = null;	
 	public OrganizationService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
@@ -72,16 +75,16 @@ public class OrganizationService{
 	public OrganizationType find(@PathParam("path") String path,@Context HttpServletRequest request){
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().findOrganization(path);
-			if(org != null) Factories.getOrganizationFactory().denormalize(org);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(path);
+			if(org != null) ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(org);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return org;
 	}
@@ -91,11 +94,11 @@ public class OrganizationService{
 		OrganizationType parent = null;
 		OrganizationType out_org = null;
 		try {
-			parent = (parentId > 0 ? Factories.getOrganizationFactory().getOrganizationById(parentId) : Factories.getRootOrganization());
+			parent = (parentId > 0 ? ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(parentId) : Factories.getRootOrganization());
 			if(parent != null){
 				System.out.println("Looking for organization '" + name + "' in parent '" + parent.getName() + "'");
-				out_org = Factories.getOrganizationFactory().getOrganizationByName(name, parent);
-				if(out_org != null) Factories.getOrganizationFactory().denormalize(out_org);
+				out_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationByName(name, parent);
+				if(out_org != null) ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(out_org);
 			}
 			else{
 				System.out.println("Parent organization not found for id #" + parentId);
@@ -104,11 +107,11 @@ public class OrganizationService{
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		return out_org;
@@ -118,16 +121,16 @@ public class OrganizationService{
 	public OrganizationType readById(@PathParam("id") long id,@Context HttpServletRequest request){
 		OrganizationType out_org = null;
 		try {
-			out_org = Factories.getOrganizationFactory().getOrganizationById(id);
-			if(out_org != null) Factories.getOrganizationFactory().denormalize(out_org);
+			out_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(id);
+			if(out_org != null) ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(out_org);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return out_org;
 	}

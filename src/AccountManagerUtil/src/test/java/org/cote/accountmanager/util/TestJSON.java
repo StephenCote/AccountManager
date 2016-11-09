@@ -6,8 +6,9 @@ import static org.junit.Assert.assertTrue;
 import java.security.Security;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.util.SimpleGeography.CountryType;
@@ -16,15 +17,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestJSON {
-	public static final Logger logger = Logger.getLogger(TestJSON.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestJSON.class);
 	@Before
 	public void setUp() throws Exception {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
 	}
 	/*
 		Actor {Can/Can't} {Do} PermissionSuffix Type

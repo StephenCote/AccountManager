@@ -33,11 +33,13 @@ import java.util.Map;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.fact.FactUtil;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.operation.IOperation;
 import org.cote.accountmanager.data.operation.OperationUtil;
 import org.cote.accountmanager.data.rule.RuleUtil;
@@ -69,31 +71,30 @@ import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-
 public class PolicyEvaluator {
 	private static DatatypeFactory dtFactory = null;
-	public static final Logger logger = Logger.getLogger(PolicyEvaluator.class.getName());
+	public static final Logger logger = LogManager.getLogger(PolicyEvaluator.class);
 
 	static{
 		try {
 			dtFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	public static PolicyType getPolicyFromRequest(PolicyRequestType prt) throws FactoryException, ArgumentException{
-		OrganizationType org = Factories.getOrganizationFactory().findOrganization(prt.getOrganizationPath());
+		OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(prt.getOrganizationPath());
 		if(org == null){
 			logger.error("Organization not found for path " + prt.getOrganizationPath());
 			return null;
 		}
-		PolicyType pol = Factories.getPolicyFactory().getByUrn(prt.getUrn());
+		PolicyType pol = Factories.getNameIdFactory(FactoryEnumType.POLICY).getByUrn(prt.getUrn());
 		if(pol == null){
 			logger.error("Policy not found for urn " + prt.getUrn() + " in org " + prt.getOrganizationPath());
 			return null;
 		}
-		Factories.getPolicyFactory().populate(pol);
+		Factories.getNameIdFactory(FactoryEnumType.POLICY).populate(pol);
 		return pol;
 
 	}
@@ -139,7 +140,7 @@ public class PolicyEvaluator {
 		logger.info("Evaluating Policy " + pol.getUrn() + " " + pol.getCondition().toString());
 		for(int i = 0; i < size;i++){
 			RuleType rule = rules.get(i);
-			Factories.getRuleFactory().populate(rule);
+			Factories.getNameIdFactory(FactoryEnumType.RULE).populate(rule);
 			if(evaluateRule(rule, facts,prr)){
 				pass++;
 				if(pol.getCondition() == ConditionEnumType.ANY){
@@ -180,7 +181,7 @@ public class PolicyEvaluator {
 		*/
 		for(int i = 0; i < rules.size(); i++){
 			RuleType crule = rules.get(i);
-			Factories.getRuleFactory().populate(crule);
+			Factories.getNameIdFactory(FactoryEnumType.RULE).populate(crule);
 			boolean bRule = evaluateRule(crule, facts, prr);
 			if(bRule){
 				pass++;
@@ -198,7 +199,7 @@ public class PolicyEvaluator {
 		}
 		for(int i = 0; i < patterns.size(); i++){
 			PatternType pat = patterns.get(i);
-			Factories.getPatternFactory().populate(pat);
+			Factories.getNameIdFactory(FactoryEnumType.PATTERN).populate(pat);
 			boolean bPat = evaluatePattern(pat,facts,prr);
 			
 			if(
@@ -364,8 +365,8 @@ public class PolicyEvaluator {
 			
 			BasePermissionType perm = null;
 			if(matchFact.getFactoryType() == FactoryEnumType.PERMISSION) perm = (BasePermissionType)g;
-			else if(FactUtil.idPattern.matcher(matchFact.getFactData()).matches()) perm = Factories.getPermissionFactory().getPermissionById(Long.parseLong(matchFact.getFactData()), matchFact.getOrganizationId());
-			else perm = Factories.getPermissionFactory().getByUrn(matchFact.getFactData());
+			else if(FactUtil.idPattern.matcher(matchFact.getFactData()).matches()) perm = Factories.getNameIdFactory(FactoryEnumType.PERMISSION).getById(Long.parseLong(matchFact.getFactData()), matchFact.getOrganizationId());
+			else perm = Factories.getNameIdFactory(FactoryEnumType.PERMISSION).getByUrn(matchFact.getFactData());
 			if(perm == null){
 				logger.error("Permission reference does not exist");
 				return OperationResponseEnumType.ERROR;
@@ -373,7 +374,7 @@ public class PolicyEvaluator {
 			out_response = evaluatePermissionAuthorization(pattern, p, g, perm);
 		}
 		else if(matchFact.getFactType() == FactEnumType.ROLE && matchFact.getFactoryType() == FactoryEnumType.ROLE){
-			//BaseRoleType role = Factories.getRoleFactory().getRoleById(Long.parseLong(matchFact.getFactData()), matchFact.getOrganization());
+			//BaseRoleType role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleById(Long.parseLong(matchFact.getFactData()), matchFact.getOrganization());
 			/*
 			if(role == null){
 				logger.error("Role reference does not exist");
@@ -485,7 +486,7 @@ public class PolicyEvaluator {
 	public static OperationResponseEnumType evaluateOperation(PatternType pattern, FactType fact, FactType matchFact, String operation) throws ArgumentException{
 		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
 		logger.info("Evaluating operation: " + operation);
-		OperationType op = Factories.getOperationFactory().getByUrn(operation);
+		OperationType op = Factories.getNameIdFactory(FactoryEnumType.OPERATION).getByUrn(operation);
 		if(op == null){
 			throw new ArgumentException("Operation is null");
 		}
@@ -496,7 +497,7 @@ public class PolicyEvaluator {
 				else out_response = oper.operate(pattern, fact, matchFact);
 				break;
 			case FUNCTION:
-				FunctionType func = Factories.getFunctionFactory().getByUrn(op.getOperation());
+				FunctionType func = Factories.getNameIdFactory(FactoryEnumType.FUNCTION).getByUrn(op.getOperation());
 				if(func == null){
 					throw new ArgumentException("Operation Function '" + op.getOperation() + "' is null");
 				}

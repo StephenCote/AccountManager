@@ -55,6 +55,7 @@ import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.TagEnumType;
 
 public class TagFactory extends NameIdGroupFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.TAG, TagFactory.class); }
 	public TagFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -95,7 +96,7 @@ public class TagFactory extends NameIdGroupFactory {
 		BaseTagType tag = (BaseTagType)object;
 		removeFromCache(tag);
 		int deleted = deleteById(tag.getId(), tag.getOrganizationId());
-		Factories.getTagParticipationFactory().deleteParticipations(tag);
+		((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).deleteParticipations(tag);
 		return (deleted > 0);
 	}
 	
@@ -270,11 +271,11 @@ public class TagFactory extends NameIdGroupFactory {
 		instruction.setPaginate(true);
 		instruction.setStartIndex(startRecord);
 		instruction.setRecordCount(recordCount);
-		List<DataParticipantType> parts = Factories.getTagParticipationFactory().getTagParticipations(tags, instruction,ParticipantEnumType.DATA);
+		List<DataParticipantType> parts = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).getTagParticipations(tags, instruction,ParticipantEnumType.DATA);
 		if(parts.size() == 0) return new ArrayList<DataType>();
 		/// Don't apply pagination to the secondary query because it's already been paginated from the parts list
 		///
-		return Factories.getTagParticipationFactory().getDataListFromParticipations(parts.toArray(new DataParticipantType[0]), true, 0, 0, organizationId);
+		return ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).getDataListFromParticipations(parts.toArray(new DataParticipantType[0]), true, 0, 0, organizationId);
 	
 	}
 

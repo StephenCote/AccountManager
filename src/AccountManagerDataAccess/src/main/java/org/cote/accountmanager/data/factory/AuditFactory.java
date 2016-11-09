@@ -172,7 +172,7 @@ public class AuditFactory extends FactoryBase {
 			connection.close();
 		} catch (SQLException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			throw new FactoryException(e.getMessage());
 		}
 		return out_list;

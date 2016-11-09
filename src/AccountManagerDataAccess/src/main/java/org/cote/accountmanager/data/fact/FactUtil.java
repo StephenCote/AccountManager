@@ -25,7 +25,8 @@ package org.cote.accountmanager.data.fact;
 
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
@@ -50,7 +51,7 @@ import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 
 public class FactUtil {
-	public static final Logger logger = Logger.getLogger(FactUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(FactUtil.class);
 	public static final Pattern idPattern = Pattern.compile("^\\d+$");
 	
 	public static void setFactReference(FactType sourceFact, FactType matchFact){
@@ -111,19 +112,19 @@ public class FactUtil {
 			logger.error("Source URL is null");
 			return null;
 		}
-		DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, sourceFact.getSourceUrl(), referenceFact.getOrganizationId());
+		DirectoryGroupType dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA, sourceFact.getSourceUrl(), referenceFact.getOrganizationId());
 		if(dir == null)
 			throw new ArgumentException("Invalid group path " + sourceFact.getSourceUrl());
 		return dir;
 	}
 	private static BasePermissionType getPermissionFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException, DataAccessException{
 		
-		BasePermissionType permission = (BasePermissionType)Factories.getPermissionFactory().findPermission(PermissionEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganizationId());
+		BasePermissionType permission = (BasePermissionType)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).findPermission(PermissionEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganizationId());
 		if(permission == null) throw new ArgumentException("Invalid permission path " + sourceFact.getSourceUrl());
 		return permission;
 	}
 	private static BaseRoleType getRoleFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException, DataAccessException{
-		BaseRoleType role = (BaseRoleType)Factories.getRoleFactory().findRole(RoleEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganizationId());
+		BaseRoleType role = (BaseRoleType)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).findRole(RoleEnumType.fromValue(sourceFact.getSourceType()), sourceFact.getSourceUrl(), referenceFact.getOrganizationId());
 		if(role == null) throw new ArgumentException("Invalid role path " + sourceFact.getSourceUrl());
 		return role;
 	}

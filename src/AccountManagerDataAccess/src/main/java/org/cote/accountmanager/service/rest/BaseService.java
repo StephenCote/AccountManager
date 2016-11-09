@@ -32,15 +32,33 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.AddressFactory;
+import org.cote.accountmanager.data.factory.ContactFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.FactFactory;
+import org.cote.accountmanager.data.factory.FunctionFactFactory;
+import org.cote.accountmanager.data.factory.FunctionFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
+import org.cote.accountmanager.data.factory.OperationFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.PatternFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.data.factory.PolicyFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.factory.RuleFactory;
+import org.cote.accountmanager.data.factory.TagFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
@@ -85,7 +103,7 @@ import org.cote.accountmanager.util.JAXBUtil;
 import org.cote.accountmanager.util.MapUtil;
 
 public class BaseService{
-	public static final Logger logger = Logger.getLogger(BaseService.class.getName());
+	public static final Logger logger = LogManager.getLogger(BaseService.class);
 	public static boolean enableExtendedAttributes = false;
 	private static boolean allowDataPointers = false;
 	private static boolean checkConfigDataPoint = false;
@@ -134,10 +152,10 @@ public class BaseService{
 		}
 		if(user != null && obj.getOrganizationPath() == null){
 			logger.warn("Organization path not specified. Using context user's organization");
-			obj.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(user.getOrganizationId()));
+			obj.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(user.getOrganizationId()));
 		}
 		if(obj.getNameType() == NameEnumType.DATA){
-			Factories.getDataFactory().normalize(object);
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).normalize(object);
 		}
 		else if(
 			obj.getNameType() == NameEnumType.GROUP
@@ -156,9 +174,9 @@ public class BaseService{
 		else if(FactoryService.isDirectoryType(obj.getNameType())){
 			NameIdGroupFactory fact = Factories.getFactory(FactoryEnumType.valueOf(obj.getNameType().toString()));
 			if(user != null){
-				BaseGroupType group = Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, ((NameIdDirectoryGroupType)obj).getGroupPath(),user.getOrganizationId());
+				BaseGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, ((NameIdDirectoryGroupType)obj).getGroupPath(),user.getOrganizationId());
 				if(group != null){
-					Factories.getGroupFactory().denormalize(group);
+					((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(group);
 					((NameIdDirectoryGroupType)obj).setGroupPath(group.getPath());
 				}
 			}
@@ -212,29 +230,29 @@ public class BaseService{
 	///
 	private static <T> boolean sanitizeAddNewObject(AuditEnumType type, UserType user, T in_obj) throws ArgumentException, FactoryException, DataException, DataAccessException{
 		boolean out_bool = false;
-		
+		INameIdFactory iFact = Factories.getNameIdFactory(FactoryEnumType.valueOf(type.toString()));
 		switch(type){
 			case TAG:
 				BaseTagType vtbean = (BaseTagType)in_obj;
-				BaseTagType new_tag = Factories.getTagFactory().newTag(user,vtbean.getName(),vtbean.getTagType(),vtbean.getGroupId());
+				BaseTagType new_tag = ((TagFactory)iFact).newTag(user,vtbean.getName(),vtbean.getTagType(),vtbean.getGroupId());
 				/// Note: Older style TagType factory still being migrated, so specify the ownerid here in order to allow for contact information to be created
 				///
 				new_tag.setOwnerId(user.getId());
 				MapUtil.shallowCloneNameIdDirectoryType(vtbean, new_tag);
-				out_bool = Factories.getTagFactory().add(new_tag);
+				out_bool = iFact.add(new_tag);
 				break;
 			case ACCOUNT:
 				AccountType v1bean = (AccountType)in_obj;
-				AccountType new_acct = Factories.getAccountFactory().newAccount(user,v1bean.getName(),v1bean.getAccountType(), v1bean.getAccountStatus(), v1bean.getGroupId());
+				AccountType new_acct = ((AccountFactory)iFact).newAccount(user,v1bean.getName(),v1bean.getAccountType(), v1bean.getAccountStatus(), v1bean.getGroupId());
 				/// Note: Older style AccountType factory still being migrated, so specify the ownerid here in order to allow for contact information to be created
 				///
 				new_acct.setOwnerId(user.getId());
 				MapUtil.shallowCloneNameIdDirectoryType(v1bean, new_acct);
-				out_bool = Factories.getAccountFactory().add(new_acct,true);
+				out_bool = ((AccountFactory)iFact).add(new_acct,true);
 				break;
 			case CONTACT:
 				ContactType v2bean = (ContactType)in_obj;
-				ContactType new_ct = Factories.getContactFactory().newContact(user, v2bean.getGroupId());
+				ContactType new_ct = ((ContactFactory)iFact).newContact(user, v2bean.getGroupId());
 	
 				MapUtil.shallowCloneNameIdDirectoryType(v2bean, new_ct);
 				new_ct.setContactType(v2bean.getContactType());
@@ -242,22 +260,12 @@ public class BaseService{
 				new_ct.setLocationType(v2bean.getLocationType());
 				new_ct.setContactValue(v2bean.getContactValue());
 				new_ct.setPreferred(v2bean.getPreferred());
-				out_bool = Factories.getContactFactory().add(new_ct);
+				out_bool = iFact.add(new_ct);
 				break;
-				/*
-			case CONTACTINFORMATION:
-				ContactInformationType v3bean = (ContactInformationType)in_obj;
-				ContactInformationType new_cti = new ContactInformationType();
-				new_cti.setReferenceId(v3bean.getReferenceId());
-				/// MapUtil.shallowCloneNameIdDirectoryType(v3bean, new_cti);
-				new_cti.setContactInformationType(v3bean.getContactInformationType());
-				new_cti.setOwnerId(v3bean.getOwnerId());
-				out_bool = Factories.getContactInformationFactory().addContactInformation(new_cti);
-				break;
-				*/
+
 			case FACT:
 				FactType v4bean = (FactType)in_obj;
-				FactType new_fa = Factories.getFactFactory().newFact(user, v4bean.getGroupId());
+				FactType new_fa = ((FactFactory)iFact).newFact(user, v4bean.getGroupId());
 	
 				MapUtil.shallowCloneAznType(v4bean, new_fa);
 				new_fa.setFactType(v4bean.getFactType());
@@ -266,40 +274,40 @@ public class BaseService{
 				new_fa.setSourceDataType(v4bean.getSourceDataType());
 				new_fa.setSourceUrl(v4bean.getSourceUrl());
 				new_fa.setSourceUrn(v4bean.getSourceUrn());
-				out_bool = Factories.getFactFactory().add(new_fa);
+				out_bool = iFact.add(new_fa);
 				break;
 			case FUNCTION:
 				FunctionType v5bean = (FunctionType)in_obj;
-				FunctionType new_fu = Factories.getFunctionFactory().newFunction(user, v5bean.getGroupId());
+				FunctionType new_fu = ((FunctionFactory)iFact).newFunction(user, v5bean.getGroupId());
 				
 				MapUtil.shallowCloneAznType(v5bean, new_fu);
 				new_fu.setFunctionType(v5bean.getFunctionType());
 				new_fu.setFunctionData(v5bean.getFunctionData());
 				new_fu.setSourceUrl(v5bean.getSourceUrl());
 				new_fu.setSourceUrn(v5bean.getSourceUrn());
-				out_bool = Factories.getFunctionFactory().add(new_fu);
+				out_bool = iFact.add(new_fu);
 				break;
 			case FUNCTIONFACT:
 				FunctionFactType v6bean = (FunctionFactType)in_obj;
-				FunctionFactType new_fuf = Factories.getFunctionFactFactory().newFunctionFact(user, v6bean.getGroupId());
+				FunctionFactType new_fuf = ((FunctionFactFactory)iFact).newFunctionFact(user, v6bean.getGroupId());
 	
 				MapUtil.shallowCloneAznType(v6bean, new_fuf);
 				new_fuf.setFactUrn(v6bean.getFactUrn());
 				new_fuf.setFunctionUrn(v6bean.getFunctionUrn());
-				out_bool = Factories.getFunctionFactFactory().add(new_fuf);
+				out_bool = Factories.getNameIdFactory(FactoryEnumType.valueOf(type.toString())).add(new_fuf);
 				break;
 			case OPERATION:
 				OperationType v7bean = (OperationType)in_obj;
-				OperationType new_op = Factories.getOperationFactory().newOperation(user, v7bean.getGroupId());
+				OperationType new_op = ((OperationFactory)iFact).newOperation(user, v7bean.getGroupId());
 	
 				MapUtil.shallowCloneAznType(v7bean, new_op);
 				new_op.setOperationType(v7bean.getOperationType());
 				new_op.setOperation(v7bean.getOperation());
-				out_bool = Factories.getOperationFactory().add(new_op);
+				out_bool = iFact.add(new_op);
 				break;
 			case PATTERN:
 				PatternType v8bean = (PatternType)in_obj;
-				PatternType new_pa = Factories.getPatternFactory().newPattern(user, v8bean.getGroupId());
+				PatternType new_pa = ((PatternFactory)iFact).newPattern(user, v8bean.getGroupId());
 	
 				MapUtil.shallowCloneAznType(v8bean, new_pa);
 				new_pa.setPatternType(v8bean.getPatternType());
@@ -307,11 +315,11 @@ public class BaseService{
 				new_pa.setFactUrn(v8bean.getFactUrn());
 				new_pa.setMatchUrn(v8bean.getMatchUrn());
 				new_pa.setOperationUrn(v8bean.getOperationUrn());
-				out_bool = Factories.getPatternFactory().add(new_pa);
+				out_bool = iFact.add(new_pa);
 				break;
 			case POLICY:
 				PolicyType v9bean = (PolicyType)in_obj;
-				PolicyType new_po = Factories.getPolicyFactory().newPolicy(user, v9bean.getGroupId());
+				PolicyType new_po = ((PolicyFactory)iFact).newPolicy(user, v9bean.getGroupId());
 	
 				MapUtil.shallowCloneAznType(v9bean, new_po);
 				new_po.setDecisionAge(v9bean.getDecisionAge());
@@ -320,25 +328,22 @@ public class BaseService{
 				new_po.getRules().addAll(v9bean.getRules());
 				new_po.setCondition(v9bean.getCondition());
 				
-				//new_po.setCreated(v9bean.getCreated());
-				//new_po.setModified(v9bean.getModified());
-				//logger.info("PD: " + new_po.getCreatedDate() + " / " + new_po.getModifiedDate() + " / " + new_po.getExpiresDate());
-				out_bool = Factories.getPolicyFactory().add(new_po);
+				out_bool = iFact.add(new_po);
 				break;
 			case RULE:
 				RuleType v10bean = (RuleType)in_obj;
-				RuleType new_ru = Factories.getRuleFactory().newRule(user, v10bean.getGroupId());
+				RuleType new_ru = ((RuleFactory)iFact).newRule(user, v10bean.getGroupId());
 	
 				MapUtil.shallowCloneAznType(v10bean, new_ru);
 				new_ru.setRuleType(v10bean.getRuleType());
 				new_ru.setCondition(v10bean.getCondition());
 				new_ru.getRules().addAll(v10bean.getRules());
 				new_ru.getPatterns().addAll(v10bean.getPatterns());
-				out_bool = Factories.getRuleFactory().add(new_ru);
+				out_bool = iFact.add(new_ru);
 				break;
 			case PERSON:
 				PersonType v11bean = (PersonType)in_obj;
-				PersonType new_per = Factories.getPersonFactory().newPerson(user, v11bean.getGroupId());
+				PersonType new_per = ((PersonFactory)iFact).newPerson(user, v11bean.getGroupId());
 	
 				MapUtil.shallowCloneNameIdDirectoryType(v11bean, new_per);
 				new_per.setAlias(v11bean.getAlias());
@@ -358,11 +363,11 @@ public class BaseService{
 				new_per.getDependents().addAll(v11bean.getDependents());
 				new_per.getPartners().addAll(v11bean.getPartners());
 				new_per.getUsers().addAll(v11bean.getUsers());
-				out_bool = Factories.getPersonFactory().add(new_per);
+				out_bool = iFact.add(new_per);
 				break;
 			case ADDRESS:
 				AddressType v12bean = (AddressType)in_obj;
-				AddressType new_addr = Factories.getAddressFactory().newAddress(user, v12bean.getGroupId());
+				AddressType new_addr = ((AddressFactory)iFact).newAddress(user, v12bean.getGroupId());
 				MapUtil.shallowCloneNameIdDirectoryType(v12bean, new_addr);
 				new_addr.setAddressLine1(v12bean.getAddressLine1());
 				new_addr.setAddressLine2(v12bean.getAddressLine2());
@@ -374,49 +379,48 @@ public class BaseService{
 				new_addr.setPreferred(v12bean.getPreferred());
 				new_addr.setRegion(v12bean.getRegion());
 				new_addr.setState(v12bean.getState());
-				out_bool = Factories.getAddressFactory().add(new_addr);
+				out_bool = iFact.add(new_addr);
 				break;
 			case ROLE:
 				BaseRoleType rlbean = (BaseRoleType)in_obj;
 				BaseRoleType parentRole = null;
 				if(rlbean.getParentId() > 0L){
-					parentRole = Factories.getRoleFactory().getById(rlbean.getParentId(), rlbean.getOrganizationId());
+					parentRole = iFact.getById(rlbean.getParentId(), rlbean.getOrganizationId());
 					if(parentRole == null) throw new ArgumentException("Role parent #" + rlbean.getParentId() + " is invalid");
 				}
-				BaseRoleType new_role = Factories.getRoleFactory().newRoleType(rlbean.getRoleType(),user, rlbean.getName(), parentRole);
-				out_bool = Factories.getRoleFactory().add(new_role);
+				BaseRoleType new_role = ((RoleFactory)iFact).newRoleType(rlbean.getRoleType(),user, rlbean.getName(), parentRole);
+				out_bool = iFact.add(new_role);
 				break;
 				
 			case PERMISSION:
 				BasePermissionType perbean = (BasePermissionType)in_obj;
 				BasePermissionType parentPermission = null;
 				if(perbean.getParentId() > 0L){
-					parentPermission = Factories.getPermissionFactory().getById(perbean.getParentId(), perbean.getOrganizationId());
+					parentPermission = iFact.getById(perbean.getParentId(), perbean.getOrganizationId());
 					if(parentPermission == null) throw new ArgumentException("Permission parent #" + perbean.getParentId() + " is invalid");
 				}
-				BasePermissionType new_per2 = Factories.getPermissionFactory().newPermission(user, perbean.getName(), perbean.getPermissionType(), parentPermission, perbean.getOrganizationId());
-				out_bool = Factories.getPermissionFactory().add(new_per2);
+				BasePermissionType new_per2 = ((PermissionFactory)iFact).newPermission(user, perbean.getName(), perbean.getPermissionType(), parentPermission, perbean.getOrganizationId());
+				out_bool = iFact.add(new_per2);
 				break;
 				
 			case GROUP:
 				BaseGroupType gbean = (BaseGroupType)in_obj;
 				BaseGroupType parentGroup = null;
 				if(gbean.getParentId() > 0L){
-					parentGroup = Factories.getGroupFactory().getById(gbean.getParentId(), gbean.getOrganizationId());
+					parentGroup = iFact.getById(gbean.getParentId(), gbean.getOrganizationId());
 				}
-				BaseGroupType new_group = Factories.getGroupFactory().newGroup(user, gbean.getName(), gbean.getGroupType(), parentGroup, gbean.getOrganizationId());
-				out_bool = Factories.getGroupFactory().add(new_group);
+				BaseGroupType new_group = ((GroupFactory)iFact).newGroup(user, gbean.getName(), gbean.getGroupType(), parentGroup, gbean.getOrganizationId());
+				out_bool = iFact.add(new_group);
 				break;
 				
 			case USER:
 				UserType ubean = (UserType)in_obj;
-				UserType new_user = Factories.getUserFactory().newUser(ubean.getName(), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, ubean.getOrganizationId());
-				//new_user.setContactInformation(ubean.getContactInformation());
-				out_bool = Factories.getUserFactory().add(new_user,true);
+				UserType new_user = ((UserFactory)iFact).newUser(ubean.getName(), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, ubean.getOrganizationId());
+				out_bool = ((UserFactory)iFact).add(new_user,true);
 				break;
 			case DATA:
 				DataType rbean = (DataType)in_obj;
-				DataType new_rec = Factories.getDataFactory().newData(user, rbean.getGroupId());
+				DataType new_rec = ((DataFactory)iFact).newData(user, rbean.getGroupId());
 				MapUtil.shallowCloneNameIdDirectoryType(rbean, new_rec);
 				new_rec.setDescription(rbean.getDescription());
 				new_rec.setDimensions(rbean.getDimensions());
@@ -429,7 +433,7 @@ public class BaseService{
 					logger.error("Creating data pointers from the web FE is forbidden regardless of configuration");
 					return false;
 				}
-				out_bool = Factories.getDataFactory().add(new_rec);
+				out_bool = iFact.add(new_rec);
 				break;				
 		}
 		return out_bool;
@@ -438,69 +442,7 @@ public class BaseService{
 		boolean out_bool = false;
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 		out_bool = iFact.update(in_obj);
-		/*
-		switch(type){
-			case ACCOUNT:
-				out_bool = Factories.getAccountFactory().updateAccount((AccountType)in_obj);
-				break;
-			case TAG:
-				out_bool = Factories.getTagFactory().updateTag((BaseTagType)in_obj);
-				break;
-
-			case PERSON:
-				out_bool = Factories.getPersonFactory().updatePerson((PersonType)in_obj);
-				break;
-			case ADDRESS:
-				out_bool = Factories.getAddressFactory().updateAddress((AddressType)in_obj);
-				break;
-
-			case CONTACT:
-				out_bool = Factories.getContactFactory().updateContact((ContactType)in_obj);
-				break;
-			case PERMISSION:
-				out_bool = Factories.getPermissionFactory().updatePermission((BasePermissionType)in_obj);
-				break;
-			/ *
-			case CONTACTINFORMATION:
-				out_bool = Factories.getContactInformationFactory().updateContactInformation((ContactInformationType)in_obj);
-				break;
-			* /
-			case FACT:
-				out_bool = Factories.getFactFactory().updateFact((FactType)in_obj);
-				break;
-			case FUNCTION:
-				out_bool = Factories.getFunctionFactory().updateFunction((FunctionType)in_obj);
-				break;
-			case FUNCTIONFACT:
-				out_bool = Factories.getFunctionFactFactory().updateFunctionFact((FunctionFactType)in_obj);
-				break;
-			case OPERATION:
-				out_bool = Factories.getOperationFactory().updateOperation((OperationType)in_obj);
-				break;
-			case PATTERN:
-				out_bool = Factories.getPatternFactory().updatePattern((PatternType)in_obj);
-				break;
-			case POLICY:
-				out_bool = Factories.getPolicyFactory().updatePolicy((PolicyType)in_obj);
-				break;
-			case RULE:
-				out_bool = Factories.getRuleFactory().updateRule((RuleType)in_obj);
-				break;
-			case ROLE:
-				out_bool = Factories.getRoleFactory().updateRole((BaseRoleType)in_obj);
-				break;
-			case USER:
-				UserType tuser = (UserType)in_obj;
-				out_bool = Factories.getUserFactory().updateUser((UserType)in_obj);
-				break;
-			case DATA:
-				out_bool = Factories.getDataFactory().updateData((DataType)in_obj);
-				break;
-			case GROUP:
-				out_bool = Factories.getGroupFactory().updateGroup((BaseGroupType)in_obj);
-				break;
-		}
-		*/
+		
 		if(out_bool && enableExtendedAttributes){
 			out_bool = Factories.getAttributeFactory().updateAttributes((NameIdType)in_obj);
 		}
@@ -517,143 +459,17 @@ public class BaseService{
 		}
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 		if(type.equals(AuditEnumType.GROUP) && ((BaseGroupType)in_obj).getGroupType().equals(GroupEnumType.DATA)){
-			out_bool = Factories.getGroupFactory().deleteDirectoryGroup((DirectoryGroupType)in_obj);
+			out_bool = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteDirectoryGroup((DirectoryGroupType)in_obj);
 		}
 		else{
 			out_bool = iFact.delete(in_obj);
 		}
-		/*
-		switch(type){
-			case ACCOUNT:
-				out_bool = Factories.getAccountFactory().deleteAccount((AccountType)in_obj);
-				break;
-			case TAG:
-				out_bool = Factories.getTagFactory().deleteTag((BaseTagType)in_obj);
-				break;
-
-			case PERSON:
-				out_bool = Factories.getPersonFactory().deletePerson((PersonType)in_obj);
-				break;
-			case ADDRESS:
-				out_bool = Factories.getAddressFactory().deleteAddress((AddressType)in_obj);
-				break;
-			case CONTACT:
-				out_bool = Factories.getContactFactory().deleteContact((ContactType)in_obj);
-				break;
-			/ *
-			case CONTACTINFORMATION:
-				out_bool = Factories.getContactInformationFactory().deleteContactInformation((ContactInformationType)in_obj);
-				break;
-			* /
-			case FACT:
-				out_bool = Factories.getFactFactory().deleteFact((FactType)in_obj);
-				break;
-			case FUNCTION:
-				out_bool = Factories.getFunctionFactory().deleteFunction((FunctionType)in_obj);
-				break;
-			case FUNCTIONFACT:
-				out_bool = Factories.getFunctionFactFactory().deleteFunctionFact((FunctionFactType)in_obj);
-				break;
-			case OPERATION:
-				out_bool = Factories.getOperationFactory().deleteOperation((OperationType)in_obj);
-				break;
-			case PATTERN:
-				out_bool = Factories.getPatternFactory().deletePattern((PatternType)in_obj);
-				break;
-			case POLICY:
-				out_bool = Factories.getPolicyFactory().deletePolicy((PolicyType)in_obj);
-				break;
-			case RULE:
-				out_bool = Factories.getRuleFactory().deleteRule((RuleType)in_obj);
-				break;
-			case ROLE:
-				out_bool = Factories.getRoleFactory().deleteRole((BaseRoleType)in_obj);
-				break;
-			case PERMISSION:
-				out_bool = Factories.getPermissionFactory().deletePermission((BasePermissionType)in_obj);
-				break;
-			case USER:
-				out_bool = Factories.getUserFactory().deleteUser((UserType)in_obj);
-				break;
-			case DATA:
-				out_bool = Factories.getDataFactory().deleteData((DataType)in_obj);
-				break;
-			case GROUP:
-				BaseGroupType gobj = (BaseGroupType)in_obj;
-				if(gobj.getGroupType() == GroupEnumType.DATA) out_bool = Factories.getGroupFactory().deleteDirectoryGroup((DirectoryGroupType)in_obj);
-				else Factories.getGroupFactory().deleteGroup(gobj);
-				break;
-
-		}
-		*/
+	
 		return out_bool;
 	}
 	public static <T> T getFactory(AuditEnumType type){
 		return Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
-		/*
-		T out_obj = null;
-		switch(type){
-			case PERMISSION:
-				out_obj = (T)Factories.getPermissionFactory();
-				break;
-			case TAG:
-				out_obj = (T)Factories.getTagFactory();
-				break;
-
-			case ACCOUNT:
-				out_obj = (T)Factories.getAccountFactory();
-				break;
-			case PERSON:
-				out_obj = (T)Factories.getPersonFactory();
-				break;
-			case ADDRESS:
-				out_obj = (T)Factories.getAddressFactory();
-				break;
-			case CONTACT:
-				out_obj = (T)Factories.getContactFactory();
-				break;
-				/ *
-			case CONTACTINFORMATION:
-				out_obj = (T)Factories.getContactInformationFactory();
-				break;
-				* /
-			case FACT:
-				out_obj = (T)Factories.getFactFactory();
-				break;
-			case FUNCTION:
-				out_obj = (T)Factories.getFunctionFactory();
-				break;
-			case FUNCTIONFACT:
-				out_obj = (T)Factories.getFunctionFactFactory();
-				break;
-			case OPERATION:
-				out_obj = (T)Factories.getOperationFactory();
-				break;
-			case PATTERN:
-				out_obj = (T)Factories.getPatternFactory();
-				break;
-			case POLICY:
-				out_obj = (T)Factories.getPolicyFactory();
-				break;
-			case RULE:
-				out_obj = (T)Factories.getRuleFactory();
-				break;
-			case ROLE:
-				out_obj = (T)Factories.getRoleFactory();
-				break;
-			case USER:
-				out_obj = (T)Factories.getUserFactory();
-				break;
-			case DATA:
-				out_obj = (T)Factories.getDataFactory();
-				break;
-			case GROUP:
-				out_obj = (T)Factories.getGroupFactory();
-				break;
-			
-		}
-		return out_obj;
-		*/
+		
 	}
 	private static <T> T getByObjectId(AuditEnumType type, String id, long organizationId) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
@@ -689,7 +505,7 @@ public class BaseService{
 						obj = (T)d;
 					} catch (DataException e) {
 						
-						logger.error(e.getStackTrace());
+						logger.error("Error",e);
 					}
 					
 				}
@@ -711,15 +527,15 @@ public class BaseService{
 		switch(type){
 			case GROUP:
 				GroupEnumType grpType = GroupEnumType.fromValue(otype);
-				out_obj = (T)Factories.getGroupFactory().getGroupByName(name, grpType, (BaseGroupType)parent, parent.getOrganizationId());
+				out_obj = (T)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupByName(name, grpType, (BaseGroupType)parent, parent.getOrganizationId());
 				break;
 			case ROLE:
 				RoleEnumType rolType = RoleEnumType.fromValue(otype);
-				out_obj = (T)Factories.getRoleFactory().getRoleByName(name, (BaseRoleType)parent, rolType, parent.getOrganizationId());
+				out_obj = (T)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(name, (BaseRoleType)parent, rolType, parent.getOrganizationId());
 				break;
 			case PERMISSION:
 				PermissionEnumType perType = PermissionEnumType.fromValue(otype);
-				out_obj = (T)Factories.getPermissionFactory().getPermissionByName(name, perType, (BasePermissionType)parent, parent.getOrganizationId());
+				out_obj = (T)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName(name, perType, (BasePermissionType)parent, parent.getOrganizationId());
 				break;
 
 		}
@@ -754,7 +570,7 @@ public class BaseService{
 				out_obj = ((NameIdGroupFactory)getFactory(type)).getByNameInGroup(name, group);;
 				break;
 			case DATA:
-				out_obj = (T)Factories.getDataFactory().getDataByName(name, group);
+				out_obj = (T)((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, group);
 				if(out_obj == null){
 					logger.error("Data '" + name + "' is null");
 					return out_obj;
@@ -771,7 +587,7 @@ public class BaseService{
 						out_obj = (T)d;
 					} catch (DataException e) {
 						
-						logger.error(e.getStackTrace());
+						logger.error("Error",e);
 					}
 					
 				}
@@ -791,10 +607,10 @@ public class BaseService{
 		T out_obj = null;
 		switch(type){
 			case ROLE:
-				out_obj = (T)Factories.getRoleFactory().getRoleByName(name, organizationId);
+				out_obj = (T)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(name, organizationId);
 				break;
 			case USER:
-				out_obj = (T)Factories.getUserFactory().getByName(name, organizationId);
+				out_obj = (T)Factories.getNameIdFactory(FactoryEnumType.USER).getByName(name, organizationId);
 				break;
 		}
 		if(out_obj != null){
@@ -814,11 +630,11 @@ public class BaseService{
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	
 	}
@@ -838,7 +654,7 @@ public class BaseService{
 			case PATTERN:
 			case POLICY:
 			case RULE:
-				out_bool = AuthorizationService.canView(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case ROLE:
 				out_bool = AuthorizationService.canView(user, (BaseRoleType)obj);
@@ -856,8 +672,8 @@ public class BaseService{
 				//
 				out_bool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
 				if(!out_bool)  out_bool = AuthorizationService.isMapOwner(user, obj);
-				if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
-				if(!out_bool) out_bool = RoleService.isFactoryReader(user, Factories.getAccountFactory(),obj.getOrganizationId());
+				if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
+				if(!out_bool) out_bool = RoleService.isFactoryReader(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 				break;
 			case GROUP:
 				out_bool = AuthorizationService.canView(user, (BaseGroupType)obj);
@@ -880,36 +696,36 @@ public class BaseService{
 			case PATTERN:
 			case POLICY:
 			case RULE:
-				out_bool = AuthorizationService.canChange(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case PERMISSION:
 				if(obj.getParentId() > 0L){
-					BasePermissionType parent = Factories.getPermissionFactory().getById(obj.getParentId(),obj.getOrganizationId());
+					BasePermissionType parent = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getById(obj.getParentId(),obj.getOrganizationId());
 					out_bool = AuthorizationService.canChange(user, parent);
 				}
 				if(!out_bool){
-					out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
+					out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 				}
 				break;
 			case ROLE:
 
 				if(obj.getParentId() > 0L){
-					BaseRoleType parent = Factories.getRoleFactory().getById(obj.getParentId(),obj.getOrganizationId());
+					BaseRoleType parent = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getById(obj.getParentId(),obj.getOrganizationId());
 					out_bool = AuthorizationService.canChange(user, parent);
 				}
 				if(!out_bool){
-					out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
+					out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 				}
 				break;
 			case DATA:
-				out_bool = AuthorizationService.canChange(user, Factories.getGroupFactory().getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case USER:
-				out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
+				out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 				break;
 			case GROUP:
 				if(obj.getParentId() > 0L){
-					BaseGroupType parent = Factories.getGroupFactory().getById(obj.getParentId(),obj.getOrganizationId());
+					BaseGroupType parent = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(obj.getParentId(),obj.getOrganizationId());
 					out_bool = AuthorizationService.canCreate(user, parent);
 				}
 				break;
@@ -932,7 +748,7 @@ public class BaseService{
 			case PATTERN:
 			case POLICY:
 			case RULE:
-				out_bool = AuthorizationService.canChange(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case PERMISSION:
 				out_bool = AuthorizationService.canChange(user, (BasePermissionType)obj);
@@ -949,7 +765,7 @@ public class BaseService{
 				/// 2015/06/22 - Relaxing the direct data constraint for general group constraint
 				/// This is temporary to fix an issue where data can be pushed into groups a user doesn't own
 				/// 
-				out_bool = AuthorizationService.canChange(user, Factories.getGroupFactory().getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case USER:
 				// allow for user requesting self
@@ -957,12 +773,12 @@ public class BaseService{
 				//
 				out_bool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
 				if(!out_bool)  out_bool = AuthorizationService.isMapOwner(user, obj);
-				if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
+				if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 				break;
 			case GROUP:
-				BaseGroupType edir = Factories.getGroupFactory().getById(obj.getId(), user.getOrganizationId());
-				BaseGroupType opdir = Factories.getGroupFactory().getById(edir.getParentId(), user.getOrganizationId());
-				BaseGroupType pdir = Factories.getGroupFactory().getById(((BaseGroupType)obj).getParentId(), user.getOrganizationId());
+				BaseGroupType edir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(obj.getId(), user.getOrganizationId());
+				BaseGroupType opdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(edir.getParentId(), user.getOrganizationId());
+				BaseGroupType pdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(((BaseGroupType)obj).getParentId(), user.getOrganizationId());
 				if(opdir == null){
 					logger.error("Original Parent group (#" + ((BaseGroupType)obj).getParentId() + ") doesn't exist in organization " + user.getOrganizationId());
 					return false;
@@ -997,7 +813,7 @@ public class BaseService{
 			case PATTERN:
 			case POLICY:
 			case RULE:
-				out_bool = AuthorizationService.canChange(user,Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+				out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 				break;
 			case PERMISSION:
 				out_bool = AuthorizationService.canDelete(user, (BasePermissionType)obj);
@@ -1019,7 +835,7 @@ public class BaseService{
 				out_bool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
 				if(out_bool) throw new FactoryException("Self deletion not supported via Web interface");
 				if(!out_bool)  out_bool = AuthorizationService.isMapOwner(user, obj);
-				if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),obj.getOrganizationId());
+				if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 				break;				
 		}
 		return out_bool;
@@ -1081,7 +897,7 @@ public class BaseService{
 
 		try {
 			if(canChangeType(type, user, typeBean)){
-				targetRole = Factories.getRoleFactory().getById(targetRoleId, organizationId);
+				targetRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getById(targetRoleId, organizationId);
 				if(targetRole != null){
 					if(authorizeRoleType(type, user, targetRole, bucket, view, edit, delete, create)){
 						EffectiveAuthorizationService.rebuildPendingRoleCache();
@@ -1093,17 +909,9 @@ public class BaseService{
 					AuditService.denyResult(audit, "Target user #" + targetRoleId + " in organization #" + organizationId + " does not exist");
 				}
 			}
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
-			AuditService.denyResult(audit, e.getMessage());
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getStackTrace());
-			AuditService.denyResult(audit, e.getMessage());
-		} catch (DataAccessException e) {
-			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			AuditService.denyResult(audit, e.getMessage());
 		}
 		return out_bool;
@@ -1120,7 +928,7 @@ public class BaseService{
 
 		try {
 			if(canChangeType(type, user, typeBean)){
-				targetUser = Factories.getUserFactory().getById(targetUserId, organizationId);
+				targetUser = Factories.getNameIdFactory(FactoryEnumType.USER).getById(targetUserId, organizationId);
 				if(targetUser != null){
 					if(authorizeUserType(type, user, targetUser, bucket, view, edit, delete, create)){
 						EffectiveAuthorizationService.rebuildPendingRoleCache();
@@ -1134,15 +942,15 @@ public class BaseService{
 			}
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			AuditService.denyResult(audit, e.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			AuditService.denyResult(audit, e.getMessage());
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			AuditService.denyResult(audit, e.getMessage());
 		}
 		return out_bool;
@@ -1175,11 +983,11 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		}
 
@@ -1233,19 +1041,19 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			AuditService.denyResult(audit, e.getMessage());
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			AuditService.denyResult(audit, e.getMessage());
 		}
 
@@ -1293,15 +1101,15 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			AuditService.denyResult(audit, e.getMessage());
 		}
 
@@ -1339,10 +1147,10 @@ public class BaseService{
 
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;
@@ -1379,10 +1187,10 @@ public class BaseService{
 
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;
@@ -1396,16 +1204,16 @@ public class BaseService{
 		if(user==null) return null;
 
 		try{
-			dir = Factories.getGroupFactory().getCreateUserDirectory(user, getDefaultGroupName(type));
+			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, getDefaultGroupName(type));
 		}
 		 catch (FactoryException e1) {
 			 logger.error(e1.getMessage());
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		return readByName(audit,type, user, dir, name, request);
 	}
@@ -1418,16 +1226,16 @@ public class BaseService{
 		if(user==null) return null;
 
 		try{
-			dir = Factories.getGroupFactory().getById(groupId, user.getOrganizationId());
+			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(groupId, user.getOrganizationId());
 		}
 		 catch (FactoryException e1) {
 			
 			 logger.error(e1.getMessage());
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		return readByName(audit,type, user, dir, name, request);
 	}
@@ -1447,8 +1255,8 @@ public class BaseService{
 			return null;
 		}
 		try {
-			//DirectoryGroupType group = Factories.getGroupFactory().getCreateUserDirectory(user, getDefaultGroupName(type));
-			Factories.getGroupFactory().populate(dir);
+			//DirectoryGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, getDefaultGroupName(type));
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir);
 			out_obj = getByNameInGroup(type, name, dir);
 			if(out_obj == null){
 				AuditService.denyResult(audit, "'" + name + "' doesn't exist");
@@ -1470,10 +1278,10 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;
@@ -1506,10 +1314,10 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;
@@ -1539,7 +1347,7 @@ public class BaseService{
 	public static <T> T readByName(AuditType audit,AuditEnumType type, UserType user, long organizationId, String name,HttpServletRequest request){
 		T out_obj = null;
 		try {
-			//DirectoryGroupType group = Factories.getGroupFactory().getCreateUserDirectory(user, getDefaultGroupName(type));
+			//DirectoryGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, getDefaultGroupName(type));
 
 			out_obj = getByNameInGroup(type, name, organizationId);
 			if(out_obj == null){
@@ -1556,11 +1364,11 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 			out_obj = null;
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 			out_obj = null;
 		} 
 
@@ -1586,17 +1394,17 @@ public class BaseService{
 		if(user==null) return 0;
 
 		try{
-			dir = (BaseGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.UNKNOWN,path, user.getOrganizationId());
-			//dir = Factories.getGroupFactory().getById(groupId, user.getOrganizationId());
+			dir = (BaseGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.UNKNOWN,path, user.getOrganizationId());
+			//dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(groupId, user.getOrganizationId());
 		}
 		 catch (FactoryException e1) {
 			
 			 logger.error(e1.getMessage());
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		if(dir == null){
 			AuditService.denyResult(audit, "Path '" + path + "' does not exist");
@@ -1616,10 +1424,10 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_count;
@@ -1651,15 +1459,15 @@ public class BaseService{
 		int out_count = 0;
 		try {
 			if(
-					RoleService.isFactoryAdministrator(user, Factories.getDataFactory(),organizationId)
+					RoleService.isFactoryAdministrator(user, ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)),organizationId)
 				||
-				RoleService.isFactoryAdministrator(user, Factories.getAccountFactory(),organizationId)
+				RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),organizationId)
 				||
-				((type == AuditEnumType.USER || type == AuditEnumType.ACCOUNT) &&  RoleService.isFactoryReader(user, Factories.getAccountFactory(),organizationId))
+				((type == AuditEnumType.USER || type == AuditEnumType.ACCOUNT) &&  RoleService.isFactoryReader(user, Factories.getFactory(FactoryEnumType.ACCOUNT),organizationId))
 				||
-				(type == AuditEnumType.ROLE && RoleService.isFactoryReader(user, Factories.getRoleFactory(),organizationId))
+				(type == AuditEnumType.ROLE && RoleService.isFactoryReader(user, ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)),organizationId))
 				||
-				(type == AuditEnumType.GROUP && RoleService.isFactoryReader(user, Factories.getGroupFactory(),organizationId))
+				(type == AuditEnumType.GROUP && RoleService.isFactoryReader(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)),organizationId))
 				
 			){
 				out_count = count(type, organizationId);
@@ -1670,10 +1478,10 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_count;
@@ -1690,10 +1498,10 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_count;
@@ -1703,7 +1511,7 @@ public class BaseService{
 	public static int count(AuditType audit,AuditEnumType type, UserType user, long organizationId, HttpServletRequest request){
 		int out_count = 0;
 		try {
-			OrganizationType org = Factories.getOrganizationFactory().getOrganizationById(organizationId);
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(organizationId);
 			if(canViewType(type,user, org) == true){
 				out_count = count(type, organizationId);
 				AuditService.permitResult(audit, "Count " + out_count + " of " + type.toString());
@@ -1713,10 +1521,10 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_count;
@@ -1760,7 +1568,7 @@ public class BaseService{
 			if(
 				AuthorizationService.canView(user, parentObj)
 				||
-				RoleService.isFactoryReader(user,Factories.getGroupFactory(),parentObj.getOrganizationId())
+				RoleService.isFactoryReader(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)),parentObj.getOrganizationId())
 			){
 				AuditService.permitResult(audit, "Access authorized to list objects");
 				out_obj = getListByParent(type,parentType,parentObj,startRecord,recordCount,parentObj.getOrganizationId() );
@@ -1771,10 +1579,10 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;
@@ -1788,15 +1596,15 @@ public class BaseService{
 		try {
 			switch(type){
 				case GROUP:
-					dirs = Factories.getGroupFactory().getListByParent(GroupEnumType.valueOf(parentType), (BaseGroupType)parentObj,  startIndex, recordCount, parentObj.getOrganizationId());
+					dirs = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getListByParent(GroupEnumType.valueOf(parentType), (BaseGroupType)parentObj,  startIndex, recordCount, parentObj.getOrganizationId());
 					break;
 				case ROLE:
-					dirs = Factories.getRoleFactory().getRoleList(RoleEnumType.valueOf(parentType), (BaseRoleType)parentObj,  startIndex, recordCount, parentObj.getOrganizationId());
+					dirs = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleList(RoleEnumType.valueOf(parentType), (BaseRoleType)parentObj,  startIndex, recordCount, parentObj.getOrganizationId());
 					break;
 				case PERMISSION:
 					/// TODO: Inconsistent method calls
 					///
-					dirs = Factories.getPermissionFactory().getPermissionList((BasePermissionType)parentObj, PermissionEnumType.valueOf(parentType),  startIndex, recordCount, parentObj.getOrganizationId());
+					dirs = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionList((BasePermissionType)parentObj, PermissionEnumType.valueOf(parentType),  startIndex, recordCount, parentObj.getOrganizationId());
 					break;
 			}
 			for(int i = 0; i < dirs.size(); i++){
@@ -1808,11 +1616,11 @@ public class BaseService{
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 
@@ -1834,7 +1642,7 @@ public class BaseService{
 			/*
 			
 			if(ngt.getGroupId().getPopulated() == false || ngt.getGroupPath() == null){
-				Factories.getGroupFactory().populate(ngt.getGroupId());
+				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(ngt.getGroupId());
 			}
 			*/
 		}
@@ -1884,7 +1692,7 @@ public class BaseService{
 		}
 		
 		try {
-			BaseGroupType dir = (BaseGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.UNKNOWN, path, user.getOrganizationId());
+			BaseGroupType dir = (BaseGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.UNKNOWN, path, user.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Invalid path: '" + path + "'");
 				return out_obj;
@@ -1898,7 +1706,7 @@ public class BaseService{
 					delink(type,out_obj.get(i));
 				}
 				*/
-				//out_Lifecycles = Factories.getLifecycleFactory().getListByGroup(dir, 0, 0, user.getOrganizationId());
+				//out_Lifecycles = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getListByGroup(dir, 0, 0, user.getOrganizationId());
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
@@ -1906,10 +1714,10 @@ public class BaseService{
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;
@@ -1927,7 +1735,7 @@ public class BaseService{
 		if(path.startsWith("~") == false && path.startsWith("/") == false) path = "/" + path;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,user.getName());
 		try {
-			BaseGroupType dir = Factories.getGroupFactory().findGroup(user, groupType, path, user.getOrganizationId());
+			BaseGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, groupType, path, user.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Invalid path: " + groupType.toString() + " " + path);
 				return bean;
@@ -1936,7 +1744,7 @@ public class BaseService{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
 				return bean;
 			}
-			Factories.getGroupFactory().populate(dir);	
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir);	
 			denormalize(dir);
 			bean = (T)dir;
 
@@ -1947,10 +1755,10 @@ public class BaseService{
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return bean;
 	}

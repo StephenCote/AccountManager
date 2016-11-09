@@ -27,12 +27,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 
 public class RuleUtil {
 	private static final Pattern intPattern = Pattern.compile("^\\d+$");
-	public static final Logger logger = Logger.getLogger(RuleUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(RuleUtil.class);
 	private static final Map<String,Pattern> patterns = new HashMap<String,Pattern>();
 	private static Pattern getPattern(String pattern){
 		if(patterns.containsKey(pattern)) return patterns.get(pattern);

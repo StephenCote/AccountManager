@@ -31,6 +31,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class CredentialFactory extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.CREDENTIAL, CredentialFactory.class); }
 	public CredentialFactory(){
 		super();
 		this.hasOwnerId = true;
@@ -50,7 +51,7 @@ public class CredentialFactory extends NameIdFactory {
 			dtFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	

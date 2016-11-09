@@ -2,7 +2,11 @@ package org.cote.accountmanager.data;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.objects.AccountRoleType;
@@ -11,32 +15,33 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.junit.Test;
 
 public class TestBulkAccount extends BaseDataAccessTest{
-	public static final Logger logger = Logger.getLogger(TestBulkAccount.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestBulkAccount.class);
 	
 	private AccountType getAccount(UserType owner, String name){
 		
 		DirectoryGroupType rootDir = null;
 		AccountType qaAccount = null;
 		try{
-			rootDir = Factories.getGroupFactory().getRootDirectory(owner.getOrganizationId());
-			qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
+			rootDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(owner.getOrganizationId());
+			qaAccount = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName(name, rootDir);
 	
 			if(qaAccount == null){
-				qaAccount = Factories.getAccountFactory().newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir.getId());
-				Factories.getAccountFactory().add(qaAccount);
-				qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
+				qaAccount = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir.getId());
+				((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).add(qaAccount);
+				qaAccount = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName(name, rootDir);
 			}
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return qaAccount;
 	}
@@ -61,13 +66,13 @@ public class TestBulkAccount extends BaseDataAccessTest{
 		try{
 			
 			String qaDirName = "QA Dir - Static";// + UUID.randomUUID().toString();
-			dir = Factories.getGroupFactory().getCreateDirectory(testUser, qaDirName, testUser.getHomeDirectory(), Factories.getDevelopmentOrganization().getId());
-			art = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Roles", null);
-			readerRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Reader Role", art);
-			writerRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Writer Role", readerRole);
-			deleterRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Deleter Role", writerRole);
-			adminRole = Factories.getRoleFactory().getCreateAccountRole(testUser, "QA Admin Role", deleterRole);
-			UserType adminUser = Factories.getUserFactory().getByName("Admin", Factories.getDevelopmentOrganization().getId());
+			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, qaDirName, testUser.getHomeDirectory(), Factories.getDevelopmentOrganization().getId());
+			art = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateAccountRole(testUser, "QA Roles", null);
+			readerRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateAccountRole(testUser, "QA Reader Role", art);
+			writerRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateAccountRole(testUser, "QA Writer Role", readerRole);
+			deleterRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateAccountRole(testUser, "QA Deleter Role", writerRole);
+			adminRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateAccountRole(testUser, "QA Admin Role", deleterRole);
+			UserType adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", Factories.getDevelopmentOrganization().getId());
 			
 			/// Put qaAccount1 in readerRole Role
 			AuthorizationService.authorizeType(adminUser, qaAccount1, readerRole, true, false, false, false);
@@ -140,15 +145,15 @@ public class TestBulkAccount extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertNotNull("QA Account is null",qaAccount1);
 		assertNotNull("QA Dir si null",dir);
@@ -164,18 +169,18 @@ public class TestBulkAccount extends BaseDataAccessTest{
 		try{
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			String guid = UUID.randomUUID().toString();
-			AccountType new_account = Factories.getAccountFactory().newAccount("BulkAccount-" + guid, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
+			AccountType new_account = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount("BulkAccount-" + guid, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ACCOUNT, new_account);
 			
-			new_account = Factories.getAccountFactory().newAccount("Bulk Child 1", new_account,AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
+			new_account = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount("Bulk Child 1", new_account,AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, Factories.getDevelopmentOrganization());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ACCOUNT, new_account);
 			
 			logger.info("Retrieving Bulk User");
-			AccountType check = Factories.getAccountFactory().getAccountByName("BulkAccount-" + guid, new_account.getOrganization());
+			AccountType check = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName("BulkAccount-" + guid, new_account.getOrganization());
 			assertNotNull("Failed user cache check",check);
 			
 			logger.info("Retrieving User By Id");
-			check = Factories.getAccountFactory().getById(new_account.getId(), new_account.getOrganization());
+			check = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getById(new_account.getId(), new_account.getOrganization());
 			assertNotNull("Failed id cache check",check);
 			
 			BulkFactories.getBulkFactory().write(sessionId);
@@ -184,15 +189,15 @@ public class TestBulkAccount extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}  catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Success bit is false",success);
 	}

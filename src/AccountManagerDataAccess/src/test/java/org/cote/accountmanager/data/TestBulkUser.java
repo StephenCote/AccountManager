@@ -6,7 +6,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.CredentialEnumType;
@@ -17,7 +19,7 @@ import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.junit.Test;
 
 public class TestBulkUser extends BaseDataAccessTest{
-	public static final Logger logger = Logger.getLogger(TestBulkUser.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestBulkUser.class);
 	
 	@Test
 	public void TestBulkUser(){
@@ -26,18 +28,18 @@ public class TestBulkUser extends BaseDataAccessTest{
 		try{
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			
-			UserType new_user = Factories.getUserFactory().newUser("BulkUser-" + guid, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
+			UserType new_user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser("BulkUser-" + guid, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, new_user);
 			//SecurityType asymKey = KeyService.newPersonalAsymmetricKey(sessionId,null,new_user,false);
 			//SecurityType symKey = KeyService.newPersonalSymmetricKey(sessionId,null,new_user,false);
 			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,new_user, new_user, "password1".getBytes("UTF-8"), true, true,false);
 
 			logger.info("Retrieving Bulk User");
-			UserType check = Factories.getUserFactory().getByName("BulkUser-" + guid, new_user.getOrganizationId());
+			UserType check = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("BulkUser-" + guid, new_user.getOrganizationId());
 			assertNotNull("Failed user cache check",check);
 			
 			logger.info("Retrieving User By Id");
-			check = Factories.getUserFactory().getById(new_user.getId(), new_user.getOrganizationId());
+			check = Factories.getNameIdFactory(FactoryEnumType.USER).getById(new_user.getId(), new_user.getOrganizationId());
 			assertNotNull("Failed id cache check",check);
 			
 			BulkFactories.getBulkFactory().write(sessionId);
@@ -46,18 +48,18 @@ public class TestBulkUser extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}  catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Success bit is false",success);
 		// Now try to authenticate as the new bulk loaded user
@@ -68,10 +70,10 @@ public class TestBulkUser extends BaseDataAccessTest{
 			 SessionSecurity.logout(chkUser);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 

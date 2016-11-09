@@ -13,8 +13,9 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.util.JAXBSource;
 import javax.xml.namespace.QName;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
 import org.junit.After;
@@ -22,15 +23,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestDataType {
-	public static final Logger logger = Logger.getLogger(TestDataType.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestDataType.class);
 	@Before
 	public void setUp() throws Exception {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
 	}
 
 	@After
@@ -85,7 +81,7 @@ public class TestDataType {
        	}
        	catch(Exception e){
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error= true;
        	}
        	assertFalse("There as an error", error);

@@ -50,6 +50,7 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class AddressFactory extends NameIdGroupFactory {
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ADDRESS, AddressFactory.class); }
 	public AddressFactory(){
 		super();
 		this.hasParentId=false;
@@ -194,7 +195,7 @@ public class AddressFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			/*
-			Factories.getContactInformationFactory().deleteContactInformationByReferenceIds(ids,organization.getId());
+			((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).deleteContactInformationByReferenceIds(ids,organization.getId());
 			Factories.getAddressParticipationFactory().deleteParticipations(ids, organizationId);
 
 			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
@@ -303,15 +304,15 @@ public class AddressFactory extends NameIdGroupFactory {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		finally{
 			
@@ -320,7 +321,7 @@ public class AddressFactory extends NameIdGroupFactory {
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		//return search(fields, instruction, organizationId);

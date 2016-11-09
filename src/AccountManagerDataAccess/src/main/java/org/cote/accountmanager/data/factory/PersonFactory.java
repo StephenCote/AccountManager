@@ -70,9 +70,10 @@ public class PersonFactory extends NameIdGroupFactory {
 		AuthorizationService.registerAuthorizationProviders(
 				FactoryEnumType.PERSON,
 				NameEnumType.PERSON,
-				Factories.getPersonParticipationFactory()
+				FactoryEnumType.PERSONPARTICIPATION
 			);	
 	}
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PERSON, PersonFactory.class); }
 	public PersonFactory(){
 		super();
 		this.hasParentId=true;
@@ -103,13 +104,14 @@ public class PersonFactory extends NameIdGroupFactory {
 	{
 		PersonType person = (PersonType)obj;
 		if(person.getPopulated() == true) return;
-		person.getPartners().addAll(Factories.getPersonParticipationFactory().getPartnersFromParticipation(person));
+		PersonParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION);
+		person.getPartners().addAll(ppFact.getPartnersFromParticipation(person));
 		//logger.info("Populated " + person.getPartners().size() + " partners");
-		person.getDependents().addAll(Factories.getPersonParticipationFactory().getDependentsFromParticipation(person));
-		person.getNotes().addAll(Factories.getPersonParticipationFactory().getDatasFromParticipation(person));
-		person.getAccounts().addAll(Factories.getPersonParticipationFactory().getAccountsFromParticipation(person));
-		person.getUsers().addAll(Factories.getPersonParticipationFactory().getUsersFromParticipation(person));
-		if(person.getContactInformation() != null) Factories.getContactInformationFactory().populate(person.getContactInformation());
+		person.getDependents().addAll(ppFact.getDependentsFromParticipation(person));
+		person.getNotes().addAll(ppFact.getDatasFromParticipation(person));
+		person.getAccounts().addAll(ppFact.getAccountsFromParticipation(person));
+		person.getUsers().addAll(ppFact.getUsersFromParticipation(person));
+		if(person.getContactInformation() != null) ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).populate(person.getContactInformation());
 		person.setPopulated(true);
 		
 		updateToCache(person);
@@ -181,17 +183,17 @@ public class PersonFactory extends NameIdGroupFactory {
 				if(bulkMode){
 					if(cobj.getContactInformation() == null){
 						//logger.info("Provisioning contact information for bulk person id " + cobj.getId());
-						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(cobj);
+						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(cobj);
 						cinfo.setOwnerId(cobj.getOwnerId());
 						cobj.setContactInformation(cinfo);
-						BulkFactories.getBulkContactInformationFactory().add(cobj.getContactInformation());
+						((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.CONTACTINFORMATION)).add(cobj.getContactInformation());
 						BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATION);
 					}
 
 				}
 				else{
 					if(cobj.getContactInformation() == null){
-						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(cobj);
+						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(cobj);
 						cinfo.setOwnerId(cobj.getOwnerId());
 						logger.debug("Adding cinfo for person in org " + cobj.getOrganizationId());
 						cobj.setContactInformation(cinfo);
@@ -201,8 +203,8 @@ public class PersonFactory extends NameIdGroupFactory {
 					/// And trying to keep the foreign key on the person means it winds up with two references: Contact Id on the Person, and Person Id on the Contact
 					/// At the moment it's being automatically added/created when the person is created
 					///
-					if(Factories.getContactInformationFactory().add(cobj.getContactInformation()) == false) throw new FactoryException("Failed to assign contact information for user #" + cobj.getId());
-					cobj.setContactInformation(Factories.getContactInformationFactory().getContactInformationForPerson(cobj));
+					if(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).add(cobj.getContactInformation()) == false) throw new FactoryException("Failed to assign contact information for user #" + cobj.getId());
+					cobj.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForPerson(cobj));
 					if(cobj.getContactInformation() == null) throw new FactoryException("Failed to retrieve contact information for user #" + cobj.getId());
 					if(update(cobj) == false) throw new FactoryException("Failed to update person cobject");
 					
@@ -212,31 +214,31 @@ public class PersonFactory extends NameIdGroupFactory {
 				}
 				
 				BaseParticipantType part = null;
-
+				PersonParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION);
 				for(int i = 0; i < obj.getPartners().size();i++){
-					part = Factories.getPersonParticipationFactory().newPartnerPersonParticipation(cobj,obj.getPartners().get(i));
-					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().add(part);
-					else Factories.getPersonParticipationFactory().add(part);
+					part = ppFact.newPartnerPersonParticipation(cobj,obj.getPartners().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
+					else ppFact.add(part);
 				}
 				for(int i = 0; i < obj.getDependents().size();i++){
-					part = Factories.getPersonParticipationFactory().newDependentPersonParticipation(cobj,obj.getDependents().get(i));
-					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().add(part);
-					else Factories.getPersonParticipationFactory().add(part);
+					part = ppFact.newDependentPersonParticipation(cobj,obj.getDependents().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
+					else ppFact.add(part);
 				}
 				for(int i = 0; i < obj.getNotes().size();i++){
-					part = Factories.getPersonParticipationFactory().newDataPersonParticipation(cobj,obj.getNotes().get(i));
-					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().add(part);
-					else Factories.getPersonParticipationFactory().add(part);
+					part = ppFact.newDataPersonParticipation(cobj,obj.getNotes().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
+					else ppFact.add(part);
 				}
 				for(int i = 0; i < obj.getAccounts().size();i++){
-					part = Factories.getPersonParticipationFactory().newAccountPersonParticipation(cobj,obj.getAccounts().get(i));
-					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().add(part);
-					else Factories.getPersonParticipationFactory().add(part);
+					part = ppFact.newAccountPersonParticipation(cobj,obj.getAccounts().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
+					else ppFact.add(part);
 				}
 				for(int i = 0; i < obj.getUsers().size();i++){
-					part = Factories.getPersonParticipationFactory().newUserPersonParticipation(cobj,obj.getUsers().get(i));
-					if(bulkMode) BulkFactories.getBulkPersonParticipationFactory().add(part);
-					else Factories.getPersonParticipationFactory().add(part);
+					part = ppFact.newUserPersonParticipation(cobj,obj.getUsers().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
+					else ppFact.add(part);
 				}
 				return true;
 			}
@@ -245,7 +247,7 @@ public class PersonFactory extends NameIdGroupFactory {
 			throw new FactoryException(dae.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		return false;
 	}
@@ -260,7 +262,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		new_obj.setNameType(NameEnumType.PERSON);
 		super.read(rset, new_obj);
 		readGroup(rset, new_obj);
-		new_obj.setContactInformation(Factories.getContactInformationFactory().getContactInformationForPerson(new_obj));
+		new_obj.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForPerson(new_obj));
 		
 		new_obj.setBirthDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("birthdate")));
 		new_obj.setDescription(rset.getString("description"));
@@ -285,106 +287,107 @@ public class PersonFactory extends NameIdGroupFactory {
 			try{
 				/// Partners
 				///
+				PersonParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION);
 				BaseParticipantType part = null;
 				List<Long> delIds = new ArrayList<Long>();
 				if(bulkMode) BulkFactories.getBulkFactory().setDirty(FactoryEnumType.PERSONPARTICIPATION);
 				Set<Long> set = new HashSet<Long>();
-				BaseParticipantType[] maps = Factories.getPersonParticipationFactory().getPartnerParticipations(data).toArray(new BaseParticipantType[0]);
+				BaseParticipantType[] maps = ppFact.getPartnerParticipations(data).toArray(new BaseParticipantType[0]);
 				//logger.info("Updating " + maps.length + " Partner References");
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getPartners().size();i++){
 					if(set.contains(data.getPartners().get(i).getId())== false){
-						part = Factories.getPersonParticipationFactory().newPartnerPersonParticipation(data,data.getPartners().get(i));
+						part = ppFact.newPartnerPersonParticipation(data,data.getPartners().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.PERSONPARTICIPATION, part);
-						else Factories.getPersonParticipationFactory().add(part);
+						else ppFact.add(part);
 					}
 					else{
 						set.remove(data.getPartners().get(i).getId());
 					}
 				}
-				//Factories.getPersonParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
+				//ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				/// Dependents
 				///
 				set = new HashSet<Long>();
-				maps = Factories.getPersonParticipationFactory().getDependentParticipations(data).toArray(new BaseParticipantType[0]);
+				maps = ppFact.getDependentParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getDependents().size();i++){
 					if(set.contains(data.getDependents().get(i).getId())== false){
-						part = Factories.getPersonParticipationFactory().newDependentPersonParticipation(data,data.getDependents().get(i));
+						part = ppFact.newDependentPersonParticipation(data,data.getDependents().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.PERSONPARTICIPATION, part);
-						else Factories.getPersonParticipationFactory().add(part);
+						else ppFact.add(part);
 					}
 					else{
 						set.remove(data.getDependents().get(i).getId());
 					}
 				}
-				//Factories.getPersonParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
+				//ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				
 				/// Datas
 				///
 				set = new HashSet<Long>();
-				maps = Factories.getPersonParticipationFactory().getDataParticipations(data).toArray(new BaseParticipantType[0]);
+				maps = ppFact.getDataParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getNotes().size();i++){
 					if(set.contains(data.getNotes().get(i).getId())== false){
-						part = Factories.getPersonParticipationFactory().newDataPersonParticipation(data,data.getNotes().get(i));
+						part = ppFact.newDataPersonParticipation(data,data.getNotes().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.PERSONPARTICIPATION, part);
-						else Factories.getPersonParticipationFactory().add(part);
+						else ppFact.add(part);
 					}
 					else{
 						set.remove(data.getNotes().get(i).getId());
 					}
 				}
-				//Factories.getPersonParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
+				//ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				
 				/// Accounts
 				///
 				set = new HashSet<Long>();
-				maps = Factories.getPersonParticipationFactory().getAccountParticipations(data).toArray(new BaseParticipantType[0]);
+				maps = ppFact.getAccountParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getAccounts().size();i++){
 					if(set.contains(data.getAccounts().get(i).getId())== false){
-						part = Factories.getPersonParticipationFactory().newAccountPersonParticipation(data,data.getAccounts().get(i));
+						part = ppFact.newAccountPersonParticipation(data,data.getAccounts().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.PERSONPARTICIPATION, part);
-						else Factories.getPersonParticipationFactory().add(part);
+						else ppFact.add(part);
 					}
 					else{
 						set.remove(data.getAccounts().get(i).getId());
 					}
 				}
-				//Factories.getPersonParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
+				//ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				
 				/// Users
 				///
 				set = new HashSet<Long>();
-				maps = Factories.getPersonParticipationFactory().getUserParticipations(data).toArray(new BaseParticipantType[0]);
+				maps = ppFact.getUserParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getUsers().size();i++){
 					if(set.contains(data.getUsers().get(i).getId())== false){
-						part = Factories.getPersonParticipationFactory().newUserPersonParticipation(data,data.getUsers().get(i));
+						part = ppFact.newUserPersonParticipation(data,data.getUsers().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.PERSONPARTICIPATION, part);
-						else Factories.getPersonParticipationFactory().add(part);
+						else ppFact.add(part);
 					}
 					else{
 						set.remove(data.getUsers().get(i).getId());
 					}
 				}
-				//Factories.getPersonParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
+				//ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-				if(delIds.size() > 0) Factories.getPersonParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), data, data.getOrganizationId());
+				if(delIds.size() > 0) ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), data, data.getOrganizationId());
 				/// 2014/09/10
 				/// Contact information is updated along with the parent object because it's a foreign-keyed object that is not otherwise easily referenced
 				///
-				out_bool = Factories.getContactInformationFactory().update(data.getContactInformation());
+				out_bool = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).update(data.getContactInformation());
 			
 			}
 			catch(ArgumentException ae){
@@ -431,8 +434,8 @@ public class PersonFactory extends NameIdGroupFactory {
 		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
-			Factories.getContactInformationFactory().deleteContactInformationByReferenceIds(ids,organizationId);
-			Factories.getPersonParticipationFactory().deleteParticipations(ids, organizationId);
+			((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).deleteContactInformationByReferenceIds(ids,organizationId);
+			Factories.getParticipationFactory(FactoryEnumType.PERSONPARTICIPATION).deleteParticipations(ids, organizationId);
 			/*
 			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
 			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
@@ -473,7 +476,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	}
 	public PersonType getPersonByUserId(long userId, long organizationId) throws FactoryException, ArgumentException{
 		PersonType person = null;
-		DirectoryGroupType dir = Factories.getGroupFactory().getPersonsDirectory(organizationId);
+		DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getPersonsDirectory(organizationId);
 		List<QueryField> fields = new ArrayList<QueryField>();
 		fields.add(QueryFields.getFieldGroup(dir.getId()));
 		fields.add(QueryFields.getFieldUserId(userId));
@@ -558,15 +561,15 @@ public class PersonFactory extends NameIdGroupFactory {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		finally{
 			
@@ -575,7 +578,7 @@ public class PersonFactory extends NameIdGroupFactory {
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		//return search(fields, instruction, organizationId);
@@ -585,17 +588,19 @@ public class PersonFactory extends NameIdGroupFactory {
 	
 	public UserType getUserPerson(PersonType person){
 		UserType user = null;
+		PersonParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION);
+		UserFactory uFact = Factories.getFactory(FactoryEnumType.USER);
 		try{
-			UserParticipantType[] parts = Factories.getPersonParticipationFactory().getUserParticipations(person).toArray(new UserParticipantType[0]);
+			UserParticipantType[] parts = ppFact.getUserParticipations(person).toArray(new UserParticipantType[0]);
 			if(parts.length > 0){
-				DirectoryGroupType pdir = Factories.getGroupFactory().getDirectoryByName("Persons",Factories.getGroupFactory().getRootDirectory(person.getOrganizationId()),person.getOrganizationId());
+				DirectoryGroupType pdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Persons",((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(person.getOrganizationId()),person.getOrganizationId());
 				if(pdir == null){
 					logger.warn("Root Persons directory not found");
 					return null;
 				}
 				QueryField field = QueryFields.getFieldParticipantIds(parts);
 				QueryField group = QueryFields.getFieldGroup(pdir.getId());
-				List<UserType> users =  Factories.getUserFactory().getUserList(new QueryField[]{ field,group }, 0, 0, person.getOrganizationId());
+				List<UserType> users =  uFact.paginateList(new QueryField[]{ field,group }, 0, 0, person.getOrganizationId());
 				if(users.size() == 1){
 					user = users.get(0);
 				}
@@ -608,11 +613,11 @@ public class PersonFactory extends NameIdGroupFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		return user;

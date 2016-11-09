@@ -4,14 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.fact.FactUtil;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.PatternType;
 
 public class RegexOperation implements IOperation {
-	public static final Logger logger = Logger.getLogger(RegexOperation.class.getName());
+	public static final Logger logger = LogManager.getLogger(RegexOperation.class);
 	Map<String,Pattern> patterns = new HashMap<String,Pattern>();
 	public <T> T read(FactType sourceFact,final FactType referenceFact){
 		return FactUtil.factoryRead(sourceFact, referenceFact);

@@ -2,13 +2,14 @@ package org.cote.accountmanager.console;
 
 import java.security.KeyStore;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.KeyStoreUtil;
 
 
 public class KeyStoreAction {
-	public static final Logger logger = Logger.getLogger(KeyStoreAction.class.getName());
+	public static final Logger logger = LogManager.getLogger(KeyStoreAction.class);
 	
 	private String binary = null;
 	private String storePath = null;

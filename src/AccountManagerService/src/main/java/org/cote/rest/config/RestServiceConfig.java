@@ -93,7 +93,7 @@ public class RestServiceConfig extends ResourceConfig{
 			}
 			catch(SQLException sqe){
 				logger.error(sqe.getMessage());
-				logger.error(sqe.getStackTrace());
+				logger.error("Error",sqe);
 			}
 			
 			logger.info("Priming Factories");
@@ -126,7 +126,7 @@ public class RestServiceConfig extends ResourceConfig{
 				roleMap = JSONUtil.getMap(StreamUtil.getStreamBytes(resourceContent), String.class, String.class);
 			} catch (IOException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			finally{
 				if(resourceContent != null)
@@ -134,7 +134,7 @@ public class RestServiceConfig extends ResourceConfig{
 						resourceContent.close();
 					} catch (IOException e) {
 						
-						logger.error(e.getStackTrace());
+						logger.error("Error",e);
 					}
 			}
 			AM5LoginModule.setRoleMap(roleMap);

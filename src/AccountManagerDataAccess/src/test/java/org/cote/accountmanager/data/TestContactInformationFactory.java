@@ -7,7 +7,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
 
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.AddressFactory;
 import org.cote.accountmanager.data.factory.ContactInformationFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
@@ -16,16 +19,16 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.junit.Test;
-
 public class TestContactInformationFactory extends BaseDataAccessTest{
-	//public static final Logger logger = Logger.getLogger(TestContactInformationFactory.class.getName());
+	//public static final Logger logger = LogManager.getLogger(TestContactInformationFactory.class);
 	private static long testRefId = 0;
 	
 	
 	
 	private UserType getUserTypeMock(){
-		OrganizationFactory of = Factories.getOrganizationFactory();
+		OrganizationFactory of = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
 		
 		UserType type = new UserType();
 		type.setId(testRefId);
@@ -39,20 +42,20 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 		AccountType acct = null;
 		String testAcctName = "Test Account 1";
 		try {
-			Factories.getUserFactory().populate(testUser);
-			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(testUser, "Accounts", testUser.getHomeDirectory(), testUser.getOrganizationId());
-			DirectoryGroupType adir = Factories.getGroupFactory().getCreateDirectory(testUser, "Addresses", testUser.getHomeDirectory(), testUser.getOrganizationId());
-			acct = Factories.getAccountFactory().getAccountByName(testAcctName, dir);
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(testUser);
+			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Accounts", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			DirectoryGroupType adir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Addresses", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			acct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName(testAcctName, dir);
 			if(acct != null){
-				Factories.getAccountFactory().delete(acct);
+				((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).delete(acct);
 				acct = null;
 			}
 			if(acct == null){
-				acct = Factories.getAccountFactory().newAccount(testUser, testAcctName, AccountEnumType.NORMAL,AccountStatusEnumType.NORMAL,dir.getId());
-				if(Factories.getAccountFactory().add(acct,true)){
+				acct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(testUser, testAcctName, AccountEnumType.NORMAL,AccountStatusEnumType.NORMAL,dir.getId());
+				if(((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).add(acct,true)){
 					logger.info("Clearing address factory cache to break the foreign key link");
-					Factories.getAccountFactory().clearCache();
-					acct = Factories.getAccountFactory().getAccountByName(testAcctName, dir);
+					((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).clearCache();
+					acct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName(testAcctName, dir);
 				}
 				else{
 					acct = null;
@@ -61,22 +64,22 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			assertNotNull("Account is null",acct);
 			logger.info("Testing account #" + acct.getId() + " in group #" + dir.getId());
 			assertNull("ContactInformation is not null",acct.getContactInformation());
-			Factories.getAccountFactory().populate(acct);
+			((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).populate(acct);
 			assertNotNull("ContactInformation is null",acct.getContactInformation());
 			
 			logger.info("Zero out cinfo references");
 			acct.getContactInformation().getAddresses().clear();
 			acct.getContactInformation().getContacts().clear();
-			Factories.getAccountFactory().update(acct);
+			((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).update(acct);
 			//Factories.clearCaches();
 			
-			AddressType addr = Factories.getAddressFactory().getByNameInGroup("Test Address 1", adir);
+			AddressType addr = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).getByNameInGroup("Test Address 1", adir);
 			if(addr == null){
-				addr = Factories.getAddressFactory().newAddress(testUser, adir.getId());
+				addr = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).newAddress(testUser, adir.getId());
 				addr.setName("Test Address 1");
-				if(Factories.getAddressFactory().add(addr)){
+				if(((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).add(addr)){
 					//Factories.clearCaches();
-					addr = Factories.getAddressFactory().getByNameInGroup("Test Address 1", adir);
+					addr = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).getByNameInGroup("Test Address 1", adir);
 				}
 				else{
 					addr = null;
@@ -85,22 +88,22 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			assertNotNull("Address is null", addr);
 			
 			acct.getContactInformation().getAddresses().add(addr);
-			Factories.getAccountFactory().update(acct);
+			((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).update(acct);
 			long acctId = acct.getId();
 			//Factories.clearCaches();
-			acct = Factories.getAccountFactory().getAccountByName(testAcctName, dir);
-			logger.info("Have Cache Id: " + Factories.getAccountFactory().haveCacheId(acctId));
+			acct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName(testAcctName, dir);
+			logger.info("Have Cache Id: " + ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).haveCacheId(acctId));
 			assertNotNull("Account is null",acct);
-			Factories.getAccountFactory().populate(acct);
+			((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).populate(acct);
 			assertTrue("Missing contact address",acct.getContactInformation().getAddresses().size() > 0);
 			
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 	}
@@ -113,7 +116,7 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 		
 		logger.info("Add w/ Ref Id: " + testRefId);
 		UserType user = getUserTypeMock();
-		ContactInformationFactory cif = Factories.getContactInformationFactory();
+		ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
 		ContactInformationType cit = cif.newContactInformation(user);
 
 		boolean add_cit = false;
@@ -122,7 +125,7 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			add_cit = cif.add(cit);
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error = true;
 			logger.error(e.getMessage());
 		}
@@ -134,19 +137,19 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 	public void testGetContactInformation(){
 		logger.info("Get w/ Ref Id: " + testRefId);
 		UserType user = getUserTypeMock();
-		ContactInformationFactory cif = Factories.getContactInformationFactory();
+		ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
 		ContactInformationType cit = null;
 		boolean error = false;
 		try {
 			cit = cif.getContactInformationForUser(user);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error = true;
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertFalse("Error occurred", error);
 		assertNotNull("Unable to get contact information", cit);
@@ -157,7 +160,7 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 	public void testUpdateContactInformation(){
 		logger.info("Update w/ Ref Id: " + testRefId);
 		UserType user = getUserTypeMock();
-		ContactInformationFactory cif = Factories.getContactInformationFactory();
+		ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
 		ContactInformationType cit = null;
 		boolean error = false;
 		boolean updated = false;
@@ -170,12 +173,12 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error = true;
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error = true;
 		}
 		assertFalse("Error occurred", error);
@@ -186,7 +189,7 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 	public void testDeleteContactInformation(){
 		logger.info("Delete w/ Ref Id: " + testRefId);
 		UserType user = getUserTypeMock();
-		ContactInformationFactory cif = Factories.getContactInformationFactory();
+		ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
 		ContactInformationType cit = null;
 		boolean error = false;
 		boolean deleted = false;
@@ -197,12 +200,12 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error = true;
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertFalse("Error occurred", error);
 		assertTrue("Unable to delete contact information", deleted);

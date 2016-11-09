@@ -45,10 +45,12 @@ import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 
 public class OrganizationFactory extends NameIdFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ORGANIZATION, OrganizationFactory.class); }
 	public OrganizationFactory(){
 		super();
 		this.scopeToOrganization = false;
@@ -210,7 +212,7 @@ public class OrganizationFactory extends NameIdFactory {
 				if(KeyService.newOrganizationAsymmetricKey(new_org.getId(), true) == null){
 					throw new FactoryException("Unable to generate organization security keys for " + new_org.getName() + "(#" + new_org.getId() + ")");
 				}
-				Factories.getGroupFactory().addDefaultGroups(new_org.getId());
+				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).addDefaultGroups(new_org.getId());
 				out_bool = true;
 			}
 		}

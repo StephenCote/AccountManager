@@ -64,9 +64,10 @@ public class GroupFactory  extends NameIdFactory {
 		AuthorizationService.registerAuthorizationProviders(
 				FactoryEnumType.GROUP,
 				NameEnumType.GROUP,
-				Factories.getGroupParticipationFactory()
+				FactoryEnumType.GROUPPARTICIPATION
 			);
 	}
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.GROUP, GroupFactory.class); }
 	public GroupFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -117,10 +118,9 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	protected void addDefaultDirectoryGroups(long organizationId) throws FactoryException, ArgumentException
 	{
+		logger.info("Adding default groups to organization " + organizationId);
 		if(organizationId == 0L) throw new FactoryException("Invalid organization");
 		DirectoryGroupType root_dir = newDirectoryGroup("Root", null, organizationId);
-		
-		//System.out.println(root_dir.getName() + ":" + root_dir.getGroupType() + ":" + root_dir.getParentId() + ":" + root_dir.getReferenceId());
 		
 		add(root_dir);
 		root_dir = getDirectoryByName("Root", organizationId);
@@ -256,7 +256,8 @@ public class GroupFactory  extends NameIdFactory {
 		//populateSubDirectories(directory);
 		DirectoryGroupType[] sub_dirs = getDirectoryGroups(directory).toArray(new DirectoryGroupType[0]);
 		for (int i = sub_dirs.length - 1; i >= 0; i--) deleteDirectoryGroup(sub_dirs[i]);
-		Factories.getDataFactory().deleteDataInGroup(directory);
+		DataFactory dFact = Factories.getFactory(FactoryEnumType.DATA);
+		dFact.deleteDataInGroup(directory);
 		return delete(directory);
 	}
 	@Override
@@ -268,7 +269,7 @@ public class GroupFactory  extends NameIdFactory {
 			sub_groups = this.getListByParent(GroupEnumType.UNKNOWN, group, 0L, 0, group.getOrganizationId());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		for(BaseGroupType sub_group : sub_groups) delete(sub_group); 
 		int deleted = deleteById(group.getId(), group.getOrganizationId());
@@ -286,7 +287,7 @@ public class GroupFactory  extends NameIdFactory {
 		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
-			Factories.getGroupParticipationFactory().deleteParticipations(ids, organizationId);
+			((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteParticipations(ids, organizationId);
 		}
 		return deleted;
 	}
@@ -446,7 +447,7 @@ public class GroupFactory  extends NameIdFactory {
 			groups = getByField(fields.toArray(new QueryField[0]), organizationId);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if (groups != null && groups.size() > 0)
 		{
@@ -473,7 +474,7 @@ public class GroupFactory  extends NameIdFactory {
 				clearGroupParentCache(group);
 			} catch (ArgumentException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		String key_name = group.getName() + "-" + group.getGroupType().toString() + "-" + group.getParentId() + "-" + group.getOrganizationId();
 		/*
@@ -506,7 +507,7 @@ public class GroupFactory  extends NameIdFactory {
 			clearGroupParentCache(group);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return super.update(group);
 	}
@@ -527,7 +528,7 @@ public class GroupFactory  extends NameIdFactory {
 		
 		BaseGroupType obj = (BaseGroupType)object;
 		if(obj.getPath() != null) return;
-		obj.setPath(Factories.getGroupFactory().getPath(obj));
+		obj.setPath(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getPath(obj));
 	}
 	
 	
@@ -570,7 +571,7 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		if (group.getPopulated()) return;
 		group.getData().clear();
-		group.getData().addAll(Factories.getDataFactory().getDataListByGroup(group,true, 0, 0, group.getOrganizationId()));
+		group.getData().addAll(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(group,true, 0, 0, group.getOrganizationId()));
 		//group.Data.Sort(new DataComparer());
 	}
 	*/
@@ -669,7 +670,7 @@ public class GroupFactory  extends NameIdFactory {
 			}
 			else if (name.equals("~") && user != null)
 			{
-				Factories.getUserFactory().populate(user);
+				Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
 				//System.out.println("GF User pop = " + user.getPopulated());
 				//System.out.println("GF User Home Dir = " + (user.getHomeDirectory() != null));
 				//System.out.println("Found Home Marker and paths length = " + paths.length);
@@ -739,7 +740,7 @@ public class GroupFactory  extends NameIdFactory {
 			}
 			else if (name.equals("~") && user != null)
 			{
-				Factories.getUserFactory().populate(user);
+				Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
 				ref_group = user.getHomeDirectory();
 				if (paths.length == 1)
 				{

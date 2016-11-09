@@ -3,13 +3,15 @@ package org.cote.accountmanager.data.security;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.Arrays;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.CredentialFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuditService;
@@ -25,7 +27,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.SecurityUtil;
 
 public class CredentialService {
-	public static final Logger logger = Logger.getLogger(CredentialService.class.getName());
+	public static final Logger logger = LogManager.getLogger(CredentialService.class);
 	public static CredentialType getPrimaryCredential(NameIdType obj) {
 		return getPrimaryCredential(obj,CredentialEnumType.UNKNOWN,false);
 	}
@@ -35,14 +37,14 @@ public class CredentialService {
 	public static CredentialType getPrimaryCredential(NameIdType obj, CredentialEnumType credType, boolean requireActive) {
 		CredentialType cred = null;
 		try {
-			cred = Factories.getCredentialFactory().getPrimaryCredential(obj,credType,requireActive);
+			cred = ((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).getPrimaryCredential(obj,credType,requireActive);
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		return cred;
@@ -93,7 +95,7 @@ public class CredentialService {
 			cred.setCredential((isPasswordHashed ? password.getBytes("UTF-8") : SecurityUtil.getSaltedDigest(password).getBytes("UTF-8")));
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return cred;
 	}
@@ -110,16 +112,16 @@ public class CredentialService {
 		String passwordHash = new String(credential.getCredential());
 		logger.info("Hash = " + passwordHash);
 		try {
-			List<NameIdType> users = Factories.getUserFactory().list(new QueryField[]{QueryFields.getFieldId(credential.getReferenceId()), QueryFields.getFieldPassword(passwordHash)}, credential.getOrganizationId());
+			List<NameIdType> users = Factories.getNameIdFactory(FactoryEnumType.USER).list(new QueryField[]{QueryFields.getFieldId(credential.getReferenceId()), QueryFields.getFieldPassword(passwordHash)}, credential.getOrganizationId());
 			if (users.size() == 1){
 				out_bool = true;
 			}
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		return out_bool;
@@ -197,7 +199,7 @@ public class CredentialService {
 			}
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return out_bool;
 	}
@@ -211,7 +213,7 @@ public class CredentialService {
 			pwdBytes = password.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return newCredential(CredentialEnumType.HASHED_PASSWORD, bulkSessionId, owner, targetObject, pwdBytes, primary, true, vaulted);
 	}
@@ -226,7 +228,7 @@ public class CredentialService {
 			pwdBytes = token.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return newCredential(CredentialEnumType.TOKEN, bulkSessionId, owner, targetObject, pwdBytes, primary, true, false);
 	}
@@ -240,10 +242,10 @@ public class CredentialService {
 		byte[] useCredBytes = credBytes;
 		try {
 
-			cred = Factories.getCredentialFactory().newCredential(owner, targetObject);
+			cred = ((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).newCredential(owner, targetObject);
 			cred.setPrimary(primary);
 			if(primary){
-				lastPrimary = Factories.getCredentialFactory().getPrimaryCredential(targetObject,credType,false);
+				lastPrimary = ((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).getPrimaryCredential(targetObject,credType,false);
 				if(lastPrimary != null){
 					cred.setPreviousCredentialId(lastPrimary.getId());
 				}
@@ -268,15 +270,15 @@ public class CredentialService {
 			cred.setCredential(useCredBytes);
 			
 			if(bulkSessionId != null) BulkFactories.getBulkFactory().createBulkEntry(bulkSessionId, FactoryEnumType.CREDENTIAL, cred);
-			else if(Factories.getCredentialFactory().add(cred)){
-				cred = Factories.getCredentialFactory().getByObjectId(cred.getObjectId(),cred.getOrganizationId());
+			else if(((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).add(cred)){
+				cred = ((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).getByObjectId(cred.getObjectId(),cred.getOrganizationId());
 			}
 			else{
 				logger.error("Failed to add credential");
 			}
 			if(lastPrimary != null){
 				lastPrimary.setPrimary(false);
-				Factories.getCredentialFactory().update(lastPrimary);
+				((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).update(lastPrimary);
 			}
 
 		} catch (ArgumentException | FactoryException e) {

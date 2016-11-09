@@ -24,6 +24,7 @@
 package org.cote.accountmanager.console;
 
 import java.io.File;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -35,7 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
@@ -59,9 +61,10 @@ import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.MimeUtil;
 import org.cote.accountmanager.util.StreamUtil;
 import org.cote.accountmanager.util.ZipUtil;
+import org.cote.accountmanager.data.factory.*;
 
 public class DataAction {
-	public static final Logger logger = Logger.getLogger(DataAction.class.getName());
+	public static final Logger logger = LogManager.getLogger(DataAction.class);
 	private static int maxLoad = 50;
 	public static void setMaximumLoad(int i){ maxLoad = i;}
 	private static Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s@])",Pattern.MULTILINE);
@@ -69,13 +72,13 @@ public class DataAction {
 	
 	public static void tagData(UserType user, String tagFile){
 		Map<String,Map<String,List<String>>> tagMap = new HashMap<String,Map<String,List<String>>>();
-		Factories.getTagParticipationFactory().setBatchSize(1000);
-		Factories.getTagParticipationFactory().setAggressiveKeyFlush(false);
+		((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setBatchSize(1000);
+		((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setAggressiveKeyFlush(false);
 
 		try{
 
-			Factories.getUserFactory().populate(user);
-			DirectoryGroupType tagDir = Factories.getGroupFactory().getCreateDirectory(user, "Tags", user.getHomeDirectory(), user.getOrganizationId());
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
+			DirectoryGroupType tagDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Tags", user.getHomeDirectory(), user.getOrganizationId());
 			String[] dataFile = FileUtil.getFileAsString(tagFile).split("\n");
 			logger.info("Reading " + dataFile.length + " lines");
 			String match = "Root/Home/product_user/Media";
@@ -109,7 +112,7 @@ public class DataAction {
 				long startTag = System.currentTimeMillis();
 				String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 				if(dataTags.containsKey(tags[i])==false){
-					DataTagType tag = Factories.getTagFactory().newDataTag(user,tags[i],tagDir.getId());
+					DataTagType tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).newDataTag(user,tags[i],tagDir.getId());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TAG, tag);
 					dataTags.put(tags[i], tag);
 					nTag = tag;
@@ -119,7 +122,7 @@ public class DataAction {
 				//logger.info("Tag Path Size = " + paths.length);
 				for(int g = 0; g < paths.length; g++){
 					long startLookup = System.currentTimeMillis();
-					DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,paths[g], user.getOrganizationId());
+					DirectoryGroupType dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA,paths[g], user.getOrganizationId());
 					//logger.info("Group Lookup: " + (System.currentTimeMillis() - startLookup));
 					if(dir == null){
 						logger.warn("Failed to find path '" + paths[g] + "'");
@@ -140,7 +143,7 @@ public class DataAction {
 					fields.add(QueryFields.getFieldGroup(dir.getId()));
 					
 					startLookup = System.currentTimeMillis();
-					List<DataType> data = Factories.getDataFactory().getDataList(fields.toArray(new QueryField[0]), null,true,dir.getOrganizationId());
+					List<DataType> data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataList(fields.toArray(new QueryField[0]), null,true,dir.getOrganizationId());
 					//logger.info("Data Lookup: " + (System.currentTimeMillis() - startLookup));
 					
 					if(data.size() == 0){
@@ -148,7 +151,7 @@ public class DataAction {
 					}
 					startLookup = System.currentTimeMillis();
 					for(int d = 0; d < data.size(); d++){
-						DataParticipantType dpt = Factories.getTagParticipationFactory().newDataTagParticipation(nTag, data.get(d));
+						DataParticipantType dpt = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).newDataTagParticipation(nTag, data.get(d));
 						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TAGPARTICIPATION, dpt);
 					}
 					//logger.info("Bulk Queue: " + (System.currentTimeMillis() - startLookup));
@@ -196,7 +199,7 @@ public class DataAction {
 		    logger.info("Migration Query: " + sql);
 		    ResultSet rset = statement.executeQuery(sql);
 		    String sessionId = BulkFactories.getBulkFactory().newBulkSession();
-		    Factories.getUserFactory().populate(user);
+		    Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
 		    while(rset.next()){
 		    	String name = rset.getString("DataName");
 		    	String mimeType = rset.getString("MimeType");
@@ -206,10 +209,10 @@ public class DataAction {
 		    		logger.info("Skip extraneous data");
 		    		continue;
 		    	}
-		    	DirectoryGroupType group = Factories.getGroupFactory().getCreateDirectory(user, groupName, user.getHomeDirectory(), user.getOrganizationId());
+		    	DirectoryGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, groupName, user.getHomeDirectory(), user.getOrganizationId());
 		    	
 		    	
-		    	DataType data = Factories.getDataFactory().newData(user, group.getId());
+		    	DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, group.getId());
 		    	data.setName(name);
 		    	data.setMimeType(mimeType);
 		    	data.setDescription(rset.getString("Description"));
@@ -247,19 +250,19 @@ public class DataAction {
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} finally {
 		    System.out.println("Closing the connection.");
 		    if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
@@ -268,7 +271,7 @@ public class DataAction {
 	}
 	public static void importDataPath(UserType user, String localPath, String targetPath, boolean isPointer){
 		try{
-			DirectoryGroupType dir = Factories.getGroupFactory().getCreatePath(user, targetPath, user.getOrganizationId());
+			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, targetPath, user.getOrganizationId());
 			File f = new File(localPath);
 			if(f.exists() == false){
 				System.out.println("Source directory " + localPath + " not found");
@@ -284,16 +287,16 @@ public class DataAction {
 			}
 		}
 		catch(FactoryException fe){
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 	}
@@ -318,7 +321,7 @@ public class DataAction {
 	}
 	
 	private static void importFile(UserType user, DirectoryGroupType dir, File f, String bulkSession, boolean isPointer) throws ArgumentException, DataException, FactoryException{
-		DataType data = Factories.getDataFactory().newData(user, dir.getId());
+		DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, dir.getId());
 		if(f.getName().startsWith(".")){
 			logger.info("Skipping possible system name: " + f.getName());
 			return;
@@ -336,7 +339,7 @@ public class DataAction {
 			DataUtil.setValue(data, f.getAbsolutePath().getBytes());
 		}
 		if(bulkSession == null){
-			if(Factories.getDataFactory().add(data)){
+			if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data)){
 				logger.info("Added " + fName + " to " + dir.getName());
 			}
 			else{
@@ -361,7 +364,7 @@ public class DataAction {
 		}
 		String fName = limitNames.matcher(f.getName()).replaceAll("");
 		
-		DirectoryGroupType tdir = Factories.getGroupFactory().getCreateDirectory(user, fName, dir, user.getOrganizationId());
+		DirectoryGroupType tdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, fName, dir, user.getOrganizationId());
 		if(tdir == null){
 			logger.warn("Invalid directory for " + fName);
 			return;

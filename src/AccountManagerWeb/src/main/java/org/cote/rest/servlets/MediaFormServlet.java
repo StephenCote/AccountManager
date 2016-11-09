@@ -35,7 +35,8 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.UserType;
@@ -51,7 +52,7 @@ import org.cote.accountmanager.util.StreamUtil;
  */
 public class MediaFormServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	public static final Logger logger = Logger.getLogger(MediaFormServlet.class.getName());
+	public static final Logger logger = LogManager.getLogger(MediaFormServlet.class);
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -127,7 +128,7 @@ public class MediaFormServlet extends HttpServlet {
 		}
 		catch(Exception e){
 			logger.error("Error: " + e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		/*
@@ -162,7 +163,7 @@ public class MediaFormServlet extends HttpServlet {
 			 catch (DataException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			} 
 		}
 		

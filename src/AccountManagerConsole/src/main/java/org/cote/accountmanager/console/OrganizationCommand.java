@@ -27,7 +27,8 @@ import java.security.Key;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
@@ -40,15 +41,17 @@ import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 import org.cote.accountmanager.util.KeyStoreUtil;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 
 public class OrganizationCommand {
-	public static final Logger logger = Logger.getLogger(OrganizationCommand.class.getName());
+	public static final Logger logger = LogManager.getLogger(OrganizationCommand.class);
 	public static boolean setOrganizationCertificate(String organizationPath, String sslPath, String alias, char[] password, String adminPassword){
 		boolean out_bool = false;
 		try{
-			OrganizationType org = Factories.getOrganizationFactory().findOrganization(organizationPath);
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(organizationPath);
 			if(org == null){
 				logger.error("Null organization");
 				return false;
@@ -88,7 +91,7 @@ public class OrganizationCommand {
 	public static boolean testOrganizationCertificate(String organizationPath, String sslPath, String adminPassword){
 		boolean out_bool = false;
 		try{
-			OrganizationType org = Factories.getOrganizationFactory().findOrganization(organizationPath);
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(organizationPath);
 			if(org == null){
 				logger.error("Null organization");
 				return false;
@@ -146,13 +149,13 @@ public class OrganizationCommand {
 		boolean out_bool = false;
 		try{
 			String orgPath = parentPath + (parentPath.endsWith("/") ? "" : "/") + name;
-			OrganizationType org = Factories.getOrganizationFactory().findOrganization(orgPath);
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
 			if(org != null){
 				
 				UserType adminUser = (allowNoAuth ? null : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org.getId()));
 				if(allowNoAuth || adminUser != null){
 					logger.warn("Deleting " + org.getName());
-					Factories.getOrganizationFactory().delete(org);
+					((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).delete(org);
 					SessionSecurity.logout(adminUser);
 				}
 				else{
@@ -176,13 +179,13 @@ public class OrganizationCommand {
 	public static boolean addOrganization(String parentPath, String name, String parentAdminPassword, String newPassword,boolean allowNoAuth){
 		boolean out_bool = false;
 		try{
-		OrganizationType org = Factories.getOrganizationFactory().findOrganization(parentPath);
+		OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(parentPath);
 		if(org != null){
 			OrganizationType uOrg = org;
 			if(uOrg.getName().equals("Global") && uOrg.getParentId().equals(0L)) uOrg = Factories.getSystemOrganization();
-			UserType adminUser = (allowNoAuth ? Factories.getUserFactory().getByName("Admin", uOrg.getId()) : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,parentAdminPassword, uOrg.getId()));
+			UserType adminUser = (allowNoAuth ? Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", uOrg.getId()) : SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,parentAdminPassword, uOrg.getId()));
 			if(adminUser != null){
-				OrganizationType newOrg = Factories.getOrganizationFactory().addOrganization(name,OrganizationEnumType.PUBLIC,org);
+				OrganizationType newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).addOrganization(name,OrganizationEnumType.PUBLIC,org);
 				if(newOrg != null && FactoryDefaults.setupOrganization(newOrg, newPassword)){
 					logger.info("Created organization " + name + " in " + org.getName());
 					UserType adminUser2 = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,newPassword, newOrg.getId());

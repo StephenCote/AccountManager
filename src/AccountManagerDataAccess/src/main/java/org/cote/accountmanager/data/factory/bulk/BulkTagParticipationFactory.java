@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
 
 public class BulkTagParticipationFactory extends TagParticipationFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.TAGPARTICIPATION, BulkTagParticipationFactory.class); }
 	public BulkTagParticipationFactory(){
 		super();
 		bulkMode = true;

@@ -35,7 +35,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -49,7 +50,7 @@ import org.cote.util.BeanUtil;
 @Path("/session")
 public class SessionService{
 
-	public static final Logger logger = Logger.getLogger(SessionService.class.getName());
+	public static final Logger logger = LogManager.getLogger(SessionService.class);
 	private static SchemaBean schemaBean = null;	
 	public SessionService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
@@ -75,7 +76,7 @@ public class SessionService{
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			System.out.println(e.getMessage());
 		}
 		

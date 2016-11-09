@@ -6,8 +6,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.UUID;
 import java.util.regex.Matcher;
 
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.junit.Test;
 
 public class TestUrnUtil extends BaseDataAccessTest {
@@ -16,8 +18,8 @@ public class TestUrnUtil extends BaseDataAccessTest {
 		String urn = null;
 		DirectoryGroupType group = null;
 		try{
-			Factories.getUserFactory().populate(testUser);
-			group = Factories.getGroupFactory().newDirectoryGroup(testUser,UUID.randomUUID().toString(),testUser.getHomeDirectory(), testUser.getOrganizationId());
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(testUser);
+			group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(testUser,UUID.randomUUID().toString(),testUser.getHomeDirectory(), testUser.getOrganizationId());
 			urn = UrnUtil.getUrn(group);
 		}
 		catch(FactoryException fe){
@@ -54,10 +56,10 @@ public class TestUrnUtil extends BaseDataAccessTest {
 			org = UrnUtil.getOrganization(orgUrn);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertNotNull("Org is null for path " + organizationPath,org);
 		
@@ -71,17 +73,17 @@ public class TestUrnUtil extends BaseDataAccessTest {
 	@Test
 	public void TestDeconstructDataGroupUrn(){
 		try {
-			Factories.getUserFactory().populate(testUser);
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(testUser);
 			/// force an update on the test group while migrating to include the new urn column, because the values for existing entries will be auto values
 			///
-			Factories.getGroupFactory().update(testUser.getHomeDirectory());
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).update(testUser.getHomeDirectory());
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		DirectoryGroupType dir = testUser.getHomeDirectory();
 

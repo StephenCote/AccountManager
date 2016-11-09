@@ -41,10 +41,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
@@ -57,6 +59,7 @@ import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
@@ -69,7 +72,7 @@ import org.cote.util.RegistrationUtil;
 @Path("/user")
 public class UserService{
 
-	public static final Logger logger = Logger.getLogger(UserService.class.getName());
+	public static final Logger logger = LogManager.getLogger(UserService.class);
 	private static SchemaBean schemaBean = null;	
 	public UserService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
@@ -85,7 +88,7 @@ public class UserService{
 			return false;
 		}
 		AuditService.targetAudit(audit, AuditEnumType.USER, "User Factory");
-		Factories.getUserFactory().clearCache();
+		Factories.getNameIdFactory(FactoryEnumType.USER).clearCache();
 		AuditService.permitResult(audit,user.getName() + " flushed User Factory cache");
 		return true;
 	}
@@ -116,11 +119,11 @@ public class UserService{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return user;
 	}
@@ -151,7 +154,7 @@ public class UserService{
 		UserType user = null;
 
 		try{
-			OrganizationType org = Factories.getOrganizationFactory().findOrganization(authRequest.getOrganizationPath());
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(authRequest.getOrganizationPath());
 			if(org == null){
 				AuditService.denyResult(audit, "Invalid organization");
 				authResponse.setMessage("Authentication failed.");
@@ -159,7 +162,7 @@ public class UserService{
 			}
 			user = SessionSecurity.login(sessionId,authRequest.getSubject(), authRequest.getCredentialType(), new String(authRequest.getCredential(),"UTF-8"), org.getId());
 			if(user != null){
-				//Factories.getUserFactory().populate(user);
+				//Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
 				AuditService.targetAudit(audit, AuditEnumType.USER, user.getUrn());
 				Factories.getAttributeFactory().populateAttributes(user);
 				authResponse.setResponse(AuthenticationResponseEnumType.AUTHENTICATED);
@@ -174,20 +177,20 @@ public class UserService{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			//logger.error(fe.getStackTrace());
+			//logger.error("Error",fe);
 			user = null;
 			AuditService.denyResult(audit, "Error: " + fe.getMessage());
 			authResponse.setMessage("An error occured.");
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			//logger.error(e.getStackTrace());
+			//logger.error("Error",e);
 			user = null;
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			authResponse.setMessage("An error occured.");
 		} catch (UnsupportedEncodingException e) {
 			
-			//logger.error(e.getStackTrace());
+			//logger.error("Error",e);
 			logger.error(e.getMessage());
 		}
 		if(user != null){
@@ -235,13 +238,13 @@ public class UserService{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 			AuditService.denyResult(audit, "Error: " + fe.getMessage());
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		ServiceUtil.clearCookie(response, "OrganizationId");
 		ServiceUtil.clearCookie(response, "OrganizationPath");
@@ -278,7 +281,7 @@ public class UserService{
 			registered = RegistrationUtil.confirmUserRegistration(id,  regId, new String(authRequest.getCredential(),"UTF-8"),request.getRemoteAddr(), sessionId);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		/*
 		MessageBean bean = new MessageBean();
@@ -303,13 +306,13 @@ public class UserService{
 		String sessionId = ServiceUtil.getSessionId(request,response,true);
 		SessionBean ctxSession = null;
 		try {
-			Factories.getUserFactory().normalize(user);
+			Factories.getNameIdFactory(FactoryEnumType.USER).normalize(user);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(user.getOrganizationId().compareTo(0L) == 0) user.setOrganizationId(Factories.getPublicOrganization().getId());
 		
@@ -334,7 +337,7 @@ public class UserService{
 			}
 			catch(FactoryException fe){
 				logger.error(fe.getMessage());
-				logger.error(fe.getStackTrace());
+				logger.error("Error",fe);
 			}
 		}
 		return BeanUtil.getSessionBean(session1, (session1 == null ? null : session1.getSessionId()));
@@ -385,15 +388,15 @@ public class UserService{
 		UserType user = ServiceUtil.getUserFromSession(request);
 		OrganizationType org = null;
 		try {
-			org =Factories.getOrganizationFactory().getOrganizationById(orgId);
+			org =((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(org == null){
 			return new ArrayList<UserType>();

@@ -28,7 +28,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
@@ -65,14 +66,13 @@ import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 
-public abstract class ParticipationFactory extends NameIdFactory {
-	public static final Logger logger = Logger.getLogger(ParticipationFactory.class.getName());
+public abstract class ParticipationFactory extends NameIdFactory implements IParticipationFactory {
+	public static final Logger logger = LogManager.getLogger(ParticipationFactory.class);
 	protected ParticipationEnumType participationType = ParticipationEnumType.UNKNOWN;
 	protected boolean haveAffect = false;
 	protected String permissionPrefix = null;
 	protected PermissionEnumType defaultPermissionType = PermissionEnumType.OBJECT;
 
-	
 	public ParticipationFactory(ParticipationEnumType type, String table_name){
 		super();
 		this.isParticipation = true;
@@ -255,7 +255,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, factoryType, participant);
 			} catch (ArgumentException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			return true;
 		}
@@ -277,7 +277,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 			} catch (ArgumentException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			} 
 			return false;
 		}
@@ -313,7 +313,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	{
 	
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return  Factories.getRoleFactory().getRoles(new QueryField[] { field }, organizationId);
+		return  Factories.getNameIdFactory(FactoryEnumType.ROLE).list(new QueryField[] { field }, organizationId);
 		//return new ArrayList<BaseRoleType>();
 
 	}
@@ -321,7 +321,7 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	{
 	
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return  Factories.getFactFactory().getFacts(new QueryField[] { field }, organizationId);
+		return  Factories.getNameIdFactory(FactoryEnumType.FACT).list(new QueryField[] { field }, organizationId);
 		//return new ArrayList<BaseFactType>();
 
 	}
@@ -329,37 +329,38 @@ public abstract class ParticipationFactory extends NameIdFactory {
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getGroupFactory().list(new QueryField[]{ field }, organizationId);
+		return ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).list(new QueryField[]{ field }, organizationId);
 	}
 	protected <T> List<T> getUserListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getUserFactory().list(new QueryField[]{ field }, organizationId);
+		return Factories.getNameIdFactory(FactoryEnumType.USER).list(new QueryField[]{ field }, organizationId);
 	}	
 	protected <T> List<T> getAccountListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getAccountFactory().list(new QueryField[]{ field }, organizationId);
+		return Factories.getNameIdFactory(FactoryEnumType.ACCOUNT).list(new QueryField[]{ field }, organizationId);
 	}
 	protected <T> List<T> getPersonListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(list.length == 0) return new ArrayList<T>();
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getPersonFactory().list(new QueryField[]{ field }, organizationId);
+		return Factories.getNameIdFactory(FactoryEnumType.PERSON).list(new QueryField[]{ field }, organizationId);
 	}
 /*
 	protected List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, long organizationId) throws FactoryException
 	{
 		QueryField field = QueryFields.getFieldParticipationList(list, organizationId);
-		return Factories.getAccountFactory().list(new QueryField[]{ field }, organizationId);
+		return Factories.getNameIdFactory(FactoryEnumType.ACCOUNT).list(new QueryField[]{ field }, organizationId);
 	}
 */
 	public List<DataType> getDataListFromParticipations(DataParticipantType[] list, boolean detailsOnly, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		return Factories.getDataFactory().getDataList(new QueryField[]{ field }, detailsOnly, startRecord, recordCount, organizationId);
+		DataFactory dFact = Factories.getFactory(FactoryEnumType.DATA);
+		return dFact.getDataList(new QueryField[]{ field }, detailsOnly, startRecord, recordCount, organizationId);
 		/*
 		return Factory.DataFactoryInstance.GetDataList(new QueryField[] { match }, DetailsOnly, StartRecord, RecordCount, organizationId);
 		*/

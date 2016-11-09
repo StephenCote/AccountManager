@@ -8,9 +8,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.cote.accountmanager.data.factory.FactoryDefaults;
-import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
-import org.cote.accountmanager.data.policy.PolicyEvaluator;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
@@ -19,32 +19,17 @@ import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
-import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.FactEnumType;
-import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OperationEnumType;
-import org.cote.accountmanager.objects.OperationType;
-import org.cote.accountmanager.objects.PatternEnumType;
-import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
-import org.cote.accountmanager.objects.PolicyDefinitionType;
-import org.cote.accountmanager.objects.PolicyRequestType;
-import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
-import org.cote.accountmanager.objects.RuleEnumType;
-import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
-import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
-
 public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTest {
 	
 	
@@ -100,112 +85,112 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		
 		boolean cleanup = true;
 		try {
-			odir = Factories.getGroupFactory().getCreatePath(testUser, "~/Operations", testUser.getOrganizationId());
-			pdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Policies", testUser.getOrganizationId());
-			rdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Rules", testUser.getOrganizationId());
-			padir = Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId());
-			fdir = Factories.getGroupFactory().getCreatePath(testUser, "~/Facts", testUser.getOrganizationId());
+			odir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Operations", testUser.getOrganizationId());
+			pdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Policies", testUser.getOrganizationId());
+			rdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Rules", testUser.getOrganizationId());
+			padir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId());
+			fdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Facts", testUser.getOrganizationId());
 
-			oper1 = Factories.getOperationFactory().getByNameInGroup(operationName, odir);
+			oper1 = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).getByNameInGroup(operationName, odir);
 			if(oper1 == null){
-				oper1 = Factories.getOperationFactory().newOperation(testUser, odir.getId());
+				oper1 = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).newOperation(testUser, odir.getId());
 				oper1.setOperationType(OperationEnumType.INTERNAL);
 				oper1.setOperation("org.cote.accountmanager.data.operation.CompareNameTypeOperation");
 				oper1.setName(operationName);
-				Factories.getOperationFactory().addOperation(oper1);
-				oper1 = Factories.getOperationFactory().getByNameInGroup(operationName, odir);
+				((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).addOperation(oper1);
+				oper1 = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).getByNameInGroup(operationName, odir);
 			}
 			
-			oper2 = Factories.getOperationFactory().getByNameInGroup(operationName2, odir);
+			oper2 = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).getByNameInGroup(operationName2, odir);
 			if(oper2 == null){
-				oper2 = Factories.getOperationFactory().newOperation(testUser, odir.getId());
+				oper2 = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).newOperation(testUser, odir.getId());
 				oper2.setOperationType(OperationEnumType.INTERNAL);
 				oper2.setOperation("org.cote.accountmanager.data.operation.MatchSystemRoleOperation");
 				oper2.setName(operationName2);
-				Factories.getOperationFactory().addOperation(oper2);
-				oper2 = Factories.getOperationFactory().getByNameInGroup(operationName2, odir);
+				((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).addOperation(oper2);
+				oper2 = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).getByNameInGroup(operationName2, odir);
 			}
 			
 			
-			fact1 = Factories.getFactFactory().getByNameInGroup(fact1Name,fdir);
+			fact1 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact1Name,fdir);
 			if(cleanup && fact1 != null){
-				Factories.getFactFactory().deleteFact(fact1);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).deleteFact(fact1);
 				fact1 = null;
 			}
 			if(fact1 == null){
-				fact1 = Factories.getFactFactory().newFact(testUser, fdir.getId());
+				fact1 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(testUser, fdir.getId());
 				fact1.setFactType(FactEnumType.PARAMETER);
 				fact1.setFactoryType(FactoryEnumType.UNKNOWN);
 				fact1.setName(fact1Name);
 				fact1.setDescription("ActorType");
-				Factories.getFactFactory().addFact(fact1);
-				fact1 = Factories.getFactFactory().getByNameInGroup(fact1Name,fdir);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).addFact(fact1);
+				fact1 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact1Name,fdir);
 			}
 			
-			fact2 = Factories.getFactFactory().getByNameInGroup(fact2Name,fdir);
+			fact2 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact2Name,fdir);
 			if(cleanup && fact2 != null){
-				Factories.getFactFactory().deleteFact(fact2);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).deleteFact(fact2);
 				fact2 = null;
 			}
 			if(fact2 == null){
-				fact2 = Factories.getFactFactory().newFact(testUser, fdir.getId());
+				fact2 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(testUser, fdir.getId());
 				fact2.setFactType(FactEnumType.ROLE);
 				fact2.setFactoryType(FactoryEnumType.ROLE);
 				fact2.setName(fact2Name);
-				Factories.getFactFactory().addFact(fact2);
-				fact2 = Factories.getFactFactory().getByNameInGroup(fact2Name,fdir);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).addFact(fact2);
+				fact2 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact2Name,fdir);
 			}
-			fact3 = Factories.getFactFactory().getByNameInGroup(fact3Name,fdir);
+			fact3 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact3Name,fdir);
 			if(cleanup && fact3 != null){
-				Factories.getFactFactory().deleteFact(fact3);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).deleteFact(fact3);
 				fact3 = null;
 			}
 			if(fact3 == null){
-				fact3 = Factories.getFactFactory().newFact(testUser, fdir.getId());
+				fact3 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(testUser, fdir.getId());
 				fact3.setFactType(FactEnumType.ROLE);
 				fact3.setFactoryType(FactoryEnumType.UNKNOWN);
 				fact3.setSourceUrn("DataAdministrators");
 				fact3.setName(fact3Name);
-				Factories.getFactFactory().addFact(fact3);
-				fact3 = Factories.getFactFactory().getByNameInGroup(fact3Name,fdir);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).addFact(fact3);
+				fact3 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact3Name,fdir);
 			}
 			
-			fact5 = Factories.getFactFactory().getByNameInGroup(fact5Name,fdir);
+			fact5 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact5Name,fdir);
 			if(cleanup && fact5 != null){
-				Factories.getFactFactory().deleteFact(fact5);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).deleteFact(fact5);
 				fact5 = null;
 			}
 			if(fact5 == null){
-				fact5 = Factories.getFactFactory().newFact(testUser, fdir.getId());
+				fact5 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(testUser, fdir.getId());
 				fact5.setFactType(FactEnumType.ROLE);
 				fact5.setFactoryType(FactoryEnumType.UNKNOWN);
 				fact5.setSourceUrn("DataReaders");
 				fact5.setName(fact5Name);
-				Factories.getFactFactory().addFact(fact5);
-				fact5 = Factories.getFactFactory().getByNameInGroup(fact5Name,fdir);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).addFact(fact5);
+				fact5 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact5Name,fdir);
 			}
 			
-			fact4 = Factories.getFactFactory().getByNameInGroup(fact4Name,fdir);
+			fact4 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact4Name,fdir);
 			if(cleanup && fact4 != null){
-				Factories.getFactFactory().deleteFact(fact4);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).deleteFact(fact4);
 				fact4 = null;
 			}
 			if(fact4 == null){
-				fact4 = Factories.getFactFactory().newFact(testUser, fdir.getId());
+				fact4 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(testUser, fdir.getId());
 				fact4.setFactType(FactEnumType.PARAMETER);
 				fact4.setFactoryType(FactoryEnumType.UNKNOWN);
 				fact4.setName(fact4Name);
 				fact4.setDescription("ObjectType");
-				Factories.getFactFactory().addFact(fact4);
-				fact4 = Factories.getFactFactory().getByNameInGroup(fact4Name,fdir);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).addFact(fact4);
+				fact4 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact4Name,fdir);
 			}
-			pattern1 = Factories.getPatternFactory().getByNameInGroup(pattern1Name, padir);
+			pattern1 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern1Name, padir);
 			if(cleanup && pattern1 != null){
-				Factories.getPatternFactory().deletePattern(pattern1);
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).deletePattern(pattern1);
 				pattern1 = null;
 			}
 			if(pattern1 == null){
-				pattern1 = Factories.getPatternFactory().newPattern(testUser, padir.getId());
+				pattern1 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).newPattern(testUser, padir.getId());
 				pattern1.setName(pattern1Name);
 				pattern1.setPatternType(PatternEnumType.OPERATION);
 				pattern1.setOperationUrn(oper1.getUrn());
@@ -213,18 +198,18 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				pattern1.setFactUrn(fact1.getUrn());
 				pattern1.setMatchUrn(fact2.getUrn());
 				pattern1.setLogicalOrder(1);
-				Factories.getPatternFactory().addPattern(pattern1);
-				pattern1 = Factories.getPatternFactory().getByNameInGroup(pattern1Name, padir);	
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).addPattern(pattern1);
+				pattern1 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern1Name, padir);	
 
 			}
 			
-			pattern2 = Factories.getPatternFactory().getByNameInGroup(pattern2Name, padir);
+			pattern2 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern2Name, padir);
 			if(cleanup && pattern2 != null){
-				Factories.getPatternFactory().deletePattern(pattern2);
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).deletePattern(pattern2);
 				pattern2 = null;
 			}
 			if(pattern2 == null){
-				pattern2 = Factories.getPatternFactory().newPattern(testUser, padir.getId());
+				pattern2 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).newPattern(testUser, padir.getId());
 				pattern2.setName(pattern2Name);
 				pattern2.setPatternType(PatternEnumType.OPERATION);
 				pattern2.setOperationUrn(oper2.getUrn());
@@ -232,18 +217,18 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				pattern2.setFactUrn(fact1.getUrn());
 				pattern2.setMatchUrn(fact3.getUrn());
 				pattern2.setLogicalOrder(2);
-				Factories.getPatternFactory().addPattern(pattern2);
-				pattern2 = Factories.getPatternFactory().getByNameInGroup(pattern2Name, padir);	
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).addPattern(pattern2);
+				pattern2 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern2Name, padir);	
 
 			}
 			
-			pattern3 = Factories.getPatternFactory().getByNameInGroup(pattern3Name, padir);
+			pattern3 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern3Name, padir);
 			if(cleanup && pattern3 != null){
-				Factories.getPatternFactory().deletePattern(pattern3);
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).deletePattern(pattern3);
 				pattern3 = null;
 			}
 			if(pattern3 == null){
-				pattern3 = Factories.getPatternFactory().newPattern(testUser, padir.getId());
+				pattern3 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).newPattern(testUser, padir.getId());
 				pattern3.setName(pattern3Name);
 				pattern3.setPatternType(PatternEnumType.OPERATION);
 				pattern3.setOperationUrn(oper2.getUrn());
@@ -251,89 +236,89 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				pattern3.setFactUrn(fact1.getUrn());
 				pattern3.setMatchUrn(fact5.getUrn());
 				pattern3.setLogicalOrder(3);
-				Factories.getPatternFactory().addPattern(pattern3);
-				pattern3 = Factories.getPatternFactory().getByNameInGroup(pattern3Name, padir);	
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).addPattern(pattern3);
+				pattern3 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern3Name, padir);	
 
 			}
 			
-			roleRule1 = Factories.getRuleFactory().getByNameInGroup(roleRule1Name, rdir);
+			roleRule1 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRule1Name, rdir);
 			if(cleanup && roleRule1 != null){
-				Factories.getRuleFactory().deleteRule(roleRule1);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).deleteRule(roleRule1);
 				roleRule1 = null;
 			}
 			if(roleRule1 == null){
-				roleRule1 = Factories.getRuleFactory().newRule(testUser, rdir.getId());
+				roleRule1 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).newRule(testUser, rdir.getId());
 				roleRule1.getPatterns().add(pattern1);
 				roleRule1.setCondition(ConditionEnumType.ANY);
 				roleRule1.setName(roleRule1Name);
 				roleRule1.setLogicalOrder(1);
 				roleRule1.setRuleType(RuleEnumType.PERMIT);
-				Factories.getRuleFactory().addRule(roleRule1);
-				roleRule1 = Factories.getRuleFactory().getByNameInGroup(roleRule1Name, rdir);	
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).addRule(roleRule1);
+				roleRule1 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRule1Name, rdir);	
 			}
-			Factories.getRuleFactory().populate(roleRule1);
+			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(roleRule1);
 
-			roleRule2 = Factories.getRuleFactory().getByNameInGroup(roleRule2Name, rdir);
+			roleRule2 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRule2Name, rdir);
 			if(cleanup && roleRule2 != null){
-				Factories.getRuleFactory().deleteRule(roleRule2);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).deleteRule(roleRule2);
 				roleRule2 = null;
 			}
 			if(roleRule2 == null){
-				roleRule2 = Factories.getRuleFactory().newRule(testUser, rdir.getId());
+				roleRule2 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).newRule(testUser, rdir.getId());
 				roleRule2.getPatterns().add(pattern2);
 				roleRule2.getPatterns().add(pattern3);
 				roleRule2.setCondition(ConditionEnumType.ANY);
 				roleRule2.setName(roleRule2Name);
 				roleRule2.setLogicalOrder(2);
 				roleRule2.setRuleType(RuleEnumType.PERMIT);
-				Factories.getRuleFactory().addRule(roleRule2);
-				roleRule2 = Factories.getRuleFactory().getByNameInGroup(roleRule2Name, rdir);	
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).addRule(roleRule2);
+				roleRule2 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRule2Name, rdir);	
 			}
-			Factories.getRuleFactory().populate(roleRule2);
+			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(roleRule2);
 			
-			roleRule = Factories.getRuleFactory().getByNameInGroup(roleRuleName, rdir);
+			roleRule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRuleName, rdir);
 			if(cleanup && roleRule != null){
-				Factories.getRuleFactory().deleteRule(roleRule);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).deleteRule(roleRule);
 				roleRule = null;
 			}
 
 			if(roleRule == null){
-				roleRule = Factories.getRuleFactory().newRule(testUser, rdir.getId());
+				roleRule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).newRule(testUser, rdir.getId());
 				roleRule.getRules().add(roleRule1);
 				roleRule.getRules().add(roleRule2);
 				roleRule.setRuleType(RuleEnumType.PERMIT);
 				roleRule.setCondition(ConditionEnumType.ALL);
 				roleRule.setName(roleRuleName);
-				Factories.getRuleFactory().addRule(roleRule);
-				roleRule = Factories.getRuleFactory().getByNameInGroup(roleRuleName, rdir);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).addRule(roleRule);
+				roleRule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRuleName, rdir);
 			}
-			Factories.getRuleFactory().populate(roleRule);
+			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(roleRule);
 			logger.info("Rules: " + roleRule.getRules().size());
 			
-			policy = Factories.getPolicyFactory().getByNameInGroup(policyName, pdir);
+			policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getByNameInGroup(policyName, pdir);
 			if(cleanup && policy != null){
-				Factories.getPolicyFactory().deletePolicy(policy);
+				((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).deletePolicy(policy);
 				policy = null;
 			}
 
 			if(policy == null){
-				policy = Factories.getPolicyFactory().newPolicy(testUser, pdir.getId());
+				policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).newPolicy(testUser, pdir.getId());
 				policy.setCondition(ConditionEnumType.ANY);
 				policy.setEnabled(true);
 				policy.setName(policyName);
 				policy.getRules().add(roleRule);
 				//policy.getRules().add(roleRule1);
-				Factories.getPolicyFactory().addPolicy(policy);
-				policy = Factories.getPolicyFactory().getByNameInGroup(policyName, pdir);
+				((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).addPolicy(policy);
+				policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getByNameInGroup(policyName, pdir);
 			}
-			Factories.getPolicyFactory().populate(policy);
+			((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).populate(policy);
 			for(int i = 0; i < policy.getRules().size(); i++){
-				Factories.getRuleFactory().populate(policy.getRules().get(i));
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(policy.getRules().get(i));
 				for(int p = 0; p < policy.getRules().get(i).getRules().size(); p++){
-					Factories.getRuleFactory().populate(policy.getRules().get(i).getRules().get(p));
+					((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(policy.getRules().get(i).getRules().get(p));
 					RuleType rule = policy.getRules().get(i).getRules().get(p);
 					for(int q = 0; q < rule.getPatterns().size();q++){
-						Factories.getPatternFactory().populate(rule.getPatterns().get(q));
+						((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).populate(rule.getPatterns().get(q));
 					}
 				}
 			}
@@ -342,7 +327,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			//logger.info(JSONUtil.exportObject(fact2));
 			logger.info(JSONUtil.exportObject(policy));
 			
-			//roleRule2 = Factories.getRuleFactory().newRule(testUser, rdir.getId());
+			//roleRule2 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).newRule(testUser, rdir.getId());
 			
 			PolicyDefinitionType pdef = PolicyDefinitionUtil.generatePolicyDefinition(policy);
 			PolicyRequestType prt = PolicyDefinitionUtil.generatePolicyRequest(pdef);
@@ -363,20 +348,20 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			//roleRule.getPatterns()
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 	}
 	private PersonRoleType getTestRole(){
 		PersonRoleType perRole1 = null;
 		try {
-			BaseRoleType baseRole = Factories.getRoleFactory().getUserRole(testUser,RoleEnumType.USER,testUser.getOrganizationId());
+			BaseRoleType baseRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(testUser,RoleEnumType.USER,testUser.getOrganizationId());
 			//assertNotNull("Base role is null", baseRole);
 			//acctRole1 = getRole(testUser,"Account Role 1",RoleEnumType.ACCOUNT,baseRole);
 			perRole1 = getRole(testUser,"Person Role 1",RoleEnumType.PERSON,baseRole);
 		} catch (FactoryException | ArgumentException | DataAccessException e2) {
 			
-			logger.error(e2.getStackTrace());
+			logger.error("Error",e2);
 		}
 		return perRole1;
 	}
@@ -393,13 +378,13 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		AccountRoleType acctRole1 = null;
 		PersonRoleType perRole1 = null;
 		try {
-			BaseRoleType baseRole = Factories.getRoleFactory().getUserRole(testUser,RoleEnumType.USER,testUser.getOrganizationId());
+			BaseRoleType baseRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(testUser,RoleEnumType.USER,testUser.getOrganizationId());
 			assertNotNull("Base role is null", baseRole);
 			acctRole1 = getRole(testUser,"Account Role 1",RoleEnumType.ACCOUNT,baseRole);
 			perRole1 = getRole(testUser,"Person Role 1",RoleEnumType.PERSON,baseRole);
 		} catch (FactoryException | ArgumentException | DataAccessException e2) {
 			
-			logger.error(e2.getStackTrace());
+			logger.error("Error",e2);
 		}
 		
 		
@@ -414,19 +399,19 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		if(person1.getAccounts().size() == 0){
 			person1.getAccounts().add(account1);
 			try {
-				Factories.getPersonFactory().update(person1);
+				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(person1);
 			} catch (FactoryException  e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		if(person2.getAccounts().size() == 0){
 			person2.getAccounts().add(account2);
 			try {
-				Factories.getPersonFactory().update(person2);
+				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(person2);
 			} catch (FactoryException  e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		
@@ -434,7 +419,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		
 		
 		try {
-			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(testUser, "Policies", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Policies", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			RoleService.addPersonToRole(person3, perRole1);
 
 			PolicyType policy = getCreatePolicy(testUser, "Test Policy", dir);
@@ -469,7 +454,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		
 		} catch (NullPointerException | ArgumentException | FactoryException | DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	
@@ -490,7 +475,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			notAuthZ = AuthorizationService.isAuthorized(checkMember, object, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		assertTrue("Failed to set: " + authZStr,setAuthZ);

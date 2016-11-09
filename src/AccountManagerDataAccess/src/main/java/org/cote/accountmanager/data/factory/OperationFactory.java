@@ -53,6 +53,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class OperationFactory extends NameIdGroupFactory {
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.OPERATION, OperationFactory.class); }
 	public OperationFactory(){
 		super();
 		this.tableNames.add("operation");

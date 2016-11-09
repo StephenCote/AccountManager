@@ -30,10 +30,14 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.util.UrnUtil;
@@ -45,6 +49,7 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.util.DataUtil;
@@ -52,7 +57,7 @@ import org.cote.accountmanager.util.GraphicsUtil;
 import org.cote.beans.MediaOptions;
 
 public class MediaUtil {
-	public static final Logger logger = Logger.getLogger(MediaUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(MediaUtil.class);
 	private static Pattern recPattern = Pattern.compile("^\\/([A-Za-z0-9\\.]+)\\/([\\w]+)([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static Pattern dimPattern = Pattern.compile("(\\/\\d+x\\d+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	
@@ -166,16 +171,16 @@ public class MediaUtil {
 	) throws IOException{
 		OrganizationType org = null;
 		try{
-			org = Factories.getOrganizationFactory().findOrganization(orgPath);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(org == null){
 			AuditService.denyResult(audit, "Organization is invalid: '" + orgPath + "'");
@@ -202,15 +207,15 @@ public class MediaUtil {
 		
 		DirectoryGroupType dir = null;
 		try{
-			dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA, objPath, org.getId());
+			dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, objPath, org.getId());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(dir == null){
 			AuditService.denyResult(audit, "Path '" + objPath + "' is invalid for " + (user == null ? "null user":user.getName()) + " in organization " + org.getName());
@@ -285,10 +290,10 @@ public class MediaUtil {
 			if(options.isThumbnail()){
 				String thumbName = objName + " " + options.getThumbWidth() + "x" + options.getThumbHeight();
 				DirectoryGroupType thumbGroup = null;
-				synchronized(Factories.getGroupFactory()){
-					thumbGroup = Factories.getGroupFactory().getDirectoryByName(".thumbnail", group, org.getId());
+				synchronized(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP))){
+					thumbGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(".thumbnail", group, org.getId());
 					if(thumbGroup == null && AuthorizationService.canChange(user, group)){
-						thumbGroup = Factories.getGroupFactory().getCreateDirectory(user, ".thumbnail", group, org.getId());
+						thumbGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, ".thumbnail", group, org.getId());
 					}
 				}
 				//DataType thumbData = 
@@ -305,10 +310,10 @@ public class MediaUtil {
 				}
 
 				/// Get the thumbnail data
-				data = Factories.getDataFactory().getDataByName(thumbName, thumbGroup);
+				data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(thumbName, thumbGroup);
 				/// If it doesn't exist, try to create it
 				if(data == null){
-						DataType chkData = Factories.getDataFactory().getDataByName(objName, true, group);
+						DataType chkData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(objName, true, group);
 						if(chkData == null){
 							AuditService.denyResult(audit, "Data is invalid: '" + objName + "'");
 							response.sendError(404);
@@ -320,7 +325,7 @@ public class MediaUtil {
 								return;
 						 }
 						if(AuthorizationService.canView(user, chkData)){
-							chkData = Factories.getDataFactory().getDataByName(objName, false, group);
+							chkData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(objName, false, group);
 							if(chkData == null || chkData.getDataBytesStore() == null || chkData.getDataBytesStore().length == 0){
 								AuditService.denyResult(audit, "Data '" + objName + " was not retrieved in a populated state");
 								response.sendError(404);
@@ -340,22 +345,22 @@ public class MediaUtil {
 							}
 							/// 2014/03/13 - Thumbnail data is owned by the original image owner, not by the context user
 							///
-							UserType dataOwner = Factories.getUserFactory().getById(chkData.getOwnerId(), group.getOrganizationId());
+							UserType dataOwner = Factories.getNameIdFactory(FactoryEnumType.USER).getById(chkData.getOwnerId(), group.getOrganizationId());
 							if(dataOwner == null){
 								AuditService.denyResult(audit, "Deny '" + objName + "' owner #" + chkData.getOwnerId() + " was not found in Org #"  + group.getOrganizationId());;
 								response.sendError(404);
 								return;
 							}
-							DataType thumbData = Factories.getDataFactory().newData(dataOwner, thumbGroup.getId());
+							DataType thumbData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(dataOwner, thumbGroup.getId());
 							thumbData.setMimeType("image/jpg");
 							thumbData.setName(thumbName);
 							DataUtil.setValue(thumbData, thumbBytes);
-							if(Factories.getDataFactory().add(thumbData) == false){
+							if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(thumbData) == false){
 								AuditService.denyResult(audit, "Data " + thumbName + " was not added to group " + thumbGroup.getName());
 								response.sendError(404);
 								return;
 							}
-							data = Factories.getDataFactory().getDataByName(thumbName, thumbGroup);
+							data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(thumbName, thumbGroup);
 						}
 						else{
 							AuditService.denyResult(audit, "User " + user.getName() + " is not authorized to view  " + objName);
@@ -369,12 +374,12 @@ public class MediaUtil {
 				}
 			} /// End if thumbnail
 			else{
-				data = Factories.getDataFactory().getDataByName(objName, group);
+				data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(objName, group);
 				//logger.info("Restrict Size: " + restrictSize + " / " + data.getMimeType());
 				if(data.getMimeType() != null && data.getMimeType().startsWith("image/") && restrictSize){
 					logger.info("Redirecting to restricted image path");
-					Factories.getGroupFactory().populate(group);
-					Factories.getGroupFactory().denormalize(group);
+					((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(group);
+					((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(group);
 					String dotPath = UrnUtil.getDotOrganizationPath(org.getId());
 					AuditService.pendResult(audit, "Redirecting user " + user.getName() + " to " + request.getServletContext().getContextPath() + "/Thumbnail/" + dotPath + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight + " with restricted dimensions");
 					response.sendRedirect(request.getServletContext().getContextPath() + "/Thumbnail/" + dotPath + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight);
@@ -387,15 +392,15 @@ public class MediaUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(data == null){
 			AuditService.denyResult(audit, "Data is invalid: '" + objName + "'");
@@ -419,7 +424,7 @@ public class MediaUtil {
 			}
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		response.setContentLength(value.length);
 		response.getOutputStream().write(value); 

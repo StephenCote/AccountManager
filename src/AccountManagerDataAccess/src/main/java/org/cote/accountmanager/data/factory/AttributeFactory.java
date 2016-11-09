@@ -31,7 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
@@ -48,7 +49,7 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 
 public class AttributeFactory extends NameIdFactory{
-	public static final Logger logger = Logger.getLogger(AttributeFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(AttributeFactory.class);
 	private int maximumInsBatch = 2000;
 	public AttributeFactory(){
 		super();

@@ -35,7 +35,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
@@ -51,7 +52,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class BulkFactory {
-	public static final Logger logger = Logger.getLogger(BulkFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(BulkFactory.class);
 	//private Map<String,Map<NameEnumType,Integer>> idScanMap = null;
 	protected static Map<String,BulkSessionType> sessions = null;
 	protected static Map<Long,String> sessionIdMap = null;
@@ -370,111 +371,7 @@ public class BulkFactory {
 			
 			NameIdType object = objects.get(i);
 			iFact.delete(object);
-			/*
-			switch(factoryType){
-				case ASYMMETRICKEY:
-					BulkFactories.getBulkAsymmetricKeyFactory().deleteAsymmetricKey((SecurityType)object);
-					break;
-				case SYMMETRICKEY:
-					BulkFactories.getBulkSymmetricKeyFactory().deleteSymmetricKey((SecurityType)object);
-					break;
-				case CONTROL:
-					BulkFactories.getBulkControlFactory().deleteControl((ControlType)object);
-					break;
-				case CREDENTIAL:
-					BulkFactories.getBulkCredentialFactory().deleteCredential((CredentialType)object);
-	
-					break;
-				case FACT:
-					BulkFactories.getBulkFactFactory().deleteFact((FactType)object);
-					break;
-				case FUNCTIONFACT:
-					BulkFactories.getBulkFunctionFactFactory().deleteFunctionFact((FunctionFactType)object);
-					break;
-				case FUNCTION:
-					BulkFactories.getBulkFunctionFactory().deleteFunction((FunctionType)object);
-					break;
-				case FUNCTIONPARTICIPATION:
-					BulkFactories.getBulkFunctionParticipationFactory().delete((BaseParticipantType)object);
-					break;
-				case POLICYPARTICIPATION:
-					BulkFactories.getBulkPolicyParticipationFactory().delete((BaseParticipantType)object);
-					break;
-				case RULEPARTICIPATION:
-					BulkFactories.getBulkRuleParticipationFactory().delete((BaseParticipantType)object);
-					break;
-	
-				case OPERATION:
-					BulkFactories.getBulkOperationFactory().deleteOperation((OperationType)object);
-					break;
-				case PATTERN:
-					BulkFactories.getBulkPatternFactory().deletePattern((PatternType)object);
-					break;
-				case POLICY:
-					BulkFactories.getBulkPolicyFactory().deletePolicy((PolicyType)object);
-					break;
-				case RULE:
-					BulkFactories.getBulkRuleFactory().deleteRule((RuleType)object);
-					break;
-				case PERMISSION:
-					BulkFactories.getBulkPermissionFactory().deletePermission((BasePermissionType)object);
-					break;
-	
-				case ACCOUNT:
-					BulkFactories.getBulkAccountFactory().deleteAccount((AccountType)object);
-					break;
-				case PERSON:
-					BulkFactories.getBulkPersonFactory().deletePerson((PersonType)object);
-					break;
-				case PERSONPARTICIPATION:
-					BulkFactories.getBulkPersonParticipationFactory().delete((BaseParticipantType)object);
-					break;
-				case CONTACTINFORMATION:
-					BulkFactories.getBulkContactInformationFactory().deleteContactInformation((ContactInformationType)object);
-					break;
-				case CONTACTINFORMATIONPARTICIPATION:
-					BulkFactories.getBulkContactInformationParticipationFactory().delete((BaseParticipantType)object);
-					break;
-				case CONTACT:
-					BulkFactories.getBulkContactFactory().deleteContact((ContactType)object);
-					break;
-				case ADDRESS:
-					BulkFactories.getBulkAddressFactory().deleteAddress((AddressType)object);
-					break;
-				case STATISTICS:
-					BulkFactories.getBulkStatisticsFactory().deleteStatistics((StatisticsType)object);
-					break;
-				case USER:
-					BulkFactories.getBulkUserFactory().deleteUser((UserType)object);
-					break;
-				case DATA:
-					BulkFactories.getBulkDataFactory().deleteData((DataType)object);
-					break;
-				case DATAPARTICIPATION:
-					BulkFactories.getBulkDataParticipationFactory().delete((BaseParticipantType)object);
-					break;
-				case GROUP:
-					BulkFactories.getBulkGroupFactory().deleteGroup((BaseGroupType)object);
-					break;
-				case GROUPPARTICIPATION:
-					BulkFactories.getBulkGroupParticipationFactory().delete((BaseParticipantType)object);
-					break;
-				case ROLE:
-					BulkFactories.getBulkRoleFactory().deleteRole((BaseRoleType)object);
-					break;
-				case ROLEPARTICIPATION:
-					BulkFactories.getBulkRoleParticipationFactory().delete((BaseParticipantType)object);
-					break;
-				case TAG:
-					BulkFactories.getBulkTagFactory().deleteTag((BaseTagType)object);
-					break;
-				case TAGPARTICIPATION:
-					BulkFactories.getBulkTagParticipationFactory().delete((BaseParticipantType)object);
-					break;
-				default:
-					throw new FactoryException("Unhandled factory type: " + factoryType);
-			}
-			*/
+
 		}
 	}
 	
@@ -490,82 +387,7 @@ public class BulkFactory {
 		for(int i = 0; i < objects.size();i++){
 			NameIdType object = objects.get(i);
 			iFact.update(object);
-			/*
-			switch(factoryType){
-				case ASYMMETRICKEY:
-					BulkFactories.getBulkAsymmetricKeyFactory().updateAsymmetricKey((SecurityType)object);
-					break;
-				case SYMMETRICKEY:
-					BulkFactories.getBulkSymmetricKeyFactory().updateSymmetricKey((SecurityType)object);
-					break;
-				case CONTROL:
-					BulkFactories.getBulkControlFactory().updateControl((ControlType)object);
-					break;
-				case CREDENTIAL:
-					BulkFactories.getBulkCredentialFactory().updateCredential((CredentialType)object);
-					break;
-				case FACT:
-					BulkFactories.getBulkFactFactory().updateFact((FactType)object);
-					break;
-				case FUNCTIONFACT:
-					BulkFactories.getBulkFunctionFactFactory().updateFunctionFact((FunctionFactType)object);
-					break;
-				case FUNCTION:
-					BulkFactories.getBulkFunctionFactory().updateFunction((FunctionType)object);
-					break;
-				case OPERATION:
-					BulkFactories.getBulkOperationFactory().updateOperation((OperationType)object);
-					break;
-				case PATTERN:
-					BulkFactories.getBulkPatternFactory().updatePattern((PatternType)object);
-					break;
-				case POLICY:
-					BulkFactories.getBulkPolicyFactory().updatePolicy((PolicyType)object);
-					break;
-				case RULE:
-					BulkFactories.getBulkRuleFactory().updateRule((RuleType)object);
-					break;
-				case PERMISSION:
-					BulkFactories.getBulkPermissionFactory().updatePermission((BasePermissionType)object);
-					break;
-	
-				case ACCOUNT:
-					BulkFactories.getBulkAccountFactory().updateAccount((AccountType)object);
-					break;
-				case PERSON:
-					BulkFactories.getBulkPersonFactory().updatePerson((PersonType)object);
-					break;
-				case CONTACTINFORMATION:
-					BulkFactories.getBulkContactInformationFactory().updateContactInformation((ContactInformationType)object);
-					break;
-				case CONTACT:
-					BulkFactories.getBulkContactFactory().updateContact((ContactType)object);
-					break;
-				case ADDRESS:
-					BulkFactories.getBulkAddressFactory().updateAddress((AddressType)object);
-					break;
-				case STATISTICS:
-					BulkFactories.getBulkStatisticsFactory().updateStatistics((StatisticsType)object);
-					break;
-				case USER:
-					BulkFactories.getBulkUserFactory().updateUser((UserType)object);
-					break;
-				case DATA:
-					BulkFactories.getBulkDataFactory().updateData((DataType)object);
-					break;
-				case GROUP:
-					BulkFactories.getBulkGroupFactory().updateGroup((BaseGroupType)object);
-					break;
-				case ROLE:
-					BulkFactories.getBulkRoleFactory().updateRole((BaseRoleType)object);
-					break;
-				case TAG:
-					BulkFactories.getBulkTagFactory().updateTag((BaseTagType)object);
-					break;
-				default:
-					throw new FactoryException("Unhandled factory type: " + factoryType);
-			} // end switch
-			*/
+			
 		} // end for
 		
 	}
@@ -573,111 +395,7 @@ public class BulkFactory {
 	protected void writeSpool(FactoryEnumType factoryType) throws FactoryException{
 		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(factoryType);
 		iFact.writeSpool();
-		/*
-		switch(factoryType){
-			case ASYMMETRICKEY:
-				BulkFactories.getBulkAsymmetricKeyFactory().writeSpool(BulkFactories.getBulkAsymmetricKeyFactory().getDataTables().get(0).getName());
-				break;
-			case SYMMETRICKEY:
-				BulkFactories.getBulkSymmetricKeyFactory().writeSpool(BulkFactories.getBulkSymmetricKeyFactory().getDataTables().get(0).getName());
-				break;
-			case CONTROL:
-				BulkFactories.getBulkControlFactory().writeSpool(BulkFactories.getBulkControlFactory().getDataTables().get(0).getName());
-				break;
-			case CREDENTIAL:
-				BulkFactories.getBulkCredentialFactory().writeSpool(BulkFactories.getBulkCredentialFactory().getDataTables().get(0).getName());
-
-				break;
-			case FACT:
-				BulkFactories.getBulkFactFactory().writeSpool(BulkFactories.getBulkFactFactory().getDataTables().get(0).getName());
-				break;
-			case FUNCTIONFACT:
-				BulkFactories.getBulkFunctionFactFactory().writeSpool(BulkFactories.getBulkFunctionFactFactory().getDataTables().get(0).getName());
-				break;
-			case FUNCTION:
-				BulkFactories.getBulkFunctionFactory().writeSpool(BulkFactories.getBulkFunctionFactory().getDataTables().get(0).getName());
-				break;
-			case FUNCTIONPARTICIPATION:
-				BulkFactories.getBulkFunctionParticipationFactory().writeSpool(BulkFactories.getBulkFunctionParticipationFactory().getDataTables().get(0).getName());
-				break;
-			case POLICYPARTICIPATION:
-				BulkFactories.getBulkPolicyParticipationFactory().writeSpool(BulkFactories.getBulkPolicyParticipationFactory().getDataTables().get(0).getName());
-				break;
-			case RULEPARTICIPATION:
-				BulkFactories.getBulkRuleParticipationFactory().writeSpool(BulkFactories.getBulkRuleParticipationFactory().getDataTables().get(0).getName());
-				break;
-
-			case OPERATION:
-				BulkFactories.getBulkOperationFactory().writeSpool(BulkFactories.getBulkOperationFactory().getDataTables().get(0).getName());
-				break;
-			case PATTERN:
-				BulkFactories.getBulkPatternFactory().writeSpool(BulkFactories.getBulkPatternFactory().getDataTables().get(0).getName());
-				break;
-			case POLICY:
-				BulkFactories.getBulkPolicyFactory().writeSpool(BulkFactories.getBulkPolicyFactory().getDataTables().get(0).getName());
-				break;
-			case RULE:
-				BulkFactories.getBulkRuleFactory().writeSpool(BulkFactories.getBulkRuleFactory().getDataTables().get(0).getName());
-				break;
-			case PERMISSION:
-				BulkFactories.getBulkPermissionFactory().writeSpool(BulkFactories.getBulkPermissionFactory().getDataTables().get(0).getName());
-				break;
-
-			case ACCOUNT:
-				BulkFactories.getBulkAccountFactory().writeSpool(BulkFactories.getBulkAccountFactory().getDataTables().get(0).getName());
-				break;
-			case PERSON:
-				BulkFactories.getBulkPersonFactory().writeSpool(BulkFactories.getBulkPersonFactory().getDataTables().get(0).getName());
-				break;
-			case PERSONPARTICIPATION:
-				BulkFactories.getBulkPersonParticipationFactory().writeSpool(BulkFactories.getBulkPersonParticipationFactory().getDataTables().get(0).getName());
-				break;
-			case CONTACTINFORMATION:
-				BulkFactories.getBulkContactInformationFactory().writeSpool(BulkFactories.getBulkContactInformationFactory().getDataTables().get(0).getName());
-				break;
-			case CONTACTINFORMATIONPARTICIPATION:
-				BulkFactories.getBulkContactInformationParticipationFactory().writeSpool(BulkFactories.getBulkContactInformationParticipationFactory().getDataTables().get(0).getName());
-				break;
-			case CONTACT:
-				BulkFactories.getBulkContactFactory().writeSpool(BulkFactories.getBulkContactFactory().getDataTables().get(0).getName());
-				break;
-			case ADDRESS:
-				BulkFactories.getBulkAddressFactory().writeSpool(BulkFactories.getBulkAddressFactory().getDataTables().get(0).getName());
-				break;
-			case STATISTICS:
-				BulkFactories.getBulkStatisticsFactory().writeSpool(BulkFactories.getBulkStatisticsFactory().getDataTables().get(0).getName());
-				break;
-			case USER:
-				BulkFactories.getBulkUserFactory().writeSpool(BulkFactories.getBulkUserFactory().getDataTables().get(0).getName());
-				break;
-			case DATA:
-				BulkFactories.getBulkDataFactory().writeSpool(BulkFactories.getBulkDataFactory().getDataTables().get(0).getName());
-				break;
-			case DATAPARTICIPATION:
-				BulkFactories.getBulkDataParticipationFactory().writeSpool(BulkFactories.getBulkDataParticipationFactory().getDataTables().get(0).getName());
-				break;
-			case GROUP:
-				BulkFactories.getBulkGroupFactory().writeSpool(BulkFactories.getBulkGroupFactory().getDataTables().get(0).getName());
-				break;
-			case GROUPPARTICIPATION:
-				BulkFactories.getBulkGroupParticipationFactory().writeSpool(BulkFactories.getBulkGroupParticipationFactory().getDataTables().get(0).getName());
-				break;
-			case ROLE:
-				BulkFactories.getBulkRoleFactory().writeSpool(BulkFactories.getBulkRoleFactory().getDataTables().get(0).getName());
-				break;
-			case ROLEPARTICIPATION:
-				BulkFactories.getBulkRoleParticipationFactory().writeSpool(BulkFactories.getBulkRoleParticipationFactory().getDataTables().get(0).getName());
-				break;
-			case TAG:
-				BulkFactories.getBulkTagFactory().writeSpool(BulkFactories.getBulkTagFactory().getDataTables().get(0).getName());
-				break;
-			case TAGPARTICIPATION:
-				BulkFactories.getBulkTagParticipationFactory().writeSpool(BulkFactories.getBulkTagParticipationFactory().getDataTables().get(0).getName());
-				break;
-			default:
-				throw new FactoryException("Unhandled factory type: " + factoryType);
-		}		
-		*/
+		
 	}
 	protected void writeObject(BulkSessionType session, BulkEntryType entry) throws FactoryException, DataAccessException, ArgumentException{
 		writePreparedObject(session,entry);
@@ -688,227 +406,23 @@ public class BulkFactory {
 		///
 		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(entry.getFactoryType());
 		iFact.mapBulkIds(entry.getObject());
-		/*
-		switch(entry.getFactoryType()){
-			case ASYMMETRICKEY:
-				BulkFactories.getBulkAsymmetricKeyFactory().mapBulkIds(entry.getObject());
-				break;
-			case SYMMETRICKEY:
-				BulkFactories.getBulkSymmetricKeyFactory().mapBulkIds(entry.getObject());
-				break;
-			case CONTROL:
-				BulkFactories.getBulkControlFactory().mapBulkIds(entry.getObject());
-				break;
-			case CREDENTIAL:
-				BulkFactories.getBulkCredentialFactory().mapBulkIds(entry.getObject());
-				break;
-			case FACT:
-				BulkFactories.getBulkFactFactory().mapBulkIds(entry.getObject());
-				break;
-			case FUNCTIONFACT:
-				BulkFactories.getBulkFunctionFactFactory().mapBulkIds(entry.getObject());
-				break;
-			case FUNCTION:
-				BulkFactories.getBulkFunctionFactory().mapBulkIds(entry.getObject());
-				break;
-			case OPERATION:
-				BulkFactories.getBulkOperationFactory().mapBulkIds(entry.getObject());
-				break;
-			case PATTERN:
-				BulkFactories.getBulkPatternFactory().mapBulkIds(entry.getObject());
-				break;
-			case POLICY:
-				BulkFactories.getBulkPolicyFactory().mapBulkIds(entry.getObject());
-				break;
-			case RULE:
-				BulkFactories.getBulkRuleFactory().mapBulkIds(entry.getObject());
-				break;
-			case PERMISSION:
-				BulkFactories.getBulkPermissionFactory().mapBulkIds(entry.getObject());
-				break;
-			case ACCOUNT:
-				BulkFactories.getBulkAccountFactory().mapBulkIds(entry.getObject());
-				break;
-			case PERSON:
-				BulkFactories.getBulkPersonFactory().mapBulkIds(entry.getObject());
-				break;
-			case ADDRESS:
-				BulkFactories.getBulkAddressFactory().mapBulkIds(entry.getObject());
-				break;
-			case CONTACT:
-				BulkFactories.getBulkContactFactory().mapBulkIds(entry.getObject());
-				break;
-			case USER:
-				BulkFactories.getBulkUserFactory().mapBulkIds(entry.getObject());
-				break;
-			case STATISTICS:
-				BulkFactories.getBulkStatisticsFactory().mapBulkIds(entry.getObject());
-				break;
-			case CONTACTINFORMATION:
-				BulkFactories.getBulkContactInformationFactory().mapBulkIds(entry.getObject());
-				break;
-			case DATA:
-				BulkFactories.getBulkDataFactory().mapBulkIds(entry.getObject());
-				break;
-			case GROUP:
-				BulkFactories.getBulkGroupFactory().mapBulkIds(entry.getObject());
-				break;
-			case ROLE:
-				BulkFactories.getBulkRoleFactory().mapBulkIds(entry.getObject());
-				break;
-			case TAG:
-				BulkFactories.getBulkTagFactory().mapBulkIds(entry.getObject());
-				break;
-		}
-		*/
+		
 	}
 	protected void writePreparedObject(BulkSessionType session,BulkEntryType entry) throws FactoryException, ArgumentException, DataAccessException{
 		BaseParticipantType part = null;
 		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(entry.getFactoryType());
-		iFact.add(entry.getObject());
 		if(iFact.isParticipation()){
 			updateParticipantIds((BaseParticipantType)entry.getObject());
 		}
-		else if(entry.getFactoryType().equals(FactoryEnumType.USER)){
+		iFact.add(entry.getObject());
+		if(entry.getFactoryType().equals(FactoryEnumType.USER)){
 			UserType user = (UserType)entry.getObject();
 			if(user.getContactInformation() == null){
-				ContactInformationType cit = Factories.getContactInformationFactory().newContactInformation((UserType)entry.getObject());
+				ContactInformationType cit = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation((UserType)entry.getObject());
 				createBulkEntry(session.getSessionId(), FactoryEnumType.CONTACTINFORMATION, cit);
 			}
 		}
-		/*
-		switch(entry.getFactoryType()){
-			case ASYMMETRICKEY:
-				BulkFactories.getBulkAsymmetricKeyFactory().addAsymmetricKey((SecurityType)entry.getObject());
-				break;
-			case SYMMETRICKEY:
-				BulkFactories.getBulkSymmetricKeyFactory().addSymmetricKey((SecurityType)entry.getObject());
-				break;
-			case CONTROL:
-				BulkFactories.getBulkControlFactory().addControl((ControlType)entry.getObject());
-				break;
-			case CREDENTIAL:
-				BulkFactories.getBulkCredentialFactory().addCredential((CredentialType)entry.getObject());
-				break;
-
-			case FACT:
-				BulkFactories.getBulkFactFactory().addFact((FactType)entry.getObject());
-				break;
-			case FUNCTIONFACT:
-				BulkFactories.getBulkFunctionFactFactory().addFunctionFact((FunctionFactType)entry.getObject());
-				break;
-			case FUNCTION:
-				BulkFactories.getBulkFunctionFactory().addFunction((FunctionType)entry.getObject());
-				break;
-			case OPERATION:
-				BulkFactories.getBulkOperationFactory().addOperation((OperationType)entry.getObject());
-				break;
-			case PATTERN:
-				BulkFactories.getBulkPatternFactory().addPattern((PatternType)entry.getObject());
-				break;
-			case POLICY:
-				BulkFactories.getBulkPolicyFactory().addPolicy((PolicyType)entry.getObject());
-				break;
-			case RULE:
-				BulkFactories.getBulkRuleFactory().addRule((RuleType)entry.getObject());
-				break;
-			case PERMISSION:
-				BulkFactories.getBulkPermissionFactory().addPermission((BasePermissionType)entry.getObject());
-				break;
-			case ADDRESS:
-				BulkFactories.getBulkAddressFactory().addAddress((AddressType)entry.getObject());
-				break;
-			case ACCOUNT:
-				AccountType account = (AccountType)entry.getObject();
-				BulkFactories.getBulkAccountFactory().addAccount(account,false);
-				/// Do not allocate contact information through add user
-				/// If other contact info is added during the same session then the bulk insert statements for the factory type will be different
-				/// And this will cause unexpected results.
-				/// The same problem affects any other dirty entity writes
-				///
-				/ *
-				if(account.getContactInformation() == null){
-					ContactInformationType cit = Factories.getContactInformationFactory().newContactInformation((UserType)entry.getObject());
-					createBulkEntry(session.getSessionId(), FactoryEnumType.CONTACTINFORMATION, cit);
-				}
-				* /
-				break;
-			case CONTACT:
-				BulkFactories.getBulkContactFactory().addContact((ContactType)entry.getObject());
-				break;
-			case PERSON:
-				BulkFactories.getBulkPersonFactory().addPerson((PersonType)entry.getObject());
-				break;
-			case PERSONPARTICIPATION:
-				part = (BaseParticipantType)entry.getObject();
-				updateParticipantIds(part);
-				BulkFactories.getBulkPersonParticipationFactory().add(part);
-				break;
-
-			case STATISTICS:
-				BulkFactories.getBulkStatisticsFactory().addStatistics((StatisticsType)entry.getObject());
-				break;
-			case CONTACTINFORMATION:
-				BulkFactories.getBulkContactInformationFactory().addContactInformation((ContactInformationType)entry.getObject());
-				break;
-			case CONTACTINFORMATIONPARTICIPATION:
-				part = (BaseParticipantType)entry.getObject();
-				updateParticipantIds(part);
-				BulkFactories.getBulkContactInformationParticipationFactory().add(part);
-				break;
-
-			case USER:
-				/// Do not allocate contact information through add user
-				/// If other contact info is added during the same session then the bulk insert statements for the factory type will be different
-				/// And this will cause unexpected results.
-				/// The same problem affects any other dirty entity writes
-				///
-				UserType user = (UserType)entry.getObject();
-				BulkFactories.getBulkUserFactory().addUser(user,false);
-				if(user.getContactInformation() == null){
-					ContactInformationType cit = Factories.getContactInformationFactory().newContactInformation((UserType)entry.getObject());
-					createBulkEntry(session.getSessionId(), FactoryEnumType.CONTACTINFORMATION, cit);
-				}
-				break;
-			case DATA:
-				
-				BulkFactories.getBulkDataFactory().addData((DataType)entry.getObject());
-				break;
-			case DATAPARTICIPATION:
-				part = (BaseParticipantType)entry.getObject();
-				updateParticipantIds(part);
-				BulkFactories.getBulkDataParticipationFactory().add(part);
-				break;
-			case GROUP:
-				
-				BulkFactories.getBulkGroupFactory().addGroup((BaseGroupType)entry.getObject());
-				break;
-			case GROUPPARTICIPATION:
-				part = (BaseParticipantType)entry.getObject();
-				updateParticipantIds(part);
-				BulkFactories.getBulkGroupParticipationFactory().add(part);
-				break;
-			case ROLE:
-				
-				BulkFactories.getBulkRoleFactory().addRole((BaseRoleType)entry.getObject());
-				break;
-			case ROLEPARTICIPATION:
-				part = (BaseParticipantType)entry.getObject();
-				updateParticipantIds(part);
-				BulkFactories.getBulkRoleParticipationFactory().add(part);
-				break;
-			case TAG:
-				BulkFactories.getBulkTagFactory().add((BaseTagType)entry.getObject());
-				break;
-			case TAGPARTICIPATION:
-				part = (BaseParticipantType)entry.getObject();
-				updateParticipantIds(part);
-				BulkFactories.getBulkTagParticipationFactory().add(part);
-				break;
-			default:
-				throw new FactoryException("Unhandled factory type: " + entry.getFactoryType());
-		}
-	*/
+		
 	}
 	public long getMappedId(long temporaryId){
 		long out_id = 0;
@@ -1095,7 +609,7 @@ public class BulkFactory {
 		}
 		
 		if(object.getId() != 0L){
-			logger.error("Object id is already set");
+			logger.error("Object id is already set to " + object.getObjectId());
 			throw new ArgumentException("Object id is already set");
 		}
 		if(object.getNameType() == NameEnumType.UNKNOWN){

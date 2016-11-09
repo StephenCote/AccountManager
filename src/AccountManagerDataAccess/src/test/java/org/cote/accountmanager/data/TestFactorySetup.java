@@ -17,32 +17,31 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.StreamUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 public class TestFactorySetup {
-	public static final Logger logger = Logger.getLogger(TestFactorySetup.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestFactorySetup.class);
 
 	private static String testAdminPassword = "password1";
 	private static boolean tearDown = true;
 	
 	@Before
 	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
+
 		ConnectionFactory cf = ConnectionFactory.getInstance();
 		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
 		cf.setDriverClassName("org.postgresql.Driver");
@@ -60,7 +59,7 @@ public class TestFactorySetup {
 	public void testFactoryTearDown(){
 		if(tearDown == false) return;
 		
-		String sqlFile = "/Users/Steve/Projects/Source/db/AM4_PG9_Schema.txt";
+		String sqlFile = "/Users/Steve/Projects/Source/db/AM6_PG9_Schema.sql";
 		String sql = new String(StreamUtil.fileToBytes(sqlFile));
 		boolean error = false;
 		try{
@@ -72,7 +71,7 @@ public class TestFactorySetup {
 		catch(SQLException sqe){
 			error = true;
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		assertFalse("Error occurred",error);
 		
@@ -86,17 +85,9 @@ public class TestFactorySetup {
 		boolean error = false;
 		try {
 			setup = FactoryDefaults.setupAccountManager("password1");
-		} catch (ArgumentException e) {
+		} catch (NullPointerException | ArgumentException | DataAccessException | FactoryException e) {
 			
-			logger.error(e.getStackTrace());
-			error = true;
-		} catch (DataAccessException e) {
-			
-			logger.error(e.getStackTrace());
-			error = true;
-		} catch (FactoryException e) {
-			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			error = true;
 		}
 		assertFalse("Error occurred", error);
@@ -114,36 +105,32 @@ public class TestFactorySetup {
 		try{
 			adminRole = RoleService.getAccountAdministratorUserRole(Factories.getPublicOrganization().getId());
 			assertNotNull("Role is null", adminRole);
-			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getRootDirectory(Factories.getSystemOrganization().getId()));
-			root = Factories.getUserFactory().getByName("Root", Factories.getSystemOrganization().getId());
+			rootAcct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName("Root", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(Factories.getSystemOrganization().getId()));
+			root = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Root", Factories.getSystemOrganization().getId());
 			assertNotNull("Root is null", root);
-			Factories.getUserFactory().populate(root);
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(root);
 			assertTrue("Root not populated", root.getPopulated());
-			admin = Factories.getUserFactory().getByName("Admin", Factories.getPublicOrganization().getId());
-			doc = Factories.getUserFactory().getByName("Document Control", Factories.getPublicOrganization().getId());
+			admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", Factories.getPublicOrganization().getId());
+			doc = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Document Control", Factories.getPublicOrganization().getId());
 			assertNotNull("Admin is null", admin);
 			assertNotNull("Doc Control is null", doc);
-			Factories.getUserFactory().populate(admin);
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(admin);
 			assertTrue("Admin not populated", admin.getPopulated());
 			assertTrue("Admin not in admin role", RoleService.getIsUserInRole(adminRole, admin));
 			assertTrue("Root not in admin role", RoleService.getIsUserInRole(adminRole, root));
 			assertFalse("Doc control is not an admin", RoleService.getIsUserInRole(adminRole, doc));
 			
-			List<UserType> users = Factories.getRoleParticipationFactory().getUsersInRole(adminRole);
+			List<UserType> users = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUsersInRole(adminRole);
 			logger.info(users.size() + " in role " + adminRole.getName());
 			for(int i = 0; i < users.size(); i++){
 				logger.info("#" + i + "- id: " + users.get(i).getId() + " " + users.get(i).getName());
 			}
-		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
-		}
 		
+	} catch (NullPointerException | ArgumentException | FactoryException e) {
+		
+		logger.error("Error",e);
+	}
+
 		
 	}
 	

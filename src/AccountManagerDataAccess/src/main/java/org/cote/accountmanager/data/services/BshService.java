@@ -32,10 +32,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.DataType;
@@ -45,6 +48,7 @@ import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.DataUtil;
 
 import bsh.EvalError;
@@ -54,7 +58,7 @@ import bsh.Parser;
 
 public class BshService {
 
-	public static final Logger logger = Logger.getLogger(BshService.class.getName());
+	public static final Logger logger = LogManager.getLogger(BshService.class);
 	//private static ScriptEngine jsEngine = null;
 	//private static Map<String,CompiledScript> jsCompiled = new HashMap<String,CompiledScript>();
 
@@ -63,7 +67,7 @@ public class BshService {
 		if(func.getFunctionType() != FunctionEnumType.JAVA) throw new ArgumentException("FunctionType '" + func.getFunctionType().toString() + "' is not applicable");
 		DataType data = func.getFunctionData();
 		if(data == null && func.getSourceUrn() != null){
-			data = Factories.getDataFactory().getByUrn(func.getSourceUrn());
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(func.getSourceUrn());
 		}
 		if(data == null) throw new ArgumentException("Function '" + func.getName() + "' data is null");
 		else if(data.getDetailsOnly() == true) throw new ArgumentException("Function data is not properly loaded");
@@ -77,7 +81,7 @@ public class BshService {
 			value = DataUtil.getValue(data);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return runWithParams(user,params,value,false);
 	}
@@ -87,7 +91,7 @@ public class BshService {
 			bytes = script.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return runWithParams(user,params,bytes,parseOnly);
 	}
@@ -99,7 +103,7 @@ public class BshService {
 		boolean bComp = false;
 		try {
 			if(contextUser != null){
-				Factories.getUserFactory().populate(contextUser);
+				Factories.getNameIdFactory(FactoryEnumType.USER).populate(contextUser);
 				Factories.getAttributeFactory().populateAttributes(contextUser);
 			}
 
@@ -131,19 +135,19 @@ public class BshService {
 		} catch (EvalError e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (IOException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(bComp) AuditService.permitResult(audit, "Completed execution");
 		else AuditService.denyResult(audit, "Failed to complete execution");
@@ -154,7 +158,7 @@ public class BshService {
 		Interpreter intr = new Interpreter();
 		try{
 			if(contextUser != null){
-				DirectoryGroupType homeDir = Factories.getGroupFactory().getUserDirectory(contextUser);
+				DirectoryGroupType homeDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(contextUser);
 				intr.set("user",contextUser);
 				intr.set("organizationId", contextUser.getOrganizationId());
 				intr.set("home",homeDir);
@@ -168,18 +172,10 @@ public class BshService {
 				}
 			}
 		}
-		catch (EvalError e) {
+		catch (EvalError | FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
-		} catch (FactoryException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return intr;
 	}
@@ -190,13 +186,13 @@ public class BshService {
 		buff.append("import org.cote.accountmanager.objects.*;\n");
 		buff.append("import org.cote.accountmanager.objects.types.*;\n");
 		buff.append("import org.cote.accountmanager.data.*;\n");
-		buff.append("import org.apache.log4j.Logger;\n");
-		buff.append("Logger logger = Logger.getLogger(\"BeanShell\");\n");
+		buff.append("import org.apache.logging.log4j.LogManager;\nimport org.apache.logging.log4j.Logger;\n");
+		buff.append("Logger logger = LogManager.getLogger(\"BeanShell\");\n");
 		try {
 			outb = buff.toString().getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return outb;
 	}

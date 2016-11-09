@@ -65,6 +65,7 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.objects.types.TagEnumType;
 
 public class TagParticipationFactory extends ParticipationFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.TAGPARTICIPATION, TagParticipationFactory.class); }
 	public TagParticipationFactory(){
 		super(ParticipationEnumType.TAG, "tagparticipation");
 		this.haveAffect = false;
@@ -171,7 +172,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 		List<AccountParticipantType> list = getAccountParticipants(account);
 		if(list.size() == 0) return new ArrayList<BaseTagType>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
-		return Factories.getTagFactory().listInGroup(null, TagEnumType.ACCOUNT, field, 0, 0,account.getOrganizationId());
+		return ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).listInGroup(null, TagEnumType.ACCOUNT, field, 0, 0,account.getOrganizationId());
 	}
 	
 	public List<BaseTagType> getUserTags(UserType user) throws FactoryException, ArgumentException
@@ -179,28 +180,28 @@ public class TagParticipationFactory extends ParticipationFactory {
 		List<UserParticipantType> list = getUserParticipants(user);
 		if(list.size() == 0) return new ArrayList<BaseTagType>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
-		return Factories.getTagFactory().listInGroup(null, TagEnumType.USER, field, 0, 0,user.getOrganizationId());
+		return ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).listInGroup(null, TagEnumType.USER, field, 0, 0,user.getOrganizationId());
 	}
 	public List<BaseTagType> getPersonTags(PersonType person) throws FactoryException, ArgumentException
 	{
 		List<PersonParticipantType> list = getPersonParticipants(person);
 		if(list.size() == 0) return new ArrayList<BaseTagType>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
-		return Factories.getTagFactory().listInGroup(null, TagEnumType.PERSON, field, 0, 0,person.getOrganizationId());
+		return ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).listInGroup(null, TagEnumType.PERSON, field, 0, 0,person.getOrganizationId());
 	}
 	public List<BaseTagType> getDataTags(DataType data) throws FactoryException, ArgumentException
 	{
 		List<DataParticipantType> list = getDataParticipants(data);
 		if(list.size() == 0) return new ArrayList<BaseTagType>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
-		return Factories.getTagFactory().listInGroup(null, TagEnumType.DATA, field, 0, 0,data.getOrganizationId());
+		return ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).listInGroup(null, TagEnumType.DATA, field, 0, 0,data.getOrganizationId());
 	}
 	public List<BaseTagType> getGroupTags(BaseGroupType group) throws FactoryException, ArgumentException
 	{
 		List<GroupParticipantType> list = getGroupParticipants(group);
 		if(list.size() == 0) return new ArrayList<BaseTagType>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
-		return Factories.getTagFactory().listInGroup(null, TagEnumType.GROUP, field, 0, 0,group.getOrganizationId());
+		return ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).listInGroup(null, TagEnumType.GROUP, field, 0, 0,group.getOrganizationId());
 	}
 	public List<PersonParticipantType> getPersonParticipants(PersonType person) throws FactoryException, ArgumentException
 	{
@@ -291,7 +292,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 		
 			while (rset.next())
 			{
-				BaseParticipantType bpt = Factories.getTagParticipationFactory().newParticipant(type);
+				BaseParticipantType bpt = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).newParticipant(type);
 				bpt.setOrganizationId(org);
 				//bpt.setParticipationId(rset.getLong(1));
 				bpt.setParticipantId(rset.getLong(1));
@@ -308,7 +309,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 			
 		}
 		catch(SQLException sqe){
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 			throw new FactoryException(sqe.getMessage());
 		}
 		finally{
@@ -316,7 +317,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 
@@ -365,7 +366,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 			
 		}
 		catch(SQLException sqe){
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 			throw new FactoryException(sqe.getMessage());
 		}
 		finally{
@@ -373,7 +374,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return count;

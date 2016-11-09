@@ -61,6 +61,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class FunctionFactory extends NameIdGroupFactory {
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.FUNCTION, FunctionFactory.class); }
 	public FunctionFactory(){
 		super();
 		this.tableNames.add("function");
@@ -84,7 +85,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 	{
 		FunctionType func = (FunctionType)obj;
 		if(func.getPopulated()) return;
-		func.getFacts().addAll(Factories.getFunctionParticipationFactory().getFunctionFactsFromParticipation(func));
+		func.getFacts().addAll(((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).getFunctionFactsFromParticipation(func));
 		Collections.sort(func.getFacts(),new LogicalTypeComparator());
 		func.setPopulated(true);
 		updateToCache(func);
@@ -132,9 +133,9 @@ public class FunctionFactory extends NameIdGroupFactory {
 				BaseParticipantType part = null;
 
 				for(int i = 0; i < obj.getFacts().size();i++){
-					part = Factories.getFunctionParticipationFactory().newFunctionFactParticipation(cobj,obj.getFacts().get(i));
-					if(bulkMode) BulkFactories.getBulkFunctionParticipationFactory().add(part);
-					else Factories.getFunctionParticipationFactory().add(part);
+					part = ((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).newFunctionFactParticipation(cobj,obj.getFacts().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).add(part);
+					else ((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).add(part);
 				}
 				return true;
 			}
@@ -177,18 +178,18 @@ public class FunctionFactory extends NameIdGroupFactory {
 			try{
 				
 				Set<Long> set = new HashSet<Long>();
-				BaseParticipantType[] maps = Factories.getFunctionParticipationFactory().getFunctionFactParticipations(data).toArray(new BaseParticipantType[0]);
+				BaseParticipantType[] maps = ((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).getFunctionFactParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getFacts().size();i++){
 					if(set.contains(data.getFacts().get(i).getId())== false){
-						Factories.getFunctionParticipationFactory().add(Factories.getFunctionParticipationFactory().newFunctionFactParticipation(data,data.getFacts().get(i)));
+						((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).add(((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).newFunctionFactParticipation(data,data.getFacts().get(i)));
 					}
 					else{
 						set.remove(data.getFacts().get(i).getId());
 					}
 				}
-				Factories.getFunctionParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
+				((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				out_bool = true;
 			}
 			catch(ArgumentException ae){
@@ -230,9 +231,9 @@ public class FunctionFactory extends NameIdGroupFactory {
 		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
-			Factories.getFunctionParticipationFactory().deleteParticipations(ids, organizationId);
+			((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).deleteParticipations(ids, organizationId);
 			/*
-			Factories.getFunctionParticipationFactory().deleteParticipations(ids, organizationId);
+			((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).deleteParticipations(ids, organizationId);
 			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
 			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
 			*/

@@ -33,17 +33,20 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServlet;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.DatabaseMaintenance;
 import org.cote.accountmanager.data.services.SessionDataMaintenance;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.util.ArticleUtil;
@@ -52,7 +55,7 @@ import org.cote.util.ArticleUtil;
  * Servlet implementation class AccountManagerFactoryInit
  */
 public class AccountManagerFactoryInit implements ServletContextListener {
-	public static final Logger logger = Logger.getLogger(AccountManagerFactoryInit.class.getName());
+	public static final Logger logger = LogManager.getLogger(AccountManagerFactoryInit.class);
 	private static final long serialVersionUID = 1L;
 	private static DatabaseMaintenance dbMaintenance = null;
 	private static AuditDataMaintenance auditThread = null;
@@ -126,12 +129,13 @@ public class AccountManagerFactoryInit implements ServletContextListener {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		
 		logger.info("Priming Factories");
 		/// invoke clear caches to queue up the table schemas
 		///
+		Factories.warmUp();
 		Factories.clearCaches();
 		
 		logger.info("Starting Maintenance Threads");
@@ -148,13 +152,13 @@ public class AccountManagerFactoryInit implements ServletContextListener {
 		OrganizationType org = null;
 		if(orgPath != null && orgPath.length() > 0){
 			try {
-				org = Factories.getOrganizationFactory().findOrganization(context.getInitParameter("organization.default"));
+				org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(context.getInitParameter("organization.default"));
 			} catch (FactoryException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			} catch (ArgumentException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			for(int i = 0; i < ArticleUtil.ARTICLE_ROLES.length; i++){
 				UserRoleType role = ArticleUtil.getRoleByName(ArticleUtil.ARTICLE_ROLES[i], org.getId());

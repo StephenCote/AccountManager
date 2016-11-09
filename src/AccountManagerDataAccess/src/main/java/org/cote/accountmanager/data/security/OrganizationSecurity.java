@@ -60,7 +60,7 @@ public class OrganizationSecurity {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			return null;
 		}
@@ -89,7 +89,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 			System.out.println(sqe.getMessage());
 		}
 
@@ -109,7 +109,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 			System.out.println(sqe.getMessage());
 		}
 		finally{
@@ -117,7 +117,7 @@ public class OrganizationSecurity {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		///System.out.println(new String(public_key));
@@ -158,7 +158,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 			System.out.println(sqe.getMessage());
 		}
 
@@ -187,7 +187,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException e)
 		{
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			System.out.println(e.getMessage());
 		}
 		finally{
@@ -195,7 +195,7 @@ public class OrganizationSecurity {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return ret;
@@ -224,7 +224,7 @@ public class OrganizationSecurity {
 			connection.close();
 		} catch (SQLException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		return ret;
@@ -275,7 +275,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 			System.out.println(sqe.getMessage());
 		}
 
@@ -308,7 +308,7 @@ public class OrganizationSecurity {
 		}
 		catch (Exception sqe)
 		{
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 			System.out.println(sqe.getMessage());
 		}
 

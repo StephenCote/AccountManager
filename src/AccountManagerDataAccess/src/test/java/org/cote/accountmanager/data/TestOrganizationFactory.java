@@ -4,27 +4,23 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 import org.cote.accountmanager.util.SecurityUtil;
 import org.junit.After;
 import org.junit.Test;
-
 public class TestOrganizationFactory{
 	private static String testOrgName = null;
-	public static final Logger logger = Logger.getLogger(TestOrganizationFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestOrganizationFactory.class);
 	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
+
 		ConnectionFactory cf = ConnectionFactory.getInstance();
 		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
 		cf.setDriverClassName("org.postgresql.Driver");
@@ -46,7 +42,7 @@ public class TestOrganizationFactory{
 		
 		logger.info("Id: " + new_org.getId());
 		logger.info("Ref Id: " + new_org.getReferenceId());
-		OrganizationFactory org_factory = Factories.getOrganizationFactory();
+		OrganizationFactory org_factory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
 		OrganizationType devOrg = Factories.getDevelopmentOrganization();
 		new_org.setParentId(devOrg.getId());
 		try {
@@ -55,12 +51,12 @@ public class TestOrganizationFactory{
 			}
 		} catch (FactoryException e2) {
 			
-			logger.error(e2.getStackTrace());
+			logger.error("Error",e2);
 			logger.error(e2.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		logger.info("Added " + testOrgName + " as " + new_org.getId());
 		assertFalse("An error occurred", error);
@@ -75,7 +71,7 @@ public class TestOrganizationFactory{
 		new_org.setName(orgName);
 		new_org.setOrganizationType(OrganizationEnumType.DEVELOPMENT);
 
-		OrganizationFactory org_factory = Factories.getOrganizationFactory();
+		OrganizationFactory org_factory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
 		OrganizationType devOrg = Factories.getDevelopmentOrganization();
 		OrganizationType parentOrg = null;
 		
@@ -91,12 +87,12 @@ public class TestOrganizationFactory{
 			}
 		} catch (FactoryException e2) {
 			
-			logger.error(e2.getStackTrace());
+			logger.error("Error",e2);
 			logger.error(e2.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		logger.info("Added " + testOrgName + " as " + new_org.getId());
 		assertFalse("An error occurred", error);
@@ -109,13 +105,13 @@ public class TestOrganizationFactory{
 		OrganizationType new_org = null;
 		try{
 			logger.info("Read clean: " + testOrgName + " in " + Factories.getDevelopmentOrganization().getId());
-			new_org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 			assertNotNull("Get organization " + testOrgName + "->" + Factories.getDevelopmentOrganization().getId() + " by name was null", new_org);
 			logger.info("Read from cache by id: " + new_org.getId());
-			new_org = Factories.getOrganizationFactory().getOrganizationById(new_org.getId());
+			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(new_org.getId());
 			assertNotNull("Get organization from cache by id was null", new_org);
 			logger.info("Read from cache by name and parent");
-			new_org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 			assertNotNull("Get oranization from cache by name was null null", new_org);
 		}
 		catch(FactoryException fe){
@@ -123,7 +119,7 @@ public class TestOrganizationFactory{
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertFalse("Error",error);
 
@@ -141,14 +137,14 @@ public class TestOrganizationFactory{
 		OrganizationType new_org = null;
 		try{
 			logger.info("Read clean");
-			new_org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertFalse("Error",error);
 		assertNotNull("Org is null", new_org);
@@ -159,16 +155,16 @@ public class TestOrganizationFactory{
 		String test_data = "This is some test data.";
 		byte[] enc = SecurityUtil.encipher(bean, test_data.getBytes());
 
-		Factories.getOrganizationFactory().clearCache();
+		((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).clearCache();
 		try{
-			new_org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		bean = KeyService.getPrimaryAsymmetricKey(new_org.getId());
 				//OrganizationSecurity.getSecurityBean(new_org);
@@ -183,21 +179,21 @@ public class TestOrganizationFactory{
 		boolean error = false;
 		String newName = "Updated Example - " + System.currentTimeMillis();
 		try{
-			OrganizationType org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 			org.setName(newName);
-			updated = Factories.getOrganizationFactory().update(org);
+			updated = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).update(org);
 			if(updated){
 				testOrgName = newName;
 			}
 
 		}
 		catch(FactoryException fe){
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertFalse("An error occurred", error);
 		assertTrue("Organization was not updated", updated);
@@ -207,17 +203,17 @@ public class TestOrganizationFactory{
 		boolean deleted = false;
 		boolean error = false;
 		try{
-			OrganizationType org = Factories.getOrganizationFactory().getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 
-			deleted = Factories.getOrganizationFactory().delete(org);
+			deleted = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).delete(org);
 		}
 		catch(FactoryException fe){
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertFalse("An error occurred", error);
 		assertTrue("Did not delete org", deleted);

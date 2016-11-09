@@ -28,13 +28,18 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.FactoryBase;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.GroupParticipationFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
@@ -62,7 +67,7 @@ import org.cote.accountmanager.service.rest.BaseService;
 
 public class GroupServiceImpl  {
 	
-	public static final Logger logger = Logger.getLogger(GroupServiceImpl.class.getName());
+	public static final Logger logger = LogManager.getLogger(GroupServiceImpl.class);
 	
 	
 	public static boolean delete(BaseGroupType bean,HttpServletRequest request){
@@ -80,17 +85,17 @@ public class GroupServiceImpl  {
 		BaseGroupType parent = null;
 		logger.info("Reading " + name + " in #" + parentId + " in org #" + orgId);
 		try{
-			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(org != null && parentId > 0L) parent = Factories.getGroupFactory().getById(parentId, orgId);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(org != null && parentId > 0L) parent = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(parentId, orgId);
 			else logger.error("Organization id #" + orgId + " is null");
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		if(parent == null){
@@ -109,16 +114,16 @@ public class GroupServiceImpl  {
 		OrganizationType org = null;
 		BaseGroupType group = null;
 		try{
-			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(org != null) group = Factories.getGroupFactory().getById(parentId, orgId);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(org != null) group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(parentId, orgId);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(group == null){
 			System.out.println("Invalid parentId reference: " + parentId);
@@ -146,7 +151,7 @@ public class GroupServiceImpl  {
 			if(
 				AuthorizationService.canView(user, parentGroup)
 				||
-				RoleService.isFactoryReader(user,Factories.getGroupFactory(),parentGroup.getOrganizationId())
+				RoleService.isFactoryReader(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)),parentGroup.getOrganizationId())
 			){
 				AuditService.permitResult(audit, "Access authorized to list groups");
 				out_obj = getList(type,parentGroup,startRecord,recordCount,parentGroup.getOrganizationId() );
@@ -157,10 +162,10 @@ public class GroupServiceImpl  {
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;
@@ -181,15 +186,15 @@ public class GroupServiceImpl  {
 		GroupEnumType groupType = GroupEnumType.valueOf(type);
 		if(parentGroup == null) return dirs;
 		try {
-			dirs = Factories.getGroupFactory().getListByParent(groupType, parentGroup,  startIndex, recordCount, parentGroup.getOrganizationId());
+			dirs = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getListByParent(groupType, parentGroup,  startIndex, recordCount, parentGroup.getOrganizationId());
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(BaseService.enableExtendedAttributes){
 			for(int i = 0; i < dirs.size(); i++){
@@ -205,7 +210,7 @@ public class GroupServiceImpl  {
 		BaseGroupType group = null;
 		NameIdType obj = null;
 		try {
-			group = Factories.getGroupFactory().getGroupById(groupId, user.getOrganizationId());
+			group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(groupId, user.getOrganizationId());
 			if(group == null){
 				AuditService.denyResult(audit, "Group does not exist");
 				return out_bool;
@@ -259,13 +264,13 @@ public class GroupServiceImpl  {
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return out_bool;
 	}
@@ -298,23 +303,23 @@ public class GroupServiceImpl  {
 			if(
 				AuthorizationService.isMapOwner(user, targGroup)
 				||
-				RoleService.isFactoryAdministrator(user, Factories.getAccountFactory())
+				RoleService.isFactoryAdministrator(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)))
 				||
 				AuthorizationService.canView(user, targGroup)
 				||
-				RoleService.isFactoryReader(user, Factories.getGroupFactory())
+				RoleService.isFactoryReader(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)))
 			){
 				AuditService.permitResult(audit, "Access authorized to list groups in group");
 				switch(memberType){
 
 					case ACCOUNT:
-						out_obj = FactoryBase.convertList(Factories.getGroupParticipationFactory().getAccountsInGroup((AccountGroupType)targGroup));
+						out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getAccountsInGroup((AccountGroupType)targGroup));
 						break;
 					case PERSON:
-						out_obj = FactoryBase.convertList(Factories.getGroupParticipationFactory().getPersonsInGroup((PersonGroupType)targGroup));
+						out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getPersonsInGroup((PersonGroupType)targGroup));
 						break;
 					case USER:
-						out_obj = FactoryBase.convertList(Factories.getGroupParticipationFactory().getUsersInGroup((UserGroupType)targGroup));
+						out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getUsersInGroup((UserGroupType)targGroup));
 						break;
 					default:
 						break;
@@ -326,10 +331,10 @@ public class GroupServiceImpl  {
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;

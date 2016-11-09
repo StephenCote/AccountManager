@@ -23,16 +23,20 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public class ServiceUtil {
-	public static final Logger logger = Logger.getLogger(FactoryService.class.getName());
+	public static final Logger logger = LogManager.getLogger(FactoryService.class);
 	public static boolean isFactorySetup(){
 		boolean out_bool = false;
 		AccountType rootAcct = null;
@@ -53,22 +57,22 @@ public class ServiceUtil {
 				logger.error("Admin role in public org is null");
 				return out_bool;
 			}
-			rootAcct = Factories.getAccountFactory().getAccountByName("Root", Factories.getGroupFactory().getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
-			root = Factories.getUserFactory().getByName("Root", Factories.getSystemOrganization().getId());
+			rootAcct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName("Root", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
+			root = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Root", Factories.getSystemOrganization().getId());
 			if(rootAcct == null || root == null){
 				logger.error("Root account or root user is null");
 				return out_bool;
 			}
 			
-			Factories.getUserFactory().populate(root);
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(root);
 			
-			admin = Factories.getUserFactory().getByName("Admin", Factories.getPublicOrganization().getId());
-			doc = Factories.getUserFactory().getByName("Document Control", Factories.getPublicOrganization().getId());
+			admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", Factories.getPublicOrganization().getId());
+			doc = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Document Control", Factories.getPublicOrganization().getId());
 			if(admin == null || doc == null){
 				logger.error("Admin or Document Control user in public org was null");
 				return out_bool;
 			}
-			Factories.getUserFactory().populate(admin);
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(admin);
 			boolean adminHasRole = RoleService.getIsUserInRole(adminRole, admin);
 			boolean rootHasRole = RoleService.getIsUserInRole(adminRole, root);
 			boolean docHasRole = RoleService.getIsUserInRole(dataRole, doc);
@@ -93,11 +97,11 @@ public class ServiceUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return out_bool;
 	}

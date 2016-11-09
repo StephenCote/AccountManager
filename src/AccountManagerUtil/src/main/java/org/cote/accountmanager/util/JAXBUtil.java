@@ -35,10 +35,11 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.util.JAXBSource;
 import javax.xml.namespace.QName;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class JAXBUtil {
-	public static final Logger logger = Logger.getLogger(JAXBUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(JAXBUtil.class);
 	public static <U,T> T clone(Class<T> tClass, U map){
 		return clone(tClass,map,new QName("http://www.cote.org/accountmanager/objects"));
 	}

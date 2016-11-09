@@ -6,14 +6,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.types.SessionStatusEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.junit.Test;
 
 public class TestUserSession extends BaseDataAccessTest{
-	public static final Logger logger = Logger.getLogger(TestSecuritySpool.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestSecuritySpool.class);
 	
 	private static String sessionId = UUID.randomUUID().toString();
 	private static String sessionId2 = UUID.randomUUID().toString();
@@ -35,7 +36,7 @@ public class TestUserSession extends BaseDataAccessTest{
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue(add_session);
 		logger.info("Session id: " + sessionId);
@@ -48,7 +49,7 @@ public class TestUserSession extends BaseDataAccessTest{
 			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertNotNull(session);
 	}
@@ -64,7 +65,7 @@ public class TestUserSession extends BaseDataAccessTest{
 			updated = Factories.getSessionFactory().update(session);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue(updated);
 	}
@@ -107,7 +108,7 @@ public class TestUserSession extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	
@@ -119,7 +120,7 @@ public class TestUserSession extends BaseDataAccessTest{
 			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertNull(session);
 	}

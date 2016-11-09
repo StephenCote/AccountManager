@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.FunctionFactFactory;
 
 public class BulkFunctionFactFactory extends FunctionFactFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.FUNCTIONFACT, BulkFunctionFactFactory.class); }
 	public BulkFunctionFactFactory(){
 		super();
 		bulkMode = true;

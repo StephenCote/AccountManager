@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.security.ApiClientConfigurationBean;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
@@ -25,7 +26,7 @@ import org.junit.Test;
 
 
 public class TestCredentialFactory extends BaseDataAccessTest{
-	public static final Logger logger = Logger.getLogger(TestCredentialFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestCredentialFactory.class);
 	
 	@Test
 	public void TestApiToken(){
@@ -38,7 +39,7 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 			cred = CredentialService.newCredential(CredentialEnumType.TOKEN, null, testUser, dir, apiTokenValue.getBytes("UTF-8"), true, false);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		*/
 		assertNotNull("Credential is null",cred);
@@ -75,7 +76,7 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 			credential = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_PASSWORD),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertNotNull("Identity is null",identity);
 		assertNotNull("Credential is null",credential);
@@ -104,7 +105,7 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 			del = Factories.getCredentialFactory().deleteCredential(cred2);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		*/
 		//assertTrue("Failed to delete credential",del);
@@ -174,7 +175,7 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertNotNull("New user security Key is null",userKey);
 		assertNotNull("New org security Key is null",orgKey);
@@ -185,7 +186,7 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 		assertNotNull("User Enc Key is null",eUserKey);
 		assertNotNull("Org Enc Key is null",eOrgKey);
 		CredentialFactory cf = Factories.getCredentialFactory();
-		ControlFactory ctf = Factories.getControlFactory();
+		ControlFactory ctf = ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL));
 
 	}
 	*/

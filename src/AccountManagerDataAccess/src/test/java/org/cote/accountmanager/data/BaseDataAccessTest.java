@@ -7,9 +7,23 @@ import static org.junit.Assert.assertTrue;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.FactFactory;
+import org.cote.accountmanager.data.factory.FunctionFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.OperationFactory;
+import org.cote.accountmanager.data.factory.PatternFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.data.factory.PolicyFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.factory.RuleFactory;
+import org.cote.accountmanager.data.factory.TagFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.PersonService;
@@ -58,7 +72,7 @@ import org.junit.Before;
 
 
 public class BaseDataAccessTest{
-	public static final Logger logger = Logger.getLogger(BaseDataAccessTest.class.getName());
+	public static final Logger logger = LogManager.getLogger(BaseDataAccessTest.class);
 	protected static String testUserName = "RocketQAUser";
 	protected static UserType testUser = null;
 	protected static String sessionId = null;
@@ -70,11 +84,7 @@ public class BaseDataAccessTest{
 	
 	@Before
 	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
+
 		ConnectionFactory cf = ConnectionFactory.getInstance();
 		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
 		cf.setDriverClassName("org.postgresql.Driver");
@@ -83,6 +93,8 @@ public class BaseDataAccessTest{
 		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
 		sessionId = UUID.randomUUID().toString();
 		sessionId2 = UUID.randomUUID().toString();
+		
+		Factories.warmUp();
 
 		try{
 			testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,"password", Factories.getDevelopmentOrganization().getId());
@@ -96,9 +108,9 @@ public class BaseDataAccessTest{
 		if(testUser == null){
 			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Test", AuditEnumType.USER, testUserName);
 			
-			UserType new_user = Factories.getUserFactory().newUser(testUserName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
+			UserType new_user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(testUserName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
 			if(PersonService.createUserAsPerson(audit, testUserName, "password", testUserName + "@example.com", UserEnumType.DEVELOPMENT,UserStatusEnumType.RESTRICTED , Factories.getDevelopmentOrganization().getId())){
-				new_user = Factories.getUserFactory().getByName(testUserName, Factories.getDevelopmentOrganization().getId());
+				new_user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(testUserName, Factories.getDevelopmentOrganization().getId());
 				testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,"password", Factories.getDevelopmentOrganization().getId());
 			}
 		}
@@ -115,9 +127,9 @@ public class BaseDataAccessTest{
 		if(testUser2 == null){
 			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Test", AuditEnumType.USER, testUserName2);
 			
-			UserType new_user = Factories.getUserFactory().newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
+			UserType new_user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
 			if(PersonService.createUserAsPerson(audit, testUserName2, "password", testUserName2 + "@example.com", UserEnumType.DEVELOPMENT,UserStatusEnumType.RESTRICTED , Factories.getDevelopmentOrganization().getId())){
-				new_user = Factories.getUserFactory().getByName(testUserName2, Factories.getDevelopmentOrganization().getId());
+				new_user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(testUserName2, Factories.getDevelopmentOrganization().getId());
 				testUser2 = SessionSecurity.login(sessionId2, testUserName2, CredentialEnumType.HASHED_PASSWORD,"password", Factories.getDevelopmentOrganization().getId());
 			}
 		
@@ -139,29 +151,29 @@ public class BaseDataAccessTest{
 		DataType data = null;
 		
 		try{
-			data = Factories.getDataFactory().getDataByName(name, dir);
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, dir);
 			if(data != null){
 				return data;
 			}
-			data = Factories.getDataFactory().newData(owner, dir.getId());
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(owner, dir.getId());
 			data.setName(name);
 			data.setMimeType("text/plain");
 			DataUtil.setValue(data, value.getBytes("UTF-8"));
-			Factories.getDataFactory().add(data);
-			data = Factories.getDataFactory().getDataByName(name, dir);
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data);
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, dir);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return data;
 	}
@@ -174,25 +186,25 @@ public class BaseDataAccessTest{
 		
 		DataType data = null;
 		try{
-			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(user,"examples", user.getHomeDirectory(), user.getOrganizationId());
-			data = Factories.getDataFactory().getDataByName(data_name,  dir);
+			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user,"examples", user.getHomeDirectory(), user.getOrganizationId());
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(data_name,  dir);
 			if(data == null){
-				data = Factories.getDataFactory().newData(user,  dir.getId());
+				data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user,  dir.getId());
 				data.setName(data_name);
 				data.setMimeType("text/plain");
 				DataUtil.setValueString(data, "Example Data");
-				Factories.getDataFactory().add(data);
-				data = Factories.getDataFactory().getDataByName(data_name,  dir);
+				((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data);
+				data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(data_name,  dir);
 			}
 		}
 		catch(FactoryException fe){
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return data;
 	}
@@ -202,19 +214,19 @@ public class BaseDataAccessTest{
 		DataTagType tag = null;
 		
 		try {
-			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(user,"tags", user.getHomeDirectory(), user.getOrganizationId());
-			tag = Factories.getTagFactory().getDataTagByName(tag_name, dir);
+			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user,"tags", user.getHomeDirectory(), user.getOrganizationId());
+			tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).getDataTagByName(tag_name, dir);
 			if(tag == null){
-				tag = Factories.getTagFactory().newDataTag(user,tag_name, dir.getId());
-				Factories.getTagFactory().add(tag);
-				tag = Factories.getTagFactory().getDataTagByName(tag_name, dir);
+				tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).newDataTag(user,tag_name, dir.getId());
+				((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).add(tag);
+				tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).getDataTagByName(tag_name, dir);
 			}
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		
 		return tag;
@@ -223,18 +235,18 @@ public class BaseDataAccessTest{
 	public UserRoleType getRole(UserType owner, String roleName, UserRoleType parent){
 		UserRoleType role = null;
 		try {
-			role = Factories.getRoleFactory().getRoleByName(roleName, parent, owner.getOrganizationId());
+			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(roleName, parent, owner.getOrganizationId());
 			if(role == null){
-				role = Factories.getRoleFactory().newUserRole(owner, roleName, parent);
-				Factories.getRoleFactory().add(role);
-				role = Factories.getRoleFactory().getUserRoleByName(roleName,parent, owner.getOrganizationId());
+				role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).newUserRole(owner, roleName, parent);
+				((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).add(role);
+				role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRoleByName(roleName,parent, owner.getOrganizationId());
 			}
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		return role;
@@ -245,20 +257,20 @@ public class BaseDataAccessTest{
 		
 		UserType user = null;
 		try {
-			user = Factories.getUserFactory().getByName(user_name, Factories.getDevelopmentOrganization().getId());
+			user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(user_name, Factories.getDevelopmentOrganization().getId());
 			if(user == null){
-				user = Factories.getUserFactory().newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
-				Factories.getUserFactory().add(user);
-				user = Factories.getUserFactory().getByName(user_name, Factories.getDevelopmentOrganization().getId());
+				user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
+				((UserFactory)Factories.getFactory(FactoryEnumType.USER)).add(user);
+				user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(user_name, Factories.getDevelopmentOrganization().getId());
 				CredentialService.newHashedPasswordCredential(user, user, password, true,false);
 			}
-			Factories.getUserFactory().populate(user);
+			((UserFactory)Factories.getFactory(FactoryEnumType.USER)).populate(user);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return user;
 	}
@@ -266,21 +278,21 @@ public class BaseDataAccessTest{
 	public <T> T getCreatePermission(UserType user, String name, PermissionEnumType type, T parent, OrganizationType org){
 		T per = null;
 		try {
-			per = (T)Factories.getPermissionFactory().getPermissionByName(name, type, (BasePermissionType)parent,org.getId());
+			per = (T)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName(name, type, (BasePermissionType)parent,org.getId());
 			if(per == null){
-				per = (T)Factories.getPermissionFactory().newPermission(user, name, type, (BasePermissionType)parent, org.getId());
-				if(Factories.getPermissionFactory().add((BasePermissionType)per)){
-					per = (T)Factories.getPermissionFactory().getPermissionByName(name, type, (BasePermissionType)parent,org.getId());
+				per = (T)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).newPermission(user, name, type, (BasePermissionType)parent, org.getId());
+				if(((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).add((BasePermissionType)per)){
+					per = (T)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName(name, type, (BasePermissionType)parent,org.getId());
 				}
 			}
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		
 		return per;
@@ -288,13 +300,13 @@ public class BaseDataAccessTest{
 	
 
 	public FactType getCreateStaticFact(UserType user,String name, String val, DirectoryGroupType fdir) throws ArgumentException, FactoryException{
-		FactType srcFact = Factories.getFactFactory().getByNameInGroup(name, fdir);
+		FactType srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name, fdir);
 		if(srcFact != null) return srcFact;
-		srcFact = Factories.getFactFactory().newFact(user, fdir.getId());
+		srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(user, fdir.getId());
 		srcFact.setName(name);
 		srcFact.setFactType(FactEnumType.STATIC);
 		srcFact.setFactData(val);
-		Factories.getFactFactory().add(srcFact);
+		((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(srcFact);
 		return srcFact;
 	}
 	public PatternType getCreatePattern(UserType user, String name, String factUrn, String matchUrn, DirectoryGroupType dir){
@@ -302,32 +314,32 @@ public class BaseDataAccessTest{
 		PatternType pattern = null;
 
 		try {
-			pattern = Factories.getPatternFactory().getByNameInGroup(name, dir);
+			pattern = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(name, dir);
 			/*
 			if(pattern != null){
-				Factories.getPatternFactory().deletePattern(pattern);
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).deletePattern(pattern);
 				pattern = null;
 			}
 			*/
 			if(pattern == null){
-				pattern = Factories.getPatternFactory().newPattern(testUser, dir.getId());
+				pattern = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).newPattern(testUser, dir.getId());
 				pattern.setName(name);
 				pattern.setPatternType(PatternEnumType.EXPRESSION);
 				pattern.setComparator(ComparatorEnumType.EQUALS);
 
 				pattern.setFactUrn(factUrn);
 				pattern.setMatchUrn(matchUrn);
-				if(Factories.getPatternFactory().add(pattern)){
-					pattern = Factories.getPatternFactory().getByNameInGroup(name, dir);
+				if(((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).add(pattern)){
+					pattern = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(name, dir);
 				}
 				else pattern = null;
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return pattern;
 	}
@@ -339,48 +351,48 @@ public class BaseDataAccessTest{
 		RuleType rule = null;
 
 		try {
-			rule = Factories.getRuleFactory().getByNameInGroup(name, dir);
+			rule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(name, dir);
 			/*
 			if(rule != null){
-				Factories.getRuleFactory().deleteRule(rule);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).deleteRule(rule);
 				rule = null;
 			}
 			*/
 			if(rule == null){
-				rule = Factories.getRuleFactory().newRule(testUser, dir.getId());
+				rule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).newRule(testUser, dir.getId());
 				rule.setName(name);
 				rule.setRuleType(ruleType);
 				rule.setCondition(ConditionEnumType.ALL);
-				if(Factories.getRuleFactory().add(rule)){
-					rule = Factories.getRuleFactory().getByNameInGroup(name, dir);
+				if(((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).add(rule)){
+					rule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(name, dir);
 				}
 				else rule = null;
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return rule;
 	}
 	
 	public OperationType getCreateOperation(UserType user, String name, String className, DirectoryGroupType dir) throws FactoryException, ArgumentException{
-		OperationType op = Factories.getOperationFactory().getByNameInGroup(name, dir);
+		OperationType op = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).getByNameInGroup(name, dir);
 		/*
 		if(op2 != null){
-			Factories.getOperationFactory().deleteOperation(op2);
+			((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).deleteOperation(op2);
 			op2 = null;
 		}
 		*/
 		if(op == null){
-			op = Factories.getOperationFactory().newOperation(testUser, dir.getId());
+			op = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).newOperation(testUser, dir.getId());
 			op.setName(name);
 			op.setOperationType(OperationEnumType.INTERNAL);
 			op.setOperation(className);
-			Factories.getOperationFactory().add(op);
-			op = Factories.getOperationFactory().getByNameInGroup(name, dir);
+			((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).add(op);
+			op = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).getByNameInGroup(name, dir);
 		}
 		return op;
 	}
@@ -390,60 +402,60 @@ public class BaseDataAccessTest{
 		PolicyType policy = null;
 
 		try {
-			policy = Factories.getPolicyFactory().getByNameInGroup(name, dir);
+			policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getByNameInGroup(name, dir);
 			/*
 			if(policy != null){
-				Factories.getPolicyFactory().deletePolicy(policy);
+				((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).deletePolicy(policy);
 				policy = null;
 			}
 			*/
 			if(policy == null){
-				policy = Factories.getPolicyFactory().newPolicy(testUser, dir.getId());
+				policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).newPolicy(testUser, dir.getId());
 				policy.setCondition(ConditionEnumType.ALL);
 				policy.setName(name);
 
-				if(Factories.getPolicyFactory().add(policy)){
-					policy = Factories.getPolicyFactory().getByNameInGroup(name, dir);
+				if(((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).add(policy)){
+					policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getByNameInGroup(name, dir);
 				}
 				else policy = null;
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return policy;
 	}
 	
 	public FactType getCreateCredentialParamFact(UserType user,String name, DirectoryGroupType fdir) throws ArgumentException, FactoryException{
-		FactType srcFact = Factories.getFactFactory().getByNameInGroup(name, fdir);
+		FactType srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name, fdir);
 		if(srcFact != null) return srcFact;
-		srcFact = Factories.getFactFactory().newFact(user, fdir.getId());
+		srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(user, fdir.getId());
 		srcFact.setName(name);
 		srcFact.setFactType(FactEnumType.PARAMETER);
 		srcFact.setFactoryType(FactoryEnumType.CREDENTIAL);
-		Factories.getFactFactory().add(srcFact);
+		((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(srcFact);
 		return srcFact;
 	}
 	public static FunctionType getCreateFunction(UserType user, String name, DataType data, DirectoryGroupType dir){
 		FunctionType func = null;
 		try{
-			func = Factories.getFunctionFactory().getByNameInGroup(name, dir);
+			func = ((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).getByNameInGroup(name, dir);
 			
 			if(func != null){
-				Factories.getFunctionFactory().delete(func);
+				((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).delete(func);
 				func = null;
 			}
 			
 			if(func == null){
-				func = Factories.getFunctionFactory().newFunction(user, dir.getId());
+				func = ((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).newFunction(user, dir.getId());
 				func.setName(name);
 				func.setFunctionType(FunctionEnumType.JAVA);
 				func.setFunctionData(data);
-				Factories.getFunctionFactory().add(func);
-				func = Factories.getFunctionFactory().getByNameInGroup(name, dir);
+				((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).add(func);
+				func = ((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).getByNameInGroup(name, dir);
 			}
 		}
 		catch(FactoryException e){
@@ -458,69 +470,69 @@ public class BaseDataAccessTest{
 		
 		DataType bsh = null;
 		try{
-			bsh = Factories.getDataFactory().getDataByName(name,false,dir);
-			DirectoryGroupType ddir = Factories.getGroupFactory().getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganizationId());
+			bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,false,dir);
+			DirectoryGroupType ddir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganizationId());
 			
 			if(bsh != null){
 				String cv = DataUtil.getValueString(bsh);
 				if(cv.equals(script)==false){
 					DataUtil.setValueString(bsh,script);
-					Factories.getDataFactory().update(bsh);
+					((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(bsh);
 				}
-				//Factories.getDataFactory().deleteData(bsh);
+				//((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).deleteData(bsh);
 				//bsh = null;
 			}
 			
 			if(bsh == null){
-				bsh = Factories.getDataFactory().newData(user, ddir.getId());
+				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, ddir.getId());
 				bsh.setName(name);
 				bsh.setMimeType("text/plain");
 				DataUtil.setValueString(bsh,script);
-				Factories.getDataFactory().add(bsh);
-				bsh = Factories.getDataFactory().getDataByName(name,false,ddir);
+				((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(bsh);
+				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,false,ddir);
 			}
 		}
 		catch(FactoryException | ArgumentException | DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return bsh;
 	}
 	public <T> T getRole(UserType owner, String name, RoleEnumType type, BaseRoleType parent){
 		T dir = null;
 		try {
-			dir = (T)Factories.getRoleFactory().getRoleByName(name, parent, type, parent.getOrganizationId());
+			dir = (T)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(name, parent, type, parent.getOrganizationId());
 			if(dir == null){
-				dir = (T)Factories.getRoleFactory().newRoleType(type, owner, name, parent);
-				if(Factories.getRoleFactory().add((BaseRoleType)dir)){
-					dir = (T)Factories.getRoleFactory().getRoleByName(name, parent, type, parent.getOrganizationId());
+				dir = (T)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).newRoleType(type, owner, name, parent);
+				if(((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).add((BaseRoleType)dir)){
+					dir = (T)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(name, parent, type, parent.getOrganizationId());
 				}
 			}
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return dir;
 	}
 	public <T> T getGroup(UserType owner, String name, GroupEnumType type, BaseGroupType parent){
 		T dir = null;
 		try {
-			dir = (T)Factories.getGroupFactory().getGroupByName(name, type, parent, parent.getOrganizationId());
+			dir = (T)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupByName(name, type, parent, parent.getOrganizationId());
 			if(dir == null){
-				dir = (T)Factories.getGroupFactory().newGroup(owner, name, type, parent, parent.getOrganizationId());
-				if(Factories.getGroupFactory().add((BaseGroupType)dir)){
-					dir = (T)Factories.getGroupFactory().getGroupByName(name, type, parent, parent.getOrganizationId());
+				dir = (T)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newGroup(owner, name, type, parent, parent.getOrganizationId());
+				if(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).add((BaseGroupType)dir)){
+					dir = (T)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupByName(name, type, parent, parent.getOrganizationId());
 				}
 			}
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return dir;
 	}
@@ -528,13 +540,13 @@ public class BaseDataAccessTest{
 	public DirectoryGroupType getApplication(String name){
 		DirectoryGroupType dir = null;
 		try {
-			dir =Factories.getGroupFactory().getCreatePath(testUser, "~/Applications/" + name, testUser.getOrganizationId());
+			dir =((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Applications/" + name, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return dir;
 	}
@@ -542,21 +554,21 @@ public class BaseDataAccessTest{
 	public PersonType getApplicationPerson(String name,DirectoryGroupType dir){
 		PersonType acct = null;
 		try {
-			acct = Factories.getPersonFactory().getByNameInGroup(name, dir);
+			acct = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getByNameInGroup(name, dir);
 			if(acct == null){
-				acct = Factories.getPersonFactory().newPerson(testUser, dir.getId());
+				acct = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(testUser, dir.getId());
 				acct.setName(name);
-				if(Factories.getPersonFactory().add(acct)){
-					acct = Factories.getPersonFactory().getByNameInGroup(name, dir);
+				if(((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).add(acct)){
+					acct = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getByNameInGroup(name, dir);
 				}
 			}
-			if(acct != null) Factories.getPersonFactory().populate(acct);
+			if(acct != null) ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(acct);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return acct;
 	}
@@ -564,20 +576,20 @@ public class BaseDataAccessTest{
 	public AccountType getApplicationAccount(String name,DirectoryGroupType dir){
 		AccountType acct = null;
 		try {
-			acct = Factories.getAccountFactory().getAccountByName(name, dir);
+			acct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName(name, dir);
 			if(acct == null){
-				acct = Factories.getAccountFactory().newAccount(testUser, name, AccountEnumType.DEVELOPMENT, AccountStatusEnumType.RESTRICTED, dir.getId());
-				if(Factories.getAccountFactory().add(acct)){
-					acct = Factories.getAccountFactory().getAccountByName(name, dir);
+				acct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(testUser, name, AccountEnumType.DEVELOPMENT, AccountStatusEnumType.RESTRICTED, dir.getId());
+				if(((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).add(acct)){
+					acct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName(name, dir);
 				}
 			}
-			if(acct != null) Factories.getAccountFactory().populate(acct);
+			if(acct != null) ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).populate(acct);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return acct;
 	}
@@ -586,19 +598,19 @@ public class BaseDataAccessTest{
 	public <T> T getApplicationPermission(String name,PermissionEnumType type, DirectoryGroupType dir){
 		T per = null;
 		try {
-			Factories.getGroupFactory().populate(dir);
-			Factories.getGroupFactory().denormalize(dir);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(dir);
 			String perPath = dir.getPath() + "/" + name;
-			per = Factories.getPermissionFactory().makePath(testUser, type, perPath, dir.getOrganizationId());
+			per = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).makePath(testUser, type, perPath, dir.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return per;
 	}
@@ -606,19 +618,19 @@ public class BaseDataAccessTest{
 	public <T> T getApplicationRole(String name,RoleEnumType type,DirectoryGroupType dir){
 		T role = null;
 		try {
-			Factories.getGroupFactory().populate(dir);
-			Factories.getGroupFactory().denormalize(dir);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(dir);
 			String perPath = dir.getPath() + "/" + name;
-			role = Factories.getRoleFactory().makePath(testUser, type, perPath, dir.getOrganizationId());
+			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).makePath(testUser, type, perPath, dir.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return role;
 	}

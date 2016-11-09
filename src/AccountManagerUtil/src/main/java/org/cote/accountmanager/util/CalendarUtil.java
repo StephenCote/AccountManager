@@ -33,13 +33,14 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CalendarUtil {
 	private static DatatypeFactory dataTypeFactory = null;
 	private static String legacyDateFormat = "yyyy/MM/dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd:hh:mm:ss Z";
-	public static final Logger logger = Logger.getLogger(CalendarUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(CalendarUtil.class);
 	public static Date importDateFromLegacyString(String s){
 		return importDateFromString(s, legacyDateFormat);
 	}

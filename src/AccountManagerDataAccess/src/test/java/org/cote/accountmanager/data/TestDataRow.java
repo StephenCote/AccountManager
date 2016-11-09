@@ -6,24 +6,16 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.DataColumnType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestDataRow{
-	public static final Logger logger = Logger.getLogger(TestDataRow.class.getName());
-	@Before
-	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
-	}
+	public static final Logger logger = LogManager.getLogger(TestDataRow.class);
+
 
 	@After
 	public void tearDown() throws Exception {

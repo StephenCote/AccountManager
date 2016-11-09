@@ -51,7 +51,8 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.SecurityUtil;
@@ -59,7 +60,7 @@ import org.cote.accountmanager.util.XmlUtil;
 import org.w3c.dom.Document;
 
 public class SecurityFactory {
-	public static final Logger logger = Logger.getLogger(SecurityFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(SecurityFactory.class);
 
 	private final static byte[] defaultSalt = new byte[]{
 			110,41,-1,-64,-107,14,1,68,-127,-93,-110,-23,-73,-113,-98,-62
@@ -73,6 +74,7 @@ public class SecurityFactory {
 		logger.debug("Initialized provider: " + (System.currentTimeMillis() - start) + "ms");
 		return securityFactory;
 	}
+
 	public SecurityFactory(){
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		

@@ -27,10 +27,16 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.PolicyFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.AuditService;
@@ -56,7 +62,7 @@ import org.cote.accountmanager.service.util.ServiceUtil;
 public class PolicyServiceImpl  {
 	
 	public static final String defaultDirectory = "~/Policies";
-	public static final Logger logger = Logger.getLogger(PolicyServiceImpl.class.getName());
+	public static final Logger logger = LogManager.getLogger(PolicyServiceImpl.class);
 	public static boolean delete(PolicyType bean,HttpServletRequest request){
 		
 		return BaseService.delete(AuditEnumType.POLICY, bean, request);
@@ -109,10 +115,10 @@ public class PolicyServiceImpl  {
 			}
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		logger.info("Policy evaluation response: " + policyResponse.getResponse());
 		return policyResponse;
@@ -125,10 +131,10 @@ public class PolicyServiceImpl  {
 			AuditService.sourceAudit(audit,AuditEnumType.USER,user.getName() + " (#" + user.getId() + ") in Org " + " (#" + user.getOrganizationId() + ")");
 			pol.setAuthenticated(user.getSessionStatus() == SessionStatusEnumType.AUTHENTICATED);
 			try{
-				pol.setAccountAdministrator(RoleService.isFactoryAdministrator(user, Factories.getAccountFactory()));
-				pol.setDataAdministrator(RoleService.isFactoryAdministrator(user, Factories.getDataFactory()));
-				pol.setAccountReader(RoleService.isFactoryReader(user, Factories.getAccountFactory()));
-				pol.setRoleReader(RoleService.isFactoryReader(user, Factories.getRoleFactory()));
+				pol.setAccountAdministrator(RoleService.isFactoryAdministrator(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))));
+				pol.setDataAdministrator(RoleService.isFactoryAdministrator(user, ((DataFactory)Factories.getFactory(FactoryEnumType.DATA))));
+				pol.setAccountReader(RoleService.isFactoryReader(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))));
+				pol.setRoleReader(RoleService.isFactoryReader(user, ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE))));
 				pol.getRoles().addAll(EffectiveAuthorizationService.getEffectiveRolesForUser(user));
 				pol.setAuthenticationId(ServiceUtil.getSessionId(request));
 				pol.setFactoryType(FactoryEnumType.USER);
@@ -137,11 +143,11 @@ public class PolicyServiceImpl  {
 			}
 			catch(FactoryException e){
 				AuditService.denyResult(audit, "Error: " + e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 				
 			} catch (ArgumentException e) {
 				AuditService.denyResult(audit, "Error: " + e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		else{
@@ -161,13 +167,13 @@ public class PolicyServiceImpl  {
 		UserType user = ServiceUtil.getUserFromSession(audit, request);
 		if(user == null) return def;
 		try {
-			PolicyType pol = Factories.getPolicyFactory().getById(id, user.getOrganizationId());
+			PolicyType pol = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getById(id, user.getOrganizationId());
 			if(pol == null){
 				AuditService.denyResult(audit, "Invalid id: " + Long.toString(id));
 				return def;
 			}
 			AuditService.targetAudit(audit, AuditEnumType.POLICY, pol.getUrn());
-			if(AuthorizationService.canView(user, Factories.getGroupFactory().getGroupById(pol.getGroupId(),pol.getOrganizationId())) == false){
+			if(AuthorizationService.canView(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(pol.getGroupId(),pol.getOrganizationId())) == false){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + " (#" + pol.getGroupId() + ")");
 				return def;
 			}

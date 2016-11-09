@@ -29,6 +29,7 @@ import org.cote.accountmanager.data.factory.DataFactory;
 
 
 public class BulkDataFactory extends DataFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.DATA, BulkDataFactory.class); }
 	public BulkDataFactory(){
 		super();
 		bulkMode = true;

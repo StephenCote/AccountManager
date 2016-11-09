@@ -186,7 +186,7 @@ public class AM5LoginModule implements LoginModule {
 			request = (HttpServletRequest) PolicyContext.getContext("javax.servlet.http.HttpServletRequest");
 		} catch (PolicyContextException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			throw new LoginException("Unable to obtain request context");
 		}
         */
@@ -210,7 +210,7 @@ public class AM5LoginModule implements LoginModule {
         UserType user = null;
 
         try {
-			orgType = Factories.getOrganizationFactory().findOrganization(orgPath);
+			orgType = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
 	        if(orgType == null){
 	        	throw new LoginException("Organization is null for path: '" + orgPath);
 	        }
@@ -220,7 +220,7 @@ public class AM5LoginModule implements LoginModule {
 
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
         if (debug())
@@ -313,7 +313,7 @@ public class AM5LoginModule implements LoginModule {
         } catch (Throwable t) {
             if (debug()) {
                 logger.info(t.getMessage());
-                logger.error(t.getStackTrace());
+                logger.error("Error",t);
             }
             throw new LoginException(t.toString());
         }
@@ -326,7 +326,7 @@ public class AM5LoginModule implements LoginModule {
             //Group[] groups = {new AccountManagerGroup("Roles")};
     		Map<String,String> map = getRoleMap();
     		List<RolePrincipal> oroles = new ArrayList<>();
-    		List<UserRoleType> roles = Factories.getRoleParticipationFactory().getUserRoles(uprince);
+    		List<UserRoleType> roles = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUserRoles(uprince);
     		logger.info("Retrieved " + roles.size() + " roles");
             for(BaseRoleType brole : roles) {
             	if(map.containsKey(brole.getName())){

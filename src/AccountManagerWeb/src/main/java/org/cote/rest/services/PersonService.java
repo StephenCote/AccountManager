@@ -37,12 +37,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.FactFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
@@ -123,7 +125,7 @@ public class PersonService{
 			return false;
 		}
 		AuditService.targetAudit(audit, AuditEnumType.PERSON, "Person Factory");
-		Factories.getFactFactory().clearCache();
+		((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).clearCache();
 		AuditService.permitResult(audit,user.getName() + " flushed Person Factory cache");
 		return true;
 	}	

@@ -39,8 +39,9 @@ import java.util.Map;
 
 import javax.ws.rs.core.GenericType;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
@@ -60,17 +61,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class TestResources{
-	public static final Logger logger = Logger.getLogger(TestResources.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestResources.class);
 	
-	@Before
-	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
-
-	}
 	
 	/*
 	@Test
@@ -114,7 +106,7 @@ public class TestResources{
 				//logger.info("Restored: " + events.size() + " events");
 			} catch (IOException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			
 		JSONUtil.importObject(json, TestRequest.class);
@@ -346,13 +338,13 @@ public class TestResources{
 			b = StreamUtil.getStreamBytes(in);
 		} catch (IOException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		try {
 			in.close();
 		} catch (IOException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return b;
 	}

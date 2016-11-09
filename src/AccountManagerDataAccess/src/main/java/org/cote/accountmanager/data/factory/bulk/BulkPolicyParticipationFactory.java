@@ -28,6 +28,7 @@ import org.cote.accountmanager.data.factory.PolicyParticipationFactory;
 
 
 public class BulkPolicyParticipationFactory extends PolicyParticipationFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.POLICYPARTICIPATION, BulkPolicyParticipationFactory.class); }
 	public BulkPolicyParticipationFactory(){
 		super();
 		bulkMode = true;

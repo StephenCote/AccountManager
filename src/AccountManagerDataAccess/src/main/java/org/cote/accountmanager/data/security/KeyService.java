@@ -1,11 +1,15 @@
 package org.cote.accountmanager.data.security;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AsymmetricKeyFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.factory.SymmetricKeyFactory;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
@@ -13,7 +17,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class KeyService {
-	public static final Logger logger = Logger.getLogger(KeyService.class.getName());
+	public static final Logger logger = LogManager.getLogger(KeyService.class);
 
 	public static SecurityBean promote(SecurityType sec) throws ArgumentException{
 		SecurityBean bean = new SecurityBean();
@@ -68,15 +72,15 @@ public class KeyService {
 	public static boolean deleteKeys(long organizationId){
 		boolean out_bool = false;
 		try {
-			Factories.getSymmetricKeyFactory().deleteByOrganization(organizationId);
-			Factories.getAsymmetricKeyFactory().deleteByOrganization(organizationId);
+			((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).deleteByOrganization(organizationId);
+			((AsymmetricKeyFactory)Factories.getFactory(FactoryEnumType.ASYMMETRICKEY)).deleteByOrganization(organizationId);
 			out_bool = true;
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		return out_bool;
@@ -84,14 +88,14 @@ public class KeyService {
 	public static SecurityBean getSymmetricKeyById(long id,long organizationId){
 		SecurityBean bean = null;
 		try {
-			SecurityType sec = Factories.getSymmetricKeyFactory().getById(id, organizationId);
+			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getById(id, organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		return bean;
@@ -99,14 +103,14 @@ public class KeyService {
 	public static SecurityBean getSymmetricKeyByObjectId(String id,long organizationId){
 		SecurityBean bean = null;
 		try {
-			SecurityType sec = Factories.getSymmetricKeyFactory().getByObjectId(id, organizationId);
+			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getByObjectId(id, organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		return bean;
@@ -114,14 +118,14 @@ public class KeyService {
 	public static SecurityBean getPrimarySymmetricKey(long organizationId) {
 		SecurityBean bean = null;
 		try {
-			SecurityType sec = Factories.getSymmetricKeyFactory().getPrimaryOrganizationKey(organizationId);
+			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getPrimaryOrganizationKey(organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		return bean;
@@ -129,14 +133,14 @@ public class KeyService {
 	public static SecurityBean getPrimarySymmetricKey(UserType user) {
 		SecurityBean bean = null;
 		try {
-			SecurityType sec = Factories.getSymmetricKeyFactory().getPrimaryPersonalKey(user);
+			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getPrimaryPersonalKey(user);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		return bean;
@@ -156,14 +160,14 @@ public class KeyService {
 	public static SecurityBean getAsymmetricKeyById(long id,long organizationId){
 		SecurityBean bean = null;
 		try {
-			SecurityType sec = Factories.getAsymmetricKeyFactory().getById(id, organizationId);
+			SecurityType sec = ((AsymmetricKeyFactory)Factories.getFactory(FactoryEnumType.ASYMMETRICKEY)).getById(id, organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		return bean;
@@ -171,14 +175,14 @@ public class KeyService {
 	public static SecurityBean getAsymmetricKeyByObjectId(String id,long organizationId){
 		SecurityBean bean = null;
 		try {
-			SecurityType sec = Factories.getAsymmetricKeyFactory().getByObjectId(id, organizationId);
+			SecurityType sec = ((AsymmetricKeyFactory)Factories.getFactory(FactoryEnumType.ASYMMETRICKEY)).getByObjectId(id, organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		return bean;
@@ -186,14 +190,14 @@ public class KeyService {
 	public static SecurityBean getPrimaryAsymmetricKey(long organizationId) {
 		SecurityBean bean = null;
 		try {
-			SecurityType sec = Factories.getAsymmetricKeyFactory().getPrimaryOrganizationKey(organizationId);
+			SecurityType sec = ((AsymmetricKeyFactory)Factories.getFactory(FactoryEnumType.ASYMMETRICKEY)).getPrimaryOrganizationKey(organizationId);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		return bean;
@@ -201,14 +205,14 @@ public class KeyService {
 	public static SecurityBean getPrimaryAsymmetricKey(UserType user) {
 		SecurityBean bean = null;
 		try {
-			SecurityType sec = Factories.getAsymmetricKeyFactory().getPrimaryPersonalKey(user);
+			SecurityType sec = ((AsymmetricKeyFactory)Factories.getFactory(FactoryEnumType.ASYMMETRICKEY)).getPrimaryPersonalKey(user);
 			if(sec != null) bean = promote(sec);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		return bean;
@@ -258,8 +262,8 @@ public class KeyService {
 				SecurityFactory.getSecurityFactory().generateSecretKey(sec)
 			){
 				if(bulkSessionId != null) BulkFactories.getBulkFactory().createBulkEntry(bulkSessionId, FactoryEnumType.SYMMETRICKEY, sec);
-				else if(Factories.getSymmetricKeyFactory().add(sec)){
-					SecurityType secm = Factories.getSymmetricKeyFactory().getByObjectId(sec.getObjectId(), sec.getOrganizationId());
+				else if(((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).add(sec)){
+					SecurityType secm = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getByObjectId(sec.getObjectId(), sec.getOrganizationId());
 					if(secm != null) sec.setId(secm.getId());
 					else{
 						logger.error("Failed to retrieve key");
@@ -271,7 +275,7 @@ public class KeyService {
 				}
 				if(lastPrimary != null){
 					lastPrimary.setPrimaryKey(false);
-					Factories.getSymmetricKeyFactory().update(lastPrimary);
+					((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).update(lastPrimary);
 				}
 			}
 		}
@@ -314,8 +318,8 @@ public class KeyService {
 				if(bulkSessionId != null){
 					BulkFactories.getBulkFactory().createBulkEntry(bulkSessionId, FactoryEnumType.ASYMMETRICKEY, sec);
 				}
-				else if(Factories.getAsymmetricKeyFactory().add(sec)){
-					SecurityType secm = Factories.getAsymmetricKeyFactory().getByObjectId(sec.getObjectId(), sec.getOrganizationId());
+				else if(((AsymmetricKeyFactory)Factories.getFactory(FactoryEnumType.ASYMMETRICKEY)).add(sec)){
+					SecurityType secm = ((AsymmetricKeyFactory)Factories.getFactory(FactoryEnumType.ASYMMETRICKEY)).getByObjectId(sec.getObjectId(), sec.getOrganizationId());
 					if(secm != null) sec.setId(secm.getId());
 					else{
 						logger.error("Failed to retrieve key");
@@ -327,18 +331,18 @@ public class KeyService {
 				}
 				if(lastPrimary != null){
 					lastPrimary.setPrimaryKey(false);
-					if(bulkSessionId != null) BulkFactories.getBulkAsymmetricKeyFactory().update(lastPrimary);
-					else Factories.getAsymmetricKeyFactory().update(lastPrimary);
+					if(bulkSessionId != null) ((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.ASYMMETRICKEY)).update(lastPrimary);
+					else ((AsymmetricKeyFactory)Factories.getFactory(FactoryEnumType.ASYMMETRICKEY)).update(lastPrimary);
 				}
 			}
 		}
 		catch(FactoryException e){
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 		//if(sec != null) sec.setPublicKey(null);
 		return sec;

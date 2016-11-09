@@ -10,15 +10,17 @@ import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.factory.MessageFactory;
 import org.cote.accountmanager.objects.MessageSpoolType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
 import org.cote.accountmanager.objects.types.ValueEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.junit.Test;
-
 public class TestMessageSpool extends BaseDataAccessTest{
-	public static final Logger logger = Logger.getLogger(TestMessageSpool.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestMessageSpool.class);
 
 	@Test
 	public void testInsertMessage(){
@@ -26,16 +28,16 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		MessageSpoolType message = null;
 		boolean add_message = false;
 		try{
-			message = Factories.getMessageFactory().newMessage(testUser);
+			message = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).newMessage(testUser);
 			message.setName("testInsertMessage");
-			add_message = Factories.getMessageFactory().addMessage(message);
+			add_message = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).addMessage(message);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Message was not added", add_message);
 	}
@@ -45,13 +47,13 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		assertNotNull("User is null", testUser);
 		List<MessageSpoolType> messages = new ArrayList<MessageSpoolType>();
 		try{
-			messages = Factories.getMessageFactory().getMessagesFromUserGroup(SpoolNameEnumType.GENERAL, testUser);
+			messages = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getMessagesFromUserGroup(SpoolNameEnumType.GENERAL, testUser);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Expected one or more messages", messages.size() > 0);
 	}
@@ -66,22 +68,22 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		boolean add_message = false;
 		List<MessageSpoolType> messages = new ArrayList<MessageSpoolType>();
 		try{
-			message = Factories.getMessageFactory().newMessage(testUser);
+			message = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).newMessage(testUser);
 			message.setName("testMessageByDate");
-			add_message = Factories.getMessageFactory().addMessage(message);
+			add_message = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).addMessage(message);
 			assertTrue(add_message);
 			XMLGregorianCalendar xCal = CalendarUtil.getXmlGregorianCalendar(now.getTime());
 			Date xCalCheck = CalendarUtil.getDate(xCal);
 			logger.info(xCal.toString() + " :: " + xCalCheck.toString());
-			messages = Factories.getMessageFactory().getMessagesAfterDate(SpoolNameEnumType.GENERAL, xCal, 0, testUser.getOrganizationId());
+			messages = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getMessagesAfterDate(SpoolNameEnumType.GENERAL, xCal, 0, testUser.getOrganizationId());
 			
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Expected 1 message, received " + messages.size() + " messages", messages.size() == 1);
 	}
@@ -91,13 +93,13 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		assertNotNull("User is null", testUser);
 		List<MessageSpoolType> messages = new ArrayList<MessageSpoolType>();
 		try{
-			messages = Factories.getMessageFactory().getMessagesFromUserGroup(SpoolNameEnumType.GENERAL, testUser);
+			messages = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getMessagesFromUserGroup(SpoolNameEnumType.GENERAL, testUser);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Expected one or more messages", messages.size() > 0);
 		MessageSpoolType message = messages.get(0);
@@ -105,7 +107,7 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		message.setValueType(ValueEnumType.STRING);
 		boolean updated = false;
 		try{
-			updated = Factories.getMessageFactory().update(message);
+			updated = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).update(message);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -118,13 +120,13 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		assertNotNull("User is null", testUser);
 		boolean deleted = false;
 		try{
-			deleted = Factories.getMessageFactory().deleteMessagesInGroup(SpoolNameEnumType.GENERAL, Factories.getMessageFactory().getUserMessagesGroup(testUser));
+			deleted = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).deleteMessagesInGroup(SpoolNameEnumType.GENERAL, ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getUserMessagesGroup(testUser));
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Failed to deleted", deleted);
 	}

@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.AddressFactory;
 
 public class BulkAddressFactory extends AddressFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.ADDRESS, BulkAddressFactory.class); }
 	public BulkAddressFactory(){
 		super();
 		bulkMode = true;

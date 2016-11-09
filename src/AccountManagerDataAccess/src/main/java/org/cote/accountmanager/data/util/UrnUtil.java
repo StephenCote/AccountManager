@@ -26,11 +26,16 @@ package org.cote.accountmanager.data.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -41,9 +46,8 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
-
 public class UrnUtil {
-	public static final Logger logger = Logger.getLogger(UrnUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(UrnUtil.class);
 	
 	/// AM 5 URN Syntax
 	/// am:type:org.path:parent.path:name
@@ -63,7 +67,7 @@ public class UrnUtil {
 	private static String getEncodedGroupPath(long groupId,long organizationId) throws FactoryException, ArgumentException{
 		if(groupId == 0L) throw new ArgumentException("Invalid groupId: " + groupId);
 		if(organizationId == 0L) throw new ArgumentException("Invalid organizationId: " + organizationId);
-		BaseGroupType dir = Factories.getGroupFactory().getGroupById(groupId,organizationId);
+		BaseGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(groupId,organizationId);
 		if(dir == null){
 			throw new ArgumentException("Null group for " + groupId + " in " + organizationId);
 		}
@@ -175,8 +179,8 @@ public class UrnUtil {
 		return outStr.toLowerCase().replaceAll("[^A-Za-z0-9\\.\\:]+","");
 	}
 	private static String getDotGroupPath(BaseGroupType group) throws FactoryException, ArgumentException{
-		Factories.getGroupFactory().populate(group);
-		Factories.getGroupFactory().denormalize(group);
+		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(group);
+		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(group);
 		//Factories
 		return getDotPath(group.getPath());
 	}
@@ -190,7 +194,7 @@ public class UrnUtil {
 		return path.substring(1,path.length()).replace('/', '.');
 	}
 	private static String getDotPermissionPath(BasePermissionType per) throws FactoryException, ArgumentException{
-		String path = Factories.getPermissionFactory().getPermissionPath(per);
+		String path = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionPath(per);
 		if(path == null){
 			throw new ArgumentException("Null permission path");
 		}
@@ -200,7 +204,7 @@ public class UrnUtil {
 		return path.substring(1,path.length()).replace('/', '.');
 	}
 	private static String getDotRolePath(BaseRoleType role) throws FactoryException, ArgumentException{
-		String path = Factories.getRoleFactory().getRolePath(role);
+		String path = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRolePath(role);
 		if(path == null){
 			throw new ArgumentException("Null role path");
 		}
@@ -211,10 +215,10 @@ public class UrnUtil {
 	}
 
 	public static String getDotOrganizationPath(long org) throws FactoryException, ArgumentException{
-		return getDotOrganizationPath(Factories.getOrganizationFactory().getOrganizationById(org));
+		return getDotOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(org));
 	}
 	public static String getDotOrganizationPath(OrganizationType org) throws FactoryException, ArgumentException{
-		String path = Factories.getOrganizationFactory().getOrganizationPath(org);
+		String path = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(org);
 		if(path == null || path.length() < 2){
 			throw new ArgumentException("Unexpected organization path: " + path);
 		}
@@ -228,7 +232,7 @@ public class UrnUtil {
 			return null;
 		}
 		orgPath = "/" + orgPath.replace('.', '/');
-		return Factories.getOrganizationFactory().findOrganization(orgPath);
+		return ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
 	}
 	public static String extractOrganizationPath(String urn){
 		Matcher m = organizationPattern.matcher(urn);
@@ -288,15 +292,15 @@ public class UrnUtil {
 		//orgPath = "/" + orgPath.replace('.', '/');
 		bucketPath = "/" + bucketPath.replace('.', '/');
 		OrganizationType org = getOrganization(urn);
-		///Factories.getOrganizationFactory().findOrganization(orgPath);
+		///((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
 		NameEnumType nameType = NameEnumType.fromValue(objType.toUpperCase());
 		try{
 			switch(nameType){
 				case PERMISSION:
-					obj = (T)Factories.getPermissionFactory().findPermission(PermissionEnumType.fromValue(bucketType.toUpperCase()), bucketPath, org);
+					obj = (T)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).findPermission(PermissionEnumType.fromValue(bucketType.toUpperCase()), bucketPath, org);
 					break;
 				case ROLE:
-					obj = (T)Factories.getRoleFactory().findRole(RoleEnumType.fromValue(bucketType.toUpperCase()), bucketPath, org);
+					obj = (T)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).findRole(RoleEnumType.fromValue(bucketType.toUpperCase()), bucketPath, org);
 					break;
 			}
 		}
@@ -333,10 +337,10 @@ public class UrnUtil {
 		//orgPath = "/" + orgPath.replace('.', '/');
 		groupPath = "/" + groupPath.replace('.', '/');
 		OrganizationType org = getOrganization(urn);
-		///Factories.getOrganizationFactory().findOrganization(orgPath);
+		///((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
 		NameEnumType nameType = NameEnumType.fromValue(objType.toUpperCase());
 
-		BaseGroupType group = Factories.getGroupFactory().findGroup(null,GroupEnumType.fromValue(groupType.toUpperCase()),groupPath,getOrganization(urn));
+		BaseGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null,GroupEnumType.fromValue(groupType.toUpperCase()),groupPath,getOrganization(urn));
 
 		switch(nameType){
 

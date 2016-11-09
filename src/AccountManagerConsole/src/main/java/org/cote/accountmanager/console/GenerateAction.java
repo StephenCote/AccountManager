@@ -4,7 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.NameIdFactory;
@@ -13,15 +14,15 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.FileUtil;
 
 public class GenerateAction {
-	public static final Logger logger = Logger.getLogger(GenerateAction.class.getName());
+	public static final Logger logger = LogManager.getLogger(GenerateAction.class);
 	private static boolean execute(String sql){
 		/*
 		try {
-			List<OrganizationType> orgs = Factories.getOrganizationFactory().list(new QueryField[]{}, 0L);
+			List<OrganizationType> orgs = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).list(new QueryField[]{}, 0L);
 
 		} catch (FactoryException | ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		}
 		*/
 		
@@ -37,7 +38,7 @@ public class GenerateAction {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			if(connection != null){
@@ -45,7 +46,7 @@ public class GenerateAction {
 					connection.close();
 				} catch (SQLException e) {
 					
-					logger.error(e.getStackTrace());
+					logger.error("Error",e);
 				}
 			}
 		}

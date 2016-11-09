@@ -23,12 +23,13 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.UserType;
 
 public class UserService {
-public static final Logger logger = Logger.getLogger(UserService.class.getName());
+public static final Logger logger = LogManager.getLogger(UserService.class);
 	
 	public static ContactType getPreferredEmailContact(UserType user){
 		return ContactService.getPreferredEmailContact(user.getContactInformation());

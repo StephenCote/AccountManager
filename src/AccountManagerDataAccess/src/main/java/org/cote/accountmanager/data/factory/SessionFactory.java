@@ -36,7 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
@@ -57,7 +58,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class SessionFactory extends FactoryBase {
 	
-	public static final Logger logger = Logger.getLogger(SessionFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(SessionFactory.class);
 	
 	private int defaultPageSize = 10;
 	private Map<String,Integer> typeIdMap = null;
@@ -102,14 +103,14 @@ public class SessionFactory extends FactoryBase {
 		catch (Exception sqe)
 		{
 			System.out.println(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return out_bool;
@@ -130,14 +131,14 @@ public class SessionFactory extends FactoryBase {
 		catch (Exception sqe)
 		{
 			System.out.println(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return out_bool;
@@ -319,7 +320,7 @@ public class SessionFactory extends FactoryBase {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
@@ -327,7 +328,7 @@ public class SessionFactory extends FactoryBase {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		if(recover == false && updated <= 0){
@@ -418,10 +419,10 @@ public class SessionFactory extends FactoryBase {
 			removeFromCache(map);
 		}
 		catch(SQLException sqe){
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		catch(DataAccessException de){
-			logger.error(de.getStackTrace());
+			logger.error("Error",de);
 		}
 		
 		return true;
@@ -498,7 +499,7 @@ public class SessionFactory extends FactoryBase {
 			out_bool = true;
 		} catch (SQLException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -506,7 +507,7 @@ public class SessionFactory extends FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 
@@ -533,7 +534,7 @@ public class SessionFactory extends FactoryBase {
 			
 		} catch (SQLException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -541,7 +542,7 @@ public class SessionFactory extends FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return out_list;

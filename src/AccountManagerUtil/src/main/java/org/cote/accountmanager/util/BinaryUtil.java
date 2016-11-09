@@ -26,10 +26,11 @@ package org.cote.accountmanager.util;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BinaryUtil {
-	public static final Logger logger = Logger.getLogger(BinaryUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(BinaryUtil.class);
 	public static String fromBase64Str(String in_base64){
 		return fromBase64Str(in_base64.getBytes());
 	}

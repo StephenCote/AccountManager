@@ -30,10 +30,13 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
@@ -47,6 +50,7 @@ import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
@@ -60,7 +64,7 @@ import org.cote.util.BeanUtil;
 public class DataServiceImpl  {
 	public static int MAX_FEEDBACK_PER_SESSION = 3;
 	public static final String defaultDirectory = "~/Datas";
-	public static final Logger logger = Logger.getLogger(DataServiceImpl.class.getName());
+	public static final Logger logger = LogManager.getLogger(DataServiceImpl.class);
 	public static boolean delete(DataType bean,HttpServletRequest request){
 		
 		return BaseService.delete(AuditEnumType.DATA, bean, request);
@@ -80,14 +84,14 @@ public class DataServiceImpl  {
 	public static DataType getProfile(UserType user, AuditType audit){
 		DataType data = null;
 		try{
-			Factories.getUserFactory().populate(user);
-			data = Factories.getDataFactory().getDataByName(".profile", false, user.getHomeDirectory());
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(".profile", false, user.getHomeDirectory());
 			if(data == null){
-				data = Factories.getDataFactory().newData(user, user.getHomeDirectory().getId());
+				data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, user.getHomeDirectory().getId());
 				data.setMimeType("text/plain");
 				data.setName(".profile");
-				if(Factories.getDataFactory().add(data)){
-					data = Factories.getDataFactory().getDataByName(".profile",false,user.getHomeDirectory());
+				if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data)){
+					data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(".profile",false,user.getHomeDirectory());
 					addDefaultProfileAttributes(data);
 				}
 			}
@@ -129,19 +133,19 @@ public class DataServiceImpl  {
 			}
 			usess.setValue("feedback.submitted", Integer.toString(subCount + 1));
 			Factories.getSessionFactory().updateData(usess);
-			UserType user = Factories.getUserFactory().getByName(feedbackUserName, org.getId());
+			UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(feedbackUserName, org.getId());
 			if(user == null){
 				AuditService.denyResult(audit,"Feedback user '" + feedbackUserName + "' doesn't exist in organization " + org.getName());
 				return out_bool;
 			}
-			Factories.getUserFactory().populate(user);
-			DirectoryGroupType feedbackGroup = Factories.getGroupFactory().getCreateDirectory(user, "Feedback", user.getHomeDirectory(), org.getId());
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
+			DirectoryGroupType feedbackGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Feedback", user.getHomeDirectory(), org.getId());
 			if(feedbackGroup == null){
 				AuditService.denyResult(audit, "Feedback group is null");
 				return out_bool;
 			}
 			
-			DataType feedback = Factories.getDataFactory().newData(user, feedbackGroup.getId());
+			DataType feedback = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, feedbackGroup.getId());
 			DataUtil.setValue(feedback, DataUtil.getValue(bean));
 			feedback.setMimeType("text/plain");
 			UserType subUser = ServiceUtil.getUserFromSession(request);
@@ -149,8 +153,8 @@ public class DataServiceImpl  {
 			AuditService.targetAudit(audit, AuditEnumType.USER, (subUser == null ? "Anonymous" : subUser.getUrn()));
 			feedback.setDescription(sDesc);
 			feedback.setName("Feedback - " + UUID.randomUUID().toString());
-			if(Factories.getDataFactory().add(feedback)){
-				feedback = Factories.getDataFactory().getDataByName(feedback.getName(), true, feedbackGroup);
+			if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(feedback)){
+				feedback = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(feedback.getName(), true, feedbackGroup);
 				if(feedback == null){
 					AuditService.denyResult(audit, "Failed to lookup feedback data");
 					
@@ -170,13 +174,13 @@ public class DataServiceImpl  {
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return out_bool;
 	}
@@ -216,7 +220,7 @@ public class DataServiceImpl  {
 		}
 			
 		try {
-			DirectoryGroupType dir = (DirectoryGroupType)Factories.getGroupFactory().findGroup(user, GroupEnumType.DATA,path, user.getOrganizationId());
+			DirectoryGroupType dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA,path, user.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Invalid path: '" + path + "'");
 				return out_obj;
@@ -225,7 +229,7 @@ public class DataServiceImpl  {
 			if(AuthorizationService.canView(user, dir) == true){
 				AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 				out_obj = getListByGroup(dir,instruction,detailsOnly,startRecord,recordCount);
-				//out_Lifecycles = Factories.getLifecycleFactory().getListByGroup(dir, 0, 0, user.getOrganization());
+				//out_Lifecycles = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getListByGroup(dir, 0, 0, user.getOrganization());
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
@@ -233,10 +237,10 @@ public class DataServiceImpl  {
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} catch (FactoryException e1) {
 			
-			logger.error(e1.getStackTrace());
+			logger.error("Error",e1);
 		} 
 
 		return out_obj;
@@ -244,11 +248,11 @@ public class DataServiceImpl  {
 	}
 	public static  List<DataType> getListByGroup(DirectoryGroupType group,ProcessingInstructionType instruction, boolean detailsOnly, long startRecord, int recordCount) throws ArgumentException, FactoryException {
 
-		List<DataType> out_obj = Factories.getDataFactory().getDataListByGroup(group, instruction,detailsOnly,startRecord, recordCount, group.getOrganizationId());
+		List<DataType> out_obj = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(group, instruction,detailsOnly,startRecord, recordCount, group.getOrganizationId());
 		for(int i = 0; i < out_obj.size();i++){
 			DataType ngt = out_obj.get(i);
-			//Factories.getDataFactory().populate(ngt);
-			Factories.getDataFactory().denormalize(ngt);
+			//((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).populate(ngt);
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).denormalize(ngt);
 			/*
 			if(ngt.getGroup().getPopulated() == true){
 				//ngt.getGroup().setParentGroup(null);

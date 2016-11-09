@@ -51,6 +51,7 @@ import org.cote.accountmanager.objects.types.ValueEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class MessageFactory extends SpoolFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.MESSAGE, MessageFactory.class); }
 	public MessageFactory()
 	{
 		super();
@@ -110,7 +111,7 @@ public class MessageFactory extends SpoolFactory {
 	
 	public DirectoryGroupType getUserMessagesGroup(UserType user) throws FactoryException, ArgumentException
 	{
-		return Factories.getGroupFactory().getCreateUserDirectory(user, ".messages");
+		return ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, ".messages");
 	}
 
 	public List<MessageSpoolType> getMessagesAfterDate(SpoolNameEnumType queue, XMLGregorianCalendar startDate, long startIndex, long organizationId) throws FactoryException, ArgumentException

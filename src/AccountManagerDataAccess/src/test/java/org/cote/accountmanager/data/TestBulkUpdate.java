@@ -3,7 +3,10 @@ package org.cote.accountmanager.data;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -14,33 +17,33 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.junit.Test;
 
 public class TestBulkUpdate extends BaseDataAccessTest{
-	public static final Logger logger = Logger.getLogger(TestBulkUpdate.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestBulkUpdate.class);
 	
 	protected AccountType getAccount(UserType owner, String name){
 		
 		DirectoryGroupType rootDir = null;
 		AccountType qaAccount = null;
 		try{
-			rootDir = Factories.getGroupFactory().getHomeDirectory(owner.getOrganizationId());
+			rootDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getHomeDirectory(owner.getOrganizationId());
 			if(rootDir == null){
 				logger.error("Null directory");
 				return null;
 			}
-			qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
+			qaAccount = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName(name, rootDir);
 	
 			if(qaAccount == null){
-				qaAccount = Factories.getAccountFactory().newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir.getId());
-				Factories.getAccountFactory().add(qaAccount);
-				qaAccount = Factories.getAccountFactory().getAccountByName(name, rootDir);
+				qaAccount = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(owner,name, AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, rootDir.getId());
+				((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).add(qaAccount);
+				qaAccount = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName(name, rootDir);
 			}
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return qaAccount;
 	}
@@ -76,13 +79,13 @@ public class TestBulkUpdate extends BaseDataAccessTest{
 		}
 		catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 
 		/*
@@ -99,7 +102,7 @@ public class TestBulkUpdate extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} 
 
 		

@@ -23,7 +23,8 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.operation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.fact.FactUtil;
 import org.cote.accountmanager.data.rule.RuleUtil;
@@ -34,7 +35,7 @@ import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 
 public class CompareAttributeOperation implements IOperation {
-	public static final Logger logger = Logger.getLogger(CompareAttributeOperation.class.getName());
+	public static final Logger logger = LogManager.getLogger(CompareAttributeOperation.class);
 	public <T> T read(FactType sourceFact,final FactType referenceFact){
 		return FactUtil.factoryRead(sourceFact, referenceFact);
 	}

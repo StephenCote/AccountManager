@@ -1,23 +1,16 @@
 package org.cote.accountmanager.util;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 ;
 
 public class TestText {
-	public static final Logger logger = Logger.getLogger(TestText.class.getName());
-	@Before
-	public void setUp() throws Exception {
+	public static final Logger logger = LogManager.getLogger(TestText.class);
 
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
-	}
 
 	@After
 	public void tearDown() throws Exception {

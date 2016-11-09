@@ -5,12 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.junit.Test;
 
 public class TestSecuritySpool extends BaseDataAccessTest {
-	public static final Logger logger = Logger.getLogger(TestSecuritySpool.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestSecuritySpool.class);
 	
 	private static String referenceId = UUID.randomUUID().toString();
 	private static String referenceId2 = UUID.randomUUID().toString();
@@ -33,10 +34,10 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("token was not added", add_token);
 	}
@@ -53,7 +54,7 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertNotNull("Expected one token", token);
 	}
@@ -69,7 +70,7 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertNotNull("Expected one token", token);
 		token.setData("Example data".getBytes());
@@ -115,7 +116,7 @@ public class TestSecuritySpool extends BaseDataAccessTest {
 		catch(FactoryException fe){
 			error = true;
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		assertFalse("An error occurred", error);
 	}

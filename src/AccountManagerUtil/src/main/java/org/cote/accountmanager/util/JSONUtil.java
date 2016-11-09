@@ -3,14 +3,15 @@ package org.cote.accountmanager.util;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class JSONUtil {
-	public static final Logger logger = Logger.getLogger(JSONUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(JSONUtil.class);
 	public static <T> Map<String,T> getMap(byte[] data, Class keyClass, Class mapClass){
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String,T> map = null;
@@ -19,7 +20,7 @@ public class JSONUtil {
 			map = mapper.readValue(data, t.constructMapType(Map.class, keyClass, mapClass));
 		} catch (IOException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return map;
 		

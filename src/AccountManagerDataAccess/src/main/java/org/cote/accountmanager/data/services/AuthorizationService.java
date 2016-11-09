@@ -26,13 +26,16 @@ package org.cote.accountmanager.data.services;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.IParticipationFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
-import org.cote.accountmanager.data.factory.ParticipationFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -48,30 +51,39 @@ import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class AuthorizationService {
-	public static final Logger logger = Logger.getLogger(AuthorizationService.class.getName());
-	private static Map<FactoryEnumType,ParticipationFactory> partFactories = new HashMap<>();
+	public static final Logger logger = LogManager.getLogger(AuthorizationService.class);
+	//private static Map<FactoryEnumType,ParticipationFactory> partFactories = new HashMap<>();
+	private static Map<FactoryEnumType,FactoryEnumType> partFactories = new HashMap<>();
 	private static Map<NameEnumType, FactoryEnumType> factoryProviders = new HashMap<>();
 	private static final NameEnumType[] actors = new NameEnumType[]{NameEnumType.ACCOUNT, NameEnumType.PERSON, NameEnumType.USER, NameEnumType.ROLE}; 
 	public static final String[] PERMISSION_BASE = new String[]{"Create","Delete","View","Edit","Execute"};
 
 	public static void clearProviders(){
+		logger.warn("*** Clearing Authorization Providers");
 		partFactories.clear();
 		factoryProviders.clear();
 	}
 	
-	public static void registerAuthorizationProviders(FactoryEnumType factType,NameEnumType objectType, ParticipationFactory fact){
-		registerParticipationFactory(factType, fact);
+	public static IParticipationFactory getRegisteredProvider(FactoryEnumType fType){
+		if(partFactories.containsKey(fType)){
+			return Factories.getFactory(partFactories.get(fType));
+		}
+		return null;
+	}
+	
+	public static void registerAuthorizationProviders(FactoryEnumType factType,NameEnumType objectType, FactoryEnumType pfact){
+		registerParticipationFactory(factType, pfact);
 		factoryProviders.put(objectType, factType);
 		for(int i = 0; i < actors.length; i++){
 			EffectiveAuthorizationService.registerType(objectType, actors[i]);	
 		}		
-	};
-	public static void registerParticipationFactory(FactoryEnumType factType,ParticipationFactory fact){
+	}
+	public static void registerParticipationFactory(FactoryEnumType factType,FactoryEnumType pfact){
 		logger.debug("Register participation factory: " + factType.toString());
-		partFactories.put(factType, fact);
+		partFactories.put(factType, pfact);
 
 	}
-	public static Map<FactoryEnumType, ParticipationFactory> getAuthorizationFactories(){
+	public static Map<FactoryEnumType, FactoryEnumType> getAuthorizationFactories(){
 		return partFactories;
 	}
 	/// Return true if the factor type has a corresponding participation table
@@ -172,7 +184,7 @@ public class AuthorizationService {
         /// 2015/06/22 - temporarly included direct ownership of the parent directory
 		///
 		if(FactoryService.isDirectoryType(object.getNameType())){
-			BaseGroupType group = Factories.getGroupFactory().getGroupById(((NameIdDirectoryGroupType)object).getGroupId(),object.getOrganizationId());
+			BaseGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)object).getGroupId(),object.getOrganizationId());
 			if (actor.getNameType() == NameEnumType.USER && isMapOwner(actor, object))
 			{
 				logger.warn("Authorized " + actor.getUrn() + " for " + object.getUrn() + " as group owner of " + group.getUrn());
@@ -203,7 +215,7 @@ public class AuthorizationService {
 	private static boolean isViewAuthorization(NameEnumType objectType, BasePermissionType[] permissions,long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType checkPer = null;
 		if(factoryProviders.containsKey(objectType)){
-			ParticipationFactory partFact = partFactories.get(factoryProviders.get(objectType));
+			IParticipationFactory partFact = getRegisteredProvider(factoryProviders.get(objectType));
 			checkPer = getRootPermission(partFact.getPermissionPrefix() + "View", partFact.getDefaultPermissionType(), organizationId);
 			if(checkPer == null){
 				logger.warn("Permission " + partFact.getPermissionPrefix() + "View was null");
@@ -217,7 +229,7 @@ public class AuthorizationService {
 		boolean out_bool = false;
 		BasePermissionType checkPer = null;
 		if(factoryProviders.containsKey(objectType)){
-			ParticipationFactory partFact = partFactories.get(factoryProviders.get(objectType));
+			IParticipationFactory partFact = getRegisteredProvider(factoryProviders.get(objectType));
 			checkPer = getRootPermission(partFact.getPermissionPrefix() + "Create", partFact.getDefaultPermissionType(), organizationId);
 		}
 		if(checkPer != null){
@@ -257,7 +269,7 @@ public class AuthorizationService {
 			logger.error("Factory " + factType.toString() + " does not support discrete authorization");
 			return false;
 		}
-		ParticipationFactory partFactory = partFactories.get(factType);
+		IParticipationFactory partFactory = getRegisteredProvider(factType);
 		if(partFactory == null){
 			logger.error("Participation factory for " + factType.toString() + " is not registered for authorization");
 			return false;
@@ -281,7 +293,7 @@ public class AuthorizationService {
 			logger.error("Factory " + factType.toString() + " does not support discrete authorization");
 			return false;
 		}
-		ParticipationFactory partFactory = partFactories.get(factType);
+		IParticipationFactory partFactory = getRegisteredProvider(factType);
 		if(!isAuthorized(admin,object, new BasePermissionType[]{getEditPermissionForMapType(admin.getNameType(), object.getOrganizationId())})){
 			logger.warn("User " + admin.getName() + " (#" + admin.getId() + ")" + " is not authorized to change object " + object.getName() + " (#" + object.getId() + ")");
 			return false;
@@ -325,7 +337,7 @@ public class AuthorizationService {
 			logger.error("Actor type " + actor.getNameType() + " is not registered for authorization");
 			return out_bool;
 		}
-		String permissionPrefix = partFactories.get(factoryProviders.get(actor.getNameType())).getPermissionPrefix();
+		String permissionPrefix = getRegisteredProvider(factoryProviders.get(actor.getNameType())).getPermissionPrefix();
 		BasePermissionType viewPermission = getPermission(actor,(NameIdType)object,permissionPrefix + "View");
 		BasePermissionType editPermission = getPermission(actor,(NameIdType)object,permissionPrefix + "Edit");
 		BasePermissionType delPermission = getPermission(actor,(NameIdType)object,permissionPrefix + "Delete");
@@ -364,8 +376,8 @@ public class AuthorizationService {
 	public static BasePermissionType getDeletePermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType per = null;
 		if(factoryProviders.containsKey(type)){
-			ParticipationFactory partFact = partFactories.get(factoryProviders.get(type));
-			return getRootPermission(partFactories.get(factoryProviders.get(type)).getPermissionPrefix() + "Delete", partFact.getDefaultPermissionType(), organizationId);
+			IParticipationFactory partFact = getRegisteredProvider(factoryProviders.get(type));
+			return getRootPermission(getRegisteredProvider(factoryProviders.get(type)).getPermissionPrefix() + "Delete", partFact.getDefaultPermissionType(), organizationId);
 		}
 		switch(type){
 
@@ -378,8 +390,9 @@ public class AuthorizationService {
 	public static BasePermissionType getViewPermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType per = null;
 		if(factoryProviders.containsKey(type)){
-			ParticipationFactory partFact = partFactories.get(factoryProviders.get(type));
+			IParticipationFactory partFact = getRegisteredProvider(factoryProviders.get(type));
 			
+			logger.info("Retrieving permission map for " + partFact.getPermissionPrefix() + "View in " + organizationId);
 			return getRootPermission(partFact.getPermissionPrefix() + "View", partFact.getDefaultPermissionType(), organizationId);
 		}
 		/// Old method
@@ -387,6 +400,7 @@ public class AuthorizationService {
 		switch(type){
 
 			default:
+				logger.warn("OLD Permission Map for " + type.toString());
 				per = getViewObjectPermission(organizationId);
 				break;
 		}
@@ -395,7 +409,7 @@ public class AuthorizationService {
 	public static BasePermissionType getExecutePermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType per = null;
 		if(factoryProviders.containsKey(type)){
-			ParticipationFactory partFact = partFactories.get(factoryProviders.get(type));
+			IParticipationFactory partFact = getRegisteredProvider(factoryProviders.get(type));
 			per = getRootPermission(partFact.getPermissionPrefix() + "Execute", partFact.getDefaultPermissionType(), organizationId);
 		}
 		return per;
@@ -404,7 +418,7 @@ public class AuthorizationService {
 	public static BasePermissionType getCreatePermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType per = null;
 		if(factoryProviders.containsKey(type)){
-			ParticipationFactory partFact = partFactories.get(factoryProviders.get(type));
+			IParticipationFactory partFact = getRegisteredProvider(factoryProviders.get(type));
 			return getRootPermission(partFact.getPermissionPrefix() + "Create", partFact.getDefaultPermissionType(), organizationId);
 		}
 		switch(type){
@@ -418,7 +432,7 @@ public class AuthorizationService {
 	public static BasePermissionType getEditPermissionForMapType(NameEnumType type, long organizationId) throws FactoryException, ArgumentException{
 		BasePermissionType per = null;
 		if(factoryProviders.containsKey(type)){
-			ParticipationFactory partFact = partFactories.get(factoryProviders.get(type));
+			IParticipationFactory partFact = getRegisteredProvider(factoryProviders.get(type));
 			return getRootPermission(partFact.getPermissionPrefix() + "Edit", partFact.getDefaultPermissionType(), organizationId);
 		}
 		switch(type){
@@ -433,7 +447,7 @@ public class AuthorizationService {
 	public static BasePermissionType getRootPermission(String name, PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException
 	{
 
-		return Factories.getPermissionFactory().getPermissionByName(name, type, organizationId);
+		return ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName(name, type, organizationId);
 	}
 	
 	public static BasePermissionType getEditObjectPermission(long organizationId) throws FactoryException, ArgumentException
@@ -504,7 +518,7 @@ public class AuthorizationService {
 		if(!partFactories.containsKey(factType)){
 			throw new ArgumentException("Factory type " + factType.toString() + " does not have a registered participation factory");
 		}
-		ParticipationFactory pfact = partFactories.get(factType);
+		IParticipationFactory pfact = getRegisteredProvider(factType);
 		String permissionName = pfact.getPermissionPrefix() + permissionBase;
 
 		BasePermissionType permission = getRootPermission(permissionName, pfact.getDefaultPermissionType(), organizationId);
@@ -567,7 +581,7 @@ public class AuthorizationService {
 			logger.error("Object " + object.getNameType().toString() + " is not registered for authorization");
 			return false;
 		}
-		ParticipationFactory pfact = partFactories.get(factoryProviders.get(object.getNameType()));
+		IParticipationFactory pfact = getRegisteredProvider(factoryProviders.get(object.getNameType()));
 		ParticipantEnumType part_type = ParticipantEnumType.valueOf(actor.getNameType().toString());
 		DataParticipantType bp = pfact.getParticipant(object, actor, part_type,null,null);
 		boolean out_boolean = false;

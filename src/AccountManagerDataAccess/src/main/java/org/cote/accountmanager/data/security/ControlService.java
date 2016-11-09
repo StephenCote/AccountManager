@@ -1,6 +1,7 @@
 package org.cote.accountmanager.data.security;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -17,10 +18,11 @@ import org.cote.accountmanager.objects.PolicyResponseEnumType;
 import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public class ControlService {
 	
-	public static final Logger logger = Logger.getLogger(ControlService.class.getName());
+	public static final Logger logger = LogManager.getLogger(ControlService.class);
 	public static <T> void defineParameter(
 			PolicyRequestType prt,
 			FactType paramFact,
@@ -70,7 +72,7 @@ public class ControlService {
 		else if(control.getControlType() == ControlEnumType.POLICY && control.getControlId().compareTo(0L) > 0){
 			logger.info("Execute policy " + control.getControlId());
 			try{
-				PolicyType policy = Factories.getPolicyFactory().getById(control.getControlId(), control.getOrganizationId());
+				PolicyType policy = Factories.getNameIdFactory(FactoryEnumType.POLICY).getById(control.getControlId(), control.getOrganizationId());
 				if(policy == null){
 					logger.error("Invalid policy reference");
 				}
@@ -94,7 +96,7 @@ public class ControlService {
 			catch (FactoryException e) {
 					
 					logger.error(e.getMessage());
-					logger.error(e.getStackTrace());
+					logger.error("Error",e);
 				}
 			/*
 			

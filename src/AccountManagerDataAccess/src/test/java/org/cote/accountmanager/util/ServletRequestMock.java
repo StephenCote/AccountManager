@@ -24,13 +24,15 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
-
+import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 public class ServletRequestMock implements HttpServletRequest {
-	public static final Logger logger = Logger.getLogger(ServletRequestMock.class.getName());
+	public static final Logger logger = LogManager.getLogger(ServletRequestMock.class);
 	HttpSessionMock session = null;
 	CookieMock[] cookies = null;
 	public ServletRequestMock(String url,String sessionId, long organizationId){
@@ -38,13 +40,13 @@ public class ServletRequestMock implements HttpServletRequest {
 		cookies = new CookieMock[1];
 		//cookies[0] = new CookieMock("OrganizationId",Long.toString(organizationId));
 		try {
-			cookies[0] = new CookieMock("OrganizationPath",Factories.getOrganizationFactory().getOrganizationPath(organizationId));
+			cookies[0] = new CookieMock("OrganizationPath",((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(organizationId));
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	@Override

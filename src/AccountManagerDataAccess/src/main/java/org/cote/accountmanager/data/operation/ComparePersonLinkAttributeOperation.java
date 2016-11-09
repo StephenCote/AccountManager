@@ -23,7 +23,8 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.operation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -38,7 +39,7 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public class ComparePersonLinkAttributeOperation implements IOperation {
-	public static final Logger logger = Logger.getLogger(ComparePersonLinkAttributeOperation.class.getName());
+	public static final Logger logger = LogManager.getLogger(ComparePersonLinkAttributeOperation.class);
 	public <T> T read(FactType sourceFact,final FactType referenceFact){
 		return FactUtil.factoryRead(sourceFact, referenceFact);
 	}
@@ -68,7 +69,7 @@ public class ComparePersonLinkAttributeOperation implements IOperation {
 				out_resp = compareLinkedAttributeValue(obj, referenceFact.getSourceUrn(),pattern.getComparator(), referenceFact.getFactData());
 			}
 			else if(referenceFact.getFactoryType() == FactoryEnumType.USER || referenceFact.getFactoryType() == FactoryEnumType.ACCOUNT){
-				Factories.getPersonFactory().populate(obj);	
+				Factories.getNameIdFactory(FactoryEnumType.PERSON).populate(obj);	
 				if(referenceFact.getFactoryType() == FactoryEnumType.USER){
 					for(int i = 0; i < obj.getUsers().size();i++){
 						Factories.getAttributeFactory().populateAttributes(obj.getUsers().get(i));
@@ -93,10 +94,10 @@ public class ComparePersonLinkAttributeOperation implements IOperation {
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		

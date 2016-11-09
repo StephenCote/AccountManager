@@ -42,7 +42,7 @@ public class LoginService {
 			request.login(credential.getOrganizationPath() + "/" + credential.getName(), new String(credential.getCredential()));
 		} catch (ServletException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			loginSuccess = false;
 		}
 		/*

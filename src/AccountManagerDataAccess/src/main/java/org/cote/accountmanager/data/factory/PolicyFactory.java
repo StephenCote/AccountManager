@@ -70,6 +70,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 	private DatatypeFactory dtFactory = null;
 	
 
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.POLICY, PolicyFactory.class); }
 	public PolicyFactory(){
 		super();
 		this.tableNames.add("policy");
@@ -80,7 +81,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 			dtFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	@Override
@@ -88,7 +89,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 		AuthorizationService.registerAuthorizationProviders(
 				FactoryEnumType.POLICY,
 				NameEnumType.POLICY,
-				Factories.getPolicyParticipationFactory()
+				FactoryEnumType.POLICYPARTICIPATION
 			);
 	}
 	
@@ -107,7 +108,8 @@ public class PolicyFactory extends NameIdGroupFactory {
 	{
 		PolicyType policy = (PolicyType)obj;
 		if(policy.getPopulated()) return;
-		policy.getRules().addAll(Factories.getPolicyParticipationFactory().getRulesFromParticipation(policy));
+		PolicyParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.POLICYPARTICIPATION);
+		policy.getRules().addAll(ppFact.getRulesFromParticipation(policy));
 		Collections.sort(policy.getRules(),new LogicalTypeComparator());
 		policy.setPopulated(true);
 		updateToCache(policy);
@@ -159,11 +161,11 @@ public class PolicyFactory extends NameIdGroupFactory {
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
 				BulkFactories.getBulkFactory().setDirty(factoryType);
 				BaseParticipantType part = null;
-
+				PolicyParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.POLICYPARTICIPATION);
 				for(int i = 0; i < obj.getRules().size();i++){
-					part = Factories.getPolicyParticipationFactory().newRuleParticipation(cobj,obj.getRules().get(i));
-					if(bulkMode) BulkFactories.getBulkPolicyParticipationFactory().add(part);
-					else Factories.getPolicyParticipationFactory().add(part);
+					part = ppFact.newRuleParticipation(cobj,obj.getRules().get(i));
+					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.POLICYPARTICIPATION)).add(part);
+					else ppFact.add(part);
 				}
 				return true;
 			}
@@ -172,7 +174,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 			throw new FactoryException(dae.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return false;
 	}
@@ -209,20 +211,20 @@ public class PolicyFactory extends NameIdGroupFactory {
 		boolean out_bool = false;
 		if(super.update(data, null)){
 			try{
-				
+				PolicyParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.POLICYPARTICIPATION);
 				Set<Long> set = new HashSet<Long>();
-				BaseParticipantType[] maps = Factories.getPolicyParticipationFactory().getRuleParticipations(data).toArray(new BaseParticipantType[0]);
+				BaseParticipantType[] maps = ppFact.getRuleParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getRules().size();i++){
 					if(set.contains(data.getRules().get(i).getId())== false){
-						Factories.getPolicyParticipationFactory().add(Factories.getPolicyParticipationFactory().newRuleParticipation(data,data.getRules().get(i)));
+						ppFact.add(ppFact.newRuleParticipation(data,data.getRules().get(i)));
 					}
 					else{
 						set.remove(data.getRules().get(i).getId());
 					}
 				}
-				Factories.getPolicyParticipationFactory().deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
+				ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				out_bool = true;
 			}
 			catch(ArgumentException ae){
@@ -269,7 +271,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
-			Factories.getPolicyParticipationFactory().deleteParticipations(ids, organizationId);
+			Factories.getParticipationFactory(FactoryEnumType.POLICYPARTICIPATION).deleteParticipations(ids, organizationId);
 			/*
 			Factories.getPolicyParticipationFactory().deleteParticipations(ids, organization);
 			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);

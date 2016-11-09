@@ -28,6 +28,7 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class PolicyParticipationFactory extends AuthorizationParticipationFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.POLICYPARTICIPATION, PolicyParticipationFactory.class); }
 	public PolicyParticipationFactory(){
 		super(ParticipationEnumType.POLICY, "policyparticipation");
 		this.haveAffect = true;

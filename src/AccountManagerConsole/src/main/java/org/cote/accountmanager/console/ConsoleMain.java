@@ -32,8 +32,9 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
@@ -46,11 +47,12 @@ import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 
 public class ConsoleMain {
-	public static final Logger logger = Logger.getLogger(ConsoleMain.class.getName());
+	public static final Logger logger = LogManager.getLogger(ConsoleMain.class);
 	
 	/// This bit is provided to reset passwords without authenticating
 	/// This is to recover admin passwords lost to key rotations or, in this case
@@ -69,11 +71,10 @@ public class ConsoleMain {
 			fis.close();
 		} catch (IOException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			return;
 		}
 		
-		PropertyConfigurator.configure(getLogProps());
 		logger.info("AccountManagerConsole");
 		logger.info("\tNote: Slow startup time due in part to cryptographic libraries being loaded and initialized");
 		
@@ -151,7 +152,7 @@ public class ConsoleMain {
 			if(cmd.hasOption("patch") && cmd.hasOption("organization")){
 				logger.debug("Applying patch ...");
 				try {
-					OrganizationType org = Factories.getOrganizationFactory().findOrganization(cmd.getOptionValue("organization"));
+					OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(cmd.getOptionValue("organization"));
 					logger.info("Patching " + org.getName());
 					logger.info("Updating permissions ...");
 					if(org != null){
@@ -175,7 +176,7 @@ public class ConsoleMain {
 						else{
 							logger.info("Checked symmetric key");
 						}
-						List<UserType> users = Factories.getUserFactory().getUserList(0, 0, org.getId());
+						List<UserType> users = Factories.getNameIdFactory(FactoryEnumType.USER).getUserList(0, 0, org.getId());
 						logger.info("Checking " + users.size() + " users for valid credentials");
 						for(int i = 0; i < users.size();i++){
 							CredentialType cred = CredentialService.getPrimaryCredential(users.get(i));
@@ -197,11 +198,11 @@ public class ConsoleMain {
 				} catch (FactoryException e) {
 					
 					logger.error(e.getMessage());
-					logger.error(e.getStackTrace());
+					logger.error("Error",e);
 				} catch (ArgumentException e) {
 					
 					logger.error(e.getMessage());
-					logger.error(e.getStackTrace());
+					logger.error("Error",e);
 				}
 			}
 			else if(cmd.hasOption("setup") && cmd.hasOption("rootPassword") && cmd.hasOption("schema")){
@@ -276,7 +277,7 @@ public class ConsoleMain {
 				logger.debug("Authenticating user");
 				try{
 					logger.debug("Finding organization");
-					OrganizationType org = Factories.getOrganizationFactory().findOrganization(cmd.getOptionValue("organization"));
+					OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(cmd.getOptionValue("organization"));
 					if(org != null){
 						String password = cmd.getOptionValue("password");
 						if(cmd.hasOption("reset")){
@@ -285,7 +286,7 @@ public class ConsoleMain {
 								logger.info("Unauthenticated password reset capability is disabled");
 							}
 							else{
-								UserType user = Factories.getUserFactory().getByName(cmd.getOptionValue("username"),org.getId());
+								UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(cmd.getOptionValue("username"),org.getId());
 								if(user != null){
 									if(password != null && password.length() > 5){
 										logger.info("Creating new primary credential");
@@ -319,10 +320,10 @@ public class ConsoleMain {
 					}
 				}
 				catch(FactoryException fe){
-					logger.error(fe.getStackTrace());
+					logger.error("Error",fe);
 				} catch (ArgumentException e) {
 					
-					logger.error(e.getStackTrace());
+					logger.error("Error",e);
 				}
 				
 			}
@@ -336,7 +337,7 @@ public class ConsoleMain {
 			}
 		} catch (ParseException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		Factories.getAuditFactory().flushSpool();
@@ -346,17 +347,17 @@ public class ConsoleMain {
 	public static void runTests(UserType user){
 		ConnectionFactory cf = ConnectionFactory.getInstance();
 		try{
-			DirectoryGroupType tDir = Factories.getGroupFactory().getCreateDirectory(user, "Tasks",user.getHomeDirectory(), user.getOrganization());
+			DirectoryGroupType tDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Tasks",user.getHomeDirectory(), user.getOrganization());
 			long start = System.currentTimeMillis();
 			String random = UUID.randomUUID().toString();
 			for(int i = 0; i < 100;i++){
 				try {
-					TaskType t = Factories.getTaskFactory().newTask(user, tDir);
+					TaskType t = ((TaskFactory)Factories.getFactory(FactoryEnumType.TASK)).newTask(user, tDir);
 					t.setName(random + "-" + i);
-					Factories.getTaskFactory().addTask(t);
+					((TaskFactory)Factories.getFactory(FactoryEnumType.TASK)).addTask(t);
 				} catch (ArgumentException e) {
 					
-					logger.error(e.getStackTrace());
+					logger.error("Error",e);
 				}
 				
 			}
@@ -365,10 +366,10 @@ public class ConsoleMain {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	*/
@@ -385,7 +386,7 @@ public class ConsoleMain {
 		    }
 		    catch(Throwable e)
 		    {
-		        logger.error(e.getStackTrace());
+		        logger.error("Error",e);
 		    }
 	}
 	public static void processAction(UserType user, CommandLine cmd){
@@ -415,7 +416,7 @@ public class ConsoleMain {
 			logProps.load(ClassLoader.getSystemResourceAsStream("logging.properties"));
 		} catch (IOException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return logProps;
 	}

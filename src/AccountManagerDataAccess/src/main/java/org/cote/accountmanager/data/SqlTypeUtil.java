@@ -25,11 +25,12 @@ package org.cote.accountmanager.data;
 
 import java.sql.Types;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class SqlTypeUtil {
-	public static final Logger logger = Logger.getLogger(SqlTypeUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(SqlTypeUtil.class);
 	public static SqlDataEnumType translateSqlType(DBFactory.CONNECTION_TYPE connectionType, String dataType){
 		
 		SqlDataEnumType out_type = SqlDataEnumType.NULL;

@@ -54,6 +54,7 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class FactFactory extends NameIdGroupFactory {
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.FACT, FactFactory.class); }
 	public FactFactory(){
 		super();
 		this.tableNames.add("fact");

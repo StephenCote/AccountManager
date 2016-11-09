@@ -29,7 +29,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
@@ -37,7 +38,7 @@ import org.cote.accountmanager.objects.types.RetentionEnumType;
 
 public class DataMaintenance {
 	
-	public static final Logger logger = Logger.getLogger(DataMaintenance.class.getName());
+	public static final Logger logger = LogManager.getLogger(DataMaintenance.class);
 	
 	public static boolean cleanupExpiredAudits(RetentionEnumType retentionType){
 		Connection connection = ConnectionFactory.getInstance().getConnection();
@@ -61,14 +62,14 @@ public class DataMaintenance {
 		}
 		catch(SQLException sqe){
 			System.out.println(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return out_bool;
@@ -101,14 +102,14 @@ public class DataMaintenance {
 		}
 		catch(SQLException sqe){
 			System.out.println(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return out_bool;

@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.PatternFactory;
 
 public class BulkPatternFactory extends PatternFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.PATTERN, BulkPatternFactory.class); }
 	public BulkPatternFactory(){
 		super();
 		bulkMode = true;

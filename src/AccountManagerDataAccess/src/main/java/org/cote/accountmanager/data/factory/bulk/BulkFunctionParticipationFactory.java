@@ -28,6 +28,7 @@ import org.cote.accountmanager.data.factory.FunctionParticipationFactory;
 
 
 public class BulkFunctionParticipationFactory extends FunctionParticipationFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.FUNCTIONPARTICIPATION, BulkFunctionParticipationFactory.class); }
 	public BulkFunctionParticipationFactory(){
 		super();
 		bulkMode = true;

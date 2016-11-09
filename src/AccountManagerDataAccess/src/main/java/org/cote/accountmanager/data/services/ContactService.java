@@ -25,17 +25,20 @@ package org.cote.accountmanager.data.services;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.ContactInformationFactory;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.types.ContactEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.LocationEnumType;
 
 public class ContactService {
-public static final Logger logger = Logger.getLogger(ContactService.class.getName());
+public static final Logger logger = LogManager.getLogger(ContactService.class);
 	public static ContactType getPreferredMobileContact(ContactInformationType cinfo){
 		return getPreferredContact(cinfo,ContactEnumType.PHONE,LocationEnumType.MOBILE);
 	}	
@@ -48,13 +51,13 @@ public static final Logger logger = Logger.getLogger(ContactService.class.getNam
 	public static ContactType getPreferredContact(ContactInformationType cinfo,ContactEnumType preferredType,LocationEnumType preferredLocation){
 		if(cinfo.getPopulated() == false){
 			try {
-				Factories.getContactInformationFactory().populate(cinfo);
+				((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).populate(cinfo);
 			} catch (FactoryException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			} catch (ArgumentException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		ContactType contact = null;

@@ -10,23 +10,20 @@ import java.security.Security;
 import java.security.cert.Certificate;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.cote.accountmanager.beans.SecurityBean;
 import org.junit.Before;
 import org.junit.Test;
 
 public class TestOpenSSLUtil {
-	public static final Logger logger = Logger.getLogger(TestOpenSSLUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestOpenSSLUtil.class);
 	
 	@Before
 	public void setUp() throws Exception {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
+
 	}
 	
 	private boolean generateCA(OpenSSLUtil util, String alias, char[] password){

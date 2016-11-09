@@ -74,13 +74,14 @@ public class DataFactory extends NameIdFactory {
 		AuthorizationService.registerAuthorizationProviders(
 				FactoryEnumType.DATA,
 				NameEnumType.DATA,
-				Factories.getDataParticipationFactory()
+				FactoryEnumType.DATAPARTICIPATION
 			);
 	}
 
 	/// Max cache size = 50MB;
 	///
 	private long maximumCacheSize = 1048576L*100L;
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.DATA, DataFactory.class); }
 	public DataFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -130,7 +131,7 @@ public class DataFactory extends NameIdFactory {
 			logger.debug("Group path is not defined");
 			return;
 		}
-		BaseGroupType dir = Factories.getGroupFactory().findGroup(null,GroupEnumType.DATA, obj.getGroupPath(), obj.getOrganizationId());
+		BaseGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null,GroupEnumType.DATA, obj.getGroupPath(), obj.getOrganizationId());
 		if(dir == null){
 			throw new ArgumentException("Invalid group path '" + obj.getGroupPath() + "'");
 		}
@@ -148,8 +149,8 @@ public class DataFactory extends NameIdFactory {
 			throw new ArgumentException("Invalid object group");	
 		}
 		if(obj.getGroupPath() != null) return;
-		BaseGroupType dir = Factories.getGroupFactory().getGroupById(obj.getGroupId(), obj.getOrganizationId());
-		obj.setGroupPath(Factories.getGroupFactory().getPath(dir));
+		BaseGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(obj.getGroupId(), obj.getOrganizationId());
+		obj.setGroupPath(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getPath(dir));
 	}
 	
 	
@@ -184,7 +185,7 @@ public class DataFactory extends NameIdFactory {
 			dtFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		int len = dataTables.size();

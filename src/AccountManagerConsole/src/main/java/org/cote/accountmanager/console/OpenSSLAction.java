@@ -1,12 +1,13 @@
 package org.cote.accountmanager.console;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.OpenSSLUtil;
 
 public class OpenSSLAction {
-	public static final Logger logger = Logger.getLogger(OpenSSLAction.class.getName());
+	public static final Logger logger = LogManager.getLogger(OpenSSLAction.class);
 	private String binary = null;
 	private String caPath = null;
 	private OpenSSLUtil sslUtil = null;

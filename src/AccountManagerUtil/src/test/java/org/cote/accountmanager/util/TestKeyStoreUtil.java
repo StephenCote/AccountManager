@@ -15,8 +15,9 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.cote.accountmanager.beans.SecurityBean;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +34,7 @@ public class TestKeyStoreUtil {
 	 * Alternately, a stronger store could be used
 	 */
 	
-	public static final Logger logger = Logger.getLogger(TestKeyStoreUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestKeyStoreUtil.class);
 	private static String sslBasePath = "/Users/Steve/Projects/Source/ssl";
 	private static String keyStorePath = sslBasePath + "/stores/key/apis.jks";
 	private static String keyStorePass = "password";
@@ -45,11 +46,7 @@ public class TestKeyStoreUtil {
 	@Before
 	public void setUp() throws Exception {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
+
 	}
 	
 	
@@ -138,7 +135,7 @@ public class TestKeyStoreUtil {
 		} catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
 				| SignatureException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertTrue("Certificate not verified",ver);
 	}

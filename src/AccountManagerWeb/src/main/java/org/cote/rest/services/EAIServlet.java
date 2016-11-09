@@ -32,7 +32,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.util.AccountManagerCallbackHandler;
 
 /**
@@ -40,7 +41,7 @@ import org.cote.util.AccountManagerCallbackHandler;
  */
 public class EAIServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	public static final Logger logger = Logger.getLogger(EAIServlet.class.getName());
+	public static final Logger logger = LogManager.getLogger(EAIServlet.class);
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -69,7 +70,7 @@ public class EAIServlet extends HttpServlet {
 			ctx.login();
 		} catch (LoginException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		boolean didLogin = false;
 		return didLogin;

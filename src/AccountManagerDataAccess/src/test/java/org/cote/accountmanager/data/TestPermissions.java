@@ -4,6 +4,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
@@ -15,10 +18,10 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.PersonPermissionType;
 import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.junit.Test;
-
 public class TestPermissions extends BaseDataAccessTest{
 	
 	
@@ -39,14 +42,14 @@ public class TestPermissions extends BaseDataAccessTest{
 		if(reset){
 			try {
 				
-				Factories.getGroupFactory().deleteDirectoryGroup(app1);
-				Factories.getPermissionFactory().delete(per1);
-				Factories.getPermissionFactory().delete(per2);
-				Factories.getPermissionFactory().delete(per3);
-				Factories.getPermissionFactory().delete(per4);
+				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteDirectoryGroup(app1);
+				((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(per1);
+				((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(per2);
+				((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(per3);
+				((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(per4);
 			} catch (FactoryException | ArgumentException e1) {
 				
-				logger.error(e1.getStackTrace());
+				logger.error("Error",e1);
 			}
 			Factories.cleanupOrphans();
 			app1 = getApplication("Application 1");
@@ -57,25 +60,25 @@ public class TestPermissions extends BaseDataAccessTest{
 		}
 		BasePermissionType perc1 = null;
 		try{
-			PersonPermissionType per5 = Factories.getPermissionFactory().getPermissionByName("Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
+			PersonPermissionType per5 = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName("Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
 			if(reset && per5 != null){
-				Factories.getPermissionFactory().delete(per5);
+				((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(per5);
 				per5 = null;
 			}
 			if(per5 == null){
-				per5 = (PersonPermissionType)Factories.getPermissionFactory().newPermission(testUser2, "Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
-				Factories.getPermissionFactory().add(per5);
-				per5 = Factories.getPermissionFactory().getPermissionByName("Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
+				per5 = (PersonPermissionType)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).newPermission(testUser2, "Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
+				((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).add(per5);
+				per5 = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName("Permission #5", PermissionEnumType.PERSON, per1, per1.getOrganizationId());
 			}
-			Factories.getPermissionFactory().denormalize(per5);
+			((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).denormalize(per5);
 			assertNotNull("Permission is null",per5);
 
-			//Factories.getPermissionFactory().denormalize(per1);
+			//((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).denormalize(per1);
 			/// Find permission by path
 			/// TODO: This path lookup is not valid for mixed types because the parent path resolution might not find the correct parent (eg: testuser ACCOUNT vs testuser PERSON types, etc)
 			/*
-			logger.info("Looking for '" + per5.getParentPath() + "/" + per5.getName() + "' from " + Factories.getPermissionFactory().getPermissionPath(per5));
-			perc1 = Factories.getPermissionFactory().findPermission(PermissionEnumType.UNKNOWN, per5.getParentPath() + "/" + per5.getName(), per5.getOrganizationId());
+			logger.info("Looking for '" + per5.getParentPath() + "/" + per5.getName() + "' from " + ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionPath(per5));
+			perc1 = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).findPermission(PermissionEnumType.UNKNOWN, per5.getParentPath() + "/" + per5.getName(), per5.getOrganizationId());
 			assertNotNull("Permission #1 Check (" + per5.getParentPath() + "/" + per5.getName() + ") was null",perc1);
 			*/
 			
@@ -85,7 +88,7 @@ public class TestPermissions extends BaseDataAccessTest{
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 
 		PersonType acct1 = getApplicationPerson("Person #1", app1);
@@ -100,15 +103,15 @@ public class TestPermissions extends BaseDataAccessTest{
 		boolean havePerm = false;
 		/// Try giving account #1 permission #1 to application #1 (a directory group in AM)
 		try {
-			Factories.getPersonFactory().populate(acct4);
-			Factories.getPersonFactory().populate(acct5);
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(acct4);
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(acct5);
 			if(acct4.getAccounts().size() == 0){
 				acct4.getAccounts().add(pacct4);
-				Factories.getPersonFactory().update(acct4);
+				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(acct4);
 			}
 			if(acct5.getAccounts().size() == 0){
 				acct5.getAccounts().add(pacct5);
-				Factories.getPersonFactory().update(acct5);
+				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(acct5);
 			}
 			assertTrue("User can't view the permission", AuthorizationService.canView(testUser,per1));
 			AuthorizationService.authorize(testUser, acct1, app1, per1, true);
@@ -152,13 +155,13 @@ public class TestPermissions extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 
@@ -194,13 +197,13 @@ public class TestPermissions extends BaseDataAccessTest{
 			assertTrue("Account #3 should have the permission", havePerm);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 
@@ -212,28 +215,28 @@ public class TestPermissions extends BaseDataAccessTest{
 		String appName = UUID.randomUUID().toString();
 		DirectoryGroupType app1 = getApplication("Application " + appName);
 		try {
-			ApplicationPermissionType perB = Factories.getPermissionFactory().makePath(testUser, PermissionEnumType.APPLICATION, app1);
+			ApplicationPermissionType perB = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).makePath(testUser, PermissionEnumType.APPLICATION, app1);
 			
 			String sess = BulkFactories.getBulkFactory().newBulkSession();
 			for(int i = 0; i < 50; i++){
-				ApplicationPermissionType p = (ApplicationPermissionType)Factories.getPermissionFactory().newPermission(testUser, "Permission " + appName + " " + (i+1), PermissionEnumType.APPLICATION,perB, testUser.getOrganizationId());
+				ApplicationPermissionType p = (ApplicationPermissionType)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).newPermission(testUser, "Permission " + appName + " " + (i+1), PermissionEnumType.APPLICATION,perB, testUser.getOrganizationId());
 				BulkFactories.getBulkFactory().createBulkEntry(sess, FactoryEnumType.PERMISSION, p);
 				
 				/// Test that the bulk entry is 'discoverable'
-				ApplicationPermissionType p2 = Factories.getPermissionFactory().getPermissionByName("Permission " + appName + " " + (i+1), PermissionEnumType.APPLICATION, perB, testUser.getOrganizationId());
+				ApplicationPermissionType p2 = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName("Permission " + appName + " " + (i+1), PermissionEnumType.APPLICATION, perB, testUser.getOrganizationId());
 				assertNotNull("Bulk cached permission not available",p2);
 			}
 			BulkFactories.getBulkFactory().write(sess);
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	*/
@@ -255,14 +258,14 @@ public class TestPermissions extends BaseDataAccessTest{
 		List<ObjectPermissionType> per = new ArrayList<ObjectPermissionType>();
 		List<ObjectPermissionType> per2 = new ArrayList<ObjectPermissionType>();
 		try {
-			per = Factories.getPermissionFactory().getPermissionList(PermissionEnumType.OBJECT, 0, 10, testUser.getOrganizationId());
-			per2 = Factories.getPermissionFactory().getPermissionList(rootPer, PermissionEnumType.OBJECT, 0, 10, testUser.getOrganizationId());
+			per = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionList(PermissionEnumType.OBJECT, 0, 10, testUser.getOrganizationId());
+			per2 = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionList(rootPer, PermissionEnumType.OBJECT, 0, 10, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		/// Just check greater than zero off the root since there are default permissions there
 		///

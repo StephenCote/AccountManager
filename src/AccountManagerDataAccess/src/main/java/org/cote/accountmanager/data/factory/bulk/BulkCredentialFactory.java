@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.CredentialFactory;
 
 public class BulkCredentialFactory extends CredentialFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.CREDENTIAL, BulkCredentialFactory.class); }
 	public BulkCredentialFactory(){
 		super();
 		bulkMode = true;

@@ -36,14 +36,15 @@ import java.sql.Types;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class DBFactory {
-	public static final Logger logger = Logger.getLogger(DBFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(DBFactory.class);
 	public enum CONNECTION_TYPE{
 		UNKNOWN,
 		SQL,

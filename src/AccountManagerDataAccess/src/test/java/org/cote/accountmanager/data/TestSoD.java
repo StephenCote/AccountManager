@@ -3,6 +3,15 @@ package org.cote.accountmanager.data;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.FactFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.PatternFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.data.factory.PolicyFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.factory.RuleFactory;
 import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.AuthorizationService;
@@ -35,63 +44,62 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.junit.Test;
-
 public class TestSoD extends BaseDataAccessTest{
 	//
 	private static long testRefId = 0;
 
 	private BaseRoleType getRoleBase(UserType user) throws FactoryException, ArgumentException, DataAccessException{
-		BaseRoleType p = Factories.getRoleFactory().getUserRole(user, RoleEnumType.ACCOUNT, user.getOrganizationId());
-		return Factories.getRoleFactory().getCreateRole(user, "ApplicationRoles", RoleEnumType.ACCOUNT, p, user.getOrganizationId());
+		BaseRoleType p = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(user, RoleEnumType.ACCOUNT, user.getOrganizationId());
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateRole(user, "ApplicationRoles", RoleEnumType.ACCOUNT, p, user.getOrganizationId());
 	}
 	
 	private BasePermissionType getPermissionBase(UserType user) throws FactoryException, ArgumentException, DataAccessException{
-		BasePermissionType p = Factories.getPermissionFactory().getUserPermission(user, PermissionEnumType.ACCOUNT, user.getOrganizationId());
-		return Factories.getPermissionFactory().getCreatePermission(user, "SoD", PermissionEnumType.ACCOUNT, p, user.getOrganizationId());
+		BasePermissionType p = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getUserPermission(user, PermissionEnumType.ACCOUNT, user.getOrganizationId());
+		return ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getCreatePermission(user, "SoD", PermissionEnumType.ACCOUNT, p, user.getOrganizationId());
 	}
 	
 	private DirectoryGroupType getSoDBase(UserType user) throws FactoryException, ArgumentException{
-		return Factories.getGroupFactory().getCreatePath(user, "~/SoD", testUser.getOrganizationId());
+		return ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, "~/SoD", testUser.getOrganizationId());
 	}
 	
 	private DirectoryGroupType getActivityBase(UserType user) throws FactoryException, ArgumentException{
-		return Factories.getGroupFactory().getCreatePath(user, "~/SoD/Activities", testUser.getOrganizationId());
+		return ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, "~/SoD/Activities", testUser.getOrganizationId());
 	}
 	
 	private DirectoryGroupType getSoDActivity(UserType user, String name, DirectoryGroupType parent) throws FactoryException, ArgumentException, DataAccessException{
 		if(parent == null) parent = getActivityBase(user);
-		Factories.getGroupFactory().denormalize(parent);
-		DirectoryGroupType group = Factories.getGroupFactory().getCreatePath(user, parent.getPath() + "/" + name, user.getOrganizationId());
+		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(parent);
+		DirectoryGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, parent.getPath() + "/" + name, user.getOrganizationId());
 		GroupService.addGroupToGroup(group, parent);
 		return group;
 	}
 	
 	private PersonType getSoDContextPerson(UserType user,String name) throws FactoryException, ArgumentException{
-		PersonType per = Factories.getPersonFactory().getByNameInGroup(name, getActivityBase(user));
+		PersonType per = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getByNameInGroup(name, getActivityBase(user));
 		if(per == null){
-			per = Factories.getPersonFactory().newPerson(user, getActivityBase(user).getId());
+			per = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(user, getActivityBase(user).getId());
 			per.setName(name);
-			Factories.getPersonFactory().add(per);
-			per = Factories.getPersonFactory().getByNameInGroup(name, getActivityBase(user));
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).add(per);
+			per = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getByNameInGroup(name, getActivityBase(user));
 		}
 		return per;
 	}
 	private AccountType getSoDContextAccount(UserType user, String name) throws FactoryException, ArgumentException{
-		AccountType per = Factories.getAccountFactory().getByNameInGroup(name, getActivityBase(user));
+		AccountType per = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getByNameInGroup(name, getActivityBase(user));
 		if(per == null){
-			per = Factories.getAccountFactory().newAccount(user, name,AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL,getActivityBase(user).getId());
+			per = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(user, name,AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL,getActivityBase(user).getId());
 
-			Factories.getAccountFactory().add(per);
-			per = Factories.getAccountFactory().getByNameInGroup(name, getActivityBase(user));
+			((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).add(per);
+			per = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getByNameInGroup(name, getActivityBase(user));
 		}
 		return per;
 	}
 
 	private BaseRoleType getApplicationRole(UserType user, String name, BaseRoleType parent) throws FactoryException, ArgumentException, DataAccessException{
-		return Factories.getRoleFactory().getCreateRole(user, name, RoleEnumType.ACCOUNT, getRoleBase(user), user.getOrganizationId());
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateRole(user, name, RoleEnumType.ACCOUNT, getRoleBase(user), user.getOrganizationId());
 	}	
 	private BasePermissionType getSodPermission(UserType user, String name, BasePermissionType parent) throws FactoryException, ArgumentException, DataAccessException{
-		return Factories.getPermissionFactory().getCreatePermission(user, name, PermissionEnumType.ACCOUNT, getPermissionBase(user), user.getOrganizationId());
+		return ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getCreatePermission(user, name, PermissionEnumType.ACCOUNT, getPermissionBase(user), user.getOrganizationId());
 	}
 /*
 	private PolicyType getCreatePolicy(UserType user, String name, DirectoryGroupType dir){
@@ -99,22 +107,22 @@ public class TestSoD extends BaseDataAccessTest{
 		PolicyType policy = null;
 
 		try {
-			policy = Factories.getPolicyFactory().getByNameInGroup(name, dir);
+			policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getByNameInGroup(name, dir);
 			if(policy == null){
-				policy = Factories.getPolicyFactory().newPolicy(testUser, dir);
+				policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).newPolicy(testUser, dir);
 				policy.setCondition(ConditionEnumType.ALL);
 				policy.setName(name);
-				if(Factories.getPolicyFactory().addPolicy(policy)){
-					policy = Factories.getPolicyFactory().getByNameInGroup(name, dir);
+				if(((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).addPolicy(policy)){
+					policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getByNameInGroup(name, dir);
 				}
 				else policy = null;
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return policy;
 	}
@@ -124,26 +132,26 @@ public class TestSoD extends BaseDataAccessTest{
 		PatternType pattern = null;
 
 		try {
-			pattern = Factories.getPatternFactory().getByNameInGroup(name, dir);
+			pattern = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(name, dir);
 			if(pattern == null){
-				pattern = Factories.getPatternFactory().newPattern(testUser, dir.getId());
+				pattern = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).newPattern(testUser, dir.getId());
 				pattern.setName(name);
 				pattern.setPatternType(PatternEnumType.SEPARATION_OF_DUTY);
 				pattern.setComparator(ComparatorEnumType.EQUALS);
 				pattern.setFactUrn(factUrn);
 				pattern.setMatchUrn(matchUrn);
 
-				if(Factories.getPatternFactory().add(pattern)){
-					pattern = Factories.getPatternFactory().getByNameInGroup(name, dir);
+				if(((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).add(pattern)){
+					pattern = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(name, dir);
 				}
 				else pattern = null;
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return pattern;
 	}
@@ -153,23 +161,23 @@ public class TestSoD extends BaseDataAccessTest{
 		RuleType rule = null;
 
 		try {
-			rule = Factories.getRuleFactory().getByNameInGroup(name, dir);
+			rule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(name, dir);
 			if(rule == null){
-				rule = Factories.getRuleFactory().newRule(testUser, dir);
+				rule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).newRule(testUser, dir);
 				rule.setName(name);
 				rule.setRuleType(RuleEnumType.DENY);
 				rule.setCondition(ConditionEnumType.ALL);
-				if(Factories.getRuleFactory().addRule(rule)){
-					rule = Factories.getRuleFactory().getByNameInGroup(name, dir);
+				if(((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).addRule(rule)){
+					rule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(name, dir);
 				}
 				else rule = null;
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return rule;
 	}
@@ -177,10 +185,10 @@ public class TestSoD extends BaseDataAccessTest{
 	private FactType getCreateGroupFact(UserType user, String name, DirectoryGroupType dir, DirectoryGroupType fDir){
 		FactType fact = null;
 		try {
-			fact = Factories.getFactFactory().getByNameInGroup(name,dir);
+			fact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name,dir);
 			if(fact == null){
 				
-				fact = Factories.getFactFactory().newFact(user, dir.getId());
+				fact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(user, dir.getId());
 				fact.setName(name);
 				//fact.setUrn(urn);
 				fact.setFactType(FactEnumType.GROUP);
@@ -188,9 +196,9 @@ public class TestSoD extends BaseDataAccessTest{
 				fact.setSourceType(fDir.getGroupType().toString());
 				//fact.setSourceUrn(fDir.getName());
 				fact.setSourceUrn(fDir.getUrn());
-				//fact.setSourceUrl(Factories.getGroupFactory().getPath(Factories.getGroupFactory().getGroupById(fDir.getParentId(), fDir.getOrganizationId())));
-				if(Factories.getFactFactory().add(fact)){
-					fact = Factories.getFactFactory().getByNameInGroup(name, dir);
+				//fact.setSourceUrl(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getPath(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(fDir.getParentId(), fDir.getOrganizationId())));
+				if(((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(fact)){
+					fact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name, dir);
 				}
 				else fact = null;
 			}
@@ -207,16 +215,16 @@ public class TestSoD extends BaseDataAccessTest{
 	private FactType getCreateAccountParameterFact(UserType user, String name, DirectoryGroupType dir){
 		FactType fact = null;
 		try {
-			fact = Factories.getFactFactory().getByNameInGroup(name,dir);
+			fact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name,dir);
 			if(fact == null){
 				
-				fact = Factories.getFactFactory().newFact(user, dir.getId());
+				fact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(user, dir.getId());
 				fact.setName(name);
 				//fact.setUrn(urn);
 				fact.setFactType(FactEnumType.PARAMETER);
 				fact.setFactoryType(FactoryEnumType.ACCOUNT);
-				if(Factories.getFactFactory().add(fact)){
-					fact = Factories.getFactFactory().getByNameInGroup(name, dir);
+				if(((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(fact)){
+					fact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name, dir);
 				}
 				else fact = null;
 			}
@@ -243,7 +251,7 @@ public class TestSoD extends BaseDataAccessTest{
 			
 			FactType accountFact = prt.getFacts().get(0);
 			DirectoryGroupType adir = getActivityBase(testUser);
-			Factories.getGroupFactory().denormalize(adir);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(adir);
 			//accountFact.setSourceUrl(adir.getPath());
 			accountFact.setSourceUrn( getSoDContextAccount(testUser,"Demo Account 2").getUrn());
 
@@ -260,10 +268,10 @@ public class TestSoD extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 
@@ -304,13 +312,13 @@ public class TestSoD extends BaseDataAccessTest{
 			demoAccount2 = getSoDContextAccount(testUser,"Demo Account 2");
 			demoPerson1.getAccounts().clear();
 			demoPerson1.getAccounts().add(demoAccount1);
-			Factories.getPersonFactory().update(demoPerson1);
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(demoPerson1);
 			
 			demoPerson2.getAccounts().clear();
 			demoPerson2.getAccounts().add(demoAccount2);
-			Factories.getPersonFactory().update(demoPerson2);
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(demoPerson2);
 			
-			sodApplication1 = Factories.getGroupFactory().getCreatePath(testUser, "~/Applications/Application 1", testUser.getOrganizationId());
+			sodApplication1 = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Applications/Application 1", testUser.getOrganizationId());
 			
 			sodParentAct1 = getSoDActivity(testUser, "Business Activity 1", null);
 			sodChildAct1 = getSoDActivity(testUser, "Business Activity Child 1", sodParentAct1);
@@ -370,13 +378,13 @@ public class TestSoD extends BaseDataAccessTest{
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	public PolicyType getTestSoDPolicy1(){
@@ -407,50 +415,50 @@ public class TestSoD extends BaseDataAccessTest{
 			sodGrandChildAct2 = getSoDActivity(testUser, "Business Activity Grand Child 2", sodChildAct2);
 
 
-			sodPol1 = getCreatePolicy(testUser, "SoD Policy 1",Factories.getGroupFactory().getCreatePath(testUser, "~/Policies", testUser.getOrganizationId()));
-			sodRule1 = getCreateRule(testUser,"SoD Rule 1",RuleEnumType.DENY,Factories.getGroupFactory().getCreatePath(testUser, "~/Rules", testUser.getOrganizationId()));
+			sodPol1 = getCreatePolicy(testUser, "SoD Policy 1",((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Policies", testUser.getOrganizationId()));
+			sodRule1 = getCreateRule(testUser,"SoD Rule 1",RuleEnumType.DENY,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Rules", testUser.getOrganizationId()));
 			
-			sodPat2 =  getCreateSoDPattern(testUser,"SoD Pattern 2",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId()));
-			sodPat1 =  getCreateSoDPattern(testUser,"SoD Pattern 1",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId()));
+			sodPat2 =  getCreateSoDPattern(testUser,"SoD Pattern 2",null,null,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId()));
+			sodPat1 =  getCreateSoDPattern(testUser,"SoD Pattern 1",null,null,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId()));
 			
-			pFact = getCreateAccountParameterFact(testUser,"Account Parameter", Factories.getGroupFactory().getCreatePath(testUser, "~/Facts", testUser.getOrganizationId()));
-			fact1 = getCreateGroupFact(testUser,"Activity 1", Factories.getGroupFactory().getCreatePath(testUser, "~/Facts", testUser.getOrganizationId()),sodChildAct1);
-			fact2 = getCreateGroupFact(testUser,"Activity 2", Factories.getGroupFactory().getCreatePath(testUser, "~/Facts", testUser.getOrganizationId()),sodChildAct2);
+			pFact = getCreateAccountParameterFact(testUser,"Account Parameter", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Facts", testUser.getOrganizationId()));
+			fact1 = getCreateGroupFact(testUser,"Activity 1", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Facts", testUser.getOrganizationId()),sodChildAct1);
+			fact2 = getCreateGroupFact(testUser,"Activity 2", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Facts", testUser.getOrganizationId()),sodChildAct2);
 			sodPat2.setFactUrn(pFact.getUrn());
 			sodPat2.setMatchUrn(fact2.getUrn());
 			sodPat2.setLogicalOrder(2);
-			Factories.getPatternFactory().update(sodPat2);
-			sodPat2 =  getCreateSoDPattern(testUser,"SoD Pattern 2",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId()));
+			((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).update(sodPat2);
+			sodPat2 =  getCreateSoDPattern(testUser,"SoD Pattern 2",null,null,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId()));
 			
 			sodPat1.setFactUrn(pFact.getUrn());
 			sodPat1.setMatchUrn(fact1.getUrn());
 			sodPat1.setLogicalOrder(1);
-			Factories.getPatternFactory().update(sodPat1);
-			sodPat1 =  getCreateSoDPattern(testUser,"SoD Pattern 1",null,null,Factories.getGroupFactory().getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId()));
+			((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).update(sodPat1);
+			sodPat1 =  getCreateSoDPattern(testUser,"SoD Pattern 1",null,null,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId()));
 			sodRule1.getPatterns().clear();
 			//sodRule1.getPatterns().add(sodPat0);
 			sodRule1.getPatterns().add(sodPat1);
 			sodRule1.getPatterns().add(sodPat2);
 			sodRule1.setRuleType(RuleEnumType.DENY);
-			Factories.getRuleFactory().update(sodRule1);
-			sodRule1 = getCreateRule(testUser,"SoD Rule 1",Factories.getGroupFactory().getCreatePath(testUser, "~/Rules", testUser.getOrganizationId()));
+			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).update(sodRule1);
+			sodRule1 = getCreateRule(testUser,"SoD Rule 1",((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Rules", testUser.getOrganizationId()));
 			sodPol1.getRules().clear();
 			sodPol1.getRules().add(sodRule1);
 			sodPol1.setEnabled(true);
-			Factories.getPolicyFactory().update(sodPol1);
-			sodPol1 = getCreatePolicy(testUser, "SoD Policy 1",Factories.getGroupFactory().getCreatePath(testUser, "~/Policies", testUser.getOrganizationId()));
+			((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).update(sodPol1);
+			sodPol1 = getCreatePolicy(testUser, "SoD Policy 1",((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Policies", testUser.getOrganizationId()));
 			
 			
-			//logger.info("Permission 1 " + Factories.getPermissionFactory().getPermissionPath(sodPer1));
+			//logger.info("Permission 1 " + ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionPath(sodPer1));
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		/*
@@ -481,13 +489,13 @@ public class TestSoD extends BaseDataAccessTest{
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		*/
 		return sodPol1;

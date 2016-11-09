@@ -23,10 +23,11 @@
  *******************************************************************************/
 package org.cote.accountmanager.services;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class ThreadService implements Runnable {
-	public static final Logger logger = Logger.getLogger(ThreadService.class.getName());
+	public static final Logger logger = LogManager.getLogger(ThreadService.class);
 	private int threadDelay = 1000;
 	private boolean stopRequested=false;
 	private Thread svcThread = null;

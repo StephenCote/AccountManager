@@ -41,18 +41,21 @@ import javax.security.jacc.PolicyContext;
 import javax.security.jacc.PolicyContextException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.util.ServiceUtil;
 
 public class AccountManagerLoginModule implements LoginModule {
-	public static final Logger logger = Logger.getLogger(AccountManagerLoginModule.class.getName());
+	public static final Logger logger = LogManager.getLogger(AccountManagerLoginModule.class);
 	//private static String EAI_PASSWORD = "debugdebug";
 	
     // initial state
@@ -158,7 +161,7 @@ public class AccountManagerLoginModule implements LoginModule {
 			request = (HttpServletRequest) PolicyContext.getContext("javax.servlet.http.HttpServletRequest");
 		} catch (PolicyContextException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			throw new LoginException("Unable to obtain request context");
 		}
         
@@ -174,7 +177,7 @@ public class AccountManagerLoginModule implements LoginModule {
         UserType user = null;
 
         try {
-			orgType = Factories.getOrganizationFactory().findOrganization(orgPath);
+			orgType = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
 	        if(orgType == null){
 	        	throw new LoginException("Organization is null for path: '" + orgPath);
 	        }
@@ -182,10 +185,10 @@ public class AccountManagerLoginModule implements LoginModule {
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
         if (debug())
@@ -282,7 +285,7 @@ public class AccountManagerLoginModule implements LoginModule {
         } catch (Throwable t) {
             if (debug()) {
                 System.out.println(t.getMessage());
-                logger.error(t.getStackTrace());
+                logger.error("Error",t);
             }
             throw new LoginException(t.toString());
         }

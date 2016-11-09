@@ -42,13 +42,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.GroupParticipationFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -65,6 +69,7 @@ import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
@@ -126,7 +131,7 @@ public class EffectiveAuthorizationService {
 	
 
 	
-	public static final Logger logger = Logger.getLogger(EffectiveAuthorizationService.class.getName());
+	public static final Logger logger = LogManager.getLogger(EffectiveAuthorizationService.class);
 
 	/// 2014/09/14 - in progress - creating generic cache mechanism
 	
@@ -558,6 +563,7 @@ public class EffectiveAuthorizationService {
 		if(map.containsKey(actor.getId()) && map.get(actor.getId()).containsKey(obj.getId())){
 			Map<Long,Boolean> pmap = map.get(actor.getId()).get(obj.getId());
 			for(int p = 0; p < permissions.length;p++){
+				if(permissions[p] == null) continue;
 				if(pmap.containsKey(permissions[p].getId())){
 					out_bool = pmap.get(permissions[p].getId());
 					//logger.debug("*** Per Cache Value == " + out_bool);
@@ -581,6 +587,7 @@ public class EffectiveAuthorizationService {
 		if(map.containsKey(actor.getId()) && map.get(actor.getId()).containsKey(obj.getId())){
 			Map<Long,Boolean> pmap = map.get(actor.getId()).get(obj.getId());
 			for(int p = 0; p < permissions.length;p++){
+				if(permissions[p] == null) continue;
 				if(pmap.containsKey(permissions[p].getId())){
 					//logger.debug("*** hasPerCache " + actor.getId() + " " + obj.getId() + " " + pmap.get(permissions[p].getId()));
 					out_bool = true;
@@ -640,6 +647,7 @@ public class EffectiveAuthorizationService {
 		if(map.containsKey(actor.getId()) == false) map.put(actor.getId(), new HashMap<Long,Map<Long,Boolean>>());
 		if(map.get(actor.getId()).containsKey(obj.getId())==false) map.get(actor.getId()).put(obj.getId(), new HashMap<Long,Boolean>());
 		for(int p = 0;p < permissions.length;p++){
+			if(permissions[p]==null) continue;
 			Map<Long,Boolean> pmap = map.get(actor.getId()).get(obj.getId());
 			pmap.put(permissions[p].getId(),val);
 		}
@@ -658,7 +666,7 @@ public class EffectiveAuthorizationService {
 		buff.append(member.getNameType().toString() + " " + member.getName() + " (");
 		for(int i = 0; i < permissions.length;i++){
 			if(i > 0) buff.append(", ");
-			buff.append(permissions[i].getName());
+			buff.append((permissions[i] == null ? "Null" : permissions[i].getName()));
 		}
 		buff.append(") " + object.getNameType().toString() + " " + object.getName());
 		return buff.toString();
@@ -692,10 +700,10 @@ public class EffectiveAuthorizationService {
 		else if(member.getNameType() == NameEnumType.PERSON){
 			PersonType person = (PersonType)member;
 			try {
-				Factories.getPersonFactory().populate(person);
+				Factories.getNameIdFactory(FactoryEnumType.PERSON).populate(person);
 			} catch (FactoryException | ArgumentException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			for(int i = 0; i < person.getAccounts().size();i++){
 				if(getEntitlementsGrantAccess(object, person.getAccounts().get(i),permissions)){
@@ -893,7 +901,7 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
@@ -901,7 +909,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return out_ents;
@@ -960,7 +968,7 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
@@ -968,7 +976,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return out_bool;
@@ -1296,7 +1304,7 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
@@ -1304,7 +1312,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return out_bool;
@@ -1369,11 +1377,11 @@ public class EffectiveAuthorizationService {
 			}
 			rset.close();
 			stat.close();
-			roles = Factories.getRoleFactory().listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])), actor.getOrganizationId());
+			roles = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])), actor.getOrganizationId());
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
@@ -1381,7 +1389,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return roles;
@@ -1409,7 +1417,7 @@ public class EffectiveAuthorizationService {
 					throw new ArgumentException("Role BulkEntry with id " + role.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
 				}
 				if(role.getRoleType() == RoleEnumType.USER){
-					List<UserType> rusers = Factories.getRoleParticipationFactory().getUsersInRole((UserRoleType)role);
+					List<UserType> rusers = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUsersInRole((UserRoleType)role);
 					for(int r = 0; r < rusers.size();r++){
 						user = rusers.get(r);
 						if(rebuildUsers.containsKey(user.getId())==false){
@@ -1418,7 +1426,7 @@ public class EffectiveAuthorizationService {
 					}
 				}
 				else if(role.getRoleType() == RoleEnumType.ACCOUNT){
-					List<AccountType> raccounts = Factories.getRoleParticipationFactory().getAccountsInRole((AccountRoleType)role);
+					List<AccountType> raccounts = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getAccountsInRole((AccountRoleType)role);
 					for(int r = 0; r < raccounts.size();r++){
 						account = raccounts.get(r);
 						if(rebuildAccounts.containsKey(account.getId())==false){
@@ -1427,7 +1435,7 @@ public class EffectiveAuthorizationService {
 					}
 				}
 				else if(role.getRoleType() == RoleEnumType.PERSON){
-					List<PersonType> rpersons = Factories.getRoleParticipationFactory().getPersonsInRole((PersonRoleType)role);
+					List<PersonType> rpersons = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getPersonsInRole((PersonRoleType)role);
 					for(int r = 0; r < rpersons.size();r++){
 						person = rpersons.get(r);
 						if(rebuildPersons.containsKey(person.getId())==false){
@@ -1453,7 +1461,7 @@ public class EffectiveAuthorizationService {
 					throw new ArgumentException("Group BulkEntry with id " + group.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
 				}
 				if(group.getGroupType() == GroupEnumType.USER){
-					List<UserType> gusers = Factories.getGroupParticipationFactory().getUsersInGroup((UserGroupType)group);
+					List<UserType> gusers = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getUsersInGroup((UserGroupType)group);
 					for(int g = 0; g < gusers.size();g++){
 						if(rebuildUsers.containsKey(gusers.get(g).getId()) == false){
 							rebuildUsers.put(gusers.get(g).getId(), gusers.get(g));
@@ -1461,7 +1469,7 @@ public class EffectiveAuthorizationService {
 					}
 				}
 				else if(group.getGroupType() == GroupEnumType.ACCOUNT){
-					List<AccountType> gaccounts = Factories.getGroupParticipationFactory().getAccountsInGroup((AccountGroupType)group);
+					List<AccountType> gaccounts = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getAccountsInGroup((AccountGroupType)group);
 					for(int g = 0; g < gaccounts.size();g++){
 						if(rebuildAccounts.containsKey(gaccounts.get(g).getId()) == false){
 							rebuildAccounts.put(gaccounts.get(g).getId(), gaccounts.get(g));
@@ -1469,7 +1477,7 @@ public class EffectiveAuthorizationService {
 					}
 				}
 				else if(group.getGroupType() == GroupEnumType.PERSON){
-					List<PersonType> gpersons = Factories.getGroupParticipationFactory().getPersonsInGroup((PersonGroupType)group);
+					List<PersonType> gpersons = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getPersonsInGroup((PersonGroupType)group);
 					for(int g = 0; g < gpersons.size();g++){
 						if(rebuildPersons.containsKey(gpersons.get(g).getId()) == false){
 							rebuildPersons.put(gpersons.get(g).getId(), gpersons.get(g));
@@ -1626,7 +1634,7 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
@@ -1634,7 +1642,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		logger.info("Rebuilt role cache with " + updated + " operations");
@@ -1693,7 +1701,7 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
@@ -1701,7 +1709,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return out_bool;
@@ -1715,7 +1723,7 @@ public class EffectiveAuthorizationService {
 			out_bool = true;
 		} catch (SQLException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		return out_bool;
@@ -1734,7 +1742,7 @@ public class EffectiveAuthorizationService {
 			out_bool = true;
 		} catch (SQLException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		logger.info("Rebuilt Entitlements Cache in " + (System.currentTimeMillis() - start) + "ms");
 		return out_bool;

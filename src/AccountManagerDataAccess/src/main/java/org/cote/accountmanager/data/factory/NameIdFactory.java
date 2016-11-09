@@ -36,7 +36,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
@@ -55,12 +56,13 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 
 public abstract class NameIdFactory extends FactoryBase implements INameIdFactory{
-	public static final Logger logger = Logger.getLogger(NameIdFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(NameIdFactory.class);
 	private Map<Long, String> typeNameIdMap = null;
 	private Map<String,Integer> typeNameMap = null;
 	private Map<Long,Integer> typeIdMap = null;
@@ -104,6 +106,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	public NameIdFactory(){
 		super();
 		setUseThreadSafeCollections(true);
+
 	}
 	
 
@@ -219,7 +222,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 			logger.debug("Organization path not defined");
 			return;
 		}
-		OrganizationType org = Factories.getOrganizationFactory().findOrganization(obj.getOrganizationPath());
+		OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(obj.getOrganizationPath());
 		if(org == null){
 			throw new ArgumentException("Invalid organization path '" + obj.getOrganizationPath() + "'");
 		}
@@ -236,10 +239,10 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		if(obj.getOrganizationPath() == null){
 
 			if(obj.getNameType() == NameEnumType.ORGANIZATION){
-				obj.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(obj.getId()));
+				obj.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(obj.getId()));
 			}
 			else{
-				obj.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(obj.getOrganizationId()));
+				obj.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(obj.getOrganizationId()));
 			}
 		}
 	}
@@ -663,8 +666,8 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		if(scopeToOrganization){
 			long org_id = rset.getLong("organizationid");
 			obj.setOrganizationId(org_id);
-			//obj.setOrganization(Factories.getOrganizationFactory().getOrganizationById(org_id));
-			obj.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(obj.getOrganizationId()));
+			//obj.setOrganization(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(org_id));
+			obj.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(obj.getOrganizationId()));
 		}
 		if(hasUrn && usePersistedUrn == true){
 			obj.setUrn(rset.getString("urn"));

@@ -57,6 +57,7 @@ import org.cote.accountmanager.objects.types.UserStatusEnumType;
 //
 public class UserFactory extends NameIdFactory {
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.USER, UserFactory.class); }
 	public UserFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -75,9 +76,9 @@ public class UserFactory extends NameIdFactory {
 	{
 		UserType user = (UserType)obj;
 		if(user.getPopulated() == true || user.getDatabaseRecord() == false) return;
-		user.setContactInformation(Factories.getContactInformationFactory().getContactInformationForUser(user));
-		user.setHomeDirectory(Factories.getGroupFactory().getUserDirectory(user));
-		user.setStatistics(Factories.getStatisticsFactory().getStatistics(user));
+		user.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForUser(user));
+		user.setHomeDirectory(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(user));
+		user.setStatistics(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(user));
 		user.setPopulated(true);
 		updateToCache(user);
 		return;
@@ -95,7 +96,7 @@ public class UserFactory extends NameIdFactory {
 		/// Contact information is updated along with the parent object because it's a foreign-keyed object that is not otherwise easily referenced
 		///
 		if(user.getContactInformation() != null){
-			b = Factories.getContactInformationFactory().update(user.getContactInformation());
+			b = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).update(user.getContactInformation());
 		}
 		return b;
 	}
@@ -146,14 +147,14 @@ public class UserFactory extends NameIdFactory {
 			/// TODO
 			/// Delete users for Account
 			///
-			Factories.getContactInformationFactory().deleteContactInformationByReferenceType(user);
-			Factories.getTagParticipationFactory().deleteUserParticipations(user);
-			Factories.getRoleFactory().deleteRolesByUser(user);
-			Factories.getDataFactory().deleteDataByUser(user);
-			Factories.getGroupFactory().deleteGroupsByUser(user);
-			Factories.getGroupParticipationFactory().deleteUserGroupParticipations(user);
-			Factories.getRoleParticipationFactory().deleteUserParticipations(user);
-			Factories.getDataParticipationFactory().deleteUserParticipations(user);
+			((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).deleteContactInformationByReferenceType(user);
+			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).deleteUserParticipations(user);
+			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).deleteRolesByUser(user);
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).deleteDataByUser(user);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteGroupsByUser(user);
+			((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteUserGroupParticipations(user);
+			((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteUserParticipations(user);
+			((DataParticipationFactory)Factories.getFactory(FactoryEnumType.DATAPARTICIPATION)).deleteUserParticipations(user);
 		}
 		return (deleted > 0);
 	}
@@ -218,20 +219,20 @@ public class UserFactory extends NameIdFactory {
 			if (insertRow(row)){
 				new_user = (bulkMode ? new_user : getByName(new_user.getName(), new_user.getOrganizationId()));
 				if(new_user == null) throw new FactoryException("Failed to retrieve new user object");
-				StatisticsType stats = Factories.getStatisticsFactory().newStatistics(new_user);
-				DirectoryGroupType home_dir = Factories.getGroupFactory().newDirectoryGroup(new_user, new_user.getName(), Factories.getGroupFactory().getHomeDirectory(new_user.getOrganizationId()), new_user.getOrganizationId());
+				StatisticsType stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).newStatistics(new_user);
+				DirectoryGroupType home_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(new_user, new_user.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getHomeDirectory(new_user.getOrganizationId()), new_user.getOrganizationId());
 				String sessionId = null;
 				if(bulkMode){
 					BulkFactories.getBulkFactory().setDirty(FactoryEnumType.STATISTICS);
-					BulkFactories.getBulkStatisticsFactory().add(stats);
+					((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.STATISTICS)).add(stats);
 					BulkFactories.getBulkFactory().setDirty(FactoryEnumType.GROUP);
 					BulkFactories.getBulkFactory().createBulkEntry(null,FactoryEnumType.GROUP,home_dir);
 					if(allot_contact_info){
-						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_user);
+						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(new_user);
 						if(new_user.getId() > 0L){
 							sessionId = BulkFactories.getBulkFactory().getGlobalSessionId();
 							BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATION);
-							BulkFactories.getBulkContactInformationFactory().add(cinfo);
+							((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.CONTACTINFORMATION)).add(cinfo);
 						}
 						else{
 							if(this.factoryType == FactoryEnumType.UNKNOWN) throw new FactoryException("Invalid Factory Type for Bulk Identifiers");
@@ -240,22 +241,22 @@ public class UserFactory extends NameIdFactory {
 								logger.error("Invalid bulk session id");
 								throw new FactoryException("Invalid bulk session id");
 							}
-							BulkFactories.getBulkGroupFactory().add(home_dir);
+							((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.GROUP)).add(home_dir);
 							logger.debug("Bulk id discovered.  User=" + new_user.getId() + ". Diverting to Bulk " + FactoryEnumType.CONTACTINFORMATION + " Operation");
 							BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cinfo);
 						}
 					}
 				}
 				else{
-					if(Factories.getStatisticsFactory().add(stats) == false) throw new FactoryException("Failed to add statistics to new user #" + new_user.getId());
-					stats = Factories.getStatisticsFactory().getStatistics(new_user);
+					if(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).add(stats) == false) throw new FactoryException("Failed to add statistics to new user #" + new_user.getId());
+					stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(new_user);
 					if(stats == null) throw new FactoryException("Failed to retrieve statistics for user #" + new_user.getId());
-					if(Factories.getGroupFactory().add(home_dir) == false) throw new FactoryException("Failed to add home directory for #" + new_user.getId());
+					if(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).add(home_dir) == false) throw new FactoryException("Failed to add home directory for #" + new_user.getId());
 					if(allot_contact_info){
-						ContactInformationType cinfo = Factories.getContactInformationFactory().newContactInformation(new_user);
+						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(new_user);
 						logger.debug("Adding cinfo for user in org " + new_user.getOrganizationId());
-						if(Factories.getContactInformationFactory().add(cinfo) == false) throw new FactoryException("Failed to assign contact information for user #" + new_user.getId());
-						cinfo = Factories.getContactInformationFactory().getContactInformationForUser(new_user);
+						if(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).add(cinfo) == false) throw new FactoryException("Failed to assign contact information for user #" + new_user.getId());
+						cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForUser(new_user);
 						if(cinfo == null) throw new FactoryException("Failed to retrieve contact information for user #" + new_user.getId());
 						new_user.setContactInformation(cinfo);
 					}
@@ -263,9 +264,9 @@ public class UserFactory extends NameIdFactory {
 				}
 				/// re-read home dir to get the right id / bulk id
 				///
-				home_dir = Factories.getGroupFactory().getDirectoryByName(new_user.getName(), Factories.getGroupFactory().getHomeDirectory(new_user.getOrganizationId()), new_user.getOrganizationId());
+				home_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(new_user.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getHomeDirectory(new_user.getOrganizationId()), new_user.getOrganizationId());
 				if(home_dir == null) throw new FactoryException("Missing home directory");
-				Factories.getGroupFactory().addDefaultUserGroups(new_user, home_dir, bulkMode,sessionId);
+				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).addDefaultUserGroups(new_user, home_dir, bulkMode,sessionId);
 				return true;
 			}
 		}

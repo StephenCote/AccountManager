@@ -6,12 +6,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.io.Files;
 
 public class OpenSSLUtil {
-	public static final Logger logger = Logger.getLogger(OpenSSLUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(OpenSSLUtil.class);
 	
 	private String openSSL = null;
 	private String sslPath = null;

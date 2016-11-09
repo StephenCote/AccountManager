@@ -48,6 +48,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 public class StatisticsFactory extends NameIdFactory {
 	
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.STATISTICS, StatisticsFactory.class); }
 	public StatisticsFactory(){
 		super();
 		this.scopeToOrganization = true;

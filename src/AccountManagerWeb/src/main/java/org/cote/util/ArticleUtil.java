@@ -36,11 +36,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
@@ -54,6 +58,7 @@ import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.services.DataServiceImpl;
@@ -108,7 +113,7 @@ public class ArticleUtil {
 			bis.close();
 		} catch (IOException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return out_str;
 	}
@@ -122,7 +127,7 @@ public class ArticleUtil {
 	/// Note: The patterns are different between the article and media utilities
 	/// The article patterns are simplified to reduce the URL length and make discovery simpler
 
-	public static final Logger logger = Logger.getLogger(ArticleUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(ArticleUtil.class);
 	/// public static UserRoleType blogRole = null;
 	public static Map<String,UserRoleType> roles = new HashMap<String,UserRoleType>();
 	
@@ -138,20 +143,20 @@ public class ArticleUtil {
 		if(roles.containsKey(key)) return roles.get(key);
 		UserRoleType role = null;
 		try {
-			UserType adminUser = Factories.getUserFactory().getByName("Admin", organizationId);
-			role = Factories.getRoleFactory().getCreateUserRole(adminUser, name, null);
+			UserType adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
+			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateUserRole(adminUser, name, null);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(role != null){
 			roles.put(key, role);
@@ -207,7 +212,7 @@ public class ArticleUtil {
 		UserRoleType role = null;
 		DirectoryGroupType dir = null;
 		try{
-			OrganizationType org = Factories.getOrganizationFactory().findOrganization(orgPath);
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
 			if(org == null){
 				AuditService.denyResult(audit, "Organization is invalid: '" + orgPath + "'");
 				response.sendError(404);
@@ -218,14 +223,14 @@ public class ArticleUtil {
 			user = ServiceUtil.getUserFromSession(request);
 			if(user == null) user = Factories.getDocumentControl(organizationId);
 			
-			targUser = Factories.getUserFactory().getByName(subPath[0], organizationId);
+			targUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(subPath[0], organizationId);
 			if(targUser == null){
 				AuditService.denyResult(audit, "User is invalid: '" + subPath[0] + "'");
 				response.sendError(404);
 				return;
 			}
-			Factories.getUserFactory().populate(targUser);
-			dir = Factories.getGroupFactory().getDirectoryByName(type, targUser.getHomeDirectory(), targUser.getOrganizationId());
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(targUser);
+			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(type, targUser.getHomeDirectory(), targUser.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Content directory is null for " + targUser.getName() + ": '~/" + type + "'");
 				response.sendError(404);
@@ -254,10 +259,10 @@ public class ArticleUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		} catch (ArgumentException e) {
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		String name = null;
@@ -307,13 +312,13 @@ public class ArticleUtil {
 				
 				AuditService.denyResult(audit, "Error: " + e.getMessage());
 				response.sendError(404);
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 				return;
 			} catch (FactoryException e) {
 				
 				AuditService.denyResult(audit, "Error: " + e.getMessage());
 				response.sendError(404);
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 				return;
 			}
 		}
@@ -398,11 +403,11 @@ public class ArticleUtil {
 			} catch (DataException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			catch(Exception e){
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 				
 			}
 

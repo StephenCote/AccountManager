@@ -63,10 +63,11 @@ public class RoleFactory extends NameIdFactory {
 		AuthorizationService.registerAuthorizationProviders(
 				FactoryEnumType.ROLE,
 				NameEnumType.ROLE,
-				Factories.getRoleParticipationFactory()
+				FactoryEnumType.ROLEPARTICIPATION
 			);
 	}
 	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ROLE, RoleFactory.class); }
 	public RoleFactory(){
 		super();
 		this.clusterByParent = true;
@@ -127,8 +128,8 @@ public class RoleFactory extends NameIdFactory {
 			return;	
 		}
 		if(obj.getParentPath() != null) return;
-		BaseRoleType parent = Factories.getRoleFactory().getRoleById(obj.getParentId(), obj.getOrganizationId());
-		obj.setParentPath(Factories.getRoleFactory().getRolePath(parent));
+		BaseRoleType parent = getRoleById(obj.getParentId(), obj.getOrganizationId());
+		obj.setParentPath(getRolePath(parent));
 	}
 	
 	
@@ -149,7 +150,7 @@ public class RoleFactory extends NameIdFactory {
 	}
 	public void addDefaultPersonRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getUserFactory().getByName("Admin", organizationId);
+		UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
 		
 		PersonRoleType root_role = newPersonRole(admin,"Root");
 		add(root_role);
@@ -160,7 +161,7 @@ public class RoleFactory extends NameIdFactory {
 	}
 	public void addDefaultAccountRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getUserFactory().getByName("Admin", organizationId);
+		UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
 		
 		AccountRoleType root_role = newAccountRole(admin,"Root");
 		add(root_role);
@@ -171,7 +172,7 @@ public class RoleFactory extends NameIdFactory {
 	}
 	public void addDefaultUserRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getUserFactory().getByName("Admin", organizationId);
+		UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
 		
 		UserRoleType root_role = newUserRole(admin,"Root");
 		add(root_role);
@@ -196,13 +197,13 @@ public class RoleFactory extends NameIdFactory {
 			childRoles = getRoleList(new QueryField[]{QueryFields.getFieldParent(role.getId())}, null, 0, 0, role.getOrganizationId());
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		//System.out.println("Remove " + childRoles.size() + " children of role #" + role.getId());
 		for(int i = childRoles.size() -1; i >=0; i--) delete(childRoles.get(i));
 		removeRoleFromCache(role);
 		int deleted = deleteById(role.getId(), role.getOrganizationId());
-		Factories.getRoleParticipationFactory().deleteParticipations(role);
+		((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteParticipations(role);
 		return (deleted > 0);
 	}
 	public int deleteRolesByUser(NameIdType map) throws FactoryException, ArgumentException
@@ -223,7 +224,7 @@ public class RoleFactory extends NameIdFactory {
 		int deleted = deleteById(ids, organizationId);
 		if (deleted > 0)
 		{
-			Factories.getRoleParticipationFactory().deleteParticipations(ids, organizationId);
+			((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteParticipations(ids, organizationId);
 		}
 		return deleted;
 	}
@@ -650,7 +651,7 @@ public class RoleFactory extends NameIdFactory {
 		return makePath(null, type, pathBase,organizationId);
 	}
 	public <T> T makePath(UserType user, RoleEnumType type, DirectoryGroupType group) throws FactoryException, ArgumentException, DataAccessException{
-		Factories.getGroupFactory().populate(group);
+		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(group);
 		return makePath(user, type, group.getPath(), group.getOrganizationId());
 	}
 	public <T> T makePath(UserType user, RoleEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{

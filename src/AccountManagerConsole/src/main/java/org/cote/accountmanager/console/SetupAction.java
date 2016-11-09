@@ -27,7 +27,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DataAccessException;
@@ -37,7 +38,7 @@ import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.util.StreamUtil;
 
 public class SetupAction {
-	public static final Logger logger = Logger.getLogger(SetupAction.class.getName());
+	public static final Logger logger = LogManager.getLogger(SetupAction.class);
 	public static boolean setupAccountManager(String rootPassword, String schemaFile){
 		boolean out_bool = false;
 		boolean error = false;
@@ -74,7 +75,7 @@ public class SetupAction {
 		catch(SQLException sqe){
 			error = true;
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			if(connection != null){
@@ -82,29 +83,29 @@ public class SetupAction {
 					connection.close();
 				} catch (SQLException e) {
 					
-					logger.error(e.getStackTrace());
+					logger.error("Error",e);
 				}
 			}
 		}
 
 		if(error == true) return out_bool;
-		// 2016/07/27 - Bug: Because the factory starts automatically, it will throw an error
-		// it also means it has to be reset again before running setup or it will fail again because all the data was just nuked by reloading the database schema
-		// 
+
+		Factories.coolDown();
+		Factories.warmUp();
+		
 		try {
-			Factories.recycleFactories();
 			if(FactoryDefaults.setupAccountManager(rootPassword)){
 				out_bool = true;
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 
 		return out_bool;

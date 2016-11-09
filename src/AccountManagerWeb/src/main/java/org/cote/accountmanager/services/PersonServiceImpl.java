@@ -27,10 +27,14 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
@@ -39,11 +43,12 @@ import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
 
 public class PersonServiceImpl  {
-	public static final Logger logger = Logger.getLogger(PersonServiceImpl.class.getName());
+	public static final Logger logger = LogManager.getLogger(PersonServiceImpl.class);
 	public static final String defaultDirectory = "~/Persons";
 
 	public static boolean delete(PersonType bean,HttpServletRequest request){
@@ -81,37 +86,37 @@ public class PersonServiceImpl  {
 		UserType contUser = ServiceUtil.getUserFromSession(audit, request);
 		if(contUser == null) return null;
 		try{
-			if(user.getId().compareTo(contUser.getId()) != 0 && RoleService.isFactoryAdministrator(contUser, Factories.getAccountFactory(),user.getOrganizationId()) == false){
+			if(user.getId().compareTo(contUser.getId()) != 0 && RoleService.isFactoryAdministrator(contUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)),user.getOrganizationId()) == false){
 				AuditService.denyResult(audit, "Not authorized to read user");
 			}
 			else{
-				person = Factories.getPersonFactory().getPersonByUser(user);
+				person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getPersonByUser(user);
 				if(person == null){
 					AuditService.denyResult(audit, "Global person does not exist for user");
 					return person;
 				}
-				if(AuthorizationService.isMapOwner(contUser, person) == false && AuthorizationService.canView(contUser, Factories.getGroupFactory().getGroupById(person.getGroupId(),person.getOrganizationId())) == false){
+				if(AuthorizationService.isMapOwner(contUser, person) == false && AuthorizationService.canView(contUser, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(person.getGroupId(),person.getOrganizationId())) == false){
 					AuditService.denyResult(audit, "Not authorized to read person");
 					person = null;
 				}
 				else{
-					Factories.getPersonFactory().populate(person);
+					((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(person);
 					/// populating group here due to a UI issue preventing most users from populating it due to the group being restricted
 					/// This prevents the path from being exposed, and any subsequent update action moves the object to the default group
 					/// even though the user is authorized to update in place
 					///
-					//Factories.getGroupFactory().populate(person.getGroup());
+					//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(person.getGroup());
 					AuditService.permitResult(audit, "Permitted to read person");
 				}
 			}
 		}
 		catch(FactoryException e){
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		return person;

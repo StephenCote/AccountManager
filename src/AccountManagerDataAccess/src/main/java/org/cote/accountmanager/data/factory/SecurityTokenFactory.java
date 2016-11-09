@@ -51,6 +51,7 @@ public class SecurityTokenFactory extends SpoolFactory {
 	public static int TOKEN_EXPIRY_10_MINUTES = 600;
 	public static int TOKEN_EXPIRY_1_HOUR = 3600;
 	public static int TOKEN_EXPIRY_6_HOURS = 21600;
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.SECURITYTOKEN, SecurityTokenFactory.class); }
 	public SecurityTokenFactory()
 	{
 		super();

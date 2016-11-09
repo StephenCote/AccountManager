@@ -6,14 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
-import org.cote.accountmanager.data.policy.PolicyEvaluator;
-import org.cote.accountmanager.data.services.BshService;
-import org.cote.accountmanager.data.services.RoleService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.factory.FactFactory;
+import org.cote.accountmanager.data.factory.FunctionFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.OperationFactory;
+import org.cote.accountmanager.data.factory.PatternFactory;
+import org.cote.accountmanager.data.factory.PolicyFactory;
+import org.cote.accountmanager.data.factory.RoleParticipationFactory;
+import org.cote.accountmanager.data.factory.RuleFactory;
 import org.cote.accountmanager.data.services.ScriptService;
-import org.cote.accountmanager.exceptions.DataException;
-import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
@@ -23,28 +26,21 @@ import org.cote.accountmanager.objects.OperationEnumType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternType;
-import org.cote.accountmanager.objects.PolicyDefinitionType;
-import org.cote.accountmanager.objects.PolicyRequestType;
-import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.objects.types.RoleEnumType;
-import org.cote.accountmanager.util.DataUtil;
-import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
-
 public class TestFunctionFactory extends BaseDataAccessTest{
-	public static final Logger logger = Logger.getLogger(TestFunctionFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestFunctionFactory.class);
 	
 	private static String getDebugJavaScript(){
 		StringBuffer buff = new StringBuffer();
 		buff.append("print('test');\nvar dt = new Date().getTime();\n");
 		buff.append("var pub = org.cote.accountmanager.data.Factories.getPublicOrganization();");
 		buff.append("\nprint('name: ' + user.getName());");
-		buff.append("var u2 = org.cote.accountmanager.data.Factories.getUserFactory().getByName('RocketQAUser2',user.getOrganizationId());");
+		buff.append("var u2 = org.cote.accountmanager.data.Factories.getNameIdFactory(FactoryEnumType.USER).getByName('RocketQAUser2',user.getOrganizationId());");
 		buff.append("dt;");
 		return buff.toString();
 	}
@@ -56,26 +52,26 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		try{
 			//AccountRoleType role1 = RoleService.getAccountAdministratorAccountRole(testUser.getOrganizationId());
 			//assertNotNull("Role is null",role1);
-			//Factories.getRoleFactory().denormalize(role1);
+			//((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).denormalize(role1);
 			//logger.info("ROLE: " + role1.getParentPath());
-			//AccountRoleType role1c = Factories.getRoleFactory().findRole(RoleEnumType.ACCOUNT, "/AccountAdministrators", testUser.getOrganizationId());
+			//AccountRoleType role1c = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).findRole(RoleEnumType.ACCOUNT, "/AccountAdministrators", testUser.getOrganizationId());
 			//logger.info("Got role? " + (role1c != null));
 			
-			UserType adminUser = Factories.getUserFactory().getByName("Admin", testUser.getOrganizationId());
-			List<UserRoleType> roles = Factories.getRoleParticipationFactory().getUserRoles(adminUser);
+			UserType adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", testUser.getOrganizationId());
+			List<UserRoleType> roles = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUserRoles(adminUser);
 			logger.info("ROLES: " + roles.size());
 			for(int i = 0; i < roles.size(); i++){
 				logger.info("\t" + roles.get(i).getName());
 			}
-			Factories.getUserFactory().populate(testUser);
-			DirectoryGroupType ddir = Factories.getGroupFactory().getCreateDirectory(testUser, "Data", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(testUser);
+			DirectoryGroupType ddir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Data", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			DataType js = getCreateTextData(testUser,"Test.js",getDebugJavaScript(),ddir); 
 			
-			DirectoryGroupType fdir = Factories.getGroupFactory().getCreateDirectory(testUser, "Functions", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			DirectoryGroupType fdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Functions", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			FunctionType func = getCreateFunction(testUser,"TestJS1",js,fdir);
 			if(func.getFunctionType() != FunctionEnumType.JAVASCRIPT){
 				func.setFunctionType(FunctionEnumType.JAVASCRIPT);
-				Factories.getFunctionFactory().update(func);
+				((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).update(func);
 			}
 			assertNotNull("Function is null",func);
 			Map<String,Object> params = new HashMap<String,Object>();
@@ -88,7 +84,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		catch(RuntimeException | FactoryException | ArgumentException  e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} 
 
 	}
@@ -96,11 +92,11 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 	@Test
 	public void TestBSHCRUD(){
 		try{
-			Factories.getUserFactory().populate(testUser);
-			DirectoryGroupType ddir = Factories.getGroupFactory().getCreateDirectory(testUser, "Data", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(testUser);
+			DirectoryGroupType ddir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Data", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			DataType bsh = getCreateTextData(testUser,"Test.bsh",getDebugShellScript(),ddir); 
 			
-			DirectoryGroupType fdir = Factories.getGroupFactory().getCreateDirectory(testUser, "Functions", testUser.getHomeDirectory(), testUser.getOrganizationId());
+			DirectoryGroupType fdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Functions", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			FunctionType func = getCreateFunction(testUser,"TestBSH1",bsh,fdir);
 			
 			assertNotNull("Function is null",func);
@@ -160,17 +156,17 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		String funcName = "FactComparator.func";
 		
 		try {
-			fudir = Factories.getGroupFactory().getCreateDirectory(user, "Functions", user.getHomeDirectory(), testUser.getOrganizationId());
-			rdir = Factories.getGroupFactory().getCreatePath(user, "~/Rules", user.getOrganizationId());
-			pdir = Factories.getGroupFactory().getCreatePath(user, "~/Patterns", user.getOrganizationId());
-			fdir = Factories.getGroupFactory().getCreatePath(user, "~/Facts", user.getOrganizationId());
-			podir = Factories.getGroupFactory().getCreatePath(user, "~/Policies", user.getOrganizationId());
-			odir = Factories.getGroupFactory().getCreatePath(user, "~/Operations", user.getOrganizationId());
-			ddir = Factories.getGroupFactory().getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganizationId());
+			fudir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Functions", user.getHomeDirectory(), testUser.getOrganizationId());
+			rdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, "~/Rules", user.getOrganizationId());
+			pdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, "~/Patterns", user.getOrganizationId());
+			fdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, "~/Facts", user.getOrganizationId());
+			podir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, "~/Policies", user.getOrganizationId());
+			odir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, "~/Operations", user.getOrganizationId());
+			ddir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganizationId());
 			
 			FactType setCredParamFact = getCreateCredentialParamFact(user,"Set Credential Parameter",fdir);
 			setCredParamFact.setFactoryType(FactoryEnumType.CREDENTIAL);
-			Factories.getFactFactory().update(setCredParamFact);
+			((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).update(setCredParamFact);
 			FactType strengthFact = getCreateStaticFact(user,"Password Strength Expression","^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{5,}$",fdir);
 
 			//FactType credParamFact = getCreateCredentialParamFact(user,"Credential Parameter",fdir);
@@ -179,7 +175,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			FunctionType func = getCreateFunction(user,"TestBshOperation",bsh,fudir);
 			OperationType rgOp = getCreateOperation(user,"Test Function Operation",func.getUrn(),odir);
 			rgOp.setOperationType(OperationEnumType.FUNCTION);
-			Factories.getOperationFactory().update(rgOp);
+			((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).update(rgOp);
 			pol = getCreatePolicy(user,pname,podir);
 			pol.setEnabled(true);
 			useRule = getCreateRule(user,rname,rdir);
@@ -188,14 +184,14 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			pat.setFactUrn(setCredParamFact.getUrn());
 			pat.setMatchUrn(strengthFact.getUrn());
 			pat.setOperationUrn(rgOp.getUrn());
-			Factories.getPatternFactory().update(pat);
+			((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).update(pat);
 			useRule.getPatterns().clear();
 			useRule.getPatterns().add(pat);
-			Factories.getRuleFactory().update(useRule);
+			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).update(useRule);
 			pol.getRules().clear();
 			pol.getRules().add(useRule);
-			Factories.getPolicyFactory().update(pol);
-			pol = Factories.getPolicyFactory().getByNameInGroup(pname,podir);
+			((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).update(pol);
+			pol = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getByNameInGroup(pname,podir);
 		}
 		catch(FactoryException e){
 			logger.error(e.getMessage());
@@ -208,14 +204,14 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 	
 	private static String getOperationShellScript(){
 		StringBuffer  buff = new StringBuffer();
-		//buff.append("import org.apache.log4j.Logger;\n");
+		//buff.append("import org.apache.logging.log4j.LogManager;\nimport org.apache.logging.log4j.Logger;\n");
 		//buff.append("import org.cote.accountmanager.objects.DirectoryGroupType;\n");
 		//buff.append("import org.cote.accountmanager.objects.DirectoryGroupType;\n");
 		//buff.append("import org.cote.accountmanager.objects.types.GroupEnumType;\n");
 		//buff.append("import org.cote.accountmanager.data.Factories;\n");
-		//buff.append("Logger logger = Logger.getLogger(\"BeanShell\");\n");
+		//buff.append("Logger logger = LogManager.getLogger(\"BeanShell\");\n");
 		
-		buff.append("DirectoryGroupType dir = Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, \"/Home/TestUser1\", Factories.getOrganizationFactory().findOrganization(\"/Accelerant/Rocket\").getId());");
+		buff.append("DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA, \"/Home/TestUser1\", ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(\"/Accelerant/Rocket\").getId());");
 		buff.append("logger.info(\"BeanShell: \" + dir.getName());");
 		buff.append("OperationResponseEnumType respError = OperationResponseEnumType.ERROR;");
 		buff.append("OperationResponseEnumType respSucceeded = OperationResponseEnumType.SUCCEEDED;");
@@ -230,14 +226,14 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 	
 	private static String getDebugShellScript(){
 		StringBuffer  buff = new StringBuffer();
-		//buff.append("import org.apache.log4j.Logger;\n");
+		//buff.append("import org.apache.logging.log4j.LogManager;\nimport org.apache.logging.log4j.Logger;\n");
 		//buff.append("import org.cote.accountmanager.objects.DirectoryGroupType;\n");
 		//buff.append("import org.cote.accountmanager.objects.DirectoryGroupType;\n");
 		//buff.append("import org.cote.accountmanager.objects.types.GroupEnumType;\n");
 		//buff.append("import org.cote.accountmanager.data.Factories;\n");
-		//buff.append("Logger logger = Logger.getLogger(\"BeanShell\");\n");
+		//buff.append("Logger logger = LogManager.getLogger(\"BeanShell\");\n");
 		
-		buff.append("DirectoryGroupType dir = Factories.getGroupFactory().findGroup(null, GroupEnumType.DATA, \"/Home/TestUser1\", Factories.getOrganizationFactory().findOrganization(\"/Accelerant/Rocket\").getId());");
+		buff.append("DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA, \"/Home/TestUser1\", ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(\"/Accelerant/Rocket\").getId());");
 		buff.append("logger.info(\"BeanShell: \" + dir.getName());");
 		buff.append("UserType user = (UserType)debug;\n");
 		buff.append("logger.info(\"User = \" + user.getName());\n");

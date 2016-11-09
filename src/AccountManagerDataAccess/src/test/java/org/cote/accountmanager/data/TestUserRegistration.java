@@ -6,9 +6,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.Calendar;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.DataMaintenance;
 import org.cote.accountmanager.data.services.PersonService;
@@ -21,13 +22,14 @@ import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class TestUserRegistration{
-	public static final Logger logger = Logger.getLogger(TestUserRegistration.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestUserRegistration.class);
 	private static String testUserName1 = "TestRegistrationUser";
 	private static String testUserName2 = "TestRegistrationUser2";
 	private UserType registrationUser = null;
@@ -42,11 +44,7 @@ public class TestUserRegistration{
 	}
 	@Before
 	public void setUp() throws Exception {
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
+
 		ConnectionFactory cf = ConnectionFactory.getInstance();
 		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
 		cf.setDriverClassName("org.postgresql.Driver");
@@ -98,7 +96,7 @@ public class TestUserRegistration{
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 	}
 	
@@ -123,9 +121,9 @@ public class TestUserRegistration{
 			user = SessionSecurity.login(UUID.randomUUID().toString(), userName, CredentialEnumType.HASHED_PASSWORD,password, Factories.getDevelopmentOrganization().getId());
 			assertNotNull("Failed to login with new user", user);
 			
-			PersonType person = Factories.getPersonFactory().getPersonByUser(user);
+			PersonType person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getPersonByUser(user);
 			assertNotNull("Person object is null", user);
-			Factories.getPersonFactory().populate(person);
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(person);
 			ContactType userEmail = PersonService.getPreferredEmailContact(person);
 			assertNotNull("Contact is null",userEmail);
 			
@@ -135,10 +133,10 @@ public class TestUserRegistration{
 			assertTrue("Failed to logout", logout);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		

@@ -23,7 +23,8 @@
  *******************************************************************************/
 package org.cote.accountmanager.console;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -36,16 +37,17 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
-
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 public class UserCommand {
-public static final Logger logger = Logger.getLogger(UserCommand.class.getName());
+public static final Logger logger = LogManager.getLogger(UserCommand.class);
 	
 	public static boolean addUser(String orgPath, String name, String adminPassword, String newPassword, String email){
 		boolean out_bool = false;
 		try{
-		OrganizationType org = Factories.getOrganizationFactory().findOrganization(orgPath);
+		OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
 		if(org != null){
 			UserType adminUser = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, org.getId());
 			if(adminUser != null){

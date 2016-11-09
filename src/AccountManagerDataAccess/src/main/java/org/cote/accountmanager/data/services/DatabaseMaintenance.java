@@ -28,13 +28,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.services.ThreadService;
 
 public class DatabaseMaintenance extends ThreadService {
 	
-	public static final Logger logger = Logger.getLogger(DatabaseMaintenance.class.getName());
+	public static final Logger logger = LogManager.getLogger(DatabaseMaintenance.class);
 	private int spoolFlushDelay = 300000;
 	
 	public DatabaseMaintenance(){
@@ -54,14 +55,14 @@ public class DatabaseMaintenance extends ThreadService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		logger.info("Cleaned up orphan data in " + (System.currentTimeMillis() - start_cleanup));

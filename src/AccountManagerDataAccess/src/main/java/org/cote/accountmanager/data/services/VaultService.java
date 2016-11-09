@@ -32,12 +32,16 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.exceptions.DataException;
@@ -49,15 +53,15 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.SecurityUtil;
 import org.cote.accountmanager.util.ZipUtil;
-
 	public class VaultService
 	{
 		
-		public static final Logger logger = Logger.getLogger(VaultService.class.getName());
+		public static final Logger logger = LogManager.getLogger(VaultService.class);
 		
 		private static String VAULT_GROUP_NAME = ".vault";
 
@@ -103,13 +107,13 @@ import org.cote.accountmanager.util.ZipUtil;
 		{
 			vaultServiceUser = serviceUser;
 			try {
-				this.organization = Factories.getOrganizationFactory().getOrganizationById(serviceUser.getOrganizationId());
+				this.organization = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(serviceUser.getOrganizationId());
 			} catch (FactoryException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			} catch (ArgumentException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			this.vaultName = vaultName;
 			vaultNameHash = Hex.encodeHexString(vaultName.getBytes());//SecurityUtil.getDigestAsString(vaultName);
@@ -163,7 +167,7 @@ import org.cote.accountmanager.util.ZipUtil;
 				dir = getVaultGroup();
 			} catch (FactoryException | ArgumentException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			if(dir == null) return null;
 			return CredentialService.getPrimaryCredential(dir, CredentialEnumType.SALT, true);
@@ -188,7 +192,7 @@ import org.cote.accountmanager.util.ZipUtil;
 				throw new ArgumentException("Unable to create path to " + vaultPath);
 			}
 			
-			Factories.getUserFactory().populate(vaultServiceUser);
+			Factories.getNameIdFactory(FactoryEnumType.USER).populate(vaultServiceUser);
 	
 			// Check for non-password protected file
 			//
@@ -311,10 +315,10 @@ import org.cote.accountmanager.util.ZipUtil;
 			return haveVaultKey;
 		}
 		public DirectoryGroupType getVaultGroup() throws FactoryException, ArgumentException{
-			return Factories.getGroupFactory().getDirectoryByName(VAULT_GROUP_NAME, vaultServiceUser.getHomeDirectory(), organization.getId());
+			return ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(VAULT_GROUP_NAME, vaultServiceUser.getHomeDirectory(), organization.getId());
 		}
 		public DirectoryGroupType getVaultInstanceGroup() throws FactoryException, ArgumentException{
-			return Factories.getGroupFactory().getDirectoryByName(vaultName,getVaultGroup(), organization.getId());
+			return ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(vaultName,getVaultGroup(), organization.getId());
 		}
 		public boolean deleteVault() throws ArgumentException, FactoryException
 		{
@@ -345,14 +349,14 @@ import org.cote.accountmanager.util.ZipUtil;
 			
 			DirectoryGroupType local_imp_dir = getVaultInstanceGroup();
 			
-			if (local_imp_dir != null && !Factories.getGroupFactory().deleteDirectoryGroup(local_imp_dir))
+			if (local_imp_dir != null && !((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteDirectoryGroup(local_imp_dir))
 			{
 				logger.warn("Unable to delete keys from vault directory");
 			}
 			DirectoryGroupType vaultGroup = getVaultGroup();
 			if(vaultGroup != null){
-				DataType imp_data = Factories.getDataFactory().getDataByName(vaultName, true,vaultGroup);
-				if(imp_data != null && !Factories.getDataFactory().delete(imp_data)){
+				DataType imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vaultName, true,vaultGroup);
+				if(imp_data != null && !((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).delete(imp_data)){
 					logger.warn("Unable to delete improvement key");
 				}
 			}
@@ -378,9 +382,9 @@ import org.cote.accountmanager.util.ZipUtil;
 				return false;
 			}
 			
-			DirectoryGroupType imp_dir = Factories.getGroupFactory().getCreateDirectory(vaultServiceUser, VAULT_GROUP_NAME, vaultServiceUser.getHomeDirectory(), organization.getId());
+			DirectoryGroupType imp_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vaultServiceUser, VAULT_GROUP_NAME, vaultServiceUser.getHomeDirectory(), organization.getId());
 
-			DataType imp_data = Factories.getDataFactory().getDataByName(vaultName, true, imp_dir);
+			DataType imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vaultName, true, imp_dir);
 			if (imp_data != null)
 			{
 				logger.error("Vault for '" + vaultName + "' could not be made.  Machine must first be unimproved.");
@@ -429,19 +433,19 @@ import org.cote.accountmanager.util.ZipUtil;
 			// Create a new group directory for storing DES keys that are vaulted for a specified vault
 			// The name is the same as the vault data name
 			//
-			DirectoryGroupType local_imp_dir = Factories.getGroupFactory().getCreateDirectory(vaultServiceUser, vaultName, imp_dir, organization.getId());
+			DirectoryGroupType local_imp_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vaultServiceUser, vaultName, imp_dir, organization.getId());
 
 			// No need to encrypt the public key beyond the auto-encrypt supplied by the AM org-level key (same key as used by default to encrypt private key)
 			//
 			byte[] public_key_config = SecurityUtil.serializeToXml(sm, false, true, false).getBytes("UTF-8");
 
-			imp_data = Factories.getDataFactory().newData(vaultServiceUser, imp_dir.getId());
+			imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(vaultServiceUser, imp_dir.getId());
 			imp_data.setName(vaultName);
 			imp_data.setDescription("Vault public key for node/cluster");
 			imp_data.setMimeType("text/xml");
 			DataUtil.setValue(imp_data, public_key_config);
 
-			Factories.getDataFactory().add(imp_data);
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(imp_data);
 			
 			haveVaultKey = true;
 
@@ -453,20 +457,20 @@ import org.cote.accountmanager.util.ZipUtil;
 			List<SecurityBean> beans = new ArrayList<SecurityBean>();
 			
 			try {
-				List<DataType> dataList = Factories.getDataFactory().getDataListByGroup(getVaultInstanceGroup(), false, 0, 0, organization.getId());
+				List<DataType> dataList = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(getVaultInstanceGroup(), false, 0, 0, organization.getId());
 				for(int i = 0; i < dataList.size();i++) beans.add(getCipherFromData(dataList.get(i)));
 			} catch (FactoryException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			} catch (ArgumentException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			} catch (DataException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			
 			
@@ -525,7 +529,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			{
 				// Get the encrypted DES keys for this data item.
 				//
-				DataType key = Factories.getDataFactory().getDataByName(name, getVaultInstanceGroup());
+				DataType key = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, getVaultInstanceGroup());
 				if (key == null){
 					logger.error("Vault key " + name + " does not exist");
 					return null;
@@ -617,7 +621,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			//
 
 
-			DataType out_data = Factories.getDataFactory().newData(vaultServiceUser, group.getId());
+			DataType out_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(vaultServiceUser, group.getId());
 			out_data.setName(name);
 			out_data.setMimeType(mime_type);
 
@@ -631,7 +635,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			return out_data;
 		}
 		public boolean newActiveKey() throws FactoryException, ArgumentException, DataException, UnsupportedEncodingException{
-			DataType imp_data = Factories.getDataFactory().getDataByName(vaultName, getVaultGroup());
+			DataType imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vaultName, getVaultGroup());
 
 			// Can't make active key
 			//
@@ -659,12 +663,12 @@ import org.cote.accountmanager.util.ZipUtil;
 			String id = UUID.randomUUID().toString();
 			
 			DirectoryGroupType loc_imp_dir = getVaultInstanceGroup();
-			DataType new_key = Factories.getDataFactory().newData(vaultServiceUser, loc_imp_dir.getId());
+			DataType new_key = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(vaultServiceUser, loc_imp_dir.getId());
 			new_key.setName(id);
 			new_key.setMimeType("text/xml");
 			new_key.setDescription("Improvement key for " + vaultName);
 			DataUtil.setValue(new_key, secret_key);
-			if(Factories.getDataFactory().add(new_key)){
+			if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(new_key)){
 				activeKeyId = id;
 				return true;
 			}
@@ -697,7 +701,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			if (activeKey == null || activeKeyId == null) return false;
 			setVaultBytes(in_data, in_bytes);
 
-			return Factories.getDataFactory().update(in_data);
+			return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(in_data);
 		}
 
 	}

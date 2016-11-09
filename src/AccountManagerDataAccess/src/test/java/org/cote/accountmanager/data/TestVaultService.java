@@ -7,20 +7,23 @@ import static org.junit.Assert.assertTrue;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
-
 public class TestVaultService extends BaseDataAccessTest{
-	public static final Logger logger = Logger.getLogger(TestVaultService.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestVaultService.class);
 
 	private boolean resetVault = true;
 
@@ -35,7 +38,7 @@ public class TestVaultService extends BaseDataAccessTest{
 		SecurityFactory.getSecurityFactory().generateSecretKey(cipherBean);
 		try {
 
-			DirectoryGroupType dir = Factories.getGroupFactory().getCreateDirectory(qaUser, "VaultExamples", qaUser.getHomeDirectory(), qaUser.getOrganizationId());
+			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(qaUser, "VaultExamples", qaUser.getHomeDirectory(), qaUser.getOrganizationId());
 
 			vs.initialize();
 			if(resetVault){
@@ -52,7 +55,7 @@ public class TestVaultService extends BaseDataAccessTest{
 			}
 			else vs.setPassword("password");
 			String dataStr = "This is the vaulted data";
-			DataType data = Factories.getDataFactory().newData(qaUser, dir.getId());
+			DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(qaUser, dir.getId());
 			data.setName(dataName);
 			data.setMimeType("text/plain");
 			DataUtil.setCipher(data, cipherBean);
@@ -62,11 +65,11 @@ public class TestVaultService extends BaseDataAccessTest{
 			
 			
 			assertNotNull("Vault data was null",data);
-			assertTrue("Failed to add data",Factories.getDataFactory().add(data));
+			assertTrue("Failed to add data",((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data));
 			
 			vs.clearCache();
 			
-			DataType dataCheck = Factories.getDataFactory().getDataByName(dataName, dir);
+			DataType dataCheck = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, dir);
 			assertNotNull("Data was null",dataCheck);
 
 			DataUtil.setPassword(dataCheck, "data password");
@@ -80,9 +83,9 @@ public class TestVaultService extends BaseDataAccessTest{
 			DataUtil.setCipher(dataCheck, cipherBean);
 			dataCheck.setDescription("Updated description");
 			vs.updateImprovedData(dataCheck, newData);
-			//Factories.getDataFactory().updateData(dataCheck);
+			//((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).updateData(dataCheck);
 			logger.info("Making sure multi-enciphered data survives an update");
-			DataType dataCheck2 = Factories.getDataFactory().getDataByName(dataName, dir);
+			DataType dataCheck2 = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, dir);
 			assertNotNull("Data was null",dataCheck2);
 
 			DataUtil.setPassword(dataCheck2, "data password");
@@ -92,17 +95,17 @@ public class TestVaultService extends BaseDataAccessTest{
 			logger.info("Extracted data value: " + new String(decBytes2));
 			
 			logger.info("Making sure a details-only data survives an update");
-			DataType dataCheck3 = Factories.getDataFactory().getDataByName(dataName, true, dir);
+			DataType dataCheck3 = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, true, dir);
 			dataCheck3.setDescription("Updated description #2");
-			Factories.getDataFactory().update(dataCheck3);
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(dataCheck3);
 
 			logger.info("Making sure an unread detailed data survives an update");
 			
-			dataCheck3 = Factories.getDataFactory().getDataByName(dataName, false, dir);
+			dataCheck3 = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, false, dir);
 			dataCheck3.setDescription("Updated description #3");
-			Factories.getDataFactory().update(dataCheck3);
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(dataCheck3);
 			
-			dataCheck3 = Factories.getDataFactory().getDataByName(dataName, false, dir);
+			dataCheck3 = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, false, dir);
 			DataUtil.setPassword(dataCheck3, "data password");
 			DataUtil.setCipher(dataCheck3, cipherBean);
 			logger.info("Vaulted data value: " + BinaryUtil.toBase64Str(DataUtil.getValue(dataCheck3)));
@@ -110,7 +113,7 @@ public class TestVaultService extends BaseDataAccessTest{
 			logger.info("Extracted data value: " + new String(decBytes3));
 
 			logger.info("Make sure vaulted data cannot be read outside of using the vault");
-			DataType dataCheck4 = Factories.getDataFactory().getDataByName(dataName, false, dir);
+			DataType dataCheck4 = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, false, dir);
 			dataCheck4.setVaulted(false);
 			DataUtil.setPassword(dataCheck4, "data password");
 			DataUtil.setCipher(dataCheck4, cipherBean);
@@ -121,19 +124,19 @@ public class TestVaultService extends BaseDataAccessTest{
 			
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	/*
@@ -163,16 +166,16 @@ public class TestVaultService extends BaseDataAccessTest{
 			
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	*/
@@ -200,16 +203,16 @@ public class TestVaultService extends BaseDataAccessTest{
 			vs3.createVault("password");
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	*/

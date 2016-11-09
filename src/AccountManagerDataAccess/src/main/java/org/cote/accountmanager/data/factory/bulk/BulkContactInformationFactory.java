@@ -29,6 +29,7 @@ import org.cote.accountmanager.data.factory.ContactInformationFactory;
 
 
 public class BulkContactInformationFactory extends ContactInformationFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.CONTACTINFORMATION, BulkContactInformationFactory.class); }
 	public BulkContactInformationFactory(){
 		super();
 		bulkMode = true;

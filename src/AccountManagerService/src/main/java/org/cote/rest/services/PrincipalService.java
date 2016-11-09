@@ -47,15 +47,15 @@ public class PrincipalService {
 			//userp.get
 			logger.info("UserPrincipal: " + userp.toString());
 			try {
-				OrganizationType org = Factories.getOrganizationFactory().findOrganization(userp.getOrganizationPath());
+				OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(userp.getOrganizationPath());
 
-				UserType user = Factories.getUserFactory().getById(userp.getId(), org.getId());
+				UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getById(userp.getId(), org.getId());
 				if(user != null){
 					outToken = user.getUrn();
 				}
 			} catch (FactoryException | ArgumentException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		else{

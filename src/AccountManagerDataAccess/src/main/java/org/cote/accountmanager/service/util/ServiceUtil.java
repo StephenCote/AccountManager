@@ -33,20 +33,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
-
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public class ServiceUtil {
-	public static final Logger logger = Logger.getLogger(ServiceUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(ServiceUtil.class);
 	/// Bit indicating that the session id should be generated independent of the application server
 	/// This in no way mitigates the need for any secondary credential or token
 	///
@@ -93,25 +95,25 @@ public class ServiceUtil {
 			long orgId = 0L;
 			try{
 				if(orgPathStr != null){
-					org = Factories.getOrganizationFactory().findOrganization(orgPathStr);
+					org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPathStr);
 				}
 				else{
 					orgId = Long.parseLong(orgIdStr);
-					if(orgId > 0) org = Factories.getOrganizationFactory().getOrganizationById(orgId);
+					if(orgId > 0) org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
 				}
 			}
 			catch(NumberFormatException nfe){
 				
 				logger.error(nfe.getMessage());
-				logger.error(nfe.getStackTrace());
+				logger.error("Error",nfe);
 			} catch (FactoryException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			} catch (ArgumentException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			
 		}
@@ -192,12 +194,12 @@ public class ServiceUtil {
 	
 			} catch (FactoryException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 				logger.error(e.getMessage());
 			} catch (ArgumentException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return user;

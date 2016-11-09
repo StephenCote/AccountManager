@@ -20,6 +20,10 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class AsymmetricKeyFactory extends NameIdFactory {
+	
+	
+	
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ASYMMETRICKEY, AsymmetricKeyFactory.class); }
 	public AsymmetricKeyFactory(){
 		super();
 		this.hasOwnerId = true;

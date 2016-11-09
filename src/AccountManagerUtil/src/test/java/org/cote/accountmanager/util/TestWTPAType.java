@@ -4,8 +4,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.security.Security;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.WTPAType;
@@ -15,15 +16,11 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class TestWTPAType {
-	public static final Logger logger = Logger.getLogger(TestWTPAType.class.getName());
+	public static final Logger logger = LogManager.getLogger(TestWTPAType.class);
 	@Before
 	public void setUp() throws Exception {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		String log4jPropertiesPath = System.getProperty("log4j.configuration");
-		if(log4jPropertiesPath != null){
-			System.out.println("Properties=" + log4jPropertiesPath);
-			PropertyConfigurator.configure(log4jPropertiesPath);
-		}
+
 	}
 
 	@After

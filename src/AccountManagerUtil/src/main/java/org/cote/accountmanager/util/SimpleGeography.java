@@ -6,13 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class SimpleGeography {
-	public static final Logger logger = Logger.getLogger(SimpleGeography.class.getName());
+	public static final Logger logger = LogManager.getLogger(SimpleGeography.class);
 	private static Map<String,CountryType> countries = null;
 	public static Map<String,RegionType[]> populateCountry(Map<String,CountryType> cnt, String code, String dataPath){
 		CountryType ctr = cnt.get(code);
@@ -24,7 +25,7 @@ public class SimpleGeography {
 			ctr.setRegions(mapper.readValue(fileStr, t.constructMapType(Map.class, String.class, RegionType[].class)));
 		} catch (IOException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return ctr.getRegions();
 	}
@@ -38,7 +39,7 @@ public class SimpleGeography {
 			countries = mapper.readValue(fileStr, t.constructMapType(Map.class, String.class, CountryType.class));
 		} catch (IOException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return countries;
 	}

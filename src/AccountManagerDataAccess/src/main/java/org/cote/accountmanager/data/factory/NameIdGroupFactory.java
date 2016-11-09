@@ -28,7 +28,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.Factories;
@@ -41,13 +42,14 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 
 
 
 
 public abstract class NameIdGroupFactory extends NameIdFactory implements INameIdGroupFactory{
-	public static final Logger logger = Logger.getLogger(NameIdGroupFactory.class.getName());
+	public static final Logger logger = LogManager.getLogger(NameIdGroupFactory.class);
 	public NameIdGroupFactory(){
 		super();
 		this.clusterByGroup = true;
@@ -71,7 +73,7 @@ public abstract class NameIdGroupFactory extends NameIdFactory implements INameI
 			logger.debug("Group path not defined");
 			return;
 		}
-		BaseGroupType dir = Factories.getGroupFactory().findGroup(null,GroupEnumType.DATA, obj.getGroupPath(), obj.getOrganizationId());
+		BaseGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null,GroupEnumType.DATA, obj.getGroupPath(), obj.getOrganizationId());
 		if(dir == null){
 			throw new ArgumentException("Invalid group path '" + obj.getGroupPath() + "' in organization '" + obj.getOrganizationPath() + "' #" + obj.getOrganizationId());
 		}
@@ -89,8 +91,8 @@ public abstract class NameIdGroupFactory extends NameIdFactory implements INameI
 			throw new ArgumentException("Invalid object group");	
 		}
 		if(obj.getGroupPath() != null) return;
-		BaseGroupType dir = Factories.getGroupFactory().getGroupById(obj.getGroupId(), obj.getOrganizationId());
-		obj.setGroupPath(Factories.getGroupFactory().getPath(dir));
+		BaseGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(obj.getGroupId(), obj.getOrganizationId());
+		obj.setGroupPath(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getPath(dir));
 	}
 	
 	@Override
@@ -109,10 +111,10 @@ public abstract class NameIdGroupFactory extends NameIdFactory implements INameI
 		super.read(rset, obj);
 		long group_id = rset.getLong("groupid");
 		NameIdDirectoryGroupType dobj = (NameIdDirectoryGroupType)obj;
-		//dobj.setGroup(Factories.getGroupFactory().getDirectoryById(group_id, dobj.getOrganizationId()));
+		//dobj.setGroup(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(group_id, dobj.getOrganizationId()));
 		
 		dobj.setGroupId(group_id);
-		dobj.setGroupPath(Factories.getGroupFactory().getPath(group_id,obj.getOrganizationId()));
+		dobj.setGroupPath(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getPath(group_id,obj.getOrganizationId()));
 		//logger.info("Reading group " + group_id);
 		return obj;
 	}

@@ -35,14 +35,17 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FunctionEnumType;
 import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.DataUtil;
 
 import jdk.nashorn.api.scripting.ClassFilter;
@@ -54,7 +57,7 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
  */
 
 public class ScriptService {
-	public static final Logger logger = Logger.getLogger(ScriptService.class.getName());
+	public static final Logger logger = LogManager.getLogger(ScriptService.class);
 	public static String SCRIPT_ENGINE_JAVASCRIPT = "javascript";
 	public static String SCRIPT_ENGINE_NASHORN = "nashorn";
 	public static String SCRIPT_ENGINE_NAME = SCRIPT_ENGINE_NASHORN;
@@ -81,7 +84,7 @@ public class ScriptService {
 		if(func.getFunctionType() != FunctionEnumType.JAVASCRIPT) throw new ArgumentException("FunctionType '" + func.getFunctionType().toString() + "' is not applicable");
 		DataType data = func.getFunctionData();
 		if(data == null && func.getSourceUrn() != null){
-			data = Factories.getDataFactory().getByUrn(func.getSourceUrn());
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(func.getSourceUrn());
 		}
 		if(data == null) throw new ArgumentException("Function '" + func.getName() + "' data is null");
 		else if(data.getDetailsOnly() == true) throw new ArgumentException("Function data is not properly loaded");
@@ -114,7 +117,7 @@ public class ScriptService {
 			Iterator<String> keys = params.keySet().iterator();
 			bd.putAll(params);
 			bd.put("user", user);
-			//DirectoryGroupType homeDir = Factories.getGroupFactory().getUserDirectory(user);
+			//DirectoryGroupType homeDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(user);
 			//bd.put("organizationId", user.getOrganizationId());
 			try{
 				//logger.info("Evaluating: " + name);

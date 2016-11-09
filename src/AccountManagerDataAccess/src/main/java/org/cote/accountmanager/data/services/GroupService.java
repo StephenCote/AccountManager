@@ -23,11 +23,13 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.GroupParticipationFactory;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountType;
@@ -41,9 +43,10 @@ import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public class GroupService{
-	public static final Logger logger = Logger.getLogger(GroupService.class.getName());
+	public static final Logger logger = LogManager.getLogger(GroupService.class);
 	
 	public static boolean getIsUserInGroup(UserGroupType group, UserType user) throws ArgumentException, FactoryException{
 		if(group == null){
@@ -66,7 +69,7 @@ public class GroupService{
 		/// accommodate bulk inserts with a negative id
 		///
 		if(group.getId() < 0) return true;
-		return Factories.getGroupParticipationFactory().getIsUserInGroup(group, user,permission,affect_type);
+		return ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getIsUserInGroup(group, user,permission,affect_type);
 	}
 	
 	public static boolean addUserToGroup(UserType user, UserGroupType group) throws ArgumentException, DataAccessException, FactoryException
@@ -81,8 +84,8 @@ public class GroupService{
 		///
 		if (group.getId() < 0 || getIsUserInGroup(group, account) == false)
 		{
-			UserParticipantType ap = Factories.getGroupParticipationFactory().newUserGroupParticipation(group, account);
-			if (Factories.getGroupParticipationFactory().add(ap))
+			UserParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newUserGroupParticipation(group, account);
+			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
 			{
 				EffectiveAuthorizationService.pendUserUpdate(account);
 				return true;
@@ -92,7 +95,7 @@ public class GroupService{
 	}
 	public static boolean removeUserFromGroup(UserGroupType group, UserType account) throws FactoryException, ArgumentException
 	{
-		if (Factories.getGroupParticipationFactory().deleteUserGroupParticipants(group, account))
+		if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteUserGroupParticipants(group, account))
 		{
 			EffectiveAuthorizationService.pendUserUpdate(account);
 			return true;
@@ -122,7 +125,7 @@ public class GroupService{
 		/// accommodate bulk inserts with a negative id
 		///
 		if(group.getId() < 0) return true;
-		return Factories.getGroupParticipationFactory().getIsGroupInGroup(group, member,permission,affect_type);
+		return ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getIsGroupInGroup(group, member,permission,affect_type);
 	}
 	
 	public static boolean addGroupToGroup(BaseGroupType member, BaseGroupType group) throws ArgumentException, DataAccessException, FactoryException
@@ -137,8 +140,8 @@ public class GroupService{
 		///
 		if (group.getId() < 0 || getIsGroupInGroup(group, member) == false)
 		{
-			GroupParticipantType ap = Factories.getGroupParticipationFactory().newGroupGroupParticipation(group, member);
-			if (Factories.getGroupParticipationFactory().add(ap))
+			GroupParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newGroupGroupParticipation(group, member);
+			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
 			{
 				EffectiveAuthorizationService.pendGroupUpdate(member);
 				return true;
@@ -149,7 +152,7 @@ public class GroupService{
 	public static boolean removeGroupFromGroup(BaseGroupType group, BaseGroupType member) throws FactoryException, ArgumentException
 	{
 
-		if (Factories.getGroupParticipationFactory().deleteGroupGroupParticipants(group, member))
+		if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteGroupGroupParticipants(group, member))
 		{
 			EffectiveAuthorizationService.pendGroupUpdate(member);
 			return true;
@@ -179,7 +182,7 @@ public class GroupService{
 		/// accommodate bulk inserts with a negative id
 		///
 		if(group.getId() < 0) return true;
-		return Factories.getGroupParticipationFactory().getIsAccountInGroup(group, account,permission,affect_type);
+		return ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getIsAccountInGroup(group, account,permission,affect_type);
 	}
 	
 	public static boolean addAccountToGroup(AccountType account, AccountGroupType group) throws ArgumentException, DataAccessException, FactoryException
@@ -194,8 +197,8 @@ public class GroupService{
 		///
 		if (group.getId() < 0 || getIsAccountInGroup(group, account) == false)
 		{
-			AccountParticipantType ap = Factories.getGroupParticipationFactory().newAccountGroupParticipation(group, account);
-			if (Factories.getGroupParticipationFactory().add(ap))
+			AccountParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(group, account);
+			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
 			{
 				EffectiveAuthorizationService.pendAccountUpdate(account);
 				return true;
@@ -205,7 +208,7 @@ public class GroupService{
 	}
 	public static boolean removeAccountFromGroup(AccountGroupType group, AccountType account) throws FactoryException, ArgumentException
 	{
-		if (Factories.getGroupParticipationFactory().deleteAccountGroupParticipants(group, account))
+		if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteAccountGroupParticipants(group, account))
 		{
 			EffectiveAuthorizationService.pendAccountUpdate(account);
 			return true;
@@ -233,7 +236,7 @@ public class GroupService{
 		/// accommodate bulk inserts with a negative id
 		///
 		if(group.getId() < 0) return true;
-		return Factories.getGroupParticipationFactory().getIsPersonInGroup(group, person,permission,affect_type);
+		return ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getIsPersonInGroup(group, person,permission,affect_type);
 	}
 	
 	public static boolean addPersonToGroup(PersonType person, PersonGroupType group) throws ArgumentException, DataAccessException, FactoryException
@@ -248,8 +251,8 @@ public class GroupService{
 		///
 		if (group.getId() < 0 || getIsPersonInGroup(group, account) == false)
 		{
-			PersonParticipantType ap = Factories.getGroupParticipationFactory().newPersonGroupParticipation(group, account);
-			if (Factories.getGroupParticipationFactory().add(ap))
+			PersonParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newPersonGroupParticipation(group, account);
+			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
 			{
 				EffectiveAuthorizationService.pendPersonUpdate(account);
 				return true;
@@ -259,7 +262,7 @@ public class GroupService{
 	}
 	public static boolean removePersonFromGroup(PersonGroupType group, PersonType account) throws FactoryException, ArgumentException
 	{
-		if (Factories.getGroupParticipationFactory().deletePersonGroupParticipants(group, account))
+		if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deletePersonGroupParticipants(group, account))
 		{
 			EffectiveAuthorizationService.pendPersonUpdate(account);
 			return true;

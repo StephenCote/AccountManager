@@ -38,10 +38,15 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -55,15 +60,17 @@ import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.services.RoleServiceImpl;
 
+
 @Path("/role")
 public class RoleService{
 
-	public static final Logger logger = Logger.getLogger(RoleService.class.getName());
+	public static final Logger logger = LogManager.getLogger(RoleService.class);
 	private static SchemaBean schemaBean = null;	
 	public RoleService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
@@ -104,7 +111,7 @@ public class RoleService{
 			return false;
 		}
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "Role Factory");
-		Factories.getRoleFactory().clearCache();
+		((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).clearCache();
 		AuditService.permitResult(audit,user.getName() + " flushed Role Factory cache");
 		return true;
 	}
@@ -176,13 +183,13 @@ public class RoleService{
 		BaseRoleType role = RoleServiceImpl.readById(id, request);
 	
 			try {
-				if(role != null) path = Factories.getRoleFactory().getRolePath(role);
+				if(role != null) path = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRolePath(role);
 			} catch (FactoryException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			} catch (ArgumentException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		return path;
 	}
@@ -193,16 +200,16 @@ public class RoleService{
 		OrganizationType targOrg = null;
 		UserRoleType targRole = null;
 		try {
-			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
+			targOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(targOrg != null) targRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getById(recordId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		if(targRole != null) return RoleServiceImpl.getListOfGroups(user, targRole);
@@ -216,16 +223,16 @@ public class RoleService{
 		OrganizationType targOrg = null;
 		PersonRoleType targRole = null;
 		try {
-			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
+			targOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(targOrg != null) targRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getById(recordId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		if(targRole != null) return RoleServiceImpl.getListOfPersons(user, targRole);
@@ -237,16 +244,16 @@ public class RoleService{
 		PersonType targPerson = null;
 		OrganizationType targOrg = null;
 		try {
-			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targPerson = Factories.getPersonFactory().getById(recordId, orgId);
+			targOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(targOrg != null) targPerson = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getById(recordId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(targPerson == null){
 			logger.error("Null user specified for org id " + orgId + " and user id " + recordId);
@@ -260,16 +267,16 @@ public class RoleService{
 		OrganizationType targOrg = null;
 		AccountRoleType targRole = null;
 		try {
-			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
+			targOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(targOrg != null) targRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getById(recordId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		if(targRole != null) return RoleServiceImpl.getListOfAccounts(user, targRole);
@@ -281,16 +288,16 @@ public class RoleService{
 		AccountType targAccount = null;
 		OrganizationType targOrg = null;
 		try {
-			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targAccount = Factories.getAccountFactory().getById(recordId, orgId);
+			targOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(targOrg != null) targAccount = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getById(recordId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(targAccount == null){
 			logger.error("Null user specified for org id " + orgId + " and user id " + recordId);
@@ -305,16 +312,16 @@ public class RoleService{
 		OrganizationType targOrg = null;
 		UserRoleType targRole = null;
 		try {
-			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targRole = Factories.getRoleFactory().getById(recordId, orgId);
+			targOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(targOrg != null) targRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getById(recordId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		if(targRole != null) return RoleServiceImpl.getListOfUsers(user, targRole);
@@ -327,16 +334,16 @@ public class RoleService{
 		UserType targUser = null;
 		OrganizationType targOrg = null;
 		try {
-			targOrg = Factories.getOrganizationFactory().getOrganizationById(orgId);
-			if(targOrg != null) targUser = Factories.getUserFactory().getById(recordId, orgId);
+			targOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(targOrg != null) targUser = Factories.getNameIdFactory(FactoryEnumType.USER).getById(recordId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(targUser == null){
 			logger.error("Null user specified for org id " + orgId + " and user id " + recordId);
@@ -357,16 +364,16 @@ public class RoleService{
 		BaseRoleType parent = null;
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().getById(orgId, 0L);
-			if(org != null && parentId > 0L) parent =Factories.getRoleFactory().getById(parentId, orgId);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getById(orgId, 0L);
+			if(org != null && parentId > 0L) parent =((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getById(parentId, orgId);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		/*
 		if(parent == null){
@@ -384,16 +391,16 @@ public class RoleService{
 		BaseRoleType parent = null;
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().getById(orgId, null);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getById(orgId, null);
 
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(org == null){
 			return new ArrayList<BaseRoleType>();

@@ -23,10 +23,11 @@
  *******************************************************************************/
 package org.cote.accountmanager.console;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ProjectAction {
-	public static final Logger logger = Logger.getLogger(ProjectAction.class.getName());
+	public static final Logger logger = LogManager.getLogger(ProjectAction.class);
 	/*
 	public static void importProjectFile(UserType user, String lifecycleName, String projectName, String projectFile){
 		ProjectType proj = null;
@@ -34,7 +35,7 @@ public class ProjectAction {
 		try {
 			lc = Rocket.getLifecycle(lifecycleName, user.getOrganization());
 			if(lc == null) lc = Rocket.createLifecycle(user, lifecycleName);
-			else Factories.getLifecycleFactory().populate(lc);
+			else ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).populate(lc);
 			if(lc == null){
 				logger.error("Null lifecycle for name '" + lifecycleName + "'");
 				return;
@@ -49,13 +50,13 @@ public class ProjectAction {
 
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(proj == null){
 			logger.error("Null project for name '" + projectName + "'");

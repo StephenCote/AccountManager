@@ -35,13 +35,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.services.BlogServiceImpl;
@@ -51,7 +54,7 @@ import org.cote.util.ArticleUtil;
 public class BlogService{
 
 	private static SchemaBean schemaBean = null;
-	public static final Logger logger = Logger.getLogger(BlogService.class.getName());
+	public static final Logger logger = LogManager.getLogger(BlogService.class);
 	public BlogService(){
 		//JSONConfiguration.mapped().rootUnwrapping(false).build();
 	}
@@ -60,13 +63,13 @@ public class BlogService{
 	public UserRoleType getAuthorRole(@PathParam("organizationId") long orgId,@Context HttpServletRequest request){
 		OrganizationType org = null;
 		try {
-			org = Factories.getOrganizationFactory().getOrganizationById(orgId);
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(org == null) return null;
 		return ArticleUtil.getRoleByType("Blog", orgId);

@@ -41,11 +41,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.AuditService;
@@ -76,7 +81,7 @@ import org.cote.beans.CryptoBean;
 @Path("/crypto")
 public class CryptoService{
 
-	public static final Logger logger = Logger.getLogger(CryptoService.class.getName());
+	public static final Logger logger = LogManager.getLogger(CryptoService.class);
 	private static SchemaBean schemaBean = null;
 	private static Pattern uidTokenPattern = Pattern.compile("^(\\d+)-(\\d+)-(\\d+)-(\\d+)-(\\d+)");
 	public CryptoService(){
@@ -122,7 +127,7 @@ public class CryptoService{
 		}
 		catch(FactoryException | ArgumentException e){
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		return tokenType;
 	}
@@ -154,12 +159,12 @@ public class CryptoService{
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage()); 
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage()); 
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		if(tokens.length > 0){
@@ -192,14 +197,14 @@ public class CryptoService{
 				}
 			}
 			catch(FactoryException fe){
-				logger.error(fe.getStackTrace());
+				logger.error("Error",fe);
 				logger.error(fe.getMessage()); 
 				secs.clear();
 			} catch (ArgumentException e) {
 				
 				logger.error(e.getMessage()); 
 				secs.clear();
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		
@@ -263,19 +268,19 @@ public class CryptoService{
 			int userId = Integer.parseInt(m.group(2));
 			int objId = Integer.parseInt(m.group(3));
 			logger.info("Parsing " + orgId + " " + userId + " " + type + " " + objId);
-			OrganizationType org = Factories.getOrganizationFactory().getOrganizationById(orgId);
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
 			if(org == null){
 				AuditService.denyResult(audit, "Invalid organization from id " + orgId);
 				return false;
 			}
-			UserType targUser = Factories.getUserFactory().getById(userId, org.getId());
+			UserType targUser = Factories.getNameIdFactory(FactoryEnumType.USER).getById(userId, org.getId());
 			if(targUser == null){
 				AuditService.denyResult(audit, "Invalid user from id " + userId);
 				return false;
 			}
 			FactoryEnumType ftype = FactoryEnumType.valueOf(type);
 			if(ftype == FactoryEnumType.GROUP){
-				BaseGroupType group = Factories.getGroupFactory().getGroupById(objId, org.getId());
+				BaseGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(objId, org.getId());
 				if(group == null){
 					AuditService.denyResult(audit, "Invalid group from id " + objId);
 					return false;
@@ -305,10 +310,10 @@ public class CryptoService{
 		}
 		catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		//CredentialService.validatePasswordCredential(updateUser, currentCred, new String(authReq.getCheckCredential(),"UTF-8"))==false
 		return out_bool;
@@ -331,10 +336,10 @@ public class CryptoService{
 			 */
 			/// TODO: Address the class name duplication 
 			///
-			boolean accountAdmin = org.cote.accountmanager.data.services.RoleService.isFactoryAdministrator(user,Factories.getAccountFactory());
-			boolean dataAdmin = org.cote.accountmanager.data.services.RoleService.isFactoryAdministrator(user, Factories.getDataFactory());
+			boolean accountAdmin = org.cote.accountmanager.data.services.RoleService.isFactoryAdministrator(user,((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)));
+			boolean dataAdmin = org.cote.accountmanager.data.services.RoleService.isFactoryAdministrator(user, ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)));
 			if(authReq.getSubjectType() == NameEnumType.USER){
-				UserType updateUser = Factories.getUserFactory().getByName(authReq.getSubject(), user.getOrganizationId());
+				UserType updateUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(authReq.getSubject(), user.getOrganizationId());
 				if(updateUser == null){
 					AuditService.denyResult(audit, "Target user " + authReq.getSubject() + " does not exist");
 					return out_bool;
@@ -367,7 +372,7 @@ public class CryptoService{
 			 * Or have access to update the object and supply current password must be supplied
 			 */
 			else if(authReq.getSubjectType() == NameEnumType.GROUP){
-				BaseGroupType updateGroup = Factories.getGroupFactory().getByUrn(authReq.getSubject());
+				BaseGroupType updateGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getByUrn(authReq.getSubject());
 				if(updateGroup == null){
 					AuditService.denyResult(audit, "Target group " + authReq.getSubject() + " does not exist");
 					return out_bool;
@@ -387,7 +392,7 @@ public class CryptoService{
 					}
 				}
 				targetObject = updateGroup;
-				owner = Factories.getUserFactory().getById(updateGroup.getOwnerId(), updateGroup.getOrganizationId());
+				owner = Factories.getNameIdFactory(FactoryEnumType.USER).getById(updateGroup.getOwnerId(), updateGroup.getOrganizationId());
 			}
 			else{
 				//logger.error("Subject type " + authReq.getSubjectType().toString() + " is unsupported");
@@ -402,10 +407,10 @@ public class CryptoService{
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		if(newCred != null){
 			AuditService.permitResult(audit, "Created a new primary credential");

@@ -1,17 +1,5 @@
 package org.cote.accountmanager.data;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.cote.accountmanager.data.services.AuthorizationService;
-import org.cote.accountmanager.objects.BasePermissionType;
-import org.cote.accountmanager.objects.OrganizationType;
-import org.cote.accountmanager.objects.UserType;
-import org.junit.Test;
-
 public class TestGroupAuthorization extends BaseDataAccessTest {
 	/*
 	 * This test largely depends on a pre-populated dataset that isn't being setup in the test
@@ -21,10 +9,10 @@ public class TestGroupAuthorization extends BaseDataAccessTest {
 		UserType user = null;
 		UserType user2 = null;
 		try {
-			org = Factories.getOrganizationFactory().findOrganization("/Accelerant/Rocket");
+			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization("/Accelerant/Rocket");
 			assertNotNull("Organization is null");
-			user = Factories.getUserFactory().getByName("TestUser1", org.getId());
-			user2 = Factories.getUserFactory().getByName("TestUser2", org.getId());
+			user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("TestUser1", org.getId());
+			user2 = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("TestUser2", org.getId());
 			assertNotNull("User 1 is null",user);
 			assertNotNull("User 2 is null",user2);
 			
@@ -40,7 +28,7 @@ public class TestGroupAuthorization extends BaseDataAccessTest {
 			logger.info("Id count #2 = " + ids2.size());
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		
 		

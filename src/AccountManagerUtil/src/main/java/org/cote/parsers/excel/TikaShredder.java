@@ -30,7 +30,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AbstractParser;
@@ -45,7 +46,7 @@ import org.xml.sax.SAXException;
 
 public class TikaShredder {
 	private static int tikaWriteLimit = 2000000;
-	public static final Logger logger = Logger.getLogger(TikaShredder.class.getName());
+	public static final Logger logger = LogManager.getLogger(TikaShredder.class);
 	private static Pattern rowLineUrlPattern = Pattern.compile("^http",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 	private static Pattern rowLinePattern = Pattern.compile("^\\t{1}\\S",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 	private static Pattern sheetLinePattern = Pattern.compile("^\\S",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);

@@ -29,7 +29,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DataAccessException;
@@ -41,7 +42,7 @@ import org.cote.accountmanager.objects.DataRowType;
 
 public class BulkInsertUtil {
 	/// Non-transactional insert of a single row
-	public static final Logger logger = Logger.getLogger(BulkInsertUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(BulkInsertUtil.class);
 	public static BulkInsertMeta getInsertTemplate(Connection connection, DataRow row) throws FactoryException
 	{
 		
@@ -119,7 +120,7 @@ public class BulkInsertUtil {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 			throw new FactoryException(sqe.getMessage());
 		}
 		return ps;
@@ -147,7 +148,7 @@ public class BulkInsertUtil {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 				throw new FactoryException(e.getMessage());
 			}
 		}
@@ -218,22 +219,22 @@ public class BulkInsertUtil {
 		catch(NullPointerException npe){
 			if(insStatement != null) logger.error("Null pointer in: BULK INSERT - " + rLen + " : " + insStatement.getParameterCount() + " : " + insStatement.getInsertTemplate());
 			logger.error(npe.getMessage());
-			logger.error(npe.getStackTrace());
+			logger.error("Error",npe);
 		}
 		catch(DataAccessException dae){
 			logger.error(dae.getMessage());
-			logger.error(dae.getStackTrace());
+			logger.error("Error",dae);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error(fe.getStackTrace());
+			logger.error("Error",fe);
 		}
 		catch (SQLException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			while(( e = e.getNextException()) != null){
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		finally{
@@ -242,7 +243,7 @@ public class BulkInsertUtil {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		//logger.info("Bulk Write Time: " + (System.currentTimeMillis() - startInsert));

@@ -66,12 +66,13 @@
 						<!-- 
 
 
-<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 
 
+<exclude>**/TestEffectiveAuthorization.java</exclude>
 
 						-->
-												<exclude>**/TestEffectiveAuthorization.java</exclude>
+<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
+<exclude>**/TestFactoryInterfaces.java</exclude>												
 						<exclude>**/TestDataFactory.java</exclude>
 						<exclude>**/TestGroupAuthorization.java</exclude>
 
@@ -137,9 +138,17 @@
 						<!--  WARNING: TestFactorySetup WILL ERASE EVERYTHING IN THE DATABASE -->
 						<exclude>**/TestFactorySetup.java</exclude>
 					</excludes>
+					<!--
 					<systemPropertyVariables>
       					<log4j.configuration>${project.build.directory}/test-classes/logging.properties</log4j.configuration>
     				</systemPropertyVariables>
+    				-->
+    				<systemProperties>
+    				          <property>
+            					<name>log4j.configurationFile</name>
+            					<value>log4j2-AccountManagerDataAccessLogging.xml</value>
+          					</property>
+          				</systemProperties>
     			</configuration>
 			</plugin>
 		</plugins>
@@ -183,12 +192,22 @@
 			<version>1.54</version>
 			<scope>provided</scope>
 		</dependency>
-	    <dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.6</version>
-			<scope>compile</scope>
-		</dependency>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-api</artifactId>
+    <version>2.6.2</version>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.6.2</version>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-web</artifactId>
+    <version>2.6.2</version>
+  </dependency>
+
 <dependency>
 	<groupId>org.postgresql</groupId>
 	<artifactId>postgresql</artifactId>

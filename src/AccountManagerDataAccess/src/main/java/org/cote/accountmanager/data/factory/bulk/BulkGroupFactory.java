@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.GroupFactory;
 
 public class BulkGroupFactory extends GroupFactory{
+	/// static{ org.cote.accountmanager.data.BulkFactories.registerClass(FactoryEnumType.GROUP, BulkGroupFactory.class); }
 	public BulkGroupFactory(){
 		super();
 		bulkMode = true;

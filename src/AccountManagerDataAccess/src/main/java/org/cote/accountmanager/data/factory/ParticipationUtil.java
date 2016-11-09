@@ -31,7 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.objects.BaseGroupType;
@@ -44,7 +45,7 @@ import org.cote.accountmanager.objects.types.ParticipantEnumType;
 /// TODO : Remove this class - it's now dead code with EffectiveAuthorizationService
 ///
 public class ParticipationUtil {
-	public static final Logger logger = Logger.getLogger(ParticipationUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(ParticipationUtil.class);
 	/*
 	public static long[] getDataFromGroupForAccount(AccountType account)
 	{
@@ -142,7 +143,7 @@ public class ParticipationUtil {
 		catch (SQLException sqe)
 		{
 			System.out.println(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 			
 		}
 		finally
@@ -151,7 +152,7 @@ public class ParticipationUtil {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return ArrayUtils.toPrimitive(out_ids.toArray(new Long[out_ids.size()]));
@@ -249,7 +250,7 @@ public class ParticipationUtil {
 		catch (SQLException sqe)
 		{
 			System.out.println(sqe.getMessage());
-			logger.error(sqe.getStackTrace());
+			logger.error("Error",sqe);
 			
 		}
 		finally
@@ -258,7 +259,7 @@ public class ParticipationUtil {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return ArrayUtils.toPrimitive(out_ids.toArray(new Long[out_ids.size()]));

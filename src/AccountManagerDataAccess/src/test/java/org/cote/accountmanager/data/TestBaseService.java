@@ -5,12 +5,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserPermissionType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
@@ -40,13 +44,13 @@ public class TestBaseService extends BaseDataAccessTest{
 		ServletRequestMock request = new ServletRequestMock(null,this.sessionId,testUser.getOrganizationId());
 		DirectoryGroupType homeDir = null;
 		try {
-			homeDir = Factories.getGroupFactory().getUserDirectory(testUser);
+			homeDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(testUser);
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		assertNotNull("Home directory is null",homeDir);
 		DirectoryGroupType dir = BaseService.readById(AuditEnumType.GROUP, homeDir.getId(), request);
@@ -84,20 +88,20 @@ public class TestBaseService extends BaseDataAccessTest{
 		
 		
 		try {
-			UserRoleType role = Factories.getRoleFactory().getUserRole(testUser,RoleEnumType.USER,testUser.getOrganizationId());
+			UserRoleType role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(testUser,RoleEnumType.USER,testUser.getOrganizationId());
 			assertNotNull("Role is null",role);
-			Factories.getRoleFactory().denormalize(role);
+			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).denormalize(role);
 			assertNotNull("Path is null",role.getParentPath());
 			logger.info("Role parent path = '" + role.getParentPath() + "'");
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	
@@ -106,20 +110,20 @@ public class TestBaseService extends BaseDataAccessTest{
 		
 		
 		try {
-			UserPermissionType permission = Factories.getPermissionFactory().getUserPermission(testUser,PermissionEnumType.USER,testUser.getOrganizationId());
+			UserPermissionType permission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getUserPermission(testUser,PermissionEnumType.USER,testUser.getOrganizationId());
 			assertNotNull("Permission is null",permission);
-			Factories.getPermissionFactory().denormalize(permission);
+			((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).denormalize(permission);
 			assertNotNull("Path is null",permission.getParentPath());
 			logger.info("Permission parent path = '" + permission.getParentPath() + "'");
 		} catch (FactoryException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (ArgumentException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		} catch (DataAccessException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 	}
 	

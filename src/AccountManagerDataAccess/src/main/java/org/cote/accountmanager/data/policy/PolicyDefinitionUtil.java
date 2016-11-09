@@ -25,10 +25,12 @@ package org.cote.accountmanager.data.policy;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.OperationType;
@@ -38,11 +40,11 @@ import org.cote.accountmanager.objects.PolicyRequestEnumType;
 import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
-
 public class PolicyDefinitionUtil {
-	public static final Logger logger = Logger.getLogger(PolicyDefinitionUtil.class.getName());
+	public static final Logger logger = LogManager.getLogger(PolicyDefinitionUtil.class);
 	
 	public static PolicyRequestType generatePolicyRequest(PolicyDefinitionType pdt){
 		PolicyRequestType prt = new PolicyRequestType();
@@ -101,12 +103,12 @@ public class PolicyDefinitionUtil {
 		pdt.setExpiresDate(pol.getExpiresDate());
 		pdt.setModifiedDate(pol.getModifiedDate());
 		pdt.setUrn(pol.getUrn());
-		pdt.setOrganizationPath(Factories.getOrganizationFactory().getOrganizationPath(pol.getOrganizationId()));
+		pdt.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(pol.getOrganizationId()));
 		copyParameters(pdt,pol);
 		return pdt;
 	}
 	private static void copyParameters(PolicyDefinitionType pdt, PolicyType pol) throws FactoryException, ArgumentException{
-		Factories.getPolicyFactory().populate(pol);
+		Factories.getNameIdFactory(FactoryEnumType.POLICY).populate(pol);
 		logger.info("Processing " + pol.getRules().size() + " rules");
 		for(int i = 0;i < pol.getRules().size();i++){
 			copyParameters(pdt,pol.getRules().get(i));
@@ -114,7 +116,7 @@ public class PolicyDefinitionUtil {
 		
 	}
 	private static void copyParameters(PolicyDefinitionType pdt, RuleType rule) throws FactoryException, ArgumentException{
-		Factories.getRuleFactory().populate(rule);
+		Factories.getNameIdFactory(FactoryEnumType.ROLE).populate(rule);
 		logger.info("Processing " + rule.getPatterns().size() + " patterns");
 		for(int i = 0; i < rule.getPatterns().size();i++){
 			copyParameters(pdt,rule.getPatterns().get(i));
@@ -136,7 +138,7 @@ public class PolicyDefinitionUtil {
 		return out_bool;
 	}
 	private static void copyParameters(PolicyDefinitionType pdt, PatternType pattern) throws FactoryException, ArgumentException{
-		Factories.getPatternFactory().populate(pattern);
+		Factories.getNameIdFactory(FactoryEnumType.PATTERN).populate(pattern);
 		if(pattern.getFact() != null && pattern.getFact().getFactType() == FactEnumType.PARAMETER){
 			logger.info("Processing Parameter");
 			if(haveParameter(pdt,pattern.getFact())){
@@ -163,7 +165,7 @@ public class PolicyDefinitionUtil {
 	}
 	public static String printPolicy(PolicyType pol) throws FactoryException, ArgumentException{
 		StringBuffer buff = new StringBuffer();
-		Factories.getPolicyFactory().populate(pol);
+		Factories.getNameIdFactory(FactoryEnumType.POLICY).populate(pol);
 		buff.append("\nPOLICY " + pol.getName()+ "\n");
 		buff.append("\turn\t" + pol.getUrn()+ "\n");
 		buff.append("\tenabled\t" + pol.getEnabled()+ "\n");
@@ -172,7 +174,7 @@ public class PolicyDefinitionUtil {
 		List<RuleType> rules = pol.getRules();
 		for(int i = 0; i < rules.size();i++){
 			RuleType rule = rules.get(i);
-			Factories.getRuleFactory().populate(rule);
+			Factories.getNameIdFactory(FactoryEnumType.RULE).populate(rule);
 			buff.append("\tRULE " + rule.getName()+ "\n");
 			buff.append("\t\turn\t" + rule.getUrn()+ "\n");
 			buff.append("\t\ttype\t" + rule.getRuleType()+ "\n");
@@ -181,7 +183,7 @@ public class PolicyDefinitionUtil {
 			List<PatternType> patterns = rule.getPatterns();
 			for(int p = 0; p < patterns.size();p++){
 				PatternType pattern = patterns.get(p);
-				Factories.getPatternFactory().populate(pattern);
+				Factories.getNameIdFactory(FactoryEnumType.PATTERN).populate(pattern);
 				buff.append("\t\tPATTERN " + pattern.getName()+ "\n");
 				buff.append("\t\t\turn\t" + pattern.getUrn()+ "\n");
 				buff.append("\t\t\ttype\t" + pattern.getPatternType()+ "\n");
@@ -214,7 +216,7 @@ public class PolicyDefinitionUtil {
 					if(mFact.getFactType() == FactEnumType.OPERATION){
 						buff.append("\t\t\t\tOPERATION\t" + (mFact.getSourceUrl() != null ? mFact.getSourceUrl() : "IS NULL")+ "\n");
 						if(mFact.getSourceUrl() != null){
-							OperationType op = Factories.getOperationFactory().getByUrn(mFact.getSourceUrl());
+							OperationType op = Factories.getNameIdFactory(FactoryEnumType.OPERATION).getByUrn(mFact.getSourceUrl());
 							buff.append("\t\t\t\turn\t" + op.getUrn()+ "\n");
 							buff.append("\t\t\t\toperationType\t" + op.getOperationType()+ "\n");
 							buff.append("\t\t\t\toperation\t" + op.getOperation()+ "\n");

@@ -28,6 +28,7 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
 
 public class ContactInformationParticipationFactory extends BaseParticipationFactory {
+	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION, ContactInformationParticipationFactory.class); }
 	public ContactInformationParticipationFactory(){
 		super(ParticipationEnumType.CONTACTINFORMATION, "contactinformationparticipation");
 		this.haveAffect = true;

@@ -35,7 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
@@ -52,7 +53,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public abstract class FactoryBase {
-	public static final Logger logger = Logger.getLogger(FactoryBase.class.getName());
+	public static final Logger logger = LogManager.getLogger(FactoryBase.class);
 	
 	protected FactoryEnumType factoryType = FactoryEnumType.UNKNOWN;
 	
@@ -122,7 +123,7 @@ public abstract class FactoryBase {
 			} catch (FactoryException e) {
 				
 				logger.error(e.getMessage());
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 			/// If the table is individual updates, then dump any rows accumulated into the table row set
 			/// 
@@ -135,6 +136,9 @@ public abstract class FactoryBase {
 			out_bool = true;
 		}
 		return out_bool;
+	}
+	public boolean getBulkMode(){
+		return bulkMode;
 	}
 	public String getDataTable(){
 		return getDataTables().get(0).getName();
@@ -305,7 +309,7 @@ public abstract class FactoryBase {
 		} catch (SQLException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -314,7 +318,7 @@ public abstract class FactoryBase {
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return out_ints.toArray(new String[0]);
@@ -357,7 +361,7 @@ public abstract class FactoryBase {
 		} catch (SQLException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -366,7 +370,7 @@ public abstract class FactoryBase {
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return ArrayUtils.toPrimitive(out_ints.toArray(new Long[out_ints.size()]));
@@ -401,7 +405,7 @@ public abstract class FactoryBase {
 		} catch (SQLException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			throw new FactoryException(e.getMessage());
 		} 
 		finally{
@@ -410,7 +414,7 @@ public abstract class FactoryBase {
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		
@@ -459,7 +463,7 @@ public abstract class FactoryBase {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		finally{
 			try {
@@ -467,7 +471,7 @@ public abstract class FactoryBase {
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 
@@ -491,7 +495,7 @@ public abstract class FactoryBase {
 		catch (SQLException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -500,7 +504,7 @@ public abstract class FactoryBase {
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		
@@ -610,7 +614,7 @@ public abstract class FactoryBase {
 	    } 
 		}
 		catch(ClassCastException cce){
-			logger.error(cce.getStackTrace());
+			logger.error("Error",cce);
 			logger.error(cce.getMessage());
 		}
 		return outList;
@@ -656,14 +660,14 @@ public abstract class FactoryBase {
 			statement.close();
 		} catch (SQLException e) {
 			
-			logger.error(e.getStackTrace());
+			logger.error("Error",e);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error(e.getStackTrace());
+				logger.error("Error",e);
 			}
 		}
 		return ids;
