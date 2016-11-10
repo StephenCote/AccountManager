@@ -1,5 +1,18 @@
+/*
 var sGroupId = "ad79f5bc-2d9c-4a60-abb5-2c65c56d2d4b";
 var iCount = Hemi.xml.getJSON("/AccountManagerService/rest/resources/GROUP/" + sGroupId + "/count");
 var aList = Hemi.xml.getJSON("/AccountManagerService/rest/resources/GROUP/" + sGroupId + "/0/10");
-
 /AccountManagerService/rest/resources/GROUP/ad79f5bc-2d9c-4a60-abb5-2c65c56d2d4b/0/10
+*/
+var oG = AM6Client.find("GROUP","DATA","~");
+var oDG = AM6Client.find("GROUP","DATA","~/Data");
+var oD = new org.cote.objects.dataType();
+oD.groupPath = oDG.path;
+oD.organizationPath = oDG.organizationPath;
+oD.name = "Test 1";
+oD.mimeType = "text/plain";
+//AM6Client.update("DATA",oD);
+
+//var aL = AM6Client.list("DATA",oDG.objectId,0,10);
+
+var oDL = AM6Client.getByName("DATA",oDG.objectId,oD.name);

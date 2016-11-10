@@ -365,6 +365,14 @@ public class AuthorizationService {
 	
 	public static boolean isMapOwner(NameIdType test_owner, NameIdType map)
 	{
+		if(test_owner == null){
+			logger.error("Owner is null");
+			return false;
+		}
+		if(map == null){
+			logger.error("Map is null");
+			return false;
+		}
 		if(test_owner.getNameType() != NameEnumType.USER){
 			return false;
 		}

@@ -45,6 +45,7 @@ import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
@@ -54,6 +55,8 @@ public class OrganizationFactory extends NameIdFactory {
 	public OrganizationFactory(){
 		super();
 		this.scopeToOrganization = false;
+		this.clusterByParent = true;
+		this.hasParentId = true;
 		this.hasUrn = true;
 		this.hasObjectId = true;
 		this.tableNames.add("organizations");
@@ -241,6 +244,13 @@ public class OrganizationFactory extends NameIdFactory {
 		path = path + "/" + org.getName();
 		return path;
 	}
+	
+	@Override
+	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException
+	{
+		return (T)findOrganization(path);
+	}
+	
 	public OrganizationType findOrganization(String path) throws FactoryException, ArgumentException
 	{
 		

@@ -16,6 +16,6 @@ response.setCharacterEncoding("UTF-8");
 	if(!window.HemiConfig) window.HemiConfig = {};
 	if(!window.HemiConfig.hemi_base) window.HemiConfig.hemi_base= "/HemiFramework/Hemi/";
 })();
-
+<%@include file="client.js" %>
 <%@include file="3rdParty/base64.js" %>
 <%@include file="3rdParty/Aes.complete.js" %>

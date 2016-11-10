@@ -1051,5 +1051,19 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		NameIdType obj = (NameIdType)parent;
 		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(obj.getId())}, obj.getOrganizationId());
 	}
+
+	public <T> T find(String path) throws FactoryException,ArgumentException
+	{
+		return find(null,null,path,0L);
+	}
+	public <T> T find(String type, String path, long organizationId) throws FactoryException, ArgumentException
+	{
+		return find(null,type,path,organizationId);
+	}
+	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException
+	{
+		logger.error("Invocation of abstract method");
+		return null;
+	}
 	
 }

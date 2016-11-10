@@ -77,9 +77,11 @@ import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
-import org.cote.accountmanager.objects.OrganizationType;
-import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.data.services.ITypeSanitizer;
+import org.cote.accountmanager.data.services.TypeSanitizer;
+import org.cote.accountmanager.objects.*;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 
 
@@ -87,6 +89,9 @@ public class Factories {
 	
 	public static final Logger logger = LogManager.getLogger(Factories.class);
 	
+	private static Map<String,ITypeSanitizer> nameTypeSanitizerInstances = new HashMap<>();
+	private static Map<NameEnumType,Class> nameTypeSanitizerClasses = new HashMap<>();
+	private static Map<FactoryEnumType, Class> factoryTypeClasses = new HashMap<>();
 	private static Map<FactoryEnumType, Class> factoryClasses = new HashMap<>();
 	private static Map<FactoryEnumType, Object> factoryInstances = new HashMap<>();
 	static {
@@ -127,6 +132,68 @@ public class Factories {
 	    Factories.registerClass(FactoryEnumType.USER, UserFactory.class); 
 	}
 	
+	static {
+	    Factories.registerTypeClass(FactoryEnumType.ACCOUNT, AccountType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.ADDRESS, AddressType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.ASYMMETRICKEY, SecurityType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.CONTACT, ContactType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.CONTACTINFORMATION, ContactInformationType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION, BaseParticipantType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.CONTROL, ControlType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.CREDENTIAL, CredentialType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.DATA, DataType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.DATAPARTICIPATION, BaseParticipantType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.FACT, FactType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.FUNCTIONFACT, FunctionFactType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.FUNCTION, FunctionType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.FUNCTIONPARTICIPATION, BaseParticipantType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.GROUP, BaseGroupType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.GROUPPARTICIPATION, BaseParticipantType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.MESSAGE, MessageType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.OPERATION, OperationType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.ORGANIZATION, OrganizationType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.PATTERN, PatternType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.PERMISSION, BasePermissionType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.PERSON, PersonType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.PERSONPARTICIPATION, BaseParticipantType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.POLICY, PolicyType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.POLICYPARTICIPATION, BaseParticipantType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.ROLE, BaseRoleType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.ROLEPARTICIPATION, BaseParticipantType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.RULE, RuleType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.RULEPARTICIPATION, BaseParticipantType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.SECURITYTOKEN, SecuritySpoolType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.STATISTICS, StatisticsType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.SYMMETRICKEY, SecurityType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.TAG, BaseTagType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.TAGPARTICIPATION, BaseParticipantType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.USER, UserType.class); 
+	}
+	
+	static {
+	    Factories.registerNameTypeSanitizer(NameEnumType.ACCOUNT, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.ADDRESS, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.CONTACT, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.CONTACTINFORMATION, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.CREDENTIAL, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.DATA, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.FACT, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.FUNCTIONFACT, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.FUNCTION, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.GROUP, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.OPERATION, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.ORGANIZATION, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.PATTERN, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.PERMISSION, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.PERSON, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.POLICY, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.ROLE, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.RULE, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.TAG, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.USER, TypeSanitizer.class); 
+	}
+	
+	
 	
 	private static String documentControlName = "Document Control";
 	
@@ -158,6 +225,42 @@ public class Factories {
 		//AuthorizationService.registerParticipationFactory(FactoryEnumType.ROLE,getRoleParticipationFactory());
 	}
 	
+	
+	protected static boolean registerNameTypeSanitizer(NameEnumType ntype, Class fClass){
+		if(nameTypeSanitizerClasses.containsKey(ntype)){
+			logger.error("Type " + ntype.toString() + " already registered");
+			return false;
+		}
+		nameTypeSanitizerClasses.put(ntype, fClass);
+		return true;
+	}
+	public static ITypeSanitizer getSanitizer(NameEnumType ntype){
+		return getSanitizerInstance(ntype);
+	}
+	protected static ITypeSanitizer getSanitizerInstance(NameEnumType ntype){
+		ITypeSanitizer sanObj = null;
+		if(nameTypeSanitizerClasses.containsKey(ntype) == false){
+			logger.error("Name type " + ntype.toString() + " not registered");
+			return sanObj;
+		}
+		Class cls = nameTypeSanitizerClasses.get(ntype);
+		String name = cls.getName();
+		if(nameTypeSanitizerInstances.containsKey(name) == true) return nameTypeSanitizerInstances.get(name);
+
+
+		try {
+			sanObj = (ITypeSanitizer)cls.newInstance();
+			if(sanObj != null){
+				nameTypeSanitizerInstances.put(name, sanObj);
+			}
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error("Error",e);
+			sanObj = null;
+		}
+		return sanObj;
+	}
+	
 	protected static boolean registerClass(FactoryEnumType ftype, Class fClass){
 		if(factoryClasses.containsKey(ftype)){
 			logger.error("Factory " + ftype.toString() + " already registered");
@@ -166,7 +269,17 @@ public class Factories {
 		factoryClasses.put(ftype, fClass);
 		return true;
 	}
-	
+	protected static boolean registerTypeClass(FactoryEnumType ftype, Class fClass){
+		if(factoryTypeClasses.containsKey(ftype)){
+			logger.error("Factory type for " + ftype.toString() + " already registered");
+			return false;
+		}
+		factoryTypeClasses.put(ftype, fClass);
+		return true;
+	}
+	public static Map<FactoryEnumType, Class> getFactoryTypeClasses() {
+		return factoryTypeClasses;
+	}
 	public static Map<FactoryEnumType, Class> getFactoryClasses() {
 		return factoryClasses;
 	}

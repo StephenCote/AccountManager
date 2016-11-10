@@ -55,11 +55,81 @@ import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.propellant.objects.ApplicationRequestType;
+import org.cote.propellant.objects.ArtifactType;
+import org.cote.propellant.objects.BlueprintType;
+import org.cote.propellant.objects.BudgetType;
+import org.cote.propellant.objects.CaseType;
+import org.cote.propellant.objects.CostType;
+import org.cote.propellant.objects.EstimateType;
+import org.cote.propellant.objects.EventType;
+import org.cote.propellant.objects.ExpenseType;
+import org.cote.propellant.objects.FormElementType;
+import org.cote.propellant.objects.FormElementValueType;
+import org.cote.propellant.objects.FormType;
+import org.cote.propellant.objects.GoalType;
+import org.cote.propellant.objects.IdentityDataImportType;
+import org.cote.propellant.objects.LifecycleType;
+import org.cote.propellant.objects.LocationType;
+import org.cote.propellant.objects.MethodologyType;
+import org.cote.propellant.objects.ModelType;
+import org.cote.propellant.objects.ModuleType;
+import org.cote.propellant.objects.NoteType;
+import org.cote.propellant.objects.ProcessStepType;
+import org.cote.propellant.objects.ProcessType;
+import org.cote.propellant.objects.ProjectType;
+import org.cote.propellant.objects.RequirementType;
+import org.cote.propellant.objects.ResourceType;
+import org.cote.propellant.objects.ScheduleType;
+import org.cote.propellant.objects.StageType;
+import org.cote.propellant.objects.TaskType;
+import org.cote.propellant.objects.TicketType;
+import org.cote.propellant.objects.TimeType;
+import org.cote.propellant.objects.TraitType;
+import org.cote.propellant.objects.ValidationRuleType;
+import org.cote.propellant.objects.WorkType;
 
 
 @XmlRootElement(name="EntitySchema")
 public class EntitySchema {
-	private String defaultPackage = "org.cote.beans";
+	private String defaultPackage = "org.cote.objects";
+	
+	private NoteType noteType = null;
+	private LifecycleType lifecycleType = null;
+	private ArtifactType artifactType = null;
+	private BlueprintType blueprintType = null;
+	private BudgetType budgetType = null;
+	private CaseType caseType = null;
+	private CostType costType = null;
+	private EstimateType estimateType = null;
+	private ExpenseType expenseType = null;
+	private FormType formType = null;
+	private FormElementType formElementType = null;
+	private FormElementValueType formElementValueType = null;
+	private GoalType goalType = null;
+	private MethodologyType methodologyType = null;
+	private ModelType modelType = null;
+	private ModuleType moduleType = null;
+	private ProcessType processType = null;
+	private ProcessStepType processStepType = null;
+	private ProjectType projectType = null;
+	private RequirementType requirementType = null;
+	private ResourceType resourceType = null;
+	private ScheduleType scheduleType = null;
+	private LocationType locationType = null;
+	private EventType eventType = null;
+	private TraitType traitType = null;
+	
+	private StageType stageType = null;
+	private TaskType taskType = null;
+	private TicketType ticketType = null;
+	private TimeType timeType = null;
+	private ValidationRuleType validationRuleType = null;
+	private WorkType workType = null;
+	private ApplicationRequestType applicationRequestType = null;
+	private IdentityDataImportType identityDataImportType = null;
+	
+	
 	private BaseRoleType baseRoleType = null;
 	private DataType dataTypeSchema = null;
 	private CryptoBean cryptoBeanSchema = null;
@@ -124,6 +194,40 @@ public class EntitySchema {
 		userType = new UserType();
 		contactInformationType = new ContactInformationType();
 		accountType = new AccountType();
+		
+		eventType = new EventType();
+		locationType = new LocationType();
+		traitType = new TraitType();
+		applicationRequestType = new ApplicationRequestType();
+		identityDataImportType = new IdentityDataImportType();
+		noteType = new NoteType();
+		lifecycleType = new LifecycleType();
+		artifactType = new ArtifactType();
+		blueprintType = new BlueprintType();
+		budgetType = new BudgetType();
+		caseType = new CaseType();
+		costType = new CostType();
+		estimateType = new EstimateType();
+		expenseType = new ExpenseType();
+		formType = new FormType();
+		formElementType = new FormElementType();
+		formElementValueType = new FormElementValueType();
+		goalType = new GoalType();
+		methodologyType = new MethodologyType();
+		modelType = new ModelType();
+		moduleType = new ModuleType();
+		processType = new ProcessType();
+		processStepType = new ProcessStepType();
+		projectType = new ProjectType();
+		requirementType = new RequirementType();
+		resourceType = new ResourceType();
+		scheduleType = new ScheduleType();
+		stageType = new StageType();
+		taskType = new TaskType();
+		ticketType = new TicketType();
+		timeType = new TimeType();
+		validationRuleType = new ValidationRuleType();
+		workType = new WorkType();
 	}
 
 	
@@ -404,17 +508,6 @@ public class EntitySchema {
 		this.baseRoleType = baseRoleType;
 	}
 
-
-	public String getDefaultPackage() {
-		return defaultPackage;
-	}
-
-	public void setDefaultPackage(String defaultPackage) {
-		this.defaultPackage = defaultPackage;
-	}
-
-
-
 	public DirectoryGroupType getDirectoryGroupType() {
 		return directoryGroupType;
 	}
@@ -461,5 +554,218 @@ public class EntitySchema {
 	public void setDataTypeSchema(DataType dataTypeSchema) {
 		this.dataTypeSchema = dataTypeSchema;
 	}
+	
+	public EventType getEventType() {
+		return eventType;
+	}
+	
+	public void setEventType(EventType eventType) {
+		this.eventType = eventType;
+	}
+	
+	public TraitType getTraitType() {
+		return traitType;
+	}
+	
+	public void setTraitType(TraitType traitType) {
+		this.traitType = traitType;
+	}
+	
+	public ApplicationRequestType getApplicationRequestType() {
+		return applicationRequestType;
+	}
+	
+	public void setApplicationRequestType(
+			ApplicationRequestType applicationRequestType) {
+		this.applicationRequestType = applicationRequestType;
+	}
+	
+	public IdentityDataImportType getIdentityDataImportType() {
+		return identityDataImportType;
+	}
+	
+	public void setIdentityDataImportType(
+			IdentityDataImportType identityDataImportType) {
+		this.identityDataImportType = identityDataImportType;
+	}
+	
+	public String getDefaultPackage() {
+		return defaultPackage;
+	}
+	
+	public void setDefaultPackage(String defaultPackage) {
+		this.defaultPackage = defaultPackage;
+	}
+	
+	
+	public NoteType getNoteType() {
+		return noteType;
+	}
+	public void setNoteType(NoteType noteType) {
+		this.noteType = noteType;
+	}
+	public LifecycleType getLifecycleType() {
+		return lifecycleType;
+	}
+	public void setLifecycleType(LifecycleType lifecycleType) {
+		this.lifecycleType = lifecycleType;
+	}
+	public ArtifactType getArtifactType() {
+		return artifactType;
+	}
+	public void setArtifactType(ArtifactType artifactType) {
+		this.artifactType = artifactType;
+	}
+	public BlueprintType getBlueprintType() {
+		return blueprintType;
+	}
+	public void setBlueprintType(BlueprintType blueprintType) {
+		this.blueprintType = blueprintType;
+	}
+	public BudgetType getBudgetType() {
+		return budgetType;
+	}
+	public void setBudgetType(BudgetType budgetType) {
+		this.budgetType = budgetType;
+	}
+	public CaseType getCaseType() {
+		return caseType;
+	}
+	public void setCaseType(CaseType caseType) {
+		this.caseType = caseType;
+	}
+	public CostType getCostType() {
+		return costType;
+	}
+	public void setCostType(CostType costType) {
+		this.costType = costType;
+	}
+	public EstimateType getEstimateType() {
+		return estimateType;
+	}
+	public void setEstimateType(EstimateType estimateType) {
+		this.estimateType = estimateType;
+	}
+	public ExpenseType getExpenseType() {
+		return expenseType;
+	}
+	public void setExpenseType(ExpenseType expenseType) {
+		this.expenseType = expenseType;
+	}
+	public FormType getFormType() {
+		return formType;
+	}
+	public void setFormType(FormType formType) {
+		this.formType = formType;
+	}
+	public FormElementType getFormElementType() {
+		return formElementType;
+	}
+	public void setFormElementType(FormElementType formElementType) {
+		this.formElementType = formElementType;
+	}
+	public FormElementValueType getFormElementValueType() {
+		return formElementValueType;
+	}
+	public void setFormElementValueType(FormElementValueType formElementValueType) {
+		this.formElementValueType = formElementValueType;
+	}
+	public GoalType getGoalType() {
+		return goalType;
+	}
+	public void setGoalType(GoalType goalType) {
+		this.goalType = goalType;
+	}
+	public MethodologyType getMethodologyType() {
+		return methodologyType;
+	}
+	public void setMethodologyType(MethodologyType methodologyType) {
+		this.methodologyType = methodologyType;
+	}
+	public ModelType getModelType() {
+		return modelType;
+	}
+	public void setModelType(ModelType modelType) {
+		this.modelType = modelType;
+	}
+	public ModuleType getModuleType() {
+		return moduleType;
+	}
+	public void setModuleType(ModuleType moduleType) {
+		this.moduleType = moduleType;
+	}
+	public ProcessType getProcessType() {
+		return processType;
+	}
+	public void setProcessType(ProcessType processType) {
+		this.processType = processType;
+	}
+	public ProcessStepType getProcessStepType() {
+		return processStepType;
+	}
+	public void setProcessStepType(ProcessStepType processStepType) {
+		this.processStepType = processStepType;
+	}
+	public ProjectType getProjectType() {
+		return projectType;
+	}
+	public void setProjectType(ProjectType projectType) {
+		this.projectType = projectType;
+	}
+	public RequirementType getRequirementType() {
+		return requirementType;
+	}
+	public void setRequirementType(RequirementType requirementType) {
+		this.requirementType = requirementType;
+	}
+	public ResourceType getResourceType() {
+		return resourceType;
+	}
+	public void setResourceType(ResourceType resourceType) {
+		this.resourceType = resourceType;
+	}
+	public ScheduleType getScheduleType() {
+		return scheduleType;
+	}
+	public void setScheduleType(ScheduleType scheduleType) {
+		this.scheduleType = scheduleType;
+	}
+	public StageType getStageType() {
+		return stageType;
+	}
+	public void setStageType(StageType stageType) {
+		this.stageType = stageType;
+	}
+	public TaskType getTaskType() {
+		return taskType;
+	}
+	public void setTaskType(TaskType taskType) {
+		this.taskType = taskType;
+	}
+	public TicketType getTicketType() {
+		return ticketType;
+	}
+	public void setTicketType(TicketType ticketType) {
+		this.ticketType = ticketType;
+	}
+	public TimeType getTimeType() {
+		return timeType;
+	}
+	public void setTimeType(TimeType timeType) {
+		this.timeType = timeType;
+	}
+	public ValidationRuleType getValidationRuleType() {
+		return validationRuleType;
+	}
+	public void setValidationRuleType(ValidationRuleType validationRuleType) {
+		this.validationRuleType = validationRuleType;
+	}
+	public WorkType getWorkType() {
+		return workType;
+	}
+	public void setWorkType(WorkType workType) {
+		this.workType = workType;
+	}
+
 
 }

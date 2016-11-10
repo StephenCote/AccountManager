@@ -30,7 +30,11 @@
  	<param-name>isLog4jAutoInitializationDisabled</param-name>
  	<param-value>false</param-value>
  	</context-param>
- 	
+ 	 	 <context-param>
+    <description>Additional Factories</description>
+    <param-name>factories.add</param-name>
+    <param-value>org.cote.rocket.Factories</param-value>
+  </context-param>
  	 <context-param>
     <description>Database Connection Type</description>
     <param-name>database.conntype</param-name>

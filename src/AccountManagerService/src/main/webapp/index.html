@@ -31,7 +31,7 @@ function doGoLogin(){
 	location.href = "/AccountManagerService/Protected/";
 }
 function doLogin(){
-	var cred = new org.cote.beans.credentialType();
+	var cred = new org.cote.objects.credentialType();
 	cred.name = "steve";
 	cred.credential = Base64.encode("password");
 	cred.organizationPath = "/Public";
@@ -53,6 +53,7 @@ function doLogin(){
 			true,
 			false
 		);
+	/*
 	uwmServices.addService(
 			"Principal",
 			"/AccountManagerService/rest/principal/smd",
@@ -74,6 +75,7 @@ function doLogin(){
 			true,
 			false
 		);
+*/
 }());
 </script>
 <!-- 

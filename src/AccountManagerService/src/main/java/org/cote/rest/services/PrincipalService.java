@@ -22,7 +22,8 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
-
+import org.cote.accountmanager.data.factory.*;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 @DeclareRoles({"user"})
 @Path("/principal")
 public class PrincipalService {

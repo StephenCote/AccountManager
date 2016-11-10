@@ -50,6 +50,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
+import org.cote.accountmanager.objects.types.RoleEnumType;
 
 public class PermissionFactory extends NameIdFactory {
 	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PERMISSION, PermissionFactory.class); }
@@ -243,7 +244,16 @@ public class PermissionFactory extends NameIdFactory {
 		path = path + "/" + per.getName();
 		return path;
 	}
-
+	@Override
+	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException
+	{
+		try {
+			return (T)findPermission(PermissionEnumType.valueOf(type),path,organizationId);
+		} catch (DataAccessException e) {
+			logger.error("Trace", e);
+		}
+		return null;
+	}
 	public <T> T findPermission(PermissionEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		return makePath(null, type, pathBase,organizationId);
 	}

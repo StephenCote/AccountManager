@@ -637,6 +637,12 @@ public class GroupFactory  extends NameIdFactory {
 		}
 		return dir;
 	}
+	@Override
+	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException
+	{
+		return (T)findGroup(user,GroupEnumType.valueOf(type), path, organizationId);
+	}
+	
 	public BaseGroupType findGroup(UserType user, GroupEnumType groupType, String path, long organizationId) throws FactoryException, ArgumentException
 	{
 		

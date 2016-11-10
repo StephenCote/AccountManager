@@ -13,6 +13,11 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 public interface INameIdFactory {
 	//public String getDataTable();
 	//public void writeSpool(String tableName);
+	
+	public <T> T find(String path) throws FactoryException,ArgumentException;
+	public <T> T find(String type, String path, long organizationId) throws FactoryException, ArgumentException;
+	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException;
+	
 	public void setBatchSize(int batchSize);
 	public boolean getBulkMode();
 	public void registerProvider();

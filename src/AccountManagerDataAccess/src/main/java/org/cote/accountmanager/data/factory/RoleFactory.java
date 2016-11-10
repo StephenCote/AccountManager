@@ -647,6 +647,16 @@ public class RoleFactory extends NameIdFactory {
 		path = path + "/" + role.getName();
 		return path;
 	}
+	@Override
+	public <T> T find(String type, String path, long organizationId) throws FactoryException, ArgumentException
+	{
+		try {
+			return (T)findRole(RoleEnumType.valueOf(type),path,organizationId);
+		} catch (DataAccessException e) {
+			logger.error("Trace", e);
+		}
+		return null;
+	}
 	public <T> T findRole(RoleEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		return makePath(null, type, pathBase,organizationId);
 	}

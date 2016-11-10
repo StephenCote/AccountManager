@@ -53,7 +53,8 @@ import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
-
+import org.cote.accountmanager.data.factory.*;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 public class AM5LoginModule implements LoginModule {
 
 	private static final Logger logger = LogManager.getLogger(AM5LoginModule.class);

@@ -23,24 +23,28 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.util.JSONUtil;
 
 /*
   GET
   Single - /resources/{type}/{objectId}
-  List - /resources/{type}/{groupId}/{startIndex}/{count}
-  ListInParent - /resources/{type}/{parentId}/{startIndex}/{count}
-  Count - /resources/{type}/{parentId}/count
-     ** Note: GROUP, PERMISSION, and ROLE use countInParent vs. countInGroup
+  
+  POST
+  Single - (add, update)
  */
 
 @DeclareRoles({"admin","user"})
-@Path("/resources/{type:[A-Za-z]+}")
+@Path("/resource/{type:[A-Za-z]+}")
 public class GenericResourceService {
 	
 	protected static Set<AuditEnumType> parentType = new HashSet<>(Arrays.asList(AuditEnumType.GROUP, AuditEnumType.ROLE, AuditEnumType.PERMISSION));
@@ -73,53 +77,51 @@ public class GenericResourceService {
 	
 	@RolesAllowed({"user"})
 	@GET
-	@Path("/{objectId:[0-9A-Za-z\\-]+}/{startIndex:[\\d]+}/{count:[\\d]+}")
+	@Path("/{parentId:[0-9A-Za-z\\-]+}/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response listObjects(@PathParam("type") String type, @PathParam("objectId") String objectId, @PathParam("startIndex") long startIndex, @PathParam("count") int recordCount, @Context HttpServletRequest request){
-		logger.info("Request to list objects in: " + type + " " + objectId);
+	public Response getObjectByNameInParent(@PathParam("type") String type, @PathParam("parentId") String parentId,@PathParam("name") String name,@Context HttpServletRequest request){
+		Object obj = null;
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
-		List<Object> objs = new ArrayList<>();
-		if(parentType.contains(auditType)){
-			logger.error("REFACTOR LIST IN PARENT");
-			objs = BaseService.listByParentObjectId(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
-		}
-		else{
-			objs = BaseService.listByGroup(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
-		}
-		return Response.status(200).entity(objs).build();
-	}
-	
-	@RolesAllowed({"user"})
-	@GET
-	@Path("/{objectId:[0-9A-Za-z\\-]+}/count")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response countObjects(@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
-		AuditEnumType auditType = AuditEnumType.valueOf(type);
-		//List<Object> objs = new ArrayList<>();
-		int count = 0;
-		if(parentType.contains(auditType)){
-			logger.error("REFACTOR COUNT IN PARENT");
-			Response r = getObject(type,objectId,request);
-			//NameIdType parent = r.readEntity(NameIdType.class);
-			NameIdType parent = (NameIdType)r.getEntity();
-			if(parent != null){
-				count = BaseService.countInParent(auditType, parent, request);
+		INameIdFactory iFact = BaseService.getFactory(auditType);
+		if(iFact.isClusterByParent() && !iFact.isClusterByGroup()){
+			logger.info("Request to get " + type + " object by parent in " + type + " " + parentId);
+			NameIdType parentObj = (NameIdType)getObject(type,parentId,request).getEntity();
+			if(parentObj != null){
+				obj = BaseService.readByNameInParent(auditType, parentObj, name, "UNKNOWN", request);
 			}
 		}
 		else{
-			BaseGroupType group = (BaseGroupType)getObject("GROUP",objectId,request).getEntity();
-			count = BaseService.countByGroup(auditType, group, request);
+			logger.info("Request to get " + type + " object by name in GROUP " + parentId);
+			DirectoryGroupType dir = (DirectoryGroupType)getObject("GROUP",parentId,request).getEntity();
+			if(dir != null) obj = BaseService.readByName(auditType, dir, name, request);
 		}
-		return Response.status(200).entity(count).build();
+		
+		return Response.status(200).entity(obj).build();
 	}
-	
+
 	@RolesAllowed({"user"})
 	@POST
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateObject(String json, @PathParam("type") String type, @Context HttpServletRequest request){
 		boolean updated = false;
-		
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		Class cls = Factories.getFactoryTypeClasses().get(FactoryEnumType.valueOf(type));
+		if(cls != null){
+			NameIdType obj = (NameIdType)JSONUtil.importObject(json, cls);
+			if(obj != null){
+				//logger.info("Imported " + obj.getName());
+				if(obj.getObjectId() == null || obj.getObjectId().length() == 0){
+					updated = BaseService.add(auditType, obj, request);
+				}
+				else{
+					updated = BaseService.update(auditType, obj, request);
+				}
+			}
+			else{
+				logger.error("Failed to restore object", json);
+			}
+		}
 		return Response.status(200).entity(updated).build();
 	}
 	

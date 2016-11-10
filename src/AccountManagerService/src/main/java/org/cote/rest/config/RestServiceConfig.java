@@ -97,9 +97,25 @@ public class RestServiceConfig extends ResourceConfig{
 			}
 			
 			logger.info("Priming Factories");
+			String addFact = context.getInitParameter("factories.add");
+			if(addFact != null){
+				String[] facts = addFact.split(",");
+				for(int i = 0; i < facts.length;i++){
+					try {
+						Class cls = Class.forName(facts[i]);
+						Factories f = (Factories)cls.newInstance();
+						f.prepare();
+					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						logger.error("Trace", e);
+					}
+					
+				}
+			}
 			/// invoke clear caches to queue up the table schemas
 			///
-			Factories.clearCaches();
+			//Factories.clearCaches();
+			Factories.warmUp();
 			
 			logger.info("Starting Maintenance Threads");
 			dbMaintenance = new DatabaseMaintenance();
