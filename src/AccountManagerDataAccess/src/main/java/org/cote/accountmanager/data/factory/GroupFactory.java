@@ -323,7 +323,29 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		return (AccountGroupType)getGroupByName(name, GroupEnumType.ACCOUNT, parent, organizationId);
 	}
+	
+	@Override
+	public <T> T getByNameInParent(String name, String type, long parent_id, long organization_id) throws FactoryException, ArgumentException
+	{
+		String key_name = name + "-" + type + "-" + parent_id + "-" + organization_id;
+		GroupEnumType group_type = GroupEnumType.valueOf(type);
+		NameIdType out_group = readCache(key_name);
+		if (out_group != null) return (T)out_group;
+		QueryFields x = null;
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldName(name));
+		fields.add(QueryFields.getFieldParent(parent_id));
+		if(group_type != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(group_type));
+		
+		List<NameIdType> groups = getByField(fields.toArray(new QueryField[0]), organization_id);
 
+		if (groups.size() > 0)
+		{
+			addToCache(groups.get(0),key_name);
+			return (T)groups.get(0);
+		}
+		return null;
+	}
 	public BaseGroupType getGroupByName(String name, GroupEnumType group_type, BaseGroupType parent, long organizationId) throws FactoryException, ArgumentException
 	{
 		String key_name = name + "-" + group_type + "-" + (parent == null ? 0 : parent.getId()) + "-" + organizationId;
@@ -889,6 +911,14 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	*/
 	
+	public <T> List<T> listInParent(String type, long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException{
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldParent(parentId));
+		GroupEnumType groupType = GroupEnumType.valueOf(type);
+		if(groupType != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(groupType));
+		return getList(fields.toArray(new QueryField[0]), startRecord, recordCount, organizationId);
+
+	}
 
 	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{

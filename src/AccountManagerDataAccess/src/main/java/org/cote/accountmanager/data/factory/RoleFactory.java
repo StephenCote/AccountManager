@@ -49,6 +49,7 @@ import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
@@ -415,6 +416,31 @@ public class RoleFactory extends NameIdFactory {
 	{
 		return getRoleByName(name, Parent, RoleEnumType.UNKNOWN, organizationId);
 	}
+	
+	@Override
+	public <T> T getByNameInParent(String name, String type, long parent_id, long organizationId) throws FactoryException, ArgumentException
+	{
+		if(name == null || organizationId <= 0L) throw new ArgumentException((name == null ? "Name" : "Organization") + " is null");
+		String key_name = type + "-" + name + "-" + parent_id + "-" + organizationId;
+		RoleEnumType role_type = RoleEnumType.valueOf(type);
+		NameIdType out_role = readCache(key_name);
+		if (out_role != null){
+			return (T)out_role;
+		}
+
+		List<QueryField> Fields = new ArrayList<QueryField>();
+		Fields.add(QueryFields.getFieldName(name));
+		Fields.add(QueryFields.getFieldParent(parent_id));
+		if (role_type != RoleEnumType.UNKNOWN) Fields.add(QueryFields.getFieldRoleType(role_type));
+		List<NameIdType> roles = getByField(Fields.toArray(new QueryField[0]),organizationId);
+		if (roles.size() > 0)
+		{
+			addToCache(roles.get(0), key_name);
+			return (T)roles.get(0);
+		}
+		return null;
+	}
+	
 	public <T> T getRoleByName(String name, BaseRoleType Parent, RoleEnumType role_type, long organizationId)  throws FactoryException, ArgumentException
 	{
 		if(name == null || organizationId <= 0L) throw new ArgumentException((name == null ? "Name" : "Organization") + " is null");
@@ -572,6 +598,14 @@ public class RoleFactory extends NameIdFactory {
 	{
 		//return getRoleList(new QueryField[] { QueryFields.getFieldParent(parentRole.getId()) }, startRecord, recordCount, organizationId);
 		return getRoleList(RoleEnumType.UNKNOWN, parentRole, startRecord, recordCount, organizationId);
+	}
+	public <T> List<T> listInParent(String type, long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException{
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldParent(parentId));
+		RoleEnumType roleType = RoleEnumType.valueOf(type);
+		if(roleType != RoleEnumType.UNKNOWN) fields.add(QueryFields.getFieldRoleType(roleType));
+		return getRoleList(fields.toArray(new QueryField[0]), startRecord, recordCount, organizationId);
+
 	}
 	public <T> List<T>  getRoleList(RoleEnumType type, BaseRoleType parent, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{

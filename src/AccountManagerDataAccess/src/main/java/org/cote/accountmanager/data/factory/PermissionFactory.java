@@ -178,7 +178,26 @@ public class PermissionFactory extends NameIdFactory {
 	{
 		return getPermissionByName(name, type, null, organizationId);
 	}
-	
+	@Override
+	public <T> T getByNameInParent(String name, String type, long parent_id, long organizationId) throws FactoryException, ArgumentException
+	{
+		String key_name = name + "-" + type + "-" + parent_id + "-" + organizationId;
+		PermissionEnumType perType = PermissionEnumType.valueOf(type);
+		T out_perm = readCache(key_name);
+		if (out_perm != null) return out_perm;
+
+		List<QueryField> Fields = new ArrayList<QueryField>();
+		Fields.add(QueryFields.getFieldName(name));
+		Fields.add(QueryFields.getFieldParent(parent_id));
+		if (perType != PermissionEnumType.UNKNOWN) Fields.add(QueryFields.getFieldPermissionType(perType));
+		List<NameIdType> perms = getByField(Fields.toArray(new QueryField[0]),organizationId);
+		if (perms.size() > 0)
+		{
+			addToCache(perms.get(0),key_name);
+			return (T)perms.get(0);
+		}
+		return null;
+	}
 	public <T> T getPermissionByName(String name, PermissionEnumType type, BasePermissionType parent, long organizationId) throws FactoryException, ArgumentException
 	{
 		long parent_id = 0;
@@ -352,6 +371,18 @@ public class PermissionFactory extends NameIdFactory {
 		return super.read(rset, new_per);
 	}
 
+	
+	public <T> List<T> listInParent(String type, long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException{
+		List<QueryField> fields = new ArrayList<QueryField>();
+		PermissionEnumType perType = PermissionEnumType.valueOf(type);
+		if(perType.equals(PermissionEnumType.UNKNOWN) == false) fields.add(QueryFields.getFieldPermissionType(perType));
+		fields.add(QueryFields.getFieldParent(parentId));
+		ProcessingInstructionType instruction = new ProcessingInstructionType();
+		instruction.setOrderClause("name ASC");
+
+		return getPermissionList(fields.toArray(new QueryField[0]), instruction, startRecord, recordCount, organizationId);		
+	}
+	
 	public <T> List<T>  getPermissionList(PermissionEnumType type, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		return getPermissionList(null, type, startRecord, recordCount, organizationId);

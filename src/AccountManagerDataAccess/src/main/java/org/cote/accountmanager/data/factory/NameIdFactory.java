@@ -548,6 +548,16 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		}
 		return row;
 	}
+	public <T> List<T> listInParent(long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException{
+		throw new FactoryException("Method must be overridden by implementing class");
+	}
+	public <T> List<T> listInParent(String type, long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException{
+		throw new FactoryException("Method must be overridden by implementing class to define type enum");
+	}
+	public <T> T getByNameInParent(String name, String type, long parent_id, long organization_id) throws FactoryException, ArgumentException
+	{
+		throw new FactoryException("Method must be overridden by implementing class to define type enum");
+	}
 	public <T> T getByNameInParent(String name, long parent_id, long organization_id) throws FactoryException, ArgumentException
 	{
 

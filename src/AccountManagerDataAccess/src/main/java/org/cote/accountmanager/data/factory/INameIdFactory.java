@@ -46,6 +46,7 @@ public interface INameIdFactory {
 	public <T> boolean updateBulk(List<T> map, ProcessingInstructionType instruction) throws FactoryException;
 
 	//public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction);
+	public <T> T getByNameInParent(String name, String type, long parent_id, long organization_id) throws FactoryException, ArgumentException;
 	public <T> T getByNameInParent(String name, long parent_id, long organization_id) throws FactoryException, ArgumentException;
 	public <T> T getByName(String name, long organizationId) throws FactoryException, ArgumentException;
 	public List<NameIdType> getByField(QueryField field, long organization_id) throws FactoryException, ArgumentException;
@@ -69,7 +70,8 @@ public interface INameIdFactory {
 	public <T> List<T> search(QueryField[] fields, ProcessingInstructionType pi, long organizationId) throws FactoryException, ArgumentException;
 	public int countInOrganization(long organization_id) throws FactoryException;
 	public <T> int countInParent(T parent) throws FactoryException;
-	
+	public <T> List<T> listInParent(String type, long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException;
+	public <T> List<T> listInParent(long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException;
 	public void clearCache();
 	
 	public void removeBranchFromCache(NameIdType obj);

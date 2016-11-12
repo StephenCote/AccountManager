@@ -32,6 +32,7 @@ import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.FunctionFactType;
 import org.cote.accountmanager.objects.FunctionType;
@@ -43,16 +44,85 @@ import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.DataUtil;
+import org.cote.accountmanager.util.JAXBUtil;
 import org.cote.accountmanager.util.MapUtil;
 
 public class TypeSanitizer implements ITypeSanitizer{
 	public static final Logger logger = LogManager.getLogger(TypeSanitizer.class);
 	public TypeSanitizer(){
 		
+	}
+	
+	public <T> boolean usePostFetch(AuditEnumType type, T object){
+		return (type.equals(AuditEnumType.DATA));
+	}
+	public <T> boolean useAlternateDelete(AuditEnumType type, T object){
+		return (type.equals(AuditEnumType.GROUP) && ((BaseGroupType)object).getGroupType().equals(GroupEnumType.DATA));
+	}
+	public <T> boolean useAlternateUpdate(AuditEnumType type, T object){
+		return false;
+	}
+	public <T> boolean useAlternateAdd(AuditEnumType type, T object){
+		return (type.equals(AuditEnumType.ACCOUNT) || type.equals(AuditEnumType.USER));
+	}
+	public <T> boolean update(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException{
+		return false;
+	}
+	public <T> T postFetch(AuditEnumType type, T object){
+		T outObj = object;
+		if(type.equals(AuditEnumType.DATA)){
+			DataType d = (DataType)object;
+			if(d.getDetailsOnly()){
+				logger.error("Data is details only.  Was expecting full data");
+			}
+			if(d.getCompressed() || d.getPointer()){
+				/// Make a copy of the object so as to operate on the copy and not a cached copy from the factory
+				///
+				d = JAXBUtil.clone(DataType.class, d);
+				try {
+					byte[] data = DataUtil.getValue(d);
+					d.setCompressed(false);
+					//d.setPointer(false);
+					d.setDataBytesStore(data);
+					d.setReadDataBytes(false);
+					outObj = (T)d;
+				} catch (DataException e) {
+					
+					logger.error("Error",e);
+				}
+				
+			}
+		}
+		return outObj;
+	}
+	public <T> boolean delete(AuditEnumType type, T object) throws FactoryException, ArgumentException{
+		boolean out_bool = false;
+		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
+		if(type.equals(AuditEnumType.GROUP)){
+			BaseGroupType group = (BaseGroupType)object;
+			if(group.getGroupType().equals(GroupEnumType.DATA)){
+				out_bool = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteDirectoryGroup((DirectoryGroupType)group);
+
+			}
+		}
+		return out_bool;
+	}
+	public <T> boolean add(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException{
+		boolean out_bool = false;
+		logger.info("Processing alternate add for type " + type.toString());
+		INameIdFactory iFact = Factories.getNameIdFactory(FactoryEnumType.valueOf(type.toString()));
+		if(type.equals(AuditEnumType.USER)){
+			out_bool = ((UserFactory)iFact).add(object, true);
+		}
+		else if(type.equals(AuditEnumType.ACCOUNT)){
+			out_bool = ((AccountFactory)iFact).add(object, true);
+		}
+		return out_bool;
 	}
 	public <T> T sanitizeNewObject(AuditEnumType type, UserType user, T in_obj) throws ArgumentException, FactoryException, DataException{
 		T out_obj = null;
