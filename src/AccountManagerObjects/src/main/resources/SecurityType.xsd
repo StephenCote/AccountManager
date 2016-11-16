@@ -46,7 +46,7 @@
 					default="false">
 				</attribute>
 				<attribute name="hashProvider" type="string"
-					use="optional" default="SHA-256">
+					use="optional" default="SHA-512">
 				</attribute>
 				<attribute name="cipherKeySpec" type="string"
 					default="AES">

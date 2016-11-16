@@ -209,7 +209,7 @@ create table data (
 	Size int not null default 0,
 	Rating double precision not null default 0,
 	IsPointer boolean not null default false,
-	Hash varchar(64),
+	Hash varchar(128),
 	IsBlob boolean not null,
 	DataBlob bytea,
 	DataString varchar(255)

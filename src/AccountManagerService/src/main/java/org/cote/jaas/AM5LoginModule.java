@@ -321,7 +321,7 @@ public class AM5LoginModule implements LoginModule {
     }
  
 
-    protected List<RolePrincipal> getRoleSets(UserPrincipal uprince) throws LoginException, FactoryException, ArgumentException
+    public static List<RolePrincipal> getRoleSets(UserPrincipal uprince) throws LoginException, FactoryException, ArgumentException
     {
             //String[] roles = new String[]{"admin"};
             //Group[] groups = {new AccountManagerGroup("Roles")};

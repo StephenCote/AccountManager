@@ -191,7 +191,14 @@
 			<artifactId>accelerant</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+<!--  JWT Libraries -->
+<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt</artifactId>
+    <version>0.7.0</version>
+</dependency>
+
 	</dependencies>
 	<build>
 		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>

@@ -36,7 +36,6 @@ public class LoginService {
 		boolean out_bool = false;
 		boolean loginSuccess = true;
 		
-
 		try {
 			request.getSession();
 			request.login(credential.getOrganizationPath() + "/" + credential.getName(), new String(credential.getCredential()));

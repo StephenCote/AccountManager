@@ -56,6 +56,20 @@
     <param-value>comp/env/tomcat/datasources/postgresDS</param-value>
   </context-param>
  	
+
+ <filter>
+   <filter-name>AuthNFilter</filter-name>
+   <filter-class>org.cote.jaas.TokenFilter</filter-class>
+   <init-param>
+	  <param-name>enabled</param-name>
+	  <param-value>True</param-value>
+   </init-param>
+</filter>
+<filter-mapping>
+   <filter-name>AuthNFilter</filter-name>
+   <url-pattern>/rest/*</url-pattern>
+</filter-mapping>
+
     <servlet>
         <servlet-name>JerseyService</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>

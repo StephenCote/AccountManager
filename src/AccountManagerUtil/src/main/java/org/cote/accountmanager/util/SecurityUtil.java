@@ -55,7 +55,7 @@ public class SecurityUtil {
 	
 	/// TODO: For CredentialType update, this will go away
 	///
-	private static String HASH_PROVIDER = "SHA-256";
+	private static String HASH_PROVIDER = "SHA-512";
 	
 	/// TODO: For CredentialType update, this will go away
 	///

@@ -104,6 +104,12 @@ public class SecurityTokenFactory extends SpoolFactory {
 		return (SecuritySpoolType)tokens.get(0);
 	}
 
+	
+	public List<SecuritySpoolType> getSecurityTokenByNameInGroup(String name, long groupid, long organizationId) throws FactoryException, ArgumentException
+	{
+		return convertList(getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldGroup(groupid),QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organizationId));
+	}
+	
 
 	public SecuritySpoolType generateSecurityToken(String referenceId, long organizationId) throws FactoryException, ArgumentException
 	{

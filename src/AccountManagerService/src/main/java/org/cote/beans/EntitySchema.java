@@ -93,7 +93,7 @@ import org.cote.propellant.objects.WorkType;
 @XmlRootElement(name="EntitySchema")
 public class EntitySchema {
 	private String defaultPackage = "org.cote.objects";
-	
+	private AuthenticationRequestType authenticationRequest = null;
 	private NoteType noteType = null;
 	private LifecycleType lifecycleType = null;
 	private ArtifactType artifactType = null;
@@ -162,6 +162,7 @@ public class EntitySchema {
 	private BaseTagType tagType = null;
 	private DataTagSearchRequest dataTagSearchRequest = null;
 	public EntitySchema(){
+		authenticationRequest = new AuthenticationRequestType();
 		credentialType = new CredentialType();
 		authenticationRequestType = new AuthenticationRequestType();
 		authenticationResponseType = new AuthenticationResponseType();
@@ -231,6 +232,30 @@ public class EntitySchema {
 	}
 
 	
+
+	public AuthenticationRequestType getAuthenticationRequest() {
+		return authenticationRequest;
+	}
+
+
+
+	public void setAuthenticationRequest(AuthenticationRequestType authenticationRequest) {
+		this.authenticationRequest = authenticationRequest;
+	}
+
+
+
+	public LocationType getLocationType() {
+		return locationType;
+	}
+
+
+
+	public void setLocationType(LocationType locationType) {
+		this.locationType = locationType;
+	}
+
+
 
 	public CredentialType getCredentialType() {
 		return credentialType;
