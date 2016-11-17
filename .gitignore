@@ -3,6 +3,11 @@ src/AccountManagerObjects/.settings
 src/AccountManagerObjects/.classpath
 src/AccountManagerObjects/.project
 src/AccountManagerObjects/target
+src/AccountManagerClient/src/generated
+src/AccountManagerClient/.settings
+src/AccountManagerClient/.classpath
+src/AccountManagerClient/.project
+src/AccountManagerClient/target
 src/AccountManagerUtil/.settings
 src/AccountManagerUtil/.classpath
 src/AccountManagerUtil/.project

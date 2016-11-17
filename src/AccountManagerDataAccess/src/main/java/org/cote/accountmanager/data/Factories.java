@@ -556,11 +556,11 @@ public class Factories {
 
 	}
     public static void prepare(){
-    	logger.info("Touch Rocket to initialize static registration");
+    	logger.debug("Touch Account Manager to initialize static registration");
     	BulkFactories.prepare();
     }
 	public static void warmUp(){
-		logger.info("Warming up factory " + factoryClasses.size() + " factory instances");
+		logger.debug("Warming up factory " + factoryClasses.size() + " factory instances");
 		prepare();
 		long startWarmUp = System.currentTimeMillis();
 		//getOrganizationFactory();

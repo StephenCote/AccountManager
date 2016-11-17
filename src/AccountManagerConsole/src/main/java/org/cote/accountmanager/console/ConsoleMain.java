@@ -76,7 +76,7 @@ public class ConsoleMain {
 		}
 		
 		logger.info("AccountManagerConsole");
-		logger.info("\tNote: Slow startup time due in part to cryptographic libraries being loaded and initialized");
+		logger.debug("\tNote: Slow startup time due in part to cryptographic libraries being loaded and initialized");
 		
 		Options options = new Options();
 		options.addOption("generate",false,"Generate DAL classes and schema for a particular type");
@@ -248,7 +248,7 @@ public class ConsoleMain {
 					sslAction.signCertificate(cmd.getOptionValue("name"), cmd.getOptionValue("signer"), Integer.parseInt(cmd.getOptionValue("expiry")));
 				}
 
-				if(cmd.hasOption("export") && cmd.hasOption("signer") && cmd.hasOption("expiry") && cmd.hasOption("password")){
+				if(cmd.hasOption("export") && cmd.hasOption("signer") && cmd.hasOption("name") && cmd.hasOption("password")){
 					sslAction.exportPKCS12Certificate(cmd.getOptionValue("name"), cmd.getOptionValue("password").toCharArray(), cmd.getOptionValue("signer"));
 				}
 

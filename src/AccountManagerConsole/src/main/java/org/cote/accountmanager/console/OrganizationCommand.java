@@ -80,6 +80,7 @@ public class OrganizationCommand {
 			if(aliasAttr != null) org.getAttributes().remove(aliasAttr);
 			org.getAttributes().add(Factories.getAttributeFactory().newAttribute(org, "certificate.alias", alias));
 			Factories.getAttributeFactory().updateAttributes(org);
+			logger.info("Configured certificate '" + alias + "' for '" + organizationPath + "'");
 			out_bool = true;
 			
 		}
@@ -119,7 +120,7 @@ public class OrganizationCommand {
 			}
 			byte[] p12 = (cred.getEnciphered() ? CredentialService.decryptCredential(cred) : cred.getCredential());
 			char[] p12pass = (new String((cred2.getEnciphered() ? CredentialService.decryptCredential(cred2) : cred2.getCredential()))).toCharArray();
-			logger.info("P12 P: " + (new String(p12pass)));
+
 			KeyStore store = KeyStoreUtil.getKeyStore(p12, p12pass);
 			if(store == null){
 				logger.error("Failed to open PKCS12 data");

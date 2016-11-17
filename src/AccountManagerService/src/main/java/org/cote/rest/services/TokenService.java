@@ -2,7 +2,13 @@ package org.cote.rest.services;
 
 import java.io.UnsupportedEncodingException;
 import java.security.Key;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +36,8 @@ import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
+import org.cote.accountmanager.objects.AuthenticationResponseEnumType;
+import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -75,7 +83,8 @@ public class TokenService {
 	@Path("/jwt/authenticate")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(AuthenticationRequestType authnRequest, @Context HttpServletRequest request, @Context HttpServletResponse response){
-		
+		AuthenticationResponseType outResp = new AuthenticationResponseType();
+		outResp.setResponse(AuthenticationResponseEnumType.NOT_AUTHENTICATED);
 		String outToken = null;		
 		if(authnRequest != null && authnRequest.getCredentialType().equals(CredentialEnumType.TOKEN) || authnRequest.getCredentialType().equals(CredentialEnumType.HASHED_PASSWORD)){
 			if(authnRequest.getOrganizationPath() == null) authnRequest.setOrganizationPath("/Public");
@@ -91,6 +100,8 @@ public class TokenService {
 					UserType user = SessionSecurity.login(authnRequest.getSubject(), authnRequest.getCredentialType(), credStr,org.getId());
 					if(user != null){
 						outToken = getJWTToken(user);
+						outResp.setMessage(outToken);
+						outResp.setResponse(AuthenticationResponseEnumType.AUTHENTICATED);
 					}
 				}
 			} catch (FactoryException | ArgumentException e) {
@@ -101,14 +112,31 @@ public class TokenService {
 		else{
 			logger.error("Unknown credential type");
 		}
-		return Response.status(200).entity(outToken).build();
+		return Response.status(200).entity(outResp).build();
 	}
-	@GET
-	@Path("/validate/{token: [A-Za-z0-9\\.\\-]+}")
+	
+	@POST
+	@Path("/jwt/validate")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response validateJWT(@PathParam("token") String token, @Context HttpServletRequest request){
+	public Response validatePostJWT(AuthenticationRequestType authRequest, @Context HttpServletRequest request){
+		AuthenticationResponseType outResp = new AuthenticationResponseType();
+		outResp.setResponse(AuthenticationResponseEnumType.NOT_AUTHENTICATED);
+		String subjectUrn = validateJWTToken(new String(authRequest.getCredential()));
+		
+		if(subjectUrn != null){
+			outResp.setResponse(AuthenticationResponseEnumType.AUTHENTICATED);
+			outResp.setMessage(new String(authRequest.getCredential()));
+		}
+		
+		return Response.status(200).entity(outResp).build();
+	}
+	
+	@GET
+	@Path("/jwt/validate/{token:[A-Za-z0-9\\-\\.]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response validateGetJWT(@PathParam("token") String token, @Context HttpServletRequest request){
 		String subjectUrn = validateJWTToken(token);
-		return Response.status(200).entity(subjectUrn != null).build();
+		return Response.status(200).entity((subjectUrn != null)).build();
 	}
 	
 	@GET
@@ -125,6 +153,7 @@ public class TokenService {
 	
 	
 	private String validateJWTToken(String token){
+		logger.info("Validting token: '" + token + "'");
 		return Jwts.parser().setSigningKeyResolver(new AM5SigningKeyResolver()).parseClaimsJws(token).getBody().getSubject();
 	}
 	
@@ -144,8 +173,11 @@ public class TokenService {
 		}
 		
 		//Key key = MacProvider.generateKey();
-	
+		Map<String,Object> claims = new HashMap<>();
+		claims.put("objectId", user.getObjectId());
+		claims.put("organizationPath", user.getOrganizationPath());
 		return Jwts.builder()
+		  .setClaims(claims)
 		  .setSubject(user.getName())
 		  .setId(user.getUrn())
 		  .compressWith(CompressionCodecs.GZIP)

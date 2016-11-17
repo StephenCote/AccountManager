@@ -43,6 +43,7 @@ public class PrincipalService {
 	public Response getSelf(@Context HttpServletRequest request){
 		Principal principal = request.getUserPrincipal();
 		String outToken = null;
+		UserType outUser = null;
 		if(principal != null && principal instanceof UserPrincipal){
 			UserPrincipal userp = (UserPrincipal)principal;
 			//userp.get
@@ -53,6 +54,7 @@ public class PrincipalService {
 				UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getById(userp.getId(), org.getId());
 				if(user != null){
 					outToken = user.getUrn();
+					outUser = user;
 				}
 			} catch (FactoryException | ArgumentException e) {
 				
@@ -64,6 +66,6 @@ public class PrincipalService {
 		}
 		boolean out_bool = false;
 
-		return Response.status(200).entity(outToken).build();
+		return Response.status(200).entity(outUser).build();
 	}
 }

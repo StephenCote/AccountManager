@@ -107,7 +107,7 @@ public class BulkFactories{
     }
 	
     public static void prepare(){
-    	logger.debug("Touch Bulk to initialize static registration");
+    	logger.debug("Touch Bulk Factories to initialize static registration");
     }
 	
 	private static BulkFactory bulkFactory = null;
