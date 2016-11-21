@@ -10,6 +10,7 @@ import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -72,6 +73,30 @@ public class GenericResourceService {
 	public Response getObject(@PathParam("type") String type, @PathParam("objectId") String objectId,@Context HttpServletRequest request){
 		logger.info("Request for object: " + type + " " + objectId);
 		Object obj = BaseService.readByObjectId(AuditEnumType.valueOf(type), objectId, request);
+		return Response.status(200).entity(obj).build();
+	}
+	
+	@RolesAllowed({"user"})
+	@DELETE
+	@Path("/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteObject(@PathParam("type") String type, @PathParam("objectId") String objectId,@Context HttpServletRequest request){
+		logger.info("Request for object: " + type + " " + objectId);
+		Object obj = BaseService.readByObjectId(AuditEnumType.valueOf(type), objectId, request);
+		boolean out_bool = false;
+		if(obj != null){
+			out_bool = BaseService.delete(AuditEnumType.valueOf(type), obj, request);
+		}
+		return Response.status(200).entity(out_bool).build();
+	}
+	
+	@RolesAllowed({"user"})
+	@GET
+	@Path("/{id:[0-9]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getObjectById(@PathParam("type") String type, @PathParam("id") long id,@Context HttpServletRequest request){
+		logger.info("Request for object: " + type + " " + id);
+		Object obj = BaseService.readById(AuditEnumType.valueOf(type), id, request);
 		return Response.status(200).entity(obj).build();
 	}
 	

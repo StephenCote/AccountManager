@@ -77,12 +77,15 @@ public class ServiceUtil {
 			sessionId = (sess != null ? sess.getId() : null);
 		}
 		if(sessionId == null){
+			logger.warn("Null Session Id. AM5 Session Mode Is " + (useAccountManagerSession ? "On":"Off") + ". This is expected for service calls");
+			/*
 			logger.error("NULL SESSION ID. AM5 Session Mode Is " + (useAccountManagerSession ? "On":"Off"));
 			Enumeration<String> headers = request.getHeaderNames();
 			while(headers.hasMoreElements()){
 				String hname = headers.nextElement();
 				logger.error(hname + "=" + request.getHeader(hname));
 			}
+			*/
 		}
 		return sessionId;
 	}
@@ -161,7 +164,7 @@ public class ServiceUtil {
 
 		UserType user = getUserFromSession(request);
 		if(SessionSecurity.isAuthenticated(user) == false){
-			AuditService.denyResult(audit,  "Invalid user. " + (user == null ? "Null user" : "Status is " + user.getSession().getSessionStatus()));
+			AuditService.denyResult(audit,  "Invalid user. " + (user == null ? "Null user" : "Status is " + (user.getSession() != null ? user.getSession().getSessionStatus() : " Unknown")));
 			//System.out.println("User is null or not authenticated");
 			return null;
 		}

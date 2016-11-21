@@ -264,18 +264,21 @@ public class SessionSecurity {
 		return user;
 	}
 	private static void authenticateUser(UserType user, String sessionId) throws FactoryException, ArgumentException{
-		UserSessionType session = Factories.getSessionFactory().getCreateSession(sessionId, user.getOrganizationId());
-		if (session == null){
-			throw new FactoryException("New session '" + sessionId + "' was not allocated.");
+		UserSessionType session = null;
+		if(sessionId != null && sessionId.length() > 0){
+			session = Factories.getSessionFactory().getCreateSession(sessionId, user.getOrganizationId());
+			if (session == null){
+				throw new FactoryException("New session '" + sessionId + "' was not allocated.");
+			}
+		}
+		else{
+			session = Factories.getSessionFactory().newUserSession();
 		}
 		session.setUserId(user.getId());
 		session.setOrganizationId(user.getOrganizationId());
 		user.setSession(session);
-
 		Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
-
 		Factories.getNameIdFactory(FactoryEnumType.USER).normalize(user);
-
 		Factories.getNameIdFactory(FactoryEnumType.USER).updateToCache(user);
 
 		session.setSessionStatus(SessionStatusEnumType.AUTHENTICATED);
@@ -290,7 +293,7 @@ public class SessionSecurity {
 		if(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).update(stats) == false){
 			throw new FactoryException("Error updating statistics for " + session.getSessionId() + " in organization id " + session.getOrganizationId());
 		}
-		if(Factories.getSessionFactory().update(session) == false){
+		if(sessionId != null && Factories.getSessionFactory().update(session) == false){
 			throw new FactoryException("Error updating session " + session.getSessionId() + " in organization id " + session.getOrganizationId());
 		}
 

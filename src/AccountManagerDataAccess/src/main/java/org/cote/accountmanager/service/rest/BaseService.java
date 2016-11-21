@@ -70,7 +70,7 @@ import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.service.util.ServiceUtil;
 
-public class BaseService implements IBaseService{
+public class BaseService {
 	public static final Logger logger = LogManager.getLogger(BaseService.class);
 	public static boolean enableExtendedAttributes = false;
 	private static boolean allowDataPointers = false;

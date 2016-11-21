@@ -78,13 +78,13 @@ public class TokenService {
 		 return schemaBean;
 	 }
 
-	
 	@POST
 	@Path("/jwt/authenticate")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response login(AuthenticationRequestType authnRequest, @Context HttpServletRequest request, @Context HttpServletResponse response){
+	public Response loginToResponse(AuthenticationRequestType authnRequest, @Context HttpServletRequest request, @Context HttpServletResponse response){
 		AuthenticationResponseType outResp = new AuthenticationResponseType();
 		outResp.setResponse(AuthenticationResponseEnumType.NOT_AUTHENTICATED);
+		//authnRequest.
 		String outToken = null;		
 		if(authnRequest != null && authnRequest.getCredentialType().equals(CredentialEnumType.TOKEN) || authnRequest.getCredentialType().equals(CredentialEnumType.HASHED_PASSWORD)){
 			if(authnRequest.getOrganizationPath() == null) authnRequest.setOrganizationPath("/Public");
@@ -113,6 +113,15 @@ public class TokenService {
 			logger.error("Unknown credential type");
 		}
 		return Response.status(200).entity(outResp).build();
+	}
+	
+	
+	@POST
+	@Path("/jwt/authenticate/token")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response loginToToken(AuthenticationRequestType authnRequest, @Context HttpServletRequest request, @Context HttpServletResponse response){
+		AuthenticationResponseType authnResp = (AuthenticationResponseType)loginToResponse(authnRequest, request, response).getEntity();
+		return Response.status(200).entity(authnResp.getMessage()).build();
 	}
 	
 	@POST

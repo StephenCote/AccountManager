@@ -51,6 +51,7 @@ import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.JAXBUtil;
 import org.cote.accountmanager.util.MapUtil;
+import org.cote.accountmanager.util.MimeUtil;
 
 public class TypeSanitizer implements ITypeSanitizer{
 	public static final Logger logger = LogManager.getLogger(TypeSanitizer.class);
@@ -315,7 +316,12 @@ public class TypeSanitizer implements ITypeSanitizer{
 				new_rec.setDescription(rbean.getDescription());
 				new_rec.setDimensions(rbean.getDimensions());
 				if(rbean.getExpiryDate() != null) new_rec.setExpiryDate(rbean.getExpiryDate());
+				if(rbean.getMimeType() == null){
+					logger.warn("MimeType not specified.  Attempting to resolve using the name '" + rbean.getName() + "'");
+					rbean.setMimeType(MimeUtil.getType(rbean.getName()));
+				}
 				new_rec.setMimeType(rbean.getMimeType());
+				
 				new_rec.setRating(rbean.getRating());
 	
 				DataUtil.setValue(new_rec, DataUtil.getValue(rbean));

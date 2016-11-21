@@ -83,6 +83,39 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+  <servlet>
+    <display-name>MediaFormServlet</display-name>
+    <servlet-name>MediaFormServlet</servlet-name>
+    <servlet-class>org.cote.servlets.MediaFormServlet</servlet-class>
+    <enabled>true</enabled>
+    <async-supported>false</async-supported>
+  </servlet>
+  <servlet>
+    <display-name>MediaServlet</display-name>
+    <servlet-name>MediaServlet</servlet-name>
+    <servlet-class>org.cote.servlets.MediaServlet</servlet-class>
+    <enabled>true</enabled>
+    <async-supported>false</async-supported>
+  </servlet>
+  <servlet>
+    <display-name>ThumbnailServlet</display-name>
+    <servlet-name>ThumbnailServlet</servlet-name>
+    <servlet-class>org.cote.servlets.ThumbnailServlet</servlet-class>
+    <enabled>true</enabled>
+    <async-supported>false</async-supported>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MediaFormServlet</servlet-name>
+    <url-pattern>/mediaForm</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>MediaServlet</servlet-name>
+    <url-pattern>/media/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ThumbnailServlet</servlet-name>
+    <url-pattern>/thumbnail/*</url-pattern>
+  </servlet-mapping>
     <servlet-mapping>
         <servlet-name>JerseyService</servlet-name>
         <url-pattern>/rest/*</url-pattern>
