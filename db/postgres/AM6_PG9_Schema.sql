@@ -136,7 +136,9 @@ CREATE TABLE participation (
 
 ) inherits (orgid);
 
-CREATE INDEX participationtype_pid ON participation(ParticipationId,ParticipantType);
+CREATE INDEX participationtype_pid ON participation(ParticipationId);
+CREATE INDEX participanttype_pid ON participation(ParticipantId,ParticipantType);
+-- CREATE INDEX participationtype_pid ON participation(ParticipationId,ParticipantType);
 -- CREATE INDEX participation_pid ON participation(ParticipationId);
 -- CREATE INDEX participant_pid ON participation(ParticipantId);
 -- CREATE INDEX participanttype_pid ON participation(ParticipantType);
@@ -1324,6 +1326,16 @@ CREATE OR REPLACE FUNCTION cleanup_orphans()
         $$ LANGUAGE 'sql';
 
 
+
+CREATE OR REPLACE FUNCTION delete_empty_thumbnails() 
+        RETURNS BOOLEAN
+        AS $$
+	delete from data where groupid in (select id from groups where name = '.thumbnail') and size <= 0;
+	select * from cleanup_orphans();
+	SELECT true;
+        $$ LANGUAGE 'sql';
+
+
 CREATE OR REPLACE FUNCTION delete_thumbnails() 
         RETURNS BOOLEAN
         AS $$
@@ -1593,6 +1605,70 @@ CREATE UNIQUE INDEX IdxruleparticipationCbo on ruleparticipation(ParticipationId
 CREATE UNIQUE INDEX IdxCredentialObjId ON credential(ObjectId);
 CREATE UNIQUE INDEX IdxControlReference on control(ControlType,ControlAction,ReferenceId,ReferenceType);
 CREATE UNIQUE INDEX IdxControlObjId ON control(ObjectId);
+
+CREATE INDEX idxattributerefid_Id ON attribute(ReferenceId,ReferenceType,OrganizationId);
+CREATE INDEX asymmetrickeys_OwnId ON asymmetrickeys(OwnerId);
+CREATE INDEX symmetrickeys_OrgId ON symmetrickeys(OwnerId);
+CREATE INDEX groups_group_name ON groups(Name,OrganizationId);
+CREATE INDEX groupparticipation_pid ON groupparticipation(ParticipationId);
+CREATE INDEX grouprolecache_id ON grouprolecache(objectId);
+CREATE INDEX grouprolecache_role_id ON grouprolecache(EffectiveRoleId);
+CREATE INDEX grouprolecache_aff_id ON grouprolecache(AffectType,AffectId);
+CREATE INDEX grouprolecache_dorg ON grouprolecache(objectId,OrganizationId);
+CREATE INDEX dataptype_pid ON dataparticipation(ParticipantType);
+CREATE INDEX dataparticipation_pid ON dataparticipation(ParticipationId);
+CREATE INDEX dataparticipant_pid ON dataparticipation(ParticipantId);
+CREATE INDEX datarolecache_id ON datarolecache(objectId);
+CREATE INDEX datarolecache_role_id ON datarolecache(EffectiveRoleId);
+CREATE INDEX datarolecache_aff_id ON datarolecache(AffectType,AffectId);
+CREATE INDEX datarolecache_dorg ON datarolecache(objectId,OrganizationId);
+CREATE INDEX accounts_org_id ON accounts(OrganizationId);
+CREATE INDEX accountrolecache_id ON accountrolecache(ObjectId);
+CREATE INDEX accountrolecache_role_id ON accountrolecache(EffectiveRoleId);
+CREATE INDEX accountrolecache_uorg_id ON accountrolecache(ObjectId,OrganizationId);
+CREATE INDEX users_org_id ON users(OrganizationId);
+CREATE INDEX userrolecache_id ON userrolecache(objectId);
+CREATE INDEX userrolecache_role_id ON userrolecache(EffectiveRoleId);
+CREATE INDEX userrolecache_uorg_id ON userrolecache(objectId,OrganizationId);
+CREATE INDEX contactinformation_type ON contactinformation(ContactInformationType);
+CREATE INDEX contactinformationparticipation_pid ON contactinformationparticipation(ParticipationId);
+CREATE INDEX contactinformationparticipant_pid ON contactinformationparticipation(ParticipantId);
+CREATE INDEX contactinformationptype_pid ON contactinformationparticipation(ParticipantType);
+CREATE INDEX persons_group_id ON persons(groupId);
+CREATE INDEX personrolecache_id ON personrolecache(ObjectId);
+CREATE INDEX personrolecache_role_id ON personrolecache(EffectiveRoleId);
+CREATE INDEX personrolecache_org_id ON personrolecache(ObjectId,OrganizationId);
+CREATE INDEX personparticipationtype_pid ON personparticipation(ParticipationId,ParticipantType);
+CREATE INDEX personparticipation_pid ON personparticipation(ParticipationId);
+CREATE INDEX personparticipant_pid ON personparticipation(ParticipantId);
+CREATE INDEX personptype_pid ON personparticipation(ParticipantType);
+CREATE INDEX roles_parent_id ON roles(ParentId);
+CREATE INDEX roleparticipation_parttype ON roleparticipation(ParticipantId,ParticipantType,AffectId,AffectType);
+CREATE INDEX roleparticipation_pid ON roleparticipation(ParticipationId);
+CREATE INDEX roleparticipant_pid ON roleparticipation(ParticipantId);
+CREATE INDEX roleptype_pid ON roleparticipation(ParticipantType);
+CREATE INDEX rolerolecache_id ON rolerolecache(objectId);
+CREATE INDEX rolerolecache_role_id ON rolerolecache(EffectiveRoleId);
+CREATE INDEX rolerolecache_aff_id ON rolerolecache(AffectType,AffectId);
+CREATE INDEX rolerolecache_dorg ON rolerolecache(objectId,OrganizationId);
+CREATE INDEX idxpermissionsparent_id ON roles(ParentId);
+CREATE INDEX tagparticipation_parttype ON tagparticipation(ParticipantId,ParticipantType);
+CREATE INDEX tagparticipation_pid ON tagparticipation(ParticipationId);
+CREATE INDEX IdxfactIdGroup on fact(Id,OrganizationId);
+CREATE INDEX IdxfunctionfactIdGroup on functionfact(Id,OrganizationId);
+CREATE INDEX IdxfunctionIdGroup on function(Id,OrganizationId);
+CREATE INDEX functionparticipation_parttype ON functionparticipation(ParticipantId,ParticipantType,AffectId);
+CREATE INDEX functionparticipation_pid ON functionparticipation(ParticipationId);
+CREATE INDEX IdxoperationIdGroup on operation(Id,OrganizationId);
+CREATE INDEX IdxpatternIdGroup on pattern(Id,OrganizationId);
+CREATE INDEX IdxpolicyIdGroup on policy(Id,OrganizationId);
+CREATE INDEX policyparticipation_parttype ON policyparticipation(ParticipantId,ParticipantType,AffectId);
+CREATE INDEX policyparticipation_pid ON policyparticipation(ParticipationId);
+CREATE INDEX IdxruleIdGroup on rule(Id,OrganizationId);
+CREATE INDEX ruleparticipation_parttype ON ruleparticipation(ParticipantId,ParticipantType,AffectId);
+CREATE INDEX ruleparticipation_pid ON ruleparticipation(ParticipationId);
+CREATE INDEX IdxCredentialReference on credential(ReferenceId,ReferenceType);
+
 
 
 
