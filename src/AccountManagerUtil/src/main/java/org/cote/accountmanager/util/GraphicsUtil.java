@@ -36,14 +36,19 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class GraphicsUtil {
 	
 	/// Adapted from earlier 2004 lib I created,
 	/// And updated based on http://stackoverflow.com/questions/1069095/how-do-you-create-a-thumbnail-image-out-of-a-jpeg-in-java
-	
+	public static final Logger logger = LogManager.getLogger(GraphicsUtil.class);
 	
 	public static byte[] createThumbnail(byte[] source_bytes, int maximum_width, int maximum_height) throws IOException {
+		
+		//long startTime = System.currentTimeMillis();
 		
 		byte[] out_bytes = new byte[0];
 		
@@ -85,7 +90,8 @@ public class GraphicsUtil {
 
 		ImageIO.write(image_out, "jpg", baos);
 
-
+		//long stopTime = System.currentTimeMillis();
+		//logger.debug("Created thumbnail in " + (stopTime - startTime) + "ms");
 		return baos.toByteArray();
 	}
 	

@@ -133,7 +133,7 @@ public class SecurityUtil {
 	}
 	public static byte[] getDigestOLDOLD(byte[] in_bytes, byte[] salt){
 		MessageDigest digest = getMessageDigest();
-		logger.warn("Refactor this method - it uses the old salt method");
+		logger.debug("Refactor this method - it uses the old salt method");
 		digest.update(in_bytes,0,in_bytes.length);
 		return digest.digest();
 

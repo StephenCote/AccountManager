@@ -19,7 +19,7 @@
  	</context-param>
  	 	<context-param>
  	<param-name>log4jConfiguration</param-name>
- 	<param-value>WEB-INF/resource/AccountManagerWebLogging.xml</param-value>
+ 	<param-value>AccountManagerWebLogging.xml</param-value>
  	</context-param>
 
   <context-param>
