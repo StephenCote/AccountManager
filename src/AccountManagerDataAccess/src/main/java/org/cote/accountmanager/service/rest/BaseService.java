@@ -134,12 +134,15 @@ public class BaseService {
 			}
 			iFact.normalize(object);
 		}
-		else if(iFact.isClusterByParent()){
+		else /*if(iFact.isClusterByParent()){*/ 
+		{ 
 			iFact.normalize(object);
 		}
+		/*
 		else{
 			throw new ArgumentException("Unsupported type: " + obj.getNameType().toString());
 		}
+		*/
 
 	}
 	
@@ -155,12 +158,16 @@ public class BaseService {
 			throw new ArgumentException("Invalid object");
 		}
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(obj.getNameType().toString()));
+		iFact.denormalize(object);
+		/*
 		if(iFact.isClusterByGroup() || iFact.isClusterByParent() || obj.getNameType().equals(NameEnumType.DATA)){
 			iFact.denormalize(object);
 		}
+		
 		else{
 			throw new ArgumentException("Unsupported type: " + obj.getNameType().toString());
 		}
+		*/
 
 	}
 
@@ -1068,7 +1075,7 @@ public class BaseService {
 		return out_obj;
 	}
 	
-	private static <T> List<T> getListByParent(AuditEnumType type,String parentType, NameIdType parentObj, long startIndex, int recordCount, long organizationId){
+	public static <T> List<T> getListByParent(AuditEnumType type,String parentType, NameIdType parentObj, long startIndex, int recordCount, long organizationId){
 		//BaseGroupType dir = findGroup(groupType, path, request);
 		List<T> dirs = new ArrayList<>();
 		INameIdFactory iFact = getFactory(type);
@@ -1096,7 +1103,7 @@ public class BaseService {
 	}
 	
 	
-	private static <T> List<T> getListByGroup(AuditEnumType type, BaseGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
+	public static <T> List<T> getListByGroup(AuditEnumType type, BaseGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
 		List<T> out_obj = new ArrayList<>();
 		INameIdFactory iFact = getFactory(type);
 		if(iFact.isClusterByGroup()){
