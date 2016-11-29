@@ -24,7 +24,7 @@
 package org.cote.accountmanager.console;
 
 import java.io.File;
-
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -45,19 +45,24 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.FileUtil;
+import org.cote.accountmanager.util.GraphicsUtil;
 import org.cote.accountmanager.util.MimeUtil;
 import org.cote.accountmanager.util.StreamUtil;
 import org.cote.accountmanager.util.ZipUtil;
@@ -69,6 +74,99 @@ public class DataAction {
 	public static void setMaximumLoad(int i){ maxLoad = i;}
 	private static Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s@])",Pattern.MULTILINE);
 	private static Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/@])",Pattern.MULTILINE);
+	
+	public static void createThumbnails(UserType user, String path){
+		DirectoryGroupType dir = BaseService.findGroup(user, GroupEnumType.DATA, path);
+		if(dir == null){
+			logger.error("Invalid path: '" + path + "'");
+			return;
+		}
+		try {
+			processDirectory(user, dir);
+		} catch (ArgumentException | FactoryException | DataAccessException | DataException | IOException e) {
+			// TODO Auto-generated catch block
+			logger.error("Trace", e);
+		}
+	}
+	private static void processDirectory(UserType user, DirectoryGroupType dir) throws ArgumentException, FactoryException, DataAccessException, DataException, IOException{
+		GroupFactory fact = (GroupFactory)Factories.getFactory(FactoryEnumType.GROUP);
+		if(AuthorizationService.canChange(user, dir) == false){
+			logger.error("Not authorized to change " + dir.getUrn());
+			return;
+		}
+		fact.populate(dir);
+		logger.info("Processing " + dir.getPath());
+		processThumbnails(user, dir);
+		List<DirectoryGroupType> subs = BaseService.getListByParent(AuditEnumType.GROUP, "DATA", dir, 0L, 0, dir.getOrganizationId());
+		//logger.info("Sub count: " + subs.size());
+		for(DirectoryGroupType sdir : subs){
+			
+			//logger.info("Dir: " + sdir.getName());
+			if(sdir.getName().equals(".thumbnail")) continue;
+			processDirectory(user, sdir);
+		}
+	}
+	
+	private static void processThumbnails(UserType user, DirectoryGroupType dir) throws ArgumentException, FactoryException, DataAccessException, DataException, IOException{
+		GroupFactory fact = (GroupFactory)Factories.getFactory(FactoryEnumType.GROUP);
+		DataFactory dfact = (DataFactory)Factories.getFactory(FactoryEnumType.DATA);
+		DirectoryGroupType thumbDir = fact.getDirectoryByName(".thumbnail", dir, dir.getOrganizationId());
+		if(thumbDir != null){
+			dfact.deleteDataInGroup(thumbDir);
+			fact.delete(thumbDir);
+		}
+		thumbDir = fact.getCreateDirectory(user, ".thumbnail", dir, dir.getOrganizationId());
+		List<DataType> dataList = BaseService.getListByGroup(AuditEnumType.DATA, dir, 0L, 0);
+		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
+		
+		int thumbWidth = 128;
+		int thumbHeight = 128;
+		
+		logger.info("Processing " + dataList.size() + " objects for thumbnail generation");
+		long startTime = System.currentTimeMillis();
+		for(DataType data : dataList){
+			 if(data.getMimeType() == null || data.getMimeType().startsWith("image/") == false){
+				continue;
+			 }
+
+			 String thumbName = data.getName() + " " + thumbWidth + "x" + thumbHeight;
+			DataType chkData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataById(data.getId(), false, data.getOrganizationId());
+			if(chkData == null || chkData.getDataBytesStore() == null || chkData.getDataBytesStore().length == 0){
+				logger.error("Data '" + data.getUrn() + " was not retrieved in a populated state");
+				continue;
+			}
+			
+			byte[] imageBytes = DataUtil.getValue(chkData);
+			//long thumbStartTime = System.currentTimeMillis();
+			
+			byte[] thumbBytes = new byte[0];
+			try{
+				thumbBytes = GraphicsUtil.createThumbnail(DataUtil.getValue(chkData), thumbWidth, thumbHeight);
+			}
+			catch(Exception e){
+				logger.error("Trace", e);
+			}
+			if(thumbBytes.length == 0){
+				continue;
+			}
+			//long thumbStopTime = System.currentTimeMillis();
+			//logger.info("Created thumbnail in " + (thumbStopTime - thumbStartTime) + "ms");
+
+			if(thumbBytes.length == 0 && imageBytes.length > 0){
+				logger.debug("Thumbnail size exceeds source image dimensions.  Using source bytearray.");
+				thumbBytes = imageBytes;
+			}
+
+			DataType thumbData = dfact.newData(user, thumbDir.getId());
+			thumbData.setMimeType("image/jpg");
+			thumbData.setName(thumbName);
+			DataUtil.setValue(thumbData, thumbBytes);
+			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.DATA, thumbData);
+		}
+		BulkFactories.getBulkFactory().write(sessionId);
+		long stopTime = System.currentTimeMillis();
+		logger.info("Processed directory in " + (stopTime - startTime) + "ms");
+	}
 	
 	public static void tagData(UserType user, String tagFile){
 		Map<String,Map<String,List<String>>> tagMap = new HashMap<String,Map<String,List<String>>>();
@@ -269,7 +367,7 @@ public class DataAction {
 		}
 		
 	}
-	public static void importDataPath(UserType user, String localPath, String targetPath, boolean isPointer){
+	public static void importDataPath(UserType user, String localPath, String targetPath, boolean isPointer, boolean createThumbnail){
 		try{
 			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, targetPath, user.getOrganizationId());
 			File f = new File(localPath);
@@ -280,10 +378,10 @@ public class DataAction {
 				System.out.println("Directory " + targetPath + " not found");
 			}
 			if(f.isDirectory() == false){
-				importFile(user, dir, f, isPointer);
+				importFile(user, dir, f, isPointer, createThumbnail);
 			}
 			else{
-				importDirectory(user,dir, f, isPointer);
+				importDirectory(user,dir, f, isPointer, createThumbnail);
 			}
 		}
 		catch(FactoryException fe){
@@ -300,7 +398,7 @@ public class DataAction {
 		}
 		
 	}
-	private static void importBulkFiles(UserType user, DirectoryGroupType dir, List<File> bulkFiles, boolean isPointer) throws ArgumentException, FactoryException, DataAccessException, DataException{
+	private static void importBulkFiles(UserType user, DirectoryGroupType dir, List<File> bulkFiles, boolean isPointer, boolean createThumbnail) throws ArgumentException, FactoryException, DataAccessException, DataException{
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 
 		for(int i = 0; i < bulkFiles.size();i++){
@@ -310,17 +408,17 @@ public class DataAction {
 				///Factories.clearCaches();
 				sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			}
-			importFile(user, dir, bulkFiles.get(i),sessionId,isPointer);
+			importFile(user, dir, bulkFiles.get(i),sessionId,isPointer, createThumbnail);
 		}
 		BulkFactories.getBulkFactory().write(sessionId);
 		BulkFactories.getBulkFactory().close(sessionId);
 		//Factories.clearCaches();
 	}
-	private static void importFile(UserType user, DirectoryGroupType dir, File f, boolean isPointer) throws ArgumentException, DataException, FactoryException{
-		importFile(user, dir, f, null, isPointer);
+	private static void importFile(UserType user, DirectoryGroupType dir, File f, boolean isPointer, boolean createThumbnail) throws ArgumentException, DataException, FactoryException{
+		importFile(user, dir, f, null, isPointer, createThumbnail);
 	}
 	
-	private static void importFile(UserType user, DirectoryGroupType dir, File f, String bulkSession, boolean isPointer) throws ArgumentException, DataException, FactoryException{
+	private static void importFile(UserType user, DirectoryGroupType dir, File f, String bulkSession, boolean isPointer, boolean createThumbnail) throws ArgumentException, DataException, FactoryException{
 		DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, dir.getId());
 		if(f.getName().startsWith(".")){
 			logger.info("Skipping possible system name: " + f.getName());
@@ -352,7 +450,7 @@ public class DataAction {
 		}
 	}
 	
-	private static void importDirectory(UserType user, DirectoryGroupType dir, File f, boolean isPointer) throws FactoryException, ArgumentException, DataException, DataAccessException{
+	private static void importDirectory(UserType user, DirectoryGroupType dir, File f, boolean isPointer, boolean createThumbnail) throws FactoryException, ArgumentException, DataException, DataAccessException{
 		if(f.getName().startsWith(".")){
 			logger.info("Skipping possible system name: " + f.getName());
 			return;
@@ -374,14 +472,14 @@ public class DataAction {
 		logger.info("Importing Directory " + f.getName());
 		for(int i = 0; i < fs.length; i++){
 			if(fs[i].isDirectory()){
-				importDirectory(user, tdir, fs[i],isPointer);
+				importDirectory(user, tdir, fs[i],isPointer,createThumbnail);
 			}
 			else{
 				bulkList.add(fs[i]);
 				//importFile(user, tdir, fs[i]);
 			}
 		}
-		importBulkFiles(user, tdir, bulkList,isPointer);
+		importBulkFiles(user, tdir, bulkList,isPointer,createThumbnail);
 		
 	}
 }

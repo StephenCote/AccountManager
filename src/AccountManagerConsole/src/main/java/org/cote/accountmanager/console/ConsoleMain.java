@@ -89,6 +89,7 @@ public class ConsoleMain {
 		options.addOption("importData",true,"Local path or file");
 		options.addOption("pointer",false,"Load data objects as filesystem pointers");
 		options.addOption("tag",false,"Apply the supplied tags");
+		options.addOption("thumbnail",false,"Generate the supplied tags");
 		options.addOption("configureApi",false,"Apply the API Configuration");
 		options.addOption("file",true,"File reference");
 		options.addOption("batchSize",true,"Maximum data batch size");
@@ -392,7 +393,11 @@ public class ConsoleMain {
 	public static void processAction(UserType user, CommandLine cmd){
 		if(cmd.hasOption("importData") && cmd.hasOption("path")){
 			if(cmd.hasOption("batchSize")) DataAction.setMaximumLoad(Integer.parseInt(cmd.getOptionValue("batchSize")));
-			DataAction.importDataPath(user, cmd.getOptionValue("importData"), cmd.getOptionValue("path"), cmd.hasOption("pointer"));
+			DataAction.importDataPath(user, cmd.getOptionValue("importData"), cmd.getOptionValue("path"), cmd.hasOption("pointer"),cmd.hasOption("thumbnail"));
+		}
+		if(cmd.hasOption("thumbnail") && cmd.hasOption("path")){
+			if(cmd.hasOption("batchSize")) DataAction.setMaximumLoad(Integer.parseInt(cmd.getOptionValue("batchSize")));
+			DataAction.createThumbnails(user, cmd.getOptionValue("path"));
 		}
 		if(cmd.hasOption("migrateData") && cmd.hasOption("ownerId")){
 			DataAction.migrateData(user,Long.parseLong(cmd.getOptionValue("ownerId")));
