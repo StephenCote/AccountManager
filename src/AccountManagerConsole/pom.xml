@@ -142,7 +142,14 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
-
+	<!-- transitive servlet dependency -->
+<dependency>
+    <groupId>javax</groupId>
+    <artifactId>javaee-web-api</artifactId>
+    <version>7.0</version>
+    <scope>provided</scope>
+  </dependency>
+  
 	</dependencies>
 	<build>
 		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
