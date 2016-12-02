@@ -676,7 +676,8 @@
 				var d = this.getCurrentViewPanel("nav").getObjects().currentDirectory;
 				var b = accountManager.getCreatePath("DATA",d.path + "/" + s);
 				if(b){
-					window.uwmServiceCache.clearServiceCache("Group");
+					//window.uwmServiceCache.clearServiceCache("Group");
+					AM6Client.clearCache("GROUP");
 					this.getCurrentViewPanel("nav").repaint();
 				}
 				this.logDebug("Create group: " + s + " " + (b ? true : false));
@@ -1444,12 +1445,15 @@
 		}
 		function getObjectById(oPanel, sType, sId, oShape){
 			var ot = getObjectType(oPanel),f;
-			f = window[uwm.getApi(ot)]["get" + ot + "ById"];
+			//f = window[uwm.getApi(ot)]["get" + ot + "ById"];
+			return AM6Client.get(ot.toUpperCase(),sId);
+			/*
 			if(!f){
 				ctl.logError("Invalid reference type '" + sType + "' to retrieve object: '" + ot + "'");
 				return 0;
 			}
-			return f(sId);
+			*/
+			
 		}
 		
 		function openObject(oTargPanel,sType, sId, oShape){

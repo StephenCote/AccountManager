@@ -32,9 +32,9 @@ function doGoLogin(){
 }
 function doLogin(){
 	var cred = new org.cote.objects.credentialType();
-	cred.name = "steve";
+	cred.name = "test@foo.bar";
 	cred.credential = Base64.encode("password");
-	cred.organizationPath = "/Public";
+	cred.organizationPath = "/FirstContact";
 	cred.credentialType = "HASHED_PASSWORD";
 	Hemi.xml.postJSON("/AccountManagerService/rest/login",cred,function(s,v){
 		//alert(v);
