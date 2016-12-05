@@ -28,8 +28,8 @@ import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 
 @DeclareRoles({"admin","user"})
-@Path("/search/{type:[A-Za-z]+}")
-public class GenericSearchService {
+@Path("/make/{type:[A-Za-z]+}")
+public class GenericMakeService {
 
 	private static SchemaBean schemaBean = null;
 	@Context
@@ -46,16 +46,17 @@ public class GenericSearchService {
 		 schemaBean = ServiceSchemaBuilder.modelRESTService(this.getClass(),uri.getAbsolutePath().getRawPath().replaceAll("/smd$", ""));
 		 return schemaBean;
 	 }
-	
+
 	@RolesAllowed({"user"})
 	@GET
 	@Path("/{objectType:[A-Za-z]+}/{path:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findObject(@PathParam("type") String type, @PathParam("objectType") String objectType, @PathParam("path") String path, @Context HttpServletRequest request){
-		logger.info("Request to find object from: " + type + " " + path);
+	public Response findMakeObject(@PathParam("type") String type, @PathParam("objectType") String objectType, @PathParam("path") String path, @Context HttpServletRequest request){
+		logger.info("Request to find object from: " + type + " " + path + ", and if it doesn't exist, then make it");
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
-		Object obj = BaseService.find(auditType, objectType, path, request);
+		Object obj = BaseService.makeFind(auditType, objectType, path, request);
 		return Response.status(200).entity(obj).build();
 	}
+
 
 }
