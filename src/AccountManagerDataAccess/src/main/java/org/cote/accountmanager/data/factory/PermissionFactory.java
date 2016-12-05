@@ -280,6 +280,14 @@ public class PermissionFactory extends NameIdFactory {
 		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(group);
 		return makePath(user, type, group.getPath(), group.getOrganizationId());
 	}
+	@Override
+	public <T> T makePath(String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return makePath(null,type,pathBase,organizationId);
+	}
+	@Override
+	public <T> T makePath(UserType user, String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return makePath(user,PermissionEnumType.valueOf(type), pathBase, organizationId);
+	}
 	public <T> T makePath(UserType user, PermissionEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		String[] path = pathBase.split("/");
 		BasePermissionType parent = null;

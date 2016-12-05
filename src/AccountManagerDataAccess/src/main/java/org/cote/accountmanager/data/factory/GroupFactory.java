@@ -53,6 +53,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class GroupFactory  extends NameIdFactory {
 	
@@ -732,6 +733,17 @@ public class GroupFactory  extends NameIdFactory {
 		out_dir = nested_group;
 
 		return out_dir;
+	}
+	@Override
+	public <T> T makePath(String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return makePath(null,type,pathBase,organizationId);
+	}
+	@Override
+	public <T> T makePath(UserType user, String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		if(makePath(user,GroupEnumType.valueOf(type), pathBase, organizationId)){
+			return find(user,type,pathBase,organizationId);
+		}
+		return null;
 	}
 	public boolean makePath(UserType user, GroupEnumType groupType, String path, long organizationId) throws FactoryException, ArgumentException
 	{

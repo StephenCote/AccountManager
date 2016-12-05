@@ -51,6 +51,7 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
@@ -698,6 +699,16 @@ public class RoleFactory extends NameIdFactory {
 		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(group);
 		return makePath(user, type, group.getPath(), group.getOrganizationId());
 	}
+	
+	@Override
+	public <T> T makePath(String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return makePath(null,type,pathBase,organizationId);
+	}
+	@Override
+	public <T> T makePath(UserType user, String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return makePath(user,RoleEnumType.valueOf(type), pathBase, organizationId);
+	}
+	
 	public <T> T makePath(UserType user, RoleEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		String[] path = pathBase.split("/");
 		BaseRoleType parent = null;

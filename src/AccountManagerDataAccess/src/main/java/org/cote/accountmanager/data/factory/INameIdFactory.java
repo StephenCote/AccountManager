@@ -3,6 +3,7 @@ package org.cote.accountmanager.data.factory;
 import java.util.List;
 
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.objects.NameIdType;
@@ -17,7 +18,8 @@ public interface INameIdFactory {
 	public <T> T find(String path) throws FactoryException,ArgumentException;
 	public <T> T find(String type, String path, long organizationId) throws FactoryException, ArgumentException;
 	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException;
-	
+	public <T> T makePath(String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException;
+	public <T> T makePath(UserType user, String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException;
 	public void setBatchSize(int batchSize);
 	public boolean getBulkMode();
 	public void registerProvider();

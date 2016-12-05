@@ -58,6 +58,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 
@@ -1061,7 +1062,12 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		NameIdType obj = (NameIdType)parent;
 		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(obj.getId())}, obj.getOrganizationId());
 	}
-
+	public <T> T makePath(String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return null;
+	}
+	public <T> T makePath(UserType user, String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
+		return null;
+	}
 	public <T> T find(String path) throws FactoryException,ArgumentException
 	{
 		return find(null,null,path,0L);

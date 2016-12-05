@@ -1239,6 +1239,43 @@ public class BaseService {
 		return bean;
 	}
 	
+	public static <T> T makeFind(AuditEnumType auditType,String type, String path, HttpServletRequest request){
+		T obj = find(auditType, type, path, request);
+		if(obj != null) return obj;
+		
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,request.getSession().getId());
+		AuditService.targetAudit(audit, auditType, path);
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null) return obj;
+
+		
+		INameIdFactory iFact = getFactory(auditType);
+		if(iFact.isClusterByParent()){
+			/// This is a pretty specific implementation limited to paths within the user directory structure
+			///
+			if(path.startsWith("..") == false && path.startsWith("~") == false && path.startsWith("/Home/" + user.getName() + "/")==false){
+				AuditService.denyResult(audit, "Paths can only be created from the home directory");
+				return null;
+			}
+			try{
+				obj = iFact.makePath(user, type, path, user.getOrganizationId());
+				if(obj != null && canViewType(auditType, user, (NameIdType)obj) == false){
+					AuditService.denyResult(audit, "User is not authorized to view object");
+					obj = null;
+				}
+				else if(obj != null){
+					iFact.populate(obj);
+					AuditService.permitResult(audit, "User is authorized to create the path under their own path home");
+				}
+			}
+			catch(ArgumentException | FactoryException | DataAccessException e){
+				logger.error(e.getMessage());
+			}
+			
+		}
+		return obj;
+		
+	}
 	public static <T> T find(AuditEnumType auditType,String type, String path, HttpServletRequest request){
 
 		T out_obj = null;
