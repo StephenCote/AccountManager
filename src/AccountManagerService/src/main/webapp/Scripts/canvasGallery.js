@@ -172,8 +172,8 @@
 				//if((oSrc.referenceType == "GROUP" || oSrc.referenceType == "OBJECT") && (oTarg.referenceType == "GROUP" || oTarg.referenceType == "OBJECT")){
 				if(oSrc.referenceType == "GROUP" && oTarg.referenceType == "GROUP"){
 					var oPanel = Hemi.registry.service.getObject(oSrc.panelId);
-					var oSGroup = accountManager.getGroupById(oSrc.referenceId);
-					var oTGroup = accountManager.getGroupById(oTarg.referenceId);
+					var oSGroup = AM6Client.get("GROUP",oSrc.referenceId);
+					var oTGroup = AM6Client.get("GROUP",oTarg.referenceId);
 					if(!oSGroup || !oTGroup){
 						this.logWarning("Invalid source or target group from " + oSrc.referenceId + " and " + oTarg.referenceId);
 						return;
@@ -199,7 +199,7 @@
 					Hemi.logError("DEAD CODE WARNING");
 					var oSPanel = Hemi.registry.service.getObject(oSrc.panelId);
 					var oObj = getObjectById(oSPanel,oSrc.referenceType,oSrc.referenceId,oSrc);
-					var oTGroup = accountManager.getGroupById(oTarg.referenceId);
+					var oTGroup = AM6Client.get("GROUP",oTarg.referenceId);
 					if(!oObj){
 						this.logError("Invalid object reference: " + oSrc.referenceName + " (#" + oSrc.referenceId + ")");
 						return;
@@ -383,7 +383,7 @@
 				     {action: "openShare",label: "Sharing",icon : "Crystal_Clear_app_Login_Manager.png"},
 				     {action: "openCache",label: "Cache",icon : "Crystal_Clear_app_database.png"},
 				     {action: "openLog",label: "Log",icon : "Crystal_Clear_app_kexi.png"},
-				     {action: "openDebug",label: "Debug",icon : "/AccountManagerExample/Media/Icons/Hemi_Logo_128x128.png"}
+				     {action: "openDebug",label: "Debug",icon : "/AccountManagerService/Media/Icons/Hemi_Logo_128x128.png"}
 					]
 				});
 				v.panel("commands",{
@@ -592,7 +592,7 @@
 			openShare : function(oTargetPanel, sType, sId, oShape){
 				var d = this.getCurrentViewPanel("nav").getObjects().currentDirectory;
 				var oProps = {viewType:d};
-				var oW = Hemi.app.createWindow('Sharing','/AccountManagerExample/Forms/Sharing.xml','Sharing-' + d.id,0,0,oProps);
+				var oW = Hemi.app.createWindow('Sharing','/AccountManagerService/Forms/Sharing.xml','Sharing-' + d.id,0,0,oProps);
 				if(oW){
 					oW.setCanMinimize(0);
 					oW.setCanMaximize(0);
@@ -602,7 +602,7 @@
 				}
 			},
 			openCache : function(oTargetPanel, sType, sId, oShape){
-				var oW = Hemi.app.createWindow('Cache','/AccountManagerExample/Forms/CacheUtility.xml','Cache');
+				var oW = Hemi.app.createWindow('Cache','/AccountManagerService/Forms/CacheUtility.xml','Cache');
 				if(oW){
 					oW.setCanMinimize(0);
 					oW.setCanMaximize(0);
@@ -613,7 +613,7 @@
 			},
 			tagSearch: function(){
 				var oProps = {altSearch:1,openerId:this.getObjectId(),searchHandler:"doTagSearch"};
-				var oW = Hemi.app.createWindow('Tag Search','/AccountManagerExample/Forms/TagSearch.xml','TagSearch',0,0,oProps);
+				var oW = Hemi.app.createWindow('Tag Search','/AccountManagerService/Forms/TagSearch.xml','TagSearch',0,0,oProps);
 				if(!oW) return;
 				oW.resizeTo(475,400);
 				oW.setHideOnClose(0);
@@ -674,7 +674,7 @@
 			},
 			createGroup : function(s){
 				var d = this.getCurrentViewPanel("nav").getObjects().currentDirectory;
-				var b = accountManager.getCreatePath("DATA",d.path + "/" + s);
+				var b = AM6Client.make("GROUP","DATA",d.path + "/" + s);
 				if(b){
 					//window.uwmServiceCache.clearServiceCache("Group");
 					AM6Client.clearCache("GROUP");
@@ -700,7 +700,7 @@
 				var oP = this.getCurrentViewPanel("nav");
 				//openWindow(oP, "DataDnd", 0, showDNDForm);
 				var vProps = {openerId:this.getObjectId()};
-				Hemi.app.createWindow("DataDnD", "/AccountManagerExample/Forms/DataDnd.xml", "DataDnD", 0, 0, vProps, showDNDForm);
+				Hemi.app.createWindow("DataDnD", "/AccountManagerService/Forms/DataDnd.xml", "DataDnD", 0, 0, vProps, showDNDForm);
 			},
 			viewObject : function(oTargetPanel,sType, sId, oShape){
 				var oP = Hemi.registry.service.getObject(oShape.panelId);
@@ -960,7 +960,7 @@
 		
 		function refreshGroupType(o,sType,sPath, bSkipDraw){
 			var _o = o.getObjects(), _s = o.getProperties(), oM, _no = o.getObjects().view.panel("nav").getObjects(),iter = 0;
-			if(!_no.currentDirectory) _no.currentDirectory = accountManager.getCreatePath("DATA",sPath);
+			if(!_no.currentDirectory) _no.currentDirectory = AM6Client.make("GROUP","DATA",sPath);
 			if(!_no.baseGroup) _no.baseGroup = _no.currentDirectory;
 
 			if(!bSkipDraw && sType == 'Group'){
@@ -970,7 +970,7 @@
 					if(_no.currentDirectory.parentId != _no.baseGroup.id){
 						paintVerticalSlottedItem(o,_no.baseGroup,"cd",0,iter++);
 					}
-					paintVerticalSlottedItem(o,accountManager.getGroupById(_no.currentDirectory.parentId),"cdup",0,iter++);
+					paintVerticalSlottedItem(o,AM6Client.get("GROUP",_no.currentDirectory.parentId),"cdup",0,iter++);
 				}
 				//paintGroup(_o[sProp],0,"48px-Crystal_Clear_filesystem_folder_grey_open.png");
 				paintVerticalSlottedItem(o,_no.currentDirectory,"cd",0,iter++);
@@ -990,9 +990,19 @@
 				aSub =  uwmServices.getService("Tag").listByTags(oR);
 			}
 			else{
-				_s.totalCount = accountManager["count" + sObjType + "s"](_no.currentDirectory.path);
-				if(sType == 'Group') aSub = accountManager["list" + sObjType + "s"](0,_no.currentDirectory,"DATA",_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
-				else aSub = accountManager["list" + sObjType + "s"](_no.currentDirectory.path,_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
+				_s.totalCount = AM6Client.count(sObjType.toUpperCase(),_no.currentDirectory.objectId); 
+					//accountManager["count" + sObjType + "s"](_no.currentDirectory.path);
+				/*
+				if(sType == 'Group'){
+					
+					aSub = accountManager["list" + sObjType + "s"](0,_no.currentDirectory,"DATA",_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
+				}
+				
+				else{
+					aSub = accountManager["list" + sObjType + "s"](_no.currentDirectory.path,_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
+				}
+				*/
+				aSub = AM6Client.list(sObjType.toUpperCase(),_no.currentDirectory.objectId, _s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
 			}
 			
 			_o.currentList = [];
@@ -1027,7 +1037,7 @@
 		
 		function changeDirectory(sId,p, aF, bSkipDirReset){
 			var _o = p.getObjects(),_p = p.getProperties();
-			var o = accountManager.getGroupById(sId);
+			var o = AM6Client.get("GROUP",sId);
 			if(!o || o.id == _o.currentDirectory) return;
 			_o.currentDirectory = o;
 			ctl.log("Changing directory to " + o.path);
@@ -1187,7 +1197,7 @@
 		function paintItem(p,o,i,b){
 			if(!o) return;
 			
-			var _s = p.getProperties(),_o=p.getObjects(),oP, g = (o.nameType == 'GROUP' ? o : accountManager.getGroupById(o.groupId)), _no = p.getObjects().view.panel("nav").getObjects();
+			var _s = p.getProperties(),_o=p.getObjects(),oP, g = (o.nameType == 'GROUP' ? o : AM6Client.get("GROUP",o.groupId)), _no = p.getObjects().view.panel("nav").getObjects();
 			
 			//ctl.log("Paint item " + o.name + " in " + g.path);
 			
@@ -1195,9 +1205,9 @@
 			if(!b && o.mimeType && o.mimeType.match(/^image/gi)){
 				sIcoSrc = _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"] + _s.itemIconImg;
 				if(g.id == _no.currentDirectory.id) g = _no.currentDirectory;
-				else if(g && !g.populated) g = accountManager.getGroupById(g.id);
+				else if(g && !g.populated) g = AM6Client.get("GROUP",g.id);
 				if(g.path){
-					sIcoSrc = "/AccountManager/Thumbnail/" + accountManager.getOrganizationDotPath() + "/Data" + g.path + "/" + o.name + "/" + _s.thumbWidth + "x" + _s.thumbHeight;
+					sIcoSrc = "/AccountManagerService/thumbnail/" + AM6Client.dotPath(g.organizationPath) + "/Data" + g.path + "/" + o.name + "/" + _s.thumbWidth + "x" + _s.thumbHeight;
 				}
 			}
 	
@@ -1411,8 +1421,8 @@
 		function reparentGroup(oPanel,s, t){
 			ctl.logDebug("Reparent " + s.name + " to " + t.name);
 			s.parentId = t.id;
-			accountManager.updateGroup(s);
-			accountManager.clearGroupCache();
+			AM6Client.update("GROUP",s);
+			AM6Client.clear("GROUP");
 			repaintPanel(oPanel);
 		}
 		function reparentObject(s, t){
@@ -1494,10 +1504,10 @@
 						if(!_s.scaleWidth) _s.scaleWidth = 1;
 						if(!_s.scaleHeight) _s.scaleHeight = 1;
 						if(_s.basePath){
-							_o.baseDir = accountManager.getCreatePath("DATA",_s.basePath);
+							_o.baseDir = AM6Client.make("GROUP","DATA",_s.basePath);
 						}
-						_s.iconLargeBase = "/AccountManagerExample/Media/Icons/Crystal/128x128/";
-						_s.iconSmallBase = "/AccountManagerExample/Media/Icons/Crystal/48x48/";
+						_s.iconLargeBase = "/AccountManagerService/Media/Icons/Crystal/128x128/";
+						_s.iconSmallBase = "/AccountManagerService/Media/Icons/Crystal/48x48/";
 					},
 					getCanvas : function(){
 						return this.getObjects().controller.getCanvas();
@@ -1600,7 +1610,7 @@
 			return v;
 		}
 		function pickText(o,sL,sH){
-			var oW = Hemi.app.createWindow("Picker","/AccountManagerExample/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},HandlePickerLoaded);
+			var oW = Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},HandlePickerLoaded);
 			if(!oW) return;
 			oW.setHideOnClose(0);
 			oW.resizeTo(475,100);

@@ -6,6 +6,7 @@
 	var sResource = sBase + "/resource";
 	var sPrincipal = sBase + "/principal";
 	var sSearch = sBase + "/search";
+	var sMake = sBase + "/make";
 	var sList = sBase + "/list";
 	function getCache(){
 		return cache;
@@ -23,7 +24,7 @@
 	function getFromCache(sType, sAct, sObjId){
 		if(!cache[sType]) return 0;
 		if(!cache[sType][sAct]) return 0;
-		if(!cache[sType][sAct][sObjId]) return 0;
+		if(typeof cache[sType][sAct][sObjId]=="undefined") return 0;
 		return cache[sType][sAct][sObjId];
 	}
 	function addToCache(sType, sAct, sId, vObj){
@@ -46,7 +47,7 @@
 			return o;
 		}
 		var f = fH;
-		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("USER","GET","_principal_",v);} if(f) f(s,v);};
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("USER","GET","_principal_",v.json);} if(f) f(s,v);};
 	   return Hemi.xml.getJSON(sPrincipal + "/",fc,(fH ? 1 : 0));
 	}
 	function get(sType,sObjectId,fH){
@@ -56,7 +57,7 @@
 			return o;
 		}
 		var f = fH;
-		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("USER","GET","_principal_",v);} if(f) f(s,v);};
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("USER","GET",sObjectId,v.json);} if(f) f(s,v);};
 
 	   return Hemi.xml.getJSON(sResource + "/" + sType + "/" + sObjectId,fc,(fH ? 1 : 0));
 	}
@@ -70,11 +71,12 @@
 			return o;
 		}
 		var f = fH;
-		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"COUNT",sObjectId,v);} if(f) f(s,v);};
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"COUNT",sObjectId,v.json);} if(f) f(s,v);};
 
 	   return Hemi.xml.getJSON(sList + "/" + sType + "/" + sObjectId + "/count",fc,(fH ? 1 : 0));
 	}
 	function list(sType,sObjectId,iStart,iLength,fH){
+		
 		var sK = "LIST-" + iStart + "-" + iLength;
 		var o = getFromCache(sType, sK, sObjectId);
 		if(o){
@@ -82,25 +84,38 @@
 			return o;
 		}
 		var f = fH;
-		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,sK,sObjectId,v);} if(f) f(s,v);};
-
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,sK,sObjectId,v.json);} if(f) f(s,v);};
 		return Hemi.xml.getJSON(sList + "/" + sType + "/" + sObjectId + "/" + iStart + "/" + iLength,fc,(fH ? 1 : 0));
 	}
 	function find(sType,sObjType,sPath,fH){
-		var sK = "LIST-" + sObjType + "-" + sPath;
-		var o = getFromCache(sType, sK, sObjectId);
+		return makeFind(sType,sObjType,sPath,0,fH);
+	}
+	function make(sType,sObjType,sPath,fH){
+		return makeFind(sType,sObjType,sPath,1,fH);
+	}
+
+	function makeFind(sType,sObjType,sPath,bMake,fH){
+		var sK = "FIND-" + sObjType;
+		var o = getFromCache(sType, sK, sPath);
 		if(o){
 			if(fH) fH("",o);
 			return o;
 		}
 		var f = fH;
-		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,sK,sObjectId,v);} if(f) f(s,v);};
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,sK,sPath,v.json);} if(f) f(s,v);};
 
-		return Hemi.xml.getJSON(sSearch + "/" + sType + "/" + sObjType + "/" + sPath,fH,(fH ? 1 : 0));
+		return Hemi.xml.getJSON((bMake ? sMake : sSearch) + "/" + sType + "/" + sObjType + "/" + sPath,fc,(fH ? 1 : 0));
+	}
+	
+	function getDotPath(path){
+		return path.replace(/^\//,"").replace(/\//,".");
+
 	}
 	
 	window.AM6Client = {
+		dotPath : getDotPath,
 		find : find,
+		make : make,
 		list : list,
 		count: count,
 		get : get,
