@@ -27,6 +27,10 @@ function doLogout(){
 		location.href = "/AccountManagerService/";		
 	},1);
 }
+function doGallery(){
+	var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");
+	eval(sTxt);
+}
 (function(){
 	if(!window.uwmServices){
 		window.uwmServices = uwmServices = Hemi.json.rpc.service;
@@ -46,6 +50,7 @@ function doLogout(){
 <body>
 <h1>Protected Account Manager Service</h1>
 <div template = "Templates/ToolBar.xml"></div>
+<p><input type = "button" value = "Gallery" onclick = "doGallery()" /></p>
 <p><input type = "button" value = "Logout" onclick = "doLogout()" /></p>
 </body>
 </html>

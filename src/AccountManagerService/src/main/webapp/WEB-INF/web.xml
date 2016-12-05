@@ -55,6 +55,11 @@
     <param-name>database.dsname</param-name>
     <param-value>comp/env/tomcat/datasources/postgresDS</param-value>
   </context-param>
+ 	<context-param>
+    <description>Enable Use of Data Pointers</description>
+    <param-name>data.pointers.enabled</param-name>
+    <param-value>true</param-value>
+  </context-param>
  	
 
  <filter>
