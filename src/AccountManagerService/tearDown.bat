@@ -1,11 +1,11 @@
 @echo off
 cd ..\AccountManagerConsole\target
 echo ***** Configuring AM6 Schema *****
-call java -jar AccountManagerConsole.jar -setup -rootPassword password -schema C:\Users\swcot\Documents\GitHub\AccountManager\db\postgres\AM6_PG9_Schema.sql -confirm
+call java -jar AccountManagerConsole.jar -setup -rootPassword password -schema "C:\Users\Stephen Cote\Documents\GitHub\AccountManager\db\postgres\AM6_PG9_Schema.sql" -confirm
 echo ***** Adding FirstContact organization *****
 call java -jar AccountManagerConsole.jar -addOrganization -organization / -name FirstContact -adminPassword password -password password
 cd ..\..\RocketConsole\target
-call java -jar RocketConsole.jar -setup -adminPassword password -schema C:\Users\swcot\Documents\GitHub\Rocket\db\postgres\Rocket_PG9_Schema.sql -confirm
+call java -jar RocketConsole.jar -setup -adminPassword password -schema "C:\Users\Stephen Cote\Documents\GitHub\Rocket\db\postgres\Rocket_PG9_Schema.sql" -confirm
 cd ..\..\AccountManagerConsole\target
 echo ***** Extending authorization schema *****
 call java -jar AccountManagerConsole.jar -generate -type POLICY -execute
