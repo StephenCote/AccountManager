@@ -86,7 +86,7 @@ public class OrganizationFactory extends NameIdFactory {
 	{
 		OrganizationType org = (OrganizationType)object;
 		removeFromCache(org);
-		return update(org);
+		return super.update(org);
 	}
 	@Override
 	public <T> boolean delete(T object) throws FactoryException

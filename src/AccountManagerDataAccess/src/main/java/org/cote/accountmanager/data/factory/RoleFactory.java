@@ -235,7 +235,7 @@ public class RoleFactory extends NameIdFactory {
 	{
 		BaseRoleType role = (BaseRoleType)object;
 		removeFromCache(role, null);
-		return update(role);
+		return super.update(role);
 	}
 
 	@Override

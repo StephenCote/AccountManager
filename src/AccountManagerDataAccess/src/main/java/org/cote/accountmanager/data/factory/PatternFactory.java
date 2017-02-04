@@ -158,7 +158,7 @@ public class PatternFactory extends NameIdGroupFactory {
 	{
 		PatternType data = (PatternType)object;
 		removeFromCache(data);
-		return update(data, null);
+		return super.update(data, null);
 	}
 	
 	@Override

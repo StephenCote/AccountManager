@@ -213,7 +213,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 	{
 		BaseParticipantType participant = (BaseParticipantType)object;
 		removeParticipantFromCache(participant);
-		return update(participant);
+		return super.update(participant);
 	}
 	protected void updateParticipantToCache(BaseParticipantType participant) throws ArgumentException{
 		//String key_name = participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganizationId();
@@ -436,8 +436,8 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		if (participation == null || participant == null || participation.getId().compareTo(0L)==0 || participant.getId().compareTo(0L)==0 || participant_type == ParticipantEnumType.UNKNOWN){
 				throw new ArgumentException("getParticipant: Invalid parameters.  "
 					+ (participation == null ? " Null Participation." : "") + (participant == null ? " Null participant." : "") + (participant_type == ParticipantEnumType.UNKNOWN ? " UNKNOWN Participant Type":"")
-					+ (participation.getId().compareTo(0L)==0 ? " Participation id is 0." : "")
-					+ (participant.getId().compareTo(0L)==0 ? " Participant id is 0." : "")
+					+ (participation != null && participation.getId().compareTo(0L)==0 ? " Participation id is 0." : "")
+					+ (participant != null && participant.getId().compareTo(0L)==0 ? " Participant id is 0." : "")
 				);
 		}
 

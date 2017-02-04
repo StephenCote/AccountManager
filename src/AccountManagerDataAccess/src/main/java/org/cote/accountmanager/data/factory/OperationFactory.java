@@ -142,7 +142,7 @@ public class OperationFactory extends NameIdGroupFactory {
 		OperationType data = (OperationType)object;
 		removeFromCache(data);
 		removeFromCache(data,getUrnCacheKey(data));
-		return update(data, null);
+		return super.update(data, null);
 	}
 	
 	@Override

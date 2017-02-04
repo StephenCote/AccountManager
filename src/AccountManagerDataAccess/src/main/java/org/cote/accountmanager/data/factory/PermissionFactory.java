@@ -141,7 +141,7 @@ public class PermissionFactory extends NameIdFactory {
 	{
 		BasePermissionType permission = (BasePermissionType)object;
 		removeFromCache(permission);
-		return update(permission);
+		return super.update(permission);
 	}
 
 	@Override
