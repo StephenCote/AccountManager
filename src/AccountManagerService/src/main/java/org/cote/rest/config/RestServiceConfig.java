@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -20,6 +22,7 @@ import org.cote.accountmanager.data.services.DatabaseMaintenance;
 import org.cote.accountmanager.data.services.SessionDataMaintenance;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.accountmanager.services.ThreadService;
 import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.StreamUtil;
 import org.cote.jaas.AM5LoginModule;
@@ -42,14 +45,31 @@ public class RestServiceConfig extends ResourceConfig{
         @Context
         ServletContext context;
 
-    	private static DatabaseMaintenance dbMaintenance = null;
+        private List<ThreadService> maintenanceThreads = new ArrayList<>();
+        /*
+        static DatabaseMaintenance dbMaintenance = null;
     	private static AuditDataMaintenance auditThread = null;
     	private static SessionDataMaintenance sessionThread = null;
-        
+        */
         @Override
         public void onShutdown(Container container) {
             logger.info("Cleaning up AccountManager");
 
+            try {
+            	logger.info("Stopping maintenance threads");
+                for(ThreadService svc : maintenanceThreads){
+                	svc.requestStop();
+                }
+                /// Sleep to give the threads a chance to shut down
+                ///
+				Thread.sleep(1000);
+
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            maintenanceThreads.clear();
+            /*
             if(dbMaintenance != null){
             	dbMaintenance.requestStop();
             	dbMaintenance = null;
@@ -62,6 +82,7 @@ public class RestServiceConfig extends ResourceConfig{
             	sessionThread.requestStop();
             	sessionThread = null;
             }
+            */
         }
 
     	
@@ -96,12 +117,13 @@ public class RestServiceConfig extends ResourceConfig{
 				logger.error("Error",sqe);
 			}
 			
-			logger.info("Priming Factories");
+			logger.info("Priming Additional Factories");
 			String addFact = context.getInitParameter("factories.add");
 			if(addFact != null){
 				String[] facts = addFact.split(",");
 				for(int i = 0; i < facts.length;i++){
 					try {
+						logger.info("Priming " + facts[0]);
 						Class cls = Class.forName(facts[i]);
 						Factories f = (Factories)cls.newInstance();
 						f.prepare();
@@ -118,13 +140,32 @@ public class RestServiceConfig extends ResourceConfig{
 			Factories.warmUp();
 			
 			logger.info("Starting Maintenance Threads");
-			dbMaintenance = new DatabaseMaintenance();
+			String addJob = context.getInitParameter("maintenance.jobs");
+			if(addJob != null){
+				String[] jobs = addJob.split(",");
+				for(int i = 0; i < jobs.length;i++){
+					try {
+						logger.info("Starting " + jobs[i]);
+						Class cls = Class.forName(jobs[i]);
+						ThreadService f = (ThreadService)cls.newInstance();
+						maintenanceThreads.add(f);
+					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						logger.error("Trace", e);
+					}
+					
+				}
+			}
+			/*
+			if(Boolean.parseBoolean(context.getInitParameter("maintenance.db.enable")) == true){
+				dbMaintenance = new DatabaseMaintenance();
+			}
 			
 			auditThread = new AuditDataMaintenance();
 			auditThread.setThreadDelay(10000);
 			
 			sessionThread = new SessionDataMaintenance();
-			
+			*/
 		
 			BaseService.enableExtendedAttributes = Boolean.parseBoolean(context.getInitParameter("extended.attributes.enabled"));
 			logger.info("Extended attributes enabled: " + BaseService.enableExtendedAttributes);
