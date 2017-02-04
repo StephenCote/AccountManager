@@ -64,9 +64,12 @@ public class MediaServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		//response.sendError(404, "Invalid request: " + request.getPathInfo())
-		long expiry = new Date().getTime() + (defCacheSeconds*1000);
+		long now = new Date().getTime();
+		long expiry = now + (defCacheSeconds*1000);
 		
 		response.setHeader("Cache-Control", "public,max-age="+ defCacheSeconds);
+		response.addHeader("Cache-Control", "must-revalidate");//optional
+		response.setDateHeader("Last-Modified", now);
 	    response.setDateHeader("Expires", expiry);
 	    response.setCharacterEncoding("UTF-8");
 		MediaUtil.writeBinaryContent(request, response);
