@@ -35,6 +35,23 @@
     <param-name>factories.add</param-name>
     <param-value>org.cote.rocket.Factories</param-value>
   </context-param>
+   	 	 <context-param>
+    <description>Community Factories</description>
+    <param-name>factories.community</param-name>
+    <param-value>org.cote.rocket.RocketCommunity</param-value>
+  </context-param>
+  <!--
+  <context-param>
+  <description>Enable DB  Maintenance Thread</description>
+  <param-name>maintenance.db.enable</param-name>
+  <param-value>false</param-value>
+  </context-param>
+  -->
+    <context-param>
+  <description>Maintenance Jobs</description>
+  <param-name>maintenance.jobs</param-name>
+  <param-value>org.cote.accountmanager.data.services.DatabaseMaintenance,org.cote.accountmanager.data.services.AuditDataMaintenance,org.cote.accountmanager.data.services.SessionDataMaintenance,org.cote.rocket.services.RocketDatabaseMaintenance,org.cote.rocket.services.ApplicationImportService</param-value>
+  </context-param>
  	 <context-param>
     <description>Database Connection Type</description>
     <param-name>database.conntype</param-name>
@@ -55,12 +72,62 @@
     <param-name>database.dsname</param-name>
     <param-value>comp/env/tomcat/datasources/postgresDS</param-value>
   </context-param>
+  
+  
+
+
+  <context-param>
+    <description>Restrict Image Size</description>
+    <param-name>image.restrict.size</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <description>Enable Extended Attributes</description>
+    <param-name>extended.attributes.enabled</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  
+    <context-param>
+    <description>Maximum Image Width</description>
+    <param-name>image.maximum.width</param-name>
+    <param-value>1024</param-value>
+  </context-param>
+
+  <context-param>
+    <description>Maximum Image Height</description>
+    <param-name>image.maximum.height</param-name>
+    <param-value>1024</param-value>
+  </context-param>
+  
+  
  	<context-param>
     <description>Enable Use of Data Pointers</description>
     <param-name>data.pointers.enabled</param-name>
     <param-value>true</param-value>
   </context-param>
  	
+ 	<filter>
+ <filter-name>ExpiresFilter</filter-name>
+ <filter-class>org.apache.catalina.filters.ExpiresFilter</filter-class>
+ <init-param>
+    <param-name>ExpiresByType image</param-name>
+    <param-value>access plus 10 minutes</param-value>
+ </init-param>
+ <init-param>
+    <param-name>ExpiresByType text/css</param-name>
+    <param-value>access plus 10 minutes</param-value>
+ </init-param>
+ <init-param>
+    <param-name>ExpiresByType application/javascript</param-name>
+    <param-value>access plus 10 minutes</param-value>
+ </init-param>
+</filter>
+
+<filter-mapping>
+ <filter-name>ExpiresFilter</filter-name>
+ <url-pattern>/*</url-pattern>
+ <dispatcher>REQUEST</dispatcher>
+</filter-mapping>
 
  <filter>
    <filter-name>AuthNFilter</filter-name>
