@@ -3,29 +3,16 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Insert title here</title>
-<style type = "text/css">
-html
-{
-		overflow:auto;
-		height:100%;
-		min-height:100%;
-		background-color: #ffffff;
-}
-body{
-
-	color: #000000;
-	margin:0px;
-	padding:0px;
-	min-height:100%;
-}
-</style>
+   		<link rel="stylesheet" href="/AccountManagerService/Style/uwm.css" type="text/css" title = "uwm" />
+   		<link rel="stylesheet" href="/AccountManagerService/Style/rocket.css" type="text/css" />
 <script type = "text/javascript" src = "../Scripts/bootstrap.jsp"></script>
+<!-- 
 <script type = "text/javascript" src = "/HemiFramework/Hemi/hemi.comp.js"></script>
+-->
+
 <script type = "text/javascript">
 function doLogout(){
-	Hemi.xml.getJSON("/AccountManagerService/rest/logout",function(s,v){
-		location.href = "/AccountManagerService/";		
-	},1);
+	AM6Client.logout(function(){location.href = "/AccountManagerService/";});
 }
 function doGallery(){
 	var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");
@@ -49,7 +36,7 @@ function doGallery(){
 </head>
 <body>
 <h1>Protected Account Manager Service</h1>
-<div template = "Templates/ToolBar.xml"></div>
+<div template = "/AccountManagerService/Forms/MainIn.xml"></div>
 <p><input type = "button" value = "Gallery" onclick = "doGallery()" /></p>
 <p><input type = "button" value = "Logout" onclick = "doLogout()" /></p>
 </body>

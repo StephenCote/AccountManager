@@ -979,15 +979,15 @@
 			var aSub = [];
 			var oCP;
 			if(sType == 'Object' && (oCP = o.getObjects().view.panel("content")).getProperties().showTagSearch){
-				var oR = new org.cote.beans.dataTagSearchRequest();
+				var oR = new org.cote.objects.dataTagSearchRequest();
 				oR.tags = oCP.getObjects().searchTags;
 				oR.startRecord = _s.startIndex;
 				oR.recordCount = _s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0);
 				oR.paginate = true;
 				oR.populateGroup = true;
-				if(!oCP.getProperties().tagSearchCount) oCP.getProperties().tagSearchCount = uwmServices.getService("Tag").countTags(oR);
+				if(!oCP.getProperties().tagSearchCount) oCP.getProperties().tagSearchCount = AM6Client.countByTag("DATA",oR);
 				_s.totalCount = oCP.getProperties().tagSearchCount;
-				aSub =  uwmServices.getService("Tag").listByTags(oR);
+				aSub =  AM6Client.findByTag("DATA",oR);
 			}
 			else{
 				_s.totalCount = AM6Client.count(sObjType.toUpperCase(),_no.currentDirectory.objectId); 

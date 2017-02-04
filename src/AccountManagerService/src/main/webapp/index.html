@@ -3,29 +3,14 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Insert title here</title>
-<style type = "text/css">
-html
-{
-		overflow:auto;
-		height:100%;
-		min-height:100%;
-		background-color: #ffffff;
-}
-body{
+   		<link rel="stylesheet" href="/AccountManagerService/Style/uwm.css" type="text/css" title = "uwm" />
+   		<link rel="stylesheet" href="/AccountManagerService/Style/rocket.css" type="text/css" />
 
-	color: #000000;
-	margin:0px;
-	padding:0px;
-	min-height:100%;
-}
-</style>
 <script type = "text/javascript" src = "Scripts/bootstrap.jsp"></script>
-<script type = "text/javascript" src = "/HemiFramework/Hemi/hemi.comp.js"></script>
+
 <script type = "text/javascript">
 function doLogout(){
-	Hemi.xml.getJSON("/AccountManagerService/rest/logout",function(s,v){
-		
-	},1);
+	AM6Client.logout(function(){ });
 }
 function doGoLogin(){
 	location.href = "/AccountManagerService/Protected/";
@@ -36,10 +21,7 @@ function doLogin(){
 	cred.credential = Base64.encode("password");
 	cred.organizationPath = "/FirstContact";
 	cred.credentialType = "HASHED_PASSWORD";
-	Hemi.xml.postJSON("/AccountManagerService/rest/login",cred,function(s,v){
-		//alert(v);
-		doGoLogin();
-	},1);
+	AM6Client.login(cred,doGoLogin);
 }
 (function(){
 	if(!window.uwmServices){
