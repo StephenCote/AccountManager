@@ -68,6 +68,7 @@ public class KeyStoreUtil {
 	}
 	public static boolean importCertificate(KeyStore store, byte[] certificate, String alias){
 		boolean out_bool = false;
+		logger.info("Import certificate");
 		try{
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
 			ByteArrayInputStream bais = new ByteArrayInputStream(certificate);
@@ -83,6 +84,7 @@ public class KeyStoreUtil {
 	}
 	public static boolean importPKCS12(KeyStore store,  byte[] p12cert, String alias, char[] password){
 		KeyStore pkstore = getKeyStore(p12cert,password);
+		logger.info("Import PKCS12 Store");
 		if(pkstore == null){
 			logger.error("PKCS12 store is null");
 			return false;
@@ -105,7 +107,7 @@ public class KeyStoreUtil {
 		            }
 		            logger.debug("Adding key for alias " + storeAlias);
 		            store.setKeyEntry(storeAlias, key, password, chain);
-		            
+
 		            out_bool = true;
 		         }
 		    }
