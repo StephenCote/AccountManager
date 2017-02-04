@@ -38,7 +38,7 @@ public class GenericMakeService {
 	@Context
 	SecurityContext securityCtx;
 	
-	private static final Logger logger = LogManager.getLogger(GenericListService.class);
+	private static final Logger logger = LogManager.getLogger(GenericMakeService.class);
 	
 	@GET @Path("/smd") @Produces(MediaType.APPLICATION_JSON)
 	 public SchemaBean getSmdSchema(@Context UriInfo uri){
