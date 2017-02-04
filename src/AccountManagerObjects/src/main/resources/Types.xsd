@@ -385,6 +385,7 @@
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
     		<enumeration value="LOCATION"></enumeration>
+    		<enumeration value="ORGANIZATION"></enumeration>
     		<enumeration value="TRAIT"></enumeration>
     		<enumeration value="EVENT"></enumeration>
     		<enumeration value="CREDENTIAL"></enumeration>
