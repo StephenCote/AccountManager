@@ -32,6 +32,7 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
+import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -40,14 +41,17 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.PersonGroupType;
 import org.cote.accountmanager.objects.PersonParticipantType;
 import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 
@@ -778,5 +782,34 @@ public class RoleService {
 		{
 			return getCreatePersonRole(role_owner, "AccountAdministrators",null);
 		}
+		
+		public static boolean switchActorInRole(NameIdType actor, BaseRoleType role, boolean add) throws ArgumentException, DataAccessException, FactoryException{
+			boolean out_bool = false;
+			if(actor.getNameType() != NameEnumType.GROUP && RoleEnumType.fromValue(actor.getNameType().toString()) != role.getRoleType()){
+				return false;
+			}
+			switch(actor.getNameType()){
+				case PERSON:
+					if(add) out_bool = RoleService.addPersonToRole((PersonType)actor, (PersonRoleType)role);
+					else out_bool = RoleService.removePersonFromRole((PersonRoleType)role,(PersonType)actor);
+					break;
+				case ACCOUNT:
+					if(add) out_bool = RoleService.addAccountToRole((AccountType)actor, (AccountRoleType)role);
+					else out_bool = RoleService.removeAccountFromRole((AccountRoleType)role,(AccountType)actor);
+					break;
+				case USER:
+					if(add) out_bool = RoleService.addUserToRole((UserType)actor, (UserRoleType)role);
+					else out_bool = RoleService.removeUserFromRole((UserRoleType)role,(UserType)actor);
+					break;
+				case GROUP:
+					//logger.warn("Group to role implementation needs to be expanded to include groups of accounts and groups of persons.");
+					if(add) out_bool = RoleService.addGroupToRole((BaseGroupType)actor, role);
+					else out_bool = RoleService.removeGroupFromRole(role,(BaseGroupType)actor);
+					break;
+				}
+
+			return out_bool;
+		}
+
 		
 }

@@ -36,6 +36,7 @@ import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.GroupParticipantType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonGroupType;
 import org.cote.accountmanager.objects.PersonParticipantType;
 import org.cote.accountmanager.objects.PersonType;
@@ -44,6 +45,7 @@ import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 
 public class GroupService{
 	public static final Logger logger = LogManager.getLogger(GroupService.class);
@@ -239,6 +241,29 @@ public class GroupService{
 		return ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getIsPersonInGroup(group, person,permission,affect_type);
 	}
 	
+	public static boolean switchActorInGroup(NameIdType actor, BaseGroupType group, boolean add) throws ArgumentException, DataAccessException, FactoryException{
+		boolean out_bool = false;
+		if(GroupEnumType.fromValue(actor.getNameType().toString()) != group.getGroupType()){
+			return false;
+		}
+		switch(actor.getNameType()){
+			case PERSON:
+				if(add) out_bool = GroupService.addPersonToGroup((PersonType)actor, (PersonGroupType)group);
+				else out_bool = GroupService.removePersonFromGroup((PersonGroupType)group,(PersonType)actor);
+				break;
+			case ACCOUNT:
+				if(add) out_bool = GroupService.addAccountToGroup((AccountType)actor, (AccountGroupType)group);
+				else out_bool = GroupService.removeAccountFromGroup((AccountGroupType)group,(AccountType)actor);
+				break;
+			case USER:
+				if(add) out_bool = GroupService.addUserToGroup((UserType)actor, (UserGroupType)group);
+				else out_bool = GroupService.removeUserFromGroup((UserGroupType)group,(UserType)actor);
+				break;
+			}
+
+		return out_bool;
+	}
+
 	public static boolean addPersonToGroup(PersonType person, PersonGroupType group) throws ArgumentException, DataAccessException, FactoryException
 	{
 		return addPersonToGroup(person, group, null, AffectEnumType.UNKNOWN);
