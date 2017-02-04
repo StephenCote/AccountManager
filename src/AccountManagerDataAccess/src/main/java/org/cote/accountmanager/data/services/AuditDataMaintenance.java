@@ -31,7 +31,7 @@ import org.cote.accountmanager.services.ThreadService;
 
 public class AuditDataMaintenance extends ThreadService {
 	public static final Logger logger = LogManager.getLogger(AuditDataMaintenance.class);
-	private int spoolFlushDelay = 1000;
+	private int spoolFlushDelay = 10000;
 	public AuditDataMaintenance(){
 		super();
 		this.setThreadDelay(spoolFlushDelay);
