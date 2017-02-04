@@ -346,6 +346,29 @@ public class DataFactory extends NameIdFactory {
 		}
 		return out_data;
 	}
+	public DataType getDataByObjectId(String id, long organizationId) throws FactoryException, ArgumentException
+	{
+		return getDataByObjectId(id, false, organizationId);
+	}
+	public DataType getDataByObjectId(String id, boolean detailsOnly, long organizationId) throws FactoryException, ArgumentException
+	{
+
+		DataType out_data = readCache(id);
+		if (out_data != null && out_data.getDetailsOnly() == detailsOnly) return out_data;
+		
+		ProcessingInstructionType instruction = new ProcessingInstructionType();
+		instruction.setAlternateQuery(detailsOnly);
+
+		List<NameIdType> data = getByField(new QueryField[] { QueryFields.getFieldObjectId(id) }, instruction, organizationId);
+
+		if (data.size() > 0)
+		{
+			out_data = (DataType)data.get(0);
+			//String key_name = id + "-" + out_data.getGroup().getId();
+			updateDataToCache(out_data);
+		}
+		return out_data;
+	}
 	public int deleteDataByUser(UserType user) throws FactoryException
 	{
 		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(user.getId()) }, user.getOrganizationId());
