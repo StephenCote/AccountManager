@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "projectPickerTitle">
+			<span rid = "projectPickerToggle"></span> Projects:
+		</p>
+		<p rid = "projectPickerContent">
+			<div component = "wideselect" rid = "projectsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addProject()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeProject()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openProject()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("projectPickerToggle","projectPickerContent");
+			if(!this.getProperties().projectListProp) this.getProperties().projectListProp = "projects";
+		},
+		openProject : function(){
+			var oI = this.getProjectsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Project");
+		},
+		addProject : function(){
+			this.manageList("Project", this.getProjectsList().getObjectId());
+		},
+		removeProject : function(){
+			var oI = this.getProjectsList().getActiveItem();
+			if(oI) this.getProjectsList().clearItem(oI.index);
+		},
+
+		configProjectsList : function(s,v){
+			var oL = this.getProjectsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshProjects();
+		},
+		refreshProjects : function(){
+			var oL = this.getProjectsList(), aP = this.getProperties().projectListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getProjectsList : function(){
+			return this.GetComponentByRID("projectsList").GetWideSelect();
+		},
+		prepareSaveProjectsList : function(o){
+			aP = this.getProperties().projectListProp;
+			o[aP] = [];
+			var aProjects = this.getProjectsList().getItems();
+			for(var i = 0; i < aProjects.length;i++) o[aP].push(aProjects[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

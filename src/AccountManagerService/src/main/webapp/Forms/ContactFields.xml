@@ -1,0 +1,64 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Location:
+		</p>
+		<p>
+			<select rid = "locationType" bind = "${bean.rocketType}">
+    		<option>UNKNOWN</option>
+    		<option>HOME</option>
+    		<option>WORK</option>
+    		<option>MOBILE</option>
+    		<option>OTHER</option>
+    		<option>NETWORK</option>
+
+			</select>
+		</p>
+	</div>
+		<div class = "rocket-column-2">
+		<p>
+			Type:
+		</p>
+		<p>
+			<select rid = "contactType" bind = "${bean.rocketType}">
+	    		<option>UNKNOWN</option>
+	    		<option>PHONE</option>
+	    		<option>EMAIL</option>
+	    		<option>WEB</option>
+	    		<option>OTHER</option>
+	    		<option>PROFILE</option>
+			</select>
+		</p>
+	</div>
+	
+	<div class = "rocket-column-2">
+		<p>
+			Contact:
+		</p>
+		<p>
+			<input type = "text" rid = "contactValue" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			//this.GetElementByRID("pathCont").style.display = "none";
+		},
+		addType : function(o){
+			Hemi.log("Add contact type: " + o.name );
+			//var b = false;
+			
+			return AM6Client.update("CONTACT",o);
+		},
+		prepareSave : function(o){
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

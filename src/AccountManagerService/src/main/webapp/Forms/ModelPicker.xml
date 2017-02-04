@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "modelPickerTitle">
+			<span rid = "modelPickerToggle"></span> Models:
+		</p>
+		<p rid = "modelPickerContent">
+			<div component = "wideselect" rid = "modelsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addModel()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeModel()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openModel()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("modelPickerToggle","modelPickerContent");
+			if(!this.getProperties().modelListProp) this.getProperties().modelListProp = "models";
+		},
+		openModel : function(){
+			var oI = this.getModelsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Model");
+		},
+		addModel : function(){
+			this.manageList("Model", this.getModelsList().getObjectId());
+		},
+		removeModel : function(){
+			var oI = this.getModelsList().getActiveItem();
+			if(oI) this.getModelsList().clearItem(oI.index);
+		},
+
+		configModelsList : function(s,v){
+			var oL = this.getModelsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshModels();
+		},
+		refreshModels : function(){
+			var oL = this.getModelsList(), aP = this.getProperties().modelListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getModelsList : function(){
+			return this.GetComponentByRID("modelsList").GetWideSelect();
+		},
+		prepareSaveModelsList : function(o){
+			aP = this.getProperties().modelListProp;
+			o[aP] = [];
+			var aModels = this.getModelsList().getItems();
+			for(var i = 0; i < aModels.length;i++) o[aP].push(aModels[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

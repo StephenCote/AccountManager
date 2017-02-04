@@ -1,0 +1,57 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "workPickerToggle"></span> Works:
+		</p>
+		<p rid = "workPickerContent">
+			<div component = "wideselect" rid = "worksList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addWork()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeWork()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openWork()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		this.toggleField("workPickerToggle","workPickerContent");
+		if(!this.getProperties().workListProp) this.getProperties().workListProp = "work";
+	},
+	openWork : function(){
+		var oI = this.getWorksList().getActiveItem();
+		if(oI && oI.data && this.openItem) this.openItem(oI.data,"Work");
+	},
+	addWork : function(){
+			this.manageList("Work", this.getWorksList().getObjectId());
+		},
+		removeWork : function(){
+			var oI = this.getWorksList().getActiveItem();
+			if(oI) this.getWorksList().clearItem(oI.index);
+		},
+
+		configWorksList : function(s,v){
+			var oL = this.getWorksList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshWorks();
+		},
+		refreshWorks : function(){
+			var oL = this.getWorksList(), aP = this.getProperties().workListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getWorksList : function(){
+			return this.GetComponentByRID("worksList").GetWideSelect();
+		},
+		prepareSaveWorksList : function(o){
+			aP = this.getProperties().workListProp;
+			o[aP] = [];
+			var aWorks = this.getWorksList().getItems();
+			for(var i = 0; i < aWorks.length;i++) o[aP].push(aWorks[i].data);
+		}
+	
+	]]></embedded-script>
+</html-fragment>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
+	<embedded-script>
+		<![CDATA[
+		// Requires TemplateTools to be included
+		//
+		template_init : function(){
+			this.initGrid("Work",uwm.getPathForType("Work"));
+		},
+		template_destroy : function(){
+			
+		},
+
+		handle_list_click : function(v){
+			///this.setStatus("Clicked: " + v.name);
+		}
+		]]>
+	</embedded-script>
+</Template>

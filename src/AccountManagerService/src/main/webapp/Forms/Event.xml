@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<!--
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/BaseType.xml" id = "BaseType" />
+	<p>
+	</p>
+	-->
+	<p>Note Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Event";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName);
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.eventType();
+					o.name = "";
+					o.description = "";
+					o.eventType = "UNKNOWN";
+					o.id = 0;
+					o.parentId = 0;
+					o.actors = [];
+					o.entryTraits = [];
+					o.exitTraits = [];
+					o.groups = [];
+					o.influencers = [];
+					o.observers = [];
+					o.orchestrators = [];
+					o.things = [];
+					o.startDate = new Date();
+					o.endDate = o.startDate;
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

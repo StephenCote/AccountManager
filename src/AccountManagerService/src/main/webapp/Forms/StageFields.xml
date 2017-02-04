@@ -1,0 +1,50 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Logical Order:
+		</p>
+		<p>
+			<input type = "text"  rid = "logicalOrder" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/SchedulePickerSingle.xml" id = "SchedulePickerSingle" />
+
+	<import-xml src="/AccountManagerService/Forms/MethodologyPickerSingle.xml" id = "MethodologyPickerSingle" />
+
+	<import-xml src="/AccountManagerService/Forms/WorkPickerSingle.xml" id = "WorkPickerSingle" />
+
+	<import-xml src="/AccountManagerService/Forms/BudgetPickerSingle.xml" id = "BudgetPickerSingle" />
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			var o = this.getBean("rocketType");
+			this.getProperties().workProp = "work";
+			this.getProperties().budgetProp = "budget";
+			this.getProperties().scheduleProp = "schedule";
+			this.getProperties().methodologyProp = "methodology";
+			this.pickMethodology('Methodology',o.methodology);
+			this.pickBudget('Budget',o.budget);
+			this.pickSchedule('Schedule',o.schedule);
+			this.pickWork('Work',o.work);
+			
+		},
+		addType : function(o){
+			Hemi.log("Add Stage type: " + o.name + ":" + o.text);
+			return AM6Client.update("STAGE",o);
+		},
+		
+		
+		prepareSave : function(o){
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

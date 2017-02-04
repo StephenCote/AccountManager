@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<div class = "rocket-column-2" style = "display:none;">
+		<p>
+			Location:
+		</p>
+		<p>
+			<input type = "text" placeholder = "~/" rid = "path" class = "rocket-text" />
+		</p>
+	</div>
+	<div style = "display:none;" rid = "lifecycleNameCont" class = "rocket-column-2">
+		<p>
+			Lifecycle:
+		</p>
+		<p>
+			<input type = "text" rid = "lifecycleName" class = "rocket-text" />
+		</p>
+	</div>
+	
+	<div style = "display:none;" rid = "projectNameCont" class = "rocket-column-2">
+		<p>
+			Project Name:
+		</p>
+		<p>
+			<input type = "text" rid = "projectName" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Methodology:
+		</p>
+		<p>
+			<select rid = "method" onchange = "${this}.setupMethodology()">
+				<option selected="true">Pick Project Methodology</option>
+				<option value = "wf">Waterfall</option>
+				<option value = "ag">Agile</option>
+				<option value = "custom">Custom</option>
+			</select>
+		</p>
+	</div>
+
+	<div class = "rocket-column-2" style = "display:none;" rid = "addStageCont">
+		<p>
+			Options:
+		</p>
+		<p>
+			<input type = "button" onclick = "${this}.addStage()" value = "Add Stage" />
+		</p>
+	</div>
+	
+	<div rid = "stages"></div>
+	
+	<div><input type = "button" onclick = "${this}.DoLogout()" value = "Logout" /></div>
+	<embedded-script>
+		<![CDATA[
+			/// Simplified Project View
+			/// 
+			
+			
+			/*
+				Move the Stage/Work/Story table into a separate import to support multiple stages
+			*/
+			template_init: function(){
+				this.getObjects().stages = [];
+				this.getObjects().stageTrash = {};
+				this.getObjects().taskRows = [];
+				this.getObjects().taskTrash = {};
+				this.getProperties().rowCount = 0;
+				this.getProperties().stageCount = 0;
+				this.getProperties().elementNames = ["rowNum","name","end","estimate","dependencies","resources"];
+				//this.getObjects().methodology = 0;
+				//this.getObjects().process = 0;
+				this.scopeHandler("project_picker_open",0,0,1);
+				this.scopeHandler("project_picker_choose",0,0,1);
+				
+				/*
+				this.GetElementByRID("estimate-row1").onkeydown = function(e){
+					Hemi.event.cancelEvent(e);
+					return false;
+				};
+				*/
+				//this.addStage();
+				if(!this.getProperties().defaultPath) this.getProperties().defaultPath = "~/";
+				this.GetElementByRID("path").setAttribute("placeholder",this.getProperties().defaultPath);
+			},
+			template_destroy : function(){
+				this._prehandle_project_picker_open = 0;
+				this._prehandle_project_picker_choose = 0;
+			},
+			getPath : function(){
+				var sP = this.GetElementByRID("path").value;
+				if(sP.length == 0) sP = this.getProperties().defaultPath;
+				return sP;
+			},
+			setupMethodology : function(){
+				var sV = this.GetElementByRID("method").value;
+				if(sV.match(/(wf|ag|custom)/gi) == false) return;
+				
+				if(sV == "wf"){
+					var oMGroup = AM6Client.make("GROUP","DATA",this.getPath() + "Methodologies");
+					var oPGroup = AM6Client.make("GROUP","DATA",this.getPath() + "Processes");
+					var oPSGroup = AM6Client.make("GROUP","DATA",this.getPath() + "ProcessSteps");
+					
+					var oM = rocket.getMethodology("Waterfall",oMGroup);
+					if(!oM){
+						rocket.addProcessStep("Waterfall - Design","Waterfall design",1,0,0,0,oPSGroup);
+						rocket.addProcessStep("Waterfall - Gather Requirements","Waterfall gather requirements",2,0,0,0,oPSGroup);
+						rocket.addProcessStep("Waterfall - Implementation","Waterfall implementation",3,0,0,0,oPSGroup);
+						rocket.addProcessStep("Waterfall - Maintenance","Waterfall maintenance",4,0,0,0,oPSGroup);
+						rocket.addProcessStep("Waterfall - Verification","Waterfall verification",5,0,0,0,oPSGroup);
+						rocket.addProcess("Waterfall", "Standard waterfall process", 1, 0, [rocket.getProcessStep("Waterfall - Design",oPSGroup),rocket.getProcessStep("Waterfall - Gather Requirements",oPSGroup),rocket.getProcessStep("Waterfall - Implementation",oPSGroup),rocket.getProcessStep("Waterfall - Maintenance",oPSGroup),rocket.getProcessStep("Waterfall - Verification",oPSGroup)], 0, oPGroup);
+						rocket.addMethodology("Waterfall","Waterfall project methodology",[rocket.getProcess("Waterfall",oPGroup)],0,oMGroup);
+					}
+					var oP = rocket.getProcess("Waterfall",oPGroup);
+					this.GetElementByRID("projectName").value = "Waterfall Project";
+					for(var i = 0; i < oP.steps.length;i++){
+						this.addStage();
+						this.GetElementByRID(this.getStageIdPrefix(i+1) + "name").value = oP.steps[i].name;
+					}
+					/*
+					this.getObjects().methodology = oM;
+					this.getObjects().process = oP;
+					*/
+					
+				}
+				
+				var oGroup = AM6Client.make("GROUP","DATA",this.getPath() + "Times");
+				var aTimes = rocket.listTimes(this.getPath() + "Times",0,0);
+				var vH = {};
+				for(var i = 0; i < aTimes.length;i++){
+					vH[aTimes[i].name]=1;
+				}
+				
+				this.GetElementByRID("projectNameCont").style.display = "block";
+				
+			},
+			getStageTemplate : function(){
+				/*
+				var aBuff = [];
+				aBuff.push("<div style = \"clear:both;\" class = \"uwm-content uwm-box-border\">");
+				aBuff.push("<div class = \"rocket-column-2\"><p>Order:</p><p><input disabled = \"true\" value = \"1\" class = \"rocket-text\" type = \"text\" style = \"width: 25px !important; border-width: 0px !important;\" rid = \"${id}stageNum\" /></p></div>");
+				aBuff.push("<div class = \"rocket-column-2\"><p>Name:</p><p><input type = \"text\" rid = \"${id}name\" class = \"rocket-text\" /></p></div>");
+				aBuff.push("<div class = \"rocket-column-2\"><p>Date:</p><p><input class = \"rocket-text\" type = \"text\" component = \"calendar\" style = \"width: 75px !important;\" rid = \"${id}start\" /><input class = \"rocket-text\" type = \"text\" component = \"calendar\" style = \"width: 75px !important;\" rid = \"${id}end\" /></p></div>");
+				//aBuff.push("<div class = \"rocket-column-2\"><p>End:</p><p><input class = \"rocket-text\" type = \"text\" component = \"calendar\" style = \"width: 75px !important;\" rid = \"${id}end\" /></p></div>");
+				//aBuff.push("<div class = \"rocket-column-2\"><p>Description:</p><p><input type = \"text\" rid = \"${id}description\" class = \"rocket-text\" /></p></div>");
+
+				aBuff.push("<div style = \"clear:both;\"><table cellpadding = \"0\" margin = \"0\" cellspacing = \"0\"><thead><tr><th></th><th>Name</th><th>Estimate</th><th>Due</th><th>Dependencies</th><th>Resources</th><th></th></tr></thead><tbody rid = \"${id}rows\"></tbody></table></div>");
+				aBuff.push("<div style = \"clear:both;\"><input type = \"button\" onclick = \"${this}.addRow(${stageNum})\" value = \"Add Row\" /><input type = \"button\" value = \"Delete Stage\" onclick = \"${this}.deleteStage(${stageNum})\" /></div>");
+				aBuff.push("</div>");
+				return aBuff.join("");
+				*/
+				return Hemi.xml.getText("/AccountManagerService/Forms/Templates/ProjectStageSection.xml",0,0,"ProjectStageSection",1);
+			},
+			getRowTemplate : function(){
+				/*
+				var aRowBuff = [];	
+				aRowBuff.push("<tr><td rid = \"${id}rowNumCell\">");
+				aRowBuff.push("<input disabled = \"true\" value = \"1\" class = \"rocket-text\" type = \"text\" style = \"width: 25px !important; border-width: 0px !important;\" rid = \"${id}rowNum\" />");
+				aRowBuff.push("</td><td>");
+				aRowBuff.push("<input class = \"rocket-text\" type = \"text\" style = \"width: 125px !important;\" rid = \"${id}name\" />");
+				aRowBuff.push("</td><td>");
+				aRowBuff.push("<input onclick = \"${this}.chooseEstimate(${stageNum},${rowNum})\" type = \"text\" rid = \"${id}estimate\" style = \"width: 100px !important;\" class = \"rocket-text\" />");
+				aRowBuff.push("</td><td>");
+
+				aRowBuff.push("<input class = \"rocket-text\" type = \"text\" component = \"calendar\" style = \"width: 75px !important;\" rid = \"${id}end\" />");
+				aRowBuff.push("</td><td>");
+				aRowBuff.push("<input class = \"rocket-text\" type = \"text\" style = \"width: 75px !important;\" rid = \"${id}dependencies\" />");
+				aRowBuff.push("</td><td>");
+				aRowBuff.push("<input class = \"rocket-text\" type = \"text\" style = \"width: 100px !important;\" rid = \"${id}resources\" />");
+				aRowBuff.push("</td><td><input type = \"button\" value = \"X\" onclick = \"${this}.deleteRow(${stageNum},${rowNum})\" /></td></tr>");
+				return aRowBuff.join("");
+				*/
+				return Hemi.xml.getText("/AccountManagerService/Forms/Templates/ProjectRowSection.xml",0,0,"ProjectRowSection",1);
+			},
+			getStageIdPrefix : function(i){
+				return ("Stage-" + Hemi.text.pad(i,10) + "-"); 
+			},
+			getRowIdPrefix : function(s,i){
+				return this.getStageIdPrefix(s) + ("Row-" + Hemi.text.pad(i,10) + "-"); 
+			},
+			deleteRow : function(s,i){
+				var o = this.getTaskAtRow(s,i),p = this.getProperties(),udef;
+				if(o.id > 0){
+					this.getObjects().taskTrash[o.id] = o;
+				}
+				this.getObjects().taskRows[i] = udef;
+				var oXForm = this.GetForm();
+				var sId = this.getRowIdPrefix(s,i);
+			   	for(var i = 0; i < p.elementNames.length; i++){
+					oXForm.removeElement(oXForm.getElementByName(sId + p.elementNames[i]));
+				}
+				Hemi.log("Delete Row: " + sId);
+				var oRow = this.GetElementByRID(sId + "rowNumCell").parentNode;
+				if(oRow){
+					/// Remove and unlink node and all framework objects;
+					Hemi.xml.removeChildren(oRow, 1);
+					Hemi.xml.removeChild(oRow,oRow.parentNode,1);
+				}
+				else{
+					Hemi.logError("Row " + sId + " not found");
+				}
+			},
+			deleteStage : function(i){
+				var o = this.getStage(s),p = this.getProperties(),udef;
+				if(o.id > 0){
+					this.getObjects().stageTrash[o.id] = o;
+				}
+				this.getObjects().stages[i] = udef;
+				var oXForm = this.GetForm();
+				var sId = this.getRowIdPrefix(s,i);
+				alert('TODO: Delete or move tasks');
+				/*
+			   	for(var i = 0; i < p.elementNames.length; i++){
+					oXForm.removeElement(oXForm.getElementByName(sId + p.elementNames[i]));
+				}
+				Hemi.log("Delete Row: " + sId);
+				var oRow = this.GetElementByRID(sId + "rowNumCell").parentNode;
+				if(oRow){
+					/// Remove and unlink node and all framework objects;
+					Hemi.xml.removeChildren(oRow, 1);
+					Hemi.xml.removeChild(oRow,oRow.parentNode,1);
+				}
+				else{
+					Hemi.logError("Row " + sId + " not found");
+				}
+				*/
+			},
+			addStage : function(){
+				var p = this.getProperties();
+				var sId = this.getStageIdPrefix(p.stageCount+1);
+				p.stageCount++;
+				var sT = this.getStageTemplate().replace(/\${id}/gi,sId);
+				sT = sT.replace(/\${stageNum}/gi,p.stageCount);
+   				var sB =  sT;
+   				//alert(sT);
+				var oX = Hemi.xml.parseXmlDocument(sB);
+			   	if(!oX || !oX.documentElement){
+			   		alert("Invalid XML from:\n\n" + sB);
+			   		return;
+			   	}
+			   	//Hemi.xml.setInnerXHTML(this.GetElementByRID("rows"), oX.documentElement,1, 0, 0, 0, 0, this._handle_xhtml_token);
+			   	
+				for(var i = 0; i < oX.documentElement.childNodes.length;i++){
+   					Hemi.xml.setInnerXHTML(this.GetElementByRID("stages"), oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
+   				}
+   				var aC = this.GetElementByRID("stages").childNodes;
+   				// Note -extendSpaceConfiguration operates against a container, without registering the container itself
+   				// therefore, the container (tr) is not registered when configured like this
+			   	// 
+			   	this.extendSpaceConfiguration(aC[aC.length-1]);
+			   	this.GetElementByRID(sId + "stageNum").value = p.stageCount;
+			   	for(var i = 0; i < 5; i++) this.addRow(p.stageCount);
+			},
+			addRow : function(iStage){
+				var p = this.getProperties();
+				var sSid = this.getStageIdPrefix(iStage);
+				var sId = this.getRowIdPrefix(iStage,p.rowCount+1);
+				/// Prime the task slot
+				///
+				var oT = this.getTaskAtRow(iStage,p.rowCount+1);
+				p.rowCount++;
+				var sT = this.getRowTemplate().replace(/\${id}/gi,sId);
+				sT = sT.replace(/\${rowNum}/gi,p.rowCount);
+				sT = sT.replace(/\${stageNum}/gi,p.stageCount);
+   				var sB = sT ;
+				var oX = Hemi.xml.parseXmlDocument(sB);
+			   	if(!oX || !oX.documentElement){
+			   		alert("Invalid XML from:\n\n" + sB);
+			   		return;
+			   	}
+
+			   	//Hemi.xml.setInnerXHTML(this.GetElementByRID("rows"), oX.documentElement,1, 0, 0, 0, 0, this._handle_xhtml_token);
+			   	var xRows = this.GetElementByRID(sSid + "rows");
+			   	if(!xRows || xRows == null){
+			   		alert("Null model reference");
+			   		return;
+			   	}
+				for(var i = 0; i < oX.documentElement.childNodes.length;i++){
+   					Hemi.xml.setInnerXHTML(xRows, oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
+   				}
+   				var aC = xRows.childNodes;
+   				// Note -extendSpaceConfiguration operates against a container, without registering the container itself
+   				// therefore, the container (tr) is not registered when configured like this
+			   	// 
+			   	this.extendSpaceConfiguration(aC[aC.length-1]);
+			   	this.GetElementByRID(sId + "rowNum").value = p.rowCount;
+			   	this.GetElementByRID(sId + "estimate").onkeydown =  function(e){
+					Hemi.event.cancelEvent(e);
+					return false;
+				};
+			   	
+   			},
+			getTaskAtRow : function(s,i){
+				var o = this.getObjects(), ot;
+				if(typeof i != "number") return;
+				if(!o.taskRows[s]) o.taskRows[s] = [];
+				if(!(ot = o.taskRows[s][i])){
+					ot = new org.cote.objects.taskType();
+					ot.name = "";
+					ot.description = "";
+					ot.taskStatus = "UNKNOWN";
+					ot.id = 0;
+					ot.logicalOrder = i;
+					ot.dueDate = (new Date());
+					ot.completedDate = (new Date());
+					o.taskRows[s][i] = ot;
+				}
+				return ot;
+			},
+			getStage : function(i){
+				var o = this.getObjects(), ot;
+				if(typeof i != "number") return;
+				if(!(ot = o.stages[i])){
+					ot = new org.cote.objects.stageType();
+					ot.name = "";
+					ot.description = "";
+					ot.id = 0;
+					ot.logicalOrder = i;
+					
+					ot.work = new org.cote.objects.workType();
+					ot.work.name = "";
+					ot.work.description = "";
+					ot.work.id = 0;
+					ot.work.logicalOrder = i;
+					
+					ot.schedule = new org.cote.objects.scheduleType();
+					ot.schedule.name = "";
+					ot.schedule.id = 0;
+					ot.schedule.startTime = new Date();
+					ot.schedule.endTime = ot.schedule.startTime;
+					
+					o.stages[i] = ot;
+					
+				}
+				return ot;
+			},
+			chooseMethodology : function(iStage){
+				var o = this.getStage();
+				if(!o.methodology || !o.process) return;
+				
+				var ctid=this.getStageIdPrefix(iStage) + "name";
+				//this.openPicker({stage:iStage,ctrlId:ctid},"Schedule", ctid,"pickSchedule");
+				this.getObjects().link_target = {type:"process",stage:iStage,ctrlId:ctid};
+				Hemi.app.createWindow("Template Picker","Templates/Picker.xml","ProcessPicker",0,0,{opener_id:this.getObjectId()},this._prehandle_project_picker_open);
+			},
+			chooseProcess : function(iStage){
+				var o = this.getObjects();
+				if(!o.methodology || !o.process) return;
+				
+				var ctid=this.getStageIdPrefix(iStage) + "name";
+				//this.openPicker({stage:iStage,ctrlId:ctid},"Schedule", ctid,"pickSchedule");
+				this.getObjects().link_target = {type:"process",stage:iStage,ctrlId:ctid};
+				Hemi.app.createWindow("Template Picker","Templates/Picker.xml","ProcessPicker",0,0,{opener_id:this.getObjectId()},this._prehandle_project_picker_open);
+			},
+	
+			_handle_project_picker_open : function(oW){
+				var p = this.getObjects().process;
+				oW.setCanResize(0);
+				oW.resizeTo(200,300);
+				Hemi.app.getWindowManager().CenterWindow(oW);
+				oW.setIsModal(1);
+				oW.SetPickerHandler(this._prehandle_project_picker_choose);
+				oW.setHideOnClose(0);
+				this.getObjects().current_picker = oW;
+				oW.GetPickerList().clearItems();
+				var oLT = this.getObjects().link_target;
+				var aL = [];
+				switch(oLT.type){
+					case "process":
+						aL = p.steps;
+						break;
+					case "schedule":
+						aL = rocket.listSchedules(this.getPath() + "Schedules");
+						break;
+				}
+				for(var i = 0; i < aL.length; i++){
+					oW.GetPickerList().addItem(aL[i].name,aL[i]);
+				}
+				
+			},
+			_handle_project_picker_choose : function(oPicker, oItem){
+				oPicker.Close();
+				var oList;
+				var oLT = this.getObjects().link_target;
+				var sN = "";
+				switch(oLT.type){
+					case "process":
+						sN = this.getStageIdPrefix(oLT.stage) + "name";
+						break;
+					case "schedule":
+						sN = this.getStageIdPrefix(oLT.stage) + "schedule";
+						this.pushScheduleToTasks(oItem.data,oLT.stage);
+						break;
+				}
+				this.GetElementByRID(sN).value = oItem.data.name;
+			},
+			
+			
+			
+			chooseSchedule : function(iStage){
+				var ctid=this.getStageIdPrefix(iStage) + "schedule";
+				//this.openPicker({stage:iStage,ctrlId:ctid},"Schedule", ctid,"pickSchedule");
+				this.getObjects().link_target = {type:"schedule",stage:iStage,ctrlId:ctid};
+				Hemi.app.createWindow("Template Picker","Templates/Picker.xml","ProcessPicker",0,0,{opener_id:this.getObjectId()},this._prehandle_project_picker_open);
+			},
+		
+			pushScheduleToTasks : function(v,i){
+				var tr = this.getObjects().taskRows;
+				if(tr[i]){
+					var atr = tr[i];
+					for(var k = 0; k < atr.length;k++){
+						if(atr[k]){
+							var sN = this.getRowIdPrefix(i,k) + "end";
+							var oD = this.GetElementByRID(sN);
+							if(oD.value.length == 0){
+								//this.SetFormValue(sN,v.endTime);
+								oD.value = (v.endTime.getMonth() + 1) + "/" + v.endTime.getDate() + "/" + v.endTime.getFullYear();
+							}
+						}
+					}
+				}
+			},
+			pickSchedule : function(s, v, i){
+				var o = this.getStage(i.stage);
+				if(!o){
+					Hemi.logError("Schedule not found at stage " + i);
+					return;
+				}
+				o.schedule = v;
+				this.GetElementByRID(this.getStageIdPrefix(i.stage) + "schedule").value = (v ? v.name : "");
+				this.pushScheduleToTasks(v,i.stage);
+				
+			},
+			chooseEstimate : function(iStage,iRow){
+				var ctid=this.getRowIdPrefix(iStage, iRow) + "estimate";
+				this.openPicker({stage:iStage,row:iRow,ctrlId:ctid}, "Estimate", ctid,"pickEstimate");
+			},
+			pickEstimate : function(s, v, i){
+				var o = this.getTaskAtRow(i.stage,i.row);
+				if(!o){
+					Hemi.logError("Task not found at row " + i);
+					return;
+				}
+				o.estimate = v;
+				this.GetElementByRID(this.getRowIdPrefix(i.stage,i.row) + "estimate").value = (v ? v.name + " " + v.estimateType : "");
+			},
+			openPicker : function(vSrc, sType, sListId, sFN){
+				var oProps = {openerId:this.getObjectId(),sourceId:vSrc,listType:sType,picker:1,pickFunction:sFN};
+				var oW = Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, 0);
+            	if (oW) {
+            		oW.resizeTo(400, 200);
+            		
+            		if(vSrc.ctrlId){
+            			var o = this.GetElementByRID(vSrc.ctrlId);
+            			var l = Hemi.css.getAbsoluteLeft(o);
+						var t = Hemi.css.getAbsoluteTop(o) + o.offsetHeight;
+						Hemi.log("Move " + vSrc.ctrlId + " to " + l + ", " + t);
+						oW.moveTo(l + "px",t + "px");
+						
+            		}
+            		else{
+            		
+            			Hemi.app.getWindowManager().CenterWindow(oW);
+            		}
+            		// Destroy the window when closed
+            		//
+            		oW.setHideOnClose(0);
+            	}
+			},
+			DoLogout : function(){
+				window.uwm.logout();
+				window.uwm.operation("ContinueWorkflow");
+			}
+		]]>
+	</embedded-script>
+</Template>

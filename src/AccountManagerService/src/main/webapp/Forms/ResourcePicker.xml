@@ -1,0 +1,57 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "resourcePickerToggle"></span> <span rid = "resourcePickerTitle">Resources</span>:
+		</p>
+		<p rid = "resourcePickerContent">
+			<div component = "wideselect" rid = "resourcesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addResource()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeResource()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openResource()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		this.toggleField("resourcePickerToggle","resourcePickerContent");
+		if(!this.getProperties().resourceListProp) this.getProperties().resourceListProp = "requiredResources";
+	},
+	openResource : function(){
+		var oI = this.getResourcesList().getActiveItem();
+		if(oI && oI.data && this.openItem) this.openItem(oI.data,"Resource");
+	},
+	addResource : function(){
+		this.manageList("Resource", this.getResourcesList().getObjectId());
+	},
+	removeResource : function(){
+		var oI = this.getResourcesList().getActiveItem();
+		if(oI) this.getResourcesList().clearItem(oI.index);
+	},
+
+	configResourcesList : function(s,v){
+		var oL = this.getResourcesList();
+			oL.getContainer().className = "rocket-wideselect-container";
+		this.refreshResources();
+	},
+	refreshResources : function(){
+		var oL = this.getResourcesList(),aP = this.getProperties().resourceListProp;
+		oL.clearItems();
+		var o = this.getBean("rocketType");
+		if(!o || !o[aP]) return;
+		for(var i = 0; i < o[aP].length;i++){
+			oL.addItem(o[aP][i].name,o[aP][i]);
+		}
+	},
+	getResourcesList : function(){
+		return this.GetComponentByRID("resourcesList").GetWideSelect();
+	},
+		prepareSaveResourcesList : function(o){
+			aP = this.getProperties().resourceListProp;
+			o[aP] = [];
+			var aResources = this.getResourcesList().getItems();
+			for(var i = 0; i < aResources.length;i++) o[aP].push(aResources[i].data);
+		}
+
+	]]></embedded-script>
+</html-fragment>

@@ -1,0 +1,53 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text"  rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Logical Order:
+		</p>
+		<p>
+			<input type = "text"  rid = "logicalOrder" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Iterates:
+		</p>
+		<p>
+			<input type = "checkbox"  rid = "iterates" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/ProcessStepPicker.xml" id = "ProcessStepPicker" />
+	<import-xml src = "/AccountManagerService/Forms/BudgetPicker.xml" id = "BudgetPicker" />
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			this.getProperties().processStepListProp = "steps";
+			this.getProperties().budgetListProp = "budgets";
+			this.GetComponentByRID("processStepsList").setLoadHandler(this.scopeHandler("configProcessStepsList",0,1,1));
+			this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
+		},
+		
+		addType : function(o){
+			return AM6Client.update("PROCESS",o);
+		},
+		prepareSave : function(o){
+
+			this.prepareSaveBudgetsList(o);
+			this.prepareSaveProcessStepsList(o);
+
+			this.GetElementByRID("logicalOrder").className = "rocket-text";
+			if(!this.ValidateForPattern("logicalOrder","numbers-only")){
+				this.GetElementByRID("logicalOrder").className = "rocket-text rocket-text-error";
+				this.setStatus("Text cannot be empty");
+				return 0;
+			}
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

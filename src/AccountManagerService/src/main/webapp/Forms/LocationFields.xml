@@ -1,0 +1,107 @@
+<html-fragment>
+	<import-xml src = "/AccountManagerService/Forms/ParentPicker.xml" id = "ParentPicker" />
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text"  rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Classification:
+		</p>
+		<p>
+			<input type = "text"  rid = "classification" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Geography:
+		</p>
+		<p>
+				<select rid = "geographyType" bind = "${bean.rocketType}">
+	  			<option>UNKNOWN</option>
+	    		<option>TECHNICAL</option>
+	    		<option>PERSON</option>
+	    		<option>PHYSICAL</option>
+	    		<option>ENVIRONMENTAL</option>
+			</select>
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/LocationPicker.xml" id = "LocationPicker" />
+
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			this.getProperties().boundaryListProp = "boundaries";
+			this.getProperties().borderListProp = "borders";
+			this.getProperties().locationListProp = "childLocations";
+			this.GetComponentByRID("locationsList").setLoadHandler(this.scopeHandler("configLocationsList",0,1,1));
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("locationPickerTitle"),"Child Locations");
+			// this.GetComponentByRID("boundariesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+
+		},
+		updateChildLocations : function(o){
+			var aI = this.getLocationsList().getItems();
+			var a = [];
+			var iUp = 0;
+			for(var i = 0; o.childLocations && i < o.childLocations.length; i++) a[o.childLocations[i].id] = o.childLocations[i];
+			for(var i = 0; i < aI.length;i++){
+				var oI = aI[i].data;
+				if(!oI) continue;
+				/// Skip existing
+				if(a[oI.id]){
+					a[oI.id] = 0;
+					continue;
+				}
+				/// Set oI parent to location
+				oI.parentId = o.id;
+				AM6Client.update("LOCATION",oI);
+				iUp++;
+			}
+			for(var i = 0; i < a.length;i++){
+				if(typeof a[i]=="object"){
+					AM6Client.delete("LOCATION",a[i].objectId);
+					iUp++;
+				}
+			}
+			
+		},
+		
+		
+		addType : function(o){
+			var aBord = aBound = [];
+			var oT, b = AM6Client.update("LOCATION",o);
+		
+			if(b){
+				var oP;
+				if(o.parentId){
+					oP = rocket.getLocationById(o.parentId);
+					oT = rocket.getLocationByParent(o.name,oP);
+				}
+				else{
+					oT = AM6Client.getByName("LOCATION",AM6Client.find("GROUP","DATA",this.getPath()).objectId,o.name);
+				}
+				
+				this.updateChildLocations(oT);
+			}
+			AM6Client.clearCache(oT);
+			return b;
+		},
+		prepareSave : function(o){
+			
+			/*
+			this.GetElementByRID("logicalOrder").className = "rocket-text";
+			o.dependencies = [];
+			var aDependencies = this.getDependenciesList().getItems();
+			for(var i = 0; i < aDependencies.length;i++) o.dependencies.push(aDependencies[i].data);
+			*/
+			if(o.id){
+				this.updateChildLocations(o);
+				rocket.flushLocation(o);
+			}	
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

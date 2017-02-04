@@ -1,0 +1,30 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text"  rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/ProcessPicker.xml" id = "ProcessPicker" />
+	<import-xml src = "/AccountManagerService/Forms/BudgetPicker.xml" id = "BudgetPicker" />
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			this.getProperties().processListProp = "processes";
+			this.getProperties().budgetListProp = "budgets";
+			this.GetComponentByRID("processesList").setLoadHandler(this.scopeHandler("configProcessesList",0,1,1));
+			this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
+		},
+		
+		addType : function(o){
+			return AM6Client.update("METHODOLOGY",o);
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("endTime").className = "rocket-text";
+			this.prepareSaveProcessesList(o);
+			this.prepareSaveBudgetsList(o);
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

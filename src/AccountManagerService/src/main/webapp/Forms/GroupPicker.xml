@@ -1,0 +1,51 @@
+<html-fragment>
+
+	<div rid = "GroupPickerCont" class = "rocket-column-2">
+		<p rid = "GroupPickerLabel">
+			Group:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "group" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseGroup()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickGroup()" />
+			<!--
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openGroup()" />
+			-->
+		</p>
+	</div>
+	
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		var o = this.getBean("rocketType");
+		if(!this.getProperties().hideGroup){
+			var oP;
+			if(o.GroupId > 0) oP = AM6Client.get(this.getProperties().typeName.toUpperCase(),o.GroupId);
+			this.pickGroup(this.getProperties().typeName,oP);
+		}
+		else{
+			this.GetElementByRID("GroupPickerCont").style.display = "none";
+		}
+	},
+	chooseGroup : function(){
+		this.manageList( this.getProperties().typeName, this.getObjectId(),"pickGroup");
+	},
+
+		openGroup : function(){
+			var o = this.getBean("rocketType"),oP;
+			if(o && o.GroupId && this.openItem){
+				oP = AM6Client.get(this.getProperties().typeName.toUpperCase(),o.GroupId);
+				this.openItem(oP,this.getProperties().typeName);
+			}
+		},
+	pickGroup : function(s, v){
+		var o = this.getBean("rocketType");
+		if(o.id > 0 && v && v.id > 0 && v.id == o.id){
+			Hemi.logError(o.id + " cannot be set to its own Group");
+			if(this.setStatus) this.setStatus("Object #" + o.id + " cannot be set to its own Group");
+			return;
+		}
+		o.GroupId = (v ? v.id : 0);
+		this.GetElementByRID("Group").value = (v ? v.name : "");
+	}
+	]]></embedded-script>
+</html-fragment>

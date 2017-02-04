@@ -1,0 +1,36 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Time:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "time" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseTime()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickTime('Time')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openTime()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		if(!this.getProperties().timeProp){
+			this.getProperties().timeProp = "time";
+		}
+		var o = this.getBean("rocketType");
+		this.pickTime('Time',o[this.getProperties().timeProp]);
+
+	},
+	chooseTime : function(){
+		this.manageList("Time", this.getObjectId(),"pickTime");
+	},
+
+		openTime : function(){
+			var o = this.getBean("rocketType");
+			if(o && o[this.getProperties().timeProp] && this.openItem) this.openItem(o[this.getProperties().timeProp],"Time");
+		},
+	pickTime : function(s, v){
+		var o = this.getBean("rocketType");
+		o[this.getProperties().timeProp] = v;
+		this.GetElementByRID("time").value = (v ? v.name : "");
+	}
+	]]></embedded-script>
+</html-fragment>

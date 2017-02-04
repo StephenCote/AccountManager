@@ -1,0 +1,36 @@
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<embedded-script><![CDATA[
+		template_init : function(){
+		},
+		template_destroy : function(){
+			this._prehandle_manager_loaded;
+		},
+		openItem : function(o,typeName,viewTypeName){
+			if(!typeName) return;
+			if(!viewTypeName) viewTypeName = typeName;
+			if(!o.populated){
+				if(o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
+					Hemi.log("Not pulling own blob data for " + o.name + " unless specifically requested.");
+				}
+				else{
+					Hemi.log("Not populated.  Fetching a populated version.");
+					o = rocket["get" + typeName](o.name,AM6Client.find("GROUP","DATA",o.groupPath));
+					if(!o.populated) alert("still not populated");
+				}
+			}
+			this.openWindow(viewTypeName, o);
+		},
+		openWindow : function(sType,oType){
+			var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:0};
+			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), "/AccountManagerService/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
+            if (oW) {
+            	oW.resizeTo(400, 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		}
+	]]></embedded-script>
+</Template>

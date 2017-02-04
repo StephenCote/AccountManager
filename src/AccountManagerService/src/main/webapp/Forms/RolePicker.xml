@@ -1,0 +1,83 @@
+<html-fragment>
+	<div class = "rocket-column-2" rid = "rolePicker" style = "display:none;">
+		<p rid = "rolePickerTitle">
+			<span rid = "rolePickerToggle"></span> <span rid="rolePickerLabel">Roles</span>:
+		</p>
+		<p rid = "rolePickerContent">
+			<div component = "wideselect" rid = "rolesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addRole()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeRole()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openRole()" />
+		</p>
+	</div>
+
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.GetElementByRID("rolePicker").style.display = "block";
+			if(this.toggleField) this.toggleField("rolePickerToggle","rolePickerContent");
+			if(!this.getProperties().roleListProp) this.getProperties().roleListProp = "roles";
+		},
+		prepareSaveRolePicker : function(o){
+			this.prepareSaveRolesList(o);
+		},
+		setRolePickerLabel : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("rolePickerLabel"),s);
+		},
+		initRolePicker : function(){
+			/// Have to put a little extra logic here because role information is optional for addresses
+			var _s = this.getProperties(),  o = this.getBean("rocketType");
+			_s.enableRoleInformation = (o != null ? 1 : 0);
+			
+			if(_s.enableRoleInformation){
+				//this.getProperties().roleListProp = "roles";
+				this.GetComponentByRID("rolesList").setLoadHandler(this.scopeHandler("configRolesList",0,1,1));
+			}
+		},
+
+		
+		openRole : function(){
+			var oI = this.getRolesList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Role");
+		},
+		addRole : function(){
+			this.manageList("Role", this.getRolesList().getObjectId());
+		},
+		removeRole : function(){
+			var oI = this.getRolesList().getActiveItem();
+			if(oI) this.getRolesList().clearItem(oI.index);
+		},
+
+		configRolesList : function(s,v){
+			var oL = this.getRolesList(),_s = this.getProperties();
+			if(!_s.enableRoleInformation) return;
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshRoles();
+		},
+		refreshRoles : function(){
+			var oL = this.getRolesList(), aP = this.getProperties().roleListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getRolesList : function(){
+			return this.GetComponentByRID("rolesList").GetWideSelect();
+		},
+		prepareSaveRolesList : function(o){
+			var _s = this.getProperties(), aP;
+			if(!_s.enableRoleInformation) return;
+			aP = this.getProperties().roleListProp;
+			o[aP] = [];
+			var aRoles = this.getRolesList().getItems();
+			for(var i = 0; i < aRoles.length;i++) o[aP].push(aRoles[i].data);
+		}
+		
+		
+		
+	]]></embedded-script>
+</html-fragment>

@@ -1,0 +1,59 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "costPickerTitle">
+			<span rid = "costPickerToggle"></span> Costs:
+		</p>
+		<p rid = "costPickerContent">
+			<div component = "wideselect" rid = "costsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addCost()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeCost()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openCost()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("costPickerToggle","costPickerContent");
+			if(!this.getProperties().costListProp) this.getProperties().costListProp = "costs";
+			
+		},
+		openCost : function(){
+			var oI = this.getCostsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Cost");
+		},
+		addCost : function(){
+			this.manageList("Cost", this.getCostsList().getObjectId());
+		},
+		removeCost : function(){
+			var oI = this.getCostsList().getActiveItem();
+			if(oI) this.getCostsList().clearItem(oI.index);
+		},
+
+		configCostsList : function(s,v){
+			var oL = this.getCostsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshCosts();
+		},
+		refreshCosts : function(){
+			var oL = this.getCostsList(), aP = this.getProperties().costListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getCostsList : function(){
+			return this.GetComponentByRID("costsList").GetWideSelect();
+		},
+		prepareSaveCostsList : function(o){
+			aP = this.getProperties().costListProp;
+			o[aP] = [];
+			var aCosts = this.getCostsList().getItems();
+			for(var i = 0; i < aCosts.length;i++) o[aP].push(aCosts[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

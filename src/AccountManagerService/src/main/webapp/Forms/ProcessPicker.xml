@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "processPickerTitle">
+			Processes:
+		</p>
+		<p>
+			<div component = "wideselect" rid = "processesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addProcess()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeProcess()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openProcess()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			if(!this.getProperties().processListProp) this.getProperties().processListProp = "processes";
+			//this.GetComponentByRID("processesList").setLoadHandler(this.scopeHandler("configProcessesList",0,1,1));
+		},
+		openProcess : function(){
+			var oI = this.getProcessesList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Process");
+		},
+		addProcess : function(){
+			this.manageList("Process", this.getProcessesList().getObjectId());
+		},
+		removeProcess : function(){
+			var oI = this.getProcessesList().getActiveItem();
+			if(oI) this.getProcessesList().clearItem(oI.index);
+		},
+
+		configProcessesList : function(s,v){
+			var oL = this.getProcessesList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshProcesses();
+		},
+		refreshProcesses : function(){
+			var oL = this.getProcessesList(), aP = this.getProperties().processListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getProcessesList : function(){
+			return this.GetComponentByRID("processesList").GetWideSelect();
+		},
+		prepareSaveProcessesList : function(o){
+			aP = this.getProperties().processListProp;
+			o[aP] = [];
+			var aProcesses = this.getProcessesList().getItems();
+			for(var i = 0; i < aProcesses.length;i++) o[aP].push(aProcesses[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

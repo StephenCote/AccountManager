@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "taskPickerToggle"></span> <span rid = "taskPickerTitle">Tasks</span>:
+		</p>
+		<p rid = "taskPickerContent">
+			<div component = "wideselect" rid = "tasksList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addTask()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeTask()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openTask()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("taskPickerToggle","taskPickerContent");
+			if(!this.getProperties().taskListProp) this.getProperties().taskListProp = "tasks";
+		},
+		openTask : function(){
+			var oI = this.getTasksList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Task");
+		},
+		addTask : function(){
+			this.manageList("Task", this.getTasksList().getObjectId());
+		},
+		removeTask : function(){
+			var oI = this.getTasksList().getActiveItem();
+			if(oI) this.getTasksList().clearItem(oI.index);
+		},
+
+		configTasksList : function(s,v){
+			var oL = this.getTasksList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshTasks();
+		},
+		refreshTasks : function(){
+			var oL = this.getTasksList(), aP = this.getProperties().taskListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getTasksList : function(){
+			return this.GetComponentByRID("tasksList").GetWideSelect();
+		},
+		prepareSaveTasksList : function(o){
+			aP = this.getProperties().taskListProp;
+			o[aP] = [];
+			var aTasks = this.getTasksList().getItems();
+			for(var i = 0; i < aTasks.length;i++) o[aP].push(aTasks[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

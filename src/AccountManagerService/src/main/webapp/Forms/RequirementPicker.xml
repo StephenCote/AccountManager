@@ -1,0 +1,57 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "requirementPickerTitle">
+			<span rid = "requirementPickerToggle"></span> Requirements:
+		</p>
+		<p rid = "requirementPickerContent">
+			<div component = "wideselect" rid = "requirementsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addRequirement()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeRequirement()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openRequirement()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		this.toggleField("requirementPickerToggle","requirementPickerContent");
+		if(!this.getProperties().requirementListProp) this.getProperties().requirementListProp = "requiredRequirements";
+	},
+	openRequirement : function(){
+		var oI = this.getRequirementsList().getActiveItem();
+		if(oI && oI.data && this.openItem) this.openItem(oI.data,"Requirement");
+	},
+	addRequirement : function(){
+		this.manageList("Requirement", this.getRequirementsList().getObjectId());
+	},
+	removeRequirement : function(){
+		var oI = this.getRequirementsList().getActiveItem();
+		if(oI) this.getRequirementsList().clearItem(oI.index);
+	},
+
+	configRequirementsList : function(s,v){
+		var oL = this.getRequirementsList();
+		oL.getContainer().className = "rocket-wideselect-container";
+		this.refreshRequirements();
+	},
+	refreshRequirements : function(){
+		var oL = this.getRequirementsList(),aP = this.getProperties().requirementListProp;
+		oL.clearItems();
+		var o = this.getBean("rocketType");
+		if(!o || !o[aP]) return;
+		for(var i = 0; i < o[aP].length;i++){
+			oL.addItem(o[aP][i].name,o[aP][i]);
+		}
+	},
+	getRequirementsList : function(){
+		return this.GetComponentByRID("requirementsList").GetWideSelect();
+	},
+		prepareSaveRequirementsList : function(o){
+			aP = this.getProperties().requirementListProp;
+			o[aP] = [];
+			var aRequirements = this.getRequirementsList().getItems();
+			for(var i = 0; i < aRequirements.length;i++) o[aP].push(aRequirements[i].data);
+		}
+
+	]]></embedded-script>
+</html-fragment>

@@ -1,0 +1,36 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "resourcePickerTitle">
+			Resource:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "resource" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseResource()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickResource('Resource')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openResource()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		if(!this.getProperties().resourceProp){
+			this.getProperties().resourceProp = "resource";
+		}
+		//var o = this.getBean("rocketType");
+		//this.pickResource('Resource',o[this.getProperties().resourceProp]);
+
+	},
+	chooseResource : function(){
+		this.manageList("Resource", this.getObjectId(),"pickResource");
+	},
+
+		openResource : function(){
+			var o = this.getBean("rocketType");
+			if(o && o[this.getProperties().resourceProp] && this.openItem) this.openItem(o[this.getProperties().resourceProp],"Resource");
+		},
+	pickResource : function(s, v){
+		var o = this.getBean("rocketType");
+		o[this.getProperties().resourceProp] = v;
+		this.GetElementByRID("resource").value = (v ? v.name : "");
+	}
+	]]></embedded-script>
+</html-fragment>

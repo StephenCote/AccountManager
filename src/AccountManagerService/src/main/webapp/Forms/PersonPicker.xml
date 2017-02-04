@@ -1,0 +1,83 @@
+<html-fragment>
+	<div class = "rocket-column-2" rid = "personPicker" style = "display:none;">
+		<p rid = "personPickerTitle">
+			<span rid = "personPickerToggle"></span> <span rid="personPickerLabel">Persons</span>:
+		</p>
+		<p rid = "personPickerContent">
+			<div component = "wideselect" rid = "personsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addPerson()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removePerson()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openPerson()" />
+		</p>
+	</div>
+
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.GetElementByRID("personPicker").style.display = "block";
+			this.toggleField("personPickerToggle","personPickerContent");
+			if(!this.getProperties().personListProp) this.getProperties().personListProp = "persons";
+		},
+		prepareSavePersonPicker : function(o){
+			this.prepareSavePersonsList(o);
+		},
+		setPersonPickerLabel : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("personPickerLabel"),s);
+		},
+		initPersonPicker : function(){
+			/// Have to put a little extra logic here because person information is optional for addresses
+			var _s = this.getProperties(),  o = this.getBean("rocketType");
+			_s.enablePersonInformation = (o != null ? 1 : 0);
+			
+			if(_s.enablePersonInformation){
+				//this.getProperties().personListProp = "persons";
+				this.GetComponentByRID("personsList").setLoadHandler(this.scopeHandler("configPersonsList",0,1,1));
+			}
+		},
+
+		
+		openPerson : function(){
+			var oI = this.getPersonsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Person");
+		},
+		addPerson : function(){
+			this.manageList("Person", this.getPersonsList().getObjectId());
+		},
+		removePerson : function(){
+			var oI = this.getPersonsList().getActiveItem();
+			if(oI) this.getPersonsList().clearItem(oI.index);
+		},
+
+		configPersonsList : function(s,v){
+			var oL = this.getPersonsList(),_s = this.getProperties();
+			if(!_s.enablePersonInformation) return;
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshPersons();
+		},
+		refreshPersons : function(){
+			var oL = this.getPersonsList(), aP = this.getProperties().personListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getPersonsList : function(){
+			return this.GetComponentByRID("personsList").GetWideSelect();
+		},
+		prepareSavePersonsList : function(o){
+			var _s = this.getProperties(), aP;
+			if(!_s.enablePersonInformation) return;
+			aP = this.getProperties().personListProp;
+			o[aP] = [];
+			var aPersons = this.getPersonsList().getItems();
+			for(var i = 0; i < aPersons.length;i++) o[aP].push(aPersons[i].data);
+		}
+		
+		
+		
+	]]></embedded-script>
+</html-fragment>

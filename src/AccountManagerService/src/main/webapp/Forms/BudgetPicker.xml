@@ -1,0 +1,59 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "budgetPickerTitle">
+			<span rid = "budgetPickerToggle"></span> Budgets:
+		</p>
+		<p rid = "budgetPickerContent">
+			<div component = "wideselect" rid = "budgetsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addBudget()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeBudget()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openBudget()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			if(!this.getProperties().budgetListProp) this.getProperties().budgetListProp = "budgets";
+			this.toggleField("budgetPickerToggle","budgetPickerContent")
+			//this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
+		},
+		openBudget : function(){
+			var oI = this.getBudgetsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Budget");
+		},
+		addBudget : function(){
+			this.manageList("Budget", this.getBudgetsList().getObjectId());
+		},
+		removeBudget : function(){
+			var oI = this.getBudgetsList().getActiveItem();
+			if(oI) this.getBudgetsList().clearItem(oI.index);
+		},
+
+		configBudgetsList : function(s,v){
+			var oL = this.getBudgetsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshBudgets();
+		},
+		refreshBudgets : function(){
+			var oL = this.getBudgetsList(), aP = this.getProperties().budgetListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getBudgetsList : function(){
+			return this.GetComponentByRID("budgetsList").GetWideSelect();
+		},
+		prepareSaveBudgetsList : function(o){
+			aP = this.getProperties().budgetListProp;
+			o[aP] = [];
+			var aBudgets = this.getBudgetsList().getItems();
+			for(var i = 0; i < aBudgets.length;i++) o[aP].push(aBudgets[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "eventPickerToggle"></span> <span rid = "eventPickerTitle">Events</span>:
+		</p>
+		<p rid = "eventPickerContent">
+			<div component = "wideselect" rid = "eventsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addEvent()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeEvent()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openEvent()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("eventPickerToggle","eventPickerContent");
+			if(!this.getProperties().eventListProp) this.getProperties().eventListProp = "events";
+		},
+		openEvent : function(){
+			var oI = this.getEventsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Event");
+		},
+		addEvent : function(){
+			this.manageList("Event", this.getEventsList().getObjectId());
+		},
+		removeEvent : function(){
+			var oI = this.getEventsList().getActiveItem();
+			if(oI) this.getEventsList().clearItem(oI.index);
+		},
+
+		configEventsList : function(s,v){
+			var oL = this.getEventsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshEvents();
+		},
+		refreshEvents : function(){
+			var oL = this.getEventsList(), aP = this.getProperties().eventListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getEventsList : function(){
+			return this.GetComponentByRID("eventsList").GetWideSelect();
+		},
+		prepareSaveEventsList : function(o){
+			aP = this.getProperties().eventListProp;
+			o[aP] = [];
+			var aEvents = this.getEventsList().getItems();
+			for(var i = 0; i < aEvents.length;i++) o[aP].push(aEvents[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

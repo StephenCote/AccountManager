@@ -1,0 +1,61 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/ProjectPicker.xml" id = "ProjectPicker" />
+	<import-xml src = "/AccountManagerService/Forms/SchedulePicker.xml" id = "SchedulePicker" />
+	<import-xml src = "/AccountManagerService/Forms/GoalPicker.xml" id = "GoalPicker" />
+	<import-xml src = "/AccountManagerService/Forms/BudgetPicker.xml" id = "BudgetPicker" />
+	
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			this.getProperties().projectListProp = "projects";
+			this.getProperties().scheduleListProp = "schedules";
+			this.getProperties().budgetListProp = "budgets";
+			this.getProperties().goalsListProp = "goals";
+			this.GetComponentByRID("goalsList").setLoadHandler(this.scopeHandler("configGoalsList",0,1,1));
+			this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
+			this.GetComponentByRID("schedulesList").setLoadHandler(this.scopeHandler("configSchedulesList",0,1,1));
+			this.GetComponentByRID("projectsList").setLoadHandler(this.scopeHandler("configProjectsList",0,1,1));
+		},
+		
+		addType : function(o){
+			if(irocket.getCommunityMode()){
+				var oP = rocket.createCommunityLifecycle(o.name);
+				if(!oP || oP == null){
+					this.setStatus("Failed to create community lifecycle");
+					return false;
+				}
+				oP.description = o.description;
+				oP.goals = o.goals;
+				oP.budgets = o.budgets;
+				oP.projects = o.projects;
+				oP.schedules = o.schedules;
+				if(AM6Client.update("LIFECYCLE",oP)){
+					Hemi.message.service.publish("oncommunitychange",this);
+					return 1;
+				}
+				return 0;
+			}
+			else{
+				uwmServiceCache.clearCache();
+				return AM6Client.update("LIFECYCLE",o);
+			}
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("endTime").className = "rocket-text";
+
+			this.prepareSaveGoalsList(o);
+			this.prepareSaveBudgetsList(o);
+			this.prepareSaveSchedulesList(o);
+			this.prepareSaveProjectsList(o);
+			
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

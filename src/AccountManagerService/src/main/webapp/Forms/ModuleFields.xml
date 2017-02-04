@@ -1,0 +1,59 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+	
+		<p>
+			Type:
+		</p>
+		<p>
+			<select rid = "moduleType" bind = "${bean.rocketType}">
+				<option>UNKNOWN</option>
+				<option>ASSEMBLY</option>
+				<option>SCRAP</option>
+				<option>COMPONENT</option>
+			</select>
+		</p>
+	</div>
+	<import-xml src="/AccountManagerService/Forms/TimePickerSingle.xml" id = "TimePickerSingle" />
+	<import-xml src="/AccountManagerService/Forms/CostPickerSingle.xml" id = "CostPickerSingle" />
+	<import-xml src="/AccountManagerService/Forms/ArtifactPicker.xml" id = "ArtifactPicker" />
+	<import-xml src="/AccountManagerService/Forms/WorkPicker.xml" id = "WorkPicker" />
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.getProperties().artifactListProp = "artifacts";
+			this.getProperties().workListProp = "work";
+			
+			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.GetComponentByRID("worksList").setLoadHandler(this.scopeHandler("configWorksList",0,1,1));
+		
+			var o = this.getBean("rocketType");
+			this.getProperties().timeProp = "actualTime";
+			this.getProperties().costProp = "actualCost";
+
+			this.pickTime('Time',o.actualTime);
+			this.pickCost('Cost',o.actualCost);
+		},
+
+		
+		addType : function(o){
+			Hemi.log("Add Module type: " + o.name + ":" + o.text);
+			return AM6Client.update("MODULE",o);
+		},
+		
+		prepareSave : function(o){
+		
+			this.prepareSaveArtifactsList(o);
+			this.prepareSaveWorksList(o);
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

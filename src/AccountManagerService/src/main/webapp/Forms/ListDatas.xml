@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
+	<embedded-script>
+		<![CDATA[
+		// Requires TemplateTools to be included
+		//
+		template_init : function(){
+			//this.initList("Note");
+			this.getProperties().iconView = 1;
+			this.initGrid("Data",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Data","~/Data")));
+		},
+		decorateListItemName : function(o){
+			var _p = this.getProperties();
+			if(!_p.iconView) return o.name;
+			var w = (_p.iconWidth ? _p.iconWidth : 48);
+			var h = (_p.iconHeight ? _p.iconHeight : 48);
+			var oL = document.createElement("div");
+			var oP = document.createElement("p");
+			oP.setAttribute("style","text-indent:0px !important;");
+			var oP2 = document.createElement("p");
+			var oI = document.createElement("img");
+			oI.setAttribute("class","alignright");
+			var sIco = "/AccountManagerService/Media/Icons/Crystal/48x48/48px-Crystal_Clear_action_filenew.png";
+			if(o.mimeType.match(/^image/)){
+				sIco = "/AccountManagerService/Thumbnail/" + AM6Client.dotPath(AM6Client.currentOrganization) + "/Data" + o.groupPath + "/" + o.name + "/" + w + "x" + h
+			}
+			oI.setAttribute("src",sIco);
+			oP.appendChild(oI);
+			oP.appendChild(document.createTextNode(o.name));
+			oP.appendChild(document.createElement("br"));
+			if(o.description != null) oP.appendChild(document.createTextNode(o.description));
+			oP.appendChild(document.createElement("br"));
+			oP.appendChild(document.createTextNode(o.createdDate.toString()));
+			oL.appendChild(oP);
+			oP2.setAttribute("class","clearalign");
+			oL.appendChild(oP2);
+			return oL;
+						
+		},
+		template_destroy : function(){
+			
+		},
+
+		handle_list_click : function(v){
+			///this.setStatus("Clicked: " + v.name);
+		}
+		]]>
+	</embedded-script>
+</Template>

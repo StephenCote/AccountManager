@@ -1,0 +1,36 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Work:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "work" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseWork()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickWork('Work')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openWork()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		if(!this.getProperties().workProp){
+			this.getProperties().workProp = "work";
+		}
+		//var o = this.getBean("rocketType");
+		//this.pickWork('Work',o[this.getProperties().workProp]);
+
+	},
+	chooseWork : function(){
+		this.manageList("Work", this.getObjectId(),"pickWork");
+	},
+
+		openWork : function(){
+			var o = this.getBean("rocketType");
+			if(o && o[this.getProperties().workProp] && this.openItem) this.openItem(o[this.getProperties().workProp],"Work");
+		},
+	pickWork : function(s, v){
+		var o = this.getBean("rocketType");
+		o[this.getProperties().workProp] = v;
+		this.GetElementByRID("work").value = (v ? v.name : "");
+	}
+	]]></embedded-script>
+</html-fragment>

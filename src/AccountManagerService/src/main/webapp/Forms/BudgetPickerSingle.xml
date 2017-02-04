@@ -1,0 +1,36 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Budget:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "budget" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseBudget()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickBudget('Budget')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openBudget()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		if(!this.getProperties().budgetProp){
+			this.getProperties().budgetProp = "budget";
+		}
+		//var o = this.getBean("rocketType");
+		//this.pickBudget('Budget',o[this.getProperties().budgetProp]);
+
+	},
+	chooseBudget : function(){
+		this.manageList("Budget", this.getObjectId(),"pickBudget");
+	},
+
+		openBudget : function(){
+			var o = this.getBean("rocketType");
+			if(o && o[this.getProperties().budgetProp] && this.openItem) this.openItem(o[this.getProperties().budgetProp],"Budget");
+		},
+	pickBudget : function(s, v){
+		var o = this.getBean("rocketType");
+		o[this.getProperties().budgetProp] = v;
+		this.GetElementByRID("budget").value = (v ? v.name : "");
+	}
+	]]></embedded-script>
+</html-fragment>

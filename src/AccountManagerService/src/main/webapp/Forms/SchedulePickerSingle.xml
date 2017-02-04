@@ -1,0 +1,36 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Schedule:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "schedule" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseSchedule()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickSchedule('Schedule')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openSchedule()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		if(!this.getProperties().scheduleProp){
+			this.getProperties().scheduleProp = "schedule";
+		}
+		//var o = this.getBean("rocketType");
+		//this.pickSchedule('Schedule',o[this.getProperties().scheduleProp]);
+
+	},
+	chooseSchedule : function(){
+		this.manageList("Schedule", this.getObjectId(),"pickSchedule");
+	},
+
+		openSchedule : function(){
+			var o = this.getBean("rocketType");
+			if(o && o[this.getProperties().scheduleProp] && this.openItem) this.openItem(o[this.getProperties().scheduleProp],"Schedule");
+		},
+	pickSchedule : function(s, v){
+		var o = this.getBean("rocketType");
+		o[this.getProperties().scheduleProp] = v;
+		this.GetElementByRID("schedule").value = (v ? v.name : "");
+	}
+	]]></embedded-script>
+</html-fragment>

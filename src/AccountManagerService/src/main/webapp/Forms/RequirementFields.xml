@@ -1,0 +1,100 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Requirement Id:
+		</p>
+		<p>
+			<input type = "text" rid = "requirementId" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Logical Order:
+		</p>
+		<p>
+			<input type = "text"  rid = "logicalOrder" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Priority:
+		</p>
+		<p>
+			<select rid = "priority" bind = "${bean.rocketType}">
+	    		<option>UNKNOWN</option>
+	    		<option>LOW</option>
+	    		<option>NORMAL</option>
+	    		<option>HIGH</option>
+	    		<option>VITAL</option>
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+	
+		<p>
+			Type:
+		</p>
+		<p>
+			<select rid = "requirementType" bind = "${bean.rocketType}">
+	  			<option>UNKNOWN</option>
+	    		<option>DESIGN</option>
+	    		<option>TECHNICAL</option>
+	    		<option>FUNCTIONAL</option>
+	    		<option>BUSINESS</option>
+	    		<option>CUSTOMER</option>
+	    		<option>MARKETING</option>
+	    		<option>EXECUTIVE</option>
+	    		<option>ARCHITECTURAL</option>
+	    		<option>TEST</option>
+	    		<option>DEVELOPMENT</option>
+	    		<option>DEPENDENCY</option>
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+	
+		<p>
+			Status:
+		</p>
+		<p>
+			<select rid = "requirementStatus" bind = "${bean.rocketType}">
+	  			<option>UNKNOWN</option>
+	    		<option>DEFINED</option>
+	    		<option>UNDEFINED</option>
+	    		<option>IMPLEMENTED</option>
+	    		<option>PENDING</option>
+	    		<option>MISSED</option>
+	    		<option>REJECTED</option>
+	    		<option>APPROVED</option>
+			</select>
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/NotePickerSingle.xml" id  = "NotePickerSingle" />
+	<import-xml src = "/AccountManagerService/Forms/FormPickerSingle.xml" id  = "FormPickerSingle" />
+	<embedded-script><![CDATA[
+		addType : function(o){
+			Hemi.log("Add requirement type: " + o.name + ":" + o.description);
+			return AM6Client.update("REQUIREMENT",o);
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("text").className = "rocket-text";
+			/*
+			if(!this.ValidateForPattern("text","not-empty")){
+				this.GetElementByRID("text").className = "rocket-text rocket-text-error";
+				this.setStatus("Text cannot be empty");
+				return 0;
+			}
+			*/
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

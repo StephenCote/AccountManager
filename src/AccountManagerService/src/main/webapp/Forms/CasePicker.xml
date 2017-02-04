@@ -1,0 +1,59 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "casePickerTitle">
+			<span rid = "casePickerToggle"></span> Cases:
+		</p>
+		<p rid = "casePickerContent">
+			<div component = "wideselect" rid = "casesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addCase()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeCase()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openCase()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("casePickerToggle","casePickerContent");
+			if(!this.getProperties().caseListProp) this.getProperties().caseListProp = "cases";
+			
+		},
+		openCase : function(){
+			var oI = this.getCasesList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Case");
+		},
+		addCase : function(){
+			this.manageList("Case", this.getCasesList().getObjectId());
+		},
+		removeCase : function(){
+			var oI = this.getCasesList().getActiveItem();
+			if(oI) this.getCasesList().clearItem(oI.index);
+		},
+
+		configCasesList : function(s,v){
+			var oL = this.getCasesList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshCases();
+		},
+		refreshCases : function(){
+			var oL = this.getCasesList(), aP = this.getProperties().caseListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getCasesList : function(){
+			return this.GetComponentByRID("casesList").GetWideSelect();
+		},
+		prepareSaveCasesList : function(o){
+			aP = this.getProperties().caseListProp;
+			o[aP] = [];
+			var aCases = this.getCasesList().getItems();
+			for(var i = 0; i < aCases.length;i++) o[aP].push(aCases[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

@@ -1,0 +1,140 @@
+<Template>
+<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+<div class = "rocket-column-2">
+		<p>
+			Object:
+		</p>
+		<p>
+			<span rid = "objectLabel"></span>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Attr Name:
+		</p>
+		<p>
+			<input type = "text" rid = "name" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Attr Values:
+		</p>
+		<p>
+			<div component = "wideselect" rid = "valuesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addValue()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeValue()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openValue()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			
+		</p>
+		<p>
+			<input type = "button" onclick = "${this}.saveAttribute()" value = "Save" />
+			<input type = "button" onclick = "${this}.Close()" value = "Close" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			var _s = this.getProperties(), o, a;
+			o = _s.viewType;
+			if(!o) Hemi.xml.setInnerXHTML(this.GetElementByRID("objectLabel"),"Invalid object reference");
+			else{
+				if(!this.getProperties().valueListProp) this.getProperties().valueListProp = "values";
+				a = _s.attributeType;
+				Hemi.xml.setInnerXHTML(this.GetElementByRID("objectLabel"),(!o ? "New Object" : o.name + " (#" + o.id + ")"));
+				this.GetElementByRID("name").value = (a ? a.name : ""); 
+				this.GetComponentByRID("valuesList").setLoadHandler(this.scopeHandler("configValuesList",0,1,1));
+			}
+			
+		},
+		saveAttribute : function(){
+			var oA = this.getProperties().attributeType, o = this.getProperties().viewType, oL = Hemi.registry.service.getObject(this.getProperties().listId), oAL = this.getValuesList(), aV, oI;
+			aV = oAL.getItems();
+			this.setStatus("");
+
+			var sN = this.GetElementByRID("name").value;
+			/// If no name, then it's an error 
+			if(!sN || sN.length == 0){
+				this.setStatus("No name was specified");
+				return;
+			}
+
+			/// If no values, then the attribute is removed
+			///
+			if(!aV.length){
+				this.setStatus("No values are specified");
+			}
+			
+			/// If saving, just chuck the item off the list before proceeding
+			///
+			oI = oL.getActiveItem();
+			if(oI) oL.clearItem(oI);
+			
+			/// Regardless of whether an attribute was specified, create a new one and  toss the old reference set
+			var a = new org.cote.objects.attributeType();
+			a.name = sN;
+			a.dataType = "VARCHAR";
+			a.values = [];
+			for(var i = 0; i < oAL.getItems().length;i++) a.values.push(oAL.getItems()[i].data);
+			var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
+			oL.addItem(oOpener.decorateAttributeItem(a),a);
+			this.Close();
+						
+		},
+		pickText : function(o,sL,sH, sDV){
+			var oW = Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},this._prehandle_picker_loaded);
+			if(!oW) return;
+			oW.setHideOnClose(0);
+			oW.resizeTo(475,100);
+			oW.center();
+			oW.setIsModal(true);
+			oW.hideButtons();
+		},
+		_handle_picker_loaded : function(oW){
+	
+		},
+		removeValue : function(){
+			var oI = this.getValuesList().getActiveItem();
+			if(oI) this.getValuesList().clearItem(oI.index);
+		},
+		openValue : function(){
+			var oI = this.getValuesList().getActiveItem();
+			if(oI) this.pickText(this,"Change " + (this.getProperties().attributeType ? this.getProperties().attributeType.name : "Attribute") + " Value","pickChangeValue",oI.data);
+		},
+		pickChangeValue : function(s){
+			if(!s) return;
+			this.removeValue();
+			if(s.length == "") return;
+			this.getValuesList().addItem(s,s);
+		},
+		addValue : function(){
+			this.pickText(this,"New " + (this.getProperties().attributeType ? this.getProperties().attributeType.name : "Attribute") + " Value","pickNewValue","");
+		},
+		pickNewValue : function(s){
+			if(!s || s.length == 0) return;
+			this.getValuesList().addItem(s,s);
+		},
+		configValuesList : function(s,v){
+			var oL = this.getValuesList(),_s = this.getProperties();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshValues();
+		},
+		refreshValues : function(){
+			var oL = this.getValuesList(), aP = this.getProperties().valueListProp;
+			oL.clearItems();
+			var o = this.getProperties().attributeType;
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i],o[aP][i]);
+			}
+		},
+		getValuesList : function(){
+			return this.GetComponentByRID("valuesList").GetWideSelect();
+		}
+	]]></embedded-script>
+</Template>

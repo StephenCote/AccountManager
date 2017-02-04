@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
+	<embedded-script>
+		<![CDATA[
+		// Requires TemplateTools to be included
+		//
+		template_init : function(){
+			this.initGrid("Location",uwm.getPathForType("Location"));
+		},
+		template_destroy : function(){
+			
+		},
+
+		decorateListItemName : function(o){
+			return AM6Client.getAttributeValue(o,"name",o.name);
+		},
+		handle_list_click : function(v){
+			///this.setStatus("Clicked: " + v.name);
+		}
+		]]>
+	</embedded-script>
+</Template>

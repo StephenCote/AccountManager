@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Fact Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Fact";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName,"~/Facts");
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.factType();
+					o.name = "";
+					o.description = "";
+					o.sourceUrl = "";
+					o.sourceUrn = "";
+					o.sourceDataType = "VARCHAR";
+					o.factData = "";
+					o.sourceType = "";
+					o.score = 0;
+					o.factType = "UNKNOWN";
+					o.factoryType = "UNKNOWN";
+					o.id = 0;
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

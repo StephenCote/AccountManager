@@ -1,0 +1,85 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Score:
+		</p>
+		<p>
+			<input type = "text"  rid = "score" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Type:
+		</p>
+		<p>
+		<select rid = "operationType" onchange = "${this}.chooseType()" bind = "${bean.rocketType}">
+			<option>UNKNOWN</option>
+			<option>NAMED</option>
+			<option>PERMISSION</option>
+			<option>FUNCTION</option>
+			<option>INTERNAL</option>
+			</select>
+    	</p>
+	</div>
+	<div class = "rocket-column-2" rid = "operationContainer">
+		<p>
+			Operation:
+		</p>
+		<p>
+			<input type = "text"  rid = "operation" bind = "${bean.rocketType}" class = "rocket-text" />
+			<input rid = "btnFind" style = "display:none;" type = "button" class = "rocket-button" value = "..." onclick = "${this}.findType()" />
+		</p>
+	</div>
+	
+	
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		this.chooseType(1);
+	},
+	chooseType : function(b){
+		var s = this.GetElementByRID("operationType").value.match(/^(permission|function)$/gi);
+		this.GetElementByRID("operation").className = "rocket-text" + (s ? " rocket-text-short" : "");
+		this.GetElementByRID("btnFind").style.display = (s ? "" : "none");
+		if(!b) this.GetElementByRID("operation").value = "";
+	},
+		findType : function(){
+			var sFType = this.GetElementByRID("operationType").value;
+			this.manageList(sFType.substring(0,1) + sFType.substring(1,sFType.length).toLowerCase(),0,"pickType");
+		},
+		pickType : function(t, o){
+			this.importType(o);
+			
+		},
+
+		importType : function(oBean){
+			o = this.getBean("rocketType");
+			var _s = this.getProperties();
+			if(!oBean.id || !oBean.nameType.match(/^(permission|function)$/gi)){
+				Hemi.logError("Unsupported fact import type " + oBean.nameType + " #" + oBean.id);
+				return;
+			}
+			
+			this.GetElementByRID("operation").value = oBean.urn;
+			
+		},
+	addType : function(o){
+			Hemi.log("Add operation type: " + o.name + ":" + o.operationType);
+			return accountManagerRule.addOperation(o.name, o.description,o.score,o.operationType, o.operation,o.groupPath);
+		},
+		prepareSave : function(o){
+
+			return 1;
+		}
+	]]></embedded-script>
+	</html-fragment>
+    		
+    		

@@ -1,0 +1,175 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Created:
+		</p>
+		<p>
+			<input type = "text" disabled = "true" rid = "createdDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Type:
+		</p>
+		<p>
+			<select onchange = "${this}.chooseArtifactType()" rid = "artifactType" bind = "${bean.rocketType}">
+    		<option>UNKNOWN</option>
+    		<option>REQUIREMENT</option>
+    		<option>DESIGN</option>
+    		<option>REVIEW</option>
+    		<option>DEVELOPMENT</option>
+    		<option>TEST</option>
+    		<option>RELEASE</option>
+    		<option>DEPENDENCY</option>
+    		<option>DATA</option>
+    		<option>TASK</option>
+    		<option>NOTE</option>
+    		<option>MODULE</option>
+    		<option>STAGE</option>
+    		<option>WORK</option>
+    		<option>STORY</option>
+    		<option>TICKET</option>
+    		<option>FORM</option>
+			</select>
+		</p>
+	</div>
+	<div rid = "dataRefCont" style = "display: none;" class = "rocket-column-2">
+		<p>
+			Reference:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "data" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseData()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickData('Data')" />
+			<input type = "button" value = ">" class = "rocket-button" onclick = "${this}.openData()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Previous:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "previousTransition" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.choosePrevTrans()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickPrevTrans('Artifact')" />
+			<input type = "button" value = ">" class = "rocket-button" onclick = "${this}.openPrevTrans()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Next:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "nextTransition" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseNextTrans()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickNextTrans('Cost')" />
+			<input type = "button" value = ">" class = "rocket-button" onclick = "${this}.openNextTrans()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			var o = this.getBean("rocketType");
+			var oPrev, oNext, oData;
+			
+			if(o.previousTransitionId) oPrev = AM6Client.get("ARTIFACT",o.previousTransitionId);
+			if(o.nextTransitionId) oNext = AM6Client.get("ARTIFACT",o.nextTransitionId); 
+			this.pickNextTrans('Artifact',oNext);
+			this.pickPrevTrans('Artifact',oPrev);
+			var oData = this.getChoiceByType();
+			this.chooseArtifactType();
+			this.pickData('Data',oData);
+		},
+		openData : function(){
+			var oI = this.getChoiceByType();
+			if(!oI || !this.openItem) return;
+			var oSel = this.GetElementByRID("artifactType");
+			var sType = oSel.value.substring(0,1) + oSel.value.substring(1,oSel.value.length).toLowerCase();
+			this.openItem(oI,sType);
+		},
+		getChoiceByType : function(){
+			var o = this.getBean("rocketType");
+			var oObj;
+			if(!o.artifactDataId) return oObj;
+			
+			var oSel = this.GetElementByRID("artifactType");
+			if(!oSel.value.match(/^(ticket|form|data|task|stage|work|requirement|note|module|story)$/i)) return oObj;
+			
+			oObj = AM6Client.get(oSel.value,o.artifactDataId);
+			return oObj;
+		},
+		chooseArtifactType : function(){
+			var oSel = this.GetElementByRID("artifactType");
+			
+			if(oSel.value.match(/^(ticket|form|data|task|stage|work|requirement|note|module|story)$/i)){
+				this.GetElementByRID("dataRefCont").style.display = "block";	
+			}
+			else{
+				this.GetElementByRID("dataRefCont").style.display = "none";
+			}
+			this.pickData('Data');
+
+		},
+		addType : function(o){
+			Hemi.log("Add artifact type: " + o.name + ":" + o.text);
+			return AM6Client.update("ARTIFACT",o);
+		},
+		choosePrevTrans : function(){
+			this.manageList("Artifact", this.getObjectId(),"pickPrevTrans");
+		},
+		chooseNextTrans : function(){
+			this.manageList("Artifact", this.getObjectId(),"pickNextTrans");
+		},
+		chooseData : function(){
+			var oSel = this.GetElementByRID("artifactType");
+			if(!oSel.value.match(/^(ticket|form|data|task|stage|work|requirement|note|module|story)$/i)) return;
+			var sType = oSel.value.substring(0,1) + oSel.value.substring(1,oSel.value.length).toLowerCase();
+			this.manageList(sType, this.getObjectId(),"pickData");
+		},
+		pickData : function(s, v){
+ 			var o = this.getBean("rocketType");
+			o.artifactDataId = (v ? v.id : 0);
+			this.GetElementByRID("data").value = (v ? v.name : "");		
+		},
+		openPrevTrans : function(){
+			var o = this.getBean("rocketType");
+			if(!o.previousTransitionId) return;
+			var v = AM6Client.get("ARTIFACT",o.previousTransitionId);
+			if(v && this.openItem) this.openItem(v,"Artifact");
+		},
+		pickPrevTrans : function(s, v){
+			var o = this.getBean("rocketType");
+			o.previousTransitionId = (v ? v.id : 0);
+			this.GetElementByRID("previousTransition").value = (v ? v.name + " " + v.artifactType : "");
+		},
+		openNextTrans : function(){
+			var o = this.getBean("rocketType");
+			if(!o.nextTransitionId) return;
+			var v = AM6Client.get("ARTIFACT",o.nextTransitionId);
+			if(v && this.openItem) this.openItem(v,"Artifact");
+		},
+		pickNextTrans : function(s, v){
+			var o = this.getBean("rocketType");
+			o.nextTransitionId = (v ? v.id : 0);
+			this.GetElementByRID("nextTransition").value = (v ? v.name + " " + v.artifactType : "");
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("text").className = "rocket-text";
+			/*
+			if(!this.ValidateForPattern("text","not-empty")){
+				this.GetElementByRID("text").className = "rocket-text rocket-text-error";
+				this.setStatus("Text cannot be empty");
+				return 0;
+			}
+			*/
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

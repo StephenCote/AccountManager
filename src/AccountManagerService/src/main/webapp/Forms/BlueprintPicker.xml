@@ -1,0 +1,59 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "blueprintPickerTitle">
+			<span rid = "blueprintPickerToggle"></span> Blueprints:
+		</p>
+		<p rid = "blueprintPickerContent">
+			<div component = "wideselect" rid = "blueprintsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addBlueprint()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeBlueprint()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openBlueprint()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("blueprintPickerToggle","blueprintPickerContent");
+			if(!this.getProperties().blueprintListProp) this.getProperties().blueprintListProp = "blueprints";
+
+		},
+		openBlueprint : function(){
+			var oI = this.getBlueprintsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Model");
+		},
+		addBlueprint : function(){
+			this.manageList("Model", this.getBlueprintsList().getObjectId());
+		},
+		removeBlueprint : function(){
+			var oI = this.getBlueprintsList().getActiveItem();
+			if(oI) this.getBlueprintsList().clearItem(oI.index);
+		},
+
+		configBlueprintsList : function(s,v){
+			var oL = this.getBlueprintsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshBlueprints();
+		},
+		refreshBlueprints : function(){
+			var oL = this.getBlueprintsList(), aP = this.getProperties().blueprintListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getBlueprintsList : function(){
+			return this.GetComponentByRID("blueprintsList").GetWideSelect();
+		},
+		prepareSaveBlueprintsList : function(o){
+			aP = this.getProperties().blueprintListProp;
+			o[aP] = [];
+			var aBlueprints = this.getBlueprintsList().getItems();
+			for(var i = 0; i < aBlueprints.length;i++) o[aP].push(aBlueprints[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

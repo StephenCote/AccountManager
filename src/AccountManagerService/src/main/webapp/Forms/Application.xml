@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Group Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Application";
+			this.getProperties().viewTypeName = "Application";
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getProperties().defaultPath) this.getProperties().defaultPath = "~/Applications";
+			this.getProperties().populate = 0;
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.baseGroupType();
+					o.name = "";
+					var p = AM6Client.find("GROUP","DATA",this.getProperties().defaultPath);
+					o.parentId = (p ? p.id : 0);
+					o.nameType = "GROUP";
+					o.groupType = "DATA";
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

@@ -1,0 +1,71 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "formPickerToggle"></span> Forms:
+		</p>
+		<p rid = "formPickerContent">
+			<div component = "wideselect" rid = "formsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addForm()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeForm()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openForm()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		this.toggleField("formPickerToggle","formPickerContent");
+		if(!this.getProperties().formListProp) this.getProperties().formListProp = "forms";
+		
+	},
+	openForm : function(){
+		var oI = this.getFormsList().getActiveItem();
+		if(oI && oI.data && this.openItem){
+			if(!oI.data.populated) oI.data = AM6Client.get("FORM",oI.data.id);
+			var oProps = {viewType:oI.data};
+			var oW = Hemi.app.createWindow(oI.data.name, "/AccountManagerService/Forms/FormView.xml", "View-" + oI.data.id, 0, 0, oProps);
+            if (oW) {
+            	oW.resizeTo(600, 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		//	this.openItem(oI.data,"Form");
+		}
+	},
+	addForm : function(){
+			this.manageList("Form", this.getFormsList().getObjectId());
+		},
+		removeForm : function(){
+			var oI = this.getFormsList().getActiveItem();
+			if(oI) this.getFormsList().clearItem(oI.index);
+		},
+
+		configFormsList : function(s,v){
+			var oL = this.getFormsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshForms();
+		},
+		refreshForms : function(){
+			var oL = this.getFormsList(),aP = this.getProperties().formListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getFormsList : function(){
+			return this.GetComponentByRID("formsList").GetWideSelect();
+		},
+		
+		prepareSaveFormsList : function(o){
+			aP = this.getProperties().formListProp;
+			o[aP] = [];
+			var aForms = this.getFormsList().getItems();
+			for(var i = 0; i < aForms.length;i++) o[aP].push(aForms[i].data);
+		}
+	
+	]]></embedded-script>
+</html-fragment>

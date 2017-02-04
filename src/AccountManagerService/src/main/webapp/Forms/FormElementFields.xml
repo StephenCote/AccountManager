@@ -1,0 +1,180 @@
+<html-fragment>
+	<import-xml src = "/AccountManagerService/Forms/Fragments/FormViewTools.xml" id = "FormViewTools" />
+	<div class = "rocket-column-2">
+		<p>
+			Element Name:
+		</p>
+		<p>
+			<input type = "text" rid = "elementName" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Element Label:
+		</p>
+		<p>
+			<input type = "text" rid = "elementLabel" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+	
+		<p>
+			Type:
+		</p>
+		<p>
+			<select onchange = "${this}.chooseElementType()" rid = "elementType" bind = "${bean.rocketType}">
+    		<option>UNKNOWN</option>
+    		<option>DATE</option>
+    		<option>STRING</option>
+    		<option>STRING_MULTILINE</option>
+    		<option>BOOLEAN</option>
+    		<option>INT</option>
+    		<option>DOUBLE</option>
+    		<option>SELECT</option>
+    		<option>MULTIPLE_SELECT</option>
+			<option>RESOURCE</option>
+			<option>SCHEDULE</option>
+			<option>ESTIMATE</option>
+			<option>TIME</option>
+			<option>NOTE</option>
+			<option>DATA</option>
+			<option>FORM</option>
+			<option>TASK</option>
+			<option>TICKET</option>
+			<option>MODEL</option>
+			<option>ARTIFACT</option>
+			<option>STAGE</option>
+			<option>CASE</option>
+			<option>WORK</option>
+			<option>GOAL</option>
+			<option>BUDGET</option>
+			<option>COST</option>
+
+			</select>
+		</p>
+	</div>
+	<div rid = "optCont" style = "display: none;" class = "rocket-column-2">
+	
+		<p>
+			Options:
+		</p>
+		<p>
+			<textarea rid = "optionValues" class = "rocket-text"></textarea>
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Rule:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "formRule" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseRule()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickRule('Form')" />
+			<input type = "button" value = ">" class = "rocket-button" onclick = "${this}.openRule()" />
+		</p>
+	</div>
+	<div rid = "viewTemplateCont" class = "rocket-column-2">
+		<p>
+			View:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "elementViewTemplate" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseViewTemplate()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickViewTemplate('Note')" />
+			<input type = "button" value = ">" class = "rocket-button" onclick = "${this}.openViewTemplate()" />
+			<input type = "button" value = "^" class = "rocket-button" onclick = "${this}.createViewTemplate()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			var o = this.getBean("rocketType");
+			this.pickRule('ValidationRule',o.validationRule);
+			this.chooseElementType();
+			this.refreshValues();
+			this.pickViewTemplate('Note',o.elementTemplate);
+		},
+		openViewTemplate : function(){
+			var o = this.getBean("rocketType");
+			if(o && o.elementTemplate && this.openItem) this.openItem(o.elementTemplate,"Note");
+		},
+		createViewTemplate : function(){
+			//function (t, l, n, v, b, a, f)
+			var o = this.getBean("rocketType");
+			var sBuff = this.getElementTemplate(0, o);
+			var oN =new org.cote.objects.noteType();
+			oN.name = "Element Template";
+			oN.text = sBuff;
+			oN.id = 0;
+			oN.createdDate = new Date();
+			oN.modifiedDate = new Date();
+			var p = {viewType:oN};
+			Hemi.app.createWindow("Create View",uwm.getApiTypeView("Note") + "/Forms/Note.xml","Create View Template - " + Hemi.guid(), 0, 0, p, function(oW){
+				oW.setHideOnClose(0);
+			}); 
+		},
+		chooseViewTemplate : function(){
+			this.manageList("Note", this.getObjectId(),"pickViewTemplate");
+		},
+		pickViewTemplate : function(s, v){
+			var o = this.getBean("rocketType");
+			o.elementTemplate = v;
+			this.GetElementByRID("elementViewTemplate").value = (v ? v.name : "");
+		},
+		refreshValues : function(){
+			var o = this.getBean("rocketType");
+			var oSel = this.GetElementByRID("elementType");
+			if(oSel.value.match(/select/gi)){
+				var aBuff = [];
+				for(var i = 0; i < o.elementValues.length;i++) aBuff.push(o.elementValues[i].textValue);
+				this.GetElementByRID("optionValues").value = aBuff.join("\n");
+			}
+		},
+		chooseElementType : function(){
+			var oSel = this.GetElementByRID("elementType");
+			this.GetElementByRID("optCont").style.display = (oSel.value.match(/select/gi) ? "block" : "none");
+		},
+		openRule : function(){
+			var o = this.getBean("rocketType");
+			if(o && o.validationRule && this.openItem) this.openItem(o.validationRule,"ValidationRule");
+		},
+		chooseRule : function(){
+			this.manageList("ValidationRule", this.getObjectId(),"pickRule");
+		},
+		pickRule : function(s, v){
+			var o = this.getBean("rocketType");
+			o.validationRule = v;
+			this.GetElementByRID("formRule").value = (v ? v.name : "");
+		},
+		addType : function(o){
+			return AM6Client.update("FORMELEMENT",o);
+		},
+		prepareSave : function(o){
+			var o = this.getBean("rocketType");
+			o.elementValues = [];
+			var oSel = this.GetElementByRID("elementType");
+			if(oSel.value.match(/select/gi)){
+				var aVals = this.GetElementByRID("optionValues").value.split("\n");
+				for(var i = 0; i < aVals.length;i++){
+					var sVal = Hemi.text.trim(aVals[i]);
+					if(sVal.length == 0) continue;
+					var oV = new org.cote.objects.formElementValueType();
+					oV.name = sVal;
+					oV.isBinary = false;
+					oV.textValue = sVal;
+					o.elementValues.push(oV);
+				}
+			}
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

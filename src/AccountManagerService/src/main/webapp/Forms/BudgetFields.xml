@@ -1,0 +1,44 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+	
+		<p>
+			Type:
+		</p>
+		<p>
+			<select rid = "budgetType" bind = "${bean.rocketType}">
+				<option>UNKNOWN</option>
+				<option>COST</option>
+				<option>MULTIFACTOR</option>
+				<option>TIME</option>
+			</select>
+		</p>
+	</div>
+	<import-xml src="/AccountManagerService/Forms/TimePickerSingle.xml" id = "TimePickerSingle" />
+	<import-xml src="/AccountManagerService/Forms/CostPickerSingle.xml" id = "CostPickerSingle" />
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			var o = this.getBean("rocketType");
+			this.getProperties().timeProp = "time";
+			this.getProperties().costProp = "cost";
+			this.pickTime('Time',o.time);
+			this.pickCost('Cost',o.cost);
+		},
+		addType : function(o){
+			Hemi.log("Add budget type: " + o.name + ":" + o.text);
+			return AM6Client.update("BUDGET",o);
+		},
+		
+		prepareSave : function(o){
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

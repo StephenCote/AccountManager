@@ -1,0 +1,191 @@
+<html-fragment>
+	<import-xml src = "/AccountManagerService/Forms/ParentPicker.xml" id = "ParentPicker" />
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text"  rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Logical Order:
+		</p>
+		<p>
+			<input type = "text"  rid = "logicalOrder" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	
+	<import-xml src = "/AccountManagerService/Forms/EstimatePicker.xml" id = "EstimatePicker" />
+	<div class = "rocket-column-2">
+		<p>
+			Start Date:
+		</p>
+		<p>
+			<input type = "date" component = "calendar" rid = "startDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>	
+	<div class = "rocket-column-2">
+		<p>
+			Due Date:
+		</p>
+		<p>
+			<input type = "date" component = "calendar" rid = "dueDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Completed Date:
+		</p>
+		<p>
+			<input type = "date" component = "calendar" rid = "completedDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+	
+		<p>
+			Type:
+		</p>
+		<p>
+			<select rid = "taskStatus" bind = "${bean.rocketType}">
+	    		<option>UNKNOWN</option>
+	    		<option>ESTIMATED</option>
+	    		<option>IN_PROGRESS</option>
+	    		<option>COMPLETED</option>
+	    		<option>BLOCKED</option>
+	    		<option>APPROVED</option>
+	    		<option>WASTE</option>
+	    		<option>UNPLANNED</option>
+	    		<option>REJECTED</option>
+			</select>
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/TaskPicker.xml" id = "TaskPicker" />
+	<import-xml src = "/AccountManagerService/Forms/RequirementPicker.xml" id = "RequirementPicker" />
+	<import-xml src = "/AccountManagerService/Forms/DependencyPicker.xml" id = "DependencyPicker" />
+	<import-xml src = "/AccountManagerService/Forms/ArtifactPicker.xml" id = "ArtifactPicker" />	
+	<import-xml src = "/AccountManagerService/Forms/WorkPicker.xml" id = "WorkPicker" />
+	<import-xml src = "/AccountManagerService/Forms/NotePicker.xml" id = "NotePicker" />
+	<import-xml src = "/AccountManagerService/Forms/TimePicker.xml" id = "TimePicker" />
+	<import-xml src = "/AccountManagerService/Forms/CostPicker.xml" id = "CostPicker" />
+	<import-xml src = "/AccountManagerService/Forms/ResourcePicker.xml" id = "ResourcePicker" />
+
+
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			
+			this.getProperties().taskListProp = "childTasks";
+			this.getProperties().costListProp = "actualCost";
+			this.getProperties().timeListProp = "actualTime";
+			this.getProperties().requirementListProp = "requirements";
+			this.getProperties().dependencyListProp = "dependencies";
+			this.getProperties().artifactListProp = "artifacts";
+			this.getProperties().resourceListProp = "resources";
+			this.getProperties().workListProp = "work";
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("taskPickerTitle"),"Child Tasks");
+			this.GetComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
+			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.GetComponentByRID("tasksList").setLoadHandler(this.scopeHandler("configTasksList",0,1,1));
+			this.GetComponentByRID("timesList").setLoadHandler(this.scopeHandler("configTimesList",0,1,1));
+			this.GetComponentByRID("costsList").setLoadHandler(this.scopeHandler("configCostsList",0,1,1));
+			this.GetComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
+			this.GetComponentByRID("notesList").setLoadHandler(this.scopeHandler("configNotesList",0,1,1));
+			this.GetComponentByRID("worksList").setLoadHandler(this.scopeHandler("configWorksList",0,1,1));
+			var o = this.getBean("rocketType");
+			this.pickEstimate('Estimate',o.estimate);
+		},
+
+		updateChildTasks : function(o){
+			var aI = this.getTasksList().getItems();
+			var a = [];
+			var iUp = 0;
+			for(var i = 0; o.childTasks && i < o.childTasks.length; i++) a[o.childTasks[i].id] = o.childTasks[i];
+			for(var i = 0; i < aI.length;i++){
+				var oI = aI[i].data;
+				if(!oI) continue;
+				/// Skip existing
+				if(a[oI.id]){
+					a[oI.id] = 0;
+					continue;
+				}
+				/// Set oI parent to task
+				oI.parentId = o.id;
+				AM6Client.update("TASK",oI);
+				iUp++;
+			}
+			for(var i = 0; i < a.length;i++){
+				if(typeof a[i]=="object"){
+					AM6Client.delete("TASK",a[i].objectId);
+					iUp++;
+				}
+			}
+			
+		},
+		
+		addType : function(o){
+			var b = AM6Client.update("TASK",o),oT;
+			if(b){
+				var oP;
+				if(o.parentId){
+					oP = AM6Client.get("TASK",o.parentId);
+					oT = rocket.getTaskByParent(o.name,oP);
+				}
+				else{
+					oT = AM6Client.getByName("TASK",AM6Client.find("GROUP","DATA",this.getPath()).objectId,o.name);
+				}
+				
+				this.updateChildTasks(oT);
+			}
+			AM6Client.clearCache(oT);
+			return b;
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("logicalOrder").className = "rocket-text";
+
+			o.requirements = [];
+			var aRequirements = this.getRequirementsList().getItems();
+			for(var i = 0; i < aRequirements.length;i++) o.requirements.push(aRequirements[i].data);
+			
+			o.dependencies = [];
+			var aDependencies = this.getDependenciesList().getItems();
+			for(var i = 0; i < aDependencies.length;i++) o.dependencies.push(aDependencies[i].data);
+			
+			o.artifacts = [];
+			var aArtifacts = this.getArtifactsList().getItems();
+			for(var i = 0; i < aArtifacts.length;i++) o.artifacts.push(aArtifacts[i].data);
+
+			o.work = [];
+			var aWorks = this.getWorksList().getItems();
+			for(var i = 0; i < aWorks.length;i++) o.work.push(aWorks[i].data);
+
+			o.notes = [];
+			var aNotes = this.getNotesList().getItems();
+			for(var i = 0; i < aNotes.length;i++) o.notes.push(aNotes[i].data);
+
+			o.actualTime = [];
+			var aTimes = this.getTimesList().getItems();
+			for(var i = 0; i < aTimes.length;i++) o.actualTime.push(aTimes[i].data);
+
+			o.actualCost = [];
+			var aCosts = this.getCostsList().getItems();
+			for(var i = 0; i < aCosts.length;i++) o.actualCost.push(aCosts[i].data);
+
+			o.resources = [];
+			var aResources = this.getResourcesList().getItems();
+			for(var i = 0; i < aResources.length;i++) o.resources.push(aResources[i].data);
+
+			if(!this.ValidateForPattern("logicalOrder","numbers-only")){
+				this.GetElementByRID("logicalOrder").className = "rocket-text rocket-text-error";
+				this.setStatus("Text cannot be empty");
+				return 0;
+			}
+			if(o.id){
+				this.updateChildTasks(o);
+				AM6Client.clearCache(o);
+			}
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

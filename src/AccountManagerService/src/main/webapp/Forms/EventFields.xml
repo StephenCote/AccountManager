@@ -1,0 +1,484 @@
+<html-fragment>
+	<import-xml src = "/AccountManagerService/Forms/ParentPicker.xml" id = "ParentPicker" />
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text"  rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Start Time:
+		</p>
+		<p>
+			<input type = "date" component = "calendar" rid = "startDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			End Time:
+		</p>
+		<p>
+			<input type = "date" component = "calendar" rid = "endDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Type:
+		</p>
+		<p>
+				<select rid = "eventType" bind = "${bean.rocketType}">
+					<option>UNKNOWN</option>
+					<option>INCEPT</option>
+					<option>GRADUATE</option>
+					<option>CONCLUDE</option>
+					<option>INGRESS</option>
+					<option>MOVE</option>
+					<option>CONSTRUCT</option>
+					<option>DESTRUCT</option>
+					<option>OPERATE</option>
+					<option>STABLIZE</option>
+					<option>DESTABILIZE</option>
+					<option>TRANSFER</option>
+					<option>EGRESS</option>
+					<option>IMMIGRATE</option>
+					<option>EMIGRATE</option>
+			</select>
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/LocationPickerSingle.xml" id = "LocationPickerSingle" />
+	<import-xml src = "/AccountManagerService/Forms/EventPicker.xml" id = "EventPicker" />
+
+	<div class = "rocket-column-2" rid = "entryTraitPicker" style = "display:none;">
+		<p rid = "entryTraitPickerTitle">
+			<span rid = "entryTraitPickerToggle"></span> Entry Traits:
+		</p>
+		<p rid = "entryTraitPickerContent">
+			<div component = "wideselect" rid = "entryTraitsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addEntryTrait()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeEntryTrait()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openEntryTrait()" />
+		</p>
+	</div>
+	
+	<div class = "rocket-column-2" rid = "exitTraitPicker" style = "display:none;">
+		<p rid = "exitTraitPickerTitle">
+			<span rid = "exitTraitPickerToggle"></span> Exit Traits:
+		</p>
+		<p rid = "exitTraitPickerContent">
+			<div component = "wideselect" rid = "exitTraitsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addExitTrait()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeExitTrait()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openExitTrait()" />
+		</p>
+	</div>
+	
+		
+	<import-xml src = "/AccountManagerService/Forms/DataPicker.xml" id = "DataPicker" />
+	
+	<import-xml src = "/AccountManagerService/Forms/PersonPicker.xml" id = "PersonPicker" />
+	
+	<div class = "rocket-column-2" rid = "orchestratorPicker" style = "display:none;">
+		<p rid = "orchestratorPickerTitle">
+			<span rid = "orchestratorPickerToggle"></span> Orchestrators:
+		</p>
+		<p rid = "orchestratorPickerContent">
+			<div component = "wideselect" rid = "orchestratorsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addOrchestrator()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeOrchestrator()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openOrchestrator()" />
+		</p>
+	</div>
+	
+		<div class = "rocket-column-2" rid = "influencerPicker" style = "display:none;">
+		<p rid = "influencerPickerTitle">
+			<span rid = "influencerPickerToggle"></span> Influencers:
+		</p>
+		<p rid = "influencerPickerContent">
+			<div component = "wideselect" rid = "influencersList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addInfluencer()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeInfluencer()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openInfluencer()" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2" rid = "observerPicker" style = "display:none;">
+		<p rid = "observerPickerTitle">
+			<span rid = "observerPickerToggle"></span> Observers:
+		</p>
+		<p rid = "observerPickerContent">
+			<div component = "wideselect" rid = "observersList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addObserver()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeObserver()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openObserver()" />
+		</p>
+	</div>
+	
+		<div class = "rocket-column-2" rid = "groupPicker" style = "display:none;">
+		<p rid = "groupPickerTitle">
+			<span rid = "groupPickerToggle"></span> Groups:
+		</p>
+		<p rid = "groupPickerContent">
+			<div component = "wideselect" rid = "groupsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addGroup()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeGroup()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openGroup()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			var o = this.getBean("rocketType");
+			this.pickLocation("Location", o.location);
+			
+			this.getProperties().eventListProp = "childEvents";
+			this.GetComponentByRID("eventsList").setLoadHandler(this.scopeHandler("configEventsList",0,1,1));
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("eventPickerTitle"),"Child Events");
+			
+
+			this.GetElementByRID("entryTraitPicker").style.display = "block";
+			this.toggleField("entryTraitPickerToggle","entryTraitPickerContent");
+			if(!this.getProperties().entryTraitListProp) this.getProperties().entryTraitListProp = "entryTraits";
+			this.GetComponentByRID("entryTraitsList").setLoadHandler(this.scopeHandler("configEntryTraitsList",0,1,1));
+			
+			this.GetElementByRID("exitTraitPicker").style.display = "block";
+			this.toggleField("exitTraitPickerToggle","exitTraitPickerContent");
+			if(!this.getProperties().exitTraitListProp) this.getProperties().exitTraitListProp = "exitTraits";
+			this.GetComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configExitTraitsList",0,1,1));
+						
+			this.GetElementByRID("orchestratorPicker").style.display = "block";
+			this.toggleField("orchestratorPickerToggle","orchestratorPickerContent");
+			if(!this.getProperties().orchestratorListProp) this.getProperties().orchestratorListProp = "orchestrators";
+			this.GetComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configOrchestratorsList",0,1,1));
+			
+
+			this.GetElementByRID("influencerPicker").style.display = "block";
+			this.toggleField("influencerPickerToggle","influencerPickerContent");
+			if(!this.getProperties().influencerListProp) this.getProperties().influencerListProp = "influencers";
+			this.GetComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configInfluencersList",0,1,1));
+
+
+			this.GetElementByRID("observerPicker").style.display = "block";
+			this.toggleField("observerPickerToggle","observerPickerContent");
+			if(!this.getProperties().observerListProp) this.getProperties().observerListProp = "observers";
+			this.GetComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configObserversList",0,1,1));
+
+			this.GetElementByRID("groupPicker").style.display = "block";
+			this.toggleField("groupPickerToggle","groupPickerContent");
+			if(!this.getProperties().groupListProp) this.getProperties().groupListProp = "groups";
+			this.GetComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configGroupsList",0,1,1));
+			
+						
+			this.getProperties().dataListProp = "things";
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("dataPickerTitle"),"Things");
+			this.GetComponentByRID("dataList").setLoadHandler(this.scopeHandler("configDataList",0,1,1));
+			
+			this.getProperties().personListProp = "actors";
+			this.setPersonPickerLabel("Actors");
+			this.initPersonPicker();
+			
+			
+
+		},	
+		updateChildEvents : function(o){
+			var aI = this.getEventsList().getItems();
+			var a = [];
+			var iUp = 0;
+			for(var i = 0; o.childEvents && i < o.childEvents.length; i++) a[o.childEvents[i].id] = o.childEvents[i];
+			for(var i = 0; i < aI.length;i++){
+				var oI = aI[i].data;
+				if(!oI) continue;
+				/// Skip existing
+				if(a[oI.id]){
+					a[oI.id] = 0;
+					continue;
+				}
+				/// Set oI parent to event
+				oI.parentId = o.id;
+				AM6Client.update("EVENT",oI);
+				iUp++;
+			}
+			for(var i = 0; i < a.length;i++){
+				if(typeof a[i]=="object"){
+					AM6Client.delete("EVENT",a[i]);
+					iUp++;
+				}
+			}
+			
+		},
+		
+		
+		
+		openEntryTrait : function(){
+			var oI = this.getEntryTraitsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Trait");
+		},
+		addEntryTrait : function(){
+			this.manageList("Trait", this.getEntryTraitsList().getObjectId(), "pickEntryTrait");
+		},
+		pickEntryTrait : function(s, v){
+			if(v){
+				this.getEntryTraitsList().addItem(AM6Client.getAttributeValue(v,"code",v.name),v);
+			}
+		},
+		removeEntryTrait : function(){
+			var oI = this.getEntryTraitsList().getActiveItem();
+			if(oI) this.getEntryTraitsList().clearItem(oI.index);
+		},
+
+		configEntryTraitsList : function(s,v){
+			var oL = this.getEntryTraitsList(),_s = this.getProperties();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshEntryTraits();
+		},
+		refreshEntryTraits : function(){
+			var oL = this.getEntryTraitsList(), aP = this.getProperties().entryTraitListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(AM6Client.getAttributeValue(o[aP][i],"code",o[aP][i].name),o[aP][i]);
+			}
+		},
+		getEntryTraitsList : function(){
+			return this.GetComponentByRID("entryTraitsList").GetWideSelect();
+		},
+		openExitTrait : function(){
+			var oI = this.getExitTraitsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Trait");
+		},
+		addExitTrait : function(){
+			this.manageList("Trait", this.getExitTraitsList().getObjectId(),"pickExitTrait");
+		},
+		pickExitTrait : function(s, v){
+			if(v){
+				this.getExitTraitsList().addItem(AM6Client.getAttributeValue(v,"code",v.name),v);
+			}
+		},
+		
+		removeExitTrait : function(){
+			var oI = this.getExitTraitsList().getActiveItem();
+			if(oI) this.getExitTraitsList().clearItem(oI.index);
+		},
+
+		configExitTraitsList : function(s,v){
+			var oL = this.getExitTraitsList(),_s = this.getProperties();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshExitTraits();
+		},
+		refreshExitTraits : function(){
+			var oL = this.getExitTraitsList(), aP = this.getProperties().exitTraitListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(AM6Client.getAttributeValue(o[aP][i],"code",o[aP][i].name),o[aP][i]);
+			}
+		},
+		getExitTraitsList : function(){
+			return this.GetComponentByRID("exitTraitsList").GetWideSelect();
+		},
+		
+		openOrchestrator : function(){
+			var oI = this.getOrchestratorsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Person");
+		},
+		addOrchestrator : function(){
+			this.manageList("Person", this.getOrchestratorsList().getObjectId());
+		},
+		removeOrchestrator : function(){
+			var oI = this.getOrchestratorsList().getActiveItem();
+			if(oI) this.getOrchestratorsList().clearItem(oI.index);
+		},
+
+		configOrchestratorsList : function(s,v){
+			var oL = this.getOrchestratorsList(),_s = this.getProperties();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshOrchestrators();
+		},
+		refreshOrchestrators : function(){
+			var oL = this.getOrchestratorsList(), aP = this.getProperties().orchestratorListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getOrchestratorsList : function(){
+			return this.GetComponentByRID("orchestratorsList").GetWideSelect();
+		},
+		
+		openObserver : function(){
+			var oI = this.getObserversList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Person");
+		},
+		addObserver : function(){
+			this.manageList("Person", this.getObserversList().getObjectId());
+		},
+		removeObserver : function(){
+			var oI = this.getObserversList().getActiveItem();
+			if(oI) this.getObserversList().clearItem(oI.index);
+		},
+
+		configObserversList : function(s,v){
+			var oL = this.getObserversList(),_s = this.getProperties();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshObservers();
+		},
+		refreshObservers : function(){
+			var oL = this.getObserversList(), aP = this.getProperties().observerListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getObserversList : function(){
+			return this.GetComponentByRID("observersList").GetWideSelect();
+		},
+		
+		openInfluencer : function(){
+			var oI = this.getInfluencersList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Person");
+		},
+		addInfluencer : function(){
+			this.manageList("Person", this.getInfluencersList().getObjectId());
+		},
+		removeInfluencer : function(){
+			var oI = this.getInfluencersList().getActiveItem();
+			if(oI) this.getInfluencersList().clearItem(oI.index);
+		},
+
+		configInfluencersList : function(s,v){
+			var oL = this.getInfluencersList(),_s = this.getProperties();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshInfluencers();
+		},
+		refreshInfluencers : function(){
+			var oL = this.getInfluencersList(), aP = this.getProperties().influencerListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getInfluencersList : function(){
+			return this.GetComponentByRID("influencersList").GetWideSelect();
+		},
+		
+			
+		openGroup : function(){
+			var oI = this.getGroupsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Group");
+		},
+		addGroup : function(){
+			//this.manageList("Group", this.getGroupsList().getObjectId());
+			this.manageList("Group", this.getObjectId(),"pickGroup",uwm.getPathForType("Group"),1);
+			
+		},
+		pickGroup : function(s, v){
+			if(v){
+				this.getGroupsList().addItem(v.name,v);
+			}
+		},
+		removeGroup : function(){
+			var oI = this.getGroupsList().getActiveItem();
+			if(oI) this.getGroupsList().clearItem(oI.index);
+		},
+
+		configGroupsList : function(s,v){
+			var oL = this.getGroupsList(),_s = this.getProperties();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshGroups();
+		},
+		refreshGroups : function(){
+			var oL = this.getGroupsList(), aP = this.getProperties().groupListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getGroupsList : function(){
+			return this.GetComponentByRID("groupsList").GetWideSelect();
+		},
+		
+		addType : function(o){
+			var oT,b = AM6Client.update(o);
+			if(b){
+				var oP;
+				if(o.parentId){
+					oP = AM6Client.get("EVENT",o.parentId);
+					oT = rocket.getEventByParent(o.name,oP);
+				}
+				else{
+					oT = AM6Client.getByName("EVENT",AM6Client.find("GROUP","DATA",this.getPath()).objectId,o.name);
+				}
+				
+				this.updateChildEvents(oT);
+			}
+			AM6Client.clearCache(oT);
+			return b;
+		},
+		prepareSave : function(o){
+			var _s = this.getProperties(), aEP,aXP;
+			aEP = this.getProperties().entryTraitListProp;
+			aXP = this.getProperties().exitTraitListProp;
+			aOP = this.getProperties().observerListProp;
+			aKP = this.getProperties().orchestratorListProp;
+			aIP = this.getProperties().influencerListProp;
+			aGP = this.getProperties().groupListProp;
+			
+			o[aEP] = [];
+			var aEntryTraits = this.getEntryTraitsList().getItems();
+			for(var i = 0; i < aEntryTraits.length;i++) o[aEP].push(aEntryTraits[i].data);
+			o[aXP] = [];
+			var aExitTraits = this.getExitTraitsList().getItems();
+			for(var i = 0; i < aExitTraits.length;i++) o[aXP].push(aExitTraits[i].data);
+			
+			o[aOP] = [];
+			var aObservers = this.getObserversList().getItems();
+			for(var i = 0; i < aObservers.length;i++) o[aOP].push(aObservers[i].data);
+			
+			o[aKP] = [];
+			var aOrchestrators = this.getOrchestratorsList().getItems();
+			for(var i = 0; i < aOrchestrators.length;i++) o[aKP].push(aOrchestrators[i].data);
+			
+			o[aIP] = [];
+			var aInfluencers = this.getInfluencersList().getItems();
+			for(var i = 0; i < aInfluencers.length;i++) o[aIP].push(aInfluencers[i].data);
+
+			o[aGP] = [];
+			var aGroups = this.getGroupsList().getItems();
+			for(var i = 0; i < aGroups.length;i++) o[aGP].push(aGroups[i].data);
+		
+			
+			this.prepareSaveDatasList(o);
+			this.prepareSavePersonsList(o);
+			
+			if(o.id){
+				this.updateChildEvents(o);
+				AM6Client.clearCache(o);
+			}
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

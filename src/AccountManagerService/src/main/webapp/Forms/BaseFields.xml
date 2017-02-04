@@ -1,0 +1,208 @@
+<html-fragment>
+<!-- 
+	<div class = "rocket-column-2">
+		<p>
+			Id:
+		</p>
+		<p>
+			<input type = "text" class = "rocket-text rocket-text-short" rid = "id" bind = "${bean.rocketType}" disable = "true" />
+		</p>
+	</div>
+-->
+	<div rid = "pathCont" class = "rocket-column-2">
+		<p>
+			Path:
+		</p>
+		<p>
+			<input type = "text" placeholder = "${property.defaultPath}" rid = "path" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Name:
+		</p>
+		<p>
+			<input type = "text" rid = "name" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	
+	<import-xml src = "${property.viewBase}/Forms/${property.typeName}Fields.xml" id = "${property.typeName}Fields" />
+	<import-xml src = "/AccountManagerService/Forms/AttributePicker.xml" id = "AttributePicker" />
+	<div rid = "debugCont" style = "display:none;clear:both;" class = "rocket-column-2">
+		<p rid = "lblDebug">
+			Debug:
+		</p>
+		<p>
+			<input rid = "btnDebug" type = "button" class = "rocket-button" value = "Debug" onclick = "${this}.sendToDebug()" />
+		</p>
+	</div>
+
+	<div style = "clear:both;" class = "rocket-column-2">
+		<p rid = "lblSave">
+			Save:
+		</p>
+		<p>
+			<input rid = "btnSave" type = "button" class = "rocket-button" value = "Save" onclick = "${this}.saveType()" />
+			<input rid = "btnFact" type = "button" class = "rocket-button" value = "Fact" onclick = "${this}.sendToFact()" />
+			<input rid = "btnClose" type = "button" class = "rocket-button" value = "Close" onclick = "${this}.closeObject()" />
+		</p>
+	</div>
+	<p style = "clear:both;"><span rid = "status"></span></p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			var o = this.getBean("rocketType"), _s = this.getProperties(), o;
+			if(!this.setStatus) this.setStatus = this._setStatus;
+			Hemi.message.service.subscribe(this, "oncommunitychange", "refreshCommunity");
+			this.GetElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
+			this.setStatus("");
+			if(typeof _s.populate == "undefined") _s.populate = 1;
+			this.GetElementByRID("name").focus();
+			if(!_s.viewTypeName) _s.viewTypeName = _s.typeName;
+			if(this.setTitle) this.setTitle(_s.viewTypeName + " - " + (o.id ? o.name : "New"));
+			if(!o.id || !o.nameType.match(/^(group|role|permission|person|account|user|data|function|operation)$/gi)) this.GetElementByRID("btnFact").style.display = "none";
+			if(this.resizeTo && this.getBody){
+				if(this.getBody().scrollHeight > this.getBody().offsetHeight){
+					var iH = this.getBody().scrollHeight + 50;
+					if(iH > document.documentElement.clientHeight) iH = document.documentElement.clientHeight;
+					this.resizeTo(this.getContainer().offsetWidth,iH);
+				}
+			}
+			this.initAttributePicker();
+			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver){
+				//Hemi.log("CALL PARENT RESOLVE");
+				o.parentResolver(this);
+			}
+			else{
+				//Hemi.log("DON'T CALL PARENT because " + _s.openerId + " : " + (o ? (typeof o.parentResolver) : ""));
+			}
+		},
+		template_destroy : function(){
+			Hemi.message.service.unsubscribe(this, "oncommunitychange", "refreshCommunity");
+		},
+		closeObject : function(){
+			var o = this.getBean("rocketType");
+			if(this.provideClose) this.provideClose(this,o);
+			else if(this.Close) this.Close();
+		},
+		refreshCommunity : function(s, v){
+			//this.GetElementByRID("path").placeholder = uwm.getPathForType(this.getProperties().typeName,"~/" + this.getProperties().typeName + "s");
+		},
+		embedded_init : function(){
+
+			
+		},
+		parentResolver : function(v){
+			Hemi.log("PARENT RESOLVE");
+			var _s = this.getProperties();
+			if(this.resolve) this.resolve(v);
+			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver) o.parentResolver(v);
+		},
+		saveType : function(){
+			this.synchronizeForm();
+			var o = this.getBean("rocketType"),_s = this.getProperties();
+			this.GetElementByRID("path").className = "rocket-text";
+			this.GetElementByRID("endTime").className = "rocket-text";
+			this.GetElementByRID("name").className = "rocket-text";
+			this.setStatus("");
+
+			if(!this.ValidateForPattern("name","not-empty")){
+				this.GetElementByRID("name").className = "rocket-text rocket-text-error";
+				this.setStatus("Name cannot be empty");
+				return;
+			}
+			if(!o.nameType || (!o.nameType.match(/^GROUP$/) && !o.nameType.match(/^PERMISSION$/) && !o.nameType.match(/^ROLE$/) && !o.nameType.match(/^USER$/))){
+				var sPath = this.getPath();
+				var oG = AM6Client.make("GROUP","DATA",sPath);
+				o.groupPath = (oG ? oG.path : sPath);
+			}
+			else if(o.nameType.match(/^PERMISSION$/) || o.nameType.match(/^ROLE$/)){
+				o.parentPath = this.getPath();
+			}
+			
+			if(this.prepareSave && !this.prepareSave(o)){
+				Hemi.logError("Prepare save failed for type " + this.getProperties().typeName);
+				return;
+			}
+			
+			this.prepareSaveAttributePicker(o);
+			
+			if(_s.customSave){
+				Hemi.log("Concluding custom save operation");
+				if(_s.provideSave && _s.openerId){
+					var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
+					if(oOpener && oOpener[_s.provideSave]) oOpener[_s.provideSave](this,o);
+				}
+				/// if(this.Close) this.Close();
+				this.closeObject();
+				return;
+			}
+			var sAct = "add", bAct = 0;
+			if(o.id > 0) sAct = "update";
+			var sMeth= sAct + this.getProperties().typeName;
+			var oApi = AM6Client;
+			if(sAct.match(/^add$/) && this.addType){
+				bAct = this.addType(o);
+			}
+			else{
+				if(!oApi[sAct]){
+					this.setStatus("Invalid API: " + sMeth);
+					return;
+				}
+				
+				bAct = oApi[sAct](this.getProperties().typeName.toUpperCase(),o);
+			}
+			if(bAct){
+				if(bAct != -1) this.postProcess();
+				else this.setStatus("Processing ...");
+			}
+			else{
+				this.setStatus("Failed to " + sAct);
+			}
+		
+		},
+		postProcess : function(){
+			var o = this.getBean("rocketType"),n;
+			if(o.nameType && o.nameType.match(/^group$/gi)) n = AM6Client.find("GROUP",o.groupType,this.getPath() + "/" + o.name);
+			else if(this.provideItem) n = this.provideItem(this.getProperties().typeName,o);
+			else if(o.nameType && o.nameType.match(/^(permission|role)$/gi)){
+				n = AM6Client.getByName(this.getProperties().typeName.toUpperCase(),AM6Client.get(o.nameType,o.parentId).objectId,o.name);
+				
+			}
+			
+			else if(o.id){
+				n = AM6Client.get(this.getProperties().typeName.toUpperCase(), o.id);
+			}
+			else{
+				n = AM6Client.getByName(this.getProperties().typeName.toUpperCase(),AM6Client.find("GROUP","DATA",o.groupPath).objectId,o.name);
+			}
+			if(n != null){
+				this.clearBean("rocketType");
+				this.setBean(n,"rocketType");
+			}
+			///Hemi.log("Refresh form for id #" + n.id);
+			this.synchronizeForm(1);
+			///if(this.getProperties().picker){
+				var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
+				if(oOpener && oOpener.refreshList) oOpener.refreshList();
+				///if(oOpener["refresh" + this.getProperties().typeName + "sList"]) oOpener["refresh" + this.getProperties().typeName + "sList"]();
+				/// if(this.Close) this.Close();
+				this.closeObject();
+			///}
+			///this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		
+		},
+
+		getPath : function(){
+			var o = this.GetElementByRID("path"), s;
+			if(!(s = o.value).length){
+				s = o.placeholder;
+				if(!s) s = "~/" + this.getProperties().typeName + "s";
+			}
+			return s;
+		},
+
+		_setStatus : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+		}
+	]]></embedded-script>
+</html-fragment>

@@ -1,0 +1,71 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text"  rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Type:
+		</p>
+		<p>
+				<select rid = "traitType" bind = "${bean.rocketType}">
+					<option>UNKNOWN</option>
+					<option>LOCATION</option>
+					<option>TRANSPORT</option>
+					<option>PROTOCOL</option>
+					<option>EVENT</option>
+					<option>PERSON</option>
+			</select>
+		</p>
+	</div>
+	
+
+	<div class = "rocket-column-2">
+		<p>
+			Alignment:
+		</p>
+		<p>
+				<select rid = "alignmentType" bind = "${bean.rocketType}">
+					<option>LAWFULGOOD</option>
+					<option>NEUTRALGOOD</option>
+					<option>CHAOTICGOOD</option>
+					<option>LAWFULNEUTRAL</option>
+					<option>NEUTRAL</option>
+					<option>CHAOTICNEUTRAL</option>
+					<option>LAWFULEVIL</option>
+					<option>NEUTRALEVIL</option>
+					<option>CHAOTICEVIL</option>
+			</select>
+		</p>
+	</div>
+	
+		<div class = "rocket-column-2">
+		<p>
+			Score:
+		</p>
+		<p>
+			<input type = "text" rid = "score" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			var o = this.getBean("rocketType");
+
+		},
+	
+		addType : function(o){
+			return AM6Client.update("TRAIT",o);
+		},
+		prepareSave : function(o){
+
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

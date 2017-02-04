@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Task Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Ticket";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName);
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.taskType();
+					o.name = "";
+					o.description = "";
+					o.ticketStatus = "UNKNOWN";
+					o.priority = "NORMAL";
+					o.severity = "LOW";
+					o.id = 0;
+					o.dueDate = (new Date());
+					o.completedDate = (new Date());
+					o.closedDate = (new Date());
+					o.reopenedDate = (new Date());
+					o.createdDate = (new Date());
+					o.modifiedDate = (new Date());
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

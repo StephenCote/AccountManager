@@ -1,0 +1,20 @@
+<Template>
+	<import-xml src = "/AccountManagerService/Forms/Fragments/FormViewTools.xml" id = "FormViewTools" />
+<embedded-script><![CDATA[
+	embedded_init : function(){
+		var oForm = this.getProperties().viewType; 
+		/// bug note: embedded_init not being derefennced when cleaning and loading directly from a nodeset in the same function call
+		if(!oForm) return;
+
+		this.getObjects().dynPattern = [];
+		this.getObjects().entities = {};
+		this.getObjects().entityMap = {};
+		var oFormTemplate = (oForm.template ? AM6Client.get("FORM",oForm.template.id) : 0);
+		delete this.getProperties().viewType;
+		
+		if(oFormTemplate.isGrid) this.viewGridForm(oForm, oFormTemplate);
+		else this.viewForm(oForm, oFormTemplate);
+		if(this.setTitle) this.setTitle("View " + oForm.name + " Data");
+	}
+]]></embedded-script>
+</Template>

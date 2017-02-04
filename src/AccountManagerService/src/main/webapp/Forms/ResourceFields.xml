@@ -1,0 +1,116 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/EstimatePicker.xml" id = "EstimatePicker" />
+	<import-xml src = "/AccountManagerService/Forms/SchedulePickerSingle.xml" id = "SchedulePickerSingle" />
+	<div class = "rocket-column-2">
+		<p>
+			Utilization:
+		</p>
+		<p>
+			<input type = "text" rid = "utilization" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Type:
+		</p>
+		<p>
+			<select onchange = "${this}.chooseResourceType()" rid = "resourceType" bind = "${bean.rocketType}">
+				<option>UNKNOWN</option>
+				<option>ACCOUNT</option>
+				<option>PERSON</option>
+    			<option>USER</option>
+    			<option>GROUP</option>
+    			<option>ROLE</option>
+     			<option>HARDWARE</option>
+    			<option>SOFTWARE</option>
+			</select>
+		</p>
+	</div>
+	<div rid = "accountPickerCont" style = "display:none;">
+		<import-xml src = "/AccountManagerService/Forms/AccountPickerSingle.xml" id = "AccountPickerSingle" />
+	</div>
+	<div rid = "personPickerCont" style = "display:none;">
+		<import-xml src = "/AccountManagerService/Forms/PersonPickerSingle.xml" id = "PersonPickerSingle" />
+	</div>
+
+	<div rid = "userPickerCont" style = "display:none;">
+		<import-xml src = "/AccountManagerService/Forms/UserPickerSingle.xml" id = "UserPicker" />
+	</div>
+	<embedded-script><![CDATA[
+		embedded_init :function(){
+			this.getProperties().userProp = "user";
+			this.getProperties().personProp = "person";
+			this.getProperties().accountProp = "account";
+			
+			this.chooseResourceType(1);
+		},
+		chooseResourceType : function(b){
+			var sVal = this.GetElementByRID("resourceType").value,d;
+			var o = this.getBean("rocketType");
+			if(b) d = this.getResourceDataByType();
+			var bUser = (sVal == "USER"), bPerson = (sVal == "PERSON"), bAccount = (sVal == "ACCOUNT");
+			this.pickUser(null,(bUser ? d : 0));
+			this.pickAccount(null,(bAccount ? d : 0));
+			this.pickPerson(null,(bPerson ? d : 0));
+			o.resourceDataId = 0;
+			this.GetElementByRID("userPickerCont").style.display = (bUser ? "block" : "none");
+			this.GetElementByRID("accountPickerCont").style.display = (bAccount ? "block" : "none");
+			this.GetElementByRID("personPickerCont").style.display = (bPerson ? "block" : "none");
+			
+		},
+		getResourceDataByType : function(){
+			var o = this.getBean("rocketType"),d;
+			if(o.resourceData){
+				d = o.resourceData;
+			}
+			else if(o.resourceDataId){
+				if(this.GetElementByRID("resourceType").value == "USER"){
+					d = AM6Client.get("USER",o.resourceDataId);
+				}
+				else if(this.GetElementByRID("resourceType").value == "ACCOUNT"){
+					d = AM6Client.get("ACCOUNT",o.resourceDataId);
+				}
+				else if(this.GetElementByRID("resourceType").value == "PERSON"){
+					d = AM6Client.get("PERSON",o.resourceDataId);
+				}
+
+			}
+			return d;
+		},
+		addType : function(o){
+			Hemi.log("Add resource type: " + o.name + ":" + o.description);
+			this.applyResourceId(o);
+			return AM6Client.update("RESOURCE",o);
+		},
+		applyResourceId : function(o){
+			var sType = o.resourceType.toLowerCase();
+			if(o[sType]){
+				o.resourceDataId = o[sType].id;
+			}
+			delete o.user;
+			delete o.person;
+			delete o.account;
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("utilization").className = "rocket-text rocket-text-short";
+			this.applyResourceId(o);			
+			delete o.resourceData;
+			if(!this.ValidateForPattern("utilization","numbers-only")){
+				this.GetElementByRID("utilization").className = "rocket-text rocket-text-short rocket-text-error";
+				this.setStatus("Utilization may only be numeric");
+				return 0;
+			}
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

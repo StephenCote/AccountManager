@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template Title = "Cache Controls">
+
+	<div class = "rocket-column-2" style = "border-top:.2em solid #000000;">
+		<p>
+			Data Cache:
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed Data Cache: ' + AM6Client.clearCache('DATA'))" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Group Cache:
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed Group Cache: ' + AM6Client.clearCache('GROUP'))" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Role Cache:
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed Role Cache: ' + AM6Client.clearCache('ROLE'))" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			User Cache:
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed User Cache: ' + AM6Client.clearCache('USER'))" />
+		</p>
+	</div>
+	<div class = "rocket-column-2" style = "border-top:.2em solid #000000;">
+		<p>
+			Flush Authorization
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed Authorization Cache: ' + AM6Client.clearAuthorizationCache())" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2" style = "border-top:.2em solid #000000;">
+		<p>
+			Flush All
+		</p>
+		<p>
+			<input type = "button" value = "Clear" onclick = "${this}.setStatus('Flushed All Caches: ' + AM6Client.clearCache())" />
+		</p>
+	</div>
+	
+	<import-xml src = "/AccountManagerService/Forms/StatusFrag.xml" id = "StatusFrag" />
+
+</Template>

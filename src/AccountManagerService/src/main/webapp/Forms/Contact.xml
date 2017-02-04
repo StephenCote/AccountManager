@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Contact Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Contact";
+			if(!this.getProperties().defaultPath) this.getProperties().defaultPath = "~/Contacts";
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.contactType();
+					o.name = "";
+					o.id = 0;
+					o.locationType = "UNKNOWN";
+					o.contactType = "UNKNOWN";
+					o.preferred = false;
+					o.description = "";
+					o.contactValue = "";
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

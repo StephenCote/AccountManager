@@ -1,0 +1,223 @@
+<html-fragment>
+
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text"  rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+	
+		<p>
+			Type:
+		</p>
+		<p>
+			<select rid = "ticketStatus" bind = "${bean.rocketType}">
+	    		<option>UNKNOWN</option>
+	    		<option>OPEN</option>
+	    		<option>REVIEW</option>
+	    		<option>CLOSED</option>
+	    		<option>BLOCKED</option>
+	    		<option>REJECTED</option>
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Priority:
+		</p>
+		<p>
+			<select rid = "priority" bind = "${bean.rocketType}">
+	    		<option>UNKNOWN</option>
+	    		<option>LOW</option>
+	    		<option>NORMAL</option>
+	    		<option>HIGH</option>
+	    		<option>VITAL</option>
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Severity:
+		</p>
+		<p>
+			<select rid = "severity" bind = "${bean.rocketType}">
+	    		<option>UNKNOWN</option>
+	    		<option>LOW</option>
+	    		<option>MEDIUM</option>
+	    		<option>HIGH</option>
+	    		<option>CAUTION</option>
+	    		<option>CRITICAL</option>
+	    		<option>FATAL</option>
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Assigned:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "assigned" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseAssigned()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickAssigned('Resource')" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Estimate:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "estimate" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseEstimate()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickEstimate('Estimate')" />
+		</p>
+	</div>
+		<div class = "rocket-column-2">
+		<p>
+			Actual Time:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "actualTime" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseActualTime()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickActualTime('Time')" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Actual Cost:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "actualCost" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseActualCost()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickActualCost('Cost')" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Created Date:
+		</p>
+		<p>
+			<input type = "date" disabled = "true" rid = "createdDate" bind = "${bean.rocketType}" class = "rocket-text rocket-text-readonly" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Modified Date:
+		</p>
+		<p>
+			<input type = "date" disabled = "true" rid = "modifiedDate" bind = "${bean.rocketType}" class = "rocket-text rocket-text-readonly" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Due Date:
+		</p>
+		<p>
+			<input type = "date" component = "calendar" rid = "dueDate" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+
+		
+	<import-xml src = "/AccountManagerService/Forms/ArtifactPicker.xml" id = "ArtifactPicker" />
+	
+	<import-xml src = "/AccountManagerService/Forms/DependencyPicker.xml" id = "DependencyPicker" />
+	
+	<import-xml src = "/AccountManagerService/Forms/NotePicker.xml" id = "NotePicker" />
+	
+	<import-xml src = "/AccountManagerService/Forms/ResourcePicker.xml" id = "ResourcePicker" />
+
+	<import-xml src = "/AccountManagerService/Forms/FormPicker.xml" id = "FormPicker" />
+
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+
+			
+			
+			
+			var o = this.getBean("rocketType");
+			this.pickAssigned('Resource',o.assignedResource);
+			this.pickEstimate('Estimate',o.estimate);
+			this.pickActualTime('Time',o.actualTime);
+			this.pickActualCost('Cost',o.actualCost);
+			this.getProperties().dependencyListProp = "dependencies";
+			this.getProperties().artifactListProp = "artifacts";
+			this.getProperties().resourceListProp = "requiredResources";
+			this.getProperties().formListProp = "forms";
+			this.getProperties().noteListProp = "notes";
+			this.GetComponentByRID("notesList").setLoadHandler(this.scopeHandler("configNotesList",0,1,1));
+			this.GetComponentByRID("formsList").setLoadHandler(this.scopeHandler("configFormsList",0,1,1));
+			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.GetComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
+		},
+		chooseAssigned : function(){
+			this.manageList("Resource", this.getObjectId(),"pickAssigned");
+		},
+
+		pickAssigned : function(s, v){
+			var o = this.getBean("rocketType");
+			o.assignedResource = v;
+			this.GetElementByRID("assigned").value = (v ? v.name : "");
+		},
+		chooseEstimate : function(){
+			this.manageList("Estimate", this.getObjectId(),"pickEstimate");
+		},
+
+		pickEstimate : function(s, v){
+			var o = this.getBean("rocketType");
+			o.estimate = v;
+			this.GetElementByRID("estimate").value = (v ? v.name + " " + v.estimateType : "");
+		},
+		chooseActualTime : function(){
+			this.manageList("Time", this.getObjectId(),"pickActualTime");
+		},
+
+		pickActualTime : function(s, v){
+			var o = this.getBean("rocketType");
+			o.actualTime = v;
+			this.GetElementByRID("actualTime").value = (v ? v.name + " " + v.basisType : "");
+		},
+		chooseActualCost : function(){
+			this.manageList("Cost", this.getObjectId(),"pickActualCost");
+		},
+
+		pickActualCost : function(s, v){
+			var o = this.getBean("rocketType");
+			o.actualCost = v;
+			this.GetElementByRID("actualCost").value = (v ? v.name + " " + v.currencyType : "");
+		},
+		
+
+		
+		
+		addType : function(o){
+			return AM6Client.update("TASK",o);
+		},
+		prepareSave : function(o){
+
+			o.forms = [];
+			var aForms = this.getFormsList().getItems();
+			for(var i = 0; i < aForms.length;i++) o.forms.push(aForms[i].data);
+			
+			o.dependencies = [];
+			var aDependencies = this.getDependenciesList().getItems();
+			for(var i = 0; i < aDependencies.length;i++) o.dependencies.push(aDependencies[i].data);
+			
+			o.artifacts = [];
+			var aArtifacts = this.getArtifactsList().getItems();
+			for(var i = 0; i < aArtifacts.length;i++) o.artifacts.push(aArtifacts[i].data);
+
+			o.notes = [];
+			var aNotes = this.getNotesList().getItems();
+			for(var i = 0; i < aNotes.length;i++) o.notes.push(aNotes[i].data);
+
+			o.requiredResources = [];
+			var aResources = this.getResourcesList().getItems();
+			for(var i = 0; i < aResources.length;i++) o.requiredResources.push(aResources[i].data);
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

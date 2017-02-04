@@ -1,0 +1,148 @@
+<html-fragment>
+	<import-xml src = "/AccountManagerService/Forms/ParentPicker.xml" id = "ParentPicker" />
+	<div class = "rocket-column-2">
+		<p>
+			Text:
+		</p>
+		<p>
+			<textarea rid = "text" onfocus = "${this}.showTextFloat()" bind = "${bean.rocketType}" class = "rocket-text"></textarea>
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Created:
+		</p>
+		<p>
+			<input type = "date" disabled = "true" rid = "createdDate" bind = "${bean.rocketType}" class = "rocket-text rocket-text-readonly" />
+		</p>
+	</div>
+		<div class = "rocket-column-2">
+		<p>
+			Modified:
+		</p>
+		<p>
+			<input type = "date" disabled = "true" rid = "modifiedDate" bind = "${bean.rocketType}" class = "rocket-text rocket-text-readonly" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Child Notes:
+		</p>
+		<p>
+			<div component = "wideselect" rid = "notesList">
+			</div>
+
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addChildNote()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeChildNote()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openChildNote()" />
+		</p>
+	</div>
+	<textarea rid = "textNoteFloat" style = "z-index:250;display:none;position:absolute;top:0px;left:0px;width:250px;height:250px;" onblur = "${this}.hideTextFloat()"></textarea>
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			this.GetComponentByRID("notesList").setLoadHandler(this.scopeHandler("configNotesList",0,1,1));
+		},
+		resizers : function(){
+			this.GetElementByRID("textNoteFloat").style.height = (this.getContainer().clientHeight - (this.getObjects().title_bar.offsetHeight + this.getObjects().status_bar.offsetHeight)) + "px";
+			this.GetElementByRID("textNoteFloat").style.width = "100%";
+		},
+		showTextFloat : function(){
+			this.GetElementByRID("textNoteFloat").style.top = (this.getObjects().title_bar ? this.getObjects().title_bar.offsetHeight + "px" : "0px");
+			// (this.getBody ? this.getBody().offsetTop + "px" : "0px");
+			// 
+			this.GetElementByRID("textNoteFloat").style.display = "block";
+			this.GetElementByRID("textNoteFloat").value = this.GetElementByRID("text").value;
+			this.GetElementByRID("textNoteFloat").focus();
+			this.resizers();
+			
+		},
+		hideTextFloat : function(){
+			this.GetElementByRID("textNoteFloat").style.display = "none";
+			this.GetElementByRID("text").value = this.GetElementByRID("textNoteFloat").value;
+		},
+		openChildNote : function(){
+			var oI = this.getNotesList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Note");
+		},
+		addChildNote : function(){
+			this.manageList("Note", this.getNotesList().getObjectId());
+		},
+		removeChildNote : function(){
+			var oI = this.getNotesList().getActiveItem();
+			if(oI){
+				this.getNotesList().clearItem(oI.index);
+			}
+		},
+		configNotesList : function(s,v){
+			var o = this.getBean("rocketType");
+			var oL = this.getNotesList();
+			oL.getContainer().style.height = "50px";
+			oL.getContainer().style.width = "150px";
+			this.refreshNotes();
+		},
+		refreshNotes : function(a){
+			var oL = this.getNotesList();
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o.childNotes) return;
+			for(var i = 0; i < o.childNotes.length;i++){
+				oL.addItem(o.childNotes[i].name,o.childNotes[i]);
+			}
+		},
+		getNotesList : function(){
+			return this.GetComponentByRID("notesList").GetWideSelect();
+		},
+		updateChildNotes : function(o){
+			var aI = this.getNotesList().getItems();
+			var a = [];
+			var iUp = 0;
+			for(var i = 0; i < o.childNotes.length; i++) a[o.childNotes[i].id] = o.childNotes[i];
+			for(var i = 0; i < aI.length;i++){
+				var oI = aI[i].data;
+				if(!oI) continue;
+				/// Skip existing
+				if(a[oI.id]){
+					a[oI.id] = 0;
+					continue;
+				}
+				/// Set oI parent to note
+				oI.parentId = o.id;
+				AM6Client.update("NOTE",oI);
+				iUp++;
+			}
+			for(var i = 0; i < a.length;i++){
+				if(typeof a[i]=="object"){
+					rocket.deleteNote(a[i]);
+					iUp++;
+				}
+			}
+			//if(iUp > 0) rocket.flushNotes();
+			
+		},
+		addType : function(o){
+			Hemi.log("Add note type: " + o.name + ":" + o.text);
+			var b =  AM6Client.update("NOTE",o),x;
+			if(b){
+				x = AM6Client.getByName("NOTE",AM6Client.find("GROUP","DATA",this.getPath()).objectId,o.name);
+				this.updateChildNotes(x);
+			}
+			if(x) AM6Client.clearCache(x);
+			return b; 
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("text").className = "rocket-text";
+			if(!this.ValidateForPattern("text","not-empty")){
+				this.GetElementByRID("text").className = "rocket-text rocket-text-error";
+				this.setStatus("Text cannot be empty");
+				return 0;
+			}
+			if(o.id){
+				this.updateChildNotes(o);
+				AM6Client.clearCache(o);
+			}
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

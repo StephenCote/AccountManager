@@ -1,0 +1,90 @@
+<html-fragment>
+	<p style = "clear:both;font-size:0px;margin:0px;"></p>
+	<import-xml src = "Fragments/TabTools.xml" id = "TabTools" />
+	<p style = "clear:both;font-size:0px;margin:0px;"></p>
+
+	<div rid = "account">
+	</div>
+	<div rid = "group">
+	</div>
+	<div rid = "permission">
+	</div>	
+	<div rid = "data">
+	</div>	
+	<import-xml src = "/AccountManagerService/Forms/DataDndPicker.xml" id = "DataDndPicker" />	
+	<embedded-script><![CDATA[
+		local_template_init : function(o){
+			var o = this.getBean("rocketType");
+			if(this.resizeTo) this.resizeTo(525, 400);
+			this.GetElementByRID("pathCont").style.display = "none";
+			if(o.id){
+				this.getProperties().dndDataPath = o.path;
+				this.AddTab("account","Accounts",this.scopeHandler("loadAccountTab",0,1,1));
+				this.AddTab("group","Groups",this.scopeHandler("loadGroupTab",0,1,1));
+				this.AddTab("permission","Permissions",this.scopeHandler("loadPermissionTab",0,1,1));
+				this.AddTab("data","Data",this.scopeHandler("loadDataTab",0,1,1));
+				this.ShowTab(0);
+				this.loadAccountTab();
+			}
+		},
+		resolve : function(o){
+			var _s;
+			if(!o || o== null || !(_s = o.getProperties()) || !_s.typeName){
+				//Hemi.logError("NO RESOLVE");
+				return;
+			}
+
+			if(_s.typeName.match(/^account$/gi) && o.getPath){
+				Hemi.log("RESOLVE " + _s.typeName + " to " + o.getPath());
+				o.GetElementByRID("path").value = o.getPath();
+			}
+		},
+		loadAccountTab : function(o){
+			this.loadTab("Account",o);
+		},
+		loadGroupTab : function(o){
+			this.loadTab("Group",o);
+		},
+		loadPermissionTab : function(o){
+			this.loadTab("Permission",o);
+		},
+		loadDataTab : function(o){
+			this.loadTab("Data",o);
+		},
+		loadTab : function(s, o){
+			var oBean = this.getBean("rocketType");
+			var c = this.GetElementByRID(s.toLowerCase());
+			if(c.loaded) return;
+			c.loaded = 1;
+			
+			var oDiv = document.createElement("div");
+			c.appendChild(oDiv);
+			var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
+			ac.setTemplateIsSpace(1);
+			ac.getProperties().openerId = this.getObjectId();
+			if(s.match(/^(account|group|data)$/gi)){
+				ac.getProperties().defaultPath = oBean.path;
+			}
+			else if(s.match(/^permission$/gi)){
+				ac.getProperties().defaultParent = rocket.getApplicationPermissionBase(oBean); 
+			}
+			if(s.match(/^account$/gi)) ac.decorateListItemName = this.decorateAccountItem;
+			//if(s.match(/^group$/gi)) ac.getProperties().listGroupType = "ACCOUNT";
+
+			ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+		},
+		decorateAccountItem : function(o){
+			var sF = AM6Client.getAttributeValue(o,"firstName");
+			var sM = AM6Client.getAttributeValue(o,"middleName");
+			var sL = AM6Client.getAttributeValue(o,"lastName");
+			if(sF || sM || sL) return (sF ? sF : "") + (sM ? " " + sM : "") + (sL ? " " + sL : "");
+			return o.name;
+		},
+		addType : function(o){
+			Hemi.log("Add group type: " + o.name + ":" + o.mimeType);
+
+			return rocket.addApplication(o.name, o.parentId);
+
+		}
+	]]></embedded-script>
+</html-fragment>

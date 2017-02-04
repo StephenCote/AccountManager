@@ -1,0 +1,97 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Location:
+		</p>
+		<p>
+			<select rid = "locationType" bind = "${bean.rocketType}">
+    		<option>UNKNOWN</option>
+    		<option>HOME</option>
+    		<option>WORK</option>
+    		<option>MOBILE</option>
+    		<option>OTHER</option>
+    		<option>NETWORK</option>
+
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Address:
+		</p>
+		<p>
+			<input type = "text" rid = "addressLine1" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Address:
+		</p>
+		<p>
+			<input type = "text" rid = "addressLine2" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			City:
+		</p>
+		<p>
+			<input type = "text" rid = "city" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Region:
+		</p>
+		<p>
+			<input type = "text" rid = "region" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			State:
+		</p>
+		<p>
+			<input type = "text" rid = "state" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Country:
+		</p>
+		<p>
+			<input type = "text" rid = "country" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Postal Code:
+		</p>
+		<p>
+			<input type = "text" rid = "postalCode" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			//this.GetElementByRID("pathCont").style.display = "none";
+		},
+		addType : function(o){
+			Hemi.log("Add address type: " + o.name );
+			
+			return AM6Client.update("ADDRESS",o);
+		},
+		prepareSave : function(o){
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

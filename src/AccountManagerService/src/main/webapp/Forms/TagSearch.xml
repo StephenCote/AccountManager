@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/TagPicker.xml" />
+	<p style = "clear:both;"><input type = "button" value = "Search" onclick = "${this}.search()" /></p>
+	
+	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
+	
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.initTagPicker();
+			
+			/// invoke again to open the toggle
+			///
+			this.toggleField("tagPickerToggle","tagPickerContent");
+			var _s = this.getProperties();
+			if(!_s.altSearch){
+				_s.iconView = 1;
+				this.initGrid("Data", "~/Data");
+			}
+			else{
+				this.GetElementByRID("buttons-bar").style.display = "none";
+				this.GetElementByRID("typelist").style.display = "none";
+			}
+			this.GetElementByRID("path").style.display = "none";
+			
+		},
+		decorateListItemName : function(o){
+			var _p = this.getProperties();
+			if(!_p.iconView) return o.name;
+			var w = (_p.iconWidth ? _p.iconWidth : 48);
+			var h = (_p.iconHeight ? _p.iconHeight : 48);
+			var oL = document.createElement("div");
+			var oP = document.createElement("p");
+			oP.setAttribute("style","text-indent:0px !important;");
+			var oP2 = document.createElement("p");
+			var oI = document.createElement("img");
+			oI.setAttribute("class","alignright");
+			var sIco = "/AccountManagerService/Media/Icons/Crystal/48x48/48px-Crystal_Clear_action_filenew.png";
+			if(o.mimeType.match(/^image/)){
+				sIco = "/AccountManagerService/Thumbnail/" + AM6Client.dotPath(o.organizationPath) + "/Data" + o.groupPath + "/" + o.name + "/" + w + "x" + h
+			}
+			oI.setAttribute("src",sIco);
+			oP.appendChild(oI);
+			oP.appendChild(document.createTextNode(o.name));
+			oP.appendChild(document.createElement("br"));
+			if(o.description != null) oP.appendChild(document.createTextNode(o.description));
+			oP.appendChild(document.createElement("br"));
+			oP.appendChild(document.createTextNode(o.createdDate.toString()));
+			oL.appendChild(oP);
+			oP2.setAttribute("class","clearalign");
+			oL.appendChild(oP2);
+			return oL;
+						
+		},
+		search : function(){
+			var _s = this.getProperties();
+			_s.providedCount = 0;
+			_s.start_record = 0;
+			_s.record_count = 10;
+			if(!_s.altSearch){
+				this.toggleField("tagPickerToggle","tagPickerContent");
+				this.refreshList();
+			}
+			else{
+				var o = Hemi.registry.service.getObject(_s.openerId);
+				o[_s.searchHandler](this.getCurrentTags());
+			}
+		},
+		getCurrentTags : function(){
+			var aT = [];
+			var aI = this.getTagsList().getItems();
+			for(var i = 0; i < aI.length;i++) aT.push(aI[i].data);
+			return aT;
+		
+		},
+		provideList : function(){
+			var aT = this.getCurrentTags();
+			if(aT.length == 0) return aT;
+			var oR = new org.cote.objects.dataTagSearchRequest();
+			oR.startRecord = this.getProperties().start_record;
+			oR.recordCount = 10;
+			oR.paginate = true;
+			oR.tags = aT;
+			window.dbg = this;
+			return AM6Client.findByTag("DATA",oR);
+
+		},
+		provideCount : function(){
+			if(this.getProperties().providedCount > 0) return this.getProperties().providedCount;
+			var aT = [];
+			var aI = this.getTagsList().getItems();
+			for(var i = 0; i < aI.length;i++) aT.push(aI[i].data);
+			if(aT.length == 0) return 0;
+			
+			var oR = new org.cote.objects.dataTagSearchRequest();
+			oR.tags = aT;
+			this.getProperties().providedCount = AM6Client.countByTag("DATA",oR);
+			return this.getProperties().providedCount;
+			
+		},
+		/// The following should really be in a separate tools file
+		/// because they replicate the shared code in BaseTemplate, except apply in one-off cases that don't use BaseTemplate
+		/// Note: This is modded from the default
+
+		toggleField : function(l, n){
+			var lbl =  this.GetElementByRID(l);//(typeof l == "string" ? this.GetElementByRID(l) : l);
+			var cnt =  this.GetElementByRID(n);//(typeof n == "string" ? this.GetElementByRID(n) : n);
+			var b = cnt.mark;
+			var s = (b ? "[ - ]" : "[ + ]");
+			var d = (b ? "block" : "none");
+			cnt.mark = (b ? 0 : 1);
+			Hemi.xml.setInnerXHTML(lbl,s);
+			cnt.style.display = d;
+			if(!lbl.mark){
+				var ctl = this;
+				lbl.mark = 1;
+				var sL = l;
+				var sN = n;
+				lbl.onclick = function(){
+					ctl.toggleField(sL,sN);
+					ctl.resizeForm();
+				};
+			}
+			if(this.resizeList) this.resizeList();
+			//this.resizeForm();
+		},
+		manageList : function(sType, sListId, sFN){
+			var oProps = {openerId:this.getObjectId(),listType:"Tag",picker:1,pickFunction:sFN,listId:sListId};
+			var oW = Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, 0);
+            if (oW) {
+            	oW.resizeTo(475, 300);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		}
+	]]></embedded-script>
+</Template>

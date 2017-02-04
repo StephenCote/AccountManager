@@ -1,0 +1,80 @@
+<html-fragment>
+	<div class = "rocket-column-2" rid = "accountPicker" style = "display:none;">
+		<p rid = "accountPickerTitle">
+			<span rid = "accountPickerToggle"></span> Accounts:
+		</p>
+		<p rid = "accountPickerContent">
+			<div component = "wideselect" rid = "accountsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addAccount()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeAccount()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openAccount()" />
+		</p>
+	</div>
+
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.GetElementByRID("accountPicker").style.display = "block";
+			this.toggleField("accountPickerToggle","accountPickerContent");
+			if(!this.getProperties().accountListProp) this.getProperties().accountListProp = "accounts";
+		},
+		prepareSaveAccountPicker : function(o){
+			this.prepareSaveAccountsList(o);
+		},
+		initAccountPicker : function(){
+			/// Have to put a little extra logic here because account information is optional for addresses
+			var _s = this.getProperties(),  o = this.getBean("rocketType");
+			_s.enableAccountInformation = (o != null ? 1 : 0);
+			
+			if(_s.enableAccountInformation){
+				this.getProperties().accountListProp = "accounts";
+				this.GetComponentByRID("accountsList").setLoadHandler(this.scopeHandler("configAccountsList",0,1,1));
+			}
+		},
+
+		
+		openAccount : function(){
+			var oI = this.getAccountsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Account");
+		},
+		addAccount : function(){
+			this.manageList("Account", this.getAccountsList().getObjectId());
+		},
+		removeAccount : function(){
+			var oI = this.getAccountsList().getActiveItem();
+			if(oI) this.getAccountsList().clearItem(oI.index);
+		},
+
+		configAccountsList : function(s,v){
+			var oL = this.getAccountsList(),_s = this.getProperties();
+			if(!_s.enableAccountInformation) return;
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshAccounts();
+		},
+		refreshAccounts : function(){
+			var oL = this.getAccountsList(), aP = this.getProperties().accountListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getAccountsList : function(){
+			return this.GetComponentByRID("accountsList").GetWideSelect();
+		},
+		prepareSaveAccountsList : function(o){
+			var _s = this.getProperties(), aP;
+			if(!_s.enableAccountInformation) return;
+			aP = this.getProperties().accountListProp;
+			o[aP] = [];
+			var aAccounts = this.getAccountsList().getItems();
+			for(var i = 0; i < aAccounts.length;i++) o[aP].push(aAccounts[i].data);
+		}
+		
+		
+		
+	]]></embedded-script>
+</html-fragment>

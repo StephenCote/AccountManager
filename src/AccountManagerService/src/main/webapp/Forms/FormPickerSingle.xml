@@ -1,0 +1,32 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Form:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "form" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseForm()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickForm('Form')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openForm()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		var o = this.getBean("rocketType");
+		this.pickForm('Form',o.form);
+	},
+	chooseForm : function(){
+		this.manageList("Form", this.getObjectId(),"pickForm");
+	},
+		openForm : function(){
+			var o = this.getBean("rocketType");
+			if(o && o.form && this.openItem) this.openItem(o.form,"Form");
+		},
+
+	pickForm : function(s, v){
+		var o = this.getBean("rocketType");
+		o.form = v;
+		this.GetElementByRID("form").value = (v ? v.name : "");
+	}
+	]]></embedded-script>
+</html-fragment>

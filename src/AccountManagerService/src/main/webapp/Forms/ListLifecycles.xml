@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
+	<embedded-script>
+		<![CDATA[
+		// Requires TemplateTools to be included
+		//
+		template_init : function(){
+			this.getObjects().lifList = [];
+			this.initGrid("Lifecycle",uwm.getPathForType("Lifecycle"));
+		},
+		provideRefresh : function(bSkipCount){
+			if(irocket.getCommunityMode()){
+				this.provideList = this._provideList;
+				this.provideCount = this._provideCount;
+				if(!bSkipCount) this.refreshCommunityLifecycles();
+			}
+			else{
+				delete this.provideList;
+				delete this.provideCount;
+				this.getObjects().lifList = [];
+			}
+		},
+		provideDelete : function(o){
+			var ctl = this;
+			
+			var vCfg = {
+				hemiSvcCfg:1,
+				async:1,
+				handler:function(s, v){
+					if(ctl.getReadyState() != 4) return;
+					if(typeof v.json == "boolean" && v.json){
+						Hemi.log("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
+						ctl.setStatus("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
+						ctl.refreshList();
+					}
+					else{
+						Hemi.logError("Unabe to delete " + ctl.getProperties().typeName + " object #" + o.id);
+						ctl.setStatus("Unable to delete " + ctl.getProperties().typeName + " object #" + o.id);
+					}
+					AM6Client.clearCache();
+					
+					Hemi.message.service.publish("oncommunitychange",this);
+				}
+			};
+			
+			if(irocket.getCommunityMode()){
+				return AM6Client.delete("LIFECYCLE",o.objectId,vCfg.handler);
+			}
+			else{
+				return AM6Client.delete("LIFECYCLE",o.objectId,vCfg.handler);
+			}
+		},
+		refreshCommunityLifecycles : function(){
+			var _o = this.getObjects();
+			_o.lifList = irocket.listLifecycles();
+		},
+		_provideList : function(sP, sF, iS, iC){
+			return this.getObjects().lifList.slice(iS,iS + iC); 
+		},
+		_provideCount : function(){
+			return this.getObjects().lifList.length;
+		},
+		template_destroy : function(){
+			this.getObjects().lifList = [];
+			delete this.provideList;
+			delete this.provideCount;
+		},
+
+		handle_list_click : function(v){
+			///this.setStatus("Clicked: " + v.name);
+		}
+		]]>
+	</embedded-script>
+</Template>

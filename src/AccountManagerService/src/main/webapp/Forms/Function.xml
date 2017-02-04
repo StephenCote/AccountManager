@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Function Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Function";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName,"~/Functions");
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.functionType();
+					o.name = "";
+					o.description = "";
+					o.sourceUrl = "";
+					o.sourceUrn = "";
+					o.functionType = "JAVA";
+					o.logicalOrder = 0;
+					o.score = 0;
+					o.id = 0;
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

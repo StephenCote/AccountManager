@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text"  rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/CasePicker.xml" id = "CasePicker" />
+	<import-xml src = "/AccountManagerService/Forms/RequirementPicker.xml" id = "RequirementPicker" />
+	<import-xml src = "/AccountManagerService/Forms/DependencyPicker.xml" id = "DependencyPicker" />
+	<import-xml src = "/AccountManagerService/Forms/ArtifactPicker.xml" id = "ArtifactPicker" />
+	<import-xml src = "/AccountManagerService/Forms/ModelPicker.xml" id = "ModelPicker" />
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			this.getProperties().caseListProp = "cases";
+			this.getProperties().dependencyListProp = "dependencies";
+			this.getProperties().artifactListProp = "artifacts";
+			this.getProperties().modelListProp = "models";
+			this.getProperties().requirementListProp = "requirements";
+			
+			this.GetComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
+			this.GetComponentByRID("casesList").setLoadHandler(this.scopeHandler("configCasesList",0,1,1));
+			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.GetComponentByRID("modelsList").setLoadHandler(this.scopeHandler("configModelsList",0,1,1));
+		},
+	
+		addType : function(o){
+			return AM6Client.update("MODEL",o);
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("endTime").className = "rocket-text";
+			o.cases = [];
+			var aCases = this.getCasesList().getItems();
+			for(var i = 0; i < aCases.length;i++) o.cases.push(aCases[i].data);
+
+			o.requirements = [];
+			var aRequirements = this.getRequirementsList().getItems();
+			for(var i = 0; i < aRequirements.length;i++) o.requirements.push(aRequirements[i].data);
+			
+			o.dependencies = [];
+			var aDependencies = this.getDependenciesList().getItems();
+			for(var i = 0; i < aDependencies.length;i++) o.dependencies.push(aDependencies[i].data);
+			
+			o.artifacts = [];
+			var aArtifacts = this.getArtifactsList().getItems();
+			for(var i = 0; i < aArtifacts.length;i++) o.artifacts.push(aArtifacts[i].data);
+			
+			o.models = [];
+			var aModels = this.getModelsList().getItems();
+			for(var i = 0; i < aModels.length;i++) o.models.push(aModels[i].data);
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

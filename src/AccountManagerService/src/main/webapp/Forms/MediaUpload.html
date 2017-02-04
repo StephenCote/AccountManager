@@ -1,0 +1,43 @@
+
+<!doctype html>
+<html class="windows no-js" lang="en-US" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+        <title>Media Upload</title>
+   		<link rel="stylesheet" href="/AccountManagerService/Style/uwm.css" type="text/css" title = "uwm" />
+		<script type="text/javascript"><!--//
+			var mediaFrameMark = 1;
+
+			function setResponseId(sId){
+				document.forms["mediaForm"].elements["responseId"].value = sId;
+			}
+			function announceSubmit(){
+				if(window != window.parent && typeof window.parent.Hemi){
+					window.parent.Hemi.message.service.publish("frame_announcement",{id:document.forms["mediaForm"].elements["responseId"].value, messages:["submit"]});
+				}
+			}
+			function announceFileChange(){
+				var sId,o;
+				if(window != window.parent && typeof window.parent.Hemi && (sId = document.forms["mediaForm"].elements["responseId"].value)){
+					window.parent.Hemi.message.service.publish("frame_announcement",{id:document.forms["mediaForm"].elements["responseId"].value, messages:["fileChange",document.forms["mediaForm"].elements["dataFile"].value]});
+				}
+			}
+			//-->
+		</script>
+
+    </head>
+    <body>
+    	<form name="mediaForm" onsubmit = "announceSubmit()" enctype="multipart/form-data" method = "post" action = "/AccountManagerService/mediaForm">
+			<input type = "hidden" name = "groupId" value = "0" />
+			<input type = "hidden" name = "groupPath" value = "" />
+			<input type = "hidden" name = "organizationPath" value = "" />
+			<input type = "hidden" name = "id" value = "0" />
+			<input type = "hidden" name = "responseId" value = "0" />
+			<input type = "hidden" name = "name" />
+			<input type = "hidden" name = "description" />
+			<input type = "file" name = "dataFile" onchange = "announceFileChange()" />
+		</form>
+
+    </body>
+</html>

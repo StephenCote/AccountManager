@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template Title = "Sharing">
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<div class = "rocket-column-2">
+		<p>
+			Actor:
+		</p>
+		<p>
+			<select rid = "shareWhoType" onchange = "${this}.refreshWhoView()">
+				<option selected = "true">Unknown</option>
+				<option>Nobody</option>
+				<option value = "ROLE">Role</option>
+				<option value = "GROUP">Group</option>
+				<option value = "PERSON">Person</option>
+				<option value = "ACCOUNT">Account</option>
+				<option value = "USER">User</option>
+				<option>Public</option>
+			</select>
+			<input type = "text" rid = "shareWhoName" class = "rocket-text" style = "width:150px !important" disabled = "true" />
+			<input type = "button" class = "rocket-button" value = "..." onclick = "${this}.findType(1)" />
+
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Object:
+		</p>
+		<p>
+			<select rid = "shareType">
+				<option value = "DATA">Data</option>
+				<option value = "GROUP">Group</option>
+			</select>
+			<input type = "text" rid = "shareName" class = "rocket-text" style = "width:150px !important" disabled = "true" />
+			<input type = "button" class = "rocket-button" value = "..." onclick = "${this}.findType()" />
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/PermissionPicker.xml" id = "PermissionPicker" />
+	<div class = "rocket-column-2">
+		<p>
+			System Permissions:
+		</p>
+		<p>
+			<input type = "checkbox" rid = "chkRead" /> : Read
+			<br />
+			<input type = "checkbox" rid = "chkUpdate" /> : Update
+			<br />
+			<input type = "checkbox" rid = "chkAdd" /> : Add
+			<br />
+			<input type = "checkbox" rid = "chkDelete" /> : Delete
+		</p>
+	</div>
+	<div rid = "systemGroupContainer" style = "display: none;" class = "rocket-column-2">
+		<p>
+			Include System Groups:
+		</p>
+		<p>
+			<input type = "checkbox" rid = "chkSystemGroups" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Authorize:
+		</p>
+		<p>
+			<input type = "button" value = "Authorize" disabled = "true" rid = "btnAuthZ" class = "rocket-button" onclick = "${this}.authorize()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Unauthorize:
+		</p>
+		<p>
+			<input type = "button" value = "Unauthorize" disabled = "true" rid = "btnUAuthZ" class = "rocket-button" onclick = "${this}.uauthorize()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Note:
+		</p>
+		<p>
+			Sharing an image will not automatically share the thumbnail directory.  To share the thumbnail directory, check the <i>Include System Groups</i> checkbox.
+		</p>
+	</div>	
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				this.refreshView();
+				this.refreshView(1);
+				this.initPermissionPicker();
+			},
+			refreshWhoView : function(){
+				this.GetElementByRID("shareWhoName").value = "";
+				this.getProperties().whoType = 0;
+			},
+			refreshView : function(b){
+				var o = this.getProperties()[(b ? "whoType":"viewType")];
+				if(this.setStatus) this.setStatus("");
+				if(!o){
+					Hemi.logError("Type is not specified");
+					if(this.setStatus) this.setStatus("View type is not specified");
+					return;
+				}
+				this.GetElementByRID("btnAuthZ").disabled = false;
+				this.GetElementByRID("btnUAuthZ").disabled = false;
+				if(typeof o == "string" && b){
+				}
+				else{
+					this.GetElementByRID((b ? "shareWhoName" : "shareName")).value = o.nameType + " " + o.name + " (#" + o.id + ")";
+					this.GetElementByRID((b ? "shareWhoType" : "shareType")).value = o.nameType;
+				}
+				this.GetElementByRID("systemGroupContainer").style.display = (o.nameType == "GROUP" ? "" : "none");
+			},
+		findType : function(b){
+			var sFType = this.GetElementByRID((b ? "shareWhoType":"shareType")).value;
+			if(b && !sFType.match(/(role|group|person|account|user)/gi)){
+				this.pickWhoType(0,sFType);
+			}
+			else{
+				this.manageList(sFType.substring(0,1) + sFType.substring(1,sFType.length).toLowerCase(),0,(b ? "pickWhoType" : "pickType"));
+			}
+		},
+		pickWhoType : function(t, o){
+			return this.pickType(t, o, 1);
+		},
+		pickType : function(t, o, b){
+			this.getProperties()[(b ? "whoType" : "viewType")] = o;
+			this.refreshView(b);
+			
+		},
+			authorize : function(){
+				this.authorizeType();
+			},
+			unauthorize : function(){
+				this.authorizeType(1);
+			},
+			
+			authorizeType : function(b,x){
+				var o = (x ? x : this.getProperties().viewType);
+				if(!o || !o.id){
+					Hemi.logError("View type is not specified");
+					if(this.setStatus) this.setStatus("View type is not specified");
+					return;
+				}
+				var oS = this.GetElementByRID("shareType");
+				var sW = this.GetElementByRID("shareWhoType").value;
+				if(sW.match(/^nobody$/gi)){
+					Hemi.logError("TODO: Policy OM not yet ready to strip all rights without specifying a specific target");
+					if(this.setStatus) this.setStatus("TODO: Policy OM not yet ready to strip all rights without specifying a specific target");
+					return;
+				}
+				var oO = 0;
+
+				if(sW.match(/^public$/gi)){
+					oO = accountManager.getPublicUser();
+					sW = "User";
+				}
+				else if(sW.match(/^(role|group|person|account|user)$/gi)){
+					oO = this.getProperties().whoType;
+					sW = sW.substring(0,1) + sW.substring(1,sW.length).toLowerCase();
+				}
+				if(!oO){
+					Hemi.logError("Target " + sT + " not specified");
+					if(this.setStatus) this.setStatus("Target " + sT + " not specified");
+					return;
+				
+				}
+
+				var sT = oS.options[oS.selectedIndex].text;
+				var aPerms = this.getPermissionsList().getItems();
+				var r = 0;
+				if(sW.match(/^(role|user)$/gi)){
+					Hemi.log("Authorize " + sT + " " + sW);
+					r = accountManager["authorize" + sT + sW](0, oO.id, o.id, (b ? false : this.GetElementByRID("chkRead").checked), (b ? false : this.GetElementByRID("chkUpdate").checked), (b ? false : this.GetElementByRID("chkDelete").checked), (b ? false : this.GetElementByRID("chkAdd").checked));
+ 
+					if(this.GetElementByRID("chkSystemGroups").checked){
+						if(o.nameType == "GROUP" && !o.name.match(/^\.thumbnail$/)){
+							var oT = AM6Client.find("GROUP","DATA",o.path + "/.thumbnail");
+							if(oT) this.authorizeType(b,oT);
+						}
+					}
+				}
+				var p = 0;
+				if(sW.match(/^(role|user|person|account|group|user)$/gi)){
+				
+					for(var i = 0; i < aPerms.length; i++){
+						if(accountManager.setPermission(o,oO,aPerms[i].data,(b?false:true))){
+							p++;
+						}
+					}
+				}
+				if(this.setStatus) this.setStatus("Authorization: " + (r ? true : false) + " / Permissions: " + p + " of " + aPerms.length);
+
+			},
+			
+		manageList : function(sType, sListId, sFN){
+			var oProps = {openerId:this.getObjectId(),listType:"Tag",picker:1,manualPick:1,pickFunction:sFN,listId:sListId};
+			var oW = Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, 0);
+            if (oW) {
+            	oW.resizeTo(475, 300);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		}
+			
+		]]>
+	</embedded-script>
+</Template>

@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "schedulePickerTitle">
+			<span rid = "schedulePickerToggle"></span> Schedules:
+		</p>
+		<p rid = "schedulePickerContent">
+			<div component = "wideselect" rid = "schedulesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addSchedule()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeSchedule()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openSchedule()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("schedulePickerToggle","schedulePickerContent");
+			if(!this.getProperties().scheduleListProp) this.getProperties().scheduleListProp = "schedules";
+		},
+		openSchedule : function(){
+			var oI = this.getSchedulesList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Schedule");
+		},
+		addSchedule : function(){
+			this.manageList("Schedule", this.getSchedulesList().getObjectId());
+		},
+		removeSchedule : function(){
+			var oI = this.getSchedulesList().getActiveItem();
+			if(oI) this.getSchedulesList().clearItem(oI.index);
+		},
+
+		configSchedulesList : function(s,v){
+			var oL = this.getSchedulesList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshSchedules();
+		},
+		refreshSchedules : function(){
+			var oL = this.getSchedulesList(), aP = this.getProperties().scheduleListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getSchedulesList : function(){
+			return this.GetComponentByRID("schedulesList").GetWideSelect();
+		},
+		prepareSaveSchedulesList : function(o){
+			aP = this.getProperties().scheduleListProp;
+			o[aP] = [];
+			var aSchedules = this.getSchedulesList().getItems();
+			for(var i = 0; i < aSchedules.length;i++) o[aP].push(aSchedules[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

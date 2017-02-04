@@ -1,0 +1,168 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+	
+		<p>
+			Type:
+		</p>
+		<p>
+			<select onchange = "${this}.chooseValidationType()" rid = "validationType" bind = "${bean.rocketType}">
+				<option>UNKNOWN</option>
+				<option>BOOLEAN</option>
+				<option>REPLACEMENT</option>
+				<option>NONE</option>
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Expression:
+		</p>
+		<p>
+			<input type = "text" rid = "expression" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div rid = "compCont" style = "display: none;" class = "rocket-column-2">
+		<p>
+			Comparison:
+		</p>
+		<p>
+			<input type = "checkbox" rid = "comparison" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Allow Null:
+		</p>
+		<p>
+			<input type = "checkbox" rid = "allowNull" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Rule Set:
+		</p>
+		<p>
+			<input onclick = "${this}.displayRules()" type = "checkbox" rid = "isRuleSet" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div rid = "rulesCont" class = "rocket-column-2">
+		<p>
+			Rules:
+		</p>
+		<p>
+			<div component = "wideselect" rid = "rulesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addRule()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeRule()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openRule()" />
+		</p>
+	</div>
+	<!--
+	<div class = "rocket-column-2">
+		<p>
+			Replace Value:
+		</p>
+		<p>
+			<input type = "checkbox" rid = "isReplacementRule" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	-->
+	<div rid = "repCont" style = "display:none;" class = "rocket-column-2">
+		<p>
+			Replacement:
+		</p>
+		<p>
+			<input type = "text" rid = "replacementValue" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Message:
+		</p>
+		<p>
+			<input type = "text" rid = "errorMessage" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+
+
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.GetComponentByRID("rulesList").setLoadHandler(this.scopeHandler("configRulesList",0,1,1));
+			this.displayRules();
+			this.chooseValidationType();
+		},
+		chooseValidationType : function(){
+			var oSel = this.GetElementByRID("validationType");
+			this.GetElementByRID("compCont").style.display = (oSel.value == "BOOLEAN" ? "block" : "none");
+			this.GetElementByRID("repCont").style.display = (oSel.value == "REPLACEMENT" ? "block" : "none");
+		},
+		displayRules : function(){
+			var o = this.getBean("rocketType");
+			var c = this.GetElementByRID("isRuleSet");
+			var bIsSet = c.checked;
+			this.GetElementByRID("rulesCont").style.display = (bIsSet ? "block" : "none");
+		},
+		openRule : function(){
+			var oI = this.getRulesList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"ValidationRule");
+		},
+		addRule : function(){
+			this.manageList("ValidationRule", this.getRulesList().getObjectId(),"pickRule");
+		},
+		pickRule : function(s, v){
+			if(v) this.getRulesList().addItem(v.name,v);
+		},
+		removeRule : function(){
+			var oI = this.getRulesList().getActiveItem();
+			if(oI) this.getRulesList().clearItem(oI.index);
+		},
+
+		configRulesList : function(s,v){
+			var oL = this.getRulesList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshRules();
+		},
+		refreshRules : function(){
+			var oL = this.getRulesList();
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o.rules) return;
+			for(var i = 0; i < o.rules.length;i++){
+				oL.addItem(o.rules[i].name,o.rules[i]);
+			}
+		},
+		getRulesList : function(){
+			return this.GetComponentByRID("rulesList").GetWideSelect();
+		},
+		addType : function(o){
+			Hemi.log("Add validation rule type: " + o.name + ":" + o.text);
+			return AM6Client.update("VALIDATIONRULE",o);
+		},
+		prepareSave : function(o){
+			//this.GetElementByRID("text").className = "rocket-text";
+			o.rules = [];
+			if(o.isRuleSet){
+				var aRules = this.getRulesList().getItems();
+				for(var i = 0; i < aRules.length;i++) o.rules.push(aRules[i].data);
+			}
+			/*
+			if(!this.ValidateForPattern("text","not-empty")){
+				this.GetElementByRID("text").className = "rocket-text rocket-text-error";
+				this.setStatus("Text cannot be empty");
+				return 0;
+			}
+			*/
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

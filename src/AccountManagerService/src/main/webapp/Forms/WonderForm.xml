@@ -1,0 +1,12 @@
+<Template>
+
+
+
+<embedded-script><![CDATA[
+	template_init : function(){
+	},
+	openForm : function(){
+	}
+
+]]></embedded-script>
+</Template>

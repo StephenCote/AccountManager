@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "timePickerTitle">
+			<span rid = "timePickerToggle"></span> Times:
+		</p>
+		<p rid = "timePickerContent">
+			<div component = "wideselect" rid = "timesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addTime()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeTime()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openTime()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("timePickerToggle","timePickerContent");
+			if(!this.getProperties().timeListProp) this.getProperties().timeListProp = "times";
+		},
+		openTime : function(){
+			var oI = this.getTimesList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Time");
+		},
+		addTime : function(){
+			this.manageList("Time", this.getTimesList().getObjectId());
+		},
+		removeTime : function(){
+			var oI = this.getTimesList().getActiveItem();
+			if(oI) this.getTimesList().clearItem(oI.index);
+		},
+
+		configTimesList : function(s,v){
+			var oL = this.getTimesList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshTimes();
+		},
+		refreshTimes : function(){
+			var oL = this.getTimesList(), aP = this.getProperties().timeListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getTimesList : function(){
+			return this.GetComponentByRID("timesList").GetWideSelect();
+		},
+		prepareSaveTimesList : function(o){
+			aP = this.getProperties().timeListProp;
+			o[aP] = [];
+			var aTimes = this.getTimesList().getItems();
+			for(var i = 0; i < aTimes.length;i++) o[aP].push(aTimes[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

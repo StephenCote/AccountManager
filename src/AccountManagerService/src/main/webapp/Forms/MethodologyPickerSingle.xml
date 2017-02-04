@@ -1,0 +1,36 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Methodology:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "methodology" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseMethodology()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickMethodology('Methodology')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openMethodology()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		if(!this.getProperties().methodologyProp){
+			this.getProperties().methodologyProp = "methodology";
+		}
+		var o = this.getBean("rocketType");
+		this.pickMethodology('Methodology',o[this.getProperties().methodologyProp]);
+
+	},
+	chooseMethodology : function(){
+		this.manageList("Methodology", this.getObjectId(),"pickMethodology");
+	},
+
+		openMethodology : function(){
+			var o = this.getBean("rocketType");
+			if(o && o[this.getProperties().methodologyProp] && this.openItem) this.openItem(o[this.getProperties().methodologyProp],"Methodology");
+		},
+	pickMethodology : function(s, v){
+		var o = this.getBean("rocketType");
+		o[this.getProperties().methodologyProp] = v;
+		this.GetElementByRID("methodology").value = (v ? v.name : "");
+	}
+	]]></embedded-script>
+</html-fragment>

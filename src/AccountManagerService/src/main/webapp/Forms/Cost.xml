@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Cost Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Cost";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName);
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.costType();
+					o.name = "";
+					o.value = 0;
+					o.currencyType = "USD";
+					o.id = 0;
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

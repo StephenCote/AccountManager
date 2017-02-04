@@ -1,0 +1,7 @@
+<html-fragment>
+	<import-xml src = "/AccountManagerService/Forms/BaseFields.xml" id = "BaseFields" />
+	
+<embedded-script><![CDATA[
+]]></embedded-script>
+
+</html-fragment>

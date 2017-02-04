@@ -1,0 +1,106 @@
+<html-fragment>
+
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text"  rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/SchedulePickerSingle.xml" id = "SchedulePickerSingle" />
+	<import-xml src = "/AccountManagerService/Forms/BlueprintPicker.xml" id = "BlueprintPicker" />
+	<import-xml src = "/AccountManagerService/Forms/RequirementPicker.xml" id = "RequirementPicker" />
+	<import-xml src = "/AccountManagerService/Forms/DependencyPicker.xml" id = "DependencyPicker" />
+	<import-xml src = "/AccountManagerService/Forms/ArtifactPicker.xml" id = "ArtifactPicker" />
+	<import-xml src = "/AccountManagerService/Forms/ModulePicker.xml" id = "ModulePicker" />
+	<import-xml src = "/AccountManagerService/Forms/StagePicker.xml" id = "StagePicker" />
+	<import-xml src = "/AccountManagerService/Forms/DataDndPicker.xml" id = "DataDndPicker" />
+
+
+
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			var o = this.getBean("rocketType"),_s = this.getProperties();
+			_s.dndHandler = "local_handle_dnd_form";
+			_s.dndShowForm = "local_handle_dnd_form_show";
+			_s.blueprintListProp = "blueprints";
+			_s.requirementListProp = "requirements";
+			_s.dependencyListProp = "dependencies";
+			_s.artifactListProp = "artifacts";
+			_s.moduleListProp = "modules";
+			_s.stageListProp = "stages";
+			_s.scheduleProp = "schedule";
+			this.pickSchedule('Schedule',o.schedule);
+			
+			
+			this.GetComponentByRID("blueprintsList").setLoadHandler(this.scopeHandler("configBlueprintsList",0,1,1));
+			this.GetComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
+			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.GetComponentByRID("modulesList").setLoadHandler(this.scopeHandler("configModulesList",0,1,1));
+			this.GetComponentByRID("stagesList").setLoadHandler(this.scopeHandler("configStagesList",0,1,1));
+
+		},
+		embedded_destroy : function(){
+
+		},
+		local_handle_dnd_form_show : function(oW){
+			this.setStatus("Warning: Window will close if successful");
+		},
+		local_handle_dnd_form : function(oW, aF){
+			var o = this.getBean("rocketType");
+			if(aF.length){
+				var oD = AM6Client.get("DATA",AM6Client.find("GROUP","DATA",uwm.getPathForType("Data")).objectId,aF[0]);
+				if(oD){
+					uwmServices.getService("Rocket").importProject(o.id,oD.id,false);
+					oW.Close();
+					this.Close();
+				}
+			}
+			
+		},
+		addType : function(o){
+			if(irocket.getCommunityMode()){
+				var oL = irocket.getCommunityLifecycle();
+				if(!oL || oL == null){
+					this.setStatus("Invalid community lifecycle selection");
+					return false;
+				}
+				var oP = rocket.createCommunityProject(oL,o.name);
+				if(!oP || oP == null){
+					this.setStatus("Failed to create community project");
+					return false;
+				}
+				oP.description = o.description;
+				oP.blueprints = o.blueprints;
+				oP.requirements = o.requirements;
+				oP.dependencies = o.dependencies;
+				oP.artifacts = o.artifacts;
+				oP.modules = o.modules;
+				oP.stages = o.stages;
+				oP.schedule = o.schedule;
+				if(rocket.updateProject(oP)){
+					//irocket.importEstimates("/AccountManagerService/Models/estimateModel.js");
+					//irocket.importEstimates("/AccountManagerService/Models/estimateModel.js");
+					Hemi.message.service.publish("oncommunitychange",this);
+					return 1;
+				}
+				return 0;
+			}
+			else{
+				uwmServiceCache.clearCache();
+				return rocket.addProject(o.name, o.description,o.blueprints, o.requirements, o.dependencies, o.artifacts, o.modules, o.stages, o.schedule,o.groupPath);
+			}
+		},
+		prepareSave : function(o){
+			this.prepareSaveBlueprintsList(o);
+			this.prepareSaveRequirementsList(o);
+			this.prepareSaveDependenciesList(o);
+			this.prepareSaveArtifactsList(o);
+			this.prepareSaveModulesList(o);
+			this.prepareSaveStagesList(o);
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

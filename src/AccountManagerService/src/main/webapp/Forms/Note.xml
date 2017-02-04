@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<!--
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/BaseType.xml" id = "BaseType" />
+	<p>
+	</p>
+	-->
+	<p>Note Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Note";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName);
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.noteType();
+					o.name = "";
+					o.text = "";
+					o.id = 0;
+					o.createdDate = new Date();
+					o.modifiedDate = o.createdDate;
+					o.childNotes = [];
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

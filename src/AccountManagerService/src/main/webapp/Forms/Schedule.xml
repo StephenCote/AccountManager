@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<!--
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/BaseType.xml" id = "BaseType" />
+	<p>
+	</p>
+	-->
+	<p>Schedule Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Schedule";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName);
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.scheduleType();
+					o.name = "";
+					o.id = 0;
+					o.startTime = new Date();
+					o.endTime = o.startTime;
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

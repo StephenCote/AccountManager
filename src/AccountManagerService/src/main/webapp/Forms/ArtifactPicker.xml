@@ -1,0 +1,69 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "artifactPickerToggle"></span> <span rid = "artifactPickerTitle">Artifacts</span>:
+		</p>
+		<p rid = "artifactPickerContent">
+			<div component = "wideselect" rid = "artifactsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addArtifact()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeArtifact()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openArtifact()" />
+			<input type = "button" class = "rocket-button" value = ">>" onclick = "${this}.openArtifactData()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		this.toggleField("artifactPickerToggle","artifactPickerContent");
+		if(!this.getProperties().artifactListProp) this.getProperties().artifactListProp = "artifacts";
+	},
+	openArtifact : function(){
+		var oI = this.getArtifactsList().getActiveItem();
+		if(oI && oI.data && this.openItem) this.openItem(oI.data,"Artifact");
+	},
+	openArtifactData : function(){
+		var oI = this.getArtifactsList().getActiveItem();
+		if(!oI || !oI.data || !oI.data.artifactDataId || !this.openItem) return;
+		var a = oI.data;
+		if(!a.artifactType.match(/^(ticket|data|task|work|note|module|story)$/i)) return oObj;
+			
+		var sType = a.artifactType.substring(0,1) + a.artifactType.substring(1,a.artifactType.length).toLowerCase();
+		var oObj = AM6Client.get(a.artifactType,a.artifactDataId);
+		if(oObj) this.openItem(oObj, sType);
+
+	},
+	addArtifact : function(){
+			this.manageList("Artifact", this.getArtifactsList().getObjectId());
+		},
+		removeArtifact : function(){
+			var oI = this.getArtifactsList().getActiveItem();
+			if(oI) this.getArtifactsList().clearItem(oI.index);
+		},
+
+		configArtifactsList : function(s,v){
+			var oL = this.getArtifactsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshArtifacts();
+		},
+		refreshArtifacts : function(){
+			var oL = this.getArtifactsList(), aP = this.getProperties().artifactListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getArtifactsList : function(){
+			return this.GetComponentByRID("artifactsList").GetWideSelect();
+		},
+		prepareSaveArtifactsList : function(o){
+			aP = this.getProperties().artifactListProp;
+			o[aP] = [];
+			var aArtifacts = this.getArtifactsList().getItems();
+			for(var i = 0; i < aArtifacts.length;i++) o[aP].push(aArtifacts[i].data);
+		}
+	
+	]]></embedded-script>
+</html-fragment>

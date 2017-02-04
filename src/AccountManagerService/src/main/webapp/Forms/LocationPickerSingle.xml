@@ -1,0 +1,32 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Location:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "location" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseLocation()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickLocation('Location')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openLocation()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		var o = this.getBean("rocketType");
+		this.pickLocation('Location',o.location);
+	},
+	chooseLocation : function(){
+		this.manageList("Location", this.getObjectId(),"pickLocation");
+	},
+
+		openLocation : function(){
+			var o = this.getBean("rocketType");
+			if(o && o.location && this.openItem) this.openItem(o.location,"Location");
+		},
+	pickLocation : function(s, v){
+		var o = this.getBean("rocketType");
+		o.location = v;
+		this.GetElementByRID("location").value = (v ? AM6Client.getAttributeValue(v,"name",v.name) : "");
+	}
+	]]></embedded-script>
+</html-fragment>

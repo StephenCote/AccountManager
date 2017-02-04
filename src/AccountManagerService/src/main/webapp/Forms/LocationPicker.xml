@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "locationPickerToggle"></span> <span rid = "locationPickerTitle">Locations</span>:
+		</p>
+		<p rid = "locationPickerContent">
+			<div component = "wideselect" rid = "locationsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addLocation()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeLocation()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openLocation()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("locationPickerToggle","locationPickerContent");
+			if(!this.getProperties().locationListProp) this.getProperties().locationListProp = "locations";
+		},
+		openLocation : function(){
+			var oI = this.getLocationsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Location");
+		},
+		addLocation : function(){
+			this.manageList("Location", this.getLocationsList().getObjectId());
+		},
+		removeLocation : function(){
+			var oI = this.getLocationsList().getActiveItem();
+			if(oI) this.getLocationsList().clearItem(oI.index);
+		},
+
+		configLocationsList : function(s,v){
+			var oL = this.getLocationsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshLocations();
+		},
+		refreshLocations : function(){
+			var oL = this.getLocationsList(), aP = this.getProperties().locationListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getLocationsList : function(){
+			return this.GetComponentByRID("locationsList").GetWideSelect();
+		},
+		prepareSaveLocationsList : function(o){
+			aP = this.getProperties().locationListProp;
+			o[aP] = [];
+			var aLocations = this.getLocationsList().getItems();
+			for(var i = 0; i < aLocations.length;i++) o[aP].push(aLocations[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

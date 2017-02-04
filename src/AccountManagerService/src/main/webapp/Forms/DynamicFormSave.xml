@@ -1,0 +1,245 @@
+<html-fragment>
+	<div rid = "defNewRowCont" style = "display: none;" class = "rocket-column-2">
+		<p>New Row</p>
+		<p><input type = "button"  onclick ="${this}.addRow()" value = "Add" class = "rocket-button" /></p>
+	</div>
+	<div rid = "debugCont" style = "display:none;clear:both;" class = "rocket-column-2">
+		<p rid = "lblDebug">
+			Debug:
+		</p>
+		<p>
+			<input rid = "btnDebug" type = "button" class = "rocket-button" value = "Debug" onclick = "${this}.sendToDebug()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2" rid = "btnSaveCont" style = "display: none;">
+		<p>Save</p>
+		<p><input type = "button"  onclick ="${this}.saveForm()" value = "Save" class = "rocket-button" /></p>
+	</div>
+	<p style = "clear:both;"><span rid = "status"></span></p>
+<embedded-script><![CDATA[
+embedded_init : function(){
+	var o = this.getBean("formBean");
+	this.GetElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
+	this.scopeHandler("profiler_loaded", 0, 0, 1);
+	/// If the form defines a template
+	/// Then it is up to the template to provide a new row button and a save button
+	/// The new row button container should have the reference id "newRowCont"
+	///
+	if(o.template){
+		if(!o.template.viewTemplate){
+			this.GetElementByRID("btnSaveCont").style.display = "block";
+		}
+		if(o.template.isGrid){
+			this.GetElementByRID("defNewRowCont").style.display = "block";
+		}
+	}
+	if(!this.setStatus) this.setStatus = this._setStatus;
+},
+
+	embedded_destroy : function(){
+
+		this._prehandle_profiler_loaded = 0;
+	},
+   sendToDebug : function(){
+        	Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler',0,0,0,this._prehandle_profiler_loaded);
+        },
+        _handle_profiler_loaded : function(oW){
+        	if(typeof oW.ShowTab == "function" && typeof ActiveSource == "object"){
+				oW.ShowTab("Active Source");
+				var oSource = oW.GetElementByRID("oSource");
+				var oEval = oW.GetElementByRID("oEval");
+				var sCont = "";
+				ActiveObjects.valContainer = 0;
+				ActiveObjects.valReference = 0;
+				ActiveObjects.valBridge = 0;
+				ActiveObjects.valComponent = 0;
+				var oBean = this.getBean("rocketType");
+				oEval.value = "ActiveObjects.val";
+				ActiveObjects.val = (oBean ? oBean : this);
+
+				if(oBean){
+					oW.Reflect();
+				}
+				else{
+					oSource.value = 
+						"Active Template"
+					;
+				}
+			}        	
+        },
+deleteRow : function(sId){
+	var o = this.getBean("formBean");
+	var oXForm = this.GetForm();
+   	for(var i = 0; i < o.template.elements.length; i++){
+   		var oE = o.template.elements[i];
+		delete o[sId + oE.elementName];
+		oXForm.removeElement(oXForm.getElementByName(sId + oE.elementName));
+	}
+	this.setBean(o,"formBean");
+	Hemi.log("Delete Row: " + sId);
+	var oRow = this.GetElementByRID(sId + "Row");
+	if(oRow){
+		/// Remove and unlink node and all framework objects;
+		Hemi.xml.removeChildren(oRow, 1);
+		
+		/// the row container will be cleaned up with the template is recycled
+		Hemi.xml.removeChild(oRow,oRow.parentNode,1);
+		//oRow.parentNode.removeChild(oRow);
+	}
+},
+
+addRow : function(){
+	var o = this.getBean("formBean");
+	var sId = "Row-" + this.pad((o.rowCount+1),10) + "-";
+	o.rowCount++;
+   	var sB = "<html-fragment>" + o.rowTemplate.replace(/\${id}/gi,sId) + "</html-fragment>";
+   	var oX = Hemi.xml.parseXmlDocument(sB);
+   	
+   	if(!oX || !oX.documentElement){
+   		alert("Invalid XML from:\n\n" + sB);
+   		return;
+   	}
+   	
+   	for(var i = 0; i < o.template.elements.length; i++){
+   		var oE = o.template.elements[i];
+	 	switch(oE.elementType){
+			case "DATE":
+				o[sId + oE.elementName] = new Date();
+				break;
+			case "BOOLEAN":
+				o[sId + oE.elementName] = false;
+				break;
+			/*
+			case "DATA":
+			case "RESOURCE":
+			case "SCHEDULE":
+			case "ESTIMATE":
+			case "TIME":
+			case "INT":
+			case "INT":
+			case "STRING":
+			case "STRINGMULTILINE":
+			*/
+			default:
+				o[sId + oE.elementName] = "";
+				break;
+		}
+		/*
+		var oIE = this.getTemplateSpace().getSpaceObjectByName(sId + oE.elementName);
+		if(!oIE || !oIE.object){
+			Hemi.logError("Failed to find '" + sID + oE.elementName + "'");
+			continue;
+		}
+		Hemi.data.form.service.synchronizeComponent(oIE,1,0);
+		*/
+   	}
+   
+	
+   	for(var i = 0; i < oX.documentElement.childNodes.length;i++){
+   		Hemi.xml.setInnerXHTML(this.GetElementByRID("rowCont"), oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
+   	}
+   	var aC = this.GetElementByRID("rowCont").childNodes;
+   	//Hemi.xml.setInnerXHTML(this.GetElementByRID("rowCont"),oX.documentElement,1);
+   	this.extendSpaceConfiguration(aC[aC.length-1]);
+   	
+   
+
+},
+	isSupportedBinaryType : function(elementType){
+		var out_bool = false;
+		switch(elementType){
+			case "RESOURCE":
+			case "SCHEDULE":
+			case "ESTIMATE":
+			case "TIME":
+			case "NOTE":
+			case "DATA":
+			case "FORM":
+			case "TASK":
+			case "TICKET":
+			case "MODEL":
+			case "ARTIFACT":
+			case "STAGE":
+			case "CASE":
+			case "WORK":
+			case "GOAL":
+			case "BUDGET":
+			case "COST":
+				out_bool = true;
+				break;
+			default:
+				break;
+		}
+		return out_bool;
+	},
+saveForm:function(){
+	if(!this.ValidateForm(1)){
+		return;
+	}
+	this.synchronizeForm();
+	var o = this.getBean("formBean");
+	var aE = o.template.elements;
+	o.form.elements = [];
+	for(var i = 0; i < aE.length;i++){
+		var oE = aE[i];
+		o.form.elements.push(oE);
+		if(o.template.isGrid){
+			o.form.elements[i].elementValues=[];
+			var iEV = 0;
+			for(var r = 0; r < o.rowCount; r++){
+				/// sId is the newly ordered row id
+			    var sId = "Row-" + this.pad((iEV+1),10) + "-";
+			    /// sCompId is the old row id
+			    var sCompId = "Row-" + this.pad((r+1),10) + "-";
+			    if(typeof o[sCompId + oE.elementName] == "undefined"){
+			    	Hemi.log("Skipping " + (r+1) + " of " + o.rowCount + " '" + sCompId + oE.elementName + "'");
+			    	continue;
+			    }
+			    Hemi.log("Indexing Row " + (r+1) + " of " + o.rowCount + " '" + sCompId + oE.elementName + "' to '" + sId + oE.elementName + "'");
+				var oVal = new org.cote.objects.formElementValueType();
+				oVal.name = sId + oE.name;
+				oVal.isBinary = this.isSupportedBinaryType(oE.elementType);
+				
+				if(this.getObjects().entityMap[sCompId + oE.elementName]){
+					if(oVal.isBinary) oVal.binaryId = parseInt(this.getObjects().entityMap[sCompId + oE.elementName]);
+					else oVal.textValue = this.getObjects().entityMap[sCompId + oE.elementName];
+				}
+				else{
+					if(oVal.isBinary) oVal.binaryId = parseint(o[sCompId + oE.elemnetName]);
+					else oVal.textValue = o[sCompId + oE.elementName];
+				}
+				o.form.elements[i].elementValues[iEV] = oVal;
+				iEV++;
+			}
+		}
+		else{
+			var oVal = new org.cote.objects.formElementValueType();
+			oVal.name = oE.name;
+			oVal.isBinary = this.isSupportedBinaryType(oE.elementType);
+			
+			if(this.getObjects().entityMap[oE.elementName]){
+				if(oVal.isBinary) oVal.binaryId = parseInt(this.getObjects().entityMap[oE.elementName]);
+				else oVal.textValue = this.getObjects().entityMap[oE.elementName];
+			}
+			else oVal.textValue = o[oE.elementName];
+			o.form.elements[i].elementValues = [oVal];
+			//window.g_last_form = o.form;
+		}
+	}
+	if(AM6Client.update("FORM",o.form)){
+		if(this.Close) this.Close();
+	}
+},
+	
+	pad : function(i,l){
+	   var s = "" + i;
+	   var a = [];
+	   for(var i = s.length; i < l;i++) a.push("0");
+	   a.push(s);
+	   return a.join("");
+	},
+		_setStatus : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+		}
+]]></embedded-script>
+</html-fragment>

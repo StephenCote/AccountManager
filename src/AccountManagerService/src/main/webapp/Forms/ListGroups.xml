@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
+	<embedded-script>
+		<![CDATA[
+		// Requires TemplateTools to be included
+		//
+		template_init : function(){
+			/// Leave the default type as UNKNOWN so as to pick up all types
+			/// This allows intermixing, and then where only specific types are desired it can be restricted
+			/// At the moment, the count function doesn't accomodate type, though, so if the group children are not all the same type
+			/// the count won't match the list.  This is the same issue with roles and permissions, since those use psuedo group-like structures
+			///
+			if(!this.getProperties().listGroupType) this.getProperties().listGroupType = "UNKNOWN";
+			this.initGrid("Group",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Group","~/")));
+
+			if(this.getProperties().viewType && this.setTitle) this.setTitle(this.getProperties().viewType.name);
+		},
+		template_destroy : function(){
+			
+		},
+
+		handle_list_click : function(v){
+			///this.setStatus("Clicked: " + v.name);
+		}
+		]]>
+	</embedded-script>
+</Template>

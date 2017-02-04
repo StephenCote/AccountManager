@@ -1,0 +1,48 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Start Time:
+		</p>
+		<p>
+			<input type = "date" component = "calendar" rid = "startTime" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			End Time:
+		</p>
+		<p>
+			<input type = "date" component = "calendar" rid = "endTime" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<import-xml src = "/AccountManagerService/Forms/GoalPicker.xml" id = "GoalPicker" />
+	<import-xml src = "/AccountManagerService/Forms/BudgetPicker.xml" id = "BudgetPicker" />
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			this.getProperties().budgetListProp = "budgets";
+			this.getProperties().goalListProp = "goals";
+			this.GetComponentByRID("goalsList").setLoadHandler(this.scopeHandler("configGoalsList",0,1,1));
+			this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
+		},
+	
+		addType : function(o){
+			return AM6Client.update("SCHEDULE",o);
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("endTime").className = "rocket-text";
+			o.goals = [];
+			o.budgets = [];
+			var aGoals = this.getGoalsList().getItems();
+			var aBudgets = this.getBudgetsList().getItems();
+			for(var i = 0; i < aGoals.length;i++) o.goals.push(aGoals[i].data);
+			for(var i = 0; i < aBudgets.length;i++) o.budgets.push(aBudgets[i].data);
+			Hemi.log("Adding " + o.goals.length + " Goals and " + o.budgets.length + " Budgets"); 
+			if(o.startTime.getTime() > (o.endTime.getTime() + 1000)){
+				this.GetElementByRID("endTime").className = "rocket-text rocket-text-error";
+				this.setStatus("End time cannot be before the start time");
+				return;
+			}
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

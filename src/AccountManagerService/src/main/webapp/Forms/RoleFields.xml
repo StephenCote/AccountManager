@@ -1,0 +1,174 @@
+<html-fragment>
+	<import-xml src = "/AccountManagerService/Forms/ParentPicker.xml" id = "ParentPicker" />
+
+	<div class = "rocket-column-2" rid = "dataTypeContainer">
+		<p>
+			Type:
+		</p>
+		<p>
+			<select rid = "roleType" bind = "${bean.rocketType}">
+				<option>ACCOUNT</option>
+				<option selected = "true">PERSON</option>
+				<option>USER</option>
+			</select>
+		</p>
+	</div>
+	
+	<div class = "rocket-column-2" rid = "memberPicker" style = "display:none;">
+		<p rid = "memberPickerTitle">
+			<span rid = "memberPickerToggle"></span> <span rid="memberPickerLabel">Members</span>:
+		</p>
+		<p rid = "memberPickerContent">
+
+			<div component = "wideselect" rid = "membersList">
+			</div>
+
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addChildMember()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeChildMember()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openChildMember()" />
+		</p>
+	</div>
+	
+	<div class = "rocket-column-2" rid = "rolePicker" style = "display:none;">
+		<p rid = "rolePickerTitle">
+			<span rid = "rolePickerToggle"></span> <span rid="rolePickerLabel">Roles</span>:
+		</p>
+		<p rid = "rolePickerContent">
+			<div component = "wideselect" rid = "rolesList">
+			</div>
+
+			<br />
+			<!--
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addChildRole()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeChildRole()" />
+			-->
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openChildRole()" />
+		</p>
+	</div>
+	
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			var o = this.getBean("rocketType");
+			this.GetElementByRID("rolePicker").style.display = "block";
+			this.toggleField("rolePickerToggle","rolePickerContent");
+
+			this.GetElementByRID("pathCont").style.display = "none";
+			this.GetComponentByRID("rolesList").setLoadHandler(this.scopeHandler("configRolesList",0,1,1));
+			
+			if(o.id && o.roleType.match(/^(person|account|user)$/gi)){
+				this.toggleField("memberPickerToggle","memberPickerContent");
+				this.GetElementByRID("memberPicker").style.display = "block";
+				this.GetComponentByRID("membersList").setLoadHandler(this.scopeHandler("configMembersList",0,1,1));
+			}
+
+		},
+
+		openChildMember : function(){
+			var oI = this.getMembersList().getActiveItem();
+			var sType = this.GetElementByRID("roleType").value;
+			sType = sType.substring(0,1) + sType.substring(1,sType.length).toLowerCase();
+			if(oI && oI.data && this.openItem){
+				var d = oI.data;
+				var sDType = d.nameType.substring(0,1) + d.nameType.substring(1,d.nameType.length).toLowerCase();
+				//if(!d.populated) d =  accountManager["get" + sDType + "ById"](d.id);
+				this.openItem(d,sDType);
+			}
+		},
+		addChildMember : function(){
+			var sType = this.GetElementByRID("roleType").value;
+			sType = sType.substring(0,1) + sType.substring(1,sType.length).toLowerCase();
+			this.manageList(sType, this.getObjectId(),"pickMember",this.getBean("rocketType").path,1);
+		},
+		pickMember : function(s, v){
+			if(v){
+				var o = this.getBean("rocketType");
+				AM6Client.member("ROLE",o.objectId,v.nameType,v.objectId,true);
+				//accountManager.setRole(v,this.getBean("rocketType"),true);
+				this.getMembersList().addItem(v.name,v);
+			}
+		},
+		removeChildMember : function(){
+			var oI = this.getMembersList().getActiveItem();
+			if(oI){
+				if(oI.data){
+					//accountManager.setRole(oI.data,this.getBean("rocketType"),false);
+					var o = this.getBean("rocketType");
+					AM6Client.member("ROLE",o.objectId,v.nameType,v.objectId,false);
+				}
+				this.getMembersList().clearItem(oI.index);
+			}
+		},
+		configMembersList : function(s,v){
+			var o = this.getBean("rocketType");
+			var oL = this.getMembersList();
+			oL.getContainer().style.height = "100px";
+			oL.getContainer().style.width = "250px";
+			this.refreshMembers();
+		},
+		refreshMembers : function(a){
+			var sType = this.GetElementByRID("roleType").value;
+			//sType = sType.substring(0,1) + sType.substring(1,sType.length).toLowerCase();
+		
+			var oL = this.getMembersList();
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || o == null || o.id <= 0) return;
+
+			var aL = AM6Client.members("ROLE",o.objectId,sType);
+			for(var i = 0; i < aL.length;i++){
+				oL.addItem(aL[i].name,aL[i]);
+			}
+		},
+		getMembersList : function(){
+			return this.GetComponentByRID("membersList").GetWideSelect();
+		},
+		openChildRole : function(){
+			var oI = this.getRolesList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Role");
+		},
+		addChildRole : function(){
+			this.manageList("Role", this.getRolesList().getObjectId());
+		},
+		removeChildRole : function(){
+			var oI = this.getRolesList().getActiveItem();
+			if(oI){
+				this.getRolesList().clearItem(oI.index);
+			}
+		},
+		configRolesList : function(s,v){
+			var o = this.getBean("rocketType");
+			var oL = this.getRolesList();
+			oL.getContainer().style.height = "50px";
+			oL.getContainer().style.width = "150px";
+			this.refreshRoles();
+		},
+		refreshRoles : function(a){
+			var oL = this.getRolesList();
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || o == null || o.id <= 0) return;
+
+			var aL = AM6Client.list("ROLE",o.objectId,0,0);
+			for(var i = 0; i < aL.length;i++){
+				oL.addItem(aL[i].name + " " + aL[i].roleType,aL[i]);
+			}
+		},
+		getRolesList : function(){
+			return this.GetComponentByRID("rolesList").GetWideSelect();
+		},
+		embedded_destroy : function(){
+		},
+		
+		addType : function(o){
+			Hemi.log("Add role type: " + o.name + ":" + o.roleType);
+
+			return AM6Client.update("ROLE",o);
+		},
+		
+		prepareSave : function(o){
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

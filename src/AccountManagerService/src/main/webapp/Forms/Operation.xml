@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Operation Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Operation";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName,"~/Operations");
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.operationType();
+					o.name = "";
+					o.score = 0;
+					o.description = "";
+					o.operation = "";
+					o.operationType = "UNKNOWN";
+					o.id = 0;
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

@@ -1,0 +1,69 @@
+<html-fragment>
+	<p>
+		<input type = "text" rid = "path" placeholder = "~/Path" class = "rocket-text" />
+	</p>
+	<div style = "width:250px;" component = "wideselect" rid = "typelist">
+	</div>
+	<p>
+		<input type = "button" class = "rocket-button"  value = "Refresh" onclick = "${this}.refreshList()" />
+	</p>
+	<p><span rid = "status">[ ... ]</span></p>
+	<embedded-script><![CDATA[
+		initList : function(sTypeName, sDefPath){
+			this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : "~/" + sTypeName + "s");
+			this.getProperties().typeName = sTypeName;
+			this.GetComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
+			if(this.setTitle) this.setTitle(sTypeName);
+		},
+		fragment_init : function(){
+			
+		},
+		
+		fragment_destroy : function(){
+			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_list_session_refresh");
+		},
+		getPath : function(){
+			var o = this.GetElementByRID("path"), s;
+			if(!(s = o.value).length){
+				s = o.placeholder;
+				if(!s) s = "~/" + this.getProperties().typeName + "s";
+			}
+			return s;
+		},
+		handle_list_session_refresh : function(s, v){
+			this.refreshList();
+		},
+		_handle_typelistclick : function(s, v){
+			if(this.handle_list_click) this.handle_list_click(v);
+		},
+		configList : function(){
+			this.getList().setResultHandler( this.scopeHandler("typelistclick",0,0,1));
+			this.refreshList();
+			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_list_session_refresh");
+		},
+		getList : function(){
+			return this.GetComponentByRID("typelist").GetWideSelect();
+		},
+		refreshList : function(){
+			var sPath = this.getPath();
+			
+			var oL = this.getList();
+			oL.clearItems();
+			this.setStatus("");
+			if(!uwm.rule("IsLoggedIn")){
+				this.setStatus("Not Authenticated with id " + uwm.getSession().sessionId);
+			}
+			else{
+				var aList = rocket["list" + this.getProperties().typeName + "s"](sPath);	
+				for(var i = 0; aList != null && i < aList.length;i++){
+					oL.addItem(aList[i].name, aList[i]);
+				}
+			}
+		
+		},
+		setStatus : function(s){
+			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+		}
+	
+	]]></embedded-script>
+</html-fragment>

@@ -1,0 +1,71 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text"  rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			logicalOrder:
+		</p>
+		<p>
+			<input type = "text"  rid = "logicalOrder" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	
+	<import-xml src = "/AccountManagerService/Forms/DependencyPicker.xml" id = "DependencyPicker" />
+	<import-xml src = "/AccountManagerService/Forms/ArtifactPicker.xml" id = "ArtifactPicker" />
+	<import-xml src = "/AccountManagerService/Forms/TaskPicker.xml" id = "TaskPicker" />
+	<import-xml src = "/AccountManagerService/Forms/ResourcePicker.xml" id = "ResourcePicker" />
+
+
+	<embedded-script><![CDATA[
+		embedded_init : function(o){
+			this.getProperties().resourceListProp = "resources";
+			this.getProperties().artifactListProp = "artifacts";
+			this.getProperties().taskListProp = "tasks";
+			this.getProperties().dependencyListProp = "dependencies";
+			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.GetComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
+			this.GetComponentByRID("tasksList").setLoadHandler(this.scopeHandler("configTasksList",0,1,1));
+
+		},
+
+		
+		
+		addType : function(o){
+			return AM6Client.update("WORK",o);
+		},
+		prepareSave : function(o){
+			this.GetElementByRID("logicalOrder").className = "rocket-text";
+
+			o.dependencies = [];
+			var aDependencies = this.getDependenciesList().getItems();
+			for(var i = 0; i < aDependencies.length;i++) o.dependencies.push(aDependencies[i].data);
+			
+			o.artifacts = [];
+			var aArtifacts = this.getArtifactsList().getItems();
+			for(var i = 0; i < aArtifacts.length;i++) o.artifacts.push(aArtifacts[i].data);
+
+			o.tasks = [];
+			var aTasks = this.getTasksList().getItems();
+			for(var i = 0; i < aTasks.length;i++) o.tasks.push(aTasks[i].data);
+
+			o.resources = [];
+			var aResources = this.getResourcesList().getItems();
+			for(var i = 0; i < aResources.length;i++) o.resources.push(aResources[i].data);
+
+			if(!this.ValidateForPattern("logicalOrder","numbers-only")){
+				this.GetElementByRID("logicalOrder").className = "rocket-text rocket-text-error";
+				this.setStatus("Text cannot be empty");
+				return 0;
+			}
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

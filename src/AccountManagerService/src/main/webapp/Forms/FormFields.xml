@@ -1,0 +1,271 @@
+<html-fragment>
+	<import-xml src = "/AccountManagerService/Forms/Fragments/FormViewTools.xml" id = "FormViewTools" />
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Is Template:
+		</p>
+		<p>
+			<input onclick = "${this}.displayTemplate()" type = "checkbox" bind = "${bean.rocketType}" rid = "isTemplate" />
+		</p>
+	</div>
+	<div rid = "gridCont" style = "display: none;" class = "rocket-column-2">
+		<p>
+			Is Grid:
+		</p>
+		<p>
+			<input type = "checkbox" bind = "${bean.rocketType}" rid = "isGrid" />
+		</p>
+	</div>	
+	<div rid = "templateCont" style = "display: none;" class = "rocket-column-2">
+		<p>
+			Template:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "formTemplate" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseTemplate()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickTemplate('Form')" />
+			<input type = "button" value = ">" class = "rocket-button" onclick = "${this}.openTemplate()" />
+		</p>
+	</div>
+	<div rid = "viewTemplateCont" style = "display: none;" class = "rocket-column-2">
+		<p>
+			View:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "formViewTemplate" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseViewTemplate()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickViewTemplate('Note')" />
+			<input type = "button" value = ">" class = "rocket-button" onclick = "${this}.openViewTemplate()" />
+			<input type = "button" value = "^" class = "rocket-button" onclick = "${this}.createViewTemplate()" />
+		</p>
+	</div>
+
+	<div rid = "viewCont" style = "display: none;" class = "rocket-column-2">
+		<p>
+			View:
+		</p>
+		<p>
+			<input type = "button" class = "rocket-button" value = "View" onclick = "${this}.openFormView()" />
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "formPickerToggle"></span> Child Forms:
+		</p>
+		<p rid = "formPickerContent">
+			<div component = "wideselect" rid = "formsList">
+			</div>
+			<span rid = "formsCtrl" style = "display: none">
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addForm()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeForm()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openForm()" />
+			</span>
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "elementPickerToggle"></span> Elements:
+		</p>
+		<p rid = "elementPickerContent">
+			<div component = "wideselect" rid = "elementsList">
+			</div>
+			<span rid = "elementsCtrl" style = "display: none">
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addElement()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeElement()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openElement()" />
+			<input type = "button" value = "^" class = "rocket-button" onclick = "${this}.createElementViewTemplate()" />
+			</span>
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.GetComponentByRID("elementsList").setLoadHandler(this.scopeHandler("configElementsList",0,1,1));
+			this.GetComponentByRID("formsList").setLoadHandler(this.scopeHandler("configFormsList",0,1,1));
+			var o = this.getBean("rocketType");
+			this.toggleField("formPickerToggle","formPickerContent");
+			this.toggleField("elementPickerToggle","elementPickerContent");
+			this.pickTemplate('Form',o.template);
+			this.pickViewTemplate('Note',o.viewTemplate);
+			this.displayTemplate();
+		},
+		openFormView : function(){
+			var oForm = this.getBean("rocketType");
+			var oProps = {viewType:oForm};
+			var oW = Hemi.app.createWindow(oForm.name, "/AccountManagerService/Forms/FormView.xml", "View-" + oForm.id, 0, 0, oProps);
+            if (oW) {
+            	oW.resizeTo(600, 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		},
+		displayTemplate : function(){
+			var o = this.getBean("rocketType");
+			var c = this.GetElementByRID("isTemplate");
+			var bIsTemplate = c.checked;
+
+			this.GetElementByRID("templateCont").style.display = (!bIsTemplate ? "block" : "none");
+			this.GetElementByRID("gridCont").style.display = (bIsTemplate ? "block" : "none");
+			this.GetElementByRID("elementsCtrl").style.display = (bIsTemplate ? "block" : "none");
+			this.GetElementByRID("formsCtrl").style.display = (bIsTemplate ? "block" : "none");
+			this.GetElementByRID("viewTemplateCont").style.display = (bIsTemplate ? "block" : "none");
+			this.refreshElements((!bIsTemplate && o.template && o.template.elements ? o.template.elements : o.elements));
+			this.GetElementByRID("viewCont").style.display = (o.id > 0 && !bIsTemplate ? "block" : "none");
+		},
+		openTemplate : function(){
+			var o = this.getBean("rocketType");
+			if(o && o.template && this.openItem) this.openItem(o.template,"Form");
+		},
+		chooseTemplate : function(){
+			this.manageList("Form", this.getObjectId(),"pickTemplate");
+		},
+		pickTemplate : function(s, v){
+			var o = this.getBean("rocketType");
+			o.template = v;
+			this.GetElementByRID("formTemplate").value = (v ? v.name : "");
+		},
+		openViewTemplate : function(){
+			var o = this.getBean("rocketType");
+			if(o && o.viewTemplate && this.openItem) this.openItem(o.viewTemplate,"Note");
+		},
+		createViewTemplate : function(){
+			//function (t, l, n, v, b, a, f)
+			var o = this.getBean("rocketType");
+			var sBuff = this.getFormTemplate(o);
+			var oN =new org.cote.objects.noteType();
+			oN.name = "Grid Form Template";
+			oN.text = sBuff;
+			oN.id = 0;
+			oN.createdDate = new Date();
+			oN.modifiedDate = new Date();
+			var p = {viewType:oN};
+			Hemi.app.createWindow("Create View","/AccountManagerService/Forms/Note.xml","Create View Template - " + Hemi.guid(), 0, 0, p, function(oW){
+				oW.setHideOnClose(0);
+			}); 
+		},
+		createElementViewTemplate : function(){
+			//function (t, l, n, v, b, a, f)
+			var o = this.getElementsList().getActiveItem();
+			if(!o || !o.data) return;
+			o = o.data;
+			var sBuff = this.getElementTemplate(this.getBean("rocketType"), o);
+			var oN =new org.cote.objects.noteType();
+			oN.name = "Element Template";
+			oN.text = sBuff;
+			oN.id = 0;
+			oN.createdDate = new Date();
+			oN.modifiedDate = new Date();
+			var p = {viewType:oN};
+			Hemi.app.createWindow("Create View","/AccountManagerService/Forms/Note.xml","Create View Template - " + Hemi.guid(), 0, 0, p, function(oW){
+				oW.setHideOnClose(0);
+			}); 
+		},
+		chooseViewTemplate : function(){
+			this.manageList("Note", this.getObjectId(),"pickViewTemplate");
+		},
+		pickViewTemplate : function(s, v){
+			var o = this.getBean("rocketType");
+			o.viewTemplate = v;
+			this.GetElementByRID("formViewTemplate").value = (v ? v.name : "");
+		},
+		openElement : function(){
+			var oI = this.getElementsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"FormElement");
+		},
+		addElement : function(){
+			this.manageList("FormElement", this.getElementsList().getObjectId());
+		},
+		removeElement : function(){
+			var oI = this.getElementsList().getActiveItem();
+			if(oI) this.getElementsList().clearItem(oI.index);
+		},
+
+		configElementsList : function(s,v){
+			var o = this.getBean("rocketType");
+			var oL = this.getElementsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			var c = this.GetElementByRID("isTemplate");
+			var bIsTemplate = c.checked;
+			this.refreshElements((!bIsTemplate && o.template && o.template.elements ? o.template.elements : o.elements));
+		},
+		refreshElements : function(a){
+			var oL = this.getElementsList();
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o.elements) return;
+			for(var i = 0; i < (a ? a : o.elements).length;i++){
+				oL.addItem((a ? a : o.elements)[i].name,(a ? a : o.elements)[i]);
+			}
+		},
+		getElementsList : function(){
+			return this.GetComponentByRID("elementsList").GetWideSelect();
+		},
+		
+		
+		openForm : function(){
+			var oI = this.getFormsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Form");
+		},
+		addForm : function(){
+			this.manageList("Form", this.getFormsList().getObjectId());
+		},
+		removeForm : function(){
+			var oI = this.getFormsList().getActiveItem();
+			if(oI) this.getFormsList().clearItem(oI.index);
+		},
+
+		configFormsList : function(s,v){
+			var o = this.getBean("rocketType");
+			var oL = this.getFormsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			var c = this.GetElementByRID("isTemplate");
+			var bIsTemplate = c.checked;
+			this.refreshForms((!bIsTemplate && o.template && o.template.childForms ? o.template.childForms : o.childForms));
+		},
+		refreshForms : function(a){
+			var oL = this.getFormsList();
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o.childForms) return;
+			for(var i = 0; i < (a ? a : o.childForms).length;i++){
+				oL.addItem((a ? a : o.childForms)[i].name,(a ? a : o.childForms)[i]);
+			}
+		},
+		getFormsList : function(){
+			return this.GetComponentByRID("formsList").GetWideSelect();
+		},		
+		
+		addType : function(o){
+			return AM6Client.update("FORM",o);
+		},
+		prepareSave : function(o){
+			o.elements = [];
+			o.childForms = [];
+			o.populated = false;
+			if(!o.isTemplate){
+				delete o.viewTemplate;
+			}
+			else{
+				delete o.template;
+				var aElements = this.getElementsList().getItems();
+				for(var i = 0; i < aElements.length;i++) o.elements.push(aElements[i].data);
+				var aForms = this.getFormsList().getItems();
+				for(var i = 0; i < aForms.length;i++) o.childForms.push(aForms[i].data);
+			}
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

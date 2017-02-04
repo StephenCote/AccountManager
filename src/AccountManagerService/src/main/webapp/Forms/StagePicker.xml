@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "stagePickerTitle">
+			<span rid = "stagePickerToggle"></span> Stages:
+		</p>
+		<p rid = "stagePickerContent">
+			<div component = "wideselect" rid = "stagesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addStage()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeStage()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openStage()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("stagePickerToggle","stagePickerContent");
+			if(!this.getProperties().stageListProp) this.getProperties().stageListProp = "stages";
+		},
+		openStage : function(){
+			var oI = this.getStagesList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Stage");
+		},
+		addStage : function(){
+			this.manageList("Stage", this.getStagesList().getObjectId());
+		},
+		removeStage : function(){
+			var oI = this.getStagesList().getActiveItem();
+			if(oI) this.getStagesList().clearItem(oI.index);
+		},
+
+		configStagesList : function(s,v){
+			var oL = this.getStagesList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshStages();
+		},
+		refreshStages : function(){
+			var oL = this.getStagesList(), aP = this.getProperties().stageListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getStagesList : function(){
+			return this.GetComponentByRID("stagesList").GetWideSelect();
+		},
+		prepareSaveStagesList : function(o){
+			aP = this.getProperties().stageListProp;
+			o[aP] = [];
+			var aStages = this.getStagesList().getItems();
+			for(var i = 0; i < aStages.length;i++) o[aP].push(aStages[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

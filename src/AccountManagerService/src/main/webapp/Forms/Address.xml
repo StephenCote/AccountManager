@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Address Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Address";
+			if(!this.getProperties().defaultPath) this.getProperties().defaultPath = "~/Addresses";
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.addressType();
+					o.name = "";
+					o.id = 0;
+					o.locationType = "UNKNOWN";
+					o.preferred = false;
+					o.addressLine1 = "";
+					o.addressLine2 = "";
+					o.city = "";
+					o.state = "";
+					o.region = "";
+					o.state = "";
+					o.postalCode = "";
+					o.country = "";
+					o.description = "";
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

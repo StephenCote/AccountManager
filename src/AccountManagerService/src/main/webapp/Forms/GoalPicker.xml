@@ -1,0 +1,58 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "goalPickerTitle">
+			<span rid = "goalPickerToggle"></span> Goals:
+		</p>
+		<p rid = "goalPickerContent">
+			<div component = "wideselect" rid = "goalsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addGoal()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeGoal()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openGoal()" />
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.toggleField("goalPickerToggle","goalPickerContent");
+			if(!this.getProperties().goalListProp) this.getProperties().goalListProp = "goals";
+		},
+		openGoal : function(){
+			var oI = this.getGoalsList().getActiveItem();
+			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Goal");
+		},
+		addGoal : function(){
+			this.manageList("Goal", this.getGoalsList().getObjectId());
+		},
+		removeGoal : function(){
+			var oI = this.getGoalsList().getActiveItem();
+			if(oI) this.getGoalsList().clearItem(oI.index);
+		},
+
+		configGoalsList : function(s,v){
+			var oL = this.getGoalsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshGoals();
+		},
+		refreshGoals : function(){
+			var oL = this.getGoalsList(), aP = this.getProperties().goalListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getGoalsList : function(){
+			return this.GetComponentByRID("goalsList").GetWideSelect();
+		},
+		prepareSaveGoalsList : function(o){
+			aP = this.getProperties().goalListProp;
+			o[aP] = [];
+			var aGoals = this.getGoalsList().getItems();
+			for(var i = 0; i < aGoals.length;i++) o[aP].push(aGoals[i].data);
+		}
+		
+	]]></embedded-script>
+</html-fragment>

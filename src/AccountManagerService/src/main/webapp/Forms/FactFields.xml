@@ -1,0 +1,237 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Description:
+		</p>
+		<p>
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Score:
+		</p>
+		<p>
+			<input type = "text" rid = "score" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+		</p>
+	</div>
+	<!-- 
+	<div class = "rocket-column-2">
+		<p>
+			Is Parameter:
+		</p>
+		<p>
+			<input type = "checkbox" bind = "${bean.rocketType}" rid = "parameter" />
+		</p>
+	</div>	
+	-->
+	<div class = "rocket-column-2">
+		<p>
+			Fact Type:
+		</p>
+		<p>
+			<select rid = "factType" bind = "${bean.rocketType}">
+			<option>UNKNOWN</option>
+			<option>GROUP</option>
+			<option>ROLE</option>
+			<option>PERMISSION</option>
+			<option>PROPERTY</option>
+			<option>ATTRIBUTE</option>
+			<option>STATIC</option>
+			<option>FACTORY</option>
+			<option>REST</option>
+			<option>FUNCTION</option>
+			<option>SUBJECT</option>
+			<option>CONTEXT</option>
+			<option>PARAMETER</option>
+			<option>OPERATION</option>
+			</select>
+		</p>
+	</div>
+	<div class = "rocket-column-2" rid = "factoryTypeContainer">
+		<p>
+			Factory:
+		</p>
+		<p>
+			<select rid = "factoryType" bind = "${bean.rocketType}">
+				<option>UNKNOWN</option>
+				<option>ACCOUNT</option>
+	    		<option>DATA</option>
+	    		<option>GROUP</option>
+	    		<option>PERMISSION</option>
+	    		<option>ROLE</option>
+	    		<option>USER</option>
+	    		<option>PERSON</option>
+	    		<option>RESOURCE</option>
+	    		<option>FACT</option>
+	    		<option>FUNCTION</option>
+	    		<option>FUNCTIONFACT</option>
+	    		<option>OPERATION</option>
+	    		<option>PATTERN</option>
+	    		<option>POLICY</option>
+	    		<option>RULE</option>
+			</select>
+		</p>
+	</div>
+	
+<div class = "rocket-column-2">
+		<p>
+			Source Type:
+		</p>
+		<p>
+			<select rid = "sourceDataType" bind = "${bean.rocketType}">
+			<option>UNKNOWN</option>
+    		<option>ARRAY</option>
+    		<option>BIGINT</option>
+    		<option>BINARY</option>
+    		<option>BIT</option>
+    		<option>BLOB</option>
+    		<option>BOOLEAN</option>
+    		<option>CHAR</option>
+    		<option>CLOB</option>
+    		<option>DATALINK</option>
+    		<option>DATE</option>
+    		<option>DECIMAL</option>
+    		<option>DISTINCT</option>
+    		<option>DOUBLE</option>
+    		<option>FLOAT</option>
+    		<option>INTEGER</option>
+    		<option>JAVA_OBJECT</option>
+    		<option>LONGVARBINARY</option>
+    		<option>LONGVARCHAR</option>
+    		<option>NULL</option>
+    		<option>NUMERIC</option>
+    		<option>OTHER</option>
+    		<option>REAL</option>
+    		<option>REF</option>
+    		<option>SMALLINT</option>
+    		<option>STRUCT</option>
+    		<option>TIME</option>
+    		<option>TIMESTAMP</option>
+    		<option>TINYINT</option>
+    		<option>VARBINARY</option>
+    		<option>VARCHAR</option>
+    		<option>TEXT</option>
+			</select>
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p>
+			Source Url:
+		</p>
+		<p>
+			<input type = "text" rid = "sourceUrl" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Source Urn:
+		</p>
+		<p>
+			<input type = "text" rid = "sourceUrn" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+			<input type = "button" class = "rocket-button" value = "..." onclick = "${this}.findType()" />
+		</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p>
+			Source Type:
+		</p>
+		<p>
+			<input type = "text" rid = "sourceType" bind = "${bean.rocketType}" class = "rocket-text" />
+		</p>
+	</div>
+		<div class = "rocket-column-2">
+		<p>
+			Data:
+		</p>
+		<p>
+			<input type = "text" rid = "factData" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+			<input type = "button" class = "rocket-button" value = "..." onclick = "${this}.findType(1)" />
+
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			this.getProperties().referByUrn = 1;
+		},
+		addType : function(o){
+			Hemi.log("Add fact type: " + o.name + ":" + o.factType);
+			return accountManagerRule.addFact(o.name, o.description,o.score,o.factType, o.factoryType, o.sourceDataType, o.sourceType,o.sourceUrn, o.sourceUrl,o.factData, o.groupPath);
+		},
+		findType : function(bData){
+			var sFType = this.GetElementByRID((bData ? "factType" : "factoryType")).value;
+			this.manageList(sFType.substring(0,1) + sFType.substring(1,sFType.length).toLowerCase(),0,(bData ? "pickData" : "pickType"));
+		},
+		pickData : function(t, o){
+			this.importType(o,1,1);
+		},
+		pickType : function(t, o){
+			this.importType(o,1);
+			
+		},
+
+		importType : function(oBean,bSkipName,bDataOnly){
+			o = this.getBean("rocketType");
+			var _s = this.getProperties();
+			if(!oBean || !oBean.id || !oBean.nameType.match(/^(group|role|permission|person|account|user|data|function|operation)$/gi)){
+				Hemi.logError("Unsupported fact import type " + (oBean ? oBean.nameType + " #" + oBean.id : "null"));
+				return;
+			}
+			if(bDataOnly){
+				this.GetElementByRID("factData").value = oBean.id;
+				return;
+			}
+			var sPath = "";
+			var sFactType = "FACTORY";
+			var sSrcType = "";
+			if(oBean.nameType.match(/^role$/gi)){
+				sFactType = "ROLE";
+				sSrcType = oBean.roleType;
+				sPath = oBean.parentPath;
+			}
+			else if(oBean.nameType.match(/^permission$/gi)){
+				sFactType = "STATIC";
+				sSrcType = oBean.permissionType;
+				sPath = oBean.parentPath
+			}
+			else if(oBean.nameType.match(/^(person|account|data|function|operation)$/gi)){
+				sPath = oBean.groupPath;
+			}
+			else if(oBean.nameType.match(/^group$/gi)){
+				var oG = oBean;
+				sFactType = "PERMISSION";
+				sSrcType = oBean.groupType;
+				if(!oG.populated || !oG.path) oG = AM6Client.get("GROUP",oG.objectId);
+				if(oG){
+					sPath = oG.path;
+					/// The reason for not reading the parentId is that the user may not be authorized to directly read that group
+					/// so the name can be picked up from the whole path
+					if(sPath) sPath = sPath.substring(0,sPath.lastIndexOf("/"));
+				}
+			}
+			if(_s.referByUrn){
+				this.GetElementByRID("sourceUrl").value = "";
+				this.GetElementByRID("sourceUrn").value = oBean.urn;
+			}
+			else{
+				this.GetElementByRID("sourceUrn").value = oBean.name;
+				this.GetElementByRID("sourceUrl").value = sPath;
+			}
+			this.GetElementByRID("sourceType").value = sSrcType;
+			this.GetElementByRID("factoryType").value = oBean.nameType;
+			this.GetElementByRID("factType").value = sFactType;
+			if(!bSkipName){
+				this.GetElementByRID("name").value = oBean.name + " Fact";
+				this.GetElementByRID("description").value = "Fact representing a relative link to " + oBean.nameType + " " + oBean.name + " with current id #" + oBean.id + " in organization " + oBean.organizationPath;
+			}
+
+			
+		},
+		prepareSave : function(o){
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>
+	

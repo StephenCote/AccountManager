@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template Title = "Image">
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<div rid = "image-field">
+
+	</div>
+	<embedded-script>
+		<![CDATA[
+		template_init : function(){
+			var _s = this.getProperties();
+			if(!_s.media_name){
+				return;
+			}
+			this.setTitle(_s.media_name + " (" + _s.media_id + ")");
+			this.scopeHandler("imageviewer_load",0,0,1);
+			
+			var oI = document.createElement("img");
+			oI.onload = this._prehandle_imageviewer_load;
+			var t = this;
+			oI.onclick = function(){
+				t.Close();
+			};
+			this.GetElementByRID("image-field").appendChild(oI);
+			oI.src = _s.media_url;
+		},
+		_handle_imageviewer_load : function(e){
+			var o = this.GetElementByRID("image-field").getElementsByTagName("img")[0];
+			//alert(o.nodeName);
+			// Add 40px to accomodate title and status bar
+			//
+			Hemi.log("Start dimen: " + o.width + "X" + o.height);
+			if(o.width > this.getProperties().maxWidth || o.height > this.getProperties().maxHeight){
+				/*
+				var iS = (this.getProperties().maxWidth / o.width);
+				if(o.height > o.width) iS = (this.getProperties().maxHeight / o.height);
+				var iW = (iS * o.width);
+				var iH = (iS * o.height); 
+				*/
+				var iS1 = (this.getProperties().maxWidth / o.width);
+				var iS2 = (this.getProperties().maxHeight / o.height);
+				var iW = (iS1 * o.width);
+				var iH = (iS1 * o.height);
+				if(this.getProperties().maxHeight < iH){
+					iW = (iS2 * o.width);
+					iH = (iS2 * o.height);
+				}
+				o.width = iW;
+				o.height = iH;
+				Hemi.log("End dimen: " + o.width + "X" + o.height + " with (" + iS1 + "/" + iS2 + ")");			
+			}
+			
+			this.resizeTo(o.width, o.height + 50);
+			Hemi.app.getWindowManager().CenterWindow(this);
+			//this.flushBody();
+		},
+		template_destroy : function(){
+			this._prehandle_imageviewer_load = 0;
+		}
+
+
+  ]]>
+	</embedded-script>
+</Template>

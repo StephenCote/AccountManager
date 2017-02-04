@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<span class="uwm-inline-buttons">
+	<img valign = "middle" src = "/AccountManagerService/Media/Icons/Crystal/24x24/48px-Crystal_Clear_filesystem_folder_green.png" onclick = "Hemi.app.createWindow('Groups List','/AccountManagerService/Forms/ListGroups.xml','ListGroups')" width = "24" height = "24" title = "Groups" />
+	<img valign = "middle" src = "/AccountManagerService/Media/Icons/Crystal/24x24/48px-Crystal_Clear_app_database.png" onclick = "Hemi.app.createWindow('Data List','/AccountManagerService/Forms/ListDatas.xml','ListDatas')" width = "24" height = "24" title = "Data" />
+	<img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/gnome-graphics.png" onclick = "${this}.DoGallery()" width = "24" height = "24" title = "Media Gallery" />
+    <img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/advanced-directory.png" onclick = "Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler');" width = "24" height = "24" title = "Framework Profiler" />
+    <img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/kivio.png" width = "24" height = "24" onclick = "Hemi.app.createWindow('Framework Designer','Templates/FrameworkDesigner.xml','FrameworkDesigner');" title = "Framework Designer" />
+	<img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/kdvi.png" width = "24" height = "24" onclick = "Hemi.app.createWindow('API Browser','Templates/FrameworkAPIBrowser.xml', 'FrameworkAPIBrowser');" title = "Framework API Browser" />
+    <img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/kexi.png" width = "24" height = "24" onclick = "Hemi.app.createWindow('Log Viewer','Templates/LogViewer.xml', 'LogViewer');" title = "Framework Log Viewer" />
+    <img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/gnome-word.png" width = "24" height = "24" onclick = "Hemi.app.createWindow('FVT Test Suite','Templates/FVTs.xml', 'FVTTestSuite');" title = "Framework Test Suite" />
+	<img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/gpa.png" onclick = "${this}.DoLogout()" width = "24" height = "24" title = "Logout" />
+	</span>
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				
+			},
+			DoLogout : function(){
+				window.uwm.logout();
+				window.uwm.operation("ContinueWorkflow",{opener:this.getObjectId()});
+			},
+			DoGallery : function(){
+				var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");
+				eval(sTxt);
+			}
+		]]>
+	</embedded-script>
+</Template>

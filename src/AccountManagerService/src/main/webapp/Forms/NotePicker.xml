@@ -1,0 +1,56 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "notePickerToggle"></span> Notes:
+		</p>
+		<p rid = "notePickerContent">
+			<div component = "wideselect" rid = "notesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addNote()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeNote()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openNote()" />
+		</p>
+	</div>
+<embedded-script><![CDATA[
+	embedded_init : function(){
+		this.toggleField("notePickerToggle","notePickerContent");
+		if(!this.getProperties().noteListProp) this.getProperties().noteListProp = "notes";
+	},
+	openNote : function(){
+		var oI = this.getNotesList().getActiveItem();
+		if(oI && oI.data && this.openItem) this.openItem(oI.data,"Note");
+	},
+	addNote : function(){
+		this.manageList("Note", this.getNotesList().getObjectId());
+	},
+	removeNote : function(){
+		var oI = this.getNotesList().getActiveItem();
+		if(oI) this.getNotesList().clearItem(oI.index);
+	},
+
+	configNotesList : function(s,v){
+		var oL = this.getNotesList();
+		oL.getContainer().className = "rocket-wideselect-container";
+		this.refreshNotes();
+	},
+	refreshNotes : function(){
+		var oL = this.getNotesList(),aP=this.getProperties().noteListProp;
+		oL.clearItems();
+		var o = this.getBean("rocketType");
+		if(!o || !o[aP]) return;
+		for(var i = 0; i < o[aP].length;i++){
+			oL.addItem(o[aP][i].name,o[aP][i]);
+		}
+	},
+	getNotesList : function(){
+		return this.GetComponentByRID("notesList").GetWideSelect();
+	},
+		prepareSaveNotesList : function(o){
+			aP = this.getProperties().noteListProp;
+			o[aP] = [];
+			var aNotes = this.getNotesList().getItems();
+			for(var i = 0; i < aNotes.length;i++) o[aP].push(aNotes[i].data);
+		}
+]]></embedded-script>
+</html-fragment>

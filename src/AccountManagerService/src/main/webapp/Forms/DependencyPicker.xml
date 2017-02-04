@@ -1,0 +1,74 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			<span rid = "dependencyPickerToggle"></span> Dependencies:
+		</p>
+		<p rid = "dependencyPickerContent">
+			<div component = "wideselect" rid = "dependenciesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addDependency()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeDependency()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openDependency()" />
+			<input type = "button" class = "rocket-button" value = ">>" onclick = "${this}.openDependencyData()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		this.toggleField("dependencyPickerToggle","dependencyPickerContent");
+		if(!this.getProperties().dependencyListProp) this.getProperties().dependencyListProp = "dependencies";
+	},
+	openDependency : function(){
+		var oI = this.getDependenciesList().getActiveItem();
+		if(oI && oI.data && this.openItem) this.openItem(oI.data,"Artifact");
+	},
+	openDependencyData : function(){
+		var oI = this.getDependenciesList().getActiveItem();
+		if(!oI || !oI.data || !oI.data.artifactDataId || !this.openItem) return;
+		var a = oI.data;
+		if(!a.artifactType.match(/^(ticket|data|task|work|note|module|story)$/i)) return oObj;
+			
+		var sType = a.artifactType.substring(0,1) + a.artifactType.substring(1,a.artifactType.length).toLowerCase();
+		var oObj;
+		oObj = AM6Client.get(a.artifactType,a.artifactId);
+		if(oObj) this.openItem(oObj, sType);
+
+	},
+		addDependency : function(){
+			this.manageList("Artifact", this.getDependenciesList().getObjectId(), "pickDependency");
+		},
+		pickDependency : function(s, v){
+			if(v) this.getDependenciesList().addItem(v.name,v);
+		},
+		removeDependency : function(){
+			var oI = this.getDependenciesList().getActiveItem();
+			if(oI) this.getDependenciesList().clearItem(oI.index);
+		},
+
+		configDependenciesList : function(s,v){
+			var oL = this.getDependenciesList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshDependencies();
+		},
+		refreshDependencies : function(){
+			var oL = this.getDependenciesList(),aP=this.getProperties().dependencyListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getDependenciesList : function(){
+			return this.GetComponentByRID("dependenciesList").GetWideSelect();
+		},
+		
+		prepareSaveDependenciesList : function(o){
+			aP = this.getProperties().dependencyListProp;
+			o[aP] = [];
+			var aDependencies = this.getDependenciesList().getItems();
+			for(var i = 0; i < aDependencies.length;i++) o[aP].push(aDependencies[i].data);
+		}
+	
+	]]></embedded-script>
+</html-fragment>

@@ -1,0 +1,33 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Value:
+		</p>
+		<p>
+			<input rid = "value" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+			<select rid = "currencyType" bind = "${bean.rocketType}">
+				<option>UNKNOWN</option>
+				<option>USD</option>
+			</select>
+		</p>
+	</div>
+
+	<embedded-script><![CDATA[
+		addType : function(o){
+			Hemi.log("Add cost type: " + o.name + ":" + o.text);
+			return rocket.addCost(o.name, o.currencyType, o.value, o.groupPath);
+		},
+
+		prepareSave : function(o){
+			this.GetElementByRID("value").className = "rocket-text";
+
+			if(!this.ValidateForPattern("value","numbers-only")){
+				this.GetElementByRID("value").className = "rocket-text rocket-text-error";
+				this.setStatus("Value must only contain numeric characters");
+				return 0;
+			}
+
+			return 1;
+		}
+	]]></embedded-script>
+</html-fragment>

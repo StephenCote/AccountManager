@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<p>Rule Base</p>
+	<embedded-script><![CDATA[
+		template_init : function(){
+			this.getProperties().typeName = "Rule";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName,"~/Rules");
+			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
+			if(!this.getBean("rocketType")){
+				var o = this.getProperties().viewType;
+				if(!o){
+					o = new org.cote.objects.ruleType();
+					o.name = "";
+					o.score = 0;
+					o.logicalOrder = 0;
+					o.description = "";
+					o.ruleType = "PERMIT";
+					o.condition = "ALL";
+					o.rules = [];
+					o.patterns = [];
+					o.id = 0;
+				}
+				else if(o.groupPath){
+					this.getProperties().defaultPath = o.groupPath;
+				}
+				delete this.getProperties().viewType;
+				this.setBean(o,"rocketType");
+			}
+			this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		}
+	]]></embedded-script>
+</Template>

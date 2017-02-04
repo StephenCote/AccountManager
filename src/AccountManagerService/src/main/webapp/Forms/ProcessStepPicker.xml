@@ -1,0 +1,59 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "processStepPickerTitle">
+			Process Steps:
+		</p>
+		<p>
+			<div component = "wideselect" rid = "processStepsList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addProcessStep()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeProcessStep()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openProcessStep()" />
+
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		if(!this.getProperties().processStepListProp) this.getProperties().processStepListProp = "processSteps";
+		//this.GetComponentByRID("processStepsList").setLoadHandler(this.scopeHandler("configProcessStepsList",0,1,1));
+	},
+	openProcessStep : function(){
+		var oI = this.getProcessStepsList().getActiveItem();
+		if(oI && oI.data && this.openItem) this.openItem(oI.data,"ProcessStep");
+	},
+	
+	addProcessStep : function(){
+			this.manageList("ProcessStep", this.getProcessStepsList().getObjectId());
+		},
+		removeProcessStep : function(){
+			var oI = this.getProcessStepsList().getActiveItem();
+			if(oI) this.getProcessStepsList().clearItem(oI.index);
+		},
+
+		configProcessStepsList : function(s,v){
+			var oL = this.getProcessStepsList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshProcessSteps();
+		},
+		refreshProcessSteps : function(){
+			var oL = this.getProcessStepsList(), aP = this.getProperties().processStepListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getProcessStepsList : function(){
+			return this.GetComponentByRID("processStepsList").GetWideSelect();
+		},
+		prepareSaveProcessStepsList : function(o){
+			aP = this.getProperties().processStepListProp;
+			o[aP] = [];
+			var aProcessSteps = this.getProcessStepsList().getItems();
+			for(var i = 0; i < aProcessSteps.length;i++) o[aP].push(aProcessSteps[i].data);
+		}
+	
+	]]></embedded-script>
+</html-fragment>

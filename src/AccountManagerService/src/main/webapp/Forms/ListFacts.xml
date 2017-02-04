@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
+	<embedded-script>
+		<![CDATA[
+		// Requires TemplateTools to be included
+		//
+		template_init : function(){
+			this.initGrid("Fact",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Fact","~/Facts")));
+
+		}
+		]]>
+	</embedded-script>
+</Template>

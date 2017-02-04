@@ -1,0 +1,59 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p rid = "modulePickerTitle">
+			<span rid = "modulePickerToggle"></span> Modules:
+		</p>
+		<p rid = "modulePickerContent">
+			<div component = "wideselect" rid = "modulesList">
+			</div>
+			<br />
+			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addModule()" />
+			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeModule()" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openModule()" />
+
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		this.toggleField("modulePickerToggle","modulePickerContent");
+		if(!this.getProperties().moduleListProp) this.getProperties().moduleListProp = "modules";
+	},
+	openModule : function(){
+		var oI = this.getModulesList().getActiveItem();
+		if(oI && oI.data && this.openItem) this.openItem(oI.data,"Module");
+	},
+	
+	addModule : function(){
+			this.manageList("Module", this.getModulesList().getObjectId());
+		},
+		removeModule : function(){
+			var oI = this.getModulesList().getActiveItem();
+			if(oI) this.getModulesList().clearItem(oI.index);
+		},
+
+		configModulesList : function(s,v){
+			var oL = this.getModulesList();
+			oL.getContainer().className = "rocket-wideselect-container";
+			this.refreshModules();
+		},
+		refreshModules : function(){
+			var oL = this.getModulesList(), aP = this.getProperties().moduleListProp;
+			oL.clearItems();
+			var o = this.getBean("rocketType");
+			if(!o || !o[aP]) return;
+			for(var i = 0; i < o[aP].length;i++){
+				oL.addItem(o[aP][i].name,o[aP][i]);
+			}
+		},
+		getModulesList : function(){
+			return this.GetComponentByRID("modulesList").GetWideSelect();
+		},
+		prepareSaveModulesList : function(o){
+			aP = this.getProperties().moduleListProp;
+			o[aP] = [];
+			var aModules = this.getModulesList().getItems();
+			for(var i = 0; i < aModules.length;i++) o[aP].push(aModules[i].data);
+		}
+	
+	]]></embedded-script>
+</html-fragment>

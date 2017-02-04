@@ -1,0 +1,156 @@
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "/AccountManagerService/Forms/BaseType.xml" />
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+		
+			this.scopeHandler("manager_loaded", 0, 0, 1);
+			this.scopeHandler("profiler_loaded", 0, 0, 1);
+			this.scopeHandler("fact_loaded", 0, 0, 1);
+			this.scopeHandler("picker_loaded", 0, 0, 1);
+			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_session_refresh");
+		},
+		embedded_destroy : function(){
+			this._prehandle_manager_loaded = 0;
+			this._prehandle_picker_loaded = 0;
+			this._prehandle_fact_loaded = 0;
+			this._prehandle_profiler_loaded = 0;
+			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_session_refresh");
+		},
+
+		handle_session_refresh : function(s,v){
+			if(this.refreshSession) this.refreshSession(s,v,uwm.rule("IsLoggedIn"));
+		},
+
+		_handle_manager_loaded: function (v) {
+			///
+        },
+        sendToFact : function(){
+        	this.openWindow("Fact",0,this._prehandle_fact_loaded);
+        	//this.openItem(this.getBean("rocketType"), this.getProperties().typeName, this.getProperties().viewTypeName,this._prehandle_fact_loaded);
+        },
+        _handle_fact_loaded : function(oW){
+        	var oBean = this.getBean("rocketType");
+        	if(oW.importType) oW.importType(oBean);
+        	//else Hemi.logError("Object does not define importType function");
+        },
+        sendToDebug : function(o){
+        	this.getObjects().debugObject = o; 
+        	Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler',0,0,0,this._prehandle_profiler_loaded);
+        },
+        _handle_profiler_loaded : function(oW){
+        	if(typeof oW.ShowTab == "function" && typeof ActiveSource == "object"){
+				oW.ShowTab("Active Source");
+				var oSource = oW.GetElementByRID("oSource");
+				var oEval = oW.GetElementByRID("oEval");
+				var sCont = "";
+				ActiveObjects.valContainer = 0;
+				ActiveObjects.valReference = 0;
+				ActiveObjects.valBridge = 0;
+				ActiveObjects.valComponent = 0;
+				var oBean = (this.getObjects().debugObject ? this.getObjects().debugObject : this.getBean("rocketType"));
+				delete this.getObjects().debugObject;
+				oEval.value = "ActiveObjects.val";
+				ActiveObjects.val = (oBean ? oBean : this);
+
+				if(oBean){
+					oW.Reflect();
+				}
+				else{
+					oSource.value = 
+						"Active Template"
+					;
+				}
+			}
+			      	
+        },
+		manageList : function(sType, sListId, sFN, sDefPath,bManPick){
+			var oProps = {openerId:this.getObjectId(),listType:sType,picker:1,manualPick:bManPick,pickFunction:sFN,listId:sListId,defaultPath:sDefPath};
+			var oW = Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, this._prehandle_manager_loaded);
+            if (oW) {
+            	oW.resizeTo(475, 300);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		},
+		local_handle_close : function(v){
+			if(this.handle_close) return this.handle_close(v);
+		},
+		resizeForm : function(){
+			if(this.resizeTo && this.getBody){
+				if(this.getBody().scrollHeight > this.getBody().offsetHeight){
+					var iH = this.getBody().scrollHeight + 50;
+					if(iH > document.documentElement.clientHeight) iH = document.documentElement.clientHeight;
+					Hemi.log("Resize To: " + this.getContainer().offsetWidth + "x" + iH);
+					this.resizeTo(this.getContainer().offsetWidth,iH);
+				}
+			}
+		},
+		toggleField : function(l, n){
+			var lbl =  this.GetElementByRID(l);//(typeof l == "string" ? this.GetElementByRID(l) : l);
+			var cnt =  this.GetElementByRID(n);//(typeof n == "string" ? this.GetElementByRID(n) : n);
+			var b = cnt.mark;
+			var s = (b ? "[ - ]" : "[ + ]");
+			var d = (b ? "block" : "none");
+			cnt.mark = (b ? 0 : 1);
+			Hemi.xml.setInnerXHTML(lbl,s);
+			cnt.style.display = d;
+			if(!lbl.mark){
+				var ctl = this;
+				lbl.mark = 1;
+				var sL = l;
+				var sN = n;
+				lbl.onclick = function(){
+					ctl.toggleField(sL,sN);
+					ctl.resizeForm();
+				};
+			}
+			//this.resizeForm();
+		},
+		openItem : function(o,typeName,viewTypeName, fHandler){
+			var _s = this.getProperties();
+			if(!typeName) typeName = _s.typeName;
+			if(!viewTypeName) viewTypeName = typeName;
+			if(_s.populate && !o.populated){
+				if(o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
+					Hemi.log("Not pulling own blob data for " + o.name + " unless specifically requested.");
+				}
+				else if(this.provideItem){
+					o = this.provideItem(typeName, o);
+				}
+				else{
+					Hemi.log("Not populated.  Fetching a populated version.");
+					if(o.id) o = AM6Client.get(typeName.toUpperCase(),o.id);
+					else o = AM6Client.get(typeName.toUpperCase(),AM6Client.find("GROUP","DATA",o.groupPath).objectId,o.name);
+					if(!o.populated) alert("still not populated");
+				}
+			}
+			this.openWindow(viewTypeName, o, fHandler);
+		},
+		openWindow : function(sType,oType, fHandler){
+			var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:0};
+			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
+            if (oW) {
+            	oW.resizeTo(475, 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		},
+		pickText : function(o,sL,sH, sDV){
+			var oW = Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},this._prehandle_picker_loaded);
+			if(!oW) return;
+			oW.setHideOnClose(0);
+			oW.resizeTo(400,100);
+			oW.center();
+			oW.setIsModal(true);
+			oW.hideButtons();
+		},
+		_handle_picker_loaded : function(oW){
+	
+		}
+	]]></embedded-script>
+</Template>

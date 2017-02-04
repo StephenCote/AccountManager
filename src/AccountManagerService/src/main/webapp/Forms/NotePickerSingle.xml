@@ -1,0 +1,32 @@
+<html-fragment>
+	<div class = "rocket-column-2">
+		<p>
+			Note:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "note" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseNote()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickNote('Note')" />
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openNote()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		var o = this.getBean("rocketType");
+		this.pickNote('Note',o.note);
+	},
+	chooseNote : function(){
+		this.manageList("Note", this.getObjectId(),"pickNote");
+	},
+
+		openNote : function(){
+			var o = this.getBean("rocketType");
+			if(o && o.note && this.openItem) this.openItem(o.note,"Note");
+		},
+	pickNote : function(s, v){
+		var o = this.getBean("rocketType");
+		o.note = v;
+		this.GetElementByRID("note").value = (v ? v.name : "");
+	}
+	]]></embedded-script>
+</html-fragment>
