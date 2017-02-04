@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="TRACE">
+<Configuration status="debug">
 <Properties>
 <Property name="log-path">./logs</Property>
 </Properties>
@@ -32,8 +32,12 @@ filePattern="${log-path}/accountManagerConsole-error-%d{yyyy-MM-dd}.log">
 <appender-ref ref="error-log" level="error"/>
 <appender-ref ref="console-log" level="debug"/>
 </Logger>
-<Root level="info" additivity="false">
-<AppenderRef ref="console-log"/>
+
+<Root level="all" additivity="true">
+<appender-ref ref="trace-log" level="debug"/>
+<appender-ref ref="error-log" level="error"/>
+<appender-ref ref="console-log" level="debug"/>
 </Root>
+
 </Loggers>
 </Configuration>
