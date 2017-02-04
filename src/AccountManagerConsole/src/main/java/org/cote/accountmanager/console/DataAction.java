@@ -445,7 +445,7 @@ public class DataAction {
 			}
 		}
 		else{
-			logger.info("Spooled " + fName + " to " + dir.getName());
+			logger.debug("Spooled " + fName + " to " + dir.getName());
 			BulkFactories.getBulkFactory().createBulkEntry(bulkSession, FactoryEnumType.DATA, data);
 		}
 	}
