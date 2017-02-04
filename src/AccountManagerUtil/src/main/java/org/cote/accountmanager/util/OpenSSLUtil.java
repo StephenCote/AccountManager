@@ -24,7 +24,9 @@ public class OpenSSLUtil {
 	public static final String KEYS_BASE_PATH = "keys";
 	public static final String KEY_PRIVATE_PATH = KEYS_BASE_PATH + "/private";
 	public static final String KEY_PUBLIC_PATH = KEYS_BASE_PATH + "/public";
-	
+	public static final String OPENSSL_CONFIG = "openssl.conf";
+	public static final String OPENSSL_DB_PATH = "openssl";
+	public static final String OPENSSL_CERTINDEX = OPENSSL_DB_PATH + "/certindex.txt";
 	public static final String STORES_BASE_PATH = "stores";
 	public static final String STORE_KEY_PATH = STORES_BASE_PATH + "/key";
 	public static final String STORE_TRUST_PATH = STORES_BASE_PATH + "/trust";
@@ -32,6 +34,8 @@ public class OpenSSLUtil {
 	/// ,"-salt" - I have it turned off at the moment while I figure out a good way to handle the salt location
 	///
 	private String[] keyCipherOptions = new String[]{"-aes256"};
+	
+	private String[] signOptions = new String[]{"-sha512"};
 	
 	public OpenSSLUtil(String openSSLBinary, String sslWorkPath){
 		openSSL = openSSLBinary;
@@ -51,7 +55,12 @@ public class OpenSSLUtil {
 				&& FileUtil.makePath(sslPath + KEY_PUBLIC_PATH)
 				&& FileUtil.makePath(sslPath + STORE_KEY_PATH)
 				&& FileUtil.makePath(sslPath + STORE_TRUST_PATH)
+				&& FileUtil.makePath(sslPath + OPENSSL_DB_PATH)
 			){
+			File f = new File(sslPath + OPENSSL_CERTINDEX);
+			if(f.exists() == false){
+				FileUtil.emitFile(sslPath + OPENSSL_CERTINDEX, "");
+			}
 			configured = true;
 		}
 		return configured;
@@ -180,6 +189,7 @@ public class OpenSSLUtil {
 		if(signerAlias != null){
 			commands.add("-chain");
 			commands.add("-CAfile");
+			//commands.add("-certfile");
 			commands.add(chainFile);
 		}
 		commands.add("-clcerts");
@@ -216,6 +226,7 @@ public class OpenSSLUtil {
 
 		String[] commands = new String[]{
 				openSSL,"req","-new",
+				"-config",OPENSSL_CONFIG,
 				"-key",KEY_PRIVATE_PATH + "/" + alias + ".key",
 				"-days",Integer.toString(expiryDays),"-nodes",
 				"-subj",dn,
@@ -233,9 +244,12 @@ public class OpenSSLUtil {
 			logger.error("CSR " + checkFilePath + " does not exist");
 			return false;
 		}
+		
 
 		String[] commands = new String[]{
 				openSSL,"x509","-req",
+//				"-config",OPENSSL_CONFIG,
+				"-extensions","v3_ca",String.join(",", signOptions),
 				"-in",CERTIFICATE_REQUEST_PATH + "/" + requestAlias + ".csr",
 				"-CA",CERTIFICATE_SIGNED_PATH + "/" + signerAlias + ".cert",
 				"-CAkey",KEY_PRIVATE_PATH + "/" + signerAlias + ".key",
@@ -266,6 +280,8 @@ public class OpenSSLUtil {
 
 		String[] commands = new String[]{
 			openSSL,"req","-x509","-new",
+			"-config",OPENSSL_CONFIG,
+			"-extensions","v3_ca",
 			"-passin","pass:" + String.valueOf(password),
 			"-key",KEY_PRIVATE_PATH + "/" + alias + ".key",
 			"-days",Integer.toString(expiryDays),"-nodes",
