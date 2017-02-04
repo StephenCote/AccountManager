@@ -38,30 +38,42 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.GroupParticipationFactory;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.INameIdGroupFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.FactoryService;
+import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.objects.AccountGroupType;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.PersonGroupType;
+import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -384,7 +396,7 @@ public class BaseService {
 			out_bool = AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
 		}
 		
-		if(out_bool == false && type.equals(AuditEnumType.PERMISSION) || type.equals(AuditEnumType.ROLE)){
+		if(out_bool == false && (type.equals(AuditEnumType.PERMISSION) || type.equals(AuditEnumType.ROLE))){
 			logger.warn("***** REFACTOR - Why is this role check not in the Authorization service check?");
 			out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 		}
@@ -1264,6 +1276,7 @@ public class BaseService {
 					obj = null;
 				}
 				else if(obj != null){
+					iFact.denormalize(obj);
 					iFact.populate(obj);
 					AuditService.permitResult(audit, "User is authorized to create the path under their own path home");
 				}
@@ -1319,4 +1332,183 @@ public class BaseService {
 		}
 		return out_obj;
 	}
+	
+	// Convenience method for adding/removing members
+	//
+	public static boolean setMember(UserType user, AuditEnumType containerType, String containerId, AuditEnumType objType, String objId, boolean enable,HttpServletRequest request){
+		boolean out_bool = false;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, containerType.toString() + " " + containerId,objType,"Object " + objId);
+		NameIdType container = readByObjectId(containerType, containerId, request);
+		NameIdType object = readByObjectId(objType, objId,request);
+		if(container == null || object == null){
+			AuditService.denyResult(audit, "Invalid container or object");
+			return false;
+		}
+		try {
+			if(BaseService.canChangeType(containerType, user, container) == false){
+				AuditService.denyResult(audit, "User not permitted to change " + container.getUrn());
+				return false;
+			}
+			switch(containerType){
+				case GROUP:
+					BaseGroupType group = (BaseGroupType)container;
+					out_bool = GroupService.switchActorInGroup(object, group, enable);
+					break;
+				case ROLE:
+					BaseRoleType role = (BaseRoleType)container;
+					out_bool = RoleService.switchActorInRole(object, role, enable);
+					break;
+			}
+			
+			if(out_bool){
+				EffectiveAuthorizationService.pendUpdate(container);
+				EffectiveAuthorizationService.pendUpdate(object);
+				EffectiveAuthorizationService.rebuildPendingRoleCache();
+				AuditService.permitResult(audit, "User " + user.getUrn() + " is authorized to change " + container.getUrn());
+			}
+			else{
+				AuditService.denyResult(audit, "User " + user.getUrn() + " did not change authorization for " + container.getUrn());
+			}
+			
+
+		} catch (FactoryException e) {
+			
+			logger.error("Error",e);
+		} catch (ArgumentException e) {
+			
+			logger.error("Error",e);
+		} catch (DataAccessException e) {
+			
+			logger.error("Error",e);
+		}
+		return out_bool;
+	}
+	
+	/// Convenience method for populating membership lists, such as members of roles, permissions, etc
+	
+	public static <T> List<T> listMembers(AuditEnumType type, UserType user,NameIdType container, FactoryEnumType memberType){
+		List<T> out_obj = new ArrayList<T>();
+		if(user == null || container == null){
+			logger.error("User or container is null");
+			return out_obj;
+		}
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All " + memberType.toString() + "in " + type.toString() + " " + container.getUrn(),AuditEnumType.ROLE,(user == null ? "Null" : user.getUrn()));
+		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All " + memberType.toString() + "in " + type.toString() + " " + container.getUrn());
+		logger.warn("Authorization implementation being reworked, so there is presently a hole here where a user can read objects as members, but may not be able to read the objects directly");
+		try {
+			if(
+				RoleService.isFactoryAdministrator(user,((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)),container.getOrganizationId())
+				||
+				AuthorizationService.canView(user, container)
+			){
+				AuditService.permitResult(audit, "Access authorized to list " + memberType.toString() + "in " + type.toString() + " " + container.getUrn());
+				if(type == AuditEnumType.ROLE){
+					switch(memberType){
+						case GROUP:
+							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getGroupsInRole((BaseRoleType)container));
+							break;
+						case ACCOUNT:
+							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getAccountsInRole((BaseRoleType)container));
+							break;
+						case PERSON:
+							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getPersonsInRole((BaseRoleType)container));
+							break;
+						case USER:
+							break;
+						default:
+							break;
+					}
+				}
+				else if(type == AuditEnumType.GROUP){
+					switch(memberType){
+						case ACCOUNT:
+							out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getAccountsInGroup((AccountGroupType)container));
+							break;
+						case PERSON:
+							out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getPersonsInGroup((PersonGroupType)container));
+							break;
+						case USER:
+							out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getUsersInGroup((UserGroupType)container));
+							break;
+					}
+				}
+			}
+			else{
+				AuditService.denyResult(audit, "User " + user.getUrn() + " not authorized to list " + memberType.toString());
+				return out_obj;
+			}
+		} catch (ArgumentException e1) {
+			
+			logger.error("Error",e1);
+		} catch (FactoryException e1) {
+			
+			logger.error("Error",e1);
+		} 
+
+		return out_obj;
+		
+	}
+	/// src is the object
+	/// targ is the actor
+	//
+	public static boolean setPermission(UserType user, AuditEnumType objectType, String objectId, AuditEnumType actorType, String actorId, String permissionId, boolean enable){
+		NameIdType src = null;
+		NameIdType targ = null;
+		BasePermissionType perm = null;
+		boolean out_bool = false;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Permission " + permissionId,AuditEnumType.PERMISSION,(user == null ? "Null" : user.getName()));
+		try {
+			if(objectType != AuditEnumType.DATA) src = ((NameIdFactory)BaseService.getFactory(objectType)).getByObjectId(objectId, user.getOrganizationId());
+			else src = ((DataFactory)BaseService.getFactory(objectType)).getDataByObjectId(objectId, true, user.getOrganizationId());
+			if(actorType != AuditEnumType.DATA) targ = ((NameIdFactory)BaseService.getFactory(actorType)).getByObjectId(actorId, user.getOrganizationId());
+			else targ = ((DataFactory)BaseService.getFactory(objectType)).getDataByObjectId(actorId, true, user.getOrganizationId());
+			perm = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getByObjectId(permissionId, user.getOrganizationId());
+			if(src == null || targ == null || perm == null){
+				AuditService.denyResult(audit, "One or more reference ids were invalid: " + (src == null ? " " + objectType.toString() + " #" +objectId + " Source is null." : "") + (targ == null ? " " + actorType.toString() + " #" +objectId + " Target is null." : "") + (perm == null ? " #" +objectId + " Permission is null." : ""));
+				return false;
+			}
+			AuditService.sourceAudit(audit, AuditEnumType.PERMISSION, objectType.toString() + " " + src.getUrn());
+			AuditService.targetAudit(audit, actorType, targ.getUrn());
+			/// To set the permission on or off, the user must:
+			/// 1) be able to change src,
+			/// 2) be able to change targ,
+			/// 3) be able to change permission
+			if(
+				BaseService.canChangeType(objectType, user,src)
+				&&
+				BaseService.canChangeType(actorType, user, targ)
+				&&
+				AuthorizationService.canChange(user, perm)
+			){
+				boolean set = false;
+				set = AuthorizationService.authorize(user,targ,src,perm,enable);
+	
+				if(set){
+					EffectiveAuthorizationService.pendUpdate(targ);
+					EffectiveAuthorizationService.rebuildPendingRoleCache();
+					out_bool = true;
+					AuditService.permitResult(audit, "User " + user.getUrn() + " is authorized to change the permission.");
+				}
+				else AuditService.denyResult(audit, "User " + user.getUrn() + " did not change the permission.");
+			}
+			else{
+				AuditService.denyResult(audit, "User " + user.getUrn() + " not authorized to set the permission.");
+			}
+
+		} catch (FactoryException e) {
+			
+			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			logger.error("Error",e);
+		} catch (ArgumentException e) {
+			
+			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			logger.error("Error",e);
+		} catch (DataAccessException e) {
+			
+			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			logger.error("Error",e);
+		}
+		return out_bool;
+	}
+	
 }
