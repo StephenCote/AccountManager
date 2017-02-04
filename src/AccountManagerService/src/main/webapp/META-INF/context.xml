@@ -1,6 +1,7 @@
 <Context encoding = "UTF-8">
  <Realm className="org.apache.catalina.realm.JAASRealm" 
     appName="AccountManagerService"
+    useContextClassLoader = "true"
     userClassNames="org.cote.accountmanager.data.security.UserPrincipal"
     roleClassNames="org.cote.accountmanager.data.security.RolePrincipal" />
 <Resource name="tomcat/datasources/postgresDS"
