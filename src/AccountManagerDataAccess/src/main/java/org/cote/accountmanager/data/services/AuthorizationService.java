@@ -374,6 +374,7 @@ public class AuthorizationService {
 			return false;
 		}
 		if(test_owner.getNameType() != NameEnumType.USER){
+			logger.warn("Invalid test owner object with type " + test_owner.getNameType().toString());
 			return false;
 		}
 		//logger.debug("Map Owner == " + test_owner.getId() + "=" + map.getOwnerId() + " == (" + (test_owner.getId() == map.getOwnerId()) + ")");
@@ -509,7 +510,7 @@ public class AuthorizationService {
 	 *    
 	 */
 	public static BasePermissionType getPermission(NameIdType actor, NameIdType object, String permissionBase) throws ArgumentException, FactoryException{
-		if(object.getNameType() != NameEnumType.PERMISSION && !factoryProviders.containsKey(object.getNameType())){
+		if(object.getNameType() != NameEnumType.PERMISSION  && !factoryProviders.containsKey(object.getNameType())){
 			throw new ArgumentException(object.getNameType() + " is not from a registered authorization provider");
 		}
 

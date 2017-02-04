@@ -77,7 +77,7 @@ public class ServiceUtil {
 			sessionId = (sess != null ? sess.getId() : null);
 		}
 		if(sessionId == null){
-			logger.warn("Null Session Id. AM5 Session Mode Is " + (useAccountManagerSession ? "On":"Off") + ". This is expected for service calls");
+			logger.debug("Null Session Id. AM5 Session Mode Is " + (useAccountManagerSession ? "On":"Off") + ". This is expected for service calls");
 			/*
 			logger.error("NULL SESSION ID. AM5 Session Mode Is " + (useAccountManagerSession ? "On":"Off"));
 			Enumeration<String> headers = request.getHeaderNames();

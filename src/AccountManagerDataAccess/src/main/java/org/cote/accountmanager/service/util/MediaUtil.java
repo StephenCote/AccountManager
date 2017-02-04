@@ -390,6 +390,7 @@ public class MediaUtil {
 		}
 		AuditService.permitResult(audit, "User " + user.getName() + " is authorized to view  " + data.getName() + " in " + data.getGroupId());
 		response.setContentType(data.getMimeType());
+
 		byte[] value = new byte[0];
 		try {
 			if(data.getPointer() && isAllowDataPointers(request) == false){
