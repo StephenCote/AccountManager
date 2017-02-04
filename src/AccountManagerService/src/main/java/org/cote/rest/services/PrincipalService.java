@@ -3,6 +3,7 @@ package org.cote.rest.services;
 import java.security.Principal;
 
 import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -22,7 +23,10 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.rocket.service.rest.BaseService;
 import org.cote.accountmanager.data.factory.*;
+import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 @DeclareRoles({"user"})
 @Path("/principal")
@@ -36,6 +40,22 @@ public class PrincipalService {
 		 schemaBean = ServiceSchemaBuilder.modelRESTService(this.getClass(),uri.getAbsolutePath().getRawPath().replaceAll("/smd$", ""));
 		 return schemaBean;
 	 }
+	
+	@RolesAllowed({"user"})
+	@GET
+	@Path("/anonymous")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getDocumentControl(@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		UserType docUser = Factories.getDocumentControl(user.getOrganizationId());
+		try {
+			BaseService.populate(AuditEnumType.USER, docUser);
+		} catch (ArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Response.status(200).entity(docUser).build();
+	}
 	
 	@GET
 	@Path("/")
