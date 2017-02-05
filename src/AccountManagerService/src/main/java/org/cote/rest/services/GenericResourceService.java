@@ -29,11 +29,13 @@ import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.util.JSONUtil;
 
 /*
@@ -115,10 +117,15 @@ public class GenericResourceService {
 				obj = BaseService.readByNameInParent(auditType, parentObj, name, "UNKNOWN", request);
 			}
 		}
-		else{
+		else if(iFact.isClusterByGroup()){
 			logger.info("Request to get " + type + " object by name in GROUP " + parentId);
 			DirectoryGroupType dir = (DirectoryGroupType)getObject("GROUP",parentId,request).getEntity();
 			if(dir != null) obj = BaseService.readByName(auditType, dir, name, request);
+		}
+		else{
+			logger.info("Request to get " + type + " object by name in organization");
+			UserType user = ServiceUtil.getUserFromSession(request);
+			obj = BaseService.readByNameInOrganization(auditType, user.getOrganizationId(), name, request);
 		}
 		
 		return Response.status(200).entity(obj).build();

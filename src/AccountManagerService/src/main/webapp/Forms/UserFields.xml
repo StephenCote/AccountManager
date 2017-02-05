@@ -38,12 +38,14 @@
 			this.GetElementByRID("credentialContainer").style.display = (this.getBean("rocketType").id ? "block":"none");
 			this.GetElementByRID("pathCont").style.display = "none";
 			this.initContactInformation();
-			var aR = accountManager.listRolesForUser();
-			
-			for(var i = 0; i < aR.length;i++){
-				if(aR[i].name.match(/^apiusers$/gi)){
-					this.GetElementByRID("apiCredentialContainer").style.display = "block";
-					break;
+			var o = this.getBean("rocketType");
+			if(o.objectId){
+				var aR = AM6Client.entitlements("USER",o.objectId);
+				for(var i = 0; i < aR.length;i++){
+					if(aR[i].name.match(/^apiusers$/gi)){
+						this.GetElementByRID("apiCredentialContainer").style.display = "block";
+						break;
+					}
 				}
 			}
 		},

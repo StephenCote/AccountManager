@@ -22,10 +22,12 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.util.ServiceUtil;
 
 /*
  *   List - /resources/{type}/{groupId}/{startIndex}/{count}
@@ -66,9 +68,15 @@ public class GenericListService {
 			logger.info("Request to list " + type + " objects by parent in " + type + " " + objectId);
 			objs = BaseService.listByParentObjectId(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
 		}
-		else{
+		else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup() || iFact.isClusterByParent()){
 			logger.info("Request to list " + type + " objects by GROUP " + objectId);
 			objs = BaseService.listByGroup(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
+		}
+		else{
+			UserType user = ServiceUtil.getUserFromSession(request);
+			logger.info("Request to list " + type + " objects by ORGANIZATION " + user.getOrganizationId());
+			objs = BaseService.listByOrganization(auditType, startIndex, recordCount, request);
+			
 		}
 		return Response.status(200).entity(objs).build();
 	}
@@ -89,12 +97,16 @@ public class GenericListService {
 				count = BaseService.countInParent(auditType, parent, request);
 			}
 		}
-		else{
+		else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup() || iFact.isClusterByParent()){
 			BaseGroupType group = (BaseGroupType)BaseService.readByObjectId(AuditEnumType.GROUP, objectId, request);
 			if(group != null){
 				logger.info("Counting " + type + " objects in GROUP " + group.getUrn());
 				count = BaseService.countByGroup(auditType, group, request);
 			}
+		}
+		else{
+			UserType user = ServiceUtil.getUserFromSession(request);
+			count = BaseService.countByOrganization(auditType, user.getOrganizationId(), request);
 		}
 		return Response.status(200).entity(count).build();
 	}

@@ -161,19 +161,21 @@
 		
 		},
 		postProcess : function(){
-			var o = this.getBean("rocketType"),n;
+			var o = this.getBean("rocketType"),n,sType = this.getProperties().typeName;
 			if(o.nameType && o.nameType.match(/^group$/gi)) n = AM6Client.find("GROUP",o.groupType,this.getPath() + "/" + o.name);
-			else if(this.provideItem) n = this.provideItem(this.getProperties().typeName,o);
+			else if(this.provideItem) n = this.provideItem(sType,o);
 			else if(o.nameType && o.nameType.match(/^(permission|role)$/gi)){
-				n = AM6Client.getByName(this.getProperties().typeName.toUpperCase(),AM6Client.get(o.nameType,o.parentId).objectId,o.name);
+				n = AM6Client.getByName(sType.toUpperCase(),AM6Client.get(o.nameType,o.parentId).objectId,o.name);
 				
 			}
 			
 			else if(o.id){
-				n = AM6Client.get(this.getProperties().typeName.toUpperCase(), o.id);
+				n = AM6Client.get(sType.toUpperCase(), o.id);
 			}
 			else{
-				n = AM6Client.getByName(this.getProperties().typeName.toUpperCase(),AM6Client.find("GROUP","DATA",o.groupPath).objectId,o.name);
+				var sGid = null;
+				if(!sType.match(/^user$/gi)) sGid = thisAM6Client.find("GROUP","DATA",o.groupPath).objectId;
+				n = AM6Client.getByName(sType.toUpperCase(),sGid,o.name);
 			}
 			if(n != null){
 				this.clearBean("rocketType");

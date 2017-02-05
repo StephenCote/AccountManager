@@ -77,7 +77,7 @@ public class OrganizationService {
 				OrganizationType uOrg = org;
 
 				if(uOrg.getName().equals("Global") && uOrg.getParentId().equals(0L)) uOrg = Factories.getSystemOrganization();
-				boolean sysAdmin = RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(uOrg.getOrganizationId()), user);
+				boolean sysAdmin = RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(uOrg.getId()), user);
 				if(sysAdmin == true){
 					OrganizationType newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).addOrganization(name,OrganizationEnumType.PUBLIC,org);
 					if(newOrg != null && FactoryDefaults.setupOrganization(newOrg, (new String(adminCredential.getCredential())).trim())){
@@ -103,7 +103,7 @@ public class OrganizationService {
 		}
 		catch(ArgumentException | FactoryException | DataAccessException e) {
 			
-			logger.error(e.getMessage());
+			logger.error("Exception",e);
 		}
 
 		return Response.status(200).entity(out_bool).build();
@@ -122,7 +122,7 @@ public class OrganizationService {
 			if(org != null && user != null){
 				OrganizationType uOrg = org;
 				if(uOrg.getName().equals("Global") && uOrg.getParentId().equals(0L)) uOrg = Factories.getSystemOrganization();
-				boolean sysAdmin = RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(uOrg.getOrganizationId()), user);
+				boolean sysAdmin = RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(uOrg.getId()), user);
 
 				if(sysAdmin == true){
 					out_bool = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).delete(uOrg);

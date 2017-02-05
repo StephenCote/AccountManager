@@ -40,6 +40,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.DataParticipationFactory;
 import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
@@ -51,6 +52,7 @@ import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
@@ -394,6 +396,9 @@ public class BaseService {
 		}
 		else if(type.equals(AuditEnumType.DATA)){
 			out_bool = AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
+		}
+		else if(type.equals(AuditEnumType.USER)){
+			out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),user.getOrganizationId());
 		}
 		
 		if(out_bool == false && (type.equals(AuditEnumType.PERMISSION) || type.equals(AuditEnumType.ROLE))){
@@ -1137,6 +1142,53 @@ public class BaseService {
 
 		return out_obj;			
 	}
+	private static <T> List<T> getListByOrganization(AuditEnumType type, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException{
+		List<T> out_obj = new ArrayList<>();
+		INameIdFactory iFact = getFactory(type);
+		if(type.equals(AuditEnumType.USER)){
+			out_obj = ((UserFactory)iFact).convertList(((UserFactory)iFact).getUserList(startRecord, recordCount, organizationId));
+		}
+		for(int i = 0; i < out_obj.size();i++){
+			//NameIdDirectoryGroupType ngt = (NameIdDirectoryGroupType)out_obj.get(i);
+			NameIdType nt = (NameIdType)out_obj.get(i);
+			denormalize(nt);
+			if(enableExtendedAttributes){
+				Factories.getAttributeFactory().populateAttributes(nt);
+			}
+
+		}
+
+		return out_obj;	
+	}
+	public static <T> List<T> listByOrganization(AuditEnumType type, long startRecord, int recordCount, HttpServletRequest request){
+		List<T> out_obj = new ArrayList<>();
+		UserType user = ServiceUtil.getUserFromSession(request);
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All objects",type,(user == null ? "Null" : user.getName()));
+		if(user == null) return out_obj;
+		AuditService.targetAudit(audit, AuditEnumType.USER, user.getUrn());
+
+		try {
+			if(
+				RoleService.isFactoryAdministrator(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == true
+				||
+				RoleService.isFactoryReader(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == true
+			){
+				AuditService.permitResult(audit, "Access authorized to list users");
+				out_obj = getListByOrganization(type, startRecord,recordCount,user.getOrganizationId());
+			}
+			else{
+				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list users.");
+				return out_obj;
+			}
+			
+		} catch (ArgumentException | FactoryException e1) {
+			
+			logger.error("Error",e1);
+		} 
+
+		return out_obj;
+	}
+
 	public static <T> List<T> listByGroup(AuditEnumType type, String groupType, String groupId, long startRecord, int recordCount, HttpServletRequest request){
 		List<T> out_obj = new ArrayList<>();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listByGroup",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
@@ -1384,6 +1436,97 @@ public class BaseService {
 		return out_bool;
 	}
 	
+	
+	// Imported/Adapted from AccountManagerWeb/RoleService
+	public static <T> List<T> listForMember(AuditEnumType type, UserType user, NameIdType obj, FactoryEnumType memberType){
+		List<T> out_obj = new ArrayList<T>();
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All objects for member",type,(user == null ? "Null" : user.getUrn()));
+		AuditService.targetAudit(audit, type, "All objects for member");
+		
+		if(SessionSecurity.isAuthenticated(user) == false){
+			AuditService.denyResult(audit, "User is null or not authenticated");
+			return null;
+		}
+		if(obj == null){
+			AuditService.denyResult(audit, "Target object is null");
+			return null;
+		}
+
+		try {
+			if(memberType == FactoryEnumType.GROUP || memberType == FactoryEnumType.ROLE){
+				if(
+						AuthorizationService.isMapOwner(user, obj)
+						||
+						RoleService.isFactoryAdministrator(user,((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)),user.getOrganizationId())
+						||
+						//(AuthorizationService.isRoleReaderInOrganization(user, type.getOrganizationId()) && AuthorizationService.isAccountReaderInOrganization(user, type.getOrganizationId()))
+						RoleService.isFactoryReader(user,((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)), user.getOrganizationId())
+					){
+						AuditService.permitResult(audit, "Access authorized to list roles");
+						switch(memberType){
+							case GROUP:
+								out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getRolesInGroup((BaseGroupType)obj));
+								break;
+							case DATA:
+								out_obj = FactoryBase.convertList(((DataParticipationFactory)Factories.getFactory(FactoryEnumType.DATAPARTICIPATION)).getRolesForData((DataType)obj));
+								break;
+							
+						}
+						
+						
+					}
+					else{
+						AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
+						return out_obj;
+					}
+			}
+			else if(memberType == FactoryEnumType.USER){
+				if(
+					(memberType == FactoryEnumType.USER && user.getId().equals(((UserType)obj).getId()))
+					||
+					RoleService.isFactoryAdministrator(user,((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)),obj.getOrganizationId())
+					||
+					RoleService.isFactoryReader(user,((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)), obj.getOrganizationId())
+				){
+					AuditService.permitResult(audit, "Access authorized to list roles");
+					switch(memberType){
+	
+						case ACCOUNT:
+							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getAccountRoles((AccountType)obj));
+							break;
+						case PERSON:
+							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getPersonRoles((PersonType)obj));
+							break;
+						case USER:
+							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUserRoles((UserType)obj));
+							break;
+						default:
+							break;
+					}
+					for(int i = 0; i < out_obj.size();i++){
+						((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).denormalize((BaseRoleType)out_obj.get(i));
+					}
+	
+				}
+				else{
+					AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
+					return out_obj;
+				}
+			}
+		} catch (ArgumentException e1) {
+			
+			logger.error("Error",e1);
+		} catch (FactoryException e1) {
+			
+			logger.error("Error",e1);
+		} 
+
+		return out_obj;
+		
+	}
+	
+	
 	/// Convenience method for populating membership lists, such as members of roles, permissions, etc
 	
 	public static <T> List<T> listMembers(AuditEnumType type, UserType user,NameIdType container, FactoryEnumType memberType){
@@ -1495,15 +1638,7 @@ public class BaseService {
 				AuditService.denyResult(audit, "User " + user.getUrn() + " not authorized to set the permission.");
 			}
 
-		} catch (FactoryException e) {
-			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			logger.error("Error",e);

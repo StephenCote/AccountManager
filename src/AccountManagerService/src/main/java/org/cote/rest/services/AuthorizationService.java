@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -27,12 +28,16 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.NameIdFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -42,6 +47,7 @@ import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
+
 
 
 @DeclareRoles({"admin","user"})
@@ -66,7 +72,7 @@ public class AuthorizationService {
 	 }
 	
 	
-	//public static boolean setPermission(UserType user, AuditEnumType objectType, String objectId, AuditEnumType actorType, String actorId, String permissionId, boolean enable){
+	@RolesAllowed({"admin","user"})
 	@GET
 	@Path("/{objectId:[0-9A-Za-z\\-]+}/permit/{actorType:[A-Za-z]+}/{actorId:[0-9A-Za-z\\-]+}/{view:(true|false)}/{edit:(true|false)}/{delete:(true|false)}/{create:(true|false)}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -98,7 +104,7 @@ public class AuthorizationService {
 		return Response.status(200).entity(permitted).build();
 	}
 	
-	//public static boolean setPermission(UserType user, AuditEnumType objectType, String objectId, AuditEnumType actorType, String actorId, String permissionId, boolean enable){
+	@RolesAllowed({"admin","user"})
 	@GET
 	@Path("/{objectId:[0-9A-Za-z\\-]+}/permit/{actorType:[A-Za-z]+}/{actorId:[0-9A-Za-z\\-]+}/{permissionId:[0-9A-Za-z\\-]+}/{permit:(true|false)}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -109,7 +115,8 @@ public class AuthorizationService {
 		boolean permitted = BaseService.setPermission(user, auditType, objectId, AuditEnumType.valueOf(actorType), actorId, permissionId, permit);
 		return Response.status(200).entity(permitted).build();
 	}
-	// [ROLE|GROUP]/id/[PERSON|USER|ACCOUNT]/[true|false]
+	
+	@RolesAllowed({"admin","user"})
 	@GET
 	@Path("/{objectId:[0-9A-Za-z\\-]+}/member/{actorType:[A-Za-z]+}/{actorId:[0-9A-Za-z\\-]+}/{enable:(true|false)}")
 	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
@@ -121,7 +128,7 @@ public class AuthorizationService {
 		return Response.status(200).entity(permitted).build();
 	}
 	
-	// [ROLE|GROUP]/id/[PERSON|USER|ACCOUNT]
+	@RolesAllowed({"admin","user"})
 	@GET @Path("/{objectId:[0-9A-Za-z\\-]+}/{actorType:[A-Za-z]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -140,6 +147,7 @@ public class AuthorizationService {
 	// Used to retrieve permission or role objects relative to the user, which the user owns
 	// Used as a reference point for defining custom roles and permissions
 	//
+	@RolesAllowed({"admin","user"})
 	@GET @Path("/user/{otype:[A-Za-z]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -174,6 +182,28 @@ public class AuthorizationService {
 			logger.error(e);
 		}
 		return Response.status(200).entity(obj).build();
+	}
+	
+
+	@GET @Path("/roles/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"admin","user"})
+	public Response listForType(@PathParam("type") String objectType,@PathParam("objectId") String objectId,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		UserType targUser = null;
+		if(objectId == null || objectId.length() == 0 || objectId.equalsIgnoreCase("null")) objectId = user.getObjectId();
+		try {
+			targUser = ((NameIdFactory)Factories.getFactory(FactoryEnumType.USER)).getByObjectId(objectId, user.getOrganizationId());
+		} catch (FactoryException | ArgumentException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		
+		//AuditEnumType auditType = AuditEnumType.valueOf(objectType);
+		List<Object> objs = BaseService.listForMember(AuditEnumType.ROLE, user, targUser, FactoryEnumType.USER);
+		return Response.status(200).entity(objs).build();
+		//return RoleServiceImpl.getListForUser(user, targUser);
 	}
 
 }

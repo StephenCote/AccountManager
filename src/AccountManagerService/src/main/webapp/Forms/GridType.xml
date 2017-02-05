@@ -428,7 +428,7 @@
 		refreshList : function(bSkipCountReset){
 			var sPath, _s = this.getProperties(), _o = this.getObjects();
 			if(this.provideRefresh) this.provideRefresh(bSkipCountReset);
-			
+
 			if(!_s.noGroup) sPath = this.getPath();
 
 			var oL = this.getList();
@@ -479,7 +479,7 @@
 						var oP = AM6Client.find(sT,sTO,sPath);
 						if(oP && oP != null) count = AM6Client.count(_s.typeName.toUpperCase(),oP.objectId);
 					}
-					else count = AM6Client.count(_s.typeName.toUpperCase(),_o.parentRef.objectId); 
+					else count = AM6Client.count(_s.typeName.toUpperCase(),(_o.parentRef ? _o.parentRef.objectId : "null")); 
 					if(count != null) this.setTotalCount(count);
 				}
 				else{
@@ -488,6 +488,7 @@
 				var aList = [];
 				var sFilt = this.GetElementByRID("filter").value;
 				var tname = _s.typeName;
+
 				if(this.provideList) aList = this.provideList(sPath, sFilt, _s.start_record,_s.record_count);
 				else if(sPath){
 					
@@ -508,8 +509,8 @@
 				}
 				else{
 				
-					if(!tname.match(/^(permission|role)$/gi)) aList = AM6Client.list(tname.toUpperCase(),_o.parentRef.objectId,_s.start_record,_s.record_count);
-					else  aList = AM6Client.list(tname.toUpperCase(),_o.parentRef.objectId,_s.start_record,_s.record_count);
+					if(!tname.match(/^(permission|role)$/gi)) aList = AM6Client.list(tname.toUpperCase(),(_o.parentRef ? _o.parentRef.objectId : "null"),_s.start_record,_s.record_count);
+					else  aList = AM6Client.list(tname.toUpperCase(),(_o.parentRef ? _o.parentRef.objectId : "null"),_s.start_record,_s.record_count);
 				}
 				
 				if(_s.start_record == 0 && (_s.typeName.match(/^(group|permission|role)$/gi)) && (_s.viewType || _o.parentRef)){

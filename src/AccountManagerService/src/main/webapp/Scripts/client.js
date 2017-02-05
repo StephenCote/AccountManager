@@ -212,7 +212,7 @@
 
 	function makeFind(sType,sObjType,sPath,bMake,fH){
 		var sK = "FIND-" + sObjType;
-		sPath = getDotPath(sPath);
+		if(sPath.match(/^\\/)) sPath = getDotPath(sPath);
 		var o = getFromCache(sType, sK, sPath);
 		if(o){
 			if(fH) fH("",o);
@@ -250,7 +250,10 @@
 		if(!sType && !sOType) return getPrincipal(fH);
 		return Hemi.xml.getJSON(sAuthZ + "/" + sType + "/user/" + sOType,fH,(fH ? 1 : 0));
 	}
-	
+	function listEntitlementsForType(sType, sObjId, fH){
+		if(!sObjId) sObjId = null;
+		 return Hemi.xml.getJSON(sAuthZ + "/" + sType + "/roles/" + sObjId,fH,(fH ? 1 : 0));
+	}
 	window.AM6Client = {
 		dotPath : getDotPath,
 		find : find,
@@ -266,6 +269,7 @@
 		cache : getCache,
 		principal : getPrincipal,
 		anonymous : getDocumentControl,
+		entitlements : listEntitlementsForType,
 		members : listMembers,
 		member : setMember,
 		user: getUserObject,
