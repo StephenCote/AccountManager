@@ -556,7 +556,7 @@ public class Factories {
 
 	}
     public static void prepare(){
-    	logger.debug("Touch Account Manager to initialize static registration");
+    	logger.info("Touch Account Manager to initialize static registration");
     	BulkFactories.prepare();
     }
 	public static void warmUp(){

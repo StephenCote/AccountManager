@@ -27,6 +27,7 @@ import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -61,7 +62,7 @@ public class OrganizationService {
 	@POST
 	@Path("/{parentId:[0-9A-Za-z\\-]+}/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public static Response addOrganization(@PathParam("parentId") String parentId,@PathParam("name") String name,CredentialType adminCredential, @Context HttpServletRequest request){
+	public static Response addOrganization(@PathParam("parentId") String parentId,@PathParam("name") String name,AuthenticationRequestType adminCredential, @Context HttpServletRequest request){
 		boolean out_bool = false;
 		String adminPassword = null;
 		if(adminCredential == null || adminCredential.getCredentialType().equals(CredentialEnumType.HASHED_PASSWORD)==false){
@@ -134,7 +135,7 @@ public class OrganizationService {
 					}
 				}
 				else{
-					logger.error("User is not a system administrator in the parent organization");
+					logger.error("User " + user.getUrn() + " is not a system administrator in organization #" + uOrg.getId() + " " + uOrg.getUrn());
 				}
 			}
 			else{

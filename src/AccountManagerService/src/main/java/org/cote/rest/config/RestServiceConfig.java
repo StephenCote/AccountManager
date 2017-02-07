@@ -20,6 +20,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.DatabaseMaintenance;
 import org.cote.accountmanager.data.services.SessionDataMaintenance;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.services.ThreadService;
@@ -126,13 +127,20 @@ public class RestServiceConfig extends ResourceConfig{
 						logger.info("Priming " + facts[0]);
 						Class cls = Class.forName(facts[i]);
 						Factories f = (Factories)cls.newInstance();
-						f.prepare();
+						logger.warn("Refactor to an interface - this is only preparing the base service");
+						//f.prepare();
+						if(facts[i].equals("org.cote.rocket.Factories")) org.cote.rocket.Factories.prepare();
 					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 						// TODO Auto-generated catch block
 						logger.error("Trace", e);
 					}
 					
 				}
+			}
+			
+			Object obj = Factories.getBulkFactory(FactoryEnumType.LIFECYCLE);
+			if(obj == null){
+				logger.error("Failed to load bulk factory from extension library");
 			}
 			/// invoke clear caches to queue up the table schemas
 			///

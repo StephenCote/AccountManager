@@ -133,7 +133,7 @@ public class BulkFactories{
 	public static <T> T getInstance(FactoryEnumType ftype){
 		T newObj = null;
 		if(factoryClasses.containsKey(ftype) == false){
-			logger.error("Factory type " + ftype.toString() + " not registered");
+			logger.error("Factory type " + ftype.toString() + " not registered out of " + factoryClasses.size() + " total registrations");
 			return newObj;
 		}
 		if(factoryInstances.containsKey(ftype) == true) return (T)factoryInstances.get(ftype);
