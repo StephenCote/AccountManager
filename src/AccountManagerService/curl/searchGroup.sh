@@ -1,4 +1,4 @@
-objName=$(./hash.sh $1.GROUP.DATA.$2)
+objName=$(./hash.sh "$1.GROUP.DATA.$2")
 cacheName="cache/object.$objName.json"
 #echo Cache Name: $cacheName
 if [ ! -f $cacheName ]; then

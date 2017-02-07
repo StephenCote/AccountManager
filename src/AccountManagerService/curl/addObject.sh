@@ -5,15 +5,15 @@ echo Object Type: $4
 bname=$(basename "$5")
 echo Object Name: $bname
 echo File: $5
-uid=$(sh hash.sh $2.DATA.$3.$bname)
+uid=$(./hash.sh "$2.DATA.$3.$bname")
 cacheName=cache/object.$uid.json
 tmpCacheName=$cacheName.tmp
-groupHash=$(sh hash.sh $2.GROUP.DATA.$3)
+groupHash=$(./hash.sh "$2.GROUP.DATA.$3")
 groupCacheName=cache/object.$groupHash.json
 #echo Invoke search group
-res=$(sh searchGroup.sh $2 "$3")
+res=$(./searchGroup.sh $2 "$3")
 #echo finished: $res
-groupOid=$(sh extractObjectId.sh $groupCacheName)
+groupOid=$(./extractObjectId.sh $groupCacheName)
 echo Group Id: $groupOid
 #objData=cache/data.$uid.json
 #fvar="$5"

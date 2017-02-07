@@ -1,6 +1,6 @@
 # username-type-parent-objectname
-groupId=$(./getGroupObjectId.sh $1 $3)
-objName=$(./hash.sh $1.$2.$groupId.$4)
+groupId=$(./getGroupObjectId.sh "$1" "$3")
+objName=$(./hash.sh "$1.$2.$groupId.$4")
 cacheName=cache/object.$objName.json
 if [[ ! -f $cacheName ]]; then
    #echo Fetching http://127.0.0.1:8080/AccountManagerService/rest/resource/$2/$groupId/$4
