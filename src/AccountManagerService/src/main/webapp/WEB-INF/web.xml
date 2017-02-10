@@ -35,7 +35,22 @@
     <param-name>factories.add</param-name>
     <param-value>org.cote.rocket.Factories</param-value>
   </context-param>
-   	 	 <context-param>
+    <context-param>
+    <description>Data Generator Names Path</description>
+    <param-name>data.generator.names</param-name>
+    <param-value>C:/Projects/DataGenerator/</param-value>
+  </context-param>
+  <context-param>
+    <description>Data Generator Dictionary Path</description>
+    <param-name>data.generator.dictionary</param-name>
+    <param-value>C:/Projects/DataGenerator/wn3.1.dict.tar/dict/</param-value>
+  </context-param>
+  <context-param>
+    <description>Data Generator Location Path</description>
+    <param-name>data.generator.location</param-name>
+    <param-value>C:/Projects/DataGenerator/location/</param-value>
+  </context-param>
+  <context-param>
     <description>Community Factories</description>
     <param-name>factories.community</param-name>
     <param-value>org.cote.rocket.RocketCommunity</param-value>
