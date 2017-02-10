@@ -88,7 +88,8 @@
 	var sSearch = sBase + "/search";
 	var sMake = sBase + "/make";
 	var sList = sBase + "/list";
-	var sAuthZ = sBase + "/authorization"
+	var sAuthZ = sBase + "/authorization";
+	var sComm = sBase + "/community";
 	function getCache(){
 		return cache;
 	}
@@ -160,6 +161,31 @@
 		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("USER","GET","_principal_",v.json);} if(f) f(s,v);};
 	   return Hemi.xml.getJSON(sPrincipal + "/",fc,(fH ? 1 : 0));
 	}
+	function getCommunity(sCommunityName, fH){
+		var sType = "COMMUNITY";
+		var o = getFromCache(sType, "GET", sCommunityName);
+		if(o){
+			if(fH) fH("",o);
+			return o;
+		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sCommunityName,v.json);} if(f) f(s,v);};
+
+	   return Hemi.xml.getJSON(sComm + "/find/" + sCommunityName,fc,(fH ? 1 : 0));
+	}
+	function getCommunityProject(sCommunityName, sProjectName,fH){
+		var sType = "COMMUNITY." + sCommunityName + ".PROJECT";
+		var o = getFromCache(sType, "GET", sProjectName);
+		if(o){
+			if(fH) fH("",o);
+			return o;
+		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sProjectName,v.json);} if(f) f(s,v);};
+
+	   return Hemi.xml.getJSON(sComm + "/find/" + sCommunityName + "/" + sProjectName,fc,(fH ? 1 : 0));
+	}
+	
 	function get(sType,sObjectId,fH){
 		var o = getFromCache(sType, "GET", sObjectId);
 		if(o){
@@ -171,9 +197,21 @@
 
 	   return Hemi.xml.getJSON(sResource + "/" + sType + "/" + sObjectId,fc,(fH ? 1 : 0));
 	}
-	function getByName(sType,sObjectId,sName,fH){
-		   return Hemi.xml.getJSON(sResource + "/" + sType + "/" + sObjectId + "/" + sName,fH,(fH ? 1 : 0));
+	function getByName(sType,sObjectId,sName,fH, bParent){
+		var sKey = sObjectId + "-" + sName;
+		var o = getFromCache(sType, "GET", sKey);
+		if(o){
+			if(fH) fH("",o);
+			return o;
 		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sKey,v.json);} if(f) f(s,v);};
+		
+		   return Hemi.xml.getJSON(sResource + "/" + sType + "/" + (bParent ? "parent/" : "") + sObjectId + "/" + sName,fc,(fH ? 1 : 0));
+		}
+	function getByNameInGroupParent(sType,sObjectId,sName,fH){
+		return getByName(sType, sObjectId, sName, fH, 1);
+	}
 	function count(sType,sObjectId,fH){
 		var o = getFromCache(sType, "COUNT", sObjectId);
 		if(o){
@@ -257,6 +295,8 @@
 	window.AM6Client = {
 		dotPath : getDotPath,
 		find : find,
+		community : getCommunity,
+		communityProject : getCommunityProject,
 		findByTag : findByTag,
 		countByTag : countByTag,
 		make : make,
@@ -264,6 +304,7 @@
 		count: count,
 		get : get,
 		getByName : getByName,
+		getByNameInGroupParent : getByNameInGroupParent,
 		update : update,
 		delete : deleteObject,
 		cache : getCache,
