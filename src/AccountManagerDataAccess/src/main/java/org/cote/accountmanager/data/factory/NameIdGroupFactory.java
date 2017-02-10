@@ -69,7 +69,11 @@ public abstract class NameIdGroupFactory extends NameIdFactory implements INameI
 			throw new ArgumentException("Null object");
 		}
 		NameIdDirectoryGroupType obj = (NameIdDirectoryGroupType)object;
-		if(obj.getParentId().compareTo(0L) != 0) return;
+		
+		/// 2017/02/07 - Why is this returning out?
+		///
+		///if(obj.getParentId().compareTo(0L) != 0) return;
+		
 		if(obj.getGroupPath() == null || obj.getGroupPath().length() == 0){
 			logger.debug("Group path not defined");
 			return;
@@ -144,6 +148,27 @@ public abstract class NameIdGroupFactory extends NameIdFactory implements INameI
 		return search(fields.toArray(new QueryField[0]), instruction, dir.getOrganizationId());
 	}
 
+	@Override
+	public <T> T getByNameInParent(String name, String type, NameIdDirectoryGroupType parentObj) throws FactoryException, ArgumentException
+	{
+		String key_name = name + "-" + "-" + parentObj.getGroupId() + "-" + parentObj.getOrganizationId();
+		NameIdType out_obj = readCache(key_name);
+		if (out_obj != null) return (T)out_obj;
+		QueryFields x = null;
+		List<QueryField> fields = new ArrayList<QueryField>();
+		fields.add(QueryFields.getFieldName(name));
+		fields.add(QueryFields.getFieldParent(parentObj.getId()));
+		
+		List<NameIdType> objs = getByField(fields.toArray(new QueryField[0]), parentObj.getOrganizationId());
+
+		if (objs.size() > 0)
+		{
+			addToCache(objs.get(0),key_name);
+			return (T)objs.get(0);
+		}
+		return null;
+	}
+	
 	public <T> T getByNameInGroup(String name, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
 		return getByNameInGroup(name, 0, parentGroup);
 	}

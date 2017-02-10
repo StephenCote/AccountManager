@@ -6,6 +6,7 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 
 public interface INameIdGroupFactory extends INameIdFactory {
 	public int countInGroup(BaseGroupType group) throws FactoryException;
@@ -15,4 +16,6 @@ public interface INameIdGroupFactory extends INameIdFactory {
 	public <T> T getByNameInGroup(String name, long parentGroupId, long organizationId) throws FactoryException, ArgumentException;
 	public <T> T getByNameInGroup(String name, long parentId, long parentGroupId, long organizationId) throws FactoryException, ArgumentException;
 	public <T> List<T> search(String searchValue, long startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException, ArgumentException;
+	public <T> T getByNameInParent(String name, String type, NameIdDirectoryGroupType parentObj) throws FactoryException, ArgumentException;
+
 }

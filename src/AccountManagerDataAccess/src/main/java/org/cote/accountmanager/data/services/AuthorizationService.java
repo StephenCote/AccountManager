@@ -401,7 +401,7 @@ public class AuthorizationService {
 		if(factoryProviders.containsKey(type)){
 			IParticipationFactory partFact = getRegisteredProvider(factoryProviders.get(type));
 			
-			logger.info("Retrieving permission map for " + partFact.getPermissionPrefix() + "View in " + organizationId);
+			//logger.info("Retrieving permission map for " + partFact.getPermissionPrefix() + "View in " + organizationId);
 			return getRootPermission(partFact.getPermissionPrefix() + "View", partFact.getDefaultPermissionType(), organizationId);
 		}
 		/// Old method

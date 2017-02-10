@@ -238,7 +238,7 @@ public class TypeSanitizer implements ITypeSanitizer{
 	
 				MapUtil.shallowCloneNameIdDirectoryType(v11bean, new_per);
 				new_per.setAlias(v11bean.getAlias());
-				new_per.setBirthDate(v11bean.getBirthDate());
+				if(v11bean.getBirthDate() != null) new_per.setBirthDate(v11bean.getBirthDate());
 				//new_per.setContact(v11bean.getContact());
 				new_per.setDescription(v11bean.getDescription());
 				new_per.setFirstName(v11bean.getFirstName());

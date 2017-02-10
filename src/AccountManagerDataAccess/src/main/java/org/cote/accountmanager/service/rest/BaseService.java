@@ -83,6 +83,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.accountmanager.util.JSONUtil;
 
 public class BaseService {
 	public static final Logger logger = LogManager.getLogger(BaseService.class);
@@ -282,7 +283,11 @@ public class BaseService {
 		
 		T out_obj = null;
 		INameIdFactory factory = getFactory(type);
-		if(factory.isClusterByParent() == true){
+		if(factory.isClusterByGroup() && (otype == null || otype.length() == 0 || otype.equalsIgnoreCase("unknown"))){
+			INameIdGroupFactory gfact = (INameIdGroupFactory)factory;
+			out_obj = gfact.getByNameInParent(name, otype, (NameIdDirectoryGroupType)parent);
+		}
+		else if(factory.isClusterByParent() == true){
 			out_obj = factory.getByNameInParent(name, otype, parent.getId(), parent.getOrganizationId());
 		}
 		if(out_obj != null){
@@ -605,6 +610,8 @@ public class BaseService {
 			
 			normalize(user,bean);
 			
+			//logger.info("Norm: " + JSONUtil.exportObject(bean));
+			//logger.info("Sub: " + JSONUtil.exportObject(dirBean));
 			if(canCreateType(addType, user, dirBean) == true){
 
 				out_bool = sanitizeAddNewObject(addType, user, bean);
