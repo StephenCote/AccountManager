@@ -1,13 +1,10 @@
-# org,username,path,type,objectName
+# org,username,name
 authName=$(./hash.sh "$1.$2")
-groupId=$(./getGroupObjectId.sh "$1" "$2" "$3")
-objName=$(./hash.sh "$1.$4.$3.$5")
+objName=$(./hash.sh "$1.USER.$3")
 cacheName=cache/object.$objName.json
-#echo "Group Id: $groupId"
 echo "Get Cache Name $cacheName"
 if [[ ! -f $cacheName ]]; then
-   #echo Fetching http://127.0.0.1:8080/AccountManagerService/rest/resource/$2/$groupId/$4
-   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/resource/$4/$groupId/$5");
+   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/resource/USER/null/$3");
    echo "Url=$url"
    curl -sS -H "Authorization: Bearer $(cat cache/auth.$authName.token)" "$url" > $cacheName
    if [[ ! -s $cacheName ]]; then
