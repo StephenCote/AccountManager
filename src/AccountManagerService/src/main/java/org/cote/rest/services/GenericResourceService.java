@@ -52,6 +52,7 @@ public class GenericResourceService {
 	
 	protected static Set<AuditEnumType> parentType = new HashSet<>(Arrays.asList(AuditEnumType.GROUP, AuditEnumType.ROLE, AuditEnumType.PERMISSION));
 	private static SchemaBean schemaBean = null;
+	
 	@Context
 	ServletContext context;
 	
@@ -128,6 +129,31 @@ public class GenericResourceService {
 			obj = BaseService.readByNameInOrganization(auditType, user.getOrganizationId(), name, request);
 		}
 		
+		return Response.status(200).entity(obj).build();
+	}
+	
+	/// Specifically to allow for the variation where a factory is clustered by both group and parent
+	/// To retrieve an object using a parent id vs. the group id
+	///
+	@RolesAllowed({"user"})
+	@GET
+	@Path("/parent/{parentId:[0-9A-Za-z\\-]+}/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getGroupedObjectByNameInParent(@PathParam("type") String type, @PathParam("parentId") String parentId,@PathParam("name") String name,@Context HttpServletRequest request){
+		Object obj = null;
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		INameIdFactory iFact = BaseService.getFactory(auditType);
+		if(!iFact.isClusterByParent() || !iFact.isClusterByGroup()){
+			logger.warn("Service intended for factories that are both clustered by group and parent");
+			//return Response.status(200).entity(obj).build();
+		}
+		NameIdType parentObj = (NameIdType)getObject(type,parentId,request).getEntity();
+		if(parentObj == null){
+			logger.error("Parent Object " + type + " " + parentId + " is null or not accessible");
+			return Response.status(200).entity(obj).build();
+		}
+		obj = BaseService.readByNameInParent(auditType, parentObj, name, "UNKNOWN", request);
+
 		return Response.status(200).entity(obj).build();
 	}
 

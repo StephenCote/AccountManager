@@ -79,7 +79,7 @@ public class CommunityService {
 	@Path("/enroll/reader/{userId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response enrollReader(@PathParam("userId") String userId, @Context HttpServletRequest request){
+	public Response enrollReaderInCommunities(@PathParam("userId") String userId, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		ICommunityProvider cp = getProvider();
 		boolean enrolled = false;
@@ -92,7 +92,7 @@ public class CommunityService {
 	@Path("/enroll/reader/{userId:[0-9A-Za-z\\-]+}/{communityId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response enrollReader(@PathParam("userId") String userId, @PathParam("communityId") String communityId, @Context HttpServletRequest request){
+	public Response enrollReaderInCommunity(@PathParam("userId") String userId, @PathParam("communityId") String communityId, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		ICommunityProvider cp = getProvider();
 		boolean enrolled = false;
@@ -105,7 +105,7 @@ public class CommunityService {
 	@Path("/enroll/reader/{userId:[0-9A-Za-z\\-]+}/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response enrollReader(@PathParam("userId") String userId, @PathParam("communityId") String communityId,  @PathParam("projectId") String projectId, @Context HttpServletRequest request){
+	public Response enrollReaderInCommunityProject(@PathParam("userId") String userId, @PathParam("communityId") String communityId,  @PathParam("projectId") String projectId, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		ICommunityProvider cp = getProvider();
 		boolean enrolled = false;
@@ -118,11 +118,24 @@ public class CommunityService {
 	@Path("/enroll/admin/{userId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response enrollAdmin(@PathParam("userId") String userId, @Context HttpServletRequest request){
+	public Response enrollAdminInCommunities(@PathParam("userId") String userId, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		ICommunityProvider cp = getProvider();
 		boolean enrolled = false;
 		if(cp != null) enrolled = cp.enrollAdminInCommunities(user, userId);
+		return Response.status(200).entity(enrolled).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/enroll/admin/{communityId:[0-9A-Za-z\\-]+}/{userId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response enrollAdminInCommunity(@PathParam("communityId") String communityId,@PathParam("userId") String userId, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean enrolled = false;
+		if(cp != null) enrolled = cp.enrollAdminInCommunity(user, communityId, userId);
 		return Response.status(200).entity(enrolled).build();
 	}
 	
@@ -145,6 +158,7 @@ public class CommunityService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response deleteCommunityProject(@PathParam("projectId") String projectId, @Context HttpServletRequest request){
+
 		UserType user = ServiceUtil.getUserFromSession(request);
 		ICommunityProvider cp = getProvider();
 		boolean enrolled = false;
@@ -296,7 +310,108 @@ public class CommunityService {
 		return Response.status(200).entity(configured).build();
 	}
 	
-
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/geo/traits/{type:[A-Za-z]+}/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response importGeoTraits(@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean imported = cp.importLocationTraits(user, AuditEnumType.valueOf(type),objectId,context.getInitParameter("data.generator.location"), "featureCodes_en.txt");
+		return Response.status(200).entity(imported).build();
+	}
 	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/geo/countryInfo/{type:[A-Za-z]+}/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response importGeoCountryInfo(@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean imported = cp.importLocationCountryInfo(user, AuditEnumType.valueOf(type),objectId,context.getInitParameter("data.generator.location"), "countryInfo.txt");
+		return Response.status(200).entity(imported).build();
+	}
 
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/geo/admin1Codes/{type:[A-Za-z]+}/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response importGeoAdmin1Codes(@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean imported = cp.importLocationAdmin1Codes(user, AuditEnumType.valueOf(type),objectId,context.getInitParameter("data.generator.location"), "admin1CodesASCII.txt");
+		return Response.status(200).entity(imported).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/geo/admin2Codes/{type:[A-Za-z]+}/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response importGeoAdmin2Codes(@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean imported = cp.importLocationAdmin2Codes(user, AuditEnumType.valueOf(type),objectId,context.getInitParameter("data.generator.location"), "admin2Codes.txt");
+		return Response.status(200).entity(imported).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/geo/country/{type:[A-Za-z]+}/{objectId:[0-9A-Za-z\\-]+}/{codes:[A-Za-z\\,]+}/{alternate:(true|false)}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response importGeoCountryData(@PathParam("type") String type, @PathParam("objectId") String objectId, @PathParam("codes") String codes,@PathParam("alternate") boolean alternate,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean imported = cp.importLocationCountryData(user, AuditEnumType.valueOf(type),objectId,context.getInitParameter("data.generator.location"), codes,(alternate ? "alternateNames.txt" : null));
+		return Response.status(200).entity(imported).build();
+	}
+	/*
+	 * 	private int testLocSize = 3;
+	private int testPerSeed = 250;
+	private int testEpochEvolutions = 10;
+	private int testEpochCount = 15;
+	 */
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/generate/region/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}/{locationSize:[\\d]+}/{seedSize:[\\d]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response generateCommunityProjectRegion(@PathParam("communityId") String communityId, @PathParam("projectId") String projectId, @PathParam("locationSize") int locationSize,  @PathParam("seedSize") int seedSize, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean enrolled = false;
+		if(cp != null) enrolled = cp.generateCommunityProjectRegion(user, communityId, projectId, locationSize, seedSize, context.getInitParameter("data.generator.dictionary"), context.getInitParameter("data.generator.names"));
+		return Response.status(200).entity(enrolled).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/generate/evolve/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}/{epochSize:[\\d]+}/{epochEvolutions:[\\d]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response evolveCommunityProjectRegion(@PathParam("communityId") String communityId, @PathParam("projectId") String projectId, @PathParam("epochSize") int epochSize, @PathParam("epochEvolutions") int epochEvolutions, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean enrolled = false;
+		if(cp != null) enrolled = cp.evolveCommunityProjectRegion(user, communityId, projectId, epochSize, epochEvolutions, context.getInitParameter("data.generator.dictionary"), context.getInitParameter("data.generator.names"));
+		return Response.status(200).entity(enrolled).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/generate/report/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response reportCommunityProjectRegion(@PathParam("communityId") String communityId, @PathParam("projectId") String projectId, @PathParam("epochSize") int epochSize, @PathParam("epochEvolutions") int epochEvolutions, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		String report = null;
+		if(cp != null) report = cp.reportCommunityProjectRegion(user, communityId, projectId, context.getInitParameter("data.generator.dictionary"), context.getInitParameter("data.generator.names"));
+		return Response.status(200).entity(report).build();
+	}
+	
 }
