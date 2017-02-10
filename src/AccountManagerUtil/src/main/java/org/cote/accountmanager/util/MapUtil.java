@@ -30,19 +30,17 @@ public class MapUtil {
 
 	public static void shallowCloneAznType(BaseAuthorizationType src, BaseAuthorizationType targ){
 		//targ.setUrn(src.getUrn());
-		targ.setScore(src.getScore());
-		targ.setDescription(src.getDescription());
-		targ.setLogicalOrder(src.getLogicalOrder());
+		if(src.getScore() != null) targ.setScore(src.getScore());
+		if(src.getDescription() != null) targ.setDescription(src.getDescription());
+		if(src.getLogicalOrder() != null) targ.setLogicalOrder(src.getLogicalOrder());
 		shallowCloneNameIdDirectoryType(src, targ);
 	}
 	public static void shallowCloneNameIdDirectoryType(NameIdType src, NameIdType targ){
-		targ.setName(src.getName());
-		targ.setParentId(src.getParentId());
-		//if(src.getNameType() == null) targ.setNameType(NameEnumType.APPLICATION);
-		if(src.getNameType() != NameEnumType.UNKNOWN) targ.setNameType(src.getNameType());
-		//if(targ.getOrganization() == null) targ.setOrganization(src.getOrganization());
-		targ.setOrganizationId(src.getOrganizationId());
-		targ.setOrganizationPath(src.getOrganizationPath());
+		if(src.getName() != null) targ.setName(src.getName());
+		if(src.getParentId() != null) targ.setParentId(src.getParentId());
+		if(src.getNameType() != null && src.getNameType() != NameEnumType.UNKNOWN) targ.setNameType(src.getNameType());
+		if(src.getOrganizationId() != null) targ.setOrganizationId(src.getOrganizationId());
+		if(src.getOrganizationPath() != null) targ.setOrganizationPath(src.getOrganizationPath());
 		if(targ.getUrn() != null) targ.setUrn(src.getUrn());
 	}
 }
