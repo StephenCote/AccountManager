@@ -174,7 +174,7 @@
 			}
 			else{
 				var sGid = null;
-				if(!sType.match(/^user$/gi)) sGid = thisAM6Client.find("GROUP","DATA",o.groupPath).objectId;
+				if(!sType.match(/^user$/gi)) sGid = AM6Client.find("GROUP","DATA",o.groupPath).objectId;
 				n = AM6Client.getByName(sType.toUpperCase(),sGid,o.name);
 			}
 			if(n != null){

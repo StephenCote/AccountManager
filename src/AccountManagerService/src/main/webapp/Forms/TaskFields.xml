@@ -129,8 +129,10 @@
 			if(b){
 				var oP;
 				if(o.parentId){
+					//oP = AM6Client.get("TASK",o.parentId);
+					//oT = rocket.getTaskByParent(o.name,oP);
 					oP = AM6Client.get("TASK",o.parentId);
-					oT = rocket.getTaskByParent(o.name,oP);
+					oT = AM6Client.getByNameInGroupParent("TASK",oP.objectId,o.name);
 				}
 				else{
 					oT = AM6Client.getByName("TASK",AM6Client.find("GROUP","DATA",this.getPath()).objectId,o.name);

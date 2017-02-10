@@ -77,8 +77,10 @@
 			if(b){
 				var oP;
 				if(o.parentId){
-					oP = rocket.getLocationById(o.parentId);
-					oT = rocket.getLocationByParent(o.name,oP);
+					//oP = rocket.getLocationById(o.parentId);
+					//oT = rocket.getLocationByParent(o.name,oP);
+					oP = AM6Client.get("LOCATION",o.parentId);
+					oT = AM6Client.getByNameInGroupParent("LOCATION",oP.objectId,o.name);
 				}
 				else{
 					oT = AM6Client.getByName("LOCATION",AM6Client.find("GROUP","DATA",this.getPath()).objectId,o.name);

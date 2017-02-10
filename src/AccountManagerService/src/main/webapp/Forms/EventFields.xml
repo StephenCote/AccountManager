@@ -422,12 +422,13 @@
 		},
 		
 		addType : function(o){
-			var oT,b = AM6Client.update(o);
+			var oT,b = AM6Client.update("EVENT",o);
 			if(b){
 				var oP;
 				if(o.parentId){
 					oP = AM6Client.get("EVENT",o.parentId);
-					oT = rocket.getEventByParent(o.name,oP);
+					//oT = rocket.getEventByParent(o.name,oP);
+					oT = AM6Client.getByNameInGroupParent("EVENT",oP.objectId,o.name);
 				}
 				else{
 					oT = AM6Client.getByName("EVENT",AM6Client.find("GROUP","DATA",this.getPath()).objectId,o.name);

@@ -500,11 +500,11 @@
 							sTO = "UNKNOWN";
 						}
 						var oObj = AM6Client.find(sT, sTO, sPath);
-						aList = AM6Client.list(tname.toUpperCase(), oObj.objectId,_s.start_record,_s.record_count);
+						if(oObj && oObj != null) aList = AM6Client.list(tname.toUpperCase(), oObj.objectId,_s.start_record,_s.record_count);
 						}
 					else{
 						var oObj = AM6Client.find(tname.toUpperCase(),_s.listGroupType,sPath);
-						aList = AM6Client.list(tname.toUpperCase(), oObj.objectId,_s.start_record,_s.record_count);
+						if(oObj && oObj != null) aList = AM6Client.list(tname.toUpperCase(), oObj.objectId,_s.start_record,_s.record_count);
 					}
 				}
 				else{
