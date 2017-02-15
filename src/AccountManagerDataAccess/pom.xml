@@ -53,7 +53,7 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>true</skipTests>
+  					<skipTests>false</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine>  
 
   					<includes>
@@ -64,13 +64,9 @@
 											
 								
 						<!-- 
-
-
-
-
-<exclude>**/TestEffectiveAuthorization.java</exclude>
-
+<exclude>**/TestBulkUpdate.java</exclude>
 						-->
+						<exclude>**/TestEffectiveAuthorization.java</exclude>
 <exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 <exclude>**/TestFactoryInterfaces.java</exclude>												
 						<exclude>**/TestDataFactory.java</exclude>
@@ -98,7 +94,7 @@
 						
 						<exclude>**/TestDataTags.java</exclude>		
 						<exclude>**/TestCachePerformance.java</exclude>		
-						<exclude>**/TestBulkUpdate.java</exclude>		
+								
 						<exclude>**/TestContactInformationFactory.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>
 						<exclude>**/TestPolicyService.java</exclude>

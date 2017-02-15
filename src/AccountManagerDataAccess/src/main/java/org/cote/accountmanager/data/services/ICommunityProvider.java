@@ -39,4 +39,7 @@ public interface ICommunityProvider {
 	public boolean generateCommunityProjectRegion(UserType user, String communityId, String projectId, int locationSize, int seedSize, String dictionaryPath, String namesPath);
 	public boolean evolveCommunityProjectRegion(UserType user, String communityId, String projectId, int epochSize, int epochEvolutions, String dictionaryPath, String namesPath);
 	public String reportCommunityProjectRegion(UserType user, String communityId, String projectId, String dictionaryPath, String namesPath);
+
+	public String getCommunityProjectScript(UserType user, String communityId, String projectId, String name);
+
 }

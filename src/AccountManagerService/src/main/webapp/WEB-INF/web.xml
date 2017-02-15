@@ -65,7 +65,11 @@
     <context-param>
   <description>Maintenance Jobs</description>
   <param-name>maintenance.jobs</param-name>
-  <param-value>org.cote.accountmanager.data.services.DatabaseMaintenance,org.cote.accountmanager.data.services.AuditDataMaintenance,org.cote.accountmanager.data.services.SessionDataMaintenance,org.cote.rocket.services.RocketDatabaseMaintenance,org.cote.rocket.services.ApplicationImportService</param-value>
+  <!-- 
+  org.cote.accountmanager.data.services.DatabaseMaintenance,
+  org.cote.rocket.services.RocketDatabaseMaintenance,
+   -->
+  <param-value>org.cote.accountmanager.data.services.AuditDataMaintenance,org.cote.accountmanager.data.services.SessionDataMaintenance,org.cote.rocket.services.ApplicationImportService</param-value>
   </context-param>
  	 <context-param>
     <description>Database Connection Type</description>

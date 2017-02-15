@@ -40,7 +40,7 @@ import org.cote.propellant.objects.ProjectType;
 @Path("/community")
 public class CommunityService {
 	
-	private static final Logger logger = LogManager.getLogger(GenericResourceService.class);
+	private static final Logger logger = LogManager.getLogger(CommunityService.class);
 	//protected static Set<AuditEnumType> parentType = new HashSet<>(Arrays.asList(AuditEnumType.GROUP, AuditEnumType.ROLE, AuditEnumType.PERMISSION));
 	private static SchemaBean schemaBean = null;
 	private static ICommunityProvider provider = null;

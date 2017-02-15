@@ -87,6 +87,9 @@ public class AttributeFactory extends NameIdFactory{
 		if(obj.getAttributesPopulated())
 			return;
 		try {
+			if(obj.getAttributes().size() > 0){
+				logger.warn("Populating attributes for object " + obj.getName() + " (" + obj.getUrn() + ") which already includes attribute values.  This will wipe out the original attribute set.");
+			}
 			obj.getAttributes().clear();
 			obj.getAttributes().addAll(getAttributes(obj));
 			obj.setAttributesPopulated(true);
