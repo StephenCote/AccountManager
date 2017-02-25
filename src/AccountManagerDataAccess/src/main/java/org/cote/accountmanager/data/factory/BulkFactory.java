@@ -172,7 +172,7 @@ public class BulkFactory {
 				if(factoryIds.containsKey(entry.getFactoryType())==false){
 					long startFact = System.currentTimeMillis();
 					factoryIds.put(entry.getFactoryType(), getFactoryIds(sessionId,entry.getFactoryType()));
-					logger.info("Retrieved factory ids for " + entry.getFactoryType().toString() + " in " + (System.currentTimeMillis() - startFact) + "ms");
+					logger.debug("Retrieved factory ids for " + entry.getFactoryType().toString() + " in " + (System.currentTimeMillis() - startFact) + "ms");
 				}
 				List<Long> ids = factoryIds.get(entry.getFactoryType());
 				long id = ids.remove(ids.size()-1);

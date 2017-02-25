@@ -147,11 +147,11 @@ public class BaseService {
 					((NameIdDirectoryGroupType)obj).setGroupPath(group.getPath());
 				}
 			}
-			iFact.normalize(object);
+			iFact.normalize(obj);
 		}
 		else /*if(iFact.isClusterByParent()){*/ 
 		{ 
-			iFact.normalize(object);
+			iFact.normalize(obj);
 		}
 		/*
 		else{
