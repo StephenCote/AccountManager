@@ -6,6 +6,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -59,6 +60,22 @@ public class ScriptService {
 		 return schemaBean;
 	 }
 	
+	
+	
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/community/exec/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response executeCommunityProjectScript(@PathParam("communityId") String communityId, @PathParam("projectId") String projectId, @PathParam("name") String name, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		Object report = null;
+		if(cp != null) report = cp.executeCommunityProjectScript(user, communityId, projectId, name);
+		return Response.status(200).entity(report).build();
+	}
+	
 	@RolesAllowed({"admin","user"})
 	@GET
 	@Path("/community/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")
@@ -72,5 +89,17 @@ public class ScriptService {
 		return Response.status(200).entity(report).build();
 	}
 	
+	@RolesAllowed({"admin","user"})
+	@POST
+	@Path("/community/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	public Response updateCommunityProjectScript(@PathParam("communityId") String communityId, @PathParam("projectId") String projectId, @PathParam("name") String name, String dataStr,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean out_bool = false;
+		if(cp != null) out_bool = cp.updateCommunityProjectScript(user, communityId, projectId, name, dataStr);
+		return Response.status(200).entity(out_bool).build();
+	}
 
 }
