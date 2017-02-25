@@ -41,6 +41,7 @@ public class MimeUtil {
 	static
 	    {
 		types = new HashMap<String,String>();
+		types.put("mp4", "video/mp4");
 		types.put("3dm","x-world/x-3dmf");
 		types.put("3dmf","x-world/x-3dmf");
 		types.put("a","application/octet-stream");
