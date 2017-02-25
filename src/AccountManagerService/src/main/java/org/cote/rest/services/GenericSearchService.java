@@ -74,8 +74,14 @@ public class GenericSearchService {
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
 		if(path.startsWith("~") == false && path.startsWith(".") == false){
 			path = "/" + path;
-			path = path.replace('.', '/');
+			/// Doubled up to allow for actual punctuation use
+			/// Clearly this is a bandaid
+			///
+			if(path.contains("..")) path = path.replaceAll("\\.\\.", "/");
+			else path = path.replace('.', '/');
+			logger.info("Alt path: " + path);
 		}
+		
 		
 		Object obj = null;
 		if(auditType.equals(AuditEnumType.ORGANIZATION)){

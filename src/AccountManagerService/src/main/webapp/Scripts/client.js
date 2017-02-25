@@ -250,7 +250,10 @@
 
 	function makeFind(sType,sObjType,sPath,bMake,fH){
 		var sK = "FIND-" + sObjType;
-		if(sPath.match(/^\\/)) sPath = getDotPath(sPath);
+		/// Band-aid - need to better encode these
+		///
+		if(sPath.match(/^\//) || sPath.match(/\./)) sPath = getDotPath(sPath,"..");
+		
 		var o = getFromCache(sType, sK, sPath);
 		if(o){
 			if(fH) fH("",o);
@@ -262,9 +265,8 @@
 		return Hemi.xml.getJSON((bMake ? sMake : sSearch) + "/" + sType + "/" + sObjType + "/" + sPath,fc,(fH ? 1 : 0));
 	}
 	
-	function getDotPath(path){
-		return path.replace(/^\//,"").replace(/\//,".");
-
+	function getDotPath(path, sAlt){
+		return path.replace(/^\//,"").replace(/\//gi,(sAlt ? sAlt : "."));
 	}
 	
 	function logout(fH){
@@ -292,6 +294,9 @@
 		if(!sObjId) sObjId = null;
 		 return Hemi.xml.getJSON(sAuthZ + "/" + sType + "/roles/" + sObjId,fH,(fH ? 1 : 0));
 	}
+	function mediaDataPath(oObj, bThumb){
+		return "/AccountManagerService/" + (bThumb ? "thumbnail" : "media") + "/" + AM6Client.dotPath(o.organizationPath) + "/Data" + o.groupPath + "/" + o.name + (bThumb ? "/100x100" : "");
+	}
 	window.AM6Client = {
 		dotPath : getDotPath,
 		find : find,
@@ -300,6 +305,7 @@
 		findByTag : findByTag,
 		countByTag : countByTag,
 		make : make,
+		mediaDataPath : mediaDataPath,
 		list : list,
 		count: count,
 		get : get,
