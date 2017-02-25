@@ -109,6 +109,17 @@ public class ScriptService {
 		return run(user, name, params);
 
 	}
+	public static Map<String, Object> getCommonParameterMap(UserType user){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("logger", logger);
+		params.put("user", user);
+		params.put("organizationPath", user.getOrganizationPath());
+		return params;
+	}
+	public static String processTokens(UserType user, String scriptText){
+		String out_str = scriptText.replaceAll("\\$\\{userUrn\\}", user.getUrn());
+		return out_str;
+	}
 	public static Object run(UserType user,String name,Map<String,Object> params) throws ArgumentException{
 		CompiledScript compScr = jsCompiled.get(name);
 		Object resp = null;
@@ -116,7 +127,7 @@ public class ScriptService {
 			Bindings bd = compScr.getEngine().createBindings();
 			Iterator<String> keys = params.keySet().iterator();
 			bd.putAll(params);
-			bd.put("user", user);
+			//bd.put("user", user);
 			//DirectoryGroupType homeDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(user);
 			//bd.put("organizationId", user.getOrganizationId());
 			try{
