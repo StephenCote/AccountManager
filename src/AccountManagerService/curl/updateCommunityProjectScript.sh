@@ -18,17 +18,13 @@ projObjectId=$(./extractObjectId.sh $projCacheName)
 
 scriptObjName=$(./hash.sh "$1.COMMUNITY.SCRIPT.$5")
 scriptCacheName="cache/script.$scriptObjName.txt"
-if [ ! -f $scriptCacheName ]; then
-   echo "Retrieving community project script for $lcObjectId community $projObjectId project"
+if [ -f $scriptCacheName ]; then
+   echo "Updating community project script for $lcObjectId community $projObjectId project"
    url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/script/community/$lcObjectId/$projObjectId/$5")
-   curl -sS -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" $url > $scriptCacheName
+   curl -sS -X "POST" -H "Content-Type: text/plain" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" --data-binary "@$scriptCacheName" $url
    echo ""
+else
+   echo "Script not available"
 fi
 
-if [[ -s $scriptCacheName ]];
-then
-   cat "$scriptCacheName"
-else
-   echo Invalid reference
-fi
 

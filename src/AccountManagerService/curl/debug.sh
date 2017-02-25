@@ -7,9 +7,9 @@ res=$(./clearLocalCache.sh)
 echo "Add community project"
 res=$(./addCommunityProject.sh "$1" "$2" "$3" "$4")
 echo "Configure community project"
-res=$(./configureCommunityProjectRegion.sh "$1" "$2" "$3" "$4" 5 250)
+res=$(./configureCommunityProjectRegion.sh "$1" "$2" "$3" "$4" 3 250)
 echo "Evolving community project"
-res=$(./evolveCommunityProjectRegion.sh "$1" "$2" "$3" "$4" 100 12)
+res=$(./evolveCommunityProjectRegion.sh "$1" "$2" "$3" "$4" 20 12)
 echo "Generating report"
 rep=$(./reportCommunityProjectRegion.sh "$1" "$2" "$3" "$4")
 echo "$rep"

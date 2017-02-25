@@ -1,4 +1,5 @@
 authName=$(./hash.sh "$1.$2")
+res=$(./clearLocalCache.sh)
 url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/cache/clearAll")
 #echo $url
 echo "Request to clear factory and authorization caches"
