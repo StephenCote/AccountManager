@@ -175,7 +175,7 @@
 				}
 			}
 		},
-		isBinary : function(){ var v = this.GetElementByRID("mimeType").value; return (v.match(/^binary$/) || v.match(/^image\//gi)); },
+		isBinary : function(){ var v = this.GetElementByRID("mimeType").value; return (v.match(/^binary$/) || v.match(/^(image|video)\//gi)); },
 		addType : function(o){
 			Hemi.log("Add data type: " + o.name + ":" + o.mimeType);
 
@@ -257,11 +257,11 @@
 			var bBin = this.isBinary();
 			var bDet = (o.id && o.detailsOnly);
 			//this.GetElementByRID("detailsOnlyContainer").style.display = (bDet ? "block" : "none");
-			this.GetElementByRID("loadBtn").disabled = (bDet && (!bBin || !o.mimeType.match(/^image/)) ? false : true);
+			this.GetElementByRID("loadBtn").disabled = (bDet && (!bBin || !o.mimeType.match(/^(image|video)/)) ? false : true);
 			this.GetElementByRID("clearBtn").disabled = (!bDet ? true : false);
 			this.GetElementByRID("binaryContainer").style.display = (!bDet && bBin ? "block" : "none");
 			this.GetElementByRID("textContainer").style.display = (!bDet && !bBin ? "block" : "none");
-			this.GetElementByRID("viewBtn").disabled = (bBin && o.mimeType.match(/^image/) ? false : true);
+			this.GetElementByRID("viewBtn").disabled = (bBin && o.mimeType.match(/^(image|video)/) ? false : true);
 			this.GetElementByRID("designBtn").disabled = (o.mimeType.match(/^text/) ? false : true);
 			if(bBin) this.initFrame();
 		},
