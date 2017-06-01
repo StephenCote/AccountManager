@@ -5,6 +5,8 @@ echo "Delete community (if it exists)"
 res=$(./deleteCommunity.sh "$1" "$2" "$3")
 echo "Clear local cache (again)"
 res=$(./clearLocalCache.sh)
+echo "Configure community"
+res=$(./configureCommunity.sh "$1" "$2")
 echo "Add community"
 res=$(./addCommunity.sh "$1" "$2" "$3")
 echo "Add community project"
