@@ -66,17 +66,28 @@ public class KeyStoreUtil {
 	      return store;
   
 	}
+	public static Certificate decodeCertificate(byte[] certificate){
+		Certificate cert = null;
+		try{
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			ByteArrayInputStream bais = new ByteArrayInputStream(certificate);
+			cert =  cf.generateCertificate(bais);
+		}
+		catch(CertificateException e){
+			logger.error(e.getMessage());
+			logger.error("Trace",e);
+		}
+		return cert;
+	}
 	public static boolean importCertificate(KeyStore store, byte[] certificate, String alias){
 		boolean out_bool = false;
 		logger.info("Import certificate");
 		try{
-			CertificateFactory cf = CertificateFactory.getInstance("X.509");
-			ByteArrayInputStream bais = new ByteArrayInputStream(certificate);
-			Certificate cert =  cf.generateCertificate(bais);
+			Certificate cert =  decodeCertificate(certificate);
 			store.setCertificateEntry(alias, cert);
 			out_bool = true;
 		}
-		catch(CertificateException | KeyStoreException e){
+		catch(KeyStoreException e){
 			logger.error(e.getMessage());
 			logger.error("Trace",e);
 		}
