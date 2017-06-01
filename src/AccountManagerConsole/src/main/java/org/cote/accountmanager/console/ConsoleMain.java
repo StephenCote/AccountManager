@@ -89,7 +89,7 @@ public class ConsoleMain {
 		options.addOption("importData",true,"Local path or file");
 		options.addOption("pointer",false,"Load data objects as filesystem pointers");
 		options.addOption("tag",false,"Apply the supplied tags");
-		options.addOption("thumbnail",false,"Generate the supplied tags");
+		options.addOption("thumbnail",false,"Generate thumbnails for the supplied path");
 		options.addOption("configureApi",false,"Apply the API Configuration");
 		options.addOption("file",true,"File reference");
 		options.addOption("batchSize",true,"Maximum data batch size");
