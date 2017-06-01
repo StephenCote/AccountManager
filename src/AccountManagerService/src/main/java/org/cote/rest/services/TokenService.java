@@ -1,16 +1,7 @@
 package org.cote.rest.services;
 
-import java.io.UnsupportedEncodingException;
-import java.security.Key;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -29,41 +20,25 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
-import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
-import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.SessionSecurity;
-import org.cote.accountmanager.factory.SecurityFactory;
-import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.AuthenticationResponseEnumType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.CredentialEnumType;
-import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
-import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.ActionEnumType;
-import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
-import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.JSONUtil;
-import org.cote.accountmanager.util.SecurityUtil;
 import org.cote.jaas.AM5SigningKeyResolver;
 import org.cote.jaas.TokenUtil;
 
-import com.adobe.xmp.impl.Base64;
-
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.CompressionCodecs;
-import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SigningKeyResolver;
-import io.jsonwebtoken.impl.crypto.MacProvider;
 
 @Path("/token")
 public class TokenService {

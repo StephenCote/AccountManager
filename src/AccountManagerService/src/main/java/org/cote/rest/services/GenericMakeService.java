@@ -16,13 +16,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.factory.GroupFactory;
-import org.cote.accountmanager.data.services.AuditService;
-import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
-import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
