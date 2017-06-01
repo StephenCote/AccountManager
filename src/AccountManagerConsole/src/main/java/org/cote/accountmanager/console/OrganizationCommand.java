@@ -64,12 +64,21 @@ public class OrganizationCommand {
 			//logger.info("Admin org: " + adminUser.getOrganizationId());
 			//logger.debug("Bug: Organization objects don't have an organization, only parents, which breaks);
 			OpenSSLAction sslAction = new OpenSSLAction(null,sslPath);
-			byte[] certificate = sslAction.getCertificate(alias, true);
-			CredentialType cred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, org, certificate, true, false, false);
+			byte[] pubCertificate = sslAction.getCertificate(alias, false);
+
+			CredentialType pubCred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, org, pubCertificate, true, false, false);
+			if(pubCred == null){
+				logger.error("Failed to create public certificate credential");
+				return out_bool;
+			}
+			
+			byte[] privCertificate = sslAction.getCertificate(alias, true);
+			CredentialType cred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, pubCred, privCertificate, true, false, false);
 			if(cred == null){
 				logger.error("Failed to create certificate credential");
 				return out_bool;
 			}
+
 			CredentialType cred2 = CredentialService.newCredential(CredentialEnumType.ENCRYPTED_PASSWORD, null, adminUser, cred, (new String(password)).getBytes(), true, true, false);
 			if(cred2 == null){
 				logger.error("Failed to create encrypted credential for certificate password");
