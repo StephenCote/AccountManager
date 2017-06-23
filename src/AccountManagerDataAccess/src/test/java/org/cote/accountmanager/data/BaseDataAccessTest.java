@@ -4,10 +4,7 @@ package org.cote.accountmanager.data;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -83,35 +80,17 @@ public class BaseDataAccessTest{
 	protected static String testUserName2 = "RocketQAUser2";
 	protected static UserType testUser2 = null;
 	protected static String sessionId2 = null;
-	protected static Properties testProperties = null;
+
 	
 	@Before
 	public void setUp() throws Exception {
 
-		if(testProperties == null){
-			testProperties = new Properties();
-		
-			try {
-				InputStream fis = ClassLoader.getSystemResourceAsStream("resource.properties"); 
-						//new FileInputStream("./resource.properties");
-				
-				testProperties.load(fis);
-				fis.close();
-			} catch (IOException e) {
-				
-				logger.error("Error",e);
-				return;
-			}
-		}
-		ConnectionFactory.setupConnectionFactory(testProperties);
-		/*
 		ConnectionFactory cf = ConnectionFactory.getInstance();
 		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
 		cf.setDriverClassName("org.postgresql.Driver");
 		cf.setUserName("devuser");
 		cf.setUserPassword("password");
 		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
-		*/
 		sessionId = UUID.randomUUID().toString();
 		sessionId2 = UUID.randomUUID().toString();
 		

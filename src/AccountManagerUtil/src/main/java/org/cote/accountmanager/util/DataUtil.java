@@ -125,7 +125,7 @@ public class DataUtil {
 		d.setReadDataBytes(false);
 		d.setShortData(null);
 		if(d.getVaulted() == false){
-			d.setDataHash(SecurityUtil.getDigestAsString(value, new byte[0]));
+			d.setDataHash(SecurityUtil.getDigestAsString(value));
 			// don't override compression setting for vaulted data
 			//
 			d.setCompressed(false);

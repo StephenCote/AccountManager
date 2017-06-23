@@ -64,9 +64,8 @@
 											
 								
 						<!-- 
-						<exclude>**/TestVaultService.java</exclude>
-						-->
 <exclude>**/TestBulkUpdate.java</exclude>
+						-->
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
 <exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 <exclude>**/TestFactoryInterfaces.java</exclude>												
@@ -80,7 +79,7 @@
 											
 						
 						<exclude>**/TestTokenService.java</exclude>
-
+						<exclude>**/TestVaultService.java</exclude>
 						<exclude>**/TestSoD.java</exclude>
 						<exclude>**/TestCredentialFactory.java</exclude>
 
@@ -149,11 +148,6 @@
     			</configuration>
 			</plugin>
 		</plugins>
-	<testResources>
-        <testResource>
-            <directory>${project.basedir}/src/test/resources</directory>
-        </testResource>
-    </testResources>
 	</build>
 	<dependencies>
 		<dependency>
