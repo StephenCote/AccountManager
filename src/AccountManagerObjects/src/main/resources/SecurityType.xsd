@@ -4,6 +4,9 @@
 	xmlns:tns="http://www.cote.org/accountmanager/objects"
 	xmlns:Q1="http://www.cote.org/accountmanager/objects/types">
 	<include schemaLocation="NameId.xsd"></include>
+
+	<include schemaLocation="AccountType.xsd"></include>
+	<include schemaLocation="CredentialType.xsd"></include>
 	<complexType name="SecurityType">
 		<complexContent>
 			<extension base="tns:NameIdType">
@@ -51,6 +54,9 @@
 				<attribute name="cipherKeySpec" type="string"
 					default="AES">
 				</attribute>
+				<attribute name="cipherKeySize" type="int"
+					default="256">
+				</attribute>
 				<attribute name="keySize" type="int" default="1024"></attribute>
 				<attribute name="globalKey" type="boolean"
 					default="false">
@@ -67,9 +73,64 @@
 				<attribute name="asymmetricKeyId" type="long"
 					default="0">
 				</attribute>
-				<attribute name="previousKeyId" type="long" default="0"></attribute>
+				<attribute name="previousKeyId" type="long"
+					default="0">
+				</attribute>
 			</extension>
 		</complexContent>
 	</complexType>
 
+
+	<complexType name="VaultType">
+		<complexContent>
+			<extension base="tns:NameIdType">
+				<sequence>
+					<element name="vaultPath" type="string"></element>
+					<element name="vaultKeyPath" type="string"></element>
+					<element name="vaultNameHash" type="string"></element>
+					<element name="vaultName" type="string"></element>
+					<element name="activeKey" type="tns:SecurityType"></element>
+					<element name="vaultKey" type="tns:SecurityType"></element>
+
+					<element name="serviceUser" type="tns:UserType"></element>
+					<element name="credential"
+						type="tns:CredentialType">
+					</element>
+					<element name="protectedCredential"
+						type="tns:CredentialType">
+					</element>
+				</sequence>
+				<attribute name="vaultGroupName" type="string"
+					default=".vault">
+				</attribute>
+				<attribute name="keyExtension" type="string"
+					default=".mprv">
+				</attribute>
+				<attribute name="keyPrefix" type="string"
+					default="Vault">
+				</attribute>
+				<attribute name="keyProtectedPrefix" type="string"
+					default="Prot">
+				</attribute>
+				<attribute name="haveVaultKey" type="boolean"
+					default="false">
+				</attribute>
+				<attribute name="activeKeyId" type="string"></attribute>
+				<attribute name="protected" type="boolean"
+					default="false">
+				</attribute>
+				<attribute name="haveCredential" type="boolean"
+					default="false">
+				</attribute>
+
+				<attribute name="serviceUserUrn" type="string"></attribute>
+				<attribute name="expiryDays" type="int" default="360"></attribute>
+				<attribute name="created" type="dateTime"></attribute>
+				<attribute name="dn" type="string"></attribute>
+				<attribute name="vaultAlias" type="string"></attribute>
+				<attribute name="vaultGroupUrn" type="string"></attribute>
+				<attribute name="initialized" type="boolean" default="false"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
 </schema>

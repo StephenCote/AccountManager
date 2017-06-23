@@ -168,6 +168,11 @@ public class DataAction {
 		logger.info("Processed directory in " + (stopTime - startTime) + "ms");
 	}
 	
+	
+	/*
+	 * This is a throw-away method for exporting/importing data tags from an older implementation
+	 * There needs to be a better export/import mechanism than this, and this isn't useable to anyone other than my own test data
+	 */
 	public static void tagData(UserType user, String tagFile){
 		Map<String,Map<String,List<String>>> tagMap = new HashMap<String,Map<String,List<String>>>();
 		((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setBatchSize(1000);

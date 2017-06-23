@@ -44,6 +44,10 @@ public class OpenSSLUtil {
 	}
 	
 	
+	public String getSSLPath(){
+		return sslPath;
+	}
+	
 	public boolean configure(){
 		boolean configured = false; 
 		if(

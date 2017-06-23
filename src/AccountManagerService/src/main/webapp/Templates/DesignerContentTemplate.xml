@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<html>
+	<head>
+		<style type = "text/css">
+			html{
+			border: 0px solid #000000;
+			background-color: #FFFFFF;
+			margin:0px;
+			padding:0px;
+			}
+			body{
+			border: 0px solid #000000;
+			margin:0px;
+			padding:0px;
+			}
+			h1{
+			font: 16px bold Arial;
+			letter-spacing:8px;
+			color: #000055;
+			}
+			h2{
+			font: 14px normal Arial;
+			color: #000055;
+			}
+			div.product-label
+			{
+			font: normal 18pt Arial ;
+			color: #FFFFFF;
+			clear:both;
+			margin-bottom:10px;
+			}
+			div.product-label-left-margin
+			{
+			width:20px;
+			border-bottom: 4px solid #0000FF;
+			float:left;
+			}
+			div.product-label-text-block
+			{
+			float:left;
+			background-color: #000000;
+			border-bottom: 4px solid #FF0000;
+			padding-left:4px;
+			padding-right:4px;
+			}
+			.product-label-right-margin
+			{
+			border-bottom: 4px solid #0000FF;
+			}
+			div.content {
+			clear:both;
+			margin:10px;
+			font: 10pt normal Arial;
+			}
+			div.field
+			{
+			width: 300px;
+			clear:both;
+			padding-top: 2px;
+			margin-top: 0px;
+			margin-bottom:0px;
+			}
+			div.field_description{
+			clear: both;
+			padding-left:110px;
+			color: #505050;
+			font: 8pt Arial;
+			}
+
+			div.field .label
+			{
+			width: 100px;
+			float:left;
+			text-align:right;
+			font: 10pt Arial normal;
+			color: #ac9162;
+			}
+			div.field .input_field
+			{
+			width: 190px;
+			float:left;
+			margin-left: 5px;
+			}
+			div.field .input_field p
+			{
+			margin-top:0px;
+			margin-bottom:0px;
+			}
+			div.form_description
+			{
+			font: 10pt Arial italic;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Account Manager Web</h1>
+		<div class = "product-label">
+			<div class = "product-label-left-margin">.</div>
+			<div class = "product-label-text-block">Demonstration</div>
+			<div class = "product-label-right-margin">.</div>
+		</div>
+
+		<div class = "content">
+			Demonstration content
+		</div>
+		<div class = "field">
+			<div class = "label">Field Name:</div>
+			<div class = "input_field">Fielid Value</div>
+		</div>
+		<div class = "content">
+			2006 - 2014, Stephen W. Cote.
+		</div>
+	</body>
+</html>

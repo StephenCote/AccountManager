@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -36,6 +37,7 @@ import javax.sql.DataSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 
 public class ConnectionFactory {
 	public static final Logger logger = LogManager.getLogger(ConnectionFactory.class);
@@ -50,6 +52,24 @@ public class ConnectionFactory {
 	private static ConnectionFactory Singleton = null;
 	
 	private static DataSource ds = null;
+	
+	public static void setupConnectionFactory(Properties props){
+		ConnectionFactory cf = ConnectionFactory.getInstance();
+		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
+		cf.setDriverClassName(props.getProperty("db.driver"));
+		cf.setUserName(props.getProperty("db.user"));
+		cf.setUserPassword(props.getProperty("db.password"));
+		cf.setUrl(props.getProperty("db.url"));
+		  try
+		    {
+		        Class.forName("org.postgresql.Driver");
+		    }
+		    catch(Throwable e)
+		    {
+		        logger.error("Error",e);
+		    }
+	}
+	
 	public static ConnectionFactory getInstance(){
 		if(Singleton == null){ 
 			Singleton = new ConnectionFactory();
@@ -60,6 +80,8 @@ public class ConnectionFactory {
 	public ConnectionFactory(){
 		
 	}
+	
+	
 	
 	public boolean isCheckDriver() {
 		return checkDriver;

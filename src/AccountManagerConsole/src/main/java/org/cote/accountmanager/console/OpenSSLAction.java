@@ -14,6 +14,7 @@ public class OpenSSLAction {
 	public OpenSSLAction(String bin, String path){
 		binary = bin;
 		caPath = path + (path.endsWith("/") ? "" : "/");
+		
 		sslUtil = new OpenSSLUtil(binary, caPath);
 		sslUtil.configure();
 	}

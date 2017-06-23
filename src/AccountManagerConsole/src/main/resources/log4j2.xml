@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="debug">
+<Configuration status="info">
 <Properties>
 <Property name="log-path">./logs</Property>
 </Properties>
@@ -27,16 +27,16 @@ filePattern="${log-path}/accountManagerConsole-error-%d{yyyy-MM-dd}.log">
 </RollingFile>
 </Appenders>
 <Loggers>
-<Logger name="org.cote.rest.log4j2" level="debug" additivity="false">
+<Logger name="org.cote.rest.log4j2" level="info" additivity="false">
 <appender-ref ref="trace-log" level="debug"/>
 <appender-ref ref="error-log" level="error"/>
-<appender-ref ref="console-log" level="debug"/>
+<appender-ref ref="console-log" level="info"/>
 </Logger>
 
 <Root level="all" additivity="true">
 <appender-ref ref="trace-log" level="debug"/>
 <appender-ref ref="error-log" level="error"/>
-<appender-ref ref="console-log" level="debug"/>
+<appender-ref ref="console-log" level="info"/>
 </Root>
 
 </Loggers>

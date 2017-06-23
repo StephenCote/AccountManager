@@ -118,7 +118,9 @@ public class SecurityUtil {
 		if(use_singleton && digest != null) hash_algorithm = digest;
 		return digest;
 	}
-
+	public static String getDigestAsString(byte[] in_bytes, byte[] salt){
+		return new String(BinaryUtil.toBase64(getDigest(in_bytes,salt)));
+	}
 	public static byte[] getDigest(byte[] in_bytes, byte[] salt){
 		MessageDigest digest = getMessageDigest();
 		/// 2015/06/23 - Changed for CredentialType updated

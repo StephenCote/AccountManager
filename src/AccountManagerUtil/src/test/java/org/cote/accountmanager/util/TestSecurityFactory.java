@@ -59,7 +59,7 @@ public class TestSecurityFactory {
 		try {
 			
 			KeyGenerator kgen = KeyGenerator.getInstance(bean.getCipherKeySpec());
-			kgen.init(128);
+			kgen.init(bean.getCipherKeySize());
 
 			SecretKey secret_key = kgen.generateKey();
 			logger.info(bean.getSymmetricCipherKeySpec());
