@@ -62,6 +62,8 @@ import org.w3c.dom.Document;
 public class SecurityFactory {
 	public static final Logger logger = LogManager.getLogger(SecurityFactory.class);
 
+	/// 2017/06/22 - this fixed salt is largely deprecated since 2015/06, but there's still one reference needing removal
+	///
 	private final static byte[] defaultSalt = new byte[]{
 			110,41,-1,-64,-107,14,1,68,-127,-93,-110,-23,-73,-113,-98,-62
 	};
@@ -333,11 +335,12 @@ public class SecurityFactory {
 		try {
 			kgen = KeyGenerator.getInstance(bean.getCipherKeySpec());
 
-			logger.warn("Key generation size is static at 128");
+			//logger.warn("Key generation size is static at 128. Bean is set for: " + bean.getKeySize());
 			// TODO: Make key size configurable - 128 is only for dev/debug
 			//
-			kgen.init(128);
-
+			//kgen.init(128);
+			
+			kgen.init(bean.getCipherKeySize());
 			secret_key = kgen.generateKey();
 			bean.setSecretKey(secret_key);
 			bean.setCipherKey(secret_key.getEncoded());

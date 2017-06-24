@@ -107,6 +107,7 @@
     <simpleType name="NameEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="VAULT"></enumeration>
     		<enumeration value="TRAIT"></enumeration>
     		<enumeration value="LOCATION"></enumeration>
     		<enumeration value="EVENT"></enumeration>
@@ -384,6 +385,7 @@
     <simpleType name="AuditEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="VAULT"></enumeration>
     		<enumeration value="LOCATION"></enumeration>
     		<enumeration value="ORGANIZATION"></enumeration>
     		<enumeration value="TRAIT"></enumeration>

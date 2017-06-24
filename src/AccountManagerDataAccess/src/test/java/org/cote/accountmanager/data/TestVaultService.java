@@ -10,23 +10,183 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
+import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.VaultType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.DataUtil;
+import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 public class TestVaultService extends BaseDataAccessTest{
 	public static final Logger logger = LogManager.getLogger(TestVaultService.class);
 
 	private boolean resetVault = true;
+	
+	private VaultBean getCreateVault(UserType owner, String vaultName, CredentialType protectionCredential){
+		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
+		VaultBean vault =  service.loadVault("./target/VaultExp", vaultName, false);
+		if(vault == null){
+			vault = service.newVault(owner, "./target/VaultExp", vaultName);
+			if(service.createVault(vault, protectionCredential) == false){
+				vault = null;
+			}
+		}
+		return vault;
+	}
+	
+	private CredentialType getLooseCredential(String password){
+		CredentialType cred = new CredentialType();
+		cred.setCredentialType(CredentialEnumType.HASHED_PASSWORD);
+		cred.setCredential(password.getBytes());
+		return cred;
+	}
+	
+	@Test
+	public void TestVaultChangeCleanup(){
+		
+	}
+	/*
+	@Test
+	public void TestVault2Data(){
+		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
+		UserType vaultUser = getUser("QA Vault User", "password");
+		UserType vaultUser2 = getUser("QA Vault User 2", "password");
+		
+		/// Note about names and vaults - if you run a unit test with a static name and then clean out that temporary directory
+		/// then it will break parity with the database and the vault and everything it is meant to protect will be trashed
+		/// 
+		String testVaultName = "Vault QA Data Test 2";
+		VaultBean vault =  service.loadVault("./target/VaultExp", testVaultName, false);
+		if(vault == null){
+			vault = service.newVault(vaultUser, "./target/VaultExp", testVaultName);
+			boolean created = service.createVault(vault, null);
+			assertTrue("Failed to create vault", created);
+		}
+		assertNotNull("Vault is null",vault);
+		try {
+			service.initialize(vault, null);
+		} catch (ArgumentException | FactoryException e1) {
+			logger.error("Error", e1);
+		}
 
+		String dataName = "Vault Data - " + UUID.randomUUID().toString();
+		StringBuilder buff = new StringBuilder();
+		for(int i = 0; i < 250; i++) buff.append("This is the test data.  This is some of the data.  This is more of the data.  ");
+		DirectoryGroupType dataDir = null;
+		try {
+			dataDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vaultUser2, "Data", vaultUser2.getHomeDirectory(), vaultUser2.getOrganizationId());
+			DataType testData = service.newVaultData(vault, vaultUser2, dataName, dataDir, "text/plain", buff.toString().getBytes(), null);
+			boolean added = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(testData);
+			assertTrue("Failed to add data", added);
+
+		
+			DataType chkData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, dataDir);
+			assertNotNull("Data is null",chkData);
+			byte[] data = service.extractVaultData(vault, chkData);
+			assertTrue("Expected data", data != null && data.length > 0);
+			logger.info("Retrieved " + data.length);
+			
+			buff = new StringBuilder();
+			for(int i = 0; i < 250; i++) buff.append("This is the new data.  This is some of the new data.  This is more of the new data.  ");
+			service.setVaultBytes(vault, chkData, buff.toString().getBytes());
+			
+			boolean updated = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(chkData);
+			assertTrue("Failed to update data", updated);
+			
+			logger.info("Rechecking data restoration");
+			
+			chkData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, dataDir);
+			assertNotNull("Data is null",chkData);
+			data = service.extractVaultData(vault, chkData);
+			assertTrue("Expected data", data != null && data.length > 0);
+			logger.info("Retrieved " + data.length);
+			
+		} catch (FactoryException | ArgumentException | UnsupportedEncodingException | DataException e) {
+			logger.error("Error", e);
+		}
+		*/
+	@Test
+	public void TestVault2Setup(){
+		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
+		UserType vaultUser = getUser("QA Vault User", "password");
+		//UserType vaultUser2 = getUser("QA Vault User 2", "password");
+		
+		String testVaultName = "Vault - " + UUID.randomUUID().toString();
+		VaultBean vault = service.newVault(vaultUser, "./target/VaultExp", testVaultName);
+
+		
+	
+		CredentialType cred = new CredentialType();
+		cred.setCredentialType(CredentialEnumType.HASHED_PASSWORD);
+		cred.setCredential("password".getBytes());
+		assertNotNull("Vault is null",vault);
+		assertNotNull("Credential is null",cred);
+		
+		try {
+			service.initialize(vault, cred);
+		} catch (ArgumentException | FactoryException e1) {
+			logger.error("Error", e1);
+		}
+		//logger.info(VaultService.exportVault(vault));
+		
+		boolean created = service.createVault(vault, cred);
+		assertTrue("Failed to create vault", created);
+		
+		
+		SecurityBean key = null;
+		try {
+			key = service.getVaultKey(vault);
+		} catch (ArgumentException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		assertNotNull("Vault key was null", key);
+		
+		VaultBean chkVault = service.loadVault("./target/VaultExp", testVaultName, true);
+		assertNotNull("Failed to load vault", chkVault);
+		
+		try {
+			service.initialize(chkVault,cred);
+			key = null;
+			key = service.getVaultKey(chkVault);
+		} catch (ArgumentException | FactoryException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		assertNotNull("Check vault key was null", key);
+		
+		boolean newKey = false;
+		try {
+			newKey = service.newActiveKey(vault);
+		} catch (UnsupportedEncodingException | FactoryException | ArgumentException | DataException e) {
+			logger.error("Error",e);
+		}
+		assertTrue("Key is null", newKey);
+		assertNotNull("Key is null", vault.getActiveKeyId());
+		logger.info("Created active key : " + vault.getActiveKeyId());
+		
+		
+		
+		try {
+			service.deleteVault(vault);
+		} catch (ArgumentException | FactoryException e) {
+			logger.error("Error", e);
+		}
+		
+	}	
+
+	
+/*
 	@Test
 	public void TestVaultData(){
 		UserType qaUser = getUser("QA Vault User", "password");
@@ -139,6 +299,7 @@ public class TestVaultService extends BaseDataAccessTest{
 			logger.error("Error",e);
 		}
 	}
+	*/
 	/*
 	@Test
 	public void TestVaultActiveKey(){
