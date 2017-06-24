@@ -142,7 +142,7 @@ public class ConsoleMain {
 		CommandLineParser parser = new PosixParser();
 		try {
 			logger.debug("Setting up connection factory");
-			setupConnectionFactory(props);
+			ConnectionFactory.setupConnectionFactory(props);
 			logger.debug("Warming up factories");
 			long startWarmUp = System.currentTimeMillis();
 			Factories.warmUp();
@@ -374,22 +374,7 @@ public class ConsoleMain {
 		}
 	}
 	*/
-	public static void setupConnectionFactory(Properties props){
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName(props.getProperty("db.driver"));
-		cf.setUserName(props.getProperty("db.user"));
-		cf.setUserPassword(props.getProperty("db.password"));
-		cf.setUrl(props.getProperty("db.url"));
-		  try
-		    {
-		        Class.forName("org.postgresql.Driver");
-		    }
-		    catch(Throwable e)
-		    {
-		        logger.error("Error",e);
-		    }
-	}
+
 	public static void processAction(UserType user, CommandLine cmd){
 		if(cmd.hasOption("importData") && cmd.hasOption("path")){
 			if(cmd.hasOption("batchSize")) DataAction.setMaximumLoad(Integer.parseInt(cmd.getOptionValue("batchSize")));

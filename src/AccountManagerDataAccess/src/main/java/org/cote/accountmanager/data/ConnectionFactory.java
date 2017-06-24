@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -55,6 +56,23 @@ public class ConnectionFactory {
 			Singleton = new ConnectionFactory();
 		}
 		return Singleton;
+	}
+	
+	public static void setupConnectionFactory(Properties props){
+		ConnectionFactory cf = ConnectionFactory.getInstance();
+		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
+		cf.setDriverClassName(props.getProperty("db.driver"));
+		cf.setUserName(props.getProperty("db.user"));
+		cf.setUserPassword(props.getProperty("db.password"));
+		cf.setUrl(props.getProperty("db.url"));
+		  try
+		    {
+		        Class.forName("org.postgresql.Driver");
+		    }
+		    catch(Throwable e)
+		    {
+		        logger.error("Error",e);
+		    }
 	}
 	
 	public ConnectionFactory(){
