@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
@@ -61,6 +62,7 @@ import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AccountGroupType;
@@ -90,6 +92,8 @@ public class BaseService {
 	public static boolean enableExtendedAttributes = false;
 	private static boolean allowDataPointers = false;
 	private static boolean checkConfigDataPoint = false;
+	public static VaultBean contextVault = null;
+	public static VaultService contextVaultService = null;
 
 	protected static boolean isAllowDataPointers(HttpServletRequest request){
 		if(checkConfigDataPoint) return allowDataPointers;
