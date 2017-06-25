@@ -55,6 +55,12 @@ import org.cote.accountmanager.objects.types.UserStatusEnumType;
 
 public class FactoryDefaults {
 	
+	public static final String ROOT_USER_NAME = "Root";
+	public static final String ADMIN_USER_NAME = "Admin";
+	public static final String FEEDBACK_USER_NAME = "FeedbackUser";
+	public static final String VAULT_USER_NAME = "VaultUser";
+	public static final String DOCUMENT_CONTROL_USER_NAME = "Document Control";
+	
 	public static final Logger logger = LogManager.getLogger(FactoryDefaults.class);
 	
 	protected static String[] default_application_permissions = new String[]{
@@ -126,14 +132,14 @@ public class FactoryDefaults {
 		
 		AccountFactory aFact = Factories.getFactory(FactoryEnumType.ACCOUNT);
 		UserFactory uFact = Factories.getFactory(FactoryEnumType.USER);
-		AccountType root_account = aFact.getAccountByName("Root", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
+		AccountType root_account = aFact.getAccountByName(ROOT_USER_NAME, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
 		if(root_account == null){
-			root_account = aFact.newAccount(null,"Root", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()).getId(),Factories.getSystemOrganization().getId());
+			root_account = aFact.newAccount(null,ROOT_USER_NAME, AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()).getId(),Factories.getSystemOrganization().getId());
 			if (!aFact.add(root_account)) throw new FactoryException("Unable to add root account");
 	
-			UserType root_user = uFact.newUserForAccount("Root", root_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+			UserType root_user = uFact.newUserForAccount(ROOT_USER_NAME, root_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 			if (!uFact.add(root_user)) throw new FactoryException("Unable to add root user");
-			root_user = uFact.getByName("Root", root_account.getOrganizationId());
+			root_user = uFact.getByName(ROOT_USER_NAME, root_account.getOrganizationId());
 			if (root_user == null) throw new FactoryException("Failed to retrieve to add root user");
 			/// 2015/06/23 - New Credential System
 			/// I intentionally left the credential operation decoupled from object creation
@@ -169,13 +175,13 @@ public class FactoryDefaults {
 		}
 		// Create administration user
 		//
-		AccountType admin_account = aFact.newAccount(null,"Admin", AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, agroup.getId(),organization.getId());
+		AccountType admin_account = aFact.newAccount(null,ADMIN_USER_NAME, AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, agroup.getId(),organization.getId());
 		if (!aFact.add(admin_account)) throw new FactoryException("Unable to add admin account");
-		admin_account = aFact.getAccountByName("Admin", agroup);
+		admin_account = aFact.getAccountByName(ADMIN_USER_NAME, agroup);
 
-		UserType admin_user = uFact.newUserForAccount("Admin", admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		UserType admin_user = uFact.newUserForAccount(ADMIN_USER_NAME, admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (!uFact.add(admin_user)) throw new FactoryException("Unable to add admin user");
-		admin_user = uFact.getByName("Admin", organization.getId());
+		admin_user = uFact.getByName(ADMIN_USER_NAME, organization.getId());
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
 		///
@@ -184,12 +190,13 @@ public class FactoryDefaults {
 
 		// Create the document control user
 		//
-		UserType dc_user = uFact.newUserForAccount("Document Control", admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		UserType dc_user = uFact.newUserForAccount(DOCUMENT_CONTROL_USER_NAME, admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (uFact.add(dc_user) == false) return false;
-		dc_user = uFact.getByName("Document Control", organization.getId());
+		dc_user = uFact.getByName(DOCUMENT_CONTROL_USER_NAME, organization.getId());
 
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
+		/// TODO: Verify this user actually needs a credential
 		///
 		cred = CredentialService.newHashedPasswordCredential(dc_user, dc_user, UUID.randomUUID().toString(), true, false);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
@@ -198,7 +205,34 @@ public class FactoryDefaults {
 			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
 			return false;
 		}
+		
 
+		
+		/// Feedback user
+		///
+		UserType fb_user = uFact.newUserForAccount(FEEDBACK_USER_NAME, admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		if (uFact.add(fb_user) == false) return false;
+		fb_user = uFact.getByName(FEEDBACK_USER_NAME, organization.getId());
+		cred = CredentialService.newHashedPasswordCredential(fb_user, fb_user, UUID.randomUUID().toString(), true, false);
+		if(cred == null) throw new FactoryException("Failed to persist credential");
+		if(fb_user.getId() <= 0 || admin_user.getId() <= 0){
+			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
+			return false;
+		}
+		
+		/// Vault user
+		///
+		UserType vl_user = uFact.newUserForAccount(VAULT_USER_NAME, admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		if (uFact.add(vl_user) == false) return false;
+		vl_user = uFact.getByName(VAULT_USER_NAME, organization.getId());
+		cred = CredentialService.newHashedPasswordCredential(vl_user, vl_user, UUID.randomUUID().toString(), true, false);
+		if(cred == null) throw new FactoryException("Failed to persist credential");
+		if(vl_user.getId() <= 0 || admin_user.getId() <= 0){
+			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
+			return false;
+		}
+		
+		
 		// Create default permission sets
 		//
 		for (int i = 0; i < default_account_permissions.length; i++)
