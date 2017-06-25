@@ -223,7 +223,7 @@ import org.cote.accountmanager.util.ZipUtil;
 		
 		public VaultBean loadVault(String vaultBasePath, String vaultName, boolean isProtected){
 			VaultType chkV = new VaultType();
-			String path = vaultBasePath + File.separator + Hex.encodeHexString(vaultName.getBytes()) + "-" + chkV.getKeyPrefix() + (isProtected ? chkV.getKeyProtectedPrefix() : "") + chkV.getKeyExtension();
+			String path = vaultBasePath + File.separator + Hex.encodeHexString(SecurityUtil.getDigest(vaultName.getBytes(),new byte[0])) + "-" + chkV.getKeyPrefix() + (isProtected ? chkV.getKeyProtectedPrefix() : "") + chkV.getKeyExtension();
 			File f = new File(path);
 			if(!f.exists()){
 				logger.error("Vault file is not accessible: '" + path + "'");
@@ -291,8 +291,8 @@ import org.cote.accountmanager.util.ZipUtil;
 			vault.setExpiryDays(720);
 			vault.setCreated(CalendarUtil.getXmlGregorianCalendar(new Date()));
 			vault.setVaultAlias(vaultName.replaceAll("\\s", "").toLowerCase());
-			vault.setDn(sslUtil.getDefaultDN(vault.getVaultAlias()));
-			vault.setVaultNameHash(Hex.encodeHexString(vaultName.getBytes()));
+			if(sslUtil != null) vault.setDn(sslUtil.getDefaultDN(vault.getVaultAlias()));
+			vault.setVaultNameHash(Hex.encodeHexString(SecurityUtil.getDigest(vaultName.getBytes(),new byte[0])));
 			vault.setVaultKeyPath(vaultBasePath + File.separator + vault.getVaultNameHash() + "-" + vault.getKeyPrefix() + (vault.getProtected() ? vault.getKeyProtectedPrefix() : "") + vault.getKeyExtension());
 	
 			return vault;
@@ -585,7 +585,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			}
 
 			DirectoryGroupType local_imp_dir = getVaultInstanceGroup(vault);
-			
+			logger.info("Removing implementation group: " + (local_imp_dir == null ? "[null]" : local_imp_dir.getUrn()));
 			if (local_imp_dir != null && !((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteDirectoryGroup(local_imp_dir))
 			{
 				logger.warn("Unable to delete keys from vault directory");
@@ -593,9 +593,16 @@ import org.cote.accountmanager.util.ZipUtil;
 			DirectoryGroupType vaultGroup = getVaultGroup(vault);
 			if(vaultGroup != null){
 				DataType imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), true,vaultGroup);
+				logger.info("Removing implementation data: " + (imp_data == null ? "[null]" : imp_data.getUrn()));
 				if(imp_data != null && !((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).delete(imp_data)){
 					logger.warn("Unable to delete improvement key");
 				}
+				else if(imp_data == null){
+					logger.warn("Implementation data '" + vault.getVaultName() + "' in group " + vaultGroup.getUrn() + " could not be removed");
+				}
+			}
+			else{
+				logger.warn("Vault group is null");
 			}
 			
 			vault.setVaultKeyPath(null);
