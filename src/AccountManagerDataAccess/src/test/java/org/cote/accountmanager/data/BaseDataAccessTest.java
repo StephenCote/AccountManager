@@ -104,14 +104,7 @@ public class BaseDataAccessTest{
 			}
 		}
 		ConnectionFactory.setupConnectionFactory(testProperties);
-		/*
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName("org.postgresql.Driver");
-		cf.setUserName("devuser");
-		cf.setUserPassword("password");
-		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
-		*/
+
 		sessionId = UUID.randomUUID().toString();
 		sessionId2 = UUID.randomUUID().toString();
 		
