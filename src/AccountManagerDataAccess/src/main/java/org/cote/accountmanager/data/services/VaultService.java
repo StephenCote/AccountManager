@@ -37,6 +37,7 @@ package org.cote.accountmanager.data.services;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -56,11 +57,13 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
@@ -70,6 +73,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.VaultType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.DataUtil;
@@ -99,6 +103,7 @@ import org.cote.accountmanager.util.ZipUtil;
 		///
 		public static String exportVault(VaultType vault){
 			VaultType clone = new VaultType();
+			clone.setNameType(NameEnumType.VAULT);
 			clone.setInitialized(false);
 			clone.setActiveKeyId(vault.getActiveKeyId());
 			clone.setCreated(vault.getCreated());
@@ -130,12 +135,90 @@ import org.cote.accountmanager.util.ZipUtil;
 			String path = vault.getVaultPath() + "/certificates/" + (isPrivate ? "private" : "signed") + "/" + vault.getVaultAlias() + "." + (isPrivate ? "p12" : "cert");
 			return FileUtil.getFile(path);
 		}
+		
+		/// Only necessary if generating secondary certificate
+		///
 		public VaultService(String sslBin, String path){
 			sslBinary = sslBin;
 			sslPath = path + (path.endsWith("/") ? "" : "/");
 			
 			sslUtil = new OpenSSLUtil(sslBinary, sslPath);
 			sslUtil.configure();
+		}
+		
+		public VaultService(){
+			
+		}
+		
+		public CredentialType loadProtectedCredential(String filePath){
+			String fileDat = FileUtil.getFileAsString(filePath);
+			if(fileDat == null || fileDat.length() == 0){
+				logger.warn("File not found: " + filePath);
+				return null;
+			}
+			return JSONUtil.importObject(FileUtil.getFileAsString(filePath), CredentialType.class);
+		}
+		
+		/// Create an encrypted credential used to protect the private vault key
+		/// This credential is enciphered with a discrete secret key, stored in the database
+		///
+		public boolean createProtectedCredentialFile(UserType vaultOwner, String filePath, byte[] credential) throws ArgumentException, FactoryException{
+			
+
+			
+			((NameIdFactory)Factories.getFactory(FactoryEnumType.USER)).populate(vaultOwner);
+			
+			File f = new File(filePath);
+			if(f.exists()){
+				logger.error("File '" + filePath + "' already exists");
+				return false;
+			}
+			
+			CredentialType cred = new CredentialType();
+			cred.setNameType(NameEnumType.CREDENTIAL);
+			cred.setCredentialType(CredentialEnumType.ENCRYPTED_PASSWORD);
+			cred.setOrganizationPath(vaultOwner.getOrganizationPath());
+			cred.setOrganizationId(vaultOwner.getOrganizationId());
+			cred.setEnciphered(true);
+			cred.setOrganizationId(vaultOwner.getOrganizationId());
+
+			SecurityBean bean = KeyService.newPersonalSymmetricKey(vaultOwner, false);
+			
+			cred.setCredential(SecurityUtil.encipher(bean,credential));
+			cred.setKeyId(bean.getObjectId());
+			
+			if(FileUtil.emitFile(filePath, JSONUtil.exportObject(cred))){
+				logger.info("Created credential file '" + filePath + "'");
+			}
+			else{
+				logger.error("Failed to create credential file at '" + filePath + "'");
+				return false;
+			}
+
+			/// Test decipher the credential
+			///
+			CredentialType chkCred = JSONUtil.importObject(new String(FileUtil.getFile(filePath)), CredentialType.class);
+			if(chkCred == null){
+				logger.error("Failed check to read in credential file");
+				return false;
+			}
+			SecurityBean chkBean = KeyService.getSymmetricKeyByObjectId(cred.getKeyId(), cred.getOrganizationId());
+			if(chkBean == null){
+				logger.error("Failed check to load the referenced symmetric key");
+				return false;
+			}
+			byte[] chkCredBa = SecurityUtil.decipher(chkBean, chkCred.getCredential());
+			String chkCredVal = new String(chkCredBa);
+			if(chkCredVal == null || chkCredVal.length() == 0){
+				logger.error("Failed to decipher credential");
+				return false;
+			}
+			if(Arrays.equals(chkCredBa,credential) == false){
+				logger.error("Restored credential does not match the submitted credential.");
+				return false;
+			}
+			logger.info("Created credential at " + filePath);
+			return true;
 		}
 		
 		public VaultBean loadVault(String vaultBasePath, String vaultName, boolean isProtected){
@@ -215,6 +298,17 @@ import org.cote.accountmanager.util.ZipUtil;
 			return vault;
 		}
 		
+		private byte[] getProtectedCredentialValue(CredentialType credential){
+			if(credential.getCredentialType() == CredentialEnumType.ENCRYPTED_PASSWORD){
+				SecurityBean bean = KeyService.getSymmetricKeyByObjectId(credential.getObjectId(), credential.getOrganizationId());
+				if(bean == null){
+					return new byte[0];
+				}
+				return SecurityUtil.decipher(bean, credential.getCredential());
+			}
+			return credential.getCredential();
+		}
+		
 		public boolean changeVaultPassword(VaultBean vault, CredentialType currentCred, CredentialType newCred) throws ArgumentException
 		{
 
@@ -225,24 +319,25 @@ import org.cote.accountmanager.util.ZipUtil;
 			byte[] dec_config = SecurityUtil.decipher(org_sm,  vault.getCredential().getCredential());
 			CredentialType credSalt = getSalt(vault);
 			if(credSalt == null){
-				logger.info("Salt is null");
+				logger.error("Salt is null");
 				return false;
 			}
-			if(vault.getProtected()) dec_config = SecurityUtil.decipher(dec_config, new String(currentCred.getCredential()),credSalt.getSalt());
+			if(vault.getProtected()) dec_config = SecurityUtil.decipher(dec_config, new String(getProtectedCredentialValue(currentCred)),credSalt.getSalt());
 			if (dec_config.length == 0) throw new ArgumentException("Failed to decipher config");
 
 			if(newCred != null){
-				dec_config = SecurityUtil.encipher(dec_config, new String(newCred.getCredential()),credSalt.getSalt());
+				dec_config = SecurityUtil.encipher(dec_config, new String(getProtectedCredentialValue(newCred)),credSalt.getSalt());
 			}
 
 			// Encipher with product key
 			//
 			byte[] enc_private_key = SecurityUtil.encipher(org_sm, dec_config);
 			vault.getCredential().setCredential(enc_private_key);
-			
+			logger.info("Saving vault to '" + vault.getVaultKeyPath() + "'");
 			FileUtil.emitFile(vault.getVaultKeyPath(), exportVault(vault));
 
 			vault.setVaultKey(null);
+			setProtected(vault, newCred);
 
 			
 			if (getVaultKey(vault) == null){
@@ -303,7 +398,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			String in_password = null;
 			if(vault.getProtectedCredential() != null && (vault.getProtectedCredential().getCredentialType() == CredentialEnumType.ENCRYPTED_PASSWORD || vault.getProtectedCredential().getCredentialType() == CredentialEnumType.HASHED_PASSWORD)){
 				//in_password = new String(CredentialService.decryptCredential(credential));
-				in_password = new String(vault.getProtectedCredential().getCredential());
+				in_password = new String(getProtectedCredentialValue(vault.getProtectedCredential()));
 			}
 			
 			// If a password was specified, encrypt with password
@@ -481,7 +576,12 @@ import org.cote.accountmanager.util.ZipUtil;
 			}
 			else{
 				File vaultKeyFile = new File(vault.getVaultKeyPath());
-				if(vaultKeyFile.exists() && vaultKeyFile.delete() == false) logger.error("Unable to delete vault key file " + vault.getVaultKeyPath());
+				if(vaultKeyFile.exists()){
+					if(vaultKeyFile.delete() == false) logger.error("Unable to delete vault key file " + vault.getVaultKeyPath());
+				}
+				else{
+					logger.warn("Vault file " + vault.getVaultKeyPath() + " does not exist");
+				}
 			}
 
 			DirectoryGroupType local_imp_dir = getVaultInstanceGroup(vault);
@@ -584,7 +684,7 @@ import org.cote.accountmanager.util.ZipUtil;
 						if (vault.getProtected()){
 							logger.info("Deciphering private key with salt " + new String(credSalt.getSalt()));
 							
-							dec_config = SecurityUtil.decipher(dec_config, new String(vault.getProtectedCredential().getCredential()),credSalt.getSalt());
+							dec_config = SecurityUtil.decipher(dec_config, new String(getProtectedCredentialValue(vault.getProtectedCredential())),credSalt.getSalt());
 						}
 						if (dec_config.length == 0) return null;
 
@@ -747,6 +847,20 @@ import org.cote.accountmanager.util.ZipUtil;
 			return out_data;
 		}
 		
+		public List<String> listVaultsByOwner(UserType owner) throws FactoryException, ArgumentException{
+			VaultType vault = new VaultType();
+			((NameIdFactory)Factories.getFactory(FactoryEnumType.USER)).populate(owner);
+			vault.setServiceUser(owner);
+			/// Using the default group location ("~/.vault)
+			///
+			DirectoryGroupType dir = getVaultGroup(vault);
+			logger.info("List in parent: " + dir.getId());
+			List<BaseGroupType> groupList = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).listInParent("DATA", dir.getId(), 0L, 0, dir.getOrganizationId());
+			List<String> vaultNames = new ArrayList<>();
+			for(BaseGroupType group : groupList) vaultNames.add(group.getName());
+			return vaultNames;
+		}
+		
 		public List<SecurityBean> getCiphers(VaultBean vault){
 			List<SecurityBean> beans = new ArrayList<SecurityBean>();
 			
@@ -756,8 +870,6 @@ import org.cote.accountmanager.util.ZipUtil;
 			} catch (FactoryException | ArgumentException | DataException e) {
 				logger.error("Error",e);
 			}
-			
-			
 			return beans;
 		}
 		
