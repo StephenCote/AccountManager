@@ -12,10 +12,10 @@ call java -jar AccountManagerConsole.jar -generate -type POLICY -execute
 call java -jar AccountManagerConsole.jar -generate -type LIFECYCLE -execute
 echo ***** Creating default accounts *****
 call java -jar AccountManagerConsole.jar -addUser -adminPassword password -organization /Public -name steve -password password
-call java -jar AccountManagerConsole.jar -addUser -adminPassword password -organization /Public -name FeedbackUser -password password
-call java -jar AccountManagerConsole.jar -addUser -adminPassword password -organization /Accelerant/Rocket -name FeedbackUser -password password
+REM call java -jar AccountManagerConsole.jar -addUser -adminPassword password -organization /Public -name FeedbackUser -password password
+REM call java -jar AccountManagerConsole.jar -addUser -adminPassword password -organization /Accelerant/Rocket -name FeedbackUser -password password
 call java -jar AccountManagerConsole.jar -addUser -adminPassword password -organization /Development -name RocketQAUser -password password
-call java -jar AccountManagerConsole.jar -addUser -adminPassword password -organization /FirstContact -name FeedbackUser -password password
+REM call java -jar AccountManagerConsole.jar -addUser -adminPassword password -organization /FirstContact -name FeedbackUser -password password
 call java -jar AccountManagerConsole.jar -addUser -adminPassword password -organization /FirstContact -name "test@foo.bar" -password password
 cd ..\..\AccountManagerService
 echo ***** Configured! *****
