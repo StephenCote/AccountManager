@@ -17,10 +17,12 @@ import org.cote.accountmanager.data.services.ServiceUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.DataUtil;
+import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 public class TestDataAuthorization extends BaseDataAccessTest {
 	
@@ -31,7 +33,7 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 		UserType user = getUser("testuser1","password");
 		
 		SecurityBean bean = KeyService.getPrimarySymmetricKey(Factories.getDevelopmentOrganization().getId());
-		
+		//logger.info("Security Bean: " + JSONUtil.exportObject((SecurityType)bean));
 		try{
 			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, "CryptoData");
 			DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, dir.getId());
