@@ -1,5 +1,7 @@
 package org.cote.accountmanager.data.services;
 
+import java.io.UnsupportedEncodingException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
@@ -81,14 +83,23 @@ public class TypeSanitizer implements ITypeSanitizer{
 			if(d.getDetailsOnly()){
 				logger.error("Data is details only.  Was expecting full data");
 			}
-			if(d.getCompressed() || d.getPointer()){
+			if((BaseService.contextVault != null && d.getVaulted()) || d.getCompressed() || d.getPointer()){
 				/// Make a copy of the object so as to operate on the copy and not a cached copy from the factory
 				///
 				d = JAXBUtil.clone(DataType.class, d);
 				try {
-					byte[] data = DataUtil.getValue(d);
+					byte[] data = new byte[0];
+					if(BaseService.contextVault != null && d.getVaulted()){
+						try {
+							data = BaseService.contextVaultService.extractVaultData(BaseService.contextVault, d);
+						} catch (FactoryException | ArgumentException e) {
+							logger.error(e);
+						}
+					}
+					else{
+						data = DataUtil.getValue(d);
+					}
 					d.setCompressed(false);
-					//d.setPointer(false);
 					d.setDataBytesStore(data);
 					d.setReadDataBytes(false);
 					outObj = (T)d;
@@ -323,8 +334,17 @@ public class TypeSanitizer implements ITypeSanitizer{
 				new_rec.setMimeType(rbean.getMimeType());
 				
 				new_rec.setRating(rbean.getRating());
-	
-				DataUtil.setValue(new_rec, DataUtil.getValue(rbean));
+				if(BaseService.contextVault != null && rbean.getVaulted()){
+					rbean.setVaulted(false);
+					try {
+						BaseService.contextVaultService.setVaultBytes(BaseService.contextVault, new_rec, DataUtil.getValue(rbean));
+					} catch (UnsupportedEncodingException e) {
+						logger.error(e);
+					}
+				}
+				else{
+					DataUtil.setValue(new_rec, DataUtil.getValue(rbean));
+				}
 				if(rbean.getPointer() == true){
 					logger.error("Creating data pointers is forbidden for sanitized objects regardless of configuration");
 					return null;
