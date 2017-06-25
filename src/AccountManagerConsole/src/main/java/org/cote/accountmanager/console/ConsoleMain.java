@@ -86,12 +86,15 @@ public class ConsoleMain {
 		options.addOption("password",true,"AccountManager password");
 		options.addOption("identity", true, "Identity information");
 		options.addOption("credential", true, "Credential information");
+		options.addOption("vault", false, "Indicate actions related to vault activities");
 		options.addOption("importData",true,"Local path or file");
 		options.addOption("pointer",false,"Load data objects as filesystem pointers");
 		options.addOption("tag",false,"Apply the supplied tags");
 		options.addOption("thumbnail",false,"Generate thumbnails for the supplied path");
 		options.addOption("configureApi",false,"Apply the API Configuration");
 		options.addOption("file",true,"File reference");
+		options.addOption("create",false,"Bit used for specific create options (currently Vault)");
+		options.addOption("delete",false,"Bit used for specific delete options (currently Vault)");
 		options.addOption("batchSize",true,"Maximum data batch size");
 		options.addOption("patch",false,"Patch the current system");
 		options.addOption("reset",false,"Bit indicating a reset operation");
@@ -232,6 +235,22 @@ public class ConsoleMain {
 			else if(cmd.hasOption("configureApi") && cmd.hasOption("organization") && cmd.hasOption("file") && cmd.hasOption("identity")&& cmd.hasOption("credential")  && cmd.hasOption("adminPassword")){
 				//logger.info("Configure API");
 				ApiConfigAction.configureApi(cmd.getOptionValue("organization"),cmd.getOptionValue("adminPassword"),cmd.getOptionValue("file"),cmd.getOptionValue("identity"),cmd.getOptionValue("credential"));
+			}
+			else if(cmd.hasOption("organization") && cmd.hasOption("vault") && cmd.hasOption("name") && cmd.hasOption("path")){
+
+				if(cmd.hasOption("delete")){
+					VaultAction.deleteVault(cmd.getOptionValue("organization"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("name"), cmd.getOptionValue("path"));
+				}
+				else if(cmd.hasOption("create")){
+					if(cmd.hasOption("credential") && cmd.hasOption("file")){
+						VaultAction.configureVaultCredential(cmd.getOptionValue("organization"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("file"), cmd.getOptionValue("credential"));
+					}
+					VaultAction.createVault(cmd.getOptionValue("organization"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("name"), cmd.getOptionValue("path"),cmd.getOptionValue("file"));
+				}
+				else{
+					logger.info("Specify create or delete option");
+				}
+
 			}
 			else if (cmd.hasOption("openssl")){
 				String sslBinary = props.getProperty("ssl.binary");
