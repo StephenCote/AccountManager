@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +15,7 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
@@ -25,6 +28,7 @@ import org.cote.accountmanager.objects.VaultType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.DataUtil;
+import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 public class TestVaultService extends BaseDataAccessTest{
@@ -33,11 +37,22 @@ public class TestVaultService extends BaseDataAccessTest{
 	private boolean resetVault = true;
 	
 	private VaultBean getCreateVault(UserType owner, String vaultName, CredentialType protectionCredential){
+		return getCreateVault(owner, vaultName, "./target/VaultExp", protectionCredential);
+	}
+	private VaultBean getCreateVault(UserType owner, String vaultPath, String vaultName, CredentialType protectionCredential){
 		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
-		VaultBean vault =  service.loadVault("./target/VaultExp", vaultName, false);
+		VaultBean vault =  service.loadVault(vaultPath, vaultName, (protectionCredential != null ? true : false));
 		if(vault == null){
-			vault = service.newVault(owner, "./target/VaultExp", vaultName);
+			vault = service.newVault(owner, vaultPath, vaultName);
 			if(service.createVault(vault, protectionCredential) == false){
+				vault = null;
+			}
+		}
+		if(vault != null){
+			try {
+				service.initialize(vault, protectionCredential);
+			} catch (ArgumentException | FactoryException e) {
+				logger.error(e);
 				vault = null;
 			}
 		}
@@ -50,11 +65,72 @@ public class TestVaultService extends BaseDataAccessTest{
 		cred.setCredential(password.getBytes());
 		return cred;
 	}
+	private CredentialType getProtectedCredential(UserType owner, String filePath,String password){
+		VaultService service = new VaultService();
+		CredentialType cred = service.loadProtectedCredential(filePath);
+		try{
+			if(cred == null && service.createProtectedCredentialFile(owner, filePath, password.getBytes())){
+				 cred = service.loadProtectedCredential(filePath);
+			}
+		}
+		catch(ArgumentException | FactoryException e){
+			logger.error(e);
+		}
+		return cred;
+	}
 	
 	@Test
-	public void TestVaultChangeCleanup(){
+	public void TestProtectedCredential(){
+		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
+		UserType vaultUser4 = getUser("QA Vault User 4", "password");
+		CredentialType cred = getProtectedCredential(vaultUser4, "c:\\projects\\vault\\development.test.credential.json", "12345");
+		assertNotNull("Credential is null",cred);
+		String testVaultName = "Vault QA Data Test 4.1";
+		VaultBean vault1 = getCreateVault(vaultUser4, "c:\\projects\\vault",testVaultName, cred);
+		assertNotNull("Vault is null", vault1);
 		
+		/*
+		try {
+			service.deleteVault(vault1);
+		} catch (ArgumentException | FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
 	}
+	/*
+	@Test
+	public void TestVaultChangeCleanup(){
+
+		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
+		UserType vaultUser3 = getUser("QA Vault User 3", "password");
+		String testVaultName = "Vault QA Data Test 3 - " + UUID.randomUUID().toString();
+		VaultBean vault1 = getCreateVault(vaultUser3, testVaultName, getLooseCredential("password"));
+		assertNotNull("Vault is null - this may happen in a test if the working directory including the vault key is cleared, and the same vault is attempted to be created without first cleaning up the corresponding database keys", vault1);
+		boolean changed = false;
+		try {
+			changed = service.changeVaultPassword(vault1, getLooseCredential("password"), getLooseCredential("password1"));
+		} catch (ArgumentException e) {
+			logger.error(e);
+		}
+		assertTrue("Failed to change password", changed);
+		VaultBean vault11 = getCreateVault(vaultUser3, testVaultName, getLooseCredential("password2"));
+		assertNotNull("Vault is null - this may happen in a test if the working directory including the vault key is cleared, and the same vault is attempted to be created without first cleaning up the corresponding database keys", vault11);
+
+		List<String> vaults = new ArrayList<>();
+		try {
+			vaults = service.listVaultsByOwner(vaultUser3);
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		logger.info("Vault Count: " + vaults.size());
+		for(String vaultName : vaults){
+			logger.info("Vault: " + vaultName);
+		}
+
+	}
+	*/
+	
 	/*
 	@Test
 	public void TestVault2Data(){
@@ -115,6 +191,7 @@ public class TestVaultService extends BaseDataAccessTest{
 			logger.error("Error", e);
 		}
 		*/
+	/*
 	@Test
 	public void TestVault2Setup(){
 		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
@@ -185,7 +262,7 @@ public class TestVaultService extends BaseDataAccessTest{
 		
 	}	
 
-	
+	*/
 /*
 	@Test
 	public void TestVaultData(){
