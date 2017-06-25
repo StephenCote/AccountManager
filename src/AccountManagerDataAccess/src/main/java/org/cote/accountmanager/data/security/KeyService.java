@@ -15,12 +15,14 @@ import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.util.JSONUtil;
 
 public class KeyService {
 	public static final Logger logger = LogManager.getLogger(KeyService.class);
 
 	public static SecurityBean promote(SecurityType sec) throws ArgumentException{
 		SecurityBean bean = new SecurityBean();
+
 		bean.setAsymmetricCipherKeySpec(sec.getAsymmetricCipherKeySpec());
 		bean.setAsymmetricKeyId(sec.getAsymmetricKeyId());
 		bean.setCipherIV(sec.getCipherIV());
@@ -65,7 +67,7 @@ public class KeyService {
 			bean.setPrivateKey(null);
 		}
 		else if(bean.getCipherIV() != null && bean.getCipherIV().length > 0 && bean.getCipherKey() != null && bean.getCipherKey().length > 0){
-			sf.setSecretKey(bean, bean.getCipherIV(),  bean.getCipherKey(), false);
+			sf.setSecretKey(bean, bean.getCipherKey(),  bean.getCipherIV(), false);
 		}
 		return bean;
 	}
@@ -105,10 +107,7 @@ public class KeyService {
 		try {
 			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getByObjectId(id, organizationId);
 			if(sec != null) bean = promote(sec);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -120,10 +119,7 @@ public class KeyService {
 		try {
 			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getPrimaryOrganizationKey(organizationId);
 			if(sec != null) bean = promote(sec);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -135,10 +131,7 @@ public class KeyService {
 		try {
 			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getPrimaryPersonalKey(user);
 			if(sec != null) bean = promote(sec);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
