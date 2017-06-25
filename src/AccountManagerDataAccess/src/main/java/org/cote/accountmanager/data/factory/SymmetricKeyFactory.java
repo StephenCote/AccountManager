@@ -18,6 +18,7 @@ import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.util.JSONUtil;
 
 public class SymmetricKeyFactory extends NameIdFactory {
 	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.SYMMETRICKEY, SymmetricKeyFactory.class); }
@@ -130,6 +131,7 @@ public class SymmetricKeyFactory extends NameIdFactory {
 			new_cred.setCipherKey(rset.getBytes("cipherkey"));
 			new_cred.setCipherIV(rset.getBytes("cipheriv"));
 		}
+		//logger.info("Symmetric Key Read: " + JSONUtil.exportObject(new_cred));
 		return new_cred;
 	}
 	
