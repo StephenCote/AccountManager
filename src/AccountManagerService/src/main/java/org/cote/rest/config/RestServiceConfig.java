@@ -14,12 +14,17 @@ import javax.ws.rs.core.Context;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.beans.VaultBean;
+import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.DatabaseMaintenance;
 import org.cote.accountmanager.data.services.SessionDataMaintenance;
+import org.cote.accountmanager.data.services.VaultService;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
@@ -34,6 +39,7 @@ import org.glassfish.jersey.server.spi.Container;
 
 public class RestServiceConfig extends ResourceConfig{
 	private static final Logger logger = LogManager.getLogger(RestServiceConfig.class);
+	
 	public RestServiceConfig(@Context ServletContext servletContext){
 		ServiceUtil.useAccountManagerSession = false;
 		register(StartupHandler.class);
@@ -70,20 +76,7 @@ public class RestServiceConfig extends ResourceConfig{
 				e.printStackTrace();
 			}
             maintenanceThreads.clear();
-            /*
-            if(dbMaintenance != null){
-            	dbMaintenance.requestStop();
-            	dbMaintenance = null;
-            }
-            if(auditThread != null){
-            	auditThread.requestStop();
-            	auditThread = null;
-            }
-            if(sessionThread != null){
-            	sessionThread.requestStop();
-            	sessionThread = null;
-            }
-            */
+
         }
 
     	
@@ -164,20 +157,37 @@ public class RestServiceConfig extends ResourceConfig{
 					
 				}
 			}
-			/*
-			if(Boolean.parseBoolean(context.getInitParameter("maintenance.db.enable")) == true){
-				dbMaintenance = new DatabaseMaintenance();
-			}
-			
-			auditThread = new AuditDataMaintenance();
-			auditThread.setThreadDelay(10000);
-			
-			sessionThread = new SessionDataMaintenance();
-			*/
 		
 			BaseService.enableExtendedAttributes = Boolean.parseBoolean(context.getInitParameter("extended.attributes.enabled"));
 			logger.info("Extended attributes enabled: " + BaseService.enableExtendedAttributes);
 
+			
+			/// Set any default vault on the BaseService
+			///
+			String vaultName = context.getInitParameter("vault.name");
+			String vaultPath = context.getInitParameter("vault.path");
+			String vaultCredential = context.getInitParameter("vault.credential");
+			
+			if(vaultName != null && vaultPath != null && vaultCredential != null){
+				logger.info("Initializing vault '" + vaultName + "'");
+				VaultService service = new VaultService();
+				VaultBean vault = service.loadVault(vaultPath, vaultName, true);
+				CredentialType cred = service.loadProtectedCredential(vaultCredential);
+				if(cred != null && vault != null){
+					try {
+						service.initialize(vault, cred);
+						BaseService.contextVault = vault;
+						BaseService.contextVaultService = service;
+						logger.info("Initialized vault");
+					} catch (ArgumentException | FactoryException e) {
+						logger.error(e);
+					}
+				}
+				else{
+					logger.error("Failed to initialize vault from " + vaultPath + " or credential from " + vaultCredential);
+				}
+			}
+			
 			String roleAuth = context.getInitParameter("amauthrole");
 			if(roleAuth != null && roleAuth.length() > 0){
 				AM5LoginModule.setAuthenticatedRole(roleAuth);

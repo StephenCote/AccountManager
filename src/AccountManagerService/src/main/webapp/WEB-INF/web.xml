@@ -92,9 +92,36 @@
     <param-value>comp/env/tomcat/datasources/postgresDS</param-value>
   </context-param>
   
+    <context-param>
+    <description>OpenSSL Binary</description>
+    <param-name>ssl.binary</param-name>
+    <param-value>C:/Projects/Tools/OpenSSL-Win64/bin/openssl.exe</param-value>
+  </context-param>
+
+    <context-param>
+    <description>SSL CA Path</description>
+    <param-name>ssl.ca.path</param-name>
+    <param-value>c:/Projects/ssl</param-value>
+  </context-param>
+
+    <context-param>
+    <description>Vault Path</description>
+    <param-name>vault.path</param-name>
+    <param-value>c:/Projects/vault</param-value>
+  </context-param>
   
+    <context-param>
+    <description>Vault Name</description>
+    <param-name>vault.name</param-name>
+    <param-value>Development Vault 1</param-value>
+  </context-param>
 
-
+  <context-param>
+    <description>Vault Credential</description>
+    <param-name>vault.credential</param-name>
+    <param-value>c:/Projects/vault/credential.json</param-value>
+  </context-param>
+  
   <context-param>
     <description>Restrict Image Size</description>
     <param-name>image.restrict.size</param-name>
