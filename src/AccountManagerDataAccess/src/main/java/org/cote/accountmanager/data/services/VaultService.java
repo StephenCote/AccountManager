@@ -27,10 +27,13 @@ package org.cote.accountmanager.data.services;
  * Refactor TODO:
  * 1) (done) Replace original single-config implementation with variable config
  * 2) Add by-owner services to more easily find/associate vaults with users, to simplify implementation
+ *    i) note: The vault isn't the data, it's the key, so to find the vault doesn't imply accessing or discovering anything protected by the vault, but to see the vault itself - this allows one party to encrypt data that only the second party can read (not really a key exchange, just public key discovery)
  * 3) Refactor getVaultKey(VaultType ...) into an optional service call, such that one instance may defer to a second instance for the cipher operations
  *    i) this would allow an arrangement where the public and cipher keys are in the database, and the vault private key is only on designated nodes
  *    ii) A whole separate instance (including database) would be possible with a registration/key-exchange, where the same database level operations are performed in the registrant and registrar, with the private key held outside the database by the registrar
  *    iii) Which basically makes item (ii) into a simplified HCM 
+ * 4) Add migration/move option that updates both the file- and db- persisted vault meta data.  This meta data is used more easily find the vault key.
+ *    ii) Note: Optionally encipher the key path because at the moment it is in plaintext.
  */
 
 
@@ -156,7 +159,11 @@ import org.cote.accountmanager.util.ZipUtil;
 				logger.warn("File not found: " + filePath);
 				return null;
 			}
-			return JSONUtil.importObject(FileUtil.getFileAsString(filePath), CredentialType.class);
+			CredentialType outCred = JSONUtil.importObject(FileUtil.getFileAsString(filePath), CredentialType.class);
+			if(outCred == null || outCred.getCredential().length == 0){
+				logger.error("Credential was not successfully restored");
+			}
+			return outCred;
 		}
 		
 		/// Create an encrypted credential used to protect the private vault key
@@ -226,7 +233,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			String path = vaultBasePath + File.separator + Hex.encodeHexString(SecurityUtil.getDigest(vaultName.getBytes(),new byte[0])) + "-" + chkV.getKeyPrefix() + (isProtected ? chkV.getKeyProtectedPrefix() : "") + chkV.getKeyExtension();
 			File f = new File(path);
 			if(!f.exists()){
-				logger.error("Vault file is not accessible: '" + path + "'");
+				logger.warn("Vault file is not accessible: '" + path + "'");
 				return null;
 			}
 			String content = FileUtil.getFileAsString(f);
@@ -300,7 +307,7 @@ import org.cote.accountmanager.util.ZipUtil;
 		
 		private byte[] getProtectedCredentialValue(CredentialType credential){
 			if(credential.getCredentialType() == CredentialEnumType.ENCRYPTED_PASSWORD){
-				SecurityBean bean = KeyService.getSymmetricKeyByObjectId(credential.getObjectId(), credential.getOrganizationId());
+				SecurityBean bean = KeyService.getSymmetricKeyByObjectId(credential.getKeyId(), credential.getOrganizationId());
 				if(bean == null){
 					return new byte[0];
 				}
@@ -422,7 +429,29 @@ import org.cote.accountmanager.util.ZipUtil;
 			imp_data.setName(vault.getVaultName());
 			imp_data.setDescription("Vault public key for node/cluster");
 			imp_data.setMimeType("text/xml");
-			DataUtil.setValue(imp_data, public_key_config);
+			
+			/// Use promote to clone the vault. The private key is set on the vault below, and this public copy will contain the public key
+			/// This also leaves a copy of relevent meta data in the database so configuration to find the other configuration isn't needed
+			/// The main challenge being solved is, given a vault id, make it straightforward to find the corresponding offline configuration for that id
+			/// By using the vault object vs. the key itself, it makes the credentialtype variable, and therefore easier to swap out in the future,
+			/// Such as for certificates, or any other desired cryptograpic configuration that is desired
+			///
+			
+			VaultBean pubVault = newVault(vault.getServiceUser(), vault.getVaultPath(),vault.getVaultName());
+			
+			pubVault.setHaveVaultKey(true);
+			CredentialType pubVaultCred = new CredentialType();
+			pubVaultCred.setNameType(NameEnumType.CREDENTIAL);
+			pubVaultCred.setEnciphered(true);
+			pubVaultCred.setCredentialType(CredentialEnumType.KEY);
+			pubVaultCred.setCredential(public_key_config);
+			pubVaultCred.setCreatedDate(pubVault.getCreated());
+			
+			pubVault.setCredential(pubVaultCred);
+			pubVault.setHaveCredential(true);
+			DataUtil.setValue(imp_data, exportVault(pubVault).getBytes());
+			
+			//DataUtil.setValue(imp_data, public_key_config);
 
 			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(imp_data);
 			imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), imp_dir);
@@ -558,7 +587,7 @@ import org.cote.accountmanager.util.ZipUtil;
 			}
 			vault.setInitialized(true);
 		}
-		
+	
 		public DirectoryGroupType getVaultGroup(VaultType vault) throws FactoryException, ArgumentException{
 			return ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(vault.getVaultGroupName(), vault.getServiceUser().getHomeDirectory(), vault.getServiceUser().getOrganizationId());
 		}
@@ -623,10 +652,16 @@ import org.cote.accountmanager.util.ZipUtil;
 				logger.error("Vault implementation data is null");
 				return false;
 			}
+			
+			VaultType pubVault = JSONUtil.importObject(new String(DataUtil.getValue(imp_data)), VaultType.class);
+			if(pubVault == null){
+				logger.error("Cannot restore public vault");
+				return false;
+			}
 
 			// Import the key, and specify that the DES key is encrypted
 			//
-			SecurityBean sm = SecurityFactory.getSecurityFactory().createSecurityBean(DataUtil.getValue(imp_data), true);
+			SecurityBean sm = SecurityFactory.getSecurityFactory().createSecurityBean(pubVault.getCredential().getCredential(), true);
 			if (sm == null){
 				logger.error("SecurityBean for Vault implementation is null");
 				return false;
@@ -689,8 +724,8 @@ import org.cote.accountmanager.util.ZipUtil;
 							return null;
 						}
 						if (vault.getProtected()){
-							logger.info("Deciphering private key with salt " + new String(credSalt.getSalt()));
-							
+							//logger.info("Deciphering private key with salt " + new String(credSalt.getSalt()));
+							//logger.warn("Check Pwd: " + new String(getProtectedCredentialValue(vault.getProtectedCredential())) + " / Salt = " + credSalt.getSalt());
 							dec_config = SecurityUtil.decipher(dec_config, new String(getProtectedCredentialValue(vault.getProtectedCredential())),credSalt.getSalt());
 						}
 						if (dec_config.length == 0) return null;
@@ -854,7 +889,12 @@ import org.cote.accountmanager.util.ZipUtil;
 			return out_data;
 		}
 		
-		public List<String> listVaultsByOwner(UserType owner) throws FactoryException, ArgumentException{
+		/// return a list of the PUBLIC vault configurations
+		/// These have the same data as the PRIVATE configuration, with the exception of which key is held
+		/// 
+
+		
+		public List<VaultType> listVaultsByOwner(UserType owner) throws FactoryException, ArgumentException, DataException{
 			VaultType vault = new VaultType();
 			((NameIdFactory)Factories.getFactory(FactoryEnumType.USER)).populate(owner);
 			vault.setServiceUser(owner);
@@ -862,11 +902,18 @@ import org.cote.accountmanager.util.ZipUtil;
 			///
 			DirectoryGroupType dir = getVaultGroup(vault);
 			logger.info("List in parent: " + dir.getId());
-			List<BaseGroupType> groupList = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).listInParent("DATA", dir.getId(), 0L, 0, dir.getOrganizationId());
-			List<String> vaultNames = new ArrayList<>();
-			for(BaseGroupType group : groupList) vaultNames.add(group.getName());
-			return vaultNames;
+			//List<BaseGroupType> groupList = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).listInParent("DATA", dir.getId(), 0L, 0, dir.getOrganizationId());
+			List<DataType> dataList = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(dir, false, 0L, 0, owner.getOrganizationId());
+			
+			List<VaultType> vaults = new ArrayList<>();
+			for(DataType data : dataList){
+				vaults.add(JSONUtil.importObject(DataUtil.getValueString(data), VaultType.class));
+			}
+			//for(BaseGroupType group : groupList) vaultNames.add(group.getName());
+			return vaults;
 		}
+		
+
 		
 		public List<SecurityBean> getCiphers(VaultBean vault){
 			List<SecurityBean> beans = new ArrayList<SecurityBean>();
