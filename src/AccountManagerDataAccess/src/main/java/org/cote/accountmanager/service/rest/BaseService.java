@@ -92,9 +92,12 @@ public class BaseService {
 	public static boolean enableExtendedAttributes = false;
 	private static boolean allowDataPointers = false;
 	private static boolean checkConfigDataPoint = false;
+	
+	/// TODO: Refactor to use the vaultId vs a single configured instance
+	/// Leaving in place for the moment
 	public static VaultBean contextVault = null;
 	public static VaultService contextVaultService = null;
-
+	
 	protected static boolean isAllowDataPointers(HttpServletRequest request){
 		if(checkConfigDataPoint) return allowDataPointers;
 		checkConfigDataPoint = true;
@@ -249,14 +252,14 @@ public class BaseService {
 		return Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 		
 	}
-	private static <T> T getByObjectId(AuditEnumType type, String id, long organizationId) throws ArgumentException, FactoryException {
+	private static <T> T getByObjectId(AuditEnumType type, UserType user, String id, long organizationId) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
 		T out_obj = factory.getByObjectId(id, organizationId);
 		
 		if(out_obj == null) return null;
-		return postFetchObject(type, out_obj);
+		return postFetchObject(type, user, out_obj);
 	}
-	private static <T> T postFetchObject(AuditEnumType type, T obj) throws ArgumentException, FactoryException{
+	private static <T> T postFetchObject(AuditEnumType type, UserType user, T obj) throws ArgumentException, FactoryException{
 		populate(type, obj);
 		denormalize(obj);
 
@@ -270,18 +273,18 @@ public class BaseService {
 			Factories.getAttributeFactory().populateAttributes((NameIdType)obj);
 		}
 		if(sanitizer.usePostFetch(type, obj)){
-			obj = sanitizer.postFetch(type, obj);
+			obj = sanitizer.postFetch(type, user, obj);
 		}
 
 		return obj;		
 	}
-	private static <T> T getById(AuditEnumType type, long id, long organizationId) throws ArgumentException, FactoryException {
+	private static <T> T getById(AuditEnumType type, UserType user, long id, long organizationId) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
 		T out_obj = factory.getById(id, organizationId);
 		
 		if(out_obj == null) return null;
 		
-		return postFetchObject(type, out_obj);
+		return postFetchObject(type, user, out_obj);
 	}
 	private static <T> T getByNameInParent(AuditEnumType type, String name, String otype, NameIdType parent) throws ArgumentException, FactoryException {
 		
@@ -306,7 +309,7 @@ public class BaseService {
 	}
 	
 	
-	private static <T> T getByNameInGroup(AuditEnumType type, String name, DirectoryGroupType group) throws ArgumentException, FactoryException {
+	private static <T> T getByNameInGroup(AuditEnumType type, UserType user, String name, DirectoryGroupType group) throws ArgumentException, FactoryException {
 		
 		T out_obj = null;
 		INameIdFactory iFact = getFactory(type);
@@ -319,7 +322,7 @@ public class BaseService {
 				logger.error("Data '" + name + "' is null");
 				return out_obj;
 			}
-			out_obj = postFetchObject(type, out_obj);
+			out_obj = postFetchObject(type, user, out_obj);
 		}
 		
 		if(out_obj != null){
@@ -712,7 +715,7 @@ public class BaseService {
 		
 		try {
 			
-			NameIdType dirType = getByObjectId(type,id, user.getOrganizationId());
+			NameIdType dirType = getByObjectId(type,user, id, user.getOrganizationId());
 			if(dirType == null){
 				AuditService.denyResult(audit, "#" + id + " (" + type + ") doesn't exist in organization " + user.getOrganizationId());
 				return null;
@@ -749,7 +752,7 @@ public class BaseService {
 		
 		try {
 			
-			NameIdType dirType = getById(type,id, user.getOrganizationId());
+			NameIdType dirType = getById(type, user, id, user.getOrganizationId());
 			if(dirType == null){
 				AuditService.denyResult(audit, "#" + id + " (" + type + ") doesn't exist in organization " + user.getOrganizationId());
 				return null;
@@ -833,14 +836,14 @@ public class BaseService {
 		}
 		try {
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir);
-			out_obj = getByNameInGroup(type, name, dir);
+			out_obj = getByNameInGroup(type, user, name, dir);
 			if(out_obj == null){
 				AuditService.denyResult(audit, "'" + name + "' doesn't exist");
 				return null;
 			}
 			AuditService.targetAudit(audit, type, ((NameIdType)out_obj).getUrn());
 			if(canViewType(type, user, (NameIdType)out_obj)){
-				if(((NameIdType)out_obj).getNameType().equals(NameEnumType.DATA) && ((DataType)out_obj).getPointer() && isAllowDataPointers(request) == false){
+				if(((NameIdType)out_obj).getNameType().equals(NameEnumType.DATA) && ((DataType)out_obj).getPointer() && request != null && isAllowDataPointers(request) == false){
 					AuditService.denyResult(audit, name + " is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
 					out_obj = null;
 				}

@@ -15,6 +15,6 @@ public interface ITypeSanitizer {
 	public <T> boolean add(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException;
 	public <T> boolean delete(AuditEnumType type, T object) throws FactoryException, ArgumentException;
 	public <T> boolean update(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException;
-	public <T> T postFetch(AuditEnumType type, T object);
+	public <T> T postFetch(AuditEnumType type, UserType user, T object);
 
 }
