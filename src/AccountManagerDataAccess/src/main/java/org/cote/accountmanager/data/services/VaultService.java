@@ -26,7 +26,7 @@ package org.cote.accountmanager.data.services;
 /*
  * Refactor TODO:
  * 1) (done) Replace original single-config implementation with variable config
- * 2) Add by-owner services to more easily find/associate vaults with users, to simplify implementation
+ * 2) (in progress) Add by-owner services to more easily find/associate vaults with users, to simplify implementation
  *    i) note: The vault isn't the data, it's the key, so to find the vault doesn't imply accessing or discovering anything protected by the vault, but to see the vault itself - this allows one party to encrypt data that only the second party can read (not really a key exchange, just public key discovery)
  * 3) Refactor getVaultKey(VaultType ...) into an optional service call, such that one instance may defer to a second instance for the cipher operations
  *    i) this would allow an arrangement where the public and cipher keys are in the database, and the vault private key is only on designated nodes
@@ -34,6 +34,8 @@ package org.cote.accountmanager.data.services;
  *    iii) Which basically makes item (ii) into a simplified HCM 
  * 4) Add migration/move option that updates both the file- and db- persisted vault meta data.  This meta data is used more easily find the vault key.
  *    ii) Note: Optionally encipher the key path because at the moment it is in plaintext.
+ * 5) Add audit
+ * 6) Make vault access contingent on readability
  */
 
 
@@ -64,8 +66,10 @@ import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
+import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.factory.SecurityFactory;
+import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
@@ -74,10 +78,13 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.VaultType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
+import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.FileUtil;
@@ -102,9 +109,11 @@ public class VaultService
 	private OpenSSLUtil sslUtil = null;
 	private boolean generateCertificates = false;
 	
+	private static Map<String,VaultBean> cacheByUrn = new HashMap<>();
+	
 	/// export a version of the vault that does not include exposed (aka unencrypted) information that should be protected
 	///
-	public static String exportVault(VaultType vault){
+	public String exportVault(VaultType vault){
 		VaultType clone = new VaultType();
 		clone.setNameType(NameEnumType.VAULT);
 		clone.setInitialized(false);
@@ -124,6 +133,7 @@ public class VaultService
 		clone.setVaultAlias(vault.getVaultAlias());
 		clone.setVaultGroupName(vault.getVaultGroupName());
 		clone.setVaultGroupUrn(vault.getVaultGroupUrn());
+		clone.setVaultDataUrn(vault.getVaultDataUrn());
 		clone.setVaultKeyPath(vault.getVaultKeyPath());
 		clone.setVaultName(vault.getVaultName());
 		clone.setVaultNameHash(vault.getVaultNameHash());
@@ -132,6 +142,7 @@ public class VaultService
 		clone.setVaultPath(vault.getVaultPath());
 		clone.setCredential(vault.getCredential());
 		clone.setVaultKey(null);
+		clone.setProtectedCredentialPath(vault.getProtectedCredentialPath());
 		return JSONUtil.exportObject(clone);
 	}
 
@@ -275,12 +286,14 @@ public class VaultService
 		vaultb.setVaultAlias(vault.getVaultAlias());
 		vaultb.setVaultGroupName(vault.getVaultGroupName());
 		vaultb.setVaultGroupUrn(vault.getVaultGroupUrn());
+		vaultb.setVaultDataUrn(vault.getVaultDataUrn());
 		vaultb.setVaultKey(vault.getVaultKey());
 		vaultb.setVaultKeyPath(vault.getVaultKeyPath());
 		vaultb.setVaultName(vault.getVaultName());
 		vaultb.setVaultNameHash(vault.getVaultNameHash());
 		vaultb.setVaultPath(vault.getVaultPath());
 		vaultb.setHaveVaultKey(vault.getHaveVaultKey());
+		vaultb.setProtectedCredentialPath(vault.getProtectedCredentialPath());
 		return vaultb;
 	}
 	
@@ -288,18 +301,17 @@ public class VaultService
 		VaultBean vault = new VaultBean();
 		vault.setNameType(NameEnumType.VAULT);
 		vault.setObjectId(UUID.randomUUID().toString());
+		vault.setServiceUser(serviceUser);
 		vault.setServiceUserUrn(serviceUser.getUrn());
 		vault.setOrganizationPath(serviceUser.getOrganizationPath());
-		vault.setVaultPath(vaultBasePath);
-		vault.setVaultName(vaultName);
-		vault.setServiceUser(serviceUser);
+		setVaultPath(vault,vaultBasePath);
+		vault.setVaultName(vaultName);		vault.setServiceUser(serviceUser);
 		vault.setExpiryDays(720);
 		vault.setCreated(CalendarUtil.getXmlGregorianCalendar(new Date()));
 		vault.setVaultAlias(vaultName.replaceAll("\\s", "").toLowerCase());
 		if(sslUtil != null) vault.setDn(sslUtil.getDefaultDN(vault.getVaultAlias()));
 		vault.setVaultNameHash(Hex.encodeHexString(SecurityUtil.getDigest(vaultName.getBytes(),new byte[0])));
-		vault.setVaultKeyPath(vaultBasePath + File.separator + vault.getVaultNameHash() + "-" + vault.getKeyPrefix() + (vault.getProtected() ? vault.getKeyProtectedPrefix() : "") + vault.getKeyExtension());
-
+		setVaultKeyPath(vault);
 		return vault;
 	}
 	
@@ -339,7 +351,7 @@ public class VaultService
 		byte[] enc_private_key = SecurityUtil.encipher(org_sm, dec_config);
 		vault.getCredential().setCredential(enc_private_key);
 		logger.info("Saving vault to '" + vault.getVaultKeyPath() + "'");
-		FileUtil.emitFile(vault.getVaultKeyPath(), exportVault(vault));
+		FileUtil.emitFile(new String(SecurityUtil.decipher(org_sm,vault.getVaultKeyPath())), exportVault(vault));
 
 		vault.setVaultKey(null);
 		setProtected(vault, newCred);
@@ -352,20 +364,61 @@ public class VaultService
 		return true;
 	}
 	
+	private void setVaultPath(VaultType vault, String path){
+		SecurityBean org_sm = KeyService.getPrimarySymmetricKey(vault.getServiceUser().getOrganizationId());
+		vault.setVaultPath(SecurityUtil.encipher(org_sm, path.getBytes()));
+	}
+	
+	private String getVaultPath(VaultType vault){
+		SecurityBean org_sm = KeyService.getPrimarySymmetricKey(vault.getServiceUser().getOrganizationId());
+		return new String(SecurityUtil.decipher(org_sm, vault.getVaultPath()));
+	}
+	
+	private void setVaultKeyPath(VaultType vault){
+		SecurityBean org_sm = KeyService.getPrimarySymmetricKey(vault.getServiceUser().getOrganizationId());
+		String path = getVaultPath(vault) + File.separator + vault.getVaultNameHash() + "-" + vault.getKeyPrefix() + (vault.getProtected() ? vault.getKeyProtectedPrefix() : "") + vault.getKeyExtension();
+		vault.setVaultKeyPath(SecurityUtil.encipher(org_sm, path.getBytes()));
+	}
+	
+	private String getVaultKeyPath(VaultType vault){
+		if(vault.getServiceUser() == null){
+			logger.error("Vault is not properly initialized");
+			return null;
+		}
+		SecurityBean org_sm = KeyService.getPrimarySymmetricKey(vault.getServiceUser().getOrganizationId());
+		return new String(SecurityUtil.decipher(org_sm, vault.getVaultKeyPath()));
+
+	}
+	
+	public void setProtectedCredentialPath(VaultType vault, String path){
+		SecurityBean org_sm = KeyService.getPrimarySymmetricKey(vault.getServiceUser().getOrganizationId());
+		vault.setProtectedCredentialPath(SecurityUtil.encipher(org_sm, path.getBytes()));
+	}
+	
+	private String getProtectedCredentialPath(VaultType vault){
+		SecurityBean org_sm = KeyService.getPrimarySymmetricKey(vault.getServiceUser().getOrganizationId());
+		return new String(SecurityUtil.decipher(org_sm, vault.getProtectedCredentialPath()));
+
+	}
+	
 	public boolean createVault(VaultBean vault, CredentialType credential){
 		try{
 		if (vault.getHaveVaultKey()== true){
 			logger.info("Vault key already exists for " + vault.getVaultName());
 			return true;
 		}
-		File vaultFile = new File(vault.getVaultKeyPath());
+
+
+		
+		setProtected(vault, credential);
+		setVaultKeyPath(vault);
+		String vaultKeyPath = getVaultKeyPath(vault);
+		File vaultFile = new File(vaultKeyPath);
 		if (vaultFile.exists() == true){
 			logger.error("Vault Key Path already exists: " + vault.getVaultKeyPath());
 			return false;
 		}
-		
-		setProtected(vault, credential);
-		vault.setVaultKeyPath(vault.getVaultPath() + File.separator + vault.getVaultNameHash() + "-" + vault.getKeyPrefix() + (vault.getProtected() ? vault.getKeyProtectedPrefix() : "") + vault.getKeyExtension());
+		//vault.setVaultKeyPath(vault.getVaultPath() + File.separator + vault.getVaultNameHash() + "-" + vault.getKeyPrefix() + (vault.getProtected() ? vault.getKeyProtectedPrefix() : "") + vault.getKeyExtension());
 
 		DirectoryGroupType imp_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vault.getServiceUser(), vault.getVaultGroupName(), vault.getServiceUser().getHomeDirectory(), vault.getServiceUser().getOrganizationId());
 
@@ -410,7 +463,6 @@ public class VaultService
 		//
 		if (vault.getProtected() && in_password != null && in_password.length() > 0)
 		{
-			logger.info("Private key config: " + private_key_config.length + " with salt " + new String(credSalt.getSalt()));
 			private_key_config = SecurityUtil.encipher(private_key_config, in_password, credSalt.getSalt()); 
 		}
 
@@ -435,9 +487,10 @@ public class VaultService
 		/// Such as for certificates, or any other desired cryptograpic configuration that is desired
 		///
 		
-		VaultBean pubVault = newVault(vault.getServiceUser(), vault.getVaultPath(),vault.getVaultName());
+		VaultBean pubVault = newVault(vault.getServiceUser(), getVaultPath(vault),vault.getVaultName());
 		
 		pubVault.setHaveVaultKey(true);
+		pubVault.setProtectedCredentialPath(vault.getProtectedCredentialPath());
 		CredentialType pubVaultCred = new CredentialType();
 		pubVaultCred.setNameType(NameEnumType.CREDENTIAL);
 		pubVaultCred.setEnciphered(true);
@@ -446,7 +499,10 @@ public class VaultService
 		pubVaultCred.setCreatedDate(pubVault.getCreated());
 		
 		pubVault.setCredential(pubVaultCred);
+		pubVault.setProtected(vault.getProtected());
 		pubVault.setHaveCredential(true);
+		pubVault.setVaultDataUrn(UrnUtil.getUrn(imp_data));
+		vault.setVaultDataUrn(pubVault.getVaultDataUrn());
 		DataUtil.setValue(imp_data, exportVault(pubVault).getBytes());
 		
 		//DataUtil.setValue(imp_data, public_key_config);
@@ -483,7 +539,7 @@ public class VaultService
 		vault.setCredential(vaultCred);
 		vault.setHaveCredential(true);
 		vault.setVaultKeyBean(sm);
-		FileUtil.emitFile(vault.getVaultKeyPath(), exportVault(vault));
+		FileUtil.emitFile(vaultKeyPath, exportVault(vault));
 
 
 		}
@@ -493,8 +549,8 @@ public class VaultService
 		return true;
 	}
 	
-	public static byte[] getCertificate(VaultType vault, boolean isPrivate){
-		String path = vault.getVaultPath() + "/certificates/" + (isPrivate ? "private" : "signed") + "/" + vault.getVaultAlias() + "." + (isPrivate ? "p12" : "cert");
+	public byte[] getCertificate(VaultType vault, boolean isPrivate){
+		String path = getVaultPath(vault) + "/certificates/" + (isPrivate ? "private" : "signed") + "/" + vault.getVaultAlias() + "." + (isPrivate ? "p12" : "cert");
 		return FileUtil.getFile(path);
 	}
 	
@@ -565,25 +621,26 @@ public class VaultService
 	
 	public void initialize(VaultType vault, CredentialType credential) throws ArgumentException, FactoryException{
 		
-		if(vault.getVaultPath() == null || vault.getVaultPath().length() == 0) throw new ArgumentException("Invalid base path");
-
-		//symmetric_keys = new HashMap<String, SecurityBean>();
-		logger.info("Initializing Vault '" + vault.getVaultName() + "' In " + vault.getVaultPath());
-		if (FileUtil.makePath(vault.getVaultPath()) == false)
-		{
-			throw new ArgumentException("Unable to create path to " + vault.getVaultPath());
-		}
 		if(vault.getServiceUser() == null && vault.getServiceUserUrn() != null){
 			vault.setServiceUser(Factories.getNameIdFactory(FactoryEnumType.USER).getByUrn(vault.getServiceUserUrn()));
 		}
 		if(vault.getServiceUser() == null){
 			throw new ArgumentException("Unable to locate service user '" + vault.getServiceUserUrn() + "'");
 		}
+		if(vault.getVaultPath().length == 0) throw new ArgumentException("Invalid base path");
+
+		String vaultPath = getVaultPath(vault);
+		logger.info("Initializing Vault '" + vault.getVaultName() + "' In " + vaultPath);
+		if (FileUtil.makePath(vaultPath) == false)
+		{
+			throw new ArgumentException("Unable to create path to " + vaultPath);
+		}
+
 		Factories.getNameIdFactory(FactoryEnumType.USER).populate(vault.getServiceUser());
 		vault.setOrganizationId(vault.getServiceUser().getOrganizationId());
 		// Check for non-password protected file
 		//
-		File vaultKeyFile = new File(vault.getVaultKeyPath());
+		File vaultKeyFile = new File(getVaultKeyPath(vault));
 		if (vaultKeyFile.exists())
 		{
 			vault.setHaveVaultKey(true);
@@ -593,13 +650,34 @@ public class VaultService
 	}
 
 	public DirectoryGroupType getVaultGroup(VaultType vault) throws FactoryException, ArgumentException{
-		return ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(vault.getVaultGroupName(), vault.getServiceUser().getHomeDirectory(), vault.getServiceUser().getOrganizationId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getVaultGroup", AuditEnumType.USER, vault.getServiceUserUrn());
+		AuditService.targetAudit(audit, AuditEnumType.GROUP, ".vault");
+		return BaseService.readByNameInParent(audit, AuditEnumType.GROUP, vault.getServiceUser(), vault.getServiceUser().getHomeDirectory(), vault.getVaultGroupName(), "DATA",null);
 	}
 	public DirectoryGroupType getVaultInstanceGroup(VaultType vault) throws FactoryException, ArgumentException{
-		return ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(vault.getVaultName(),getVaultGroup(vault), vault.getServiceUser().getOrganizationId());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getVaultInstanceGroup", AuditEnumType.USER, vault.getServiceUserUrn());
+		AuditService.targetAudit(audit, AuditEnumType.GROUP, vault.getVaultName());
+		return BaseService.readByNameInParent(audit, AuditEnumType.GROUP, vault.getServiceUser(), getVaultGroup(vault), vault.getVaultName(), "DATA",null);
 	}
+	
+	
+	private AuditType beginAudit(VaultType vault,  ActionEnumType action, String actionName, boolean requireInit){
+		AuditType audit = AuditService.beginAudit(action, actionName, AuditEnumType.USER, "Anonymous");
+		if(requireInit && (vault.getInitialized() == false || vault.getServiceUser() == null)){
+			AuditService.denyResult(audit, "Vault is not properly initialized");
+			return null;
+		}
+		audit.setAuditSourceData(vault.getServiceUserUrn());
+		audit.setAuditTargetType(AuditEnumType.VAULT);
+		audit.setAuditTargetData(vault.getVaultDataUrn());
+		return audit;
+	}
+	
+	
 	public boolean deleteVault(VaultType vault) throws ArgumentException, FactoryException
 	{
+		AuditType audit = beginAudit(vault,ActionEnumType.DELETE, "Delete vault",true);
+
 		logger.info("Cleaning up vault instance");
 		if (vault.getHaveVaultKey() == false){
 			logger.warn("No key detected, so nothing is deleted");
@@ -608,7 +686,7 @@ public class VaultService
 			logger.warn("Path is null");
 		}
 		else{
-			File vaultKeyFile = new File(vault.getVaultKeyPath());
+			File vaultKeyFile = new File(getVaultKeyPath(vault));
 			if(vaultKeyFile.exists()){
 				if(vaultKeyFile.delete() == false) logger.error("Unable to delete vault key file " + vault.getVaultKeyPath());
 			}
@@ -637,18 +715,28 @@ public class VaultService
 		else{
 			logger.warn("Vault group is null");
 		}
-		
+		cacheByUrn.remove(vault.getVaultDataUrn());
+		vault.setVaultDataUrn(null);
 		vault.setVaultKeyPath(null);
 		vault.setHaveCredential(false);
 		vault.setProtectedCredential(null);
 		vault.setActiveKey(null);
 		vault.setVaultKey(null);
 		vault.setCredential(null);
-
+		
+		AuditService.permitResult(audit, "TODO: Add authZ check");
 		return true;
 	}
+	private DataType getVaultMetaData(VaultBean vault) throws FactoryException, ArgumentException{
+		AuditType audit = beginAudit(vault,ActionEnumType.READ, "getVaultMetaData",true);
+		return BaseService.readByName(audit, AuditEnumType.DATA, vault.getServiceUser(),  getVaultGroup(vault), vault.getVaultName(), null);
+	}
 	public boolean newActiveKey(VaultBean vault) throws FactoryException, ArgumentException, DataException, UnsupportedEncodingException{
-		DataType imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), getVaultGroup(vault));
+		
+		
+		AuditType audit = beginAudit(vault,ActionEnumType.ADD, "Vault key",true);
+		DataType imp_data = getVaultMetaData(vault);
+		//DataType imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), getVaultGroup(vault));
 
 		// Can't make active key
 		//
@@ -843,7 +931,7 @@ public class VaultService
 		data.setVaulted(true);
 		DataUtil.setValue(data,SecurityUtil.encipher(vault.getActiveKeyBean(), in_data));
 		data.setKeyId(vault.getActiveKeyId());
-		data.setVaultId(vault.getVaultName());
+		data.setVaultId(vault.getVaultDataUrn());
 
 	}
 	public byte[] extractVaultData(VaultBean vault, DataType in_data) throws FactoryException, ArgumentException, DataException
@@ -853,8 +941,8 @@ public class VaultService
 
 		// If the data vault id isn't the same as this vault name, then it can't be decrypted.
 		//
-		if (vault.getVaultName().equals(in_data.getVaultId()) == false){
-			logger.error("Data vault id '" + in_data.getVaultId() + "' does not match the specified vault name '" + vault.getVaultName() + "'.  This is a precautionary/secondary check, probably due to changing the persisted vault configuration name");
+		if (vault.getVaultDataUrn().equals(in_data.getVaultId()) == false){
+			logger.error("Data vault id '" + in_data.getVaultId() + "' does not match the specified vault name '" + vault.getVaultDataUrn() + "'.  This is a precautionary/secondary check, probably due to changing the persisted vault configuration name");
 			return out_bytes;
 		}
 
@@ -902,12 +990,15 @@ public class VaultService
 		VaultType vault = new VaultType();
 		((NameIdFactory)Factories.getFactory(FactoryEnumType.USER)).populate(owner);
 		vault.setServiceUser(owner);
+		vault.setServiceUserUrn(owner.getUrn());
 		/// Using the default group location ("~/.vault)
 		///
 		DirectoryGroupType dir = getVaultGroup(vault);
 		logger.info("List in parent: " + dir.getId());
 		//List<BaseGroupType> groupList = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).listInParent("DATA", dir.getId(), 0L, 0, dir.getOrganizationId());
 		List<DataType> dataList = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(dir, false, 0L, 0, owner.getOrganizationId());
+		
+		//BaseService.listByGroup(AuditEnumType.DATA, "DATA", dir.getId(), 0, 0L, null);
 		
 		List<VaultType> vaults = new ArrayList<>();
 		for(DataType data : dataList){
@@ -917,7 +1008,61 @@ public class VaultService
 		return vaults;
 	}
 	
+	/// User provided for context authorization
+	///
+	public VaultBean getVaultByUrn(UserType user, String urn){
+		VaultBean vault = null;
+		VaultType pubVault = null;
+		
+		if(cacheByUrn.containsKey(urn)) return cacheByUrn.get(urn);
+		
+		/// TODO: Switch to BaseService call to include AuthZ check
+		///
+		logger.debug("Missing authorization check for getVaultByUrn");
+		DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(urn);
 
+		if(data == null){
+			logger.error("Data is null for urn '" + urn + "'");
+			return null;
+		}
+		
+		try {
+			pubVault = JSONUtil.importObject(new String(DataUtil.getValue(data)), VaultType.class);
+			initialize(pubVault, null);
+		} catch ( DataException | ArgumentException | FactoryException e) {
+			logger.error(e);
+		}
+
+		
+		if(pubVault == null){
+			logger.error("Vault reference could not be restored");
+			return null;
+		}
+		
+		String vaultPath = getVaultPath(pubVault);
+		String credPath = getProtectedCredentialPath(pubVault);
+		if(vaultPath == null){
+			logger.error("Vault path is null");
+			return null;
+		}
+		CredentialType cred = null;
+		if(credPath != null){
+			cred = loadProtectedCredential(credPath);
+		}
+		vault = loadVault(vaultPath, pubVault.getVaultName(), pubVault.getProtected());
+		if(vault == null){
+			logger.error("Failed to restore vault");
+			return null;
+		}
+		try {
+			initialize(vault, cred);
+		} catch (ArgumentException | FactoryException e) {
+			logger.error(e);
+			vault = null;
+		}
+		cacheByUrn.put(urn, vault);
+		return vault;
+	}
 	
 	public List<SecurityBean> getCiphers(VaultBean vault){
 		List<SecurityBean> beans = new ArrayList<SecurityBean>();

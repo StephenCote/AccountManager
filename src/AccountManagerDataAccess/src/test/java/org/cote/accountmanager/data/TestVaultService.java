@@ -40,11 +40,12 @@ public class TestVaultService extends BaseDataAccessTest{
 		return getCreateVault(owner, vaultName, "./target/VaultExp", protectionCredential);
 	}
 	*/
-	private VaultBean getCreateVault(UserType owner, String vaultPath, String vaultName, CredentialType protectionCredential){
+	private VaultBean getCreateVault(UserType owner, String vaultPath, String vaultName, CredentialType protectionCredential, String credPath){
 		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
 		VaultBean vault =  service.loadVault(vaultPath, vaultName, (protectionCredential != null ? true : false));
 		if(vault == null){
 			vault = service.newVault(owner, vaultPath, vaultName);
+			if(credPath != null) service.setProtectedCredentialPath(vault, credPath);
 			if(service.createVault(vault, protectionCredential) == false){
 				vault = null;
 			}
@@ -89,22 +90,33 @@ public class TestVaultService extends BaseDataAccessTest{
 	public void TestProtectedCredential(){
 		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
 		UserType vaultUser4 = getUser("QA Vault User 4", "password");
-		CredentialType cred = getProtectedCredential(vaultUser4, "c:\\projects\\vault\\development.test.credential.json", "12345");
+		String credPath = "c:\\projects\\vault\\development.test.credential.json";
+		CredentialType cred = getProtectedCredential(vaultUser4, credPath, "12345");
 		assertNotNull("Credential is null",cred);
-		String testVaultName = "Vault QA Data Test 4.4";
-		VaultBean vault1 = getCreateVault(vaultUser4, "c:\\projects\\vault",testVaultName, cred);
+		String testVaultName = "Vault QA Data Test 4.5";
+		VaultBean vault1 = getCreateVault(vaultUser4, "c:\\projects\\vault",testVaultName, cred, credPath);
 		assertNotNull("Vault is null", vault1);
 		
 		try {
 			List<VaultType> pubVaults = service.listVaultsByOwner(vault1.getServiceUser());
 			assertTrue("No vaults were found",pubVaults.size() > 0);
 			for(VaultType pvault : pubVaults){
-				logger.info("Pub Vault for " + pvault.getVaultName());
+				logger.info("Pub Vault for " + pvault.getVaultName() + " (" + pvault.getVaultDataUrn() + ")");
 			}
 		} catch (FactoryException | ArgumentException | DataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		boolean addKey = false;
+		VaultBean chkVault = service.getVaultByUrn(vault1.getServiceUser(),vault1.getVaultDataUrn());
+		try {
+			addKey = service.newActiveKey(chkVault);
+			
+		} catch (UnsupportedEncodingException | FactoryException | ArgumentException | DataException e) {
+			logger.error(e);
+		}
+		assertTrue("Failed to create new active key",addKey);
 		
 		/*
 		boolean newKey = false;

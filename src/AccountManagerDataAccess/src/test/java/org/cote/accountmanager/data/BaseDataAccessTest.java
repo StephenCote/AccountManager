@@ -155,6 +155,7 @@ public class BaseDataAccessTest{
 	@After
 	public void tearDown() throws Exception{
 		//logger.info("Cleanup session: " + sessionId);
+		Factories.getAuditFactory().flushSpool();
 		SessionSecurity.logout(sessionId,  Factories.getDevelopmentOrganization().getId());
 		SessionSecurity.logout(sessionId2,  Factories.getDevelopmentOrganization().getId());
 	}
