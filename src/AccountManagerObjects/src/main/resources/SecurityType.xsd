@@ -85,8 +85,12 @@
 		<complexContent>
 			<extension base="tns:NameIdType">
 				<sequence>
-					<element name="vaultPath" type="string"></element>
-					<element name="vaultKeyPath" type="string"></element>
+					<element name="vaultPath" type="base64Binary"
+						minOccurs="0" maxOccurs="1">
+					</element>
+					<element name="vaultKeyPath" type="base64Binary"
+						minOccurs="0" maxOccurs="1">
+					</element>
 					<element name="vaultNameHash" type="string"></element>
 					<element name="vaultName" type="string"></element>
 					<element name="activeKey" type="tns:SecurityType"></element>
@@ -98,6 +102,9 @@
 					</element>
 					<element name="protectedCredential"
 						type="tns:CredentialType">
+					</element>
+					<element name="protectedCredentialPath"
+						type="base64Binary" minOccurs="0" maxOccurs="1">
 					</element>
 				</sequence>
 				<attribute name="vaultGroupName" type="string"
@@ -129,7 +136,10 @@
 				<attribute name="dn" type="string"></attribute>
 				<attribute name="vaultAlias" type="string"></attribute>
 				<attribute name="vaultGroupUrn" type="string"></attribute>
-				<attribute name="initialized" type="boolean" default="false"></attribute>
+				<attribute name="initialized" type="boolean"
+					default="false">
+				</attribute>
+				<attribute name="vaultDataUrn" type="string"></attribute>
 			</extension>
 		</complexContent>
 	</complexType>
