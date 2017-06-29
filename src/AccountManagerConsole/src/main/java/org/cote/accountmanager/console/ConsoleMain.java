@@ -34,13 +34,12 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
-import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.CredentialEnumType;
@@ -49,7 +48,6 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-import org.cote.accountmanager.data.factory.OrganizationFactory;
 
 public class ConsoleMain {
 	public static final Logger logger = LogManager.getLogger(ConsoleMain.class);
@@ -93,12 +91,14 @@ public class ConsoleMain {
 		options.addOption("thumbnail",false,"Generate thumbnails for the supplied path");
 		options.addOption("configureApi",false,"Apply the API Configuration");
 		options.addOption("file",true,"File reference");
-		options.addOption("create",false,"Bit used for specific create options (currently Vault)");
-		options.addOption("delete",false,"Bit used for specific delete options (currently Vault)");
+		options.addOption("action",true,"Variable used for specific actions (currently Vault)");
+		//options.addOption("create",false,"Bit used for specific create options (currently Vault)");
+		//options.addOption("delete",false,"Bit used for specific delete options (currently Vault)");
 		options.addOption("batchSize",true,"Maximum data batch size");
 		options.addOption("patch",false,"Patch the current system");
 		options.addOption("reset",false,"Bit indicating a reset operation");
 		options.addOption("name",true,"Variable name");
+		options.addOption("urn",true,"Variable urn");
 		options.addOption("addUser",false,"Add a new user");
 		options.addOption("addOrganization",false,"Add a new organization");
 		options.addOption("deleteOrganization",false,"Delete a new organization");
@@ -236,6 +236,7 @@ public class ConsoleMain {
 				//logger.info("Configure API");
 				ApiConfigAction.configureApi(cmd.getOptionValue("organization"),cmd.getOptionValue("adminPassword"),cmd.getOptionValue("file"),cmd.getOptionValue("identity"),cmd.getOptionValue("credential"));
 			}
+			/*
 			else if(cmd.hasOption("organization") && cmd.hasOption("vault") && cmd.hasOption("name") && cmd.hasOption("path")){
 
 				if(cmd.hasOption("delete")){
@@ -252,6 +253,7 @@ public class ConsoleMain {
 				}
 
 			}
+			*/
 			else if (cmd.hasOption("openssl")){
 				String sslBinary = props.getProperty("ssl.binary");
 				String localPath = props.getProperty("ssl.ca.path");
@@ -397,7 +399,7 @@ public class ConsoleMain {
 	public static void processAction(UserType user, CommandLine cmd){
 		if(cmd.hasOption("importData") && cmd.hasOption("path")){
 			if(cmd.hasOption("batchSize")) DataAction.setMaximumLoad(Integer.parseInt(cmd.getOptionValue("batchSize")));
-			DataAction.importDataPath(user, cmd.getOptionValue("importData"), cmd.getOptionValue("path"), cmd.hasOption("pointer"),cmd.hasOption("thumbnail"));
+			DataAction.importDataPath(user, cmd.getOptionValue("importData"), cmd.getOptionValue("path"), cmd.hasOption("pointer"),cmd.hasOption("thumbnail"),cmd.hasOption("vault"),cmd.getOptionValue("urn"));
 		}
 		if(cmd.hasOption("thumbnail") && cmd.hasOption("path")){
 			if(cmd.hasOption("batchSize")) DataAction.setMaximumLoad(Integer.parseInt(cmd.getOptionValue("batchSize")));
@@ -408,6 +410,33 @@ public class ConsoleMain {
 		}
 		if(cmd.hasOption("tag") && cmd.hasOption("file")){
 			DataAction.tagData(user, cmd.getOptionValue("file"));
+		} 
+		if(cmd.hasOption("vault") && cmd.hasOption("action")){
+			if((cmd.hasOption("name") && cmd.hasOption("path")) || cmd.hasOption("urn")){
+				switch(cmd.getOptionValue("action")){
+					case "create":
+						logger.info("Create Vault");
+						VaultAction.createVault(user, cmd.getOptionValue("name"), cmd.getOptionValue("path"), cmd.getOptionValue("credential"));
+						break;
+					case "delete":
+						logger.info("Delete Vault");
+						VaultAction.deleteVault(user, cmd.getOptionValue("urn"));
+						break;
+					case "list":
+						logger.info("List Vault Keys");
+						VaultAction.listVaults(user);
+						break;
+				}
+			}
+			else{
+				switch(cmd.getOptionValue("action")){
+					case "list":
+						logger.info("List Vaults");
+						VaultAction.listVaults(user);
+						break;
+				}
+			}
+			//cmd.hasOption("vault") && cmd.hasOption("name") && cmd.hasOption("path")
 		}
 		/*
 		if(cmd.hasOption("importProject") && cmd.hasOption("projectName") && cmd.hasOption("lifecycleName")){
