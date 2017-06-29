@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.PersonService;
 import org.cote.accountmanager.data.services.SessionSecurity;
@@ -40,7 +41,6 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
-import org.cote.accountmanager.data.factory.OrganizationFactory;
 public class UserCommand {
 public static final Logger logger = LogManager.getLogger(UserCommand.class);
 	

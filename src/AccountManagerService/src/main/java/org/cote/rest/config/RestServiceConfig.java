@@ -164,6 +164,7 @@ public class RestServiceConfig extends ResourceConfig{
 			
 			/// Set any default vault on the BaseService
 			///
+			/*
 			String vaultName = context.getInitParameter("vault.name");
 			String vaultPath = context.getInitParameter("vault.path");
 			String vaultCredential = context.getInitParameter("vault.credential");
@@ -187,7 +188,7 @@ public class RestServiceConfig extends ResourceConfig{
 					logger.error("Failed to initialize vault from " + vaultPath + " or credential from " + vaultCredential);
 				}
 			}
-			
+			*/
 			String roleAuth = context.getInitParameter("amauthrole");
 			if(roleAuth != null && roleAuth.length() > 0){
 				AM5LoginModule.setAuthenticatedRole(roleAuth);

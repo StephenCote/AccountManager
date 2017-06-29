@@ -8,6 +8,7 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.ApiClientConfigurationBean;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.services.SessionSecurity;
@@ -18,7 +19,6 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.JSONUtil;
-import org.cote.accountmanager.data.factory.OrganizationFactory;
 
 public class ApiConfigAction {
 	public static final Logger logger = LogManager.getLogger(ApiConfigAction.class);

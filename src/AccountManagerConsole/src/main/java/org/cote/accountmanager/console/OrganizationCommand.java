@@ -34,6 +34,7 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.AttributeType;
@@ -44,7 +45,6 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 import org.cote.accountmanager.util.KeyStoreUtil;
-import org.cote.accountmanager.data.factory.OrganizationFactory;
 
 public class OrganizationCommand {
 	public static final Logger logger = LogManager.getLogger(OrganizationCommand.class);
