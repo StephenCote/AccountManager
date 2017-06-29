@@ -25,6 +25,7 @@ package org.cote.accountmanager.console;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -38,15 +39,20 @@ import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.TagFactory;
+import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
-import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataTagType;
@@ -66,7 +72,6 @@ import org.cote.accountmanager.util.GraphicsUtil;
 import org.cote.accountmanager.util.MimeUtil;
 import org.cote.accountmanager.util.StreamUtil;
 import org.cote.accountmanager.util.ZipUtil;
-import org.cote.accountmanager.data.factory.*;
 
 public class DataAction {
 	public static final Logger logger = LogManager.getLogger(DataAction.class);
@@ -74,6 +79,7 @@ public class DataAction {
 	public static void setMaximumLoad(int i){ maxLoad = i;}
 	private static Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s@])",Pattern.MULTILINE);
 	private static Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/@])",Pattern.MULTILINE);
+	private static final VaultService vaultService = new VaultService();
 	
 	public static void createThumbnails(UserType user, String path){
 		DirectoryGroupType dir = BaseService.findGroup(user, GroupEnumType.DATA, path);
@@ -129,14 +135,22 @@ public class DataAction {
 				continue;
 			 }
 
-			 String thumbName = data.getName() + " " + thumbWidth + "x" + thumbHeight;
+			String thumbName = data.getName() + " " + thumbWidth + "x" + thumbHeight;
 			DataType chkData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataById(data.getId(), false, data.getOrganizationId());
 			if(chkData == null || chkData.getDataBytesStore() == null || chkData.getDataBytesStore().length == 0){
 				logger.error("Data '" + data.getUrn() + " was not retrieved in a populated state");
 				continue;
 			}
 			
-			byte[] imageBytes = DataUtil.getValue(chkData);
+			byte[] imageBytes = new byte[0];
+			VaultBean vaultBean = null;
+			if(chkData.getVaulted()){
+				vaultBean = vaultService.getVaultByUrn(user, chkData.getVaultId());
+				imageBytes = vaultService.extractVaultData(vaultBean, chkData);
+			}
+			else{
+				imageBytes = DataUtil.getValue(chkData);
+			}
 			//long thumbStartTime = System.currentTimeMillis();
 			
 			byte[] thumbBytes = new byte[0];
@@ -160,7 +174,12 @@ public class DataAction {
 			DataType thumbData = dfact.newData(user, thumbDir.getId());
 			thumbData.setMimeType("image/jpg");
 			thumbData.setName(thumbName);
-			DataUtil.setValue(thumbData, thumbBytes);
+			if(vaultBean != null && chkData.getVaulted()){
+				vaultService.setVaultBytes(vaultBean, thumbData, thumbBytes);
+			}
+			else{
+				DataUtil.setValue(thumbData, thumbBytes);
+			}
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.DATA, thumbData);
 		}
 		BulkFactories.getBulkFactory().write(sessionId);
@@ -367,7 +386,7 @@ public class DataAction {
 		}
 		
 	}
-	public static void importDataPath(UserType user, String localPath, String targetPath, boolean isPointer, boolean createThumbnail){
+	public static void importDataPath(UserType user, String localPath, String targetPath, boolean isPointer, boolean createThumbnail, boolean vault, String vaultUrn){
 		try{
 			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, targetPath, user.getOrganizationId());
 			File f = new File(localPath);
@@ -378,50 +397,47 @@ public class DataAction {
 				System.out.println("Directory " + targetPath + " not found");
 			}
 			if(f.isDirectory() == false){
-				importFile(user, dir, f, isPointer, createThumbnail);
+				importFile(user, dir, f, isPointer, createThumbnail, vault, vaultUrn);
 			}
 			else{
-				importDirectory(user,dir, f, isPointer, createThumbnail);
+				importDirectory(user,dir, f, isPointer, createThumbnail, vault, vaultUrn);
 			}
 		}
-		catch(FactoryException fe){
-			logger.error("Error",fe);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		} catch (DataException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
+		catch(FactoryException | ArgumentException | DataException | DataAccessException | UnsupportedEncodingException e) {
 			
 			logger.error("Error",e);
 		}
 		
 	}
-	private static void importBulkFiles(UserType user, DirectoryGroupType dir, List<File> bulkFiles, boolean isPointer, boolean createThumbnail) throws ArgumentException, FactoryException, DataAccessException, DataException{
+	private static void importBulkFiles(UserType user, DirectoryGroupType dir, List<File> bulkFiles, boolean isPointer, boolean createThumbnail, boolean vault, String vaultUrn) throws ArgumentException, FactoryException, DataAccessException, DataException, UnsupportedEncodingException{
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
-
+		VaultBean vaultBean = (vault ? vaultService.getVaultByUrn(user, vaultUrn) : null);
 		for(int i = 0; i < bulkFiles.size();i++){
 			if(i > 0 && (i % maxLoad) == 0){
+				if(vaultBean != null && vaultBean.getActiveKeyId() == null){
+					logger.info("Rotating key");
+
+					vaultService.newActiveKey(vaultBean);
+				}
 				BulkFactories.getBulkFactory().write(sessionId);
 				BulkFactories.getBulkFactory().close(sessionId);
 				///Factories.clearCaches();
 				sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			}
-			importFile(user, dir, bulkFiles.get(i),sessionId,isPointer, createThumbnail);
+			importFile(user, dir, bulkFiles.get(i),sessionId,isPointer, createThumbnail, vault, vaultUrn);
 		}
 		BulkFactories.getBulkFactory().write(sessionId);
 		BulkFactories.getBulkFactory().close(sessionId);
 		//Factories.clearCaches();
 	}
-	private static void importFile(UserType user, DirectoryGroupType dir, File f, boolean isPointer, boolean createThumbnail) throws ArgumentException, DataException, FactoryException{
-		importFile(user, dir, f, null, isPointer, createThumbnail);
+	private static void importFile(UserType user, DirectoryGroupType dir, File f, boolean isPointer, boolean createThumbnail, boolean vault, String vaultUrn) throws ArgumentException, DataException, FactoryException, UnsupportedEncodingException{
+		importFile(user, dir, f, null, isPointer, createThumbnail, vault, vaultUrn);
 	}
 	
-	private static void importFile(UserType user, DirectoryGroupType dir, File f, String bulkSession, boolean isPointer, boolean createThumbnail) throws ArgumentException, DataException, FactoryException{
+	private static void importFile(UserType user, DirectoryGroupType dir, File f, String bulkSession, boolean isPointer, boolean createThumbnail, boolean vault, String vaultUrn) throws ArgumentException, DataException, FactoryException, UnsupportedEncodingException{
 		DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, dir.getId());
 		if(f.getName().startsWith(".")){
-			logger.info("Skipping possible system name: " + f.getName());
+			logger.debug("Skipping possible system name: " + f.getName());
 			return;
 		}
 		String fName = f.getName();
@@ -430,11 +446,16 @@ public class DataAction {
 		if(data.getMimeType() == null) data.setMimeType("application/unknown");
 		data.setName(fName);
 		data.setPointer(isPointer);
+		
+		VaultBean vaultBean = (vault ? vaultService.getVaultByUrn(user, vaultUrn) : null);
+		if(vault && vaultBean.getActiveKeyId() == null) vaultService.newActiveKey(vaultBean);
 		if(isPointer == false){
-			DataUtil.setValue(data, StreamUtil.fileHandleToBytes(f));
+			if(!vault) DataUtil.setValue(data, StreamUtil.fileHandleToBytes(f));
+			else vaultService.setVaultBytes(vaultBean, data, StreamUtil.fileHandleToBytes(f));
 		}
 		else{
-			DataUtil.setValue(data, f.getAbsolutePath().getBytes());
+			if(!vault) DataUtil.setValue(data, f.getAbsolutePath().getBytes());
+			else vaultService.setVaultBytes(vaultBean, data, f.getAbsolutePath().getBytes());
 		}
 		if(bulkSession == null){
 			if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data)){
@@ -450,7 +471,7 @@ public class DataAction {
 		}
 	}
 	
-	private static void importDirectory(UserType user, DirectoryGroupType dir, File f, boolean isPointer, boolean createThumbnail) throws FactoryException, ArgumentException, DataException, DataAccessException{
+	private static void importDirectory(UserType user, DirectoryGroupType dir, File f, boolean isPointer, boolean createThumbnail, boolean vault, String vaultUrn) throws FactoryException, ArgumentException, DataException, DataAccessException, UnsupportedEncodingException{
 		if(f.getName().startsWith(".")){
 			logger.info("Skipping possible system name: " + f.getName());
 			return;
@@ -472,14 +493,14 @@ public class DataAction {
 		logger.info("Importing Directory " + f.getName());
 		for(int i = 0; i < fs.length; i++){
 			if(fs[i].isDirectory()){
-				importDirectory(user, tdir, fs[i],isPointer,createThumbnail);
+				importDirectory(user, tdir, fs[i],isPointer,createThumbnail, vault, vaultUrn);
 			}
 			else{
 				bulkList.add(fs[i]);
 				//importFile(user, tdir, fs[i]);
 			}
 		}
-		importBulkFiles(user, tdir, bulkList,isPointer,createThumbnail);
+		importBulkFiles(user, tdir, bulkList,isPointer,createThumbnail, vault, vaultUrn);
 		
 	}
 }
