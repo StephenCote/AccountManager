@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -17,6 +18,7 @@ import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AuditType;
@@ -36,7 +38,7 @@ public class MediaUtil {
 	public static final Logger logger = LogManager.getLogger(MediaUtil.class);
 	private static Pattern recPattern = Pattern.compile("^\\/([A-Za-z0-9\\.]+)\\/([\\w]+)([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static Pattern dimPattern = Pattern.compile("(\\/\\d+x\\d+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-	
+	private static final VaultService vaultService = new VaultService();
 	private static int maximumImageWidth = -1;
 	private static int maximumImageHeight = -1;
 	private static boolean restrictImageSize = false;
@@ -307,12 +309,17 @@ public class MediaUtil {
 								response.sendError(404);
 								return;
 							}
+							VaultBean vaultBean = null;
 							byte[] imageBytes = new byte[0];
 							if(chkData.getPointer() && isAllowDataPointers(request) == false){
 								logger.error("Access to data pointer for thumbnail data is forbidden.");
 							}
 							else{
-								imageBytes = DataUtil.getValue(chkData);
+								vaultBean = (chkData.getVaulted() ? vaultService.getVaultByUrn(user, chkData.getVaultId()) : null);
+								if(vaultBean != null && vaultBean.getActiveKeyId() == null) vaultService.newActiveKey(vaultBean);
+
+								if(vaultBean != null) imageBytes = vaultService.extractVaultData(vaultBean, chkData);
+								else imageBytes = DataUtil.getValue(chkData);
 							}
 							byte[] thumbBytes = GraphicsUtil.createThumbnail(imageBytes, options.getThumbWidth(), options.getThumbHeight());
 							if(thumbBytes.length == 0 && imageBytes.length > 0){
@@ -330,7 +337,8 @@ public class MediaUtil {
 							DataType thumbData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(dataOwner, thumbGroup.getId());
 							thumbData.setMimeType("image/jpg");
 							thumbData.setName(thumbName);
-							DataUtil.setValue(thumbData, thumbBytes);
+							if(vaultBean != null) vaultService.setVaultBytes(vaultBean, thumbData, thumbBytes);
+							else DataUtil.setValue(thumbData, thumbBytes);
 							if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(thumbData) == false){
 								AuditService.denyResult(audit, "Data " + thumbName + " was not added to group " + thumbGroup.getName());
 								response.sendError(404);
@@ -366,14 +374,7 @@ public class MediaUtil {
 				can_view = true;
 			}
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			logger.error("Error",fe);
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (DataException e) {
+		catch(FactoryException| ArgumentException | DataException e) {
 			
 			logger.error(e.getMessage());
 			logger.error("Error",e);
@@ -397,9 +398,17 @@ public class MediaUtil {
 				logger.error("Access to data pointer data is forbidden.");
 			}
 			else{
-				value = DataUtil.getValue(data);
+				VaultBean vaultBean = (data.getVaulted() ? vaultService.getVaultByUrn(user, data.getVaultId()) : null);
+				if(data.getVaulted()){
+				if(vaultBean != null && vaultBean.getActiveKeyId() == null) vaultService.newActiveKey(vaultBean);
+					value = vaultService.extractVaultData(vaultBean, data);
+				
+				}
+				else{
+					value = DataUtil.getValue(data);
+				}
 			}
-		} catch (DataException e) {
+		} catch (DataException | FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
