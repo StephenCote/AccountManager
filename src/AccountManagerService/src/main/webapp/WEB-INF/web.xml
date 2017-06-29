@@ -103,7 +103,8 @@
     <param-name>ssl.ca.path</param-name>
     <param-value>c:/Projects/ssl</param-value>
   </context-param>
-
+<!-- 
+	Placeholder partly for default values
     <context-param>
     <description>Vault Path</description>
     <param-name>vault.path</param-name>
@@ -121,7 +122,7 @@
     <param-name>vault.credential</param-name>
     <param-value>c:/Projects/vault/credential.json</param-value>
   </context-param>
-  
+  -->
   <context-param>
     <description>Restrict Image Size</description>
     <param-name>image.restrict.size</param-name>
