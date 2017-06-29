@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
@@ -57,6 +58,7 @@ import org.cote.accountmanager.util.MimeUtil;
 
 public class TypeSanitizer implements ITypeSanitizer{
 	public static final Logger logger = LogManager.getLogger(TypeSanitizer.class);
+	private static final VaultService vaultService = new VaultService();
 	public TypeSanitizer(){
 		
 	}
@@ -76,22 +78,26 @@ public class TypeSanitizer implements ITypeSanitizer{
 	public <T> boolean update(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException{
 		return false;
 	}
-	public <T> T postFetch(AuditEnumType type, T object){
+	public <T> T postFetch(AuditEnumType type, UserType user, T object){
 		T outObj = object;
 		if(type.equals(AuditEnumType.DATA)){
 			DataType d = (DataType)object;
 			if(d.getDetailsOnly()){
 				logger.error("Data is details only.  Was expecting full data");
 			}
-			if((BaseService.contextVault != null && d.getVaulted()) || d.getCompressed() || d.getPointer()){
+			if((d.getVaulted()) || d.getCompressed() || d.getPointer()){
 				/// Make a copy of the object so as to operate on the copy and not a cached copy from the factory
 				///
 				d = JAXBUtil.clone(DataType.class, d);
 				try {
 					byte[] data = new byte[0];
-					if(BaseService.contextVault != null && d.getVaulted()){
+					if( d.getVaulted()){
+						
 						try {
-							data = BaseService.contextVaultService.extractVaultData(BaseService.contextVault, d);
+							VaultBean vaultBean = vaultService.getVaultByUrn(user, d.getVaultId());
+							data = vaultService.extractVaultData(vaultBean, d);
+							
+							//data = BaseService.contextVaultService.extractVaultData(BaseService.contextVault, d);
 						} catch (FactoryException | ArgumentException e) {
 							logger.error(e);
 						}
