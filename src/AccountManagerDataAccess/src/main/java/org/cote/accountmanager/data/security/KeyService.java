@@ -1,5 +1,8 @@
 package org.cote.accountmanager.data.security;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
@@ -19,7 +22,13 @@ import org.cote.accountmanager.util.JSONUtil;
 
 public class KeyService {
 	public static final Logger logger = LogManager.getLogger(KeyService.class);
-
+	
+	/// 2017/06/26 - TODO: Reconsider how key caching is handled
+	///
+	private static final Map<Long,SecurityBean> primaryUserSymmetricKeys = new HashMap<>();
+	private static final Map<Long,SecurityBean> primaryOrganizationSymmetricKeys = new HashMap<>();
+	private static final Map<String,SecurityBean> symmetricKeys = new HashMap<>();
+	
 	public static SecurityBean promote(SecurityType sec) throws ArgumentException{
 		SecurityBean bean = new SecurityBean();
 
@@ -104,9 +113,13 @@ public class KeyService {
 	}
 	public static SecurityBean getSymmetricKeyByObjectId(String id,long organizationId){
 		SecurityBean bean = null;
+		if(symmetricKeys.containsKey(id)) return symmetricKeys.get(id);
 		try {
 			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getByObjectId(id, organizationId);
-			if(sec != null) bean = promote(sec);
+			if(sec != null){
+				bean = promote(sec);
+				symmetricKeys.put(id, bean);
+			}
 		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
@@ -116,9 +129,13 @@ public class KeyService {
 	}
 	public static SecurityBean getPrimarySymmetricKey(long organizationId) {
 		SecurityBean bean = null;
+		if(primaryOrganizationSymmetricKeys.containsKey(organizationId)) return primaryOrganizationSymmetricKeys.get(organizationId);
 		try {
 			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getPrimaryOrganizationKey(organizationId);
-			if(sec != null) bean = promote(sec);
+			if(sec != null){
+				bean = promote(sec);
+				primaryOrganizationSymmetricKeys.put(organizationId, bean);
+			}
 		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
@@ -128,9 +145,13 @@ public class KeyService {
 	}	
 	public static SecurityBean getPrimarySymmetricKey(UserType user) {
 		SecurityBean bean = null;
+		if(primaryUserSymmetricKeys.containsKey(user.getId())) return primaryUserSymmetricKeys.get(user.getId());
 		try {
 			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getPrimaryPersonalKey(user);
-			if(sec != null) bean = promote(sec);
+			if(sec != null){
+				bean = promote(sec);
+				primaryUserSymmetricKeys.put(user.getId(), bean);
+			}
 		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
