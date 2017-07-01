@@ -75,10 +75,12 @@ import org.cote.accountmanager.data.factory.SymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.TypeSanitizer;
+import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.objects.*;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -493,7 +495,20 @@ public class Factories {
 		}
 		return out_bool;
 	}
-	
+	public static String reportCaches(){
+		StringBuffer buff = new StringBuffer();
+		for(Object fact : factoryInstances.values()){
+			if(fact instanceof INameIdFactory){
+				buff.append(((INameIdFactory)fact).reportCacheSize() + "\n");
+			}
+			
+		}
+		buff.append(BulkFactories.reportCacheSize());
+		buff.append(EffectiveAuthorizationService.reportCacheSize());
+		buff.append(KeyService.reportCacheSize());
+		buff.append(VaultService.reportCacheSize());
+		return buff.toString();
+	}
 	public static boolean clearCaches(){
 
 		for(Object fact : factoryInstances.values()){

@@ -898,7 +898,18 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		cacheExpires = 0;
 	}
 	
-	
+	public String reportCacheSize(){
+		if(factoryType == FactoryEnumType.UNKNOWN){
+			logger.warn(getDataTables().get(0).getName() + " doesn't define a factory type");
+		}
+		return this.factoryType.toString() + " Cache Report\n"
+			+ "typeNameIdMap\t" + typeNameIdMap.keySet().size()
+			+ "\ntypeNameMap\t" + typeNameMap.keySet().size()
+			+ "\ntypeIdMap\t" + typeIdMap.keySet().size()
+			+ "\ntypeObjectIdMap\t" + typeObjectIdMap.keySet().size()
+			+ "\ntypeMap\t" + typeMap.size() + "\n"
+		;
+	}
 	public void clearCache(){
 		typeNameIdMap.clear();
 		typeNameMap.clear();

@@ -146,6 +146,7 @@ public abstract class FactoryBase {
 	public void writeSpool(){
 		writeSpool(getDataTable());
 	}
+	
 	public void writeSpool(String tableName)
 	{
 		DataTable table = getDataTable(tableName);
@@ -159,12 +160,9 @@ public abstract class FactoryBase {
 				}
 				table.getRows().clear();
 			}
-			
 		}
 	}
 
-	
-	
 	public boolean isInitialized() {
 		return initialized;
 	}

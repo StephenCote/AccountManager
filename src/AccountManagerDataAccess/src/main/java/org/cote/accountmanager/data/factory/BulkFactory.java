@@ -161,7 +161,7 @@ public class BulkFactory {
 
 		synchronized(session){
 			eLen = session.getBulkEntries().size();
-			logger.info("Writing Bulk Session " + sessionId + " with " + (eLen - offset) + " objects");
+			logger.debug("Writing Bulk Session " + sessionId + " with " + (eLen - offset) + " objects");
 			long startPass = System.currentTimeMillis();
 			for(int i = offset; i < eLen; i++){
 				BulkEntryType entry = session.getBulkEntries().get(i);

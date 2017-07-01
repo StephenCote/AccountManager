@@ -30,6 +30,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.BulkFactory;
 import org.cote.accountmanager.data.factory.FactoryBase;
+import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkAccountFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkAddressFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkAsymmetricKeyFactory;
@@ -150,7 +152,18 @@ public class BulkFactories{
 		}
 		return newObj;
 	}
-	
+	public static String reportCacheSize(){
+		StringBuffer buff = new StringBuffer();
+		for(Object fact : factoryInstances.values()){
+			if(fact instanceof INameIdFactory){
+				NameIdFactory ifact = ((NameIdFactory)fact);
+				buff.append(ifact.reportCacheSize());
+				buff.append("Rows\t" + ifact.getDataTables().get(0).getRows().size() + "\n");
+			}
+			
+		}
+		return buff.toString();
+	}
 	public static BulkFactory getBulkFactory(){
 		if(bulkFactory == null){
 			bulkFactory = new BulkFactory();

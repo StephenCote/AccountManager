@@ -147,7 +147,7 @@ public class EffectiveAuthorizationService {
 	///
 	private static Map<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>> actorMap = new HashMap<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>>();
 	
-	
+
 	private static Map<Long,UserType> rebuildUsers = new HashMap<Long,UserType>();
 	private static Map<Long,AccountType> rebuildAccounts = new HashMap<Long,AccountType>();
 	private static Map<Long,PersonType> rebuildPersons = new HashMap<Long,PersonType>();
@@ -308,7 +308,17 @@ public class EffectiveAuthorizationService {
 		/// logger.debug("Pend group " + group.getName() + " #" + group.getId() + " for total count " + rebuildGroups.size());
 	}
 
-	
+	public static String reportCacheSize(){
+		StringBuffer buff = new StringBuffer(); 
+		buff.append("Effective Authorization Cache Report\n");
+		for(NameEnumType key : objectMap.keySet()){
+			for(AuthorizationMapType aMap : objectMap.get(key).values()){
+				buff.append(key.toString() + " " + aMap.getActor().toString() + "\t" + aMap.getMap().keySet().size() + "\n");
+			}
+
+		}
+		return buff.toString();
+	}
 	public static void clearCache(){
 		logger.debug("Clearing Authorization Cache");
 		for(NameEnumType key : objectMap.keySet()){

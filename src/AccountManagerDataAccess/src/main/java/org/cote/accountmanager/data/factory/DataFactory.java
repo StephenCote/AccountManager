@@ -63,6 +63,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 public class DataFactory extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
 	
+	private long maximumCacheSize = 1048576L*100L;
 	private long currentCacheSize = 0L;
 
 	static{
@@ -80,7 +81,7 @@ public class DataFactory extends NameIdFactory {
 
 	/// Max cache size = 50MB;
 	///
-	private long maximumCacheSize = 1048576L*100L;
+
 	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.DATA, DataFactory.class); }
 	public DataFactory(){
 		super();

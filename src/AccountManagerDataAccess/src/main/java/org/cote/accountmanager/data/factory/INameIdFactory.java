@@ -75,6 +75,7 @@ public interface INameIdFactory {
 	public <T> List<T> listInParent(String type, long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException;
 	public <T> List<T> listInParent(long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException;
 	public void clearCache();
+	public String reportCacheSize();
 	
 	public void removeBranchFromCache(NameIdType obj);
 	public void removeFromCache(NameIdType obj);
