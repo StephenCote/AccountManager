@@ -47,6 +47,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.query.QueryField;
@@ -105,6 +106,7 @@ public class DataAction {
 		processThumbnails(user, dir);
 		List<DirectoryGroupType> subs = BaseService.getListByParent(AuditEnumType.GROUP, "DATA", dir, 0L, 0, dir.getOrganizationId());
 		//logger.info("Sub count: " + subs.size());
+		//FileUtil.emitFile("./cacheReport.txt", Factories.reportCaches().getBytes());
 		for(DirectoryGroupType sdir : subs){
 			
 			//logger.info("Dir: " + sdir.getName());
@@ -155,13 +157,13 @@ public class DataAction {
 			
 			byte[] thumbBytes = new byte[0];
 			try{
-				thumbBytes = GraphicsUtil.createThumbnail(DataUtil.getValue(chkData), thumbWidth, thumbHeight);
+				thumbBytes = GraphicsUtil.createThumbnail(imageBytes, thumbWidth, thumbHeight);
 			}
 			catch(Exception e){
 				logger.error("Trace", e);
 			}
 			if(thumbBytes.length == 0){
-				continue;
+				logger.warn("Thumbnail data not generated for " + chkData.getUrn());
 			}
 			//long thumbStopTime = System.currentTimeMillis();
 			//logger.info("Created thumbnail in " + (thumbStopTime - thumbStartTime) + "ms");
@@ -298,96 +300,14 @@ public class DataAction {
 	/// One-off method
 	///
 	public static void migrateData(UserType user, long sourceOwnerId){
-		try {
-		    Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-		    throw new RuntimeException("Cannot find the driver in the classpath!", e);
-		}	
-		
-		/// Obviously not used any more - this was the mysql db for the .NET implementation
-		String url = "jdbc:mysql://192.168.1.120:3306/coredb";
-		String username = "coreuser";
-		String password = "Password1";
-		Connection connection = null;
-		try {
-		    connection = DriverManager.getConnection(url, username, password);
-		    Statement statement = connection.createStatement();
-		    String sql = "SELECT A.Name as AccountName,A.Id as AccountId,G.Name as GroupName,D.Id as DataId, D.Name as DataName,Description,Size,Dimensions,MimeType,IsCompressed,CompressionType,GroupId,CreatedDate,ModifiedDate,Expiration,IsBlob,DataBlob,DataString FROM Data D INNER JOIN Account A ON A.Id = D.OwnerId INNER JOIN Groups G ON G.Id = D.GroupId WHERE A.Id = " + Long.toString(sourceOwnerId) + ";";
-		    logger.info("Migration Query: " + sql);
-		    ResultSet rset = statement.executeQuery(sql);
-		    String sessionId = BulkFactories.getBulkFactory().newBulkSession();
-		    Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
-		    while(rset.next()){
-		    	String name = rset.getString("DataName");
-		    	String mimeType = rset.getString("MimeType");
-		    	String groupName = rset.getString("GroupName");
-		    	if(groupName.equals("Media")) groupName = "GalleryHome";
-		    	if(!groupName.equals("Media") && !groupName.equals("Blog")){
-		    		logger.info("Skip extraneous data");
-		    		continue;
-		    	}
-		    	DirectoryGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, groupName, user.getHomeDirectory(), user.getOrganizationId());
-		    	
-		    	
-		    	DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, group.getId());
-		    	data.setName(name);
-		    	data.setMimeType(mimeType);
-		    	data.setDescription(rset.getString("Description"));
-		    	byte[] dataComp = new byte[0];
-		    	if(rset.getBoolean("IsBlob")){
-		    		dataComp = rset.getBytes("DataBlob");
-		    		if(rset.getBoolean("IsCompressed")){
-		    			dataComp = ZipUtil.gunzipBytes(dataComp);
-		    			logger.info("Gunzipped " + dataComp.length + " bytes");
-		    		}
-		    	}
-		    	else{
-		    		DataUtil.setValueString(data, rset.getString("DataString"));
-		    	}
-		    	if(groupName.equals("Blog")){
-		    		String[] source = (new String(dataComp)).split("\n");
-		    		StringBuffer buff = new StringBuffer();
-		    		for(int i = 0; i < source.length;i++){
-		    			buff.append("[p]" + source[i] + "[/p]");
-		    		}
-		    		dataComp = buff.toString().getBytes();
-		    	}
-		       	DataUtil.setValue(data, dataComp);
-		    	data.setDimensions(rset.getString("Dimensions"));
-		    	data.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("CreatedDate")));
-		    	data.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("ModifiedDate")));
-		    	logger.info("Migrating data '" + name + "' from " + data.getCreatedDate().toString() + " to group " + group.getName());
-		    	BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.DATA,data);
-		    }
-		    BulkFactories.getBulkFactory().write(sessionId);
-		    rset.close();
-		} catch (SQLException e) {
-			logger.error(e.getMessage());
-		    throw new RuntimeException("Cannot connect the database!", e);
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (FactoryException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (DataException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} finally {
-		    System.out.println("Closing the connection.");
-		    if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
-		}
+		logger.warn("Redacted V4 (.Net/Mono + SQL/MySql) to V5 support (Java + Postgre) since I'm fairly confident nobody other than me used that - ever.  Leaving in place for future migration");
 		
 	}
 	public static void importDataPath(UserType user, String localPath, String targetPath, boolean isPointer, boolean createThumbnail, boolean vault, String vaultUrn){
 		try{
+			if(createThumbnail){
+				logger.warn("Thumbnail generation will follow as a post-import process and will not take place mid import");
+			}
 			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, targetPath, user.getOrganizationId());
 			File f = new File(localPath);
 			if(f.exists() == false){
@@ -414,7 +334,8 @@ public class DataAction {
 		VaultBean vaultBean = (vault ? vaultService.getVaultByUrn(user, vaultUrn) : null);
 		for(int i = 0; i < bulkFiles.size();i++){
 			if(i > 0 && (i % maxLoad) == 0){
-				if(vaultBean != null && vaultBean.getActiveKeyId() == null){
+				///  && vaultBean.getActiveKeyId() == null
+				if(vaultBean != null){
 					logger.info("Rotating key");
 
 					vaultService.newActiveKey(vaultBean);
@@ -482,7 +403,14 @@ public class DataAction {
 			return;
 		}
 		String fName = limitNames.matcher(f.getName()).replaceAll("");
-		
+		if(vault){
+			/// Rotate the key for each new directory
+			logger.info("Rotating vault key");
+			VaultBean vaultBean = vaultService.getVaultByUrn(user, vaultUrn);
+			vaultService.newActiveKey(vaultBean);
+			//vaultBean.getSymmetricKeyMap().clear();
+			//logger.info("Vault " + vaultBean.getName() + " key cache: " + vaultBean.getSymmetricKeyMap().keySet().size());
+		}
 		DirectoryGroupType tdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, fName, dir, user.getOrganizationId());
 		if(tdir == null){
 			logger.warn("Invalid directory for " + fName);
@@ -490,7 +418,12 @@ public class DataAction {
 		}
 
 		List<File> bulkList = new ArrayList<File>();
+		
+		/// 2017/06/29 DEBUG CHECK - flushing data factory cache to test for a memory leak from keys stacking up in the instance map via the VaultService
+		//((INameIdFactory)Factories.getFactory(FactoryEnumType.DATA)).clearCache();
 		logger.info("Importing Directory " + f.getName());
+		
+		//FileUtil.emitFile("./cacheReport.txt", Factories.reportCaches().getBytes());
 		for(int i = 0; i < fs.length; i++){
 			if(fs[i].isDirectory()){
 				importDirectory(user, tdir, fs[i],isPointer,createThumbnail, vault, vaultUrn);
