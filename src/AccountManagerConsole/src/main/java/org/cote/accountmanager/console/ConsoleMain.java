@@ -41,6 +41,7 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
@@ -141,7 +142,7 @@ public class ConsoleMain {
 		// options.addOption("test",false,"Run Tests");
 		
 		
-			
+		AuditDataMaintenance auditThread = null;
 		CommandLineParser parser = new PosixParser();
 		try {
 			logger.debug("Setting up connection factory");
@@ -151,7 +152,7 @@ public class ConsoleMain {
 			Factories.warmUp();
 			long stopWarmUp = System.currentTimeMillis();
 			logger.debug("Completed warm up in " + (stopWarmUp - startWarmUp) + "ms");
-
+			auditThread = new AuditDataMaintenance();
 			CommandLine cmd = parser.parse( options, args);
 			if(cmd.hasOption("patch") && cmd.hasOption("organization")){
 				logger.debug("Applying patch ...");
@@ -361,7 +362,10 @@ public class ConsoleMain {
 			
 			logger.error("Error",e);
 		}
-
+		if(auditThread != null){
+			auditThread.requestStop();
+			auditThread = null;
+		}
 		Factories.getAuditFactory().flushSpool();
 		
 	}
