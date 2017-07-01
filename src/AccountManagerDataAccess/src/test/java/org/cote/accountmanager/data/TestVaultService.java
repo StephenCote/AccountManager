@@ -86,6 +86,52 @@ public class TestVaultService extends BaseDataAccessTest{
 		return cred;
 	}
 	
+	
+	/*
+	 * There's a perf issue on large bulk operations where, quite suddenly, all operations cease and the CPU spikes like it's caught in a while loop
+	 * ... let's go find it
+	 */
+	/*
+	@Test
+	public void TestVaultMemoryPerformance(){
+		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
+		UserType vaultUser4 = getUser("QA Vault User 5", "password");
+		String credPath = "c:\\projects\\vault\\development.qauser5perf.credential.json";
+		CredentialType cred = getProtectedCredential(vaultUser4, credPath, "12345");
+		assertNotNull("Credential is null",cred);
+		String testVaultName = "Vault QA Perf Test 1";
+		VaultBean vault1 = getCreateVault(vaultUser4, "c:\\projects\\vault",testVaultName, cred, credPath);
+		assertNotNull("Vault is null", vault1);
+		
+		///String sessionId = BulkFactories.getBulkFactory().newBulkSession();
+		
+		/// Rotate through 10K ciphers
+		///   Watching the cache size on the vault and vault service
+		try{
+			for(int i = 0; i < 1000; i++){
+				service.newActiveKey(vault1);
+			}
+			VaultType expVault = (VaultType)vault1;
+			//expVault.setActiveKey(null);
+			//expVault.setCredential(null);
+			expVault.setProtectedCredential(null);
+			FileUtil.emitFile("vault.test.txt", JSONUtil.exportObject(new VaultType()));
+
+		}
+		catch(Exception  e){
+			logger.error(e);
+		}
+		try{
+			FileUtil.emitFile("./cacheReport.txt",Factories.reportCaches());
+		}
+		catch(NullPointerException e){
+			logger.error(e);
+			logger.error(e.getStackTrace());
+		}
+		logger.info("End");
+	}
+	*/
+	
 	@Test
 	public void TestProtectedCredential(){
 		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
@@ -118,7 +164,8 @@ public class TestVaultService extends BaseDataAccessTest{
 		}
 		assertTrue("Failed to create new active key",addKey);
 		
-		/*
+	
+		
 		boolean newKey = false;
 		try {
 			newKey = service.newActiveKey(vault1);
@@ -136,16 +183,18 @@ public class TestVaultService extends BaseDataAccessTest{
 			e.printStackTrace();
 		}
 		assertNotNull("Cipher is null",cipher);
-		*/
-		/*
-		try {
-			service.deleteVault(vault1);
-		} catch (ArgumentException | FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
+		
+
 	}
+
+/*
+try {
+	service.deleteVault(vault1);
+} catch (ArgumentException | FactoryException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+*/
 /*
 	@Test
 	public void TestVaultChangeCleanup(){
