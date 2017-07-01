@@ -26,8 +26,11 @@ package org.cote.accountmanager.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
-
+import java.util.Map;
+import java.util.HashMap;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -43,10 +46,20 @@ public class JAXBUtil {
 	public static <U,T> T clone(Class<T> tClass, U map){
 		return clone(tClass,map,new QName("http://www.cote.org/accountmanager/objects"));
 	}
+	
+	/// 2017/06/30 - Switched the clone operation away from JAXB since there's a really bad GC issue when put under load
+	///
 	public static <U,T> T clone(Class<T> tClass, U map, QName qName){
+		/// Trying bouncing through JSON to avoid JAXB GC problems
+		///
+		return (T)JSONUtil.importObject(JSONUtil.exportObject(map), map.getClass());
+		//return jaxbClone(tClass, map, qName);
+	}
+	public static <U,T> T jaxbClone(Class<T> tClass, U map, QName qName){
 		 T bean = null;
 		try{
-			 JAXBContext contextA = JAXBContext.newInstance(map.getClass());
+			 JAXBContext contextA  = JAXBContext.newInstance(map.getClass());
+
 		      JAXBElement<U> jaxbElementA = new JAXBElement(qName, map.getClass(), map);
 		        JAXBSource sourceA = new JAXBSource(contextA, jaxbElementA);
 	
