@@ -39,6 +39,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class AuditService {
 	public static final Logger logger = LogManager.getLogger(AuditService.class);
+	public static int maximumAuditSpoolSize = 1000;
 	public static String getAuditString(AuditType audit){
 		return audit.getAuditResultType() + " (" + audit.getAuditResultData() + ") "
 				+ audit.getAuditSourceType() + " (" + audit.getAuditSourceData() + ") "
@@ -59,6 +60,11 @@ public class AuditService {
 			Calendar now = Calendar.getInstance();
 			audit.setAuditResultDate(CalendarUtil.getXmlGregorianCalendar(now.getTime()));
 			added = Factories.getAuditFactory().addAudit(audit);
+			
+			if(Factories.getAuditFactory().getDataTables().get(0).getRows().size() >= maximumAuditSpoolSize){
+				logger.warn("Force flush audit spool - this should be handled by the maintenance thread before reaching the " + maximumAuditSpoolSize + " limit");
+				Factories.getAuditFactory().flushSpool();
+			}
 			String auditStr = getAuditString(audit);
 			logger.info("*** Audit *** " + auditStr);
 		} catch (FactoryException e) {
