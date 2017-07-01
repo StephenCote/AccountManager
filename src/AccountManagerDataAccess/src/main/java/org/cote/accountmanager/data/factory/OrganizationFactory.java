@@ -59,6 +59,7 @@ public class OrganizationFactory extends NameIdFactory {
 		this.hasParentId = true;
 		this.hasUrn = true;
 		this.hasObjectId = true;
+		this.factoryType = FactoryEnumType.ORGANIZATION;
 		this.tableNames.add("organizations");
 	}
 	
