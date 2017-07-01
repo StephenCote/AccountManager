@@ -26,6 +26,7 @@ package org.cote.accountmanager.data.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.objects.types.RetentionEnumType;
 import org.cote.accountmanager.services.ThreadService;
 
@@ -40,6 +41,13 @@ public class AuditDataMaintenance extends ThreadService {
 
 		logger.debug("AuditDataMaintenance: Flush Spool - " + Factories.getAuditFactory().getDataTable("audit").getRows().size());
 		Factories.getAuditFactory().flushSpool();
+		
+		/// TODO: The following checks should be pushed into their own maintenance threads
+		///
+		KeyService.checkPrimaryOrganizationSymmetricKeyCache();
+		KeyService.checkPrimaryUserSymmetricKeyCache();
+		KeyService.checkSymmetricKeyCache();
+		
 		DataMaintenance.cleanupExpiredAudits(RetentionEnumType.OPERATIONAL);
 		
 	}
