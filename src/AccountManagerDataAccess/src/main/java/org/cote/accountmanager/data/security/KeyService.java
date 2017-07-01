@@ -28,6 +28,11 @@ public class KeyService {
 	private static final Map<Long,SecurityBean> primaryUserSymmetricKeys = new HashMap<>();
 	private static final Map<Long,SecurityBean> primaryOrganizationSymmetricKeys = new HashMap<>();
 	private static final Map<String,SecurityBean> symmetricKeys = new HashMap<>();
+	private static final int maximumCacheSize = 1000;
+	private static final int maximumCacheAgeSeconds = 360;
+	private static long lastSymmetricCacheRefresh = 0L;
+	private static long lastOrgSymmetricCacheRefresh = 0L;
+	private static long lastUserSymmetricCacheRefresh = 0L;
 	
 	public static SecurityBean promote(SecurityType sec) throws ArgumentException{
 		SecurityBean bean = new SecurityBean();
@@ -80,6 +85,13 @@ public class KeyService {
 		}
 		return bean;
 	}
+	public static String reportCacheSize(){
+		return "Key Service Cache Report\n"
+			+ "primaryUserSymmetricKeys\t" + primaryUserSymmetricKeys.keySet().size()
+			+ "\nprimaryOrganizationSymmetricKeys\t" + primaryOrganizationSymmetricKeys.keySet().size()
+			+ "\nsymmetricKeys\t" + symmetricKeys.keySet().size() + "\n"
+		;
+	}
 	public static boolean deleteKeys(long organizationId){
 		boolean out_bool = false;
 		try {
@@ -111,8 +123,33 @@ public class KeyService {
 		
 		return bean;
 	}
+	public static void checkPrimaryOrganizationSymmetricKeyCache(){
+		long now = System.currentTimeMillis();
+		if(primaryOrganizationSymmetricKeys.size() > maximumCacheSize || lastOrgSymmetricCacheRefresh < (now - (maximumCacheAgeSeconds * 1000))){
+			lastOrgSymmetricCacheRefresh = now;
+			primaryOrganizationSymmetricKeys.clear();
+			logger.debug("Clearing organization symmetric key cache");
+		}
+	}
+	public static void checkPrimaryUserSymmetricKeyCache(){
+		long now = System.currentTimeMillis();
+		if(primaryUserSymmetricKeys.size() > maximumCacheSize || lastUserSymmetricCacheRefresh < (now - (maximumCacheAgeSeconds * 1000))){
+			lastUserSymmetricCacheRefresh = now;
+			primaryUserSymmetricKeys.clear();
+			logger.debug("Clearing user symmetric key cache");
+		}
+	}
+	public static void checkSymmetricKeyCache(){
+		long now = System.currentTimeMillis();
+		if(symmetricKeys.size() > maximumCacheSize || lastSymmetricCacheRefresh < (now - (maximumCacheAgeSeconds * 1000))){
+			lastSymmetricCacheRefresh = now;
+			symmetricKeys.clear();
+			logger.debug("Clearing symmetric key cache");
+		}
+	}
 	public static SecurityBean getSymmetricKeyByObjectId(String id,long organizationId){
 		SecurityBean bean = null;
+		checkSymmetricKeyCache();
 		if(symmetricKeys.containsKey(id)) return symmetricKeys.get(id);
 		try {
 			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getByObjectId(id, organizationId);
@@ -129,6 +166,7 @@ public class KeyService {
 	}
 	public static SecurityBean getPrimarySymmetricKey(long organizationId) {
 		SecurityBean bean = null;
+		checkPrimaryOrganizationSymmetricKeyCache();
 		if(primaryOrganizationSymmetricKeys.containsKey(organizationId)) return primaryOrganizationSymmetricKeys.get(organizationId);
 		try {
 			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getPrimaryOrganizationKey(organizationId);
@@ -145,6 +183,7 @@ public class KeyService {
 	}	
 	public static SecurityBean getPrimarySymmetricKey(UserType user) {
 		SecurityBean bean = null;
+		checkPrimaryUserSymmetricKeyCache();
 		if(primaryUserSymmetricKeys.containsKey(user.getId())) return primaryUserSymmetricKeys.get(user.getId());
 		try {
 			SecurityType sec = ((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).getPrimaryPersonalKey(user);
