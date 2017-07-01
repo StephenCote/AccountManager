@@ -134,6 +134,9 @@ public class SecurityFactory {
 		logger.warn("Static default salt needs to be refactored");
 		setPassKey(bean, passKey, defaultSalt, encrypted_pass_key);
 	}
+	
+	/// TODO: Remove hard coded algorithm reference
+	///
 	public void setPassKey(SecurityBean bean, String passKey, byte[] salt, boolean encrypted_pass_key){
 		long start = System.currentTimeMillis();
 		try{
