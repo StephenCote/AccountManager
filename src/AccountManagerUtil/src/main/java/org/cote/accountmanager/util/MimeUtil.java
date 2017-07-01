@@ -26,7 +26,11 @@ package org.cote.accountmanager.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class MimeUtil {
+	public static final Logger logger = LogManager.getLogger(MimeUtil.class);
 	public static String getType(String ext){
 		String sLow = ext.toLowerCase();
 		if(sLow.indexOf(".") > -1) sLow = sLow.substring(sLow.lastIndexOf(".") + 1,sLow.length());
@@ -34,13 +38,17 @@ public class MimeUtil {
 			//System.out.println("Matched: '" + sLow + "'");
 			return types.get(sLow);
 		}
-		System.out.println("No match: '" + sLow + "'");
+		logger.warn("No match: '" + sLow + "'");
 		return null;
 	}
 	private static Map<String,String> types = null;
 	static
 	    {
 		types = new HashMap<String,String>();
+		types.put("weba", "audio/weba");
+		types.put("webm", "video/webm");
+		types.put("wmv", "video/x-ms-wmv");
+		types.put("flv", "video/x-flv");
 		types.put("mp4", "video/mp4");
 		types.put("3dm","x-world/x-3dmf");
 		types.put("3dmf","x-world/x-3dmf");
