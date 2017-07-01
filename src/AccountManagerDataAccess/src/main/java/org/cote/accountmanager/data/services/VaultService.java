@@ -36,6 +36,19 @@ package org.cote.accountmanager.data.services;
  *    ii) Note: Optionally encipher the key path because at the moment it is in plaintext.
  * 5) Add audit
  * 6) Make vault access contingent on readability
+ * 7) Need a good way to clean up orphaned keys.  The following query pulls up the orphaned keys used by DataType objects, but wouldn't factor in any other use of a vault key
+ * 8) There's a memory leak due to caching that needs to be cleared up.  One of the caches is filling up and not being cleared.
+ *    i) This may be in the authZ or audit services since these are now being exercised harder when using VaultService to encrypt the data values, vs. not using the vault service
+ *       a) Not Audit - it was stacking up on bulk console operations because the maintenance thread wasn't running
+ *       b) Not factory caches, though the typeMap cache in the factories was stacking up a bit without the factory cache running
+ *       c) It looks like it may be the repeated invocation of newActiveKey on the same vaultCheck other factories for stray caches - caches
+ *    ii) After running against a Visual VM, the culprit popped right out: Cloning via JAXB.  I swapped it out and all seems well again.
+delete FROM data WHERE groupid in(
+   SELECT id FROM groups WHERE parentid in (SELECT id FROM groups WHERE name = '.vault')
+) AND name NOT IN (SELECT keyid FROM data WHERE NOT keyid IS NULL)
+
+ *
+ *
  */
 
 
@@ -43,6 +56,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -109,7 +123,7 @@ public class VaultService
 	private OpenSSLUtil sslUtil = null;
 	private boolean generateCertificates = false;
 	
-	private static Map<String,VaultBean> cacheByUrn = new HashMap<>();
+	private static Map<String,VaultBean> cacheByUrn = Collections.synchronizedMap(new HashMap<>());
 	
 	/// export a version of the vault that does not include exposed (aka unencrypted) information that should be protected
 	///
@@ -619,6 +633,9 @@ public class VaultService
 		vault.setProtectedCredential(credential);
 	}
 	
+	/// When loading a vault via urn, this method will be invoked twice: Once for the meta data reference in the database which is used to find the vault, and Two for the vault itself
+	/// Therefore, log statements are dialed down to debug, otherwise it looks like the call to initialize twice is in error
+	///
 	public void initialize(VaultType vault, CredentialType credential) throws ArgumentException, FactoryException{
 		
 		if(vault.getServiceUser() == null && vault.getServiceUserUrn() != null){
@@ -630,7 +647,7 @@ public class VaultService
 		if(vault.getVaultPath().length == 0) throw new ArgumentException("Invalid base path");
 
 		String vaultPath = getVaultPath(vault);
-		logger.info("Initializing Vault '" + vault.getVaultName() + "' In " + vaultPath);
+		logger.debug("Initializing Vault '" + vault.getVaultName() + "' In " + vaultPath);
 		if (FileUtil.makePath(vaultPath) == false)
 		{
 			throw new ArgumentException("Unable to create path to " + vaultPath);
@@ -731,6 +748,12 @@ public class VaultService
 		AuditType audit = beginAudit(vault,ActionEnumType.READ, "getVaultMetaData",true);
 		return BaseService.readByName(audit, AuditEnumType.DATA, vault.getServiceUser(),  getVaultGroup(vault), vault.getVaultName(), null);
 	}
+	
+	/// Creates a new symmetric key within the vault group/data structure 
+	/// This is currently using the older key storage style than the symmetrickeys table because (a) the keys don't hold any relationship reference other than vault ids, and (b) that makes it harder to determine if the key is still used without scanning every other table that includes a cipherkey reference
+	/// By keeping it in the vault meta data (where it's effectively the same level of protection (or lack of), the keys can more easily be cleaned up by simply deleting the vault
+	/// This could be refactored by defining groups of symmetric keys vs. groups of data items containing the keys and associating that group relative to the vault group
+	///
 	public boolean newActiveKey(VaultBean vault) throws FactoryException, ArgumentException, DataException, UnsupportedEncodingException{
 		
 		
@@ -937,6 +960,10 @@ public class VaultService
 	public byte[] extractVaultData(VaultBean vault, DataType in_data) throws FactoryException, ArgumentException, DataException
 	{
 		byte[] out_bytes = new byte[0];
+		if(vault == null){
+			logger.error("Vault reference is null");
+			return out_bytes;
+		}
 		if (vault.getHaveVaultKey() == false || in_data.getVaulted() == false) return out_bytes;
 
 		// If the data vault id isn't the same as this vault name, then it can't be decrypted.
@@ -951,6 +978,11 @@ public class VaultService
 	}
 	public static byte[] getVaultBytes(VaultBean vault, DataType data, SecurityBean bean) throws DataException
 	{
+		
+		if(bean == null){
+			logger.error("Vault cipher for " + data.getKeyId() + " is null");
+			return new byte[0];
+		}
 		byte[] ret = SecurityUtil.decipher(bean,DataUtil.getValue(data));
 		if (data.getCompressed() && ret.length > 0)
 		{
@@ -994,7 +1026,7 @@ public class VaultService
 		/// Using the default group location ("~/.vault)
 		///
 		DirectoryGroupType dir = getVaultGroup(vault);
-		logger.info("List in parent: " + dir.getId());
+
 		//List<BaseGroupType> groupList = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).listInParent("DATA", dir.getId(), 0L, 0, dir.getOrganizationId());
 		List<DataType> dataList = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(dir, false, 0L, 0, owner.getOrganizationId());
 		
@@ -1101,6 +1133,9 @@ public class VaultService
 		setVaultBytes(vault, in_data, in_bytes);
 
 		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(in_data);
+	}
+	public static String reportCacheSize(){
+		return "VaultService Cache Report\ncacheByUrn\t" + cacheByUrn.keySet().size() + "\n";
 	}
 
 }
