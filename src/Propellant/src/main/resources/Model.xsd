@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/propellant/objects" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.cote.org/propellant/objects" xmlns:Q1="http://www.cote.org/accountmanager/objects" xmlns:Q2="http://www.cote.org/propellant/objects/types">
+
+    <import schemaLocation="Types.xsd" namespace="http://www.cote.org/propellant/objects/types"></import>
+    <include schemaLocation="Requirement.xsd"></include>
+    <include schemaLocation="Case.xsd"></include>
+    <include schemaLocation="Artifact.xsd"></include>
+    <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/ParticipantType.xsd" namespace="http://www.cote.org/accountmanager/objects"></import>
+    <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/NameId.xsd" namespace="http://www.cote.org/accountmanager/objects"></import>
+    <complexType name="ModelType">
+    	<complexContent>
+    		<extension base="Q1:NameIdDirectoryGroupType">
+    			<sequence>
+    				<element name="artifacts" type="tns:ArtifactType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    				<element name="cases" type="tns:CaseType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    				<element name="requirements"
+    					type="tns:RequirementType" minOccurs="0"
+    					maxOccurs="unbounded">
+    				</element>
+    				<element name="dependencies" type="tns:ArtifactType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    				<element name="models" type="tns:ModelType" minOccurs="0" maxOccurs="unbounded"></element>
+    			</sequence>
+    			<attribute name="description" type="string"></attribute>
+    			<attribute name="modelType" type="Q2:ModelEnumType"></attribute>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="ModelParticipantType">
+    	<complexContent>
+    		<extension base="Q1:BaseParticipantType"></extension>
+    	</complexContent>
+    </complexType>
+</schema>

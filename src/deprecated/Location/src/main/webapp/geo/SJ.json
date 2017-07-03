@@ -1,0 +1,66 @@
+{
+	"9170" : [
+		{
+			"city" : "Longyearbyen",
+			"stateName" : "Svalbard",
+			"stateCode" : "21",
+			"county" : "Spitsbergen"
+		}
+	],
+	"9171" : [
+		{
+			"city" : "Longyearbyen",
+			"stateName" : "Svalbard",
+			"stateCode" : "21",
+			"county" : "Spitsbergen"
+		}
+	],
+	"9173" : [
+		{
+			"city" : "Ny-Ålesund",
+			"stateName" : "Svalbard",
+			"stateCode" : "21",
+			"county" : "Spitsbergen"
+		}
+	],
+	"9175" : [
+		{
+			"city" : "Sveagruva",
+			"stateName" : "Svalbard",
+			"stateCode" : "21",
+			"county" : "Spitsbergen"
+		}
+	],
+	"9178" : [
+		{
+			"city" : "Barentsburg",
+			"stateName" : "Svalbard",
+			"stateCode" : "21",
+			"county" : "Spitsbergen"
+		}
+	],
+	"9176" : [
+		{
+			"city" : "Bjørnøya",
+			"stateName" : "Svalbard",
+			"stateCode" : "21",
+			"county" : "Bjørnøya"
+		}
+	],
+	"9174" : [
+		{
+			"city" : "Hopen",
+			"stateName" : "Svalbard",
+			"stateCode" : "21",
+			"county" : "Hopen"
+		}
+	],
+	"8099" : [
+		{
+			"city" : "Jan Mayen",
+			"stateName" : "Jan Mayen",
+			"stateCode" : "22",
+			"county" : "Jan Mayen"
+		}
+	]
+}

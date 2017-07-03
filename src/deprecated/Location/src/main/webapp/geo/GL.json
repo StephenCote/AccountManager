@@ -1,0 +1,266 @@
+{
+	"2412" : [
+		{
+			"city" : "Santa Claus/Julemanden",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3900" : [
+		{
+			"city" : "Nuuk",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3905" : [
+		{
+			"city" : "Nuussuaq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3910" : [
+		{
+			"city" : "Kangerlussuaq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3911" : [
+		{
+			"city" : "Sisimiut",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3912" : [
+		{
+			"city" : "Maniitsoq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3913" : [
+		{
+			"city" : "Tasiilaq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3915" : [
+		{
+			"city" : "Kulusuk",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3919" : [
+		{
+			"city" : "Alluitsup Paa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3920" : [
+		{
+			"city" : "Qaqortoq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3921" : [
+		{
+			"city" : "Narsaq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3922" : [
+		{
+			"city" : "Nanortalik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3923" : [
+		{
+			"city" : "Narsarsuaq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3924" : [
+		{
+			"city" : "Ikerasassuaq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3930" : [
+		{
+			"city" : "Kangilinnguit",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3932" : [
+		{
+			"city" : "Arsuk",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3940" : [
+		{
+			"city" : "Paamiut",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3950" : [
+		{
+			"city" : "Aasiaat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3951" : [
+		{
+			"city" : "Qasigiannguit",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3952" : [
+		{
+			"city" : "Ilulissat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3953" : [
+		{
+			"city" : "Qeqertarsuaq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3955" : [
+		{
+			"city" : "Kangaatsiaq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3961" : [
+		{
+			"city" : "Uummannaq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3962" : [
+		{
+			"city" : "Upernavik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3964" : [
+		{
+			"city" : "Qaarsut",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3970" : [
+		{
+			"city" : "Pituffik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3971" : [
+		{
+			"city" : "Qaanaaq",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3972" : [
+		{
+			"city" : "Station Nord",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3980" : [
+		{
+			"city" : "Ittoqqortoormiit",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3982" : [
+		{
+			"city" : "Mestervi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3984" : [
+		{
+			"city" : "Danmarkshavn",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3985" : [
+		{
+			"city" : "Constable Pynt",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3992" : [
+		{
+			"city" : "Slædepatruljen Sirius",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	]
+}

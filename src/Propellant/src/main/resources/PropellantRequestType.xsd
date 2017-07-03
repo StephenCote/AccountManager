@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/propellant/objects"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/propellant/objects"
+	xmlns:pref="http://www.cote.org/accountmanager/objects">
+	<import
+		schemaLocation="../../../../AccountManagerObjects/src/main/resources/RequestType.xsd"
+		namespace="http://www.cote.org/accountmanager/objects">
+	</import>
+
+
+	<include schemaLocation="Identity.xsd"></include>
+	<complexType name="BasePropellantRequestType">
+		<complexContent>
+			<extension base="pref:BaseSearchRequestType">
+				<attribute name="lifecycleId" type="long" default="0"></attribute>
+				<attribute name="projectId" type="long" default="0"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="TaskRequestType">
+		<complexContent>
+			<extension base="tns:BasePropellantRequestType"></extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ApplicationRequestType">
+		<complexContent>
+			<extension base="tns:BasePropellantRequestType">
+				<sequence>
+					<element name="imports" type="tns:IdentityDataImportType" minOccurs="0" maxOccurs="unbounded"></element>
+				</sequence>
+				<attribute name="applicationId" type="long" default="0"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

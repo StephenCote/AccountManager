@@ -1,0 +1,1762 @@
+{
+	"1000" : [
+		{
+			"city" : "Skopje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1010" : [
+		{
+			"city" : "Skopje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1011" : [
+		{
+			"city" : "Kuceviste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1020" : [
+		{
+			"city" : "Skopje-Karpos 3",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1040" : [
+		{
+			"city" : "Skopje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1041" : [
+		{
+			"city" : "Ilinden",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1042" : [
+		{
+			"city" : "Miladinovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1043" : [
+		{
+			"city" : "Petrovec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1044" : [
+		{
+			"city" : "Katlanovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1045" : [
+		{
+			"city" : "Aracinovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1047" : [
+		{
+			"city" : "Jurumleri",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1050" : [
+		{
+			"city" : "Skopje-Dracevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1053" : [
+		{
+			"city" : "Zelenikovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1054" : [
+		{
+			"city" : "Rakotnici",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1060" : [
+		{
+			"city" : "Skopje-Gjorce Petrov",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1062" : [
+		{
+			"city" : "Radusa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1063" : [
+		{
+			"city" : "Bukovik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1200" : [
+		{
+			"city" : "Tetovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1201" : [
+		{
+			"city" : "Mala Recica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1203" : [
+		{
+			"city" : "Nerashte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1206" : [
+		{
+			"city" : "Jazince",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1211" : [
+		{
+			"city" : "Dobroste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1212" : [
+		{
+			"city" : "Dzepciste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1213" : [
+		{
+			"city" : "Zerovjane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1214" : [
+		{
+			"city" : "Pirok",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1215" : [
+		{
+			"city" : "Jegunovce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1216" : [
+		{
+			"city" : "Brvenica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1218" : [
+		{
+			"city" : "Grupcin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1219" : [
+		{
+			"city" : "Golema Recica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1220" : [
+		{
+			"city" : "Bogovinje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1221" : [
+		{
+			"city" : "Kamenjane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1224" : [
+		{
+			"city" : "Tearce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1225" : [
+		{
+			"city" : "Vratnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1226" : [
+		{
+			"city" : "Zelino",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1227" : [
+		{
+			"city" : "Celopek",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1228" : [
+		{
+			"city" : "Shemshevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1230" : [
+		{
+			"city" : "Gostivar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1231" : [
+		{
+			"city" : "Vrutok",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1234" : [
+		{
+			"city" : "Debreshe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1235" : [
+		{
+			"city" : "Negotino-Gostivarsko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1236" : [
+		{
+			"city" : "Dobri Dol",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1237" : [
+		{
+			"city" : "Cegrane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1238" : [
+		{
+			"city" : "Vrapciste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1239" : [
+		{
+			"city" : "Srbinovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1250" : [
+		{
+			"city" : "Debar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1254" : [
+		{
+			"city" : "Rostusa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1255" : [
+		{
+			"city" : "Zirovnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1256" : [
+		{
+			"city" : "Mavrovi Anovi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1257" : [
+		{
+			"city" : "Skudrinje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1258" : [
+		{
+			"city" : "Golem Papradnik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1300" : [
+		{
+			"city" : "Kumanovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1302" : [
+		{
+			"city" : "Zeglane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1303" : [
+		{
+			"city" : "Staro Negoricane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1304" : [
+		{
+			"city" : "Klecovce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1305" : [
+		{
+			"city" : "Orasec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1306" : [
+		{
+			"city" : "Matejce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1307" : [
+		{
+			"city" : "Lipkovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1308" : [
+		{
+			"city" : "Tabanovce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1309" : [
+		{
+			"city" : "Gradiste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1312" : [
+		{
+			"city" : "Mlado Nagoricane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1314" : [
+		{
+			"city" : "Oblavce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1315" : [
+		{
+			"city" : "Otlja",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1316" : [
+		{
+			"city" : "Rankovce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1322" : [
+		{
+			"city" : "Romanovce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1323" : [
+		{
+			"city" : "Pcinja",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1324" : [
+		{
+			"city" : "Vaksince",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1325" : [
+		{
+			"city" : "Slupcane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1330" : [
+		{
+			"city" : "Kriva Palanka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1332" : [
+		{
+			"city" : "Petralnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1333" : [
+		{
+			"city" : "Mozdivnjak",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1334" : [
+		{
+			"city" : "Dubrovnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1335" : [
+		{
+			"city" : "Zidilovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1360" : [
+		{
+			"city" : "Kratovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1361" : [
+		{
+			"city" : "Stracin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1400" : [
+		{
+			"city" : "Veles",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1406" : [
+		{
+			"city" : "Basino Selo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1407" : [
+		{
+			"city" : "Ivankovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1408" : [
+		{
+			"city" : "Gorno Orizari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1413" : [
+		{
+			"city" : "Caska",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1414" : [
+		{
+			"city" : "Izvor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1415" : [
+		{
+			"city" : "Bogomila",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1420" : [
+		{
+			"city" : "Gradsko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1421" : [
+		{
+			"city" : "Sirkovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1422" : [
+		{
+			"city" : "Rosoman",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1423" : [
+		{
+			"city" : "Drenovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1424" : [
+		{
+			"city" : "Vozarci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1426" : [
+		{
+			"city" : "Marena",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1427" : [
+		{
+			"city" : "Sopot",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1430" : [
+		{
+			"city" : "Kavadarci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1434" : [
+		{
+			"city" : "Resava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1437" : [
+		{
+			"city" : "Konopiste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1440" : [
+		{
+			"city" : "Negotino",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1441" : [
+		{
+			"city" : "Pepeliste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1442" : [
+		{
+			"city" : "Demir Kapija",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1443" : [
+		{
+			"city" : "Dolni Disan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1480" : [
+		{
+			"city" : "Gevgelija",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1483" : [
+		{
+			"city" : "Negorci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1484" : [
+		{
+			"city" : "Bogdanci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1485" : [
+		{
+			"city" : "Nov Dojran",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1487" : [
+		{
+			"city" : "Star Dojran",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1488" : [
+		{
+			"city" : "Stojakovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1489" : [
+		{
+			"city" : "Miravci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2000" : [
+		{
+			"city" : "Stip",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2207" : [
+		{
+			"city" : "Karbinci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2208" : [
+		{
+			"city" : "Lozovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2210" : [
+		{
+			"city" : "Probishtip",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2212" : [
+		{
+			"city" : "Zletovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2220" : [
+		{
+			"city" : "Sveti Nikole",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2225" : [
+		{
+			"city" : "Erdzelija",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2227" : [
+		{
+			"city" : "Amzabegovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2300" : [
+		{
+			"city" : "Kocani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2301" : [
+		{
+			"city" : "Oblesevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2302" : [
+		{
+			"city" : "Orizari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2304" : [
+		{
+			"city" : "Makedonska Kamenica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2305" : [
+		{
+			"city" : "Zrnovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2307" : [
+		{
+			"city" : "Gorni Podlog",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2310" : [
+		{
+			"city" : "Vinica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2312" : [
+		{
+			"city" : "Istibanja",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2314" : [
+		{
+			"city" : "Blatec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2315" : [
+		{
+			"city" : "Rusinovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2316" : [
+		{
+			"city" : "Dragobraste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2320" : [
+		{
+			"city" : "Delcevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2325" : [
+		{
+			"city" : "Trabotiviste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2326" : [
+		{
+			"city" : "Pehcevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2330" : [
+		{
+			"city" : "Berovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2331" : [
+		{
+			"city" : "Vladimirovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2332" : [
+		{
+			"city" : "Budinarci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2333" : [
+		{
+			"city" : "Cesinovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2400" : [
+		{
+			"city" : "Strumica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2410" : [
+		{
+			"city" : "Kuklis",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2411" : [
+		{
+			"city" : "Vasilevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2412" : [
+		{
+			"city" : "Vladevci / Radicevo sobiraliste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2413" : [
+		{
+			"city" : "Kosturino",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2414" : [
+		{
+			"city" : "Veljusa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2416" : [
+		{
+			"city" : "Dobrasinci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2420" : [
+		{
+			"city" : "Radovis",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2423" : [
+		{
+			"city" : "Podares",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2424" : [
+		{
+			"city" : "Konce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2430" : [
+		{
+			"city" : "Petralinci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2431" : [
+		{
+			"city" : "Bosilovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2432" : [
+		{
+			"city" : "Murtino",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2433" : [
+		{
+			"city" : "Turnovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2434" : [
+		{
+			"city" : "Novo Selo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2435" : [
+		{
+			"city" : "Mokrievo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2436" : [
+		{
+			"city" : "Dracevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2460" : [
+		{
+			"city" : "Valandovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2461" : [
+		{
+			"city" : "Calakli",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2464" : [
+		{
+			"city" : "Udovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6000" : [
+		{
+			"city" : "Ohrid",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6245" : [
+		{
+			"city" : "Malo Crsko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6250" : [
+		{
+			"city" : "Kicevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6253" : [
+		{
+			"city" : "Zajas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6254" : [
+		{
+			"city" : "Oslomej",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6255" : [
+		{
+			"city" : "Brzdani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6256" : [
+		{
+			"city" : "Izvor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6257" : [
+		{
+			"city" : "Dlapkin Dol",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6258" : [
+		{
+			"city" : "Vranestica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6259" : [
+		{
+			"city" : "Celopeci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6260" : [
+		{
+			"city" : "Rastanski Pat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6261" : [
+		{
+			"city" : "Drugovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6262" : [
+		{
+			"city" : "Strelci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6306" : [
+		{
+			"city" : "Leskovec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6322" : [
+		{
+			"city" : "Ohrid",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6330" : [
+		{
+			"city" : "Struga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6333" : [
+		{
+			"city" : "Radolista",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6334" : [
+		{
+			"city" : "Velesta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6335" : [
+		{
+			"city" : "Vevcani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6336" : [
+		{
+			"city" : "Labunista",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6337" : [
+		{
+			"city" : "Lukovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6338" : [
+		{
+			"city" : "Delgozda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6339" : [
+		{
+			"city" : "Oktisi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6341" : [
+		{
+			"city" : "Trebenista",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6342" : [
+		{
+			"city" : "Meseista",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6344" : [
+		{
+			"city" : "Belcista",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6346" : [
+		{
+			"city" : "Slivovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6530" : [
+		{
+			"city" : "Makedonski Brod",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6533" : [
+		{
+			"city" : "Dolni Manastirec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6535" : [
+		{
+			"city" : "Samokov",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6539" : [
+		{
+			"city" : "Dvorci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7000" : [
+		{
+			"city" : "Bitola",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7202" : [
+		{
+			"city" : "Smilevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7204" : [
+		{
+			"city" : "Dolno Orizari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7205" : [
+		{
+			"city" : "Dihovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7211" : [
+		{
+			"city" : "Novaci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7212" : [
+		{
+			"city" : "Dedebalci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7213" : [
+		{
+			"city" : "Makovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7214" : [
+		{
+			"city" : "Staravina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7215" : [
+		{
+			"city" : "Dobrusevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7216" : [
+		{
+			"city" : "Mogila",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7221" : [
+		{
+			"city" : "Bistrica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7223" : [
+		{
+			"city" : "Porodin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7224" : [
+		{
+			"city" : "Keremenica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7225" : [
+		{
+			"city" : "Bac",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7240" : [
+		{
+			"city" : "Demir Hisar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7241" : [
+		{
+			"city" : "Kukurecani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7242" : [
+		{
+			"city" : "Lopatica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7244" : [
+		{
+			"city" : "Zvan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7245" : [
+		{
+			"city" : "Ivanjevci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7310" : [
+		{
+			"city" : "Resen",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7313" : [
+		{
+			"city" : "Capari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7314" : [
+		{
+			"city" : "Kazani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7315" : [
+		{
+			"city" : "Carev Dvor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7316" : [
+		{
+			"city" : "Asamati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7317" : [
+		{
+			"city" : "Krani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7318" : [
+		{
+			"city" : "Ljubojno",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7319" : [
+		{
+			"city" : "Otesevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7320" : [
+		{
+			"city" : "Jankovec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7500" : [
+		{
+			"city" : "Prilep",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7504" : [
+		{
+			"city" : "Dolneni",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7505" : [
+		{
+			"city" : "Kostinci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7506" : [
+		{
+			"city" : "Dunje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7507" : [
+		{
+			"city" : "Lazani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7508" : [
+		{
+			"city" : "Vitoliste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7509" : [
+		{
+			"city" : "Golemo Konjari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7512" : [
+		{
+			"city" : "Topolcani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7514" : [
+		{
+			"city" : "Kanatlarci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7524" : [
+		{
+			"city" : "Krivogastani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7525" : [
+		{
+			"city" : "Vodani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7537" : [
+		{
+			"city" : "Debreste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"7550" : [
+		{
+			"city" : "Krusevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	]
+}

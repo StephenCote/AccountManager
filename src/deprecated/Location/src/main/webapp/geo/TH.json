@@ -1,0 +1,7088 @@
+{
+	"10100" : [
+		{
+			"city" : "Samphanthawong",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Pom Prap Sattru Phai",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10110" : [
+		{
+			"city" : "Wattana",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10120" : [
+		{
+			"city" : "Yannawa",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bang Kholame",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10140" : [
+		{
+			"city" : "Rat Burana",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Thung Khru",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10150" : [
+		{
+			"city" : "Bang Bon",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bang Khun Thian",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10160" : [
+		{
+			"city" : "Nong Khaem",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Phasi Charoen",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bang Khae",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10170" : [
+		{
+			"city" : "Taling Chan",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Thawi Wattana",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10200" : [
+		{
+			"city" : "Phra Nakhon",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10210" : [
+		{
+			"city" : "Lak Si",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10220" : [
+		{
+			"city" : "Bang Khen",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Sai Mai",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10230" : [
+		{
+			"city" : "Lat Phrao",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Khanna Yao",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10240" : [
+		{
+			"city" : "Bang Kapi",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bung Kum",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Saphan Sung B39",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10250" : [
+		{
+			"city" : "Pra Vet",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Suang Luang",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10260" : [
+		{
+			"city" : "Bang Na",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Phra Khanong",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10300" : [
+		{
+			"city" : "Dusit",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10310" : [
+		{
+			"city" : "Wangthong Lang",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10320" : [
+		{
+			"city" : "Huai Khwang",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10330" : [
+		{
+			"city" : "Pahtum Wan",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10400" : [
+		{
+			"city" : "Ding Daeng",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Phaya Thai",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10500" : [
+		{
+			"city" : "Bang Rak",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10510" : [
+		{
+			"city" : "Min Buri",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Khlong Samwa",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10520" : [
+		{
+			"city" : "Lat Krabang",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10530" : [
+		{
+			"city" : "Nong Chok",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10600" : [
+		{
+			"city" : "Khlong San",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bangkok Yai",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Thon Buri",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10700" : [
+		{
+			"city" : "Bangkok Noi",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bang Plat",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10800" : [
+		{
+			"city" : "Bang Su",
+			"stateName" : "Bangkok",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"10130" : [
+		{
+			"city" : "Phra Pradaeng",
+			"stateName" : "Samut Prakan",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"10270" : [
+		{
+			"city" : "Muang Samut Prakan",
+			"stateName" : "Samut Prakan",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"10290" : [
+		{
+			"city" : "Phra Samut Chedi",
+			"stateName" : "Samut Prakan",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"10540" : [
+		{
+			"city" : "Bang Phli",
+			"stateName" : "Samut Prakan",
+			"stateCode" : "11",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bang Saotong",
+			"stateName" : "Samut Prakan",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"10560" : [
+		{
+			"city" : "Bang Bo",
+			"stateName" : "Samut Prakan",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"11000" : [
+		{
+			"city" : "Muang Nonthaburi",
+			"stateName" : "Nonthaburi",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"11110" : [
+		{
+			"city" : "Bang Bua Thong",
+			"stateName" : "Nonthaburi",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"11120" : [
+		{
+			"city" : "Pak Kret",
+			"stateName" : "Nonthaburi",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"11130" : [
+		{
+			"city" : "Bang Kruai",
+			"stateName" : "Nonthaburi",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"11140" : [
+		{
+			"city" : "Bang Yai",
+			"stateName" : "Nonthaburi",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"11150" : [
+		{
+			"city" : "Sai Noi",
+			"stateName" : "Nonthaburi",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"12000" : [
+		{
+			"city" : "Muang Pathum Thani",
+			"stateName" : "Pathum Thani",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"12110" : [
+		{
+			"city" : "Thanyaburi",
+			"stateName" : "Pathum Thani",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"12120" : [
+		{
+			"city" : "Khlong Luang",
+			"stateName" : "Pathum Thani",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"12140" : [
+		{
+			"city" : "Lat Lum Kaeo",
+			"stateName" : "Pathum Thani",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"12150" : [
+		{
+			"city" : "Lam Luk Ka",
+			"stateName" : "Pathum Thani",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"12160" : [
+		{
+			"city" : "Sam Khok",
+			"stateName" : "Pathum Thani",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"12170" : [
+		{
+			"city" : "Nong Sua",
+			"stateName" : "Pathum Thani",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"14000" : [
+		{
+			"city" : "Muang ANG THONG",
+			"stateName" : "Ang Thong",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"14110" : [
+		{
+			"city" : "Wiset Chai Chan",
+			"stateName" : "Ang Thong",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"14120" : [
+		{
+			"city" : "Pho Thong",
+			"stateName" : "Ang Thong",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"14130" : [
+		{
+			"city" : "Pa Mok",
+			"stateName" : "Ang Thong",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"14140" : [
+		{
+			"city" : "Chaiyo",
+			"stateName" : "Ang Thong",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"14150" : [
+		{
+			"city" : "Sawaengha",
+			"stateName" : "Ang Thong",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"14160" : [
+		{
+			"city" : "Samko",
+			"stateName" : "Ang Thong",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"18000" : [
+		{
+			"city" : "Muang Saraburi",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chaloem Phakiat",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18110" : [
+		{
+			"city" : "Kaeng Khoi",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18120" : [
+		{
+			"city" : "Phra Phutthabat",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18130" : [
+		{
+			"city" : "Ban Mo",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18140" : [
+		{
+			"city" : "Nong Khae",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18150" : [
+		{
+			"city" : "Wihan Daeng",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18160" : [
+		{
+			"city" : "Sao Hai",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18170" : [
+		{
+			"city" : "Nong Saeng",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18180" : [
+		{
+			"city" : "Muak Lek",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18190" : [
+		{
+			"city" : "Nong Doan",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18210" : [
+		{
+			"city" : "Don Phut",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"18220" : [
+		{
+			"city" : "Wang Muang",
+			"stateName" : "Saraburi",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"21000" : [
+		{
+			"city" : "Muang Rayong",
+			"stateName" : "Rayong",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"21110" : [
+		{
+			"city" : "Khao Chamao",
+			"stateName" : "Rayong",
+			"stateCode" : "21",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Klaeng",
+			"stateName" : "Rayong",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"21120" : [
+		{
+			"city" : "Ban Khai",
+			"stateName" : "Rayong",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"21130" : [
+		{
+			"city" : "Ban Chang",
+			"stateName" : "Rayong",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"21140" : [
+		{
+			"city" : "Pluak Daeng",
+			"stateName" : "Rayong",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"21180" : [
+		{
+			"city" : "Nikhom Pattana",
+			"stateName" : "Rayong",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"21210" : [
+		{
+			"city" : "Wang Chan",
+			"stateName" : "Rayong",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"22000" : [
+		{
+			"city" : "Muang Chanthaburi",
+			"stateName" : "Chanthaburi",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"22110" : [
+		{
+			"city" : "Khlung",
+			"stateName" : "Chanthaburi",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"22120" : [
+		{
+			"city" : "Tha Mai",
+			"stateName" : "Chanthaburi",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"22130" : [
+		{
+			"city" : "Laem Sing",
+			"stateName" : "Chanthaburi",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"22140" : [
+		{
+			"city" : "Pong Nam Ron",
+			"stateName" : "Chanthaburi",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"22150" : [
+		{
+			"city" : "Makham",
+			"stateName" : "Chanthaburi",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"22160" : [
+		{
+			"city" : "Na Yai Am",
+			"stateName" : "Chanthaburi",
+			"stateCode" : "22",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Kaeng Hang Maew",
+			"stateName" : "Chanthaburi",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"22180" : [
+		{
+			"city" : "Soi Dao",
+			"stateName" : "Chanthaburi",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"22210" : [
+		{
+			"city" : "Khao Kitchakut",
+			"stateName" : "Chanthaburi",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"23000" : [
+		{
+			"city" : "Muang Trat",
+			"stateName" : "Trat",
+			"stateCode" : "23",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ko Kud",
+			"stateName" : "Trat",
+			"stateCode" : "23",
+			"county" : ""
+		}
+	],
+	"23110" : [
+		{
+			"city" : "Khlong Yai",
+			"stateName" : "Trat",
+			"stateCode" : "23",
+			"county" : ""
+		}
+	],
+	"23120" : [
+		{
+			"city" : "Laem Ngob",
+			"stateName" : "Trat",
+			"stateCode" : "23",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ko Chang",
+			"stateName" : "Trat",
+			"stateCode" : "23",
+			"county" : ""
+		}
+	],
+	"23130" : [
+		{
+			"city" : "Khao Saming",
+			"stateName" : "Trat",
+			"stateCode" : "23",
+			"county" : ""
+		}
+	],
+	"23140" : [
+		{
+			"city" : "Bo Rai",
+			"stateName" : "Trat",
+			"stateCode" : "23",
+			"county" : ""
+		}
+	],
+	"24000" : [
+		{
+			"city" : "Khlong Kaen",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Muang Chachoengsao",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+	],
+	"24110" : [
+		{
+			"city" : "Bang Khla",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+	],
+	"24120" : [
+		{
+			"city" : "Rachsan",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Phanom Sarakham",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+	],
+	"24130" : [
+		{
+			"city" : "Bang Pakong",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+	],
+	"24140" : [
+		{
+			"city" : "Ban Pho",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+	],
+	"24150" : [
+		{
+			"city" : "Bang Nam Prieo",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+	],
+	"24160" : [
+		{
+			"city" : "Sanam Chai Khet",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ta Takiab",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+	],
+	"24190" : [
+		{
+			"city" : "Paeng Yao",
+			"stateName" : "Chachoengsao",
+			"stateCode" : "24",
+			"county" : ""
+		}
+	],
+	"26000" : [
+		{
+			"city" : "Muang Nakhon Nayok",
+			"stateName" : "Nakhon Nayok",
+			"stateCode" : "26",
+			"county" : ""
+		}
+	],
+	"26110" : [
+		{
+			"city" : "Ban Na",
+			"stateName" : "Nakhon Nayok",
+			"stateCode" : "26",
+			"county" : ""
+		}
+	],
+	"26120" : [
+		{
+			"city" : "Ongkarak",
+			"stateName" : "Nakhon Nayok",
+			"stateCode" : "26",
+			"county" : ""
+		}
+	],
+	"26130" : [
+		{
+			"city" : "Pak Phli",
+			"stateName" : "Nakhon Nayok",
+			"stateCode" : "26",
+			"county" : ""
+		}
+	],
+	"27000" : [
+		{
+			"city" : "Khao Chakhun",
+			"stateName" : "Sa Kaeo",
+			"stateCode" : "27",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Muang Sa Kaeo",
+			"stateName" : "Sa Kaeo",
+			"stateCode" : "27",
+			"county" : ""
+		}
+	],
+	"27120" : [
+		{
+			"city" : "Aranyaprathet",
+			"stateName" : "Sa Kaeo",
+			"stateCode" : "27",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Wang Nam Yen",
+			"stateName" : "Sa Kaeo",
+			"stateCode" : "27",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Khok Sung",
+			"stateName" : "Sa Kaeo",
+			"stateCode" : "27",
+			"county" : ""
+		}
+	],
+	"27160" : [
+		{
+			"city" : "Wattana Nakhon",
+			"stateName" : "Sa Kaeo",
+			"stateCode" : "27",
+			"county" : ""
+		}
+	],
+	"27180" : [
+		{
+			"city" : "Ta Phraya",
+			"stateName" : "Sa Kaeo",
+			"stateCode" : "27",
+			"county" : ""
+		}
+	],
+	"27250" : [
+		{
+			"city" : "Wang Sombun",
+			"stateName" : "Sa Kaeo",
+			"stateCode" : "27",
+			"county" : ""
+		}
+	],
+	"27260" : [
+		{
+			"city" : "Khlong Hat",
+			"stateName" : "Sa Kaeo",
+			"stateCode" : "27",
+			"county" : ""
+		}
+	],
+	"30000" : [
+		{
+			"city" : "Muang Nakhon Ratchasima",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30110" : [
+		{
+			"city" : "Phimai",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30120" : [
+		{
+			"city" : "Bua Yai",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bua Lai",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30130" : [
+		{
+			"city" : "Pak Chong",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30140" : [
+		{
+			"city" : "Sikhiu",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30150" : [
+		{
+			"city" : "Pak Thong Chai",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30160" : [
+		{
+			"city" : "Non Sung",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30170" : [
+		{
+			"city" : "Sung Noen",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30180" : [
+		{
+			"city" : "Prathai",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30190" : [
+		{
+			"city" : "Chok Chai",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30210" : [
+		{
+			"city" : "Theparak",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Dan Khun Thot",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30220" : [
+		{
+			"city" : "Phra Thomgkom",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Non Thai",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30230" : [
+		{
+			"city" : "Cheleam Phakiat",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chakkarat",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30240" : [
+		{
+			"city" : "Huai Thalaeng",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30250" : [
+		{
+			"city" : "Khon Buri",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30260" : [
+		{
+			"city" : "Khong",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30270" : [
+		{
+			"city" : "Chum Phuang",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Muang Yang",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Lum Thamenchai",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30280" : [
+		{
+			"city" : "Kham Thale So",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30290" : [
+		{
+			"city" : "Kham Sakae Saeng",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30330" : [
+		{
+			"city" : "Soeng Sang",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30350" : [
+		{
+			"city" : "Ban Luam",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30360" : [
+		{
+			"city" : "Non Daeng",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30370" : [
+		{
+			"city" : "Wang Nam Khyo",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30410" : [
+		{
+			"city" : "Nong Bunnak",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30430" : [
+		{
+			"city" : "Sida",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"30440" : [
+		{
+			"city" : "Kang Sanam Nang",
+			"stateName" : "Nakhon Ratchasima",
+			"stateCode" : "30",
+			"county" : ""
+		}
+	],
+	"34000" : [
+		{
+			"city" : "Muang Ubon Ratchathani",
+			"stateName" : "Ubon Ratchathani",
+			"stateCode" : "34",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Don Moddang",
+			"stateName" : "Ubon Ratchathani",
+			"stateCode" : "34",
+			"county" : ""
+		}
+	],
+	"34140" : [
+		{
+			"city" : "Muang Samsib",
+			"stateName" : "Ubon Ratchathani",
+			"stateCode" : "34",
+			"county" : ""
+		}
+	],
+	"34150" : [
+		{
+			"city" : "Khuang Nai",
+			"stateName" : "Ubon Ratchathani",
+			"stateCode" : "34",
+			"county" : ""
+		}
+	],
+	"34160" : [
+		{
+			"city" : "Det Udom",
+			"stateName" : "Ubon Ratchathani",
+			"stateCode" : "34",
+			"county" : ""
+		}
+	],
+	"34170" : [
+		{
+			"city" : "Khemarat",
+			"stateName" : "Ubon Ratchathani",
+			"stateCode" : "34",
+			"county" : ""
+		}
+	],
+	"34220" : [
+		{
+			"city" : "Khong Chiam",
+			"stateName" : "Ubon Ratchathani",
+			"stateCode" : "34",
+			"county" : ""
+		}
+	],
+	"34230" : [
+		{
+			"city" : "Buntharik",
+			"stateName" : "Ubon Ratchathani",
+			"stateCode" : "34",
+			"county" : ""
+		}
+	],
+	"34270" : [
+		{
+			"city" : "Kut Khaopun",
+			"stateName" : "Ubon Ratchathani",
+			"stateCode" : "34",
+			"county" : ""
+		}
+	],
+	"34280" : [
+		{
+			"city" : "Na Chaluai",
+			"stateName" : "Ubon Ratchathani",
+			"stateCode" : "34",
+			"county" : ""
+		}
+	],
+	"35000" : [
+		{
+			"city" : "Muang Yasothon",
+			"stateName" : "Yasothon",
+			"stateCode" : "35",
+			"county" : ""
+		}
+	],
+	"35110" : [
+		{
+			"city" : "Kham Khuan Kaeo",
+			"stateName" : "Yasothon",
+			"stateCode" : "35",
+			"county" : ""
+		}
+	],
+	"35120" : [
+		{
+			"city" : "Loeng Nok Tha",
+			"stateName" : "Yasothon",
+			"stateCode" : "35",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Thai Chaloen",
+			"stateName" : "Yasothon",
+			"stateCode" : "35",
+			"county" : ""
+		}
+	],
+	"35130" : [
+		{
+			"city" : "Maha Chana Chai",
+			"stateName" : "Yasothon",
+			"stateCode" : "35",
+			"county" : ""
+		}
+	],
+	"35140" : [
+		{
+			"city" : "Kud Chum",
+			"stateName" : "Yasothon",
+			"stateCode" : "35",
+			"county" : ""
+		}
+	],
+	"35150" : [
+		{
+			"city" : "Pa Tiu",
+			"stateName" : "Yasothon",
+			"stateCode" : "35",
+			"county" : ""
+		}
+	],
+	"35160" : [
+		{
+			"city" : "Kho Wang",
+			"stateName" : "Yasothon",
+			"stateCode" : "35",
+			"county" : ""
+		}
+	],
+	"35170" : [
+		{
+			"city" : "Sai Mun",
+			"stateName" : "Yasothon",
+			"stateCode" : "35",
+			"county" : ""
+		}
+	],
+	"36000" : [
+		{
+			"city" : "Muang Chaiyaphum",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36110" : [
+		{
+			"city" : "Phu Khieo",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36120" : [
+		{
+			"city" : "Kaset Sombun",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36130" : [
+		{
+			"city" : "Noen Sa Nga",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chaturat",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Sub Yai",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36140" : [
+		{
+			"city" : "Khon Sawan",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36150" : [
+		{
+			"city" : "Kaeng Khro",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36160" : [
+		{
+			"city" : "Bamnet Narong",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36170" : [
+		{
+			"city" : "Ban Khwao",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36180" : [
+		{
+			"city" : "Khon San",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36190" : [
+		{
+			"city" : "Ban Thaen",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36210" : [
+		{
+			"city" : "Nong Bua Daeng",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36230" : [
+		{
+			"city" : "Thep Satthit",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36250" : [
+		{
+			"city" : "Nong Bua Rawe",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"36260" : [
+		{
+			"city" : "Phakdi Chumpon",
+			"stateName" : "Chaiyaphum",
+			"stateCode" : "36",
+			"county" : ""
+		}
+	],
+	"37000" : [
+		{
+			"city" : "Muang Amnat Charoen",
+			"stateName" : "Amnat Charoen",
+			"stateCode" : "37",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Lua Amnart",
+			"stateName" : "Amnat Charoen",
+			"stateCode" : "37",
+			"county" : ""
+		}
+	],
+	"37110" : [
+		{
+			"city" : "Phathumratvongsa",
+			"stateName" : "Amnat Charoen",
+			"stateCode" : "37",
+			"county" : ""
+		}
+	],
+	"37180" : [
+		{
+			"city" : "Phana",
+			"stateName" : "Amnat Charoen",
+			"stateCode" : "37",
+			"county" : ""
+		}
+	],
+	"37210" : [
+		{
+			"city" : "Chanunman",
+			"stateName" : "Amnat Charoen",
+			"stateCode" : "37",
+			"county" : ""
+		}
+	],
+	"37240" : [
+		{
+			"city" : "Hua Taphan",
+			"stateName" : "Amnat Charoen",
+			"stateCode" : "37",
+			"county" : ""
+		}
+	],
+	"37290" : [
+		{
+			"city" : "Senangkhanikhorn",
+			"stateName" : "Amnat Charoen",
+			"stateCode" : "37",
+			"county" : ""
+		}
+	],
+	"40000" : [
+		{
+			"city" : "Muang Khonkaen",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40110" : [
+		{
+			"city" : "Ban Had",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ban Phai",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Non Silla",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40120" : [
+		{
+			"city" : "Phon",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40130" : [
+		{
+			"city" : "Chum Phae",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40140" : [
+		{
+			"city" : "Nam Phong",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40150" : [
+		{
+			"city" : "Phu Wiang",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nong Nakham",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40160" : [
+		{
+			"city" : "Khok Phochai",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mancha Khiri",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40170" : [
+		{
+			"city" : "Sum Sung",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Kranuan",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40180" : [
+		{
+			"city" : "Chonnabot",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40190" : [
+		{
+			"city" : "Nong Song Hong",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40210" : [
+		{
+			"city" : "Nong Rua",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40220" : [
+		{
+			"city" : "Si Chomphu",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40230" : [
+		{
+			"city" : "Waeng Noi",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40250" : [
+		{
+			"city" : "Ubolratana",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40270" : [
+		{
+			"city" : "Ban Fang",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40280" : [
+		{
+			"city" : "Khao Suan Kwang",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40320" : [
+		{
+			"city" : "Phra Yun",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40330" : [
+		{
+			"city" : "Waeng Yai",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40340" : [
+		{
+			"city" : "Puai Noi",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"40350" : [
+		{
+			"city" : "Phu Pha Man",
+			"stateName" : "Khon Kaen",
+			"stateCode" : "40",
+			"county" : ""
+		}
+	],
+	"41000" : [
+		{
+			"city" : "Muang Udon Thani",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41110" : [
+		{
+			"city" : "Phrachuk Siliakram",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Kumphawapi",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41130" : [
+		{
+			"city" : "Pibun Rak",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ku Khaew",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nong Han",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41150" : [
+		{
+			"city" : "Phen",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41190" : [
+		{
+			"city" : "Ban Dung",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ban Phu",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41210" : [
+		{
+			"city" : "Nam Som",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41220" : [
+		{
+			"city" : "Nong Wua So",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41230" : [
+		{
+			"city" : "Si That",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41240" : [
+		{
+			"city" : "Non Sa-at",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41250" : [
+		{
+			"city" : "Kut Chab",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41260" : [
+		{
+			"city" : "Sang Khom",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41290" : [
+		{
+			"city" : "Chaiwan",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41310" : [
+		{
+			"city" : "Thung Fon",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41340" : [
+		{
+			"city" : "Nong Saeng",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41380" : [
+		{
+			"city" : "Na Yung",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Wang Sam Mo",
+			"stateName" : "Udon Thani",
+			"stateCode" : "41",
+			"county" : ""
+		}
+	],
+	"41220" : [
+		{
+			"city" : "Erawan",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42000" : [
+		{
+			"city" : "Muang Loei",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42110" : [
+		{
+			"city" : "Chiang Khan",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42120" : [
+		{
+			"city" : "Dan Sai",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42130" : [
+		{
+			"city" : "Wang Saphung",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42140" : [
+		{
+			"city" : "Tha Li",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42150" : [
+		{
+			"city" : "Pak Chom",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42160" : [
+		{
+			"city" : "Phu Rua",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42170" : [
+		{
+			"city" : "Na Haeo",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42180" : [
+		{
+			"city" : "Phu Kradung",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42210" : [
+		{
+			"city" : "Na Duang",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42230" : [
+		{
+			"city" : "Phu Luang",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"42240" : [
+		{
+			"city" : "Pha Khao",
+			"stateName" : "Loei",
+			"stateCode" : "42",
+			"county" : ""
+		}
+	],
+	"43000" : [
+		{
+			"city" : "Muang Nong Khai",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43100" : [
+		{
+			"city" : "Sra Khai",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43110" : [
+		{
+			"city" : "Tha Bo",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43120" : [
+		{
+			"city" : "Rattana Wapi",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Phon Phisai",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Fao Rai",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43130" : [
+		{
+			"city" : "Po Tak",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Si Chiang Mai",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43140" : [
+		{
+			"city" : "Bung Kan",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bung Kla",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43150" : [
+		{
+			"city" : "Seka",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43160" : [
+		{
+			"city" : "Sang Khom",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43170" : [
+		{
+			"city" : "So Phisai",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43180" : [
+		{
+			"city" : "Phon Charoen",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43190" : [
+		{
+			"city" : "Pak Khat",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43210" : [
+		{
+			"city" : "Si Wilai",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"43220" : [
+		{
+			"city" : "Bung Khong Long",
+			"stateName" : "Nong Khai",
+			"stateCode" : "43",
+			"county" : ""
+		}
+	],
+	"44000" : [
+		{
+			"city" : "Muang Maha Sarakham",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"44110" : [
+		{
+			"city" : "Phayakkhaphum Phisai",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"44120" : [
+		{
+			"city" : "Wapi Pathum",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"44130" : [
+		{
+			"city" : "Borabu",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Kud Rang",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"44140" : [
+		{
+			"city" : "Kosum Phisai",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"44150" : [
+		{
+			"city" : "Kantharawichai",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"44160" : [
+		{
+			"city" : "Chuan Chum",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chiang Yun",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"44170" : [
+		{
+			"city" : "Na Chuak",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"44180" : [
+		{
+			"city" : "Na Dun",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"44190" : [
+		{
+			"city" : "Kae Dam",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"44210" : [
+		{
+			"city" : "Yang Si Surat",
+			"stateName" : "Maha Sarakham",
+			"stateCode" : "44",
+			"county" : ""
+		}
+	],
+	"45000" : [
+		{
+			"city" : "Chang Han",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Sri Somdet",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chiang Khaw",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Muang Roi Et",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45110" : [
+		{
+			"city" : "Phon Thong",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45120" : [
+		{
+			"city" : "Salaphum",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45130" : [
+		{
+			"city" : "Suwannaphum",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45140" : [
+		{
+			"city" : "Phaanom Phrai",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nong Hi",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45150" : [
+		{
+			"city" : "Kaset Wisai",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45160" : [
+		{
+			"city" : "At Samat",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45170" : [
+		{
+			"city" : "Thawatchaburi",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Tung Khaoluang",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45180" : [
+		{
+			"city" : "Chaturaphak Phiman",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45190" : [
+		{
+			"city" : "Pathum Rat",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45210" : [
+		{
+			"city" : "Nong Phok",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45220" : [
+		{
+			"city" : "Muang Suang",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45230" : [
+		{
+			"city" : "Pho Chai",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45240" : [
+		{
+			"city" : "Phon Sai",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"45250" : [
+		{
+			"city" : "Moeiyawadi",
+			"stateName" : "Roi Et",
+			"stateCode" : "45",
+			"county" : ""
+		}
+	],
+	"46000" : [
+		{
+			"city" : "Donchan",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Muang Kalasin",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46110" : [
+		{
+			"city" : "Kuchinarai",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46120" : [
+		{
+			"city" : "Yang Talat",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46130" : [
+		{
+			"city" : "Kong Chai",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Kamalasai",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46140" : [
+		{
+			"city" : "Sahatsakhan",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46150" : [
+		{
+			"city" : "Somdet",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46160" : [
+		{
+			"city" : "Khao Wong",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Na Ku",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46170" : [
+		{
+			"city" : "Huai Mek",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46180" : [
+		{
+			"city" : "Kham Muang",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46190" : [
+		{
+			"city" : "Tha Khantho",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46210" : [
+		{
+			"city" : "Rong Kham",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46220" : [
+		{
+			"city" : "Nong Kung Si",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46230" : [
+		{
+			"city" : "Na Mon",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"46240" : [
+		{
+			"city" : "Huai Phung",
+			"stateName" : "Kalasin",
+			"stateCode" : "46",
+			"county" : ""
+		}
+	],
+	"47000" : [
+		{
+			"city" : "Muang Sakon Nakhon",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47110" : [
+		{
+			"city" : "Sawang Daen Din",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47120" : [
+		{
+			"city" : "Wanon Niwat",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47130" : [
+		{
+			"city" : "Phanna Nikhom",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47140" : [
+		{
+			"city" : "Ban Muang",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47150" : [
+		{
+			"city" : "Waritchaphum",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47160" : [
+		{
+			"city" : "Phang Khon",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47170" : [
+		{
+			"city" : "Akat Amnuai",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47180" : [
+		{
+			"city" : "Phu Phan",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Kut Bak",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47190" : [
+		{
+			"city" : "Song Dao",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47210" : [
+		{
+			"city" : "Kusuman",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47230" : [
+		{
+			"city" : "Pon Nakaew",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47250" : [
+		{
+			"city" : "Kham Ta Kla",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47260" : [
+		{
+			"city" : "Tao Ngoi",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47270" : [
+		{
+			"city" : "Nikhom Nam Un",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47280" : [
+		{
+			"city" : "Khok Si Supan",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"47290" : [
+		{
+			"city" : "Charoensin",
+			"stateName" : "Sakon Nakhon",
+			"stateCode" : "47",
+			"county" : ""
+		}
+	],
+	"48000" : [
+		{
+			"city" : "Muang Nakhon Phanom",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+	],
+	"48110" : [
+		{
+			"city" : "That Phanom",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+	],
+	"48120" : [
+		{
+			"city" : "Tha Songkhram",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Tha Uthen",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+	],
+	"48130" : [
+		{
+			"city" : "Na Kae",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Wang Yang",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+	],
+	"48140" : [
+		{
+			"city" : "Ban Phaeng",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Na Thom",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+	],
+	"48150" : [
+		{
+			"city" : "Si Songkhram",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+	],
+	"48160" : [
+		{
+			"city" : "Pla Pak",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+	],
+	"48170" : [
+		{
+			"city" : "Renu Nakhon",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+	],
+	"48180" : [
+		{
+			"city" : "Na Wa",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+	],
+	"48190" : [
+		{
+			"city" : "Phon Sawan",
+			"stateName" : "Nakhon Phanom",
+			"stateCode" : "48",
+			"county" : ""
+		}
+	],
+	"49000" : [
+		{
+			"city" : "Muang Mukdahan",
+			"stateName" : "Mukdahan",
+			"stateCode" : "49",
+			"county" : ""
+		}
+	],
+	"49110" : [
+		{
+			"city" : "Khamcha-I",
+			"stateName" : "Mukdahan",
+			"stateCode" : "49",
+			"county" : ""
+		}
+	],
+	"49120" : [
+		{
+			"city" : "Don Tan",
+			"stateName" : "Mukdahan",
+			"stateCode" : "49",
+			"county" : ""
+		}
+	],
+	"49130" : [
+		{
+			"city" : "Nikhom Kham Soi",
+			"stateName" : "Mukdahan",
+			"stateCode" : "49",
+			"county" : ""
+		}
+	],
+	"49140" : [
+		{
+			"city" : "Don Luang",
+			"stateName" : "Mukdahan",
+			"stateCode" : "49",
+			"county" : ""
+		}
+	],
+	"49150" : [
+		{
+			"city" : "Wan Yai",
+			"stateName" : "Mukdahan",
+			"stateCode" : "49",
+			"county" : ""
+		}
+	],
+	"49160" : [
+		{
+			"city" : "Nong Sung",
+			"stateName" : "Mukdahan",
+			"stateCode" : "49",
+			"county" : ""
+		}
+	],
+	"50000" : [
+		{
+			"city" : "Muang Chiang Mai",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50110" : [
+		{
+			"city" : "Fang",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50120" : [
+		{
+			"city" : "San Pa Tong",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50130" : [
+		{
+			"city" : "Mae On",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+,
+		{
+			"city" : "San Kamphaeng",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50140" : [
+		{
+			"city" : "Saraphi",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50150" : [
+		{
+			"city" : "Mae Taeng",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50160" : [
+		{
+			"city" : "Chom Thong",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Doi Lor",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50170" : [
+		{
+			"city" : "Chiang Dao",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50180" : [
+		{
+			"city" : "Mae Rim",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50190" : [
+		{
+			"city" : "Phrao",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50210" : [
+		{
+			"city" : "San Sai",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50220" : [
+		{
+			"city" : "Doi Saket",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50230" : [
+		{
+			"city" : "Hang Dong",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50240" : [
+		{
+			"city" : "Hot",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50250" : [
+		{
+			"city" : "Samoeng",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50260" : [
+		{
+			"city" : "Doi Tao",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50270" : [
+		{
+			"city" : "Mae Chaem",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50280" : [
+		{
+			"city" : "Mae Ai",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50310" : [
+		{
+			"city" : "Omkoi",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50320" : [
+		{
+			"city" : "Chai Prakarn",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50350" : [
+		{
+			"city" : "Weang Hang",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"50360" : [
+		{
+			"city" : "Mae Wang",
+			"stateName" : "Chiang Mai",
+			"stateCode" : "50",
+			"county" : ""
+		}
+	],
+	"51000" : [
+		{
+			"city" : "Muang Lamphun",
+			"stateName" : "Lamphun",
+			"stateCode" : "51",
+			"county" : ""
+		}
+	],
+	"51110" : [
+		{
+			"city" : "Li",
+			"stateName" : "Lamphun",
+			"stateCode" : "51",
+			"county" : ""
+		}
+	],
+	"51120" : [
+		{
+			"city" : "Pa Sang",
+			"stateName" : "Lamphun",
+			"stateCode" : "51",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Wiang Nonglong",
+			"stateName" : "Lamphun",
+			"stateCode" : "51",
+			"county" : ""
+		}
+	],
+	"51130" : [
+		{
+			"city" : "Ban Hong",
+			"stateName" : "Lamphun",
+			"stateCode" : "51",
+			"county" : ""
+		}
+	],
+	"51140" : [
+		{
+			"city" : "Mae Tha",
+			"stateName" : "Lamphun",
+			"stateCode" : "51",
+			"county" : ""
+		}
+	],
+	"51160" : [
+		{
+			"city" : "Thung Hua Chang",
+			"stateName" : "Lamphun",
+			"stateCode" : "51",
+			"county" : ""
+		}
+	],
+	"51180" : [
+		{
+			"city" : "Ban Thi",
+			"stateName" : "Lamphun",
+			"stateCode" : "51",
+			"county" : ""
+		}
+	],
+	"52000" : [
+		{
+			"city" : "Muang Lampang",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52110" : [
+		{
+			"city" : "Ngao",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52120" : [
+		{
+			"city" : "Chae Hom",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52130" : [
+		{
+			"city" : "Ko Kha",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52140" : [
+		{
+			"city" : "Wang Nua",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52150" : [
+		{
+			"city" : "Mae Tha",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52160" : [
+		{
+			"city" : "Thoen",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52170" : [
+		{
+			"city" : "Sop Prap",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52180" : [
+		{
+			"city" : "Mae Phrik",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52190" : [
+		{
+			"city" : "Hang Chat",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52210" : [
+		{
+			"city" : "Soem Ngam",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52220" : [
+		{
+			"city" : "Mae Mo",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"52240" : [
+		{
+			"city" : "Muang Pan",
+			"stateName" : "Lampang",
+			"stateCode" : "52",
+			"county" : ""
+		}
+	],
+	"53000" : [
+		{
+			"city" : "Muang Uttaradit",
+			"stateName" : "Uttaradit",
+			"stateCode" : "53",
+			"county" : ""
+		}
+	],
+	"53110" : [
+		{
+			"city" : "Nam Pat",
+			"stateName" : "Uttaradit",
+			"stateCode" : "53",
+			"county" : ""
+		}
+	],
+	"53120" : [
+		{
+			"city" : "Phichai",
+			"stateName" : "Uttaradit",
+			"stateCode" : "53",
+			"county" : ""
+		}
+	],
+	"53130" : [
+		{
+			"city" : "Laplae",
+			"stateName" : "Uttaradit",
+			"stateCode" : "53",
+			"county" : ""
+		}
+	],
+	"53140" : [
+		{
+			"city" : "Tron",
+			"stateName" : "Uttaradit",
+			"stateCode" : "53",
+			"county" : ""
+		}
+	],
+	"53150" : [
+		{
+			"city" : "Tha Pla",
+			"stateName" : "Uttaradit",
+			"stateCode" : "53",
+			"county" : ""
+		}
+	],
+	"53160" : [
+		{
+			"city" : "Fak Tha",
+			"stateName" : "Uttaradit",
+			"stateCode" : "53",
+			"county" : ""
+		}
+	],
+	"53180" : [
+		{
+			"city" : "Ban Khok",
+			"stateName" : "Uttaradit",
+			"stateCode" : "53",
+			"county" : ""
+		}
+	],
+	"53230" : [
+		{
+			"city" : "Tong Saen Khan",
+			"stateName" : "Uttaradit",
+			"stateCode" : "53",
+			"county" : ""
+		}
+	],
+	"54000" : [
+		{
+			"city" : "Muang Phrae",
+			"stateName" : "Phrae",
+			"stateCode" : "54",
+			"county" : ""
+		}
+	],
+	"54120" : [
+		{
+			"city" : "Song",
+			"stateName" : "Phrae",
+			"stateCode" : "54",
+			"county" : ""
+		}
+	],
+	"54130" : [
+		{
+			"city" : "Sung Men",
+			"stateName" : "Phrae",
+			"stateCode" : "54",
+			"county" : ""
+		}
+	],
+	"54140" : [
+		{
+			"city" : "Rong Kwang",
+			"stateName" : "Phrae",
+			"stateCode" : "54",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Den Chai",
+			"stateName" : "Phrae",
+			"stateCode" : "54",
+			"county" : ""
+		}
+	],
+	"54150" : [
+		{
+			"city" : "Long",
+			"stateName" : "Phrae",
+			"stateCode" : "54",
+			"county" : ""
+		}
+	],
+	"54160" : [
+		{
+			"city" : "Wang Chin",
+			"stateName" : "Phrae",
+			"stateCode" : "54",
+			"county" : ""
+		}
+	],
+	"54170" : [
+		{
+			"city" : "Nong Muangkhai",
+			"stateName" : "Phrae",
+			"stateCode" : "54",
+			"county" : ""
+		}
+	],
+	"55000" : [
+		{
+			"city" : "Santisuk",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Phu Piang",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Muang Nan",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"55110" : [
+		{
+			"city" : "Wiang Sa",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"55120" : [
+		{
+			"city" : "Pua",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"55130" : [
+		{
+			"city" : "Thung Chang",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chaloem Phrakiat",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"55140" : [
+		{
+			"city" : "Tha Wang Pha",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"55150" : [
+		{
+			"city" : "Na Noi",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"55160" : [
+		{
+			"city" : "Song Khaew",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chiang Klang",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"55170" : [
+		{
+			"city" : "Mae Charim",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"55180" : [
+		{
+			"city" : "Na Mun",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"55190" : [
+		{
+			"city" : "Ban Luang",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"55220" : [
+		{
+			"city" : "Bo Klua",
+			"stateName" : "Nan",
+			"stateCode" : "55",
+			"county" : ""
+		}
+	],
+	"56000" : [
+		{
+			"city" : "Muang Phayao",
+			"stateName" : "Phayao",
+			"stateCode" : "56",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Pu Khamyaw",
+			"stateName" : "Phayao",
+			"stateCode" : "56",
+			"county" : ""
+		}
+	],
+	"56110" : [
+		{
+			"city" : "Pu Sang",
+			"stateName" : "Phayao",
+			"stateCode" : "56",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chiang Kham",
+			"stateName" : "Phayao",
+			"stateCode" : "56",
+			"county" : ""
+		}
+	],
+	"56120" : [
+		{
+			"city" : "Dok Kham Tai",
+			"stateName" : "Phayao",
+			"stateCode" : "56",
+			"county" : ""
+		}
+	],
+	"56130" : [
+		{
+			"city" : "Mae Chai",
+			"stateName" : "Phayao",
+			"stateCode" : "56",
+			"county" : ""
+		}
+	],
+	"56140" : [
+		{
+			"city" : "Pong",
+			"stateName" : "Phayao",
+			"stateCode" : "56",
+			"county" : ""
+		}
+	],
+	"56150" : [
+		{
+			"city" : "Chun",
+			"stateName" : "Phayao",
+			"stateCode" : "56",
+			"county" : ""
+		}
+	],
+	"56160" : [
+		{
+			"city" : "Chiacg Muan",
+			"stateName" : "Phayao",
+			"stateCode" : "56",
+			"county" : ""
+		}
+	],
+	"57000" : [
+		{
+			"city" : "Muang Chiang Rai",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57110" : [
+		{
+			"city" : "Mae Chan",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Doi Luang",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mae Pha Luang",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57120" : [
+		{
+			"city" : "Phan",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57130" : [
+		{
+			"city" : "Mae Sai",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57140" : [
+		{
+			"city" : "Chiang Khong",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57150" : [
+		{
+			"city" : "Chiang Saen",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57160" : [
+		{
+			"city" : "Thoeng",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57170" : [
+		{
+			"city" : "Wiang Pa Pao",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57180" : [
+		{
+			"city" : "Mae Suai",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57190" : [
+		{
+			"city" : "Pa Daet",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57210" : [
+		{
+			"city" : "Wiang Chai",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Wiang Chiang Rung",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57250" : [
+		{
+			"city" : "Mae Lao",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57290" : [
+		{
+			"city" : "Phaya Mengrai",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57310" : [
+		{
+			"city" : "Wiang Kaen",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"57340" : [
+		{
+			"city" : "Khun Tan",
+			"stateName" : "Chiang Rai",
+			"stateCode" : "57",
+			"county" : ""
+		}
+	],
+	"58000" : [
+		{
+			"city" : "Muang Mae Hong Son",
+			"stateName" : "Mae Hong Son",
+			"stateCode" : "58",
+			"county" : ""
+		}
+	],
+	"58110" : [
+		{
+			"city" : "Sop Moei",
+			"stateName" : "Mae Hong Son",
+			"stateCode" : "58",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mae Sariang",
+			"stateName" : "Mae Hong Son",
+			"stateCode" : "58",
+			"county" : ""
+		}
+	],
+	"58120" : [
+		{
+			"city" : "Mae La Noi",
+			"stateName" : "Mae Hong Son",
+			"stateCode" : "58",
+			"county" : ""
+		}
+	],
+	"58130" : [
+		{
+			"city" : "Pai",
+			"stateName" : "Mae Hong Son",
+			"stateCode" : "58",
+			"county" : ""
+		}
+	],
+	"58140" : [
+		{
+			"city" : "Khun Yuam",
+			"stateName" : "Mae Hong Son",
+			"stateCode" : "58",
+			"county" : ""
+		}
+	],
+	"58150" : [
+		{
+			"city" : "Pang Mapha",
+			"stateName" : "Mae Hong Son",
+			"stateCode" : "58",
+			"county" : ""
+		}
+	],
+	"60000" : [
+		{
+			"city" : "Muang Nakhon Sawan",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60110" : [
+		{
+			"city" : "Nong Bua",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60120" : [
+		{
+			"city" : "Chumsaeng",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60130" : [
+		{
+			"city" : "Phayuha Khiri",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60140" : [
+		{
+			"city" : "Takhli",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60150" : [
+		{
+			"city" : "Chum Tabong",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Lat Yao",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mae Poen",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mae Wong",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60160" : [
+		{
+			"city" : "Tha Tako",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60170" : [
+		{
+			"city" : "Krok Phra",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60180" : [
+		{
+			"city" : "Banphot Phisai",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60190" : [
+		{
+			"city" : "Tak Fa",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60220" : [
+		{
+			"city" : "Phaisali",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"60230" : [
+		{
+			"city" : "Kao Lieo",
+			"stateName" : "Nakhon Sawan",
+			"stateCode" : "60",
+			"county" : ""
+		}
+	],
+	"61000" : [
+		{
+			"city" : "Muang Uthai Thani",
+			"stateName" : "Uthai Thani",
+			"stateCode" : "61",
+			"county" : ""
+		}
+	],
+	"61110" : [
+		{
+			"city" : "Nong Chang",
+			"stateName" : "Uthai Thani",
+			"stateCode" : "61",
+			"county" : ""
+		}
+	],
+	"61120" : [
+		{
+			"city" : "Thap Than",
+			"stateName" : "Uthai Thani",
+			"stateCode" : "61",
+			"county" : ""
+		}
+	],
+	"61130" : [
+		{
+			"city" : "Nong Khayang",
+			"stateName" : "Uthai Thani",
+			"stateCode" : "61",
+			"county" : ""
+		}
+	],
+	"61140" : [
+		{
+			"city" : "Ban Rai",
+			"stateName" : "Uthai Thani",
+			"stateCode" : "61",
+			"county" : ""
+		}
+	],
+	"61150" : [
+		{
+			"city" : "Sawang Arom",
+			"stateName" : "Uthai Thani",
+			"stateCode" : "61",
+			"county" : ""
+		}
+	],
+	"61160" : [
+		{
+			"city" : "Lan Sak",
+			"stateName" : "Uthai Thani",
+			"stateCode" : "61",
+			"county" : ""
+		}
+	],
+	"61170" : [
+		{
+			"city" : "Huai Khot",
+			"stateName" : "Uthai Thani",
+			"stateCode" : "61",
+			"county" : ""
+		}
+	],
+	"62000" : [
+		{
+			"city" : "Muang Kamphaeng Phet",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+	],
+	"62110" : [
+		{
+			"city" : "Phran Kratai",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+	],
+	"62120" : [
+		{
+			"city" : "Khlong Khlung",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Pangslila Thong",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+	],
+	"62130" : [
+		{
+			"city" : "Khanu Woralaksaburi",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+	],
+	"62150" : [
+		{
+			"city" : "Sai Ngam",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+	],
+	"62170" : [
+		{
+			"city" : "Khosamphi Nakhon",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Lan Krabue",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+	],
+	"62180" : [
+		{
+			"city" : "Khlong Lan",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+	],
+	"62190" : [
+		{
+			"city" : "Saithong Wattana",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+	],
+	"62210" : [
+		{
+			"city" : "Bung Samakki",
+			"stateName" : "Kamphaeng Phet",
+			"stateCode" : "62",
+			"county" : ""
+		}
+	],
+	"63000" : [
+		{
+			"city" : "Muang Tak",
+			"stateName" : "Tak",
+			"stateCode" : "63",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Wang Chaw",
+			"stateName" : "Tak",
+			"stateCode" : "63",
+			"county" : ""
+		}
+	],
+	"63110" : [
+		{
+			"city" : "Mae Sot",
+			"stateName" : "Tak",
+			"stateCode" : "63",
+			"county" : ""
+		}
+	],
+	"63120" : [
+		{
+			"city" : "Ban Tak",
+			"stateName" : "Tak",
+			"stateCode" : "63",
+			"county" : ""
+		}
+	],
+	"63130" : [
+		{
+			"city" : "Sam Ngao",
+			"stateName" : "Tak",
+			"stateCode" : "63",
+			"county" : ""
+		}
+	],
+	"63140" : [
+		{
+			"city" : "Mae Ramat",
+			"stateName" : "Tak",
+			"stateCode" : "63",
+			"county" : ""
+		}
+	],
+	"63150" : [
+		{
+			"city" : "Tha Song Yang",
+			"stateName" : "Tak",
+			"stateCode" : "63",
+			"county" : ""
+		}
+	],
+	"63160" : [
+		{
+			"city" : "Phob Phra",
+			"stateName" : "Tak",
+			"stateCode" : "63",
+			"county" : ""
+		}
+	],
+	"63170" : [
+		{
+			"city" : "Umphang",
+			"stateName" : "Tak",
+			"stateCode" : "63",
+			"county" : ""
+		}
+	],
+	"64000" : [
+		{
+			"city" : "Muang Sukhothai",
+			"stateName" : "Sukhothai",
+			"stateCode" : "64",
+			"county" : ""
+		}
+	],
+	"64110" : [
+		{
+			"city" : "Sawankhalok",
+			"stateName" : "Sukhothai",
+			"stateCode" : "64",
+			"county" : ""
+		}
+	],
+	"64120" : [
+		{
+			"city" : "Si Samrong",
+			"stateName" : "Sukhothai",
+			"stateCode" : "64",
+			"county" : ""
+		}
+	],
+	"64130" : [
+		{
+			"city" : "Si Satchanalai",
+			"stateName" : "Sukhothai",
+			"stateCode" : "64",
+			"county" : ""
+		}
+	],
+	"64140" : [
+		{
+			"city" : "Ban Dan Lan Hoi",
+			"stateName" : "Sukhothai",
+			"stateCode" : "64",
+			"county" : ""
+		}
+	],
+	"64150" : [
+		{
+			"city" : "Thung Saliam",
+			"stateName" : "Sukhothai",
+			"stateCode" : "64",
+			"county" : ""
+		}
+	],
+	"64160" : [
+		{
+			"city" : "Khiri Mat",
+			"stateName" : "Sukhothai",
+			"stateCode" : "64",
+			"county" : ""
+		}
+	],
+	"64170" : [
+		{
+			"city" : "Kong Krailat",
+			"stateName" : "Sukhothai",
+			"stateCode" : "64",
+			"county" : ""
+		}
+	],
+	"64180" : [
+		{
+			"city" : "Si Nakhon",
+			"stateName" : "Sukhothai",
+			"stateCode" : "64",
+			"county" : ""
+		}
+	],
+	"65000" : [
+		{
+			"city" : "Muang Phitsanulok",
+			"stateName" : "Phitsanulok",
+			"stateCode" : "65",
+			"county" : ""
+		}
+	],
+	"65110" : [
+		{
+			"city" : "Bang Krathum",
+			"stateName" : "Phitsanulok",
+			"stateCode" : "65",
+			"county" : ""
+		}
+	],
+	"65120" : [
+		{
+			"city" : "Nakhon Thai",
+			"stateName" : "Phitsanulok",
+			"stateCode" : "65",
+			"county" : ""
+		}
+	],
+	"65130" : [
+		{
+			"city" : "Wang Thong",
+			"stateName" : "Phitsanulok",
+			"stateCode" : "65",
+			"county" : ""
+		}
+	],
+	"65140" : [
+		{
+			"city" : "Bang Rakam",
+			"stateName" : "Phitsanulok",
+			"stateCode" : "65",
+			"county" : ""
+		}
+	],
+	"65150" : [
+		{
+			"city" : "Phrom Phiram",
+			"stateName" : "Phitsanulok",
+			"stateCode" : "65",
+			"county" : ""
+		}
+	],
+	"65160" : [
+		{
+			"city" : "Wat Bot",
+			"stateName" : "Phitsanulok",
+			"stateCode" : "65",
+			"county" : ""
+		}
+	],
+	"65170" : [
+		{
+			"city" : "Chat Trakan",
+			"stateName" : "Phitsanulok",
+			"stateCode" : "65",
+			"county" : ""
+		}
+	],
+	"65190" : [
+		{
+			"city" : "Noen Maprang",
+			"stateName" : "Phitsanulok",
+			"stateCode" : "65",
+			"county" : ""
+		}
+	],
+	"66000" : [
+		{
+			"city" : "Muang Phichit",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+	],
+	"66110" : [
+		{
+			"city" : "Taphan Hin",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+	],
+	"66120" : [
+		{
+			"city" : "Bang Mun Nak",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+	],
+	"66130" : [
+		{
+			"city" : "Pho Thale",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bung Norong",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+	],
+	"66140" : [
+		{
+			"city" : "Sam Ngam",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Wachirabarami",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+	],
+	"66150" : [
+		{
+			"city" : "Tab Khlo",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+	],
+	"66160" : [
+		{
+			"city" : "Sak Lek",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+	],
+	"66180" : [
+		{
+			"city" : "Wang Sai Phun",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+	],
+	"66190" : [
+		{
+			"city" : "Pho Prathap Chang",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+	],
+	"66210" : [
+		{
+			"city" : "Dong Charoen",
+			"stateName" : "Phichit",
+			"stateCode" : "66",
+			"county" : ""
+		}
+	],
+	"70000" : [
+		{
+			"city" : "Muang Ratchaburi",
+			"stateName" : "Ratchaburi",
+			"stateCode" : "70",
+			"county" : ""
+		}
+	],
+	"70110" : [
+		{
+			"city" : "Ban Pong",
+			"stateName" : "Ratchaburi",
+			"stateCode" : "70",
+			"county" : ""
+		}
+	],
+	"70120" : [
+		{
+			"city" : "Photharam",
+			"stateName" : "Ratchaburi",
+			"stateCode" : "70",
+			"county" : ""
+		}
+	],
+	"70130" : [
+		{
+			"city" : "Damnoen Saduak",
+			"stateName" : "Ratchaburi",
+			"stateCode" : "70",
+			"county" : ""
+		}
+	],
+	"70140" : [
+		{
+			"city" : "Pak Tho",
+			"stateName" : "Ratchaburi",
+			"stateCode" : "70",
+			"county" : ""
+		}
+	],
+	"70150" : [
+		{
+			"city" : "Chom Bung",
+			"stateName" : "Ratchaburi",
+			"stateCode" : "70",
+			"county" : ""
+		}
+	],
+	"70160" : [
+		{
+			"city" : "Bang Phae",
+			"stateName" : "Ratchaburi",
+			"stateCode" : "70",
+			"county" : ""
+		}
+	],
+	"70170" : [
+		{
+			"city" : "Wat Phleng",
+			"stateName" : "Ratchaburi",
+			"stateCode" : "70",
+			"county" : ""
+		}
+	],
+	"70180" : [
+		{
+			"city" : "Suan Phung",
+			"stateName" : "Ratchaburi",
+			"stateCode" : "70",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ban Ka",
+			"stateName" : "Ratchaburi",
+			"stateCode" : "70",
+			"county" : ""
+		}
+	],
+	"72000" : [
+		{
+			"city" : "Muang Suphan Buri",
+			"stateName" : "Suphanburi",
+			"stateCode" : "72",
+			"county" : ""
+		}
+	],
+	"72110" : [
+		{
+			"city" : "Song Phi Nong",
+			"stateName" : "Suphanburi",
+			"stateCode" : "72",
+			"county" : ""
+		}
+	],
+	"72120" : [
+		{
+			"city" : "Doembang Nangbuat",
+			"stateName" : "Suphanburi",
+			"stateCode" : "72",
+			"county" : ""
+		}
+	],
+	"72130" : [
+		{
+			"city" : "Sam Chuk",
+			"stateName" : "Suphanburi",
+			"stateCode" : "72",
+			"county" : ""
+		}
+	],
+	"72140" : [
+		{
+			"city" : "Si Prachan",
+			"stateName" : "Suphanburi",
+			"stateCode" : "72",
+			"county" : ""
+		}
+	],
+	"72150" : [
+		{
+			"city" : "Bang Pla Ma",
+			"stateName" : "Suphanburi",
+			"stateCode" : "72",
+			"county" : ""
+		}
+	],
+	"72160" : [
+		{
+			"city" : "U-Thong",
+			"stateName" : "Suphanburi",
+			"stateCode" : "72",
+			"county" : ""
+		}
+	],
+	"72170" : [
+		{
+			"city" : "Don Chedi",
+			"stateName" : "Suphanburi",
+			"stateCode" : "72",
+			"county" : ""
+		}
+	],
+	"72180" : [
+		{
+			"city" : "Dan Chang",
+			"stateName" : "Suphanburi",
+			"stateCode" : "72",
+			"county" : ""
+		}
+	],
+	"72240" : [
+		{
+			"city" : "Nong Yasai",
+			"stateName" : "Suphanburi",
+			"stateCode" : "72",
+			"county" : ""
+		}
+	],
+	"73000" : [
+		{
+			"city" : "Muang Nakhon Pathom",
+			"stateName" : "Nakhon Pathom",
+			"stateCode" : "73",
+			"county" : ""
+		}
+	],
+	"73110" : [
+		{
+			"city" : "Sam Phran",
+			"stateName" : "Nakhon Pathom",
+			"stateCode" : "73",
+			"county" : ""
+		}
+	],
+	"73120" : [
+		{
+			"city" : "Nakhon Chaisi",
+			"stateName" : "Nakhon Pathom",
+			"stateCode" : "73",
+			"county" : ""
+		}
+	],
+	"73130" : [
+		{
+			"city" : "Bang Len",
+			"stateName" : "Nakhon Pathom",
+			"stateCode" : "73",
+			"county" : ""
+		}
+	],
+	"73140" : [
+		{
+			"city" : "Khamphaeng Saen",
+			"stateName" : "Nakhon Pathom",
+			"stateCode" : "73",
+			"county" : ""
+		}
+	],
+	"73150" : [
+		{
+			"city" : "Don Tum",
+			"stateName" : "Nakhon Pathom",
+			"stateCode" : "73",
+			"county" : ""
+		}
+	],
+	"73170" : [
+		{
+			"city" : "Phutha Monthon",
+			"stateName" : "Nakhon Pathom",
+			"stateCode" : "73",
+			"county" : ""
+		}
+	],
+	"74000" : [
+		{
+			"city" : "Muang Samut Sakhon",
+			"stateName" : "Samut Sakhon",
+			"stateCode" : "74",
+			"county" : ""
+		}
+	],
+	"74110" : [
+		{
+			"city" : "Krathum Baen",
+			"stateName" : "Samut Sakhon",
+			"stateCode" : "74",
+			"county" : ""
+		}
+	],
+	"74120" : [
+		{
+			"city" : "Ban Phaeo",
+			"stateName" : "Samut Sakhon",
+			"stateCode" : "74",
+			"county" : ""
+		}
+	],
+	"75000" : [
+		{
+			"city" : "Muang Samut Songkhram",
+			"stateName" : "Samut Songkhram",
+			"stateCode" : "75",
+			"county" : ""
+		}
+	],
+	"75110" : [
+		{
+			"city" : "Amphawa",
+			"stateName" : "Samut Songkhram",
+			"stateCode" : "75",
+			"county" : ""
+		}
+	],
+	"75120" : [
+		{
+			"city" : "Bang Khonthi",
+			"stateName" : "Samut Songkhram",
+			"stateCode" : "75",
+			"county" : ""
+		}
+	],
+	"67000" : [
+		{
+			"city" : "Muang Phetchabun",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"67110" : [
+		{
+			"city" : "Lom Sak",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"67120" : [
+		{
+			"city" : "Lom Kao",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"67130" : [
+		{
+			"city" : "Wichian Buri",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"67140" : [
+		{
+			"city" : "Nong Phai",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"67150" : [
+		{
+			"city" : "Chon Daen",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"67160" : [
+		{
+			"city" : "Bung Sam Phan",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"67170" : [
+		{
+			"city" : "Si Thep",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"67240" : [
+		{
+			"city" : "Wang Pong",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"67260" : [
+		{
+			"city" : "Nam Nao",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"67270" : [
+		{
+			"city" : "Khao Kho",
+			"stateName" : "Phetchabun",
+			"stateCode" : "76",
+			"county" : ""
+		}
+	],
+	"76000" : [
+		{
+			"city" : "Muang Phetchaburi",
+			"stateName" : "Phetchaburi",
+			"stateCode" : "78",
+			"county" : ""
+		}
+	],
+	"76110" : [
+		{
+			"city" : "Ban Laem",
+			"stateName" : "Phetchaburi",
+			"stateCode" : "78",
+			"county" : ""
+		}
+	],
+	"76120" : [
+		{
+			"city" : "Cha-Am",
+			"stateName" : "Phetchaburi",
+			"stateCode" : "78",
+			"county" : ""
+		}
+	],
+	"76130" : [
+		{
+			"city" : "Tha Yang",
+			"stateName" : "Phetchaburi",
+			"stateCode" : "78",
+			"county" : ""
+		}
+	],
+	"76140" : [
+		{
+			"city" : "Khao Yoi",
+			"stateName" : "Phetchaburi",
+			"stateCode" : "78",
+			"county" : ""
+		}
+	],
+	"76150" : [
+		{
+			"city" : "Ban Lat",
+			"stateName" : "Phetchaburi",
+			"stateCode" : "78",
+			"county" : ""
+		}
+	],
+	"76160" : [
+		{
+			"city" : "Nong Ya Plong",
+			"stateName" : "Phetchaburi",
+			"stateCode" : "78",
+			"county" : ""
+		}
+	],
+	"76170" : [
+		{
+			"city" : "Kang Krachan",
+			"stateName" : "Phetchaburi",
+			"stateCode" : "78",
+			"county" : ""
+		}
+	],
+	"81000" : [
+		{
+			"city" : "Muang Krabi",
+			"stateName" : "Krabi",
+			"stateCode" : "81",
+			"county" : ""
+		}
+	],
+	"81110" : [
+		{
+			"city" : "Ao Luk",
+			"stateName" : "Krabi",
+			"stateCode" : "81",
+			"county" : ""
+		}
+	],
+	"81120" : [
+		{
+			"city" : "Lam Thap",
+			"stateName" : "Krabi",
+			"stateCode" : "81",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Khlong Thom",
+			"stateName" : "Krabi",
+			"stateCode" : "81",
+			"county" : ""
+		}
+	],
+	"81130" : [
+		{
+			"city" : "Nua Khlong",
+			"stateName" : "Krabi",
+			"stateCode" : "81",
+			"county" : ""
+		}
+	],
+	"81140" : [
+		{
+			"city" : "Khao Phanom",
+			"stateName" : "Krabi",
+			"stateCode" : "81",
+			"county" : ""
+		}
+	],
+	"81150" : [
+		{
+			"city" : "Ko Lanta",
+			"stateName" : "Krabi",
+			"stateCode" : "81",
+			"county" : ""
+		}
+	],
+	"81160" : [
+		{
+			"city" : "Plai Phraya",
+			"stateName" : "Krabi",
+			"stateCode" : "81",
+			"county" : ""
+		}
+	],
+	"82000" : [
+		{
+			"city" : "Muang Phang Nga",
+			"stateName" : "Phang Nga",
+			"stateCode" : "82",
+			"county" : ""
+		}
+	],
+	"82110" : [
+		{
+			"city" : "Takua Pa",
+			"stateName" : "Phang Nga",
+			"stateCode" : "82",
+			"county" : ""
+		}
+	],
+	"82120" : [
+		{
+			"city" : "Thai Muang",
+			"stateName" : "Phang Nga",
+			"stateCode" : "82",
+			"county" : ""
+		}
+	],
+	"82130" : [
+		{
+			"city" : "Takua Thung",
+			"stateName" : "Phang Nga",
+			"stateCode" : "82",
+			"county" : ""
+		}
+	],
+	"82150" : [
+		{
+			"city" : "Khura Buri",
+			"stateName" : "Phang Nga",
+			"stateCode" : "82",
+			"county" : ""
+		}
+	],
+	"82160" : [
+		{
+			"city" : "Koh Yao",
+			"stateName" : "Phang Nga",
+			"stateCode" : "82",
+			"county" : ""
+		}
+	],
+	"82170" : [
+		{
+			"city" : "Kapong",
+			"stateName" : "Phang Nga",
+			"stateCode" : "82",
+			"county" : ""
+		}
+	],
+	"82180" : [
+		{
+			"city" : "Thap Put",
+			"stateName" : "Phang Nga",
+			"stateCode" : "82",
+			"county" : ""
+		}
+	],
+	"83000" : [
+		{
+			"city" : "Muang Phuket",
+			"stateName" : "Phuket",
+			"stateCode" : "83",
+			"county" : ""
+		}
+	],
+	"83110" : [
+		{
+			"city" : "Thalang",
+			"stateName" : "Phuket",
+			"stateCode" : "83",
+			"county" : ""
+		}
+	],
+	"83120" : [
+		{
+			"city" : "Kathu",
+			"stateName" : "Phuket",
+			"stateCode" : "83",
+			"county" : ""
+		}
+	],
+	"84000" : [
+		{
+			"city" : "Muang Surat Thani",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84110" : [
+		{
+			"city" : "Chaiya",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84120" : [
+		{
+			"city" : "Ban Na San",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84130" : [
+		{
+			"city" : "Phunphin",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84140" : [
+		{
+			"city" : "Ko Samui",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84150" : [
+		{
+			"city" : "Tha Chang",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84160" : [
+		{
+			"city" : "Kanchanadit",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84170" : [
+		{
+			"city" : "Tha Chana",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84180" : [
+		{
+			"city" : "Khiri Ratthanikhom",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Wiphawadi",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84190" : [
+		{
+			"city" : "Wiang Sa",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84210" : [
+		{
+			"city" : "Chai Buri",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Phrasaeng",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84220" : [
+		{
+			"city" : "Don Sak",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84230" : [
+		{
+			"city" : "Ban Ta Khun",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84240" : [
+		{
+			"city" : "Ban Na Doem",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84250" : [
+		{
+			"city" : "Phanom",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84260" : [
+		{
+			"city" : "Khian Sa",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"84280" : [
+		{
+			"city" : "Ko Phangan",
+			"stateName" : "Surat Thani",
+			"stateCode" : "84",
+			"county" : ""
+		}
+	],
+	"85000" : [
+		{
+			"city" : "Muang Ranong",
+			"stateName" : "Ranong",
+			"stateCode" : "85",
+			"county" : ""
+		}
+	],
+	"85110" : [
+		{
+			"city" : "Kra Buri",
+			"stateName" : "Ranong",
+			"stateCode" : "85",
+			"county" : ""
+		}
+	],
+	"85120" : [
+		{
+			"city" : "Suk Samran",
+			"stateName" : "Ranong",
+			"stateCode" : "85",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Kapoe",
+			"stateName" : "Ranong",
+			"stateCode" : "85",
+			"county" : ""
+		}
+	],
+	"85130" : [
+		{
+			"city" : "La-Un",
+			"stateName" : "Ranong",
+			"stateCode" : "85",
+			"county" : ""
+		}
+	],
+	"90000" : [
+		{
+			"city" : "Muang Songkhla",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90110" : [
+		{
+			"city" : "Bang Klam",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Hat Yai",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90120" : [
+		{
+			"city" : "Sa Dao",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90130" : [
+		{
+			"city" : "Chana",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90140" : [
+		{
+			"city" : "Ranot",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90150" : [
+		{
+			"city" : "Thepha",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90160" : [
+		{
+			"city" : "Na Thawi",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90180" : [
+		{
+			"city" : "Rattapum",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90190" : [
+		{
+			"city" : "Sating Phra",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90210" : [
+		{
+			"city" : "Sabayoi",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90220" : [
+		{
+			"city" : "Kuan Niang",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90230" : [
+		{
+			"city" : "Khlong Hoykhong",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90270" : [
+		{
+			"city" : "Krasae Sin",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90310" : [
+		{
+			"city" : "Na Mom",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"90330" : [
+		{
+			"city" : "Singha Nakorn",
+			"stateName" : "Songkhla",
+			"stateCode" : "90",
+			"county" : ""
+		}
+	],
+	"91000" : [
+		{
+			"city" : "Muang Satun",
+			"stateName" : "Satun",
+			"stateCode" : "91",
+			"county" : ""
+		}
+	],
+	"91110" : [
+		{
+			"city" : "Langu",
+			"stateName" : "Satun",
+			"stateCode" : "91",
+			"county" : ""
+		}
+	],
+	"91120" : [
+		{
+			"city" : "Thung Wa",
+			"stateName" : "Satun",
+			"stateCode" : "91",
+			"county" : ""
+		}
+	],
+	"91130" : [
+		{
+			"city" : "Khuan Ka Long",
+			"stateName" : "Satun",
+			"stateCode" : "91",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Manung",
+			"stateName" : "Satun",
+			"stateCode" : "91",
+			"county" : ""
+		}
+	],
+	"91150" : [
+		{
+			"city" : "Tha Phae",
+			"stateName" : "Satun",
+			"stateCode" : "91",
+			"county" : ""
+		}
+	],
+	"91160" : [
+		{
+			"city" : "Khuan Doan",
+			"stateName" : "Satun",
+			"stateCode" : "91",
+			"county" : ""
+		}
+	],
+	"92000" : [
+		{
+			"city" : "Muang Trang",
+			"stateName" : "Trang",
+			"stateCode" : "92",
+			"county" : ""
+		}
+	],
+	"92110" : [
+		{
+			"city" : "Kantang",
+			"stateName" : "Trang",
+			"stateCode" : "92",
+			"county" : ""
+		}
+	],
+	"92120" : [
+		{
+			"city" : "Had Samran",
+			"stateName" : "Trang",
+			"stateCode" : "92",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Palian",
+			"stateName" : "Trang",
+			"stateCode" : "92",
+			"county" : ""
+		}
+	],
+	"92130" : [
+		{
+			"city" : "Huai Yot",
+			"stateName" : "Trang",
+			"stateCode" : "92",
+			"county" : ""
+		}
+	],
+	"92140" : [
+		{
+			"city" : "Yan Tak Kao",
+			"stateName" : "Trang",
+			"stateCode" : "92",
+			"county" : ""
+		}
+	],
+	"92150" : [
+		{
+			"city" : "Sikao",
+			"stateName" : "Trang",
+			"stateCode" : "92",
+			"county" : ""
+		}
+	],
+	"92160" : [
+		{
+			"city" : "Rachada",
+			"stateName" : "Trang",
+			"stateCode" : "92",
+			"county" : ""
+		}
+	],
+	"92170" : [
+		{
+			"city" : "Na Yong",
+			"stateName" : "Trang",
+			"stateCode" : "92",
+			"county" : ""
+		}
+	],
+	"92220" : [
+		{
+			"city" : "Wang Wiset",
+			"stateName" : "Trang",
+			"stateCode" : "92",
+			"county" : ""
+		}
+	],
+	"94000" : [
+		{
+			"city" : "Muang Pattani",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"94110" : [
+		{
+			"city" : "Sai Buri",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"94120" : [
+		{
+			"city" : "Khok Pho",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"94130" : [
+		{
+			"city" : "Panare",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"94140" : [
+		{
+			"city" : "Mayo",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Thung Yan Daeng",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"94150" : [
+		{
+			"city" : "Yaring",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"94160" : [
+		{
+			"city" : "Yarang",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"94170" : [
+		{
+			"city" : "Nong Chik",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"94180" : [
+		{
+			"city" : "Mae Lan",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"94220" : [
+		{
+			"city" : "Mai Kaen",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"94230" : [
+		{
+			"city" : "Kpho",
+			"stateName" : "Pattani",
+			"stateCode" : "94",
+			"county" : ""
+		}
+	],
+	"95000" : [
+		{
+			"city" : "Kung Pinung",
+			"stateName" : "Yala",
+			"stateCode" : "95",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Muang Yala",
+			"stateName" : "Yala",
+			"stateCode" : "95",
+			"county" : ""
+		}
+	],
+	"95110" : [
+		{
+			"city" : "Betong",
+			"stateName" : "Yala",
+			"stateCode" : "95",
+			"county" : ""
+		}
+	],
+	"95120" : [
+		{
+			"city" : "Yaha",
+			"stateName" : "Yala",
+			"stateCode" : "95",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ka Bung",
+			"stateName" : "Yala",
+			"stateCode" : "95",
+			"county" : ""
+		}
+	],
+	"95130" : [
+		{
+			"city" : "Bannang Sata",
+			"stateName" : "Yala",
+			"stateCode" : "95",
+			"county" : ""
+		}
+	],
+	"95140" : [
+		{
+			"city" : "Raman",
+			"stateName" : "Yala",
+			"stateCode" : "95",
+			"county" : ""
+		}
+	],
+	"95150" : [
+		{
+			"city" : "Than To",
+			"stateName" : "Yala",
+			"stateCode" : "95",
+			"county" : ""
+		}
+	],
+	"96000" : [
+		{
+			"city" : "Muang Narathiwat",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96110" : [
+		{
+			"city" : "Tak Bai",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96120" : [
+		{
+			"city" : "Sungai Kolok",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96130" : [
+		{
+			"city" : "Jao I Rong",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Rangae",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96140" : [
+		{
+			"city" : "Sungai Padi",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96150" : [
+		{
+			"city" : "Ruso",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96160" : [
+		{
+			"city" : "Waeng",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96170" : [
+		{
+			"city" : "Bacho",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96180" : [
+		{
+			"city" : "Yi-Ngo",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96190" : [
+		{
+			"city" : "Sukhirin",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96210" : [
+		{
+			"city" : "Si Sakhon",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"96220" : [
+		{
+			"city" : "Chanae",
+			"stateName" : "Narathiwat",
+			"stateCode" : "96",
+			"county" : ""
+		}
+	],
+	"13000" : [
+		{
+			"city" : "Pharnakhon Si Ayutthaya",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13110" : [
+		{
+			"city" : "Sena",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13120" : [
+		{
+			"city" : "Pak Hai",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13130" : [
+		{
+			"city" : "Tha Rua",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13140" : [
+		{
+			"city" : "Phachi",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13150" : [
+		{
+			"city" : "Maha Rat",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13160" : [
+		{
+			"city" : "Bang Pa-In",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13170" : [
+		{
+			"city" : "Wang Noi",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13190" : [
+		{
+			"city" : "Bang Sai",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13210" : [
+		{
+			"city" : "Uthai",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13220" : [
+		{
+			"city" : "Bang Pahan",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13230" : [
+		{
+			"city" : "Lat Bua Luang",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13240" : [
+		{
+			"city" : "Ban Phraek",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13250" : [
+		{
+			"city" : "Bang Ban",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13260" : [
+		{
+			"city" : "Nakhon Luang",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"13270" : [
+		{
+			"city" : "Bang Sai",
+			"stateName" : "Phranakhon Si Ayutthaya",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"15000" : [
+		{
+			"city" : "Muang Lopburi",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"15110" : [
+		{
+			"city" : "Ban Mi",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"15120" : [
+		{
+			"city" : "Khok Samrong",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"15130" : [
+		{
+			"city" : "Tha Luang",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chai Badan",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"15140" : [
+		{
+			"city" : "Phattana Nikhom",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"15150" : [
+		{
+			"city" : "Tha Wung",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"15170" : [
+		{
+			"city" : "Nong Muang",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"15190" : [
+		{
+			"city" : "Lum Sunthi",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"15240" : [
+		{
+			"city" : "Sa Bot",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"15250" : [
+		{
+			"city" : "Khok Charoen",
+			"stateName" : "Lopburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"16000" : [
+		{
+			"city" : "Muang Sing Buri",
+			"stateName" : "Singburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"16110" : [
+		{
+			"city" : "In Buri",
+			"stateName" : "Singburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"16120" : [
+		{
+			"city" : "Phrom Buri",
+			"stateName" : "Singburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"16130" : [
+		{
+			"city" : "Bang Rachan",
+			"stateName" : "Singburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"16140" : [
+		{
+			"city" : "Tha Chang",
+			"stateName" : "Singburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"16150" : [
+		{
+			"city" : "Khai Bang Rachan",
+			"stateName" : "Singburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"17000" : [
+		{
+			"city" : "Muang Chainat",
+			"stateName" : "Chainat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"17100" : [
+		{
+			"city" : "Nong Mamong",
+			"stateName" : "Chainat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"17110" : [
+		{
+			"city" : "Manorom",
+			"stateName" : "Chainat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"17120" : [
+		{
+			"city" : "Wat Sing",
+			"stateName" : "Chainat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"17130" : [
+		{
+			"city" : "Non Kham",
+			"stateName" : "Chainat",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Hankha",
+			"stateName" : "Chainat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"17140" : [
+		{
+			"city" : "Sankhaburi",
+			"stateName" : "Chainat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"17150" : [
+		{
+			"city" : "Sanphaya",
+			"stateName" : "Chainat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20000" : [
+		{
+			"city" : "Muang Chonburi",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20110" : [
+		{
+			"city" : "Si Racha",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20120" : [
+		{
+			"city" : "Ko Sichang",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20140" : [
+		{
+			"city" : "Phanat Nikhom",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20150" : [
+		{
+			"city" : "Bang Lamung",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20160" : [
+		{
+			"city" : "Phan Thong",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20170" : [
+		{
+			"city" : "Ban Bung",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20180" : [
+		{
+			"city" : "Sattahip",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20190" : [
+		{
+			"city" : "Nong Yai",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20240" : [
+		{
+			"city" : "Ko Chan",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"20270" : [
+		{
+			"city" : "Bo Thong",
+			"stateName" : "Chonburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"25000" : [
+		{
+			"city" : "Muang Prachinburi",
+			"stateName" : "Prachinburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"25110" : [
+		{
+			"city" : "Kabin Buri",
+			"stateName" : "Prachinburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"25130" : [
+		{
+			"city" : "Prachantakham",
+			"stateName" : "Prachinburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"25140" : [
+		{
+			"city" : "Si Maha Phot",
+			"stateName" : "Prachinburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"25150" : [
+		{
+			"city" : "Ban Sang",
+			"stateName" : "Prachinburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"25190" : [
+		{
+			"city" : "Khok Pip",
+			"stateName" : "Prachinburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Si Mahosot",
+			"stateName" : "Prachinburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"25220" : [
+		{
+			"city" : "Na Di",
+			"stateName" : "Prachinburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31000" : [
+		{
+			"city" : "Ban Dan",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Huai Ratch",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Muang Buri Ram",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31110" : [
+		{
+			"city" : "Nang Rong",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Non Suwan",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chaloem Phrakhiat",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cham Ni",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31120" : [
+		{
+			"city" : "Phutthaisong",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Banmai Chaiphot",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31130" : [
+		{
+			"city" : "Lam Phai Mat",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31140" : [
+		{
+			"city" : "Prakhon Chai",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31150" : [
+		{
+			"city" : "Kandong",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Satuk",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31160" : [
+		{
+			"city" : "Krasang",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31170" : [
+		{
+			"city" : "Lahan Sai",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31180" : [
+		{
+			"city" : "Ban Kruat",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31190" : [
+		{
+			"city" : "Khu Muang",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31210" : [
+		{
+			"city" : "Nong Ki",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31220" : [
+		{
+			"city" : "Pak Kam",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31230" : [
+		{
+			"city" : "Na Pho",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31240" : [
+		{
+			"city" : "Nong Hong",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31250" : [
+		{
+			"city" : "Ban Phlapphla",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"31260" : [
+		{
+			"city" : "Non Dindaeng",
+			"stateName" : "Burirum",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33000" : [
+		{
+			"city" : "Muang Sisaket",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33110" : [
+		{
+			"city" : "Kantharalak",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Benchalak",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33120" : [
+		{
+			"city" : "Uthumphon Phisai",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Muang Chan",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Po Sri Suwan",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33130" : [
+		{
+			"city" : "Kanthararom",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nam Kliang",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33140" : [
+		{
+			"city" : "Pu Sing",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Khukhan",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33150" : [
+		{
+			"city" : "Khun Han",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33160" : [
+		{
+			"city" : "Rasi Salai",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Silalad",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33170" : [
+		{
+			"city" : "Prang Ku",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33180" : [
+		{
+			"city" : "Phrai Bung",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33190" : [
+		{
+			"city" : "Yang Chum Noi",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33210" : [
+		{
+			"city" : "Huai Thap Than",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33220" : [
+		{
+			"city" : "Bung Bun",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33230" : [
+		{
+			"city" : "Phayu",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33240" : [
+		{
+			"city" : "Si Rattana",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33250" : [
+		{
+			"city" : "Non Khun",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"33270" : [
+		{
+			"city" : "Wang Hin",
+			"stateName" : "Sisaket",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"34110" : [
+		{
+			"city" : "Phibun Mangsahan",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"34130" : [
+		{
+			"city" : "Trakan Puetphon",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"34160" : [
+		{
+			"city" : "Na Year",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Thung Sriudom",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"34190" : [
+		{
+			"city" : "Sawang Werarong",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Warin Chamrabp",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"34250" : [
+		{
+			"city" : "Si Muang Mai",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"34260" : [
+		{
+			"city" : "Nam Khun",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nam Yuen",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"34330" : [
+		{
+			"city" : "Tan Sum",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"34340" : [
+		{
+			"city" : "Po Sai",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"34350" : [
+		{
+			"city" : "Sirinhon",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"34360" : [
+		{
+			"city" : "Samrong",
+			"stateName" : "Na Tan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"39000" : [
+		{
+			"city" : "Muang Nong Bua Lam Phu",
+			"stateName" : "Non Bua Lam Phu",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"39140" : [
+		{
+			"city" : "Nong Sang",
+			"stateName" : "Non Bua Lam Phu",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Non Sang",
+			"stateName" : "Non Bua Lam Phu",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"39170" : [
+		{
+			"city" : "Nawang",
+			"stateName" : "Non Bua Lam Phu",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Na Klang",
+			"stateName" : "Non Bua Lam Phu",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"39180" : [
+		{
+			"city" : "Si Bun Ruang",
+			"stateName" : "Non Bua Lam Phu",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"39270" : [
+		{
+			"city" : "Suwannakhuha",
+			"stateName" : "Non Bua Lam Phu",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71000" : [
+		{
+			"city" : "Muang Kanchanaburi",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71110" : [
+		{
+			"city" : "Tha Muang",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71120" : [
+		{
+			"city" : "Tha Maka",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71140" : [
+		{
+			"city" : "Phanom Thuan",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71150" : [
+		{
+			"city" : "Sai Yok",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71160" : [
+		{
+			"city" : "Bo Phloi",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71170" : [
+		{
+			"city" : "Huai Khaiaw",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71180" : [
+		{
+			"city" : "Thong Phaphum",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71210" : [
+		{
+			"city" : "Lao Khwan",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71220" : [
+		{
+			"city" : "Nong Prue",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71240" : [
+		{
+			"city" : "Sangkhla Buri",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71250" : [
+		{
+			"city" : "Si Sawat",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"71260" : [
+		{
+			"city" : "Dan Makham Tia",
+			"stateName" : "Khanchanaburi",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"77000" : [
+		{
+			"city" : "Muang prachuap Khirikan",
+			"stateName" : "Prachuap Khirikhan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"77110" : [
+		{
+			"city" : "Hua Hin",
+			"stateName" : "Prachuap Khirikhan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"77120" : [
+		{
+			"city" : "Pran Buri",
+			"stateName" : "Prachuap Khirikhan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"77130" : [
+		{
+			"city" : "Thap Sakae",
+			"stateName" : "Prachuap Khirikhan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"77140" : [
+		{
+			"city" : "Bang Saphan",
+			"stateName" : "Prachuap Khirikhan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"77150" : [
+		{
+			"city" : "Kui Buri",
+			"stateName" : "Prachuap Khirikhan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"77170" : [
+		{
+			"city" : "Bang Saphan Noi",
+			"stateName" : "Prachuap Khirikhan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"77180" : [
+		{
+			"city" : "Samaroiyod",
+			"stateName" : "Prachuap Khirikhan",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80000" : [
+		{
+			"city" : "Phra Phrom",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Muang Nakhon Si Thammarat",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80110" : [
+		{
+			"city" : "Thung Song",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80120" : [
+		{
+			"city" : "Sichon",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80130" : [
+		{
+			"city" : "Chula Phon",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ron Phibun",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80140" : [
+		{
+			"city" : "Pak Phanang",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80150" : [
+		{
+			"city" : "Chawang",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80160" : [
+		{
+			"city" : "Tha Sala",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nob Pitam",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80170" : [
+		{
+			"city" : "Hua Sai",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80180" : [
+		{
+			"city" : "Cha-uat",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80190" : [
+		{
+			"city" : "Chaloem Phrakiat",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Chian Yai",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80210" : [
+		{
+			"city" : "Khanom",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80220" : [
+		{
+			"city" : "Na Bon",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80230" : [
+		{
+			"city" : "Lan Saka",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80240" : [
+		{
+			"city" : "Thung Yai",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80250" : [
+		{
+			"city" : "Chang Khlang",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80260" : [
+		{
+			"city" : "Tham Punnara",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80270" : [
+		{
+			"city" : "Phipun",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80320" : [
+		{
+			"city" : "Phromkhiri",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"80360" : [
+		{
+			"city" : "Bang Khan",
+			"stateName" : "Nakhon Sie Thammarat",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"86000" : [
+		{
+			"city" : "Muang Chumphon",
+			"stateName" : "Chumphon",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"86110" : [
+		{
+			"city" : "Lang Suan",
+			"stateName" : "Chumphon",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"86130" : [
+		{
+			"city" : "Sawi",
+			"stateName" : "Chumphon",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"86140" : [
+		{
+			"city" : "Tha Sae",
+			"stateName" : "Chumphon",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"86160" : [
+		{
+			"city" : "Pathiu",
+			"stateName" : "Chumphon",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"86170" : [
+		{
+			"city" : "Lamae",
+			"stateName" : "Chumphon",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"86180" : [
+		{
+			"city" : "Phato",
+			"stateName" : "Chumphon",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"86220" : [
+		{
+			"city" : "Thung Tako",
+			"stateName" : "Chumphon",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"93000" : [
+		{
+			"city" : "Muang Phatthalung",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Sri Nakharin",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"93110" : [
+		{
+			"city" : "Khuan Khanun",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Pa Payam",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"93120" : [
+		{
+			"city" : "Pak Phayun",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"93130" : [
+		{
+			"city" : "Khao Chaison",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"93140" : [
+		{
+			"city" : "Bang Kaeo",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"93160" : [
+		{
+			"city" : "Tamot",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"93170" : [
+		{
+			"city" : "Pa Bon",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"93180" : [
+		{
+			"city" : "Kong Ra",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"93190" : [
+		{
+			"city" : "Si Ban Phot",
+			"stateName" : "Phatthalung",
+			"stateCode" : "",
+			"county" : ""
+		}
+	]
+}

@@ -1,0 +1,4386 @@
+{
+	"16000" : [
+		{
+			"city" : "DEPTO DE ALTA VERAPAZ",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16001" : [
+		{
+			"city" : "COBAN",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16002" : [
+		{
+			"city" : "SANTA CRUZ VERAPAZ",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16003" : [
+		{
+			"city" : "SAN CRISTOBAL VERAPAZ",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16004" : [
+		{
+			"city" : "TACTIC",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16005" : [
+		{
+			"city" : "TAMAHU",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16006" : [
+		{
+			"city" : "TUCURU",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16007" : [
+		{
+			"city" : "PANZOS",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16008" : [
+		{
+			"city" : "SENAHU",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16009" : [
+		{
+			"city" : "SAN PEDRO CARCHA",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16010" : [
+		{
+			"city" : "SAN JUAN CHAMELCO",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16011" : [
+		{
+			"city" : "LANQUIN",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16012" : [
+		{
+			"city" : "CAHABON",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16013" : [
+		{
+			"city" : "CHISET",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16014" : [
+		{
+			"city" : "CHAHAL",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16015" : [
+		{
+			"city" : "FRAY BARTOLOME DE LAS CASAS",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16016" : [
+		{
+			"city" : "LA TINTA (PANZOS)",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16017" : [
+		{
+			"city" : "TELEMAN (PANZOS)",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16018" : [
+		{
+			"city" : "PANCAJCHE (TUCURU)",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16019" : [
+		{
+			"city" : "SEBOL (FRAY BARTOLOME)",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16020" : [
+		{
+			"city" : "BOLONCO (FRAY BARTOLOME)",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16021" : [
+		{
+			"city" : "CAMPUR (SAN PEDRO CARCHA)",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16022" : [
+		{
+			"city" : "LAS CASAS",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16023" : [
+		{
+			"city" : "SALACUIN",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16024" : [
+		{
+			"city" : "EL ROSARIO",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16025" : [
+		{
+			"city" : "LAS CONCHAS",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"16026" : [
+		{
+			"city" : "RAXRUHA (CHISEC)",
+			"stateName" : "DEPTO DE ALTA VERAPAZ",
+			"stateCode" : "01",
+			"county" : ""
+		}
+	],
+	"15000" : [
+		{
+			"city" : "DEPTO DE BAJA VERAPAZ",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15001" : [
+		{
+			"city" : "SALAMA",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15002" : [
+		{
+			"city" : "SAN MIGUEL CHICAJ",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15003" : [
+		{
+			"city" : "RABINAL",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15004" : [
+		{
+			"city" : "CUBULCO",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15005" : [
+		{
+			"city" : "GRANADOS",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15006" : [
+		{
+			"city" : "EL CHOL",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15007" : [
+		{
+			"city" : "SAN JERONIMO",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15008" : [
+		{
+			"city" : "PERULHA",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15009" : [
+		{
+			"city" : "LOS AMATES (EL CHOL)",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15010" : [
+		{
+			"city" : "LA CANOA (SALAMA)",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15011" : [
+		{
+			"city" : "SALTAN (GRANADOS)",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"15012" : [
+		{
+			"city" : "SAN GABRIEL PANTZUY (SAN MIGUEL CHICAJ)",
+			"stateName" : "DEPTO DE BAJA VERAPAZ",
+			"stateCode" : "02",
+			"county" : ""
+		}
+	],
+	"04000" : [
+		{
+			"city" : "DEPTO DE CHIMALTENANGO",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04001" : [
+		{
+			"city" : "CHIMALTENANGO",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04002" : [
+		{
+			"city" : "SAN JOSE POAQUIL",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04003" : [
+		{
+			"city" : "SAN MARTIN JILOTEPEQUE",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04004" : [
+		{
+			"city" : "COMALAPA",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04005" : [
+		{
+			"city" : "SANTA APOLONIA",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04006" : [
+		{
+			"city" : "TECPAN GUATEMALA",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04007" : [
+		{
+			"city" : "PATZUN",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04008" : [
+		{
+			"city" : "POCHUTA",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04009" : [
+		{
+			"city" : "PATZICIA",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04010" : [
+		{
+			"city" : "SANTA CRUZ BALANYA",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04011" : [
+		{
+			"city" : "ACATENANGO",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04012" : [
+		{
+			"city" : "YEPOCAPA",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04013" : [
+		{
+			"city" : "SAN ANDRES ITZAPA",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04014" : [
+		{
+			"city" : "PARRAMOS",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04015" : [
+		{
+			"city" : "ZARAGOZA",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"04016" : [
+		{
+			"city" : "EL TEJAR",
+			"stateName" : "DEPTO DE CHIMALTENANGO",
+			"stateCode" : "03",
+			"county" : ""
+		}
+	],
+	"20000" : [
+		{
+			"city" : "DEPTO DE CHIQUIMULA",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20001" : [
+		{
+			"city" : "CHIQUIMULA",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20002" : [
+		{
+			"city" : "SAN JOSE LA ARADA",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20003" : [
+		{
+			"city" : "SAN JUAN ERMITA",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20004" : [
+		{
+			"city" : "JOCOTAN",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20005" : [
+		{
+			"city" : "CAMOTAN",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20006" : [
+		{
+			"city" : "OLOPA",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20007" : [
+		{
+			"city" : "ESQUIPULAS",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20008" : [
+		{
+			"city" : "CONCEPCION LAS MINAS",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20009" : [
+		{
+			"city" : "QUETZALTEPEQUE",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20010" : [
+		{
+			"city" : "SAN JACINTO",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20011" : [
+		{
+			"city" : "IPALA",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20012" : [
+		{
+			"city" : "ANGUIATU (CONCEP. LAS MINAS )",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20013" : [
+		{
+			"city" : "EL AMATILLO (JOCOTAN)",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20014" : [
+		{
+			"city" : "EL FLORIDO (CAMOTAN)",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20015" : [
+		{
+			"city" : "SANTA ELENA (CHIQUIMULA)",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20016" : [
+		{
+			"city" : "VALDO HONDO (CHIQUIMULA)",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20017" : [
+		{
+			"city" : "SAN ESTEBAN (CHIQUIMULA)",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20018" : [
+		{
+			"city" : "TIERRA COLORADA ( SAN JOSE LA ARADA)",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20019" : [
+		{
+			"city" : "AGUA CALIENTE ( ESQUIPULAS)",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"20020" : [
+		{
+			"city" : "NUEVA ANGUIATU (CONCEP. LAS MINAS)",
+			"stateName" : "DEPTO DE CHIQUIMULA",
+			"stateCode" : "04",
+			"county" : ""
+		}
+	],
+	"05000" : [
+		{
+			"city" : "DEPTO DE ESCUINTLA",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05001" : [
+		{
+			"city" : "ESCUINTLA",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05002" : [
+		{
+			"city" : "SANTA LUCIA COTZUMALGUAPA",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05003" : [
+		{
+			"city" : "LA DEMOCRACIA",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05004" : [
+		{
+			"city" : "SIQUINALA",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05005" : [
+		{
+			"city" : "MASAGUA",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05006" : [
+		{
+			"city" : "TIQUISATE",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05007" : [
+		{
+			"city" : "LA GOMERA",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05009" : [
+		{
+			"city" : "SAN JOSE",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05010" : [
+		{
+			"city" : "ITZAPA",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05011" : [
+		{
+			"city" : "PALIN",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05012" : [
+		{
+			"city" : "SAN VICENTE PACAYA",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05013" : [
+		{
+			"city" : "NUEVA CONCEPCION",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05014" : [
+		{
+			"city" : "OBERO (MASAGUA)",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05015" : [
+		{
+			"city" : "BRITO (GUANAGAZAPA)",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05016" : [
+		{
+			"city" : "SANTA ANA MIXTAN (NUEVA CONCEPCION)",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05017" : [
+		{
+			"city" : "EL NARANJO (MASAGUA)",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05018" : [
+		{
+			"city" : "SAN ANDRES OSUMA (ESCUINTLA)",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05019" : [
+		{
+			"city" : "CUYUTA (MASAGUA)",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05020" : [
+		{
+			"city" : "EL PORVENIR TICANLU (TIQUISATE)",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"05021" : [
+		{
+			"city" : "SIPACATE (LA GOMERA)",
+			"stateName" : "DEPTO DE ESCUINTLA",
+			"stateCode" : "06",
+			"county" : ""
+		}
+	],
+	"01001" : [
+		{
+			"city" : "ZONA 1",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01002" : [
+		{
+			"city" : "ZONA 2",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01003" : [
+		{
+			"city" : "ZONA 3",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01004" : [
+		{
+			"city" : "ZONA 4",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01005" : [
+		{
+			"city" : "ZONA 5",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01006" : [
+		{
+			"city" : "ZONA 6",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01007" : [
+		{
+			"city" : "ZONA 7",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01008" : [
+		{
+			"city" : "ZONA 8",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01009" : [
+		{
+			"city" : "ZONA 9",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01010" : [
+		{
+			"city" : "ZONA 10",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01011" : [
+		{
+			"city" : "ZONA 11",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01012" : [
+		{
+			"city" : "ZONA 12",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01013" : [
+		{
+			"city" : "ZONA 13",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01014" : [
+		{
+			"city" : "ZONA 14",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01015" : [
+		{
+			"city" : "ZONA 15",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01016" : [
+		{
+			"city" : "ZONA 16",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01017" : [
+		{
+			"city" : "ZONA 17",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01018" : [
+		{
+			"city" : "ZONA 18",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01019" : [
+		{
+			"city" : "ZONA 19",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01021" : [
+		{
+			"city" : "ZONA 21",
+			"stateName" : "Ciudad de Guatemala",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01051" : [
+		{
+			"city" : "SANTA CATARINA PINULA",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01052" : [
+		{
+			"city" : "SAN JOSE PINULA",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01053" : [
+		{
+			"city" : "SAN JOSE DEL GOLFO",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01054" : [
+		{
+			"city" : "PALENCIA",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01055" : [
+		{
+			"city" : "CHINAUTLA",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01056" : [
+		{
+			"city" : "SAN PEDRO AYAMPUC",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01057" : [
+		{
+			"city" : "MIXCO",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01058" : [
+		{
+			"city" : "SAN PEDRO SACATEPEQUEZ",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01059" : [
+		{
+			"city" : "SAN JUAN SACATEPEQUEZ",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01060" : [
+		{
+			"city" : "SAN RAYMUNDO",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01061" : [
+		{
+			"city" : "CHUARRANCHO",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01062" : [
+		{
+			"city" : "FRAIJANES",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01063" : [
+		{
+			"city" : "AMATITLAN",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01064" : [
+		{
+			"city" : "VILLA NUEVA",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01065" : [
+		{
+			"city" : "VILLA CANALES",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01066" : [
+		{
+			"city" : "PETAPA",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01067" : [
+		{
+			"city" : "CANALITOS (ZONA 21)",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01068" : [
+		{
+			"city" : "EL FISCAL (PALENCIA)",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01069" : [
+		{
+			"city" : "BOCA DEL MONTE (VILLA CANALES)",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01070" : [
+		{
+			"city" : "VUELTA GRANDE (SAN RAYMUNDO)",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01071" : [
+		{
+			"city" : "TRAPICHE GRANDE (CHUARRANCHO)",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01072" : [
+		{
+			"city" : "SANTA ELENA BARILLAS (VILLA CANALES)",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"01073" : [
+		{
+			"city" : "PUERTA PARADA (SANTA CATARINA PINULA)",
+			"stateName" : "DEPTO DE GUATEMALA",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02000" : [
+		{
+			"city" : "DEPTO DE EL PROGRESO",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02001" : [
+		{
+			"city" : "GUASTATOYA",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02002" : [
+		{
+			"city" : "MORAZAN",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02003" : [
+		{
+			"city" : "SAN AGUSTIN ACASAGUASTLAN",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02004" : [
+		{
+			"city" : "SAN CRISTOBAL ACASAGUASTLAN",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02005" : [
+		{
+			"city" : "EL JICARO",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02006" : [
+		{
+			"city" : "SANSARE",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02007" : [
+		{
+			"city" : "SANARATE",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02008" : [
+		{
+			"city" : "SAN ANTONIO LA PAZ",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02009" : [
+		{
+			"city" : "TULUMAJILLO (SAN AGUSTIN ACASAGUASTLAN)",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02010" : [
+		{
+			"city" : "ESTACION JALAPA (SANSARE)",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02011" : [
+		{
+			"city" : "TULUMAJE (SAN AGUSTIN ACASAGUASTLAN)",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02012" : [
+		{
+			"city" : "ESTANCIA DE LA VIRGEN (SAN CRISTOBAL ACASAGUASTLAN)",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02013" : [
+		{
+			"city" : "PASO DE LOS JALAPAS (EL JICARO)",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02014" : [
+		{
+			"city" : "SANTA RITA (GUASTATOYA)",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"02015" : [
+		{
+			"city" : "EL RANCHO ( SAN AGUSTIN ACASAGUASTLAN)",
+			"stateName" : "DEPTO DE EL PROGRESO",
+			"stateCode" : "07",
+			"county" : ""
+		}
+	],
+	"13000" : [
+		{
+			"city" : "DEPTO DE HUEHUETENANGO",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13001" : [
+		{
+			"city" : "HUEHUETENANGO",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13002" : [
+		{
+			"city" : "CHIANTLA",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13003" : [
+		{
+			"city" : "MALACANCITO",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13004" : [
+		{
+			"city" : "CUILCO",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13005" : [
+		{
+			"city" : "NENTON",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13006" : [
+		{
+			"city" : "SAN PEDRO NECTA",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13007" : [
+		{
+			"city" : "JACALTENANGO",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13008" : [
+		{
+			"city" : "SOLOMA",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13009" : [
+		{
+			"city" : "IXTAHUATAN",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13010" : [
+		{
+			"city" : "SANTA BARBARA",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13011" : [
+		{
+			"city" : "LA LIBERTAD",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13012" : [
+		{
+			"city" : "LA DEMOCRACIA",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13013" : [
+		{
+			"city" : "SAN MIGUEL ACATAN",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13014" : [
+		{
+			"city" : "SAN RAFAEL LA INDEPENDENCIA",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13015" : [
+		{
+			"city" : "TODOS SANTOS CUCHUMATAN",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13016" : [
+		{
+			"city" : "SAN JUAN ATITAN",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13017" : [
+		{
+			"city" : "SANTA EULALIA",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13018" : [
+		{
+			"city" : "SAN MATEO IXTATAN",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13019" : [
+		{
+			"city" : "COLOTENANGO",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13020" : [
+		{
+			"city" : "SAN SEBASTIAN HUEHUETENANGO",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13021" : [
+		{
+			"city" : "TECTITAN",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13022" : [
+		{
+			"city" : "CONCEPCION",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13023" : [
+		{
+			"city" : "SAN JUAN IXCOY",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13024" : [
+		{
+			"city" : "SAN ANTONIO HUISTA",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13025" : [
+		{
+			"city" : "SAN SEBASTIAN COSTAN",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13026" : [
+		{
+			"city" : "BARILLAS",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13027" : [
+		{
+			"city" : "AGUACATAN",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13028" : [
+		{
+			"city" : "SAN RAFAEL PETZAL",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13029" : [
+		{
+			"city" : "SAN GASPAR IXCHIL",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13030" : [
+		{
+			"city" : "SANTIAGO CHIMALTENANGO",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13031" : [
+		{
+			"city" : "SANTA ANA HUISTA",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13032" : [
+		{
+			"city" : "GRACIAS A DIOS (NENTON)",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13033" : [
+		{
+			"city" : "SAN LORENZO (HUEHUETENANGO)",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13034" : [
+		{
+			"city" : "SAN MARTIN CUCHUMATAN (TODOS SANTOS CUCHUMATAN)",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13035" : [
+		{
+			"city" : "SAN MARCOS HUISTA (JACALTENANGO)",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13036" : [
+		{
+			"city" : "PETATAN (CONCEPCION)",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13037" : [
+		{
+			"city" : "PAQUIX (CHIANTLA)",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13038" : [
+		{
+			"city" : "MICHICOY (SAN PEDRO NECTA)",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13039" : [
+		{
+			"city" : "SAN ANDRES HIUISTA (JACALTENANGO)",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13040" : [
+		{
+			"city" : "CHALUM (LA LIBERTAD)",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"13041" : [
+		{
+			"city" : "LA MESILLA",
+			"stateName" : "DEPTO DE HUEHUETENANGO",
+			"stateCode" : "08",
+			"county" : ""
+		}
+	],
+	"18000" : [
+		{
+			"city" : "DEPTO DE IZABAL",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18001" : [
+		{
+			"city" : "PUERTO BARRIOS",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18002" : [
+		{
+			"city" : "LIVINGSTON",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18003" : [
+		{
+			"city" : "EL ESTOR",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18004" : [
+		{
+			"city" : "MORALES",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18005" : [
+		{
+			"city" : "LOS AMATES",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18006" : [
+		{
+			"city" : "PLAYITAS (MORALES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18007" : [
+		{
+			"city" : "EL RICO (LOS AMATES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18008" : [
+		{
+			"city" : "CAYUGA (MORALES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18009" : [
+		{
+			"city" : "QUIRIGUA (LOS AMATES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18010" : [
+		{
+			"city" : "EL CINCHADO (PUERTO BARRIOS)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18011" : [
+		{
+			"city" : "LAS QUEBRADAS (MORALES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18012" : [
+		{
+			"city" : "ENTRE RIOS (PUERTO BARRIOS)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18013" : [
+		{
+			"city" : "SANTO TOMAS DE CASTILLA (PUERTO BARRIOS)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18014" : [
+		{
+			"city" : "EL MITCHAL (MORALES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18015" : [
+		{
+			"city" : "LAS VINAS (MORALES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18016" : [
+		{
+			"city" : "EL REFUGIO (LOS AMATES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18017" : [
+		{
+			"city" : "SANTA INES (LOS AMATES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18018" : [
+		{
+			"city" : "TENEDORES (MORALES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18019" : [
+		{
+			"city" : "SAN FELIPE (LIVINGSTON)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18020" : [
+		{
+			"city" : "BANANERA (MORALES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18021" : [
+		{
+			"city" : "FRONTERAS (LIVINGSTON)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18022" : [
+		{
+			"city" : "MARISCOS (LOS AMATES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"18023" : [
+		{
+			"city" : "BUENOS AIRES (MORALES)",
+			"stateName" : "DEPTO DE IZABAL",
+			"stateCode" : "09",
+			"county" : ""
+		}
+	],
+	"21000" : [
+		{
+			"city" : "DEPTO DE JALAPA",
+			"stateName" : "DEPTO DE JALAPA",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"21001" : [
+		{
+			"city" : "JALAPA",
+			"stateName" : "DEPTO DE JALAPA",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"21002" : [
+		{
+			"city" : "SAN PEDRO PINULA",
+			"stateName" : "DEPTO DE JALAPA",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"21003" : [
+		{
+			"city" : "SAN LUIS JILOTEPEQUE",
+			"stateName" : "DEPTO DE JALAPA",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"21004" : [
+		{
+			"city" : "SAN MANUEL CHAPARRON",
+			"stateName" : "DEPTO DE JALAPA",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"21005" : [
+		{
+			"city" : "SAN CARLOS ALZATATE",
+			"stateName" : "DEPTO DE JALAPA",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"21006" : [
+		{
+			"city" : "MONJAS",
+			"stateName" : "DEPTO DE JALAPA",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"21007" : [
+		{
+			"city" : "MATATESCUINTLA",
+			"stateName" : "DEPTO DE JALAPA",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"21008" : [
+		{
+			"city" : "LLANO GRANDE",
+			"stateName" : "DEPTO DE JALAPA",
+			"stateCode" : "10",
+			"county" : ""
+		}
+	],
+	"22000" : [
+		{
+			"city" : "DEPTO DE JUTIAPA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22001" : [
+		{
+			"city" : "JUTIAPA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22002" : [
+		{
+			"city" : "EL PROGRESO",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22003" : [
+		{
+			"city" : "SANTA CATARINA MITA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22004" : [
+		{
+			"city" : "AGUA BLANCA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22005" : [
+		{
+			"city" : "ASUNCION MITA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22006" : [
+		{
+			"city" : "YUPILTEPEQUE",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22007" : [
+		{
+			"city" : "ATESCATEMPA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22008" : [
+		{
+			"city" : "JERES",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22009" : [
+		{
+			"city" : "EL ADELANTO",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22010" : [
+		{
+			"city" : "ZAPOTITLAN",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22011" : [
+		{
+			"city" : "COMAPA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22012" : [
+		{
+			"city" : "JALPATAGUA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22013" : [
+		{
+			"city" : "CONGUANCO",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22014" : [
+		{
+			"city" : "MOYUTA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22015" : [
+		{
+			"city" : "PASACO",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22016" : [
+		{
+			"city" : "SAN JOSE ACATEMPA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22017" : [
+		{
+			"city" : "QUESADA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22018" : [
+		{
+			"city" : "CIUDAD PEDRO DE ALVARADO (MOYUTA)",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22019" : [
+		{
+			"city" : "SAN CRSITOBAL FRONTERA (ATESCATEMPA)",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22020" : [
+		{
+			"city" : "VALLE NUEVO JALPATAGUA",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22021" : [
+		{
+			"city" : "RIO DE PAZ",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22022" : [
+		{
+			"city" : "HORCONES (STA. CAT. MITA)",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22023" : [
+		{
+			"city" : "EL OVEJERO (EL PROGRESO)",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22024" : [
+		{
+			"city" : "CONTEPEQUE (ATESCATEMPA)",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22025" : [
+		{
+			"city" : "LA ESMERALDA (JEREZ)",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22026" : [
+		{
+			"city" : "HORCONES (ATESCATEMPA)",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"22027" : [
+		{
+			"city" : "TIUCAL (ASUNCION MITA)",
+			"stateName" : "DEPTO DE JUTIAPA",
+			"stateCode" : "11",
+			"county" : ""
+		}
+	],
+	"17000" : [
+		{
+			"city" : "DEPTO DE PETEN",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17001" : [
+		{
+			"city" : "FLORES",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17002" : [
+		{
+			"city" : "SAN JOSE",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17003" : [
+		{
+			"city" : "SAN BENITO",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17004" : [
+		{
+			"city" : "SAN ANDRES",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17005" : [
+		{
+			"city" : "LA LIBERTAD",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17006" : [
+		{
+			"city" : "SAN FRANCISCO",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17007" : [
+		{
+			"city" : "SANTA ANA",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17008" : [
+		{
+			"city" : "DOLORES",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17009" : [
+		{
+			"city" : "SAN LUIS",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17010" : [
+		{
+			"city" : "SAYAXCHE",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17011" : [
+		{
+			"city" : "MELCHOR DE MENCOS",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17012" : [
+		{
+			"city" : "POPTUN",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17013" : [
+		{
+			"city" : "TIKAL (FLORES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17014" : [
+		{
+			"city" : "DOS LAGUNAS (FLORES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17015" : [
+		{
+			"city" : "SANTO TORIBIO (DOLORES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17016" : [
+		{
+			"city" : "PASO CABALLOS (SAN ANDRES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17017" : [
+		{
+			"city" : "UAXACTUN (FLORES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17018" : [
+		{
+			"city" : "CARMELITA (SAN ANDRES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17019" : [
+		{
+			"city" : "MACHAQUILA (DOLORES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17020" : [
+		{
+			"city" : "EL CHAL ( DOLORES )",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17021" : [
+		{
+			"city" : "MACANCHE (DOLORES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17022" : [
+		{
+			"city" : "EL REMATE (FLORES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17023" : [
+		{
+			"city" : "LA FELICIDAD (SAYAXCHE)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17024" : [
+		{
+			"city" : "EL NARANJO (LA LIBERTAD)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17025" : [
+		{
+			"city" : "SACPUY (SAN ANDRES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17026" : [
+		{
+			"city" : "PAXCAMAN (FLORES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17027" : [
+		{
+			"city" : "LAS CRUCES (LA LIBERTAD)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17028" : [
+		{
+			"city" : "SABANETA (DOLORES)",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"17029" : [
+		{
+			"city" : "SANTA ELENA",
+			"stateName" : "DEPTO DE PETEN",
+			"stateCode" : "12",
+			"county" : ""
+		}
+	],
+	"09000" : [
+		{
+			"city" : "DEPTO DE QUETZALTENANGO",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09001" : [
+		{
+			"city" : "QUETZALTENANGO",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09002" : [
+		{
+			"city" : "SALCAJA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09003" : [
+		{
+			"city" : "OLINTEPEQUE",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09004" : [
+		{
+			"city" : "SAN CARLOS SIJA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09005" : [
+		{
+			"city" : "SIBILIA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09006" : [
+		{
+			"city" : "CABRICAN",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09007" : [
+		{
+			"city" : "CAJOLA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09008" : [
+		{
+			"city" : "SAN MIGUEL SIQUINALA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09009" : [
+		{
+			"city" : "OSTUNCALCO",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09010" : [
+		{
+			"city" : "SAN MATEO",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09011" : [
+		{
+			"city" : "CONCEPCION CHIQUIRICHAPA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09012" : [
+		{
+			"city" : "SAN MARTIN SACATEPEQUEZ",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09013" : [
+		{
+			"city" : "ALMOLONGA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09014" : [
+		{
+			"city" : "CANTEL",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09015" : [
+		{
+			"city" : "HUITAN",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09016" : [
+		{
+			"city" : "ZUNIL",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09017" : [
+		{
+			"city" : "COLOMBA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09018" : [
+		{
+			"city" : "SAN FRANCISCO LA UNION",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09019" : [
+		{
+			"city" : "EL PALMAR",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09020" : [
+		{
+			"city" : "COATEPEQUE",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09021" : [
+		{
+			"city" : "GENOVA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09022" : [
+		{
+			"city" : "FLORES COSTA CUCA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09023" : [
+		{
+			"city" : "LA ESPERANZA",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09024" : [
+		{
+			"city" : "PALESTINA DE LOS ALTOS",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09025" : [
+		{
+			"city" : "SANTA MARIA DE JESUS (ZUNIL)",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09026" : [
+		{
+			"city" : "CHIQUIBAL (SAN CARLOS SIJA)",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09027" : [
+		{
+			"city" : "LAS PALMAS (COATEPEQUE)",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09028" : [
+		{
+			"city" : "CUICALBA (SIBILIA)",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09029" : [
+		{
+			"city" : "SAN JOSE CHIQUILAJA (QUETZALTENANGO)",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09030" : [
+		{
+			"city" : "EL EDEN (PALESTINA DE LOS ALTOS)",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09031" : [
+		{
+			"city" : "CHUATUJ (SAN CARLOS SIJA)",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09032" : [
+		{
+			"city" : "EL TAMBOR (EL PALMAR)",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09033" : [
+		{
+			"city" : "LAS MERCEDES (COLOMBA)",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"09034" : [
+		{
+			"city" : "PALMIRA (COLOMBA)",
+			"stateName" : "DEPTO DE QUETZALTENANGO",
+			"stateCode" : "13",
+			"county" : ""
+		}
+	],
+	"14000" : [
+		{
+			"city" : "DEPTO DEL QUICHE",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14001" : [
+		{
+			"city" : "SANTA CRUZ DEL QUICHE",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14002" : [
+		{
+			"city" : "QUICHE",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14003" : [
+		{
+			"city" : "CHINISQUE",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14004" : [
+		{
+			"city" : "ZACUALPA",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14005" : [
+		{
+			"city" : "CHAJUL",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14006" : [
+		{
+			"city" : "CHICHICASTENANGO",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14007" : [
+		{
+			"city" : "PATZITE",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14008" : [
+		{
+			"city" : "SAN ANTONIO ILOTENANGO",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14009" : [
+		{
+			"city" : "SAN PEDRO JOCOPILAS",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14010" : [
+		{
+			"city" : "CUNEN",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14011" : [
+		{
+			"city" : "SAN JUAN COTZAL",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14012" : [
+		{
+			"city" : "JOYABAJ",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14013" : [
+		{
+			"city" : "NEBAJ",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14014" : [
+		{
+			"city" : "SAN ANDRES SAJCABAJA",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14015" : [
+		{
+			"city" : "USPANTAN",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14016" : [
+		{
+			"city" : "SACAPULAS",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14017" : [
+		{
+			"city" : "SAN BARTOLOME JOCOTENANGO",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14018" : [
+		{
+			"city" : "CANILLA",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14019" : [
+		{
+			"city" : "PLAYA GRANDE (IXCAN)",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14020" : [
+		{
+			"city" : "CHICAMAN",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14021" : [
+		{
+			"city" : "SANTA ROSA CHUJUYUB (SANTA CRUZ DEL QUICHE)",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14022" : [
+		{
+			"city" : "PACHALUM",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14023" : [
+		{
+			"city" : "CANTABAL",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14024" : [
+		{
+			"city" : "SAN JOSE LA 20 (USPANTAN-IXCAN)",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"14025" : [
+		{
+			"city" : "XACBAL",
+			"stateName" : "DEPTO DEL QUICHE",
+			"stateCode" : "14",
+			"county" : ""
+		}
+	],
+	"11000" : [
+		{
+			"city" : "DEPTO DE RETALHULEU",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11001" : [
+		{
+			"city" : "RETALHULEU",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11002" : [
+		{
+			"city" : "SAN SEBASTIAN",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11003" : [
+		{
+			"city" : "SANTA CRUZ MULUA",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11004" : [
+		{
+			"city" : "SAN MARTIN ZAPOTITLAN",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11005" : [
+		{
+			"city" : "SAN FELIPE",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11006" : [
+		{
+			"city" : "SAN ANDRES VILLA SECA",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11007" : [
+		{
+			"city" : "CHAMPERICO",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11008" : [
+		{
+			"city" : "NUEVO SAN CARLOS",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11009" : [
+		{
+			"city" : "EL ASINTAL",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11010" : [
+		{
+			"city" : "CABALLO BLANCO (RETALHULEU)",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11011" : [
+		{
+			"city" : "CANDELARIA XOLHUITZ (NUEVO SAN CARLOS)",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11012" : [
+		{
+			"city" : "SINAVBA (EL ASINTAL)",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11013" : [
+		{
+			"city" : "EL XAB (EL ASINTAL)",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"11014" : [
+		{
+			"city" : "LA MAQUINA (SAN ANDRES VILLA SECA)",
+			"stateName" : "DEPTO DE RETALHULEU",
+			"stateCode" : "15",
+			"county" : ""
+		}
+	],
+	"03000" : [
+		{
+			"city" : "DEPTO DE SACATEPEQUEZ",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03001" : [
+		{
+			"city" : "ANTIGUA GUATEMALA",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03002" : [
+		{
+			"city" : "JOCOTENANGO",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03003" : [
+		{
+			"city" : "PASTORES",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03004" : [
+		{
+			"city" : "SUMPANGO",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03005" : [
+		{
+			"city" : "SANTO DOMINGO XENACOJ",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03006" : [
+		{
+			"city" : "SANTIAGO SACATEPEQUEZ",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03007" : [
+		{
+			"city" : "SAN BARTOLOME MILPAS ALTAS",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03008" : [
+		{
+			"city" : "SAN LUCAS SACATEPEQUEZ",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03009" : [
+		{
+			"city" : "SANTA LUCIA MILPAS ALTAS",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03010" : [
+		{
+			"city" : "MAGDALENA MILPAS ALTAS",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03011" : [
+		{
+			"city" : "SANTA MARIA DE JESUS",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03012" : [
+		{
+			"city" : "CIUDAD VIEJA",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03013" : [
+		{
+			"city" : "SAN MIGUEL DUENAS",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03014" : [
+		{
+			"city" : "ALOTENANGO",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03015" : [
+		{
+			"city" : "SAN ANTONIO AGUAS CALIENTES",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03016" : [
+		{
+			"city" : "SANTA CATARINA BARAHONA",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"03017" : [
+		{
+			"city" : "SANTA MARIA CAUQUE (SANTIAGO SACATEPEQUEZ)",
+			"stateName" : "DEPTO DE SACATEPEQUEZ",
+			"stateCode" : "16",
+			"county" : ""
+		}
+	],
+	"12000" : [
+		{
+			"city" : "DEPTO DE SAN MARCOS",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12001" : [
+		{
+			"city" : "SAN MARCOS",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12002" : [
+		{
+			"city" : "SAN PEDRO SACATEPEQUEZ",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12003" : [
+		{
+			"city" : "SAN ANTONIO SACATEPEQUEZ",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12004" : [
+		{
+			"city" : "COMITANCILLO",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12005" : [
+		{
+			"city" : "SAN MIGUEL IXTAGUACAN",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12006" : [
+		{
+			"city" : "CONCEPCION TUTUAPA",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12007" : [
+		{
+			"city" : "TACANA",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12008" : [
+		{
+			"city" : "SIBINAL",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12009" : [
+		{
+			"city" : "TAJUMULCO",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12010" : [
+		{
+			"city" : "TEJUTLA",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12011" : [
+		{
+			"city" : "SAN RAFAEL PIE DE LA CUESTA",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12012" : [
+		{
+			"city" : "NUEVO PROGRESO",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12013" : [
+		{
+			"city" : "EL TUMBADOR",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12014" : [
+		{
+			"city" : "EL RODEO",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12015" : [
+		{
+			"city" : "MALACATAN",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12016" : [
+		{
+			"city" : "CATARINA",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12017" : [
+		{
+			"city" : "TECUN UMAN",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12018" : [
+		{
+			"city" : "OCOS",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12019" : [
+		{
+			"city" : "SAN PABLO",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12020" : [
+		{
+			"city" : "EL QUETZAL",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12021" : [
+		{
+			"city" : "LA REFORMA",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12022" : [
+		{
+			"city" : "PAJAPITA",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12023" : [
+		{
+			"city" : "IXCHIGUAN",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12024" : [
+		{
+			"city" : "SAN JOSE OJETEPAN",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12025" : [
+		{
+			"city" : "SAN CRISTOBAL CUCHO",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12026" : [
+		{
+			"city" : "SIPACANA",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12027" : [
+		{
+			"city" : "ESQUIPULAS PALO GORDO",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12028" : [
+		{
+			"city" : "RIO BLANCO",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12029" : [
+		{
+			"city" : "SAN LORENZO",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12030" : [
+		{
+			"city" : "EL CARMEN (MALACATAN)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12031" : [
+		{
+			"city" : "ZANJON SAN LORENZO (TECUN UMAN)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12032" : [
+		{
+			"city" : "SAN JERONIMO (EL TUMBADOR)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12033" : [
+		{
+			"city" : "SERCHIL ( SAN MARCOS)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12034" : [
+		{
+			"city" : "LA DEMOCRACIA (EL TUMBADOR)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12035" : [
+		{
+			"city" : "SAN FRANCISCO ( EL RODEO)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12036" : [
+		{
+			"city" : "EL AMPARO (EL TUMBADOR)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12037" : [
+		{
+			"city" : "SAN SEBASTIAN (SAN MARCOS)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12038" : [
+		{
+			"city" : "LOS LIMINES (OCOS)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12039" : [
+		{
+			"city" : "LA BLANCA (OCOS)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12040" : [
+		{
+			"city" : "EL CIELO (EL TUMBADOR)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12041" : [
+		{
+			"city" : "SAN JOSE IXTAL (NUEVO PROGRESO)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12042" : [
+		{
+			"city" : "PLATANARES (OCOS)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12043" : [
+		{
+			"city" : "LAS DELICIAS (EL TUMBADOR)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12044" : [
+		{
+			"city" : "CALAPTE (IXCHIGUAN)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12045" : [
+		{
+			"city" : "TOCAHE(SAN PABLO)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12046" : [
+		{
+			"city" : "LA CONQUISTA (NUEVO PROGRESO)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12047" : [
+		{
+			"city" : "CHAMPOLLAP (SAN PEDRO SACATEPEQUEZ)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12048" : [
+		{
+			"city" : "PIEDRA GRANDE (SAN PEDRO SACATEPEQUEZ",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12049" : [
+		{
+			"city" : "SANTA LUCIA IXCAMAL (SAN MARCOS)",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"12050" : [
+		{
+			"city" : "EL SITIO (CATARINA )",
+			"stateName" : "DEPTO DE SAN MARCOS",
+			"stateCode" : "17",
+			"county" : ""
+		}
+	],
+	"06000" : [
+		{
+			"city" : "DEPTO DE SANTA ROSA",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06001" : [
+		{
+			"city" : "CUILAPA",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06002" : [
+		{
+			"city" : "BARBERENA",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06003" : [
+		{
+			"city" : "SANTA ROSA DE LIMA",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06004" : [
+		{
+			"city" : "CASILLAS",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06005" : [
+		{
+			"city" : "SAN RAFAEL LAS FLORES",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06006" : [
+		{
+			"city" : "ORATORIO",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06007" : [
+		{
+			"city" : "SAN JUAN TECUACO",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06008" : [
+		{
+			"city" : "CHIQUIMULILLA",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06009" : [
+		{
+			"city" : "TAXISCO",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06010" : [
+		{
+			"city" : "SANTA MARIA IXHUATAN",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06011" : [
+		{
+			"city" : "GUAZACAPAN",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06012" : [
+		{
+			"city" : "SANTA CRUZ NARANJO",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06013" : [
+		{
+			"city" : "PUEBLO NUEVO VINAS",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06014" : [
+		{
+			"city" : "NUEVA SANTA ROSA",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06015" : [
+		{
+			"city" : "EL AHUMADO (CHIQUIMULILLA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06016" : [
+		{
+			"city" : "LOS CERRITOS (CHIQUIMULILLA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06017" : [
+		{
+			"city" : "CASAS VIEJAS (CHIQUIMULILLA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06018" : [
+		{
+			"city" : "AYARZA (CASILLAS)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06019" : [
+		{
+			"city" : "EL MOLINO (CUILAPA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06020" : [
+		{
+			"city" : "NANCINTA (CHIQUIMULILLA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06021" : [
+		{
+			"city" : "SAN MIGUEL AROCHE (CHIQUIMULILLA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06022" : [
+		{
+			"city" : "LOS ESCLAVOS (CUILAPA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06023" : [
+		{
+			"city" : "EL SERINAL (BARBERENA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06024" : [
+		{
+			"city" : "MONTERICO (TAXISCO)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06025" : [
+		{
+			"city" : "SAN JUAN DE ARANA (CUILAPA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06026" : [
+		{
+			"city" : "EL RINCONCITO (SANTA ROSA DE LIMA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"06027" : [
+		{
+			"city" : "CERRO GORDO (SANTA ROSA DE LIMA)",
+			"stateName" : "DEPTO DE SANTA ROSA",
+			"stateCode" : "18",
+			"county" : ""
+		}
+	],
+	"07000" : [
+		{
+			"city" : "DEPTO DE SOLOLA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07001" : [
+		{
+			"city" : "SOLOLA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07002" : [
+		{
+			"city" : "SAN JOSE CHACAYA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07003" : [
+		{
+			"city" : "SANTA MARIA VISITACION",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07004" : [
+		{
+			"city" : "SANTA LUCIA UTATLAN",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07005" : [
+		{
+			"city" : "NAHUALA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07006" : [
+		{
+			"city" : "SANTA CATARINA IXTAHUACAN",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07007" : [
+		{
+			"city" : "SANTA CLARA LA LAGUNA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07008" : [
+		{
+			"city" : "CONCEPCION",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07009" : [
+		{
+			"city" : "SAN ANDRES SEMETATABAJ",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07010" : [
+		{
+			"city" : "PANAJACHEL",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07011" : [
+		{
+			"city" : "SANTA CATARINA PALOPO",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07012" : [
+		{
+			"city" : "SAN ANTONIO PALOPO",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07013" : [
+		{
+			"city" : "SAN LUCAS TOLIMAN",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07014" : [
+		{
+			"city" : "SANTA CRUZ LA LAGUNA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07015" : [
+		{
+			"city" : "SAN PABLO LA LAGUNA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07016" : [
+		{
+			"city" : "SAN MARCOS LA LAGUNA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07017" : [
+		{
+			"city" : "SAN JUAN LA LAGUNA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07018" : [
+		{
+			"city" : "SAN PEDRO LA LAGUNA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07019" : [
+		{
+			"city" : "SANTIAGO ATITLAN",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07020" : [
+		{
+			"city" : "LOS ENCUENTROS SOLOLA",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07021" : [
+		{
+			"city" : "GODINEZ (SAN ANDRES SEMETABAJ)",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07022" : [
+		{
+			"city" : "AGUA ESCONDIDA ( SAN ANTONIO PALOPO)",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07023" : [
+		{
+			"city" : "ARGUETA (SOLOLA)",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"07024" : [
+		{
+			"city" : "PIXABAJ (SOLOLA)",
+			"stateName" : "DEPTO DE SOLOLA",
+			"stateCode" : "19",
+			"county" : ""
+		}
+	],
+	"10000" : [
+		{
+			"city" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10001" : [
+		{
+			"city" : "MAZATENANGO",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10002" : [
+		{
+			"city" : "CUYOTENANGO",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10003" : [
+		{
+			"city" : "SAN FRANCISCO ZAPOTITLAN",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10004" : [
+		{
+			"city" : "SAN BERNARDINO",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10005" : [
+		{
+			"city" : "SAN JOSE EL IDOLO",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10006" : [
+		{
+			"city" : "SANTO DOMINGO SUCHITEPEQUEZ",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10007" : [
+		{
+			"city" : "SAN LORENZO",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10008" : [
+		{
+			"city" : "SAMAYAO",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10009" : [
+		{
+			"city" : "SAN PABLO JOCOPILAS",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10010" : [
+		{
+			"city" : "SAN ANTONIO SUCHITEPEQUEZ",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10011" : [
+		{
+			"city" : "SAN MIGUEL PANAN",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10012" : [
+		{
+			"city" : "SAN GABRIEL",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10013" : [
+		{
+			"city" : "CHICACAO",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10014" : [
+		{
+			"city" : "PATULUL",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10015" : [
+		{
+			"city" : "SANTA BARBARA",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10016" : [
+		{
+			"city" : "SAN JUAN BAUTISTA",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10017" : [
+		{
+			"city" : "SANTO TOMAS LA UNION",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10018" : [
+		{
+			"city" : "ZUNULITO",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10019" : [
+		{
+			"city" : "PUEBLO NUEVO",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10020" : [
+		{
+			"city" : "RIO BRAVO",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10021" : [
+		{
+			"city" : "COCALES (PATULUL)",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10022" : [
+		{
+			"city" : "CHOCOLA (SAN PABLO JOCOPILAS)",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10023" : [
+		{
+			"city" : "TAHUEXCO (MAZATENANGO)",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10024" : [
+		{
+			"city" : "GUATALON (RIO BRAVO)",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10025" : [
+		{
+			"city" : "PALO GORDO (SAN ANTONIO SUCHITEPEQUEZ)",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10026" : [
+		{
+			"city" : "SAN RAFAEL PANAN (SANTA BARBARA)",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10027" : [
+		{
+			"city" : "BRACITOS (MAZATENANGO)",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10028" : [
+		{
+			"city" : "BOLIVIA (SANTO DOMINGO SUCHITEPEQUEZ)",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10029" : [
+		{
+			"city" : "MONTERREY (SANTO DOMINGO SUCHITEPEQUEZ)",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"10030" : [
+		{
+			"city" : "LA MAQUINA (CUYOTENANGO)",
+			"stateName" : "DEPTO DE SUCHITEPEQUEZ",
+			"stateCode" : "20",
+			"county" : ""
+		}
+	],
+	"08000" : [
+		{
+			"city" : "DEPTO DE TOTONICAPAN",
+			"stateName" : "DEPTO DE TOTONICAPAN",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"08001" : [
+		{
+			"city" : "TOTONICAPAN",
+			"stateName" : "DEPTO DE TOTONICAPAN",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"08002" : [
+		{
+			"city" : "SAN CRISTOBAL TOTONICAPAN",
+			"stateName" : "DEPTO DE TOTONICAPAN",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"08003" : [
+		{
+			"city" : "SAN FRANCISCO EL ALTO",
+			"stateName" : "DEPTO DE TOTONICAPAN",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"08004" : [
+		{
+			"city" : "SAN ANDRES XECUL",
+			"stateName" : "DEPTO DE TOTONICAPAN",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"08005" : [
+		{
+			"city" : "MOMOSTENANGO",
+			"stateName" : "DEPTO DE TOTONICAPAN",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"08006" : [
+		{
+			"city" : "SANTA MARIA CHIQUIMULA",
+			"stateName" : "DEPTO DE TOTONICAPAN",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"08007" : [
+		{
+			"city" : "SANTA LUCIA LA REFORMA",
+			"stateName" : "DEPTO DE TOTONICAPAN",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"08008" : [
+		{
+			"city" : "SAN BARTOLO",
+			"stateName" : "DEPTO DE TOTONICAPAN",
+			"stateCode" : "21",
+			"county" : ""
+		}
+	],
+	"19000" : [
+		{
+			"city" : "DEPTO DE ZACAPA",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19001" : [
+		{
+			"city" : "ZACAPA",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19002" : [
+		{
+			"city" : "ESTANZUELA",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19003" : [
+		{
+			"city" : "RIO HONDO",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19004" : [
+		{
+			"city" : "GUALAN",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19005" : [
+		{
+			"city" : "TECULUTAN",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19006" : [
+		{
+			"city" : "USUMATLAN",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19007" : [
+		{
+			"city" : "CABANAS",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19008" : [
+		{
+			"city" : "SAN DIEGO",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19009" : [
+		{
+			"city" : "LA UNION",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19010" : [
+		{
+			"city" : "HUITE",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19011" : [
+		{
+			"city" : "LA REFORMA (HUITE)",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19012" : [
+		{
+			"city" : "SAN JOSE (TECULUTAN)",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19013" : [
+		{
+			"city" : "SAN JORGE (ZACAPA)",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19014" : [
+		{
+			"city" : "SANTA ROSALIA (ZACAPA)",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19015" : [
+		{
+			"city" : "SANTA LUCIA (ZACAPA)",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19016" : [
+		{
+			"city" : "LA FRAGUA (ZACAPA)",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19017" : [
+		{
+			"city" : "SAN PABLO (ZACAPA)",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	],
+	"19018" : [
+		{
+			"city" : "SAN VICENTE",
+			"stateName" : "DEPTO DE ZACAPA",
+			"stateCode" : "22",
+			"county" : ""
+		}
+	]
+}

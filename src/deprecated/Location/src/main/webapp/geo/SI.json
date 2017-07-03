@@ -1,0 +1,4450 @@
+{
+	"1000" : [
+		{
+			"city" : "Ljubljana - dostava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1001" : [
+		{
+			"city" : "Ljubljana - poštni predali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1210" : [
+		{
+			"city" : "Ljubljana Šentvid",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1211" : [
+		{
+			"city" : "Ljubljana-Šmartno",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1215" : [
+		{
+			"city" : "Medvode",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1216" : [
+		{
+			"city" : "Smlednik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1217" : [
+		{
+			"city" : "Vodice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1218" : [
+		{
+			"city" : "Komenda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1219" : [
+		{
+			"city" : "Laze v Tuhinju",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1221" : [
+		{
+			"city" : "Motnik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1222" : [
+		{
+			"city" : "Trojane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1223" : [
+		{
+			"city" : "Blagovica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1225" : [
+		{
+			"city" : "Lukovica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1230" : [
+		{
+			"city" : "Domžale",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1231" : [
+		{
+			"city" : "Ljubljana Črnuče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1233" : [
+		{
+			"city" : "Dob",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1234" : [
+		{
+			"city" : "Mengeš",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1235" : [
+		{
+			"city" : "Radomlje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1236" : [
+		{
+			"city" : "Trzin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1241" : [
+		{
+			"city" : "Kamnik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1242" : [
+		{
+			"city" : "Stahovica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1251" : [
+		{
+			"city" : "Moravče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1252" : [
+		{
+			"city" : "Vače",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1260" : [
+		{
+			"city" : "Ljubljana Polje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1261" : [
+		{
+			"city" : "Ljubljana-Dobrunje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1262" : [
+		{
+			"city" : "Dol pri Ljubljani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1270" : [
+		{
+			"city" : "Litija",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1272" : [
+		{
+			"city" : "Polšnik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1273" : [
+		{
+			"city" : "Dole pri Litiji",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1274" : [
+		{
+			"city" : "Gabrovka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1275" : [
+		{
+			"city" : "Šmartno pri Litiji",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1276" : [
+		{
+			"city" : "Primskovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1281" : [
+		{
+			"city" : "Kresnice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1282" : [
+		{
+			"city" : "Sava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1290" : [
+		{
+			"city" : "Grosuplje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1291" : [
+		{
+			"city" : "Škofljica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1292" : [
+		{
+			"city" : "Ig",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1293" : [
+		{
+			"city" : "Šmarje-Sap",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1294" : [
+		{
+			"city" : "Višnja Gora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1295" : [
+		{
+			"city" : "Ivančna Gorica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1296" : [
+		{
+			"city" : "Šentvid pri Stični",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1301" : [
+		{
+			"city" : "Krka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1303" : [
+		{
+			"city" : "Zagradec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1310" : [
+		{
+			"city" : "Ribnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1311" : [
+		{
+			"city" : "Turjak",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1312" : [
+		{
+			"city" : "Videm-Dobrepolje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1313" : [
+		{
+			"city" : "Struge",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1314" : [
+		{
+			"city" : "Rob",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1315" : [
+		{
+			"city" : "Velike Lašče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1316" : [
+		{
+			"city" : "Ortnek",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1317" : [
+		{
+			"city" : "Sodražica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1318" : [
+		{
+			"city" : "Loški Potok",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1319" : [
+		{
+			"city" : "Draga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1330" : [
+		{
+			"city" : "Kočevje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1331" : [
+		{
+			"city" : "Dolenja vas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1332" : [
+		{
+			"city" : "Stara Cerkev",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1336" : [
+		{
+			"city" : "Vas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1337" : [
+		{
+			"city" : "Osilnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1338" : [
+		{
+			"city" : "Kočevska Reka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1351" : [
+		{
+			"city" : "Brezovica pri Ljubljani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1352" : [
+		{
+			"city" : "Preserje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1353" : [
+		{
+			"city" : "Borovnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1354" : [
+		{
+			"city" : "Horjul",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1355" : [
+		{
+			"city" : "Polhov Gradec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1356" : [
+		{
+			"city" : "Dobrova",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1357" : [
+		{
+			"city" : "Notranje Gorice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1358" : [
+		{
+			"city" : "Log pri Brezovici",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1360" : [
+		{
+			"city" : "Vrhnika",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1370" : [
+		{
+			"city" : "Logatec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1371" : [
+		{
+			"city" : "Logatec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1372" : [
+		{
+			"city" : "Hotedršica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1373" : [
+		{
+			"city" : "Rovte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1380" : [
+		{
+			"city" : "Cerknica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1381" : [
+		{
+			"city" : "Rakek",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1382" : [
+		{
+			"city" : "Begunje pri Cerknici",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1384" : [
+		{
+			"city" : "Grahovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1385" : [
+		{
+			"city" : "Nova vas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1386" : [
+		{
+			"city" : "Stari trg pri Ložu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1410" : [
+		{
+			"city" : "Zagorje ob Savi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1411" : [
+		{
+			"city" : "Izlake",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1412" : [
+		{
+			"city" : "Kisovec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1413" : [
+		{
+			"city" : "Čemšenik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1414" : [
+		{
+			"city" : "Podkum",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1420" : [
+		{
+			"city" : "Trbovlje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1423" : [
+		{
+			"city" : "Dobovec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1430" : [
+		{
+			"city" : "Hrastnik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1431" : [
+		{
+			"city" : "Dol pri Hrastniku",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1432" : [
+		{
+			"city" : "Zidani Most",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1433" : [
+		{
+			"city" : "Radeče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1434" : [
+		{
+			"city" : "Loka pri Zidanem Mostu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1500" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1501" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1502" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1503" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1504" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1505" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1506" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1507" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1508" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1509" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1510" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1511" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1512" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1513" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1514" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1516" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1517" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1518" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1519" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1520" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1521" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1522" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1523" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1524" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1525" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1526" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1527" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1528" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1529" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1532" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1533" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1534" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1535" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1536" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1537" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1538" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1540" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1542" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1543" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1544" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1545" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1546" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1547" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1550" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"1600" : [
+		{
+			"city" : "Ljubljana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2000" : [
+		{
+			"city" : "Maribor - dostava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2001" : [
+		{
+			"city" : "Maribor - poštni predali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2201" : [
+		{
+			"city" : "Zgornja Kungota",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2204" : [
+		{
+			"city" : "Miklavž na Dravskem polju",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2205" : [
+		{
+			"city" : "Starše",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2206" : [
+		{
+			"city" : "Marjeta na Dravskem polju",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2208" : [
+		{
+			"city" : "Pohorje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2211" : [
+		{
+			"city" : "Pesnica pri Mariboru",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2212" : [
+		{
+			"city" : "Šentilj v Slovenskih goricah",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2213" : [
+		{
+			"city" : "Zgornja Velka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2214" : [
+		{
+			"city" : "Sladki Vrh",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2215" : [
+		{
+			"city" : "Ceršak",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2221" : [
+		{
+			"city" : "Jarenina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2222" : [
+		{
+			"city" : "Jakobski Dol",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2223" : [
+		{
+			"city" : "Jurovski Dol",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2229" : [
+		{
+			"city" : "Malečnik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2230" : [
+		{
+			"city" : "Lenart v Slovenskih goricah",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2231" : [
+		{
+			"city" : "Pernica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2232" : [
+		{
+			"city" : "Voličina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2233" : [
+		{
+			"city" : "Sv. Ana v Slovenskih goricah",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2234" : [
+		{
+			"city" : "Benedikt",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2235" : [
+		{
+			"city" : "Sv. Trojica v Slovenskih goricah",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2236" : [
+		{
+			"city" : "Cerkvenjak",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2241" : [
+		{
+			"city" : "Spodnji Duplek",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2242" : [
+		{
+			"city" : "Zgornja Korena",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2250" : [
+		{
+			"city" : "Ptuj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2252" : [
+		{
+			"city" : "Dornava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2253" : [
+		{
+			"city" : "Destrnik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2254" : [
+		{
+			"city" : "Trnovska vas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2255" : [
+		{
+			"city" : "Vitomarci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2256" : [
+		{
+			"city" : "Juršinci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2257" : [
+		{
+			"city" : "Polenšak",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2258" : [
+		{
+			"city" : "Sveti Tomaž",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2259" : [
+		{
+			"city" : "Ivanjkovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2270" : [
+		{
+			"city" : "Ormož",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2272" : [
+		{
+			"city" : "Gorišnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2273" : [
+		{
+			"city" : "Podgorci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2274" : [
+		{
+			"city" : "Velika Nedelja",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2275" : [
+		{
+			"city" : "Miklavž pri Ormožu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2276" : [
+		{
+			"city" : "Kog",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2277" : [
+		{
+			"city" : "Središče ob Dravi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2281" : [
+		{
+			"city" : "Markovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2282" : [
+		{
+			"city" : "Cirkulane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2283" : [
+		{
+			"city" : "Zavrč",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2284" : [
+		{
+			"city" : "Videm pri Ptuju",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2285" : [
+		{
+			"city" : "Zgornji Leskovec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2286" : [
+		{
+			"city" : "Podlehnik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2287" : [
+		{
+			"city" : "Žetale",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2288" : [
+		{
+			"city" : "Hajdina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2289" : [
+		{
+			"city" : "Stoperce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2310" : [
+		{
+			"city" : "Slovenska Bistrica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2311" : [
+		{
+			"city" : "Hoče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2312" : [
+		{
+			"city" : "Orehova vas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2313" : [
+		{
+			"city" : "Fram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2314" : [
+		{
+			"city" : "Zgornja Polskava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2315" : [
+		{
+			"city" : "Šmartno na Pohorju",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2316" : [
+		{
+			"city" : "Zgornja Ložnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2317" : [
+		{
+			"city" : "Oplotnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2318" : [
+		{
+			"city" : "Laporje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2319" : [
+		{
+			"city" : "Poljčane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2321" : [
+		{
+			"city" : "Makole",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2322" : [
+		{
+			"city" : "Majšperk",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2323" : [
+		{
+			"city" : "Ptujska Gora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2324" : [
+		{
+			"city" : "Lovrenc na Dravskem polju",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2325" : [
+		{
+			"city" : "Kidričevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2326" : [
+		{
+			"city" : "Cirkovce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2327" : [
+		{
+			"city" : "Rače",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2331" : [
+		{
+			"city" : "Pragersko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2341" : [
+		{
+			"city" : "Limbuš",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2342" : [
+		{
+			"city" : "Ruše",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2343" : [
+		{
+			"city" : "Fala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2344" : [
+		{
+			"city" : "Lovrenc na Pohorju",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2345" : [
+		{
+			"city" : "Bistrica ob Dravi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2351" : [
+		{
+			"city" : "Kamnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2352" : [
+		{
+			"city" : "Selnica ob Dravi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2353" : [
+		{
+			"city" : "Sv. Duh na Ostrem Vrhu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2354" : [
+		{
+			"city" : "Bresternica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2360" : [
+		{
+			"city" : "Radlje ob Dravi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2361" : [
+		{
+			"city" : "Ožbalt",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2362" : [
+		{
+			"city" : "Kapla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2363" : [
+		{
+			"city" : "Podvelka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2364" : [
+		{
+			"city" : "Ribnica na Pohorju",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2365" : [
+		{
+			"city" : "Vuhred",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2366" : [
+		{
+			"city" : "Muta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2367" : [
+		{
+			"city" : "Vuzenica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2370" : [
+		{
+			"city" : "Dravograd",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2371" : [
+		{
+			"city" : "Trbonje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2372" : [
+		{
+			"city" : "Libeliče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2373" : [
+		{
+			"city" : "Šentjanž pri Dravogradu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2380" : [
+		{
+			"city" : "Slovenj Gradec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2381" : [
+		{
+			"city" : "Podgorje pri Slovenj Gradcu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2382" : [
+		{
+			"city" : "Mislinja",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2383" : [
+		{
+			"city" : "Šmartno pri Slovenj Gradcu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2390" : [
+		{
+			"city" : "Ravne na Koroškem",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2391" : [
+		{
+			"city" : "Prevalje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2392" : [
+		{
+			"city" : "Mežica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2393" : [
+		{
+			"city" : "Črna na Koroškem",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2394" : [
+		{
+			"city" : "Kotlje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2500" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2501" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2502" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2503" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2504" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2505" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2506" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2507" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2509" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2600" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2603" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2609" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"2610" : [
+		{
+			"city" : "Maribor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3000" : [
+		{
+			"city" : "Celje - dostava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3001" : [
+		{
+			"city" : "Celje - poštni predali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3201" : [
+		{
+			"city" : "Šmartno v Rožni dolini",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3202" : [
+		{
+			"city" : "Ljubečna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3203" : [
+		{
+			"city" : "Nova Cerkev",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3204" : [
+		{
+			"city" : "Dobrna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3205" : [
+		{
+			"city" : "Vitanje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3206" : [
+		{
+			"city" : "Stranice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3210" : [
+		{
+			"city" : "Slovenske Konjice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3211" : [
+		{
+			"city" : "Škofja vas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3212" : [
+		{
+			"city" : "Vojnik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3213" : [
+		{
+			"city" : "Frankolovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3214" : [
+		{
+			"city" : "Zreče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3215" : [
+		{
+			"city" : "Loče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3220" : [
+		{
+			"city" : "Štore",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3221" : [
+		{
+			"city" : "Teharje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3222" : [
+		{
+			"city" : "Dramlje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3223" : [
+		{
+			"city" : "Loka pri Žusmu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3224" : [
+		{
+			"city" : "Dobje pri Planini",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3225" : [
+		{
+			"city" : "Planina pri Sevnici",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3230" : [
+		{
+			"city" : "Šentjur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3231" : [
+		{
+			"city" : "Grobelno",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3232" : [
+		{
+			"city" : "Ponikva",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3233" : [
+		{
+			"city" : "Kalobje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3240" : [
+		{
+			"city" : "Šmarje pri Jelšah",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3241" : [
+		{
+			"city" : "Podplat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3250" : [
+		{
+			"city" : "Rogaška Slatina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3252" : [
+		{
+			"city" : "Rogatec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3253" : [
+		{
+			"city" : "Pristava pri Mestinju",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3254" : [
+		{
+			"city" : "Podčetrtek",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3255" : [
+		{
+			"city" : "Buče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3256" : [
+		{
+			"city" : "Bistrica ob Sotli",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3257" : [
+		{
+			"city" : "Podsreda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3260" : [
+		{
+			"city" : "Kozje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3261" : [
+		{
+			"city" : "Lesično",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3262" : [
+		{
+			"city" : "Prevorje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3263" : [
+		{
+			"city" : "Gorica pri Slivnici",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3264" : [
+		{
+			"city" : "Sveti Štefan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3270" : [
+		{
+			"city" : "Laško",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3271" : [
+		{
+			"city" : "Šentrupert",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3272" : [
+		{
+			"city" : "Rimske Toplice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3273" : [
+		{
+			"city" : "Jurklošter",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3301" : [
+		{
+			"city" : "Petrovče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3302" : [
+		{
+			"city" : "Griže",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3303" : [
+		{
+			"city" : "Gomilsko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3304" : [
+		{
+			"city" : "Tabor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3305" : [
+		{
+			"city" : "Vransko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3310" : [
+		{
+			"city" : "Žalec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3311" : [
+		{
+			"city" : "Šempeter v Savinjski dolini",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3312" : [
+		{
+			"city" : "Prebold",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3313" : [
+		{
+			"city" : "Polzela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3314" : [
+		{
+			"city" : "Braslovče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3320" : [
+		{
+			"city" : "Velenje - dostava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3322" : [
+		{
+			"city" : "Velenje - poštni predali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3325" : [
+		{
+			"city" : "Šoštanj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3326" : [
+		{
+			"city" : "Topolšica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3327" : [
+		{
+			"city" : "Šmartno ob Paki",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3330" : [
+		{
+			"city" : "Mozirje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3331" : [
+		{
+			"city" : "Nazarje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3332" : [
+		{
+			"city" : "Rečica ob Savinji",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3333" : [
+		{
+			"city" : "Ljubno ob Savinji",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3334" : [
+		{
+			"city" : "Luče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3335" : [
+		{
+			"city" : "Solčava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3341" : [
+		{
+			"city" : "Šmartno ob Dreti",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3342" : [
+		{
+			"city" : "Gornji Grad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3502" : [
+		{
+			"city" : "Celje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3503" : [
+		{
+			"city" : "Velenje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3504" : [
+		{
+			"city" : "Velenje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3505" : [
+		{
+			"city" : "Celje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"3600" : [
+		{
+			"city" : "Celje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4000" : [
+		{
+			"city" : "Kranj - dostava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4001" : [
+		{
+			"city" : "Kranj - poštni predali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4201" : [
+		{
+			"city" : "Zgornja Besnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4202" : [
+		{
+			"city" : "Naklo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4203" : [
+		{
+			"city" : "Duplje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4204" : [
+		{
+			"city" : "Golnik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4205" : [
+		{
+			"city" : "Preddvor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4206" : [
+		{
+			"city" : "Zgornje Jezersko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4207" : [
+		{
+			"city" : "Cerklje na Gorenjskem",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4208" : [
+		{
+			"city" : "Šenčur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4209" : [
+		{
+			"city" : "Žabnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4210" : [
+		{
+			"city" : "Brnik aerodrom",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4211" : [
+		{
+			"city" : "Mavčiče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4212" : [
+		{
+			"city" : "Visoko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4220" : [
+		{
+			"city" : "Škofja Loka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4223" : [
+		{
+			"city" : "Poljane nad Škofjo Loko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4224" : [
+		{
+			"city" : "Gorenja vas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4225" : [
+		{
+			"city" : "Sovodenj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4226" : [
+		{
+			"city" : "Žiri",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4227" : [
+		{
+			"city" : "Selca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4228" : [
+		{
+			"city" : "Železniki",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4229" : [
+		{
+			"city" : "Sorica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4240" : [
+		{
+			"city" : "Radovljica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4243" : [
+		{
+			"city" : "Brezje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4244" : [
+		{
+			"city" : "Podnart",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4245" : [
+		{
+			"city" : "Kropa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4246" : [
+		{
+			"city" : "Kamna Gorica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4247" : [
+		{
+			"city" : "Zgornje Gorje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4248" : [
+		{
+			"city" : "Lesce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4260" : [
+		{
+			"city" : "Bled",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4263" : [
+		{
+			"city" : "Bohinjska Bela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4264" : [
+		{
+			"city" : "Bohinjska Bistrica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4265" : [
+		{
+			"city" : "Bohinjsko jezero",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4267" : [
+		{
+			"city" : "Srednja vas v Bohinju",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4270" : [
+		{
+			"city" : "Jesenice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4273" : [
+		{
+			"city" : "Blejska Dobrava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4274" : [
+		{
+			"city" : "Žirovnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4275" : [
+		{
+			"city" : "Begunje na Gorenjskem",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4276" : [
+		{
+			"city" : "Hrušica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4280" : [
+		{
+			"city" : "Kranjska Gora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4281" : [
+		{
+			"city" : "Mojstrana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4282" : [
+		{
+			"city" : "Gozd Martuljek",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4283" : [
+		{
+			"city" : "Rateče-Planica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4290" : [
+		{
+			"city" : "Tržič",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4294" : [
+		{
+			"city" : "Križe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4501" : [
+		{
+			"city" : "Naklo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4502" : [
+		{
+			"city" : "Kranj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"4600" : [
+		{
+			"city" : "Kranj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5000" : [
+		{
+			"city" : "Nova Gorica - dostava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5001" : [
+		{
+			"city" : "Nova Gorica - poštni predali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5210" : [
+		{
+			"city" : "Deskle",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5211" : [
+		{
+			"city" : "Kojsko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5212" : [
+		{
+			"city" : "Dobrovo v Brdih",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5213" : [
+		{
+			"city" : "Kanal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5214" : [
+		{
+			"city" : "Kal nad Kanalom",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5215" : [
+		{
+			"city" : "Ročinj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5216" : [
+		{
+			"city" : "Most na Soči",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5220" : [
+		{
+			"city" : "Tolmin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5222" : [
+		{
+			"city" : "Kobarid",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5223" : [
+		{
+			"city" : "Breginj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5224" : [
+		{
+			"city" : "Srpenica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5230" : [
+		{
+			"city" : "Bovec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5231" : [
+		{
+			"city" : "Log pod Mangartom",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5232" : [
+		{
+			"city" : "Soča",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5242" : [
+		{
+			"city" : "Grahovo ob Bači",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5243" : [
+		{
+			"city" : "Podbrdo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5250" : [
+		{
+			"city" : "Solkan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5251" : [
+		{
+			"city" : "Grgar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5252" : [
+		{
+			"city" : "Trnovo pri Gorici",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5253" : [
+		{
+			"city" : "Čepovan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5261" : [
+		{
+			"city" : "Šempas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5262" : [
+		{
+			"city" : "Črniče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5263" : [
+		{
+			"city" : "Dobravlje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5270" : [
+		{
+			"city" : "Ajdovščina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5271" : [
+		{
+			"city" : "Vipava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5272" : [
+		{
+			"city" : "Podnanos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5273" : [
+		{
+			"city" : "Col",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5274" : [
+		{
+			"city" : "Črni Vrh nad Idrijo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5275" : [
+		{
+			"city" : "Godovič",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5280" : [
+		{
+			"city" : "Idrija",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5281" : [
+		{
+			"city" : "Spodnja Idrija",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5282" : [
+		{
+			"city" : "Cerkno",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5283" : [
+		{
+			"city" : "Slap ob Idrijci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5290" : [
+		{
+			"city" : "Šempeter pri Gorici",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5291" : [
+		{
+			"city" : "Miren",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5292" : [
+		{
+			"city" : "Renče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5293" : [
+		{
+			"city" : "Volčja Draga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5294" : [
+		{
+			"city" : "Dornberk",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5295" : [
+		{
+			"city" : "Branik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5296" : [
+		{
+			"city" : "Kostanjevica na Krasu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5297" : [
+		{
+			"city" : "Prvačina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"5600" : [
+		{
+			"city" : "Nova Gorica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6000" : [
+		{
+			"city" : "Koper/Capodistria - dostava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6001" : [
+		{
+			"city" : "Koper/Capodistria - poštni predali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6210" : [
+		{
+			"city" : "Sežana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6215" : [
+		{
+			"city" : "Divača",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6216" : [
+		{
+			"city" : "Podgorje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6217" : [
+		{
+			"city" : "Vremski Britof",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6219" : [
+		{
+			"city" : "Lokev",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6221" : [
+		{
+			"city" : "Dutovlje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6222" : [
+		{
+			"city" : "Štanjel",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6223" : [
+		{
+			"city" : "Komen",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6224" : [
+		{
+			"city" : "Senožeče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6225" : [
+		{
+			"city" : "Hruševje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6230" : [
+		{
+			"city" : "Postojna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6232" : [
+		{
+			"city" : "Planina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6240" : [
+		{
+			"city" : "Kozina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6242" : [
+		{
+			"city" : "Materija",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6243" : [
+		{
+			"city" : "Obrov",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6244" : [
+		{
+			"city" : "Podgrad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6250" : [
+		{
+			"city" : "Ilirska Bistrica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6251" : [
+		{
+			"city" : "Ilirska Bistrica-Trnovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6253" : [
+		{
+			"city" : "Knežak",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6254" : [
+		{
+			"city" : "Jelšane",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6255" : [
+		{
+			"city" : "Prem",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6256" : [
+		{
+			"city" : "Košana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6257" : [
+		{
+			"city" : "Pivka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6258" : [
+		{
+			"city" : "Prestranek",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6271" : [
+		{
+			"city" : "Dekani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6272" : [
+		{
+			"city" : "Gračišče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6273" : [
+		{
+			"city" : "Marezige",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6274" : [
+		{
+			"city" : "Šmarje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6275" : [
+		{
+			"city" : "Črni Kal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6276" : [
+		{
+			"city" : "Pobegi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6280" : [
+		{
+			"city" : "Ankaran/Ancarano",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6281" : [
+		{
+			"city" : "Škofije",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6310" : [
+		{
+			"city" : "Izola/Isola",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6320" : [
+		{
+			"city" : "Portorož/Portorose",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6323" : [
+		{
+			"city" : "Strunjan/Strugnano (sezonska pošta)",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6330" : [
+		{
+			"city" : "Piran/Pirano",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6333" : [
+		{
+			"city" : "Sečovlje/Sicciole",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6501" : [
+		{
+			"city" : "Koper",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6502" : [
+		{
+			"city" : "Koper",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6503" : [
+		{
+			"city" : "Koper",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6504" : [
+		{
+			"city" : "Koper",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6505" : [
+		{
+			"city" : "Koper",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"6600" : [
+		{
+			"city" : "Koper",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8000" : [
+		{
+			"city" : "Novo mesto - dostava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8001" : [
+		{
+			"city" : "Novo mesto - poštni predali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8210" : [
+		{
+			"city" : "Trebnje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8211" : [
+		{
+			"city" : "Dobrnič",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8212" : [
+		{
+			"city" : "Velika Loka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8213" : [
+		{
+			"city" : "Veliki Gaber",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8216" : [
+		{
+			"city" : "Mirna Peč",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8220" : [
+		{
+			"city" : "Šmarješke Toplice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8222" : [
+		{
+			"city" : "Otočec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8230" : [
+		{
+			"city" : "Mokronog",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8231" : [
+		{
+			"city" : "Trebelno",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8232" : [
+		{
+			"city" : "Šentrupert",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8233" : [
+		{
+			"city" : "Mirna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8250" : [
+		{
+			"city" : "Brežice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8251" : [
+		{
+			"city" : "Čatež ob Savi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8253" : [
+		{
+			"city" : "Artiče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8254" : [
+		{
+			"city" : "Globoko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8255" : [
+		{
+			"city" : "Pišece",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8256" : [
+		{
+			"city" : "Sromlje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8257" : [
+		{
+			"city" : "Dobova",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8258" : [
+		{
+			"city" : "Kapele",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8259" : [
+		{
+			"city" : "Bizeljsko",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8261" : [
+		{
+			"city" : "Jesenice na Dolenjskem",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8262" : [
+		{
+			"city" : "Krška vas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8263" : [
+		{
+			"city" : "Cerklje ob Krki",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8270" : [
+		{
+			"city" : "Krško",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8272" : [
+		{
+			"city" : "Zdole",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8273" : [
+		{
+			"city" : "Leskovec pri Krškem",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8274" : [
+		{
+			"city" : "Raka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8275" : [
+		{
+			"city" : "Škocjan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8276" : [
+		{
+			"city" : "Bučka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8280" : [
+		{
+			"city" : "Brestanica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8281" : [
+		{
+			"city" : "Senovo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8282" : [
+		{
+			"city" : "Koprivnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8283" : [
+		{
+			"city" : "Blanca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8290" : [
+		{
+			"city" : "Sevnica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8292" : [
+		{
+			"city" : "Zabukovje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8293" : [
+		{
+			"city" : "Studenec",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8294" : [
+		{
+			"city" : "Boštanj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8295" : [
+		{
+			"city" : "Tržišče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8296" : [
+		{
+			"city" : "Krmelj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8297" : [
+		{
+			"city" : "Šentjanž",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8310" : [
+		{
+			"city" : "Šentjernej",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8311" : [
+		{
+			"city" : "Kostanjevica na Krki",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8312" : [
+		{
+			"city" : "Podbočje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8321" : [
+		{
+			"city" : "Brusnice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8322" : [
+		{
+			"city" : "Stopiče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8323" : [
+		{
+			"city" : "Uršna sela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8330" : [
+		{
+			"city" : "Metlika",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8331" : [
+		{
+			"city" : "Suhor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8332" : [
+		{
+			"city" : "Gradac",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8333" : [
+		{
+			"city" : "Semič",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8340" : [
+		{
+			"city" : "Črnomelj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8341" : [
+		{
+			"city" : "Adlešiči",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8342" : [
+		{
+			"city" : "Stari trg ob Kolpi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8343" : [
+		{
+			"city" : "Dragatuš",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8344" : [
+		{
+			"city" : "Vinica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8350" : [
+		{
+			"city" : "Dolenjske Toplice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8351" : [
+		{
+			"city" : "Straža",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8360" : [
+		{
+			"city" : "Žužemberk",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8361" : [
+		{
+			"city" : "Dvor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8362" : [
+		{
+			"city" : "Hinje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8501" : [
+		{
+			"city" : "Novo mesto",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"8600" : [
+		{
+			"city" : "Novo mesto",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9000" : [
+		{
+			"city" : "Murska Sobota - dostava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9001" : [
+		{
+			"city" : "Murska Sobota - poštni predali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9201" : [
+		{
+			"city" : "Puconci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9202" : [
+		{
+			"city" : "Mačkovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9203" : [
+		{
+			"city" : "Petrovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9204" : [
+		{
+			"city" : "Šalovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9205" : [
+		{
+			"city" : "Hodoš/Hodos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9206" : [
+		{
+			"city" : "Križevci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9207" : [
+		{
+			"city" : "Prosenjakovci/Partosfalva",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9208" : [
+		{
+			"city" : "Fokovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9220" : [
+		{
+			"city" : "Lendava/Lendva",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9221" : [
+		{
+			"city" : "Martjanci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9222" : [
+		{
+			"city" : "Bogojina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9223" : [
+		{
+			"city" : "Dobrovnik/Dobronak",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9224" : [
+		{
+			"city" : "Turnišče",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9225" : [
+		{
+			"city" : "Velika Polana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9226" : [
+		{
+			"city" : "Moravske Toplice",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9227" : [
+		{
+			"city" : "Kobilje",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9231" : [
+		{
+			"city" : "Beltinci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9232" : [
+		{
+			"city" : "Črenšovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9233" : [
+		{
+			"city" : "Odranci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9240" : [
+		{
+			"city" : "Ljutomer",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9241" : [
+		{
+			"city" : "Veržej",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9242" : [
+		{
+			"city" : "Križevci pri Ljutomeru",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9243" : [
+		{
+			"city" : "Mala Nedelja",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9244" : [
+		{
+			"city" : "Sv. Jurij ob Ščavnici",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9245" : [
+		{
+			"city" : "Spodnji Ivanjci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9250" : [
+		{
+			"city" : "Gornja Radgona",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9251" : [
+		{
+			"city" : "Tišina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9252" : [
+		{
+			"city" : "Radenci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9253" : [
+		{
+			"city" : "Apače",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9261" : [
+		{
+			"city" : "Cankova",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9262" : [
+		{
+			"city" : "Rogašovci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9263" : [
+		{
+			"city" : "Kuzma",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9264" : [
+		{
+			"city" : "Grad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9265" : [
+		{
+			"city" : "Bodonci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9501" : [
+		{
+			"city" : "Murska Sobota",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9502" : [
+		{
+			"city" : "Radenci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"9600" : [
+		{
+			"city" : "Murska Sobota",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	]
+}

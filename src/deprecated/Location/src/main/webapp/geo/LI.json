@@ -1,0 +1,106 @@
+{
+	"9490" : [
+		{
+			"city" : "Vaduz",
+			"stateName" : "Vaduz",
+			"stateCode" : "7001",
+			"county" : ""
+		}
+	],
+	"9495" : [
+		{
+			"city" : "Triesen",
+			"stateName" : "Triesen",
+			"stateCode" : "7002",
+			"county" : ""
+		}
+	],
+	"9496" : [
+		{
+			"city" : "Balzers",
+			"stateName" : "Balzers",
+			"stateCode" : "7003",
+			"county" : ""
+		}
+	],
+	"9497" : [
+		{
+			"city" : "Triesenberg",
+			"stateName" : "Triesenberg",
+			"stateCode" : "7004",
+			"county" : ""
+		}
+	],
+	"9494" : [
+		{
+			"city" : "Schaan",
+			"stateName" : "Schaan",
+			"stateCode" : "7005",
+			"county" : ""
+		}
+	],
+	"9498" : [
+		{
+			"city" : "Planken",
+			"stateName" : "Planken",
+			"stateCode" : "7006",
+			"county" : ""
+		}
+	],
+	"9485" : [
+		{
+			"city" : "Nendeln",
+			"stateName" : "Eschen",
+			"stateCode" : "7007",
+			"county" : ""
+		}
+	],
+	"9492" : [
+		{
+			"city" : "Eschen",
+			"stateName" : "Eschen",
+			"stateCode" : "7007",
+			"county" : ""
+		}
+	],
+	"9486" : [
+		{
+			"city" : "Schaanwald",
+			"stateName" : "Mauren",
+			"stateCode" : "7008",
+			"county" : ""
+		}
+	],
+	"9493" : [
+		{
+			"city" : "Mauren FL",
+			"stateName" : "Mauren",
+			"stateCode" : "7008",
+			"county" : ""
+		}
+	],
+	"9487" : [
+		{
+			"city" : "Gamprin-Bendern",
+			"stateName" : "Gamprin",
+			"stateCode" : "7009",
+			"county" : ""
+		}
+	],
+	"9491" : [
+		{
+			"city" : "Ruggell",
+			"stateName" : "Ruggell",
+			"stateCode" : "7010",
+			"county" : ""
+		}
+	],
+	"9488" : [
+		{
+			"city" : "Schellenberg",
+			"stateName" : "Schellenberg",
+			"stateCode" : "7011",
+			"county" : ""
+		}
+	]
+}

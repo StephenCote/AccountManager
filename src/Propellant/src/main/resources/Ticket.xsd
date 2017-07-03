@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/propellant/objects" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.cote.org/propellant/objects" xmlns:pref="http://www.cote.org/propellant/objects/types" xmlns:pref1="http://www.cote.org/accountmanager/objects/types" xmlns:Q1="http://www.cote.org/accountmanager/objects">
+
+
+
+    <import schemaLocation="Types.xsd" namespace="http://www.cote.org/propellant/objects/types"></import>
+    <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/AuditType.xsd" namespace="http://www.cote.org/accountmanager/objects"></import>
+    <include schemaLocation="Form.xsd"></include>
+    <import schemaLocation="Note.xsd" namespace="http://www.cote.org/propellant/objects"></import>
+    <import schemaLocation="Artifact.xsd" namespace="http://www.cote.org/propellant/objects"></import>
+    <import schemaLocation="Estimate.xsd" namespace="http://www.cote.org/propellant/objects"></import>
+    <import schemaLocation="Resource.xsd" namespace="http://www.cote.org/propellant/objects"></import>
+    <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/ParticipantType.xsd" namespace="http://www.cote.org/accountmanager/objects"></import>
+    <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/NameId.xsd" namespace="http://www.cote.org/accountmanager/objects"></import>
+    <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
+
+    <complexType name="TicketType">
+    	<complexContent>
+    		<extension base="Q1:NameIdDirectoryGroupType">
+    			<sequence>
+    				<element name="assignedResource"
+    					type="tns:ResourceType">
+    				</element>
+    				<element name="requiredResources"
+    					type="tns:ResourceType" minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    				<element name="estimate" type="tns:EstimateType"></element>
+    				<element name="actualTime" type="tns:TimeType"></element>
+    				<element name="actualCost" type="tns:CostType"></element>
+    				<element name="tickets" type="tns:TicketType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    				<element name="dependencies" type="tns:ArtifactType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    				<element name="artifacts" type="tns:ArtifactType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    				<element name="notes" type="tns:NoteType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    				<element name="forms" type="tns:FormType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    				<element name="audit" type="Q1:AuditType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</element>
+    			</sequence>
+    			<attribute name="createdDate" type="dateTime"></attribute>
+    			<attribute name="modifiedDate" type="dateTime"></attribute>
+    			<attribute name="dueDate" type="dateTime"></attribute>
+    			<attribute name="closedDate" type="dateTime"></attribute>
+    			<attribute name="reopenedDate" type="dateTime"></attribute>
+    			<attribute name="description" type="string"></attribute>
+    			<attribute name="ticketStatus"
+    				type="pref:TicketStatusEnumType">
+    			</attribute>
+    			<attribute name="priority"
+    				type="pref:PriorityEnumType">
+    			</attribute>
+    			<attribute name="severity" type="pref:SeverityEnumType"></attribute>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="TicketParticipantType">
+    	<complexContent>
+    		<extension base="Q1:BaseParticipantType"></extension>
+    	</complexContent>
+    </complexType>
+</schema>

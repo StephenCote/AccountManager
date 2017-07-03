@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/propellant/objects"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/propellant/objects"
+	xmlns:Q1="http://www.cote.org/accountmanager/objects"
+	xmlns:pref="http://www.cote.org/propellant/objects/types">
+
+	<import
+		schemaLocation="../../../../AccountManagerObjects/src/main/resources/ParticipantType.xsd"
+		namespace="http://www.cote.org/accountmanager/objects">
+	</import>
+	<import
+		schemaLocation="../../../../AccountManagerObjects/src/main/resources/NameId.xsd"
+		namespace="http://www.cote.org/accountmanager/objects">
+	</import>
+	<import schemaLocation="Types.xsd"
+		namespace="http://www.cote.org/propellant/objects/types">
+	</import>
+	<include schemaLocation="Estimate.xsd"></include>
+	<include schemaLocation="Schedule.xsd"></include>
+	<complexType name="ResourceType">
+		<complexContent>
+			<extension base="Q1:NameIdDirectoryGroupType">
+				<sequence>
+					<element name="resourceData" type="Q1:NameIdType"></element>
+					<element name="estimate" type="tns:EstimateType"></element>
+					<element name="schedule" type="tns:ScheduleType"></element>
+				</sequence>
+				<attribute name="resourceType"
+					type="pref:ResourceEnumType">
+				</attribute>
+				<attribute name="utilization" default="0"
+					type="double">
+				</attribute>
+				<attribute name="resourceDataId" type="long"
+					default="0">
+				</attribute>
+				<attribute name="description" type="string"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ResourceParticipantType">
+		<complexContent>
+			<extension base="Q1:BaseParticipantType"></extension>
+		</complexContent>
+	</complexType>
+</schema>

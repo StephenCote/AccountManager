@@ -1,0 +1,4017 @@
+{
+	"10101" : [
+		{
+			"city" : "Centro de Los Heroes",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10102" : [
+		{
+			"city" : "Mata Hambre",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10103" : [
+		{
+			"city" : "Zona Universitaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10104" : [
+		{
+			"city" : "San Geronimo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10105" : [
+		{
+			"city" : "Ciudad Universitaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10106" : [
+		{
+			"city" : "Los Robles",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10107" : [
+		{
+			"city" : "El Vergel",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Esperilla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10108" : [
+		{
+			"city" : "El Manguito",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Esperilla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10109" : [
+		{
+			"city" : "La Julia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10110" : [
+		{
+			"city" : "El Embajador",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10111" : [
+		{
+			"city" : "Bella Vista",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10112" : [
+		{
+			"city" : "Bella Vista",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10113" : [
+		{
+			"city" : "Sarasota",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10114" : [
+		{
+			"city" : "Mirador Norte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10115" : [
+		{
+			"city" : "Rocamar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Atala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Portal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10116" : [
+		{
+			"city" : "30 de Mayo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ciudad Gandera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10117" : [
+		{
+			"city" : "Hoduras",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ensanche La Paz",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10118" : [
+		{
+			"city" : "Antillas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Cacique",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Arrecifes",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Costa Brava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10119" : [
+		{
+			"city" : "Naco",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10120" : [
+		{
+			"city" : "La Yuca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10121" : [
+		{
+			"city" : "Arboleda (Naco)",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10122" : [
+		{
+			"city" : "Centro Olimpico",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Naco",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10123" : [
+		{
+			"city" : "Naco",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10124" : [
+		{
+			"city" : "Naco",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10125" : [
+		{
+			"city" : "Lopez de Vega",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10126" : [
+		{
+			"city" : "Paraiso",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10127" : [
+		{
+			"city" : "Piantini",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10128" : [
+		{
+			"city" : "Carmelita",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10129" : [
+		{
+			"city" : "Urbanizacion Fernandez",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10130" : [
+		{
+			"city" : "Julieta Morales",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Praditos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10131" : [
+		{
+			"city" : "Los Prados",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10132" : [
+		{
+			"city" : "Los Prados",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10133" : [
+		{
+			"city" : "Castellana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10134" : [
+		{
+			"city" : "San Geronimo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10135" : [
+		{
+			"city" : "Ciudad Moderna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Encarnacion",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Las Praderas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10136" : [
+		{
+			"city" : "Residencial Rosmil",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10137" : [
+		{
+			"city" : "Los Restauradores",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10138" : [
+		{
+			"city" : "Manganagua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10139" : [
+		{
+			"city" : "Los Millones",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10140" : [
+		{
+			"city" : "Los Millones",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10141" : [
+		{
+			"city" : "Los Millones",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10142" : [
+		{
+			"city" : "Los Millones",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10143" : [
+		{
+			"city" : "Estela Marina ( Los Millones).",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10144" : [
+		{
+			"city" : "Los Millones",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10145" : [
+		{
+			"city" : "Ensanche Quisqueya",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10146" : [
+		{
+			"city" : "Ensanche Quisqueya",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10147" : [
+		{
+			"city" : "Evaristo Morales",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10148" : [
+		{
+			"city" : "Piantini",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10149" : [
+		{
+			"city" : "El Millon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10150" : [
+		{
+			"city" : "Piantini",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10201" : [
+		{
+			"city" : "Don Bosco",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10202" : [
+		{
+			"city" : "Don Bosco",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10203" : [
+		{
+			"city" : "Miraflores",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10204" : [
+		{
+			"city" : "Gazcue ( Plaza de La Cultura )",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10205" : [
+		{
+			"city" : "Gazcue",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10206" : [
+		{
+			"city" : "Ensanche Independencia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10207" : [
+		{
+			"city" : "La Primavera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10208" : [
+		{
+			"city" : "Ciudad Nueva",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10209" : [
+		{
+			"city" : "Ensanche Lugo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10210" : [
+		{
+			"city" : "Zona Colonial",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10211" : [
+		{
+			"city" : "San Lazaro",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10212" : [
+		{
+			"city" : "San Miguel",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10213" : [
+		{
+			"city" : "Borojol",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10214" : [
+		{
+			"city" : "Villa Francisca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10215" : [
+		{
+			"city" : "Villa Francisca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10216" : [
+		{
+			"city" : "San Carlos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10217" : [
+		{
+			"city" : "San Carlos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10218" : [
+		{
+			"city" : "Reparto Aguedita ( Gazcue)",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10301" : [
+		{
+			"city" : "Mejoramiento Social",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10302" : [
+		{
+			"city" : "Guachupita",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Fuente",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "San Martin de Porres",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Maria Auxiliadora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10303" : [
+		{
+			"city" : "La Cienaga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10304" : [
+		{
+			"city" : "Los Guandules",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Domingo Savio",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10305" : [
+		{
+			"city" : "Maria Auxiliadora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "27 de Febrero",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Agua Dulce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10306" : [
+		{
+			"city" : "Mejoramiento Social",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10307" : [
+		{
+			"city" : "Villa Maria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10308" : [
+		{
+			"city" : "Villa Consuelo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10309" : [
+		{
+			"city" : "Villa Consuelo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10401" : [
+		{
+			"city" : "Ensanche Luperon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10402" : [
+		{
+			"city" : "Ensanche Espaillat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10403" : [
+		{
+			"city" : "Gualey",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10404" : [
+		{
+			"city" : "24 de Abril",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10405" : [
+		{
+			"city" : "Simon Bolivar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10406" : [
+		{
+			"city" : "Ensanche Luperon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10407" : [
+		{
+			"city" : "Capotillo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10408" : [
+		{
+			"city" : "La Zurza",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10409" : [
+		{
+			"city" : "Villas Agricolas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10410" : [
+		{
+			"city" : "La Caridad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villas Agricolas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10411" : [
+		{
+			"city" : "El Ensanchito",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10412" : [
+		{
+			"city" : "Villa Juana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10413" : [
+		{
+			"city" : "Villa Juana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10501" : [
+		{
+			"city" : "Trueva",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Caliche",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cristo Rey",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10502" : [
+		{
+			"city" : "Santa Rosa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Las Flores",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Cuarenta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Yaquito",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10503" : [
+		{
+			"city" : "Parque Isabela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Isabela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10504" : [
+		{
+			"city" : "Cuesta Hermosa III",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Isabel Villas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cerro de Arroyo Hdo.",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10505" : [
+		{
+			"city" : "Arroyo Manzano",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Puerta de Hierro",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Manzano",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cuesta Brava",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Buena Vista",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Meseta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Pista de Motocros La Yuca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Fundacion",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10506" : [
+		{
+			"city" : "Altos de Arroyo Hondo II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10507" : [
+		{
+			"city" : "La Puya",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cuesta Hermosa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Colinas de Arroyo Hondo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Arroyos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Lomas de Arroyo Hondo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10508" : [
+		{
+			"city" : "La Aldaba",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Pino",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Pinos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10509" : [
+		{
+			"city" : "La Agustinita",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Carmen Amelia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10510" : [
+		{
+			"city" : "Los Caminos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Viejo Arroyo Hondo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10511" : [
+		{
+			"city" : "La Fe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10512" : [
+		{
+			"city" : "La Fe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10513" : [
+		{
+			"city" : "Ens. Kennedy",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10514" : [
+		{
+			"city" : "Ens. La Fe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cachiman",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10515" : [
+		{
+			"city" : "Barrio Obrero",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10516" : [
+		{
+			"city" : "La Cementera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Lanna Gautier",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Agustina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10601" : [
+		{
+			"city" : "Constelacion",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Proceres",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10602" : [
+		{
+			"city" : "Los Jardines del Norte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10603" : [
+		{
+			"city" : "Las Villas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10604" : [
+		{
+			"city" : "Los Rios",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Esperanza",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10605" : [
+		{
+			"city" : "Altos de Arroyo Hdo. I",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cerros de Arroyo Hdo III",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Altos de Arroyo Hdo. III",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10606" : [
+		{
+			"city" : "Residencial La Yuca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Colinas del Seminario",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10607" : [
+		{
+			"city" : "Los Guayabos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Ceiba",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Claudia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Condado",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Don Honorio",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10608" : [
+		{
+			"city" : "Villa Marina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Las Colinas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Pradera Hermosa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Elena",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Pinos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10701" : [
+		{
+			"city" : "La Redencion",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Pantoja",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Lotificacion Vista Verde",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Isabela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Colinas del Norte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Batey Palmarejo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10702" : [
+		{
+			"city" : "Los Girasoles",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Angeles",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Peralejos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Reparto Samaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Palma Real",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Reparto Miguelina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urbanizacion Palma Real",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Brisa del Norte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10801" : [
+		{
+			"city" : "Invi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio La Esperanza",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Alcarrizos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Tamarindo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Lebron",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Chavon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio La Union",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio La Fe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio La Torre",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Obras Publicas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10802" : [
+		{
+			"city" : "Barrio La Piña",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Libertadores",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Valle Encantado",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Americanos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Gran Poder de Dios",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Paraiso",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa San Felipe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Compuerta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Alcarrizos III",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Landia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Zona Franca de Los Alcarrizos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Piñita",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10803" : [
+		{
+			"city" : "El Chucho",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "24 de Abril",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Savica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Varia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urbanizacion Las Mercedes",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Las Mercedes",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10804" : [
+		{
+			"city" : "El Catorce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Altos del Oeste",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Cienaga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Concordia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villas Naco",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10805" : [
+		{
+			"city" : "Nuevo Horizonte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nuevo Amanecer",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Puerto Rico",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Pueblo Nuevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ciudad Codiana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cerros de Palmarejo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Palmarejito",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Progreso",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Las Crorias",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Arenoso",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. San Rafael",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10901" : [
+		{
+			"city" : "El Caliche",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Las Palmas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Olimpo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Aura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10902" : [
+		{
+			"city" : "La Venta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "San Miguel",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Hato Nuevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Batey Bienvenido",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Alameda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Manoguayabo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bella Colina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Residencial Almendra",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Peravia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Residencial Alameda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Buenas Noches",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Antillano",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10903" : [
+		{
+			"city" : "Rivera del Haina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Paraiso del Caribe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Nazaret",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bayona",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10904" : [
+		{
+			"city" : "Rosa Maria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ens. Ivan Guzman Klan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Engome",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Palmar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Abanico de Herrera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Residencial Loyola",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Lotificacion Engombe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"10905" : [
+		{
+			"city" : "Las Caobas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ciudad Agraria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Las Caobitas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11001" : [
+		{
+			"city" : "Zona Industrial de Herrera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11002" : [
+		{
+			"city" : "Barrio Enriquillo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Holguin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11003" : [
+		{
+			"city" : "Juan Pablo Duarte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Las Palmas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Buenos Aires",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Duarte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11004" : [
+		{
+			"city" : "Luz Divina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "San Francisco",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. El Rosal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Rosa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Galaxia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11005" : [
+		{
+			"city" : "Herrera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Josue",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Libertador",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ens. Paraiso",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11101" : [
+		{
+			"city" : "Aesa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Invi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "16 de Agosto",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Atlantida",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11102" : [
+		{
+			"city" : "Mirador",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Buenos Aires del",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Gacela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Residencial Jose Contreras",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Costa Caribe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11103" : [
+		{
+			"city" : "Km. 8",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nordesa III",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Miramar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11104" : [
+		{
+			"city" : "Las Acacias",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mar Azul",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11105" : [
+		{
+			"city" : "Km. 7",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "San Jose",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Jardines del Sur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Dominicanos Ausentes",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Tropicana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11106" : [
+		{
+			"city" : "Resd. Enriquillo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Loteria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "San Miguel",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11107" : [
+		{
+			"city" : "El Pedregal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Sandra",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Sandra I",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Luz Consuelo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11108" : [
+		{
+			"city" : "Los Cacicazgos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11109" : [
+		{
+			"city" : "Mirador Sur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11110" : [
+		{
+			"city" : "Los Maestros",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11111" : [
+		{
+			"city" : "Renacimiento",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11112" : [
+		{
+			"city" : "Urb. Real",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Renacimiento",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11113" : [
+		{
+			"city" : "Zona Industrial de Herrera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11114" : [
+		{
+			"city" : "Res. Santo Domingo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ensanche Altagracia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11115" : [
+		{
+			"city" : "El Café",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Colinas de Canaan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Paraiso",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11116" : [
+		{
+			"city" : "Villas del Café",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Residencial Canaan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "12 de Haina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11117" : [
+		{
+			"city" : "Costa Azul",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Placeta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Costa Verde",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Puerto de Haina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Manresa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11201" : [
+		{
+			"city" : "Marañon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Nueva",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Mella",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Satelite",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Mamey",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Sarah Gabriela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Valle Verde",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Carmela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Haras Nacionales",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Jardines de Genovena",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Rep. Villa Maria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Vista Bella",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11202" : [
+		{
+			"city" : "Ensanche Paraiso",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mata Los Indios",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Carlos Alvarez",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. El Dorado",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. El Remanso",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Marañon II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11203" : [
+		{
+			"city" : "Barrio Nuevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Maria Isabela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Colonia de Los Doctores",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Primavera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11204" : [
+		{
+			"city" : "El Fundo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Suriel",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Santa Cruz",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Conucos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11205" : [
+		{
+			"city" : "Urb. Maximo Gomez",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. Sol de Luz",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Santa Cruz",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Isabela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Zona Industrial de La Isabela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Torito",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11206" : [
+		{
+			"city" : "De Villa Mella",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cerros de Buena Vista II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ceuta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Zona Industrial de Villa Mella",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cerros de Buena Vista I",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11207" : [
+		{
+			"city" : "Reparto Rudima",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Javilla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Eden",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cruz Grande (Villa Mella Y Sabana Perdida )",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Campechito II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Radiante",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Antena",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11301" : [
+		{
+			"city" : "Barrio Norte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Proyecto Ciudad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Modelo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Guaricanos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nueva Isabela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11302" : [
+		{
+			"city" : "Barrio Nuevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Hnas. Mirabal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Proyecto Bnv",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Jacagua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ponce",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Las Palmeras",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Casabes",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Altos del Parque",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11401" : [
+		{
+			"city" : "Lotes Y Servicios",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Majagual",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11402" : [
+		{
+			"city" : "Altos de Chavon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. Noelia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Mina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Esperanza",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Milloncito",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cerros de La Yuca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Nuevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11403" : [
+		{
+			"city" : "Urb. Charles de Gaulle",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Progreso",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Libertad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Palmares",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11404" : [
+		{
+			"city" : "La Barquita",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "2 de Enero",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Sabana Perdida",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Colinas del Ozama",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cerros de Sabana Perdida",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ensanche Cristal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Altos de Sabana Perdida",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Sabana Centro",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11405" : [
+		{
+			"city" : "Los Coordinadores",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Salome Ureña",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Enrriquillo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Blanca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Loteria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11501" : [
+		{
+			"city" : "Ensanche Ozama",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11502" : [
+		{
+			"city" : "Molinuevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11503" : [
+		{
+			"city" : "Ens. Alma Rosa (Lado Oeste)",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Jardines de Alma Rosa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11504" : [
+		{
+			"city" : "Ens. Alma Rosa (Lado Este)",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11505" : [
+		{
+			"city" : "Villa Faro",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11506" : [
+		{
+			"city" : "Alma Rosa II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Rosal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Italia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ivette",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11507" : [
+		{
+			"city" : "Ralma",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Savica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11508" : [
+		{
+			"city" : "La Esperanza",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Paraiso Oriental",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Franconia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Loteria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Amanda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Vecinos Unidos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11509" : [
+		{
+			"city" : "Bello Campo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Isabel",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Hamarap",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Alpes I",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. Oriente",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Sol Naciente",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mi Sueño",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11510" : [
+		{
+			"city" : "Res. del Este",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mendoza",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mi Hogar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Brisal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Carolina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11511" : [
+		{
+			"city" : "Rep. Alma Rosa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Las Palmas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11512" : [
+		{
+			"city" : "Mandinga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cancino II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Narcisa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Trinitarios",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cancino I",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Duarte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11513" : [
+		{
+			"city" : "Cabirma del Este I",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. Lomisa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11514" : [
+		{
+			"city" : "Res. Idalia A I",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11515" : [
+		{
+			"city" : "Prados del Cachon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Cachon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11516" : [
+		{
+			"city" : "Lucerna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cancino",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11517" : [
+		{
+			"city" : "Vista Hermosa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Colinas del Este",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cancino Adentro",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. Don Oscar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Cachon de La Rubia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11518" : [
+		{
+			"city" : "San Pablo II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. Amapola",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11519" : [
+		{
+			"city" : "Altos de Cancino",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11601" : [
+		{
+			"city" : "Calero",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Pueblo Nuevo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11602" : [
+		{
+			"city" : "Simonico",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Duarte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Francia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11603" : [
+		{
+			"city" : "Parque del Este I",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Molinos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "San Souci",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11604" : [
+		{
+			"city" : "Res. Parque del Este",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Maquiteria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Parque Mirador Este",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Faro A Colon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11605" : [
+		{
+			"city" : "Los Tres Ojos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11606" : [
+		{
+			"city" : "Las Americas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Olimpica",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11704" : [
+		{
+			"city" : "Corales del Sur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Tropical del Este",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. Teresa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11705" : [
+		{
+			"city" : "Los Frailes",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Marbella III",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Arismar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11706" : [
+		{
+			"city" : "Los Frailes II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "San Bartolo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Reparto Caribe",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11707" : [
+		{
+			"city" : "Lotificacion del Este",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Eloisa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Adela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11708" : [
+		{
+			"city" : "Mirador Este",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11801" : [
+		{
+			"city" : "Issfapol",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Molinos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Trinitarios II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ana Virginia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11802" : [
+		{
+			"city" : "Eugenio M. de Hostos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Carmen",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ciudad de Los Trabajadores",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Invivienda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Rep. Villa Carmen",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Trabajadores",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11803" : [
+		{
+			"city" : "San Jose de Mendoza",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Brisa del Eden",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Brisa de Charles",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. Clarimar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11804" : [
+		{
+			"city" : "Amarilis III",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nuevo Amanecer",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. Mirador del Este",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Res. Fernandez Oriental",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11805" : [
+		{
+			"city" : "Buena Ventura II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Restauradores",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Villa Esfuerzo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio John F. Kennedy",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11806" : [
+		{
+			"city" : "Ciudad del Almirante II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Ciudad del Almirante I",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Zona Franca Industrial de Herrera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11807" : [
+		{
+			"city" : "Invimosa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Hainamosa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Invi Cea",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Nuevo Renacer",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Urb. Ana T. Balaguer",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Pinos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Parque Ind. Nueva Isabela",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11808" : [
+		{
+			"city" : "Batey Piragua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Batey La Balsa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Sabaneta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11809" : [
+		{
+			"city" : "Residencial Don Oscar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "El Tamarindo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Rosales",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cabirma del Este II",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Barrio Paraiso",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11901" : [
+		{
+			"city" : "Pidoca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "La Milagrosa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Los Mina Sur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11902" : [
+		{
+			"city" : "Felicidad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Vietnan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "San Antonio",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11903" : [
+		{
+			"city" : "Los Mina Norte",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Katanga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11904" : [
+		{
+			"city" : "Las Frutas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Cerros del Ozama",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Puerto Rico",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Rosario Sanchez",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Francisco del",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11905" : [
+		{
+			"city" : "Los 3 Brazos",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mil Flores",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"11906" : [
+		{
+			"city" : "Los Mina Viejo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Las Enfermeras",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	]
+}

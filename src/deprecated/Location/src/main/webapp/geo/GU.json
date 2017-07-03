@@ -1,0 +1,186 @@
+{
+	"96910" : [
+		{
+			"city" : "Hagatna",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96911" : [
+		{
+			"city" : "Tamuning",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96912" : [
+		{
+			"city" : "Dededo",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96913" : [
+		{
+			"city" : "Barrigada",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96914" : [
+		{
+			"city" : "Yona",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96915" : [
+		{
+			"city" : "Santa Rita",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96916" : [
+		{
+			"city" : "Merizo",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96917" : [
+		{
+			"city" : "Inarajan",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96918" : [
+		{
+			"city" : "Umatac",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96919" : [
+		{
+			"city" : "Agana Heights",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96921" : [
+		{
+			"city" : "Barrigada",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96922" : [
+		{
+			"city" : "Asan",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96923" : [
+		{
+			"city" : "Mangilao",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96925" : [
+		{
+			"city" : "Piti",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96926" : [
+		{
+			"city" : "Sinajana",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96927" : [
+		{
+			"city" : "Mongmong",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96928" : [
+		{
+			"city" : "Agat",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96929" : [
+		{
+			"city" : "Yigo",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96930" : [
+		{
+			"city" : "Talofofo",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96931" : [
+		{
+			"city" : "Tamuning",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96932" : [
+		{
+			"city" : "Hagatna",
+			"stateName" : "Gu",
+			"stateCode" : "66",
+			"county" : "Guam"
+		}
+	],
+	"96921" : [
+		{
+			"city" : "Barrigada",
+			"stateName" : "Guam ",
+			"stateCode" : "GU",
+			"county" : "Guam"
+		}
+	],
+	"96932" : [
+		{
+			"city" : "Hagatna",
+			"stateName" : "Guam ",
+			"stateCode" : "GU",
+			"county" : "Guam"
+		}
+	]
+}

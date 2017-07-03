@@ -1,0 +1,65 @@
+{
+	"GY1" : [
+		{
+			"city" : "St Peter Port",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Guernsey Channel Islands"
+		}
+	],
+	"GY10" : [
+		{
+			"city" : "Sark",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Channel Islands"
+		}
+	],
+	"GY2" : [
+		{
+			"city" : "St Sampsons",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Guernsey Channel Islands"
+		}
+,
+		{
+			"city" : "Delancey",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Guernsey Channel Islands"
+		}
+	],
+	"GY3" : [
+		{
+			"city" : "Vale",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Guernsey Channel Islands"
+		}
+	],
+	"GY4" : [
+		{
+			"city" : "St Martin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Guernsey Channel Islands"
+		}
+	],
+	"GY5" : [
+		{
+			"city" : "Castel",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Guernsey Channel Islands"
+		}
+	],
+	"GY9" : [
+		{
+			"city" : "Alderney",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Channel Islands"
+		}
+	]
+}

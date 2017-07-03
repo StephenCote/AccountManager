@@ -1,0 +1,112 @@
+{
+	"97650" : [
+		{
+			"city" : "Bandraboua",
+			"stateName" : "Bandraboua",
+			"stateCode" : "97602",
+			"county" : ""
+		}
+	],
+	"97620" : [
+		{
+			"city" : "Bandr√©l√©",
+			"stateName" : "Bandrele",
+			"stateCode" : "97603",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Bou√©ni",
+			"stateName" : "Bou√©ni",
+			"stateCode" : "97604",
+			"county" : ""
+		}
+	],
+	"97670" : [
+		{
+			"city" : "Chiconi",
+			"stateName" : "Chiconi",
+			"stateCode" : "97605",
+			"county" : ""
+		}
+	],
+	"97620" : [
+		{
+			"city" : "Chirongui",
+			"stateName" : "Chirongui",
+			"stateCode" : "97606",
+			"county" : ""
+		}
+	],
+	"97660" : [
+		{
+			"city" : "Dembeni",
+			"stateName" : "Dembeni",
+			"stateCode" : "97607",
+			"county" : ""
+		}
+	],
+	"97625" : [
+		{
+			"city" : "Kani K√©li",
+			"stateName" : "Kani-K√©li",
+			"stateCode" : "97609",
+			"county" : ""
+		}
+	],
+	"97600" : [
+		{
+			"city" : "Koungou",
+			"stateName" : "Koungou",
+			"stateCode" : "97610",
+			"county" : ""
+		}
+,
+		{
+			"city" : "Mamoudzou",
+			"stateName" : "Mamoudzou",
+			"stateCode" : "97611",
+			"county" : ""
+		}
+	],
+	"97630" : [
+		{
+			"city" : "Mtsamboro",
+			"stateName" : "Mtsamboro",
+			"stateCode" : "97612",
+			"county" : ""
+		}
+	],
+	"97650" : [
+		{
+			"city" : "M'Tsangamouji",
+			"stateName" : "M'Tsangamouji",
+			"stateCode" : "97613",
+			"county" : ""
+		}
+	],
+	"97670" : [
+		{
+			"city" : "Ouangani",
+			"stateName" : "Ouangani",
+			"stateCode" : "97614",
+			"county" : ""
+		}
+	],
+	"97640" : [
+		{
+			"city" : "Sada",
+			"stateName" : "Sada",
+			"stateCode" : "97616",
+			"county" : ""
+		}
+	],
+	"97680" : [
+		{
+			"city" : "Tsingoni",
+			"stateName" : "Tsingoni",
+			"stateCode" : "97617",
+			"county" : ""
+		}
+	]
+}

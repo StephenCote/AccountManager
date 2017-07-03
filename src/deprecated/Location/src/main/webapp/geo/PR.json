@@ -1,0 +1,1418 @@
+{
+	"00601" : [
+		{
+			"city" : "Adjuntas",
+			"stateName" : "Adjuntas",
+			"stateCode" : "001",
+			"county" : ""
+		}
+	],
+	"00602" : [
+		{
+			"city" : "Aguada",
+			"stateName" : "Aguada",
+			"stateCode" : "003",
+			"county" : ""
+		}
+	],
+	"00603" : [
+		{
+			"city" : "Aguadilla",
+			"stateName" : "Aguadilla",
+			"stateCode" : "005",
+			"county" : ""
+		}
+	],
+	"00604" : [
+		{
+			"city" : "Aguadilla",
+			"stateName" : "Aguadilla",
+			"stateCode" : "005",
+			"county" : ""
+		}
+	],
+	"00605" : [
+		{
+			"city" : "Aguadilla",
+			"stateName" : "Aguadilla",
+			"stateCode" : "005",
+			"county" : ""
+		}
+	],
+	"00690" : [
+		{
+			"city" : "San Antonio",
+			"stateName" : "Aguadilla",
+			"stateCode" : "005",
+			"county" : ""
+		}
+	],
+	"00703" : [
+		{
+			"city" : "Aguas Buenas",
+			"stateName" : "Aguas Buenas",
+			"stateCode" : "007",
+			"county" : ""
+		}
+	],
+	"00705" : [
+		{
+			"city" : "Aibonito",
+			"stateName" : "Aibonito",
+			"stateCode" : "009",
+			"county" : ""
+		}
+	],
+	"00786" : [
+		{
+			"city" : "La Plata",
+			"stateName" : "Aibonito",
+			"stateCode" : "009",
+			"county" : ""
+		}
+	],
+	"00610" : [
+		{
+			"city" : "Anasco",
+			"stateName" : "Anasco",
+			"stateCode" : "011",
+			"county" : ""
+		}
+	],
+	"00612" : [
+		{
+			"city" : "Arecibo",
+			"stateName" : "Arecibo",
+			"stateCode" : "013",
+			"county" : ""
+		}
+	],
+	"00613" : [
+		{
+			"city" : "Arecibo",
+			"stateName" : "Arecibo",
+			"stateCode" : "013",
+			"county" : ""
+		}
+	],
+	"00614" : [
+		{
+			"city" : "Arecibo",
+			"stateName" : "Arecibo",
+			"stateCode" : "013",
+			"county" : ""
+		}
+	],
+	"00616" : [
+		{
+			"city" : "Bajadero",
+			"stateName" : "Arecibo",
+			"stateCode" : "013",
+			"county" : ""
+		}
+	],
+	"00652" : [
+		{
+			"city" : "Garrochales",
+			"stateName" : "Arecibo",
+			"stateCode" : "013",
+			"county" : ""
+		}
+	],
+	"00688" : [
+		{
+			"city" : "Sabana Hoyos",
+			"stateName" : "Arecibo",
+			"stateCode" : "013",
+			"county" : ""
+		}
+	],
+	"00714" : [
+		{
+			"city" : "Arroyo",
+			"stateName" : "Arroyo",
+			"stateCode" : "015",
+			"county" : ""
+		}
+	],
+	"00617" : [
+		{
+			"city" : "Barceloneta",
+			"stateName" : "Barceloneta",
+			"stateCode" : "017",
+			"county" : ""
+		}
+	],
+	"00794" : [
+		{
+			"city" : "Barranquitas",
+			"stateName" : "Barranquitas",
+			"stateCode" : "019",
+			"county" : ""
+		}
+	],
+	"00934" : [
+		{
+			"city" : "Fort Buchanan",
+			"stateName" : "Bayamon",
+			"stateCode" : "021",
+			"county" : ""
+		}
+	],
+	"00956" : [
+		{
+			"city" : "Bayamon",
+			"stateName" : "Bayamon",
+			"stateCode" : "021",
+			"county" : ""
+		}
+	],
+	"00957" : [
+		{
+			"city" : "Bayamon",
+			"stateName" : "Bayamon",
+			"stateCode" : "021",
+			"county" : ""
+		}
+	],
+	"00958" : [
+		{
+			"city" : "Bayamon",
+			"stateName" : "Bayamon",
+			"stateCode" : "021",
+			"county" : ""
+		}
+	],
+	"00959" : [
+		{
+			"city" : "Bayamon",
+			"stateName" : "Bayamon",
+			"stateCode" : "021",
+			"county" : ""
+		}
+	],
+	"00960" : [
+		{
+			"city" : "Bayamon",
+			"stateName" : "Bayamon",
+			"stateCode" : "021",
+			"county" : ""
+		}
+	],
+	"00961" : [
+		{
+			"city" : "Bayamon",
+			"stateName" : "Bayamon",
+			"stateCode" : "021",
+			"county" : ""
+		}
+	],
+	"00622" : [
+		{
+			"city" : "Boqueron",
+			"stateName" : "Cabo Rojo",
+			"stateCode" : "023",
+			"county" : ""
+		}
+	],
+	"00623" : [
+		{
+			"city" : "Cabo Rojo",
+			"stateName" : "Cabo Rojo",
+			"stateCode" : "023",
+			"county" : ""
+		}
+	],
+	"00725" : [
+		{
+			"city" : "Caguas",
+			"stateName" : "Caguas",
+			"stateCode" : "025",
+			"county" : ""
+		}
+	],
+	"00726" : [
+		{
+			"city" : "Caguas",
+			"stateName" : "Caguas",
+			"stateCode" : "025",
+			"county" : ""
+		}
+	],
+	"00727" : [
+		{
+			"city" : "Caguas",
+			"stateName" : "Caguas",
+			"stateCode" : "025",
+			"county" : ""
+		}
+	],
+	"00627" : [
+		{
+			"city" : "Camuy",
+			"stateName" : "Camuy",
+			"stateCode" : "027",
+			"county" : ""
+		}
+	],
+	"00729" : [
+		{
+			"city" : "Canovanas",
+			"stateName" : "Canovanas",
+			"stateCode" : "029",
+			"county" : ""
+		}
+	],
+	"00983" : [
+		{
+			"city" : "Carolina",
+			"stateName" : "Carolina",
+			"stateCode" : "031",
+			"county" : ""
+		}
+	],
+	"00984" : [
+		{
+			"city" : "Carolina",
+			"stateName" : "Carolina",
+			"stateCode" : "031",
+			"county" : ""
+		}
+	],
+	"00985" : [
+		{
+			"city" : "Carolina",
+			"stateName" : "Carolina",
+			"stateCode" : "031",
+			"county" : ""
+		}
+	],
+	"00986" : [
+		{
+			"city" : "Carolina",
+			"stateName" : "Carolina",
+			"stateCode" : "031",
+			"county" : ""
+		}
+	],
+	"00987" : [
+		{
+			"city" : "Carolina",
+			"stateName" : "Carolina",
+			"stateCode" : "031",
+			"county" : ""
+		}
+	],
+	"00988" : [
+		{
+			"city" : "Carolina",
+			"stateName" : "Carolina",
+			"stateCode" : "031",
+			"county" : ""
+		}
+	],
+	"00962" : [
+		{
+			"city" : "Catano",
+			"stateName" : "Catano",
+			"stateCode" : "033",
+			"county" : ""
+		}
+	],
+	"00963" : [
+		{
+			"city" : "Catano",
+			"stateName" : "Catano",
+			"stateCode" : "033",
+			"county" : ""
+		}
+	],
+	"00736" : [
+		{
+			"city" : "Cayey",
+			"stateName" : "Cayey",
+			"stateCode" : "035",
+			"county" : ""
+		}
+	],
+	"00737" : [
+		{
+			"city" : "Cayey",
+			"stateName" : "Cayey",
+			"stateCode" : "035",
+			"county" : ""
+		}
+	],
+	"00735" : [
+		{
+			"city" : "Ceiba",
+			"stateName" : "Ceiba",
+			"stateCode" : "037",
+			"county" : ""
+		}
+	],
+	"00742" : [
+		{
+			"city" : "Roosevelt Roads",
+			"stateName" : "Ceiba",
+			"stateCode" : "037",
+			"county" : ""
+		}
+	],
+	"00638" : [
+		{
+			"city" : "Ciales",
+			"stateName" : "Ciales",
+			"stateCode" : "039",
+			"county" : ""
+		}
+	],
+	"00739" : [
+		{
+			"city" : "Cidra",
+			"stateName" : "Cidra",
+			"stateCode" : "041",
+			"county" : ""
+		}
+	],
+	"00769" : [
+		{
+			"city" : "Coamo",
+			"stateName" : "Coamo",
+			"stateCode" : "043",
+			"county" : ""
+		}
+	],
+	"00782" : [
+		{
+			"city" : "Comerio",
+			"stateName" : "Comerio",
+			"stateCode" : "045",
+			"county" : ""
+		}
+	],
+	"00783" : [
+		{
+			"city" : "Corozal",
+			"stateName" : "Corozal",
+			"stateCode" : "047",
+			"county" : ""
+		}
+	],
+	"00775" : [
+		{
+			"city" : "Culebra",
+			"stateName" : "Culebra",
+			"stateCode" : "049",
+			"county" : ""
+		}
+	],
+	"00646" : [
+		{
+			"city" : "Dorado",
+			"stateName" : "Dorado",
+			"stateCode" : "051",
+			"county" : ""
+		}
+	],
+	"00738" : [
+		{
+			"city" : "Fajardo",
+			"stateName" : "Fajardo",
+			"stateCode" : "053",
+			"county" : ""
+		}
+	],
+	"00740" : [
+		{
+			"city" : "Puerto Real",
+			"stateName" : "Fajardo",
+			"stateCode" : "053",
+			"county" : ""
+		}
+	],
+	"00650" : [
+		{
+			"city" : "Florida",
+			"stateName" : "Florida",
+			"stateCode" : "054",
+			"county" : ""
+		}
+	],
+	"00647" : [
+		{
+			"city" : "Ensenada",
+			"stateName" : "Guanica",
+			"stateCode" : "055",
+			"county" : ""
+		}
+	],
+	"00653" : [
+		{
+			"city" : "Guanica",
+			"stateName" : "Guanica",
+			"stateCode" : "055",
+			"county" : ""
+		}
+	],
+	"00704" : [
+		{
+			"city" : "Aguirre",
+			"stateName" : "Guayama",
+			"stateCode" : "057",
+			"county" : ""
+		}
+	],
+	"00784" : [
+		{
+			"city" : "Guayama",
+			"stateName" : "Guayama",
+			"stateCode" : "057",
+			"county" : ""
+		}
+	],
+	"00656" : [
+		{
+			"city" : "Guayanilla",
+			"stateName" : "Guayanilla",
+			"stateCode" : "059",
+			"county" : ""
+		}
+	],
+	"00785" : [
+		{
+			"city" : "Guayama",
+			"stateName" : "Guayanilla",
+			"stateCode" : "059",
+			"county" : ""
+		}
+	],
+	"00965" : [
+		{
+			"city" : "Guaynabo",
+			"stateName" : "Guaynabo",
+			"stateCode" : "061",
+			"county" : ""
+		}
+	],
+	"00966" : [
+		{
+			"city" : "Guaynabo",
+			"stateName" : "Guaynabo",
+			"stateCode" : "061",
+			"county" : ""
+		}
+	],
+	"00969" : [
+		{
+			"city" : "Guaynabo",
+			"stateName" : "Guaynabo",
+			"stateCode" : "061",
+			"county" : ""
+		}
+	],
+	"00970" : [
+		{
+			"city" : "Guaynabo",
+			"stateName" : "Guaynabo",
+			"stateCode" : "061",
+			"county" : ""
+		}
+	],
+	"00971" : [
+		{
+			"city" : "Guaynabo",
+			"stateName" : "Guaynabo",
+			"stateCode" : "061",
+			"county" : ""
+		}
+	],
+	"00778" : [
+		{
+			"city" : "Gurabo",
+			"stateName" : "Gurabo",
+			"stateCode" : "063",
+			"county" : ""
+		}
+	],
+	"00659" : [
+		{
+			"city" : "Hatillo",
+			"stateName" : "Hatillo",
+			"stateCode" : "065",
+			"county" : ""
+		}
+	],
+	"00660" : [
+		{
+			"city" : "Hormigueros",
+			"stateName" : "Hormigueros",
+			"stateCode" : "067",
+			"county" : ""
+		}
+	],
+	"00741" : [
+		{
+			"city" : "Punta Santiago",
+			"stateName" : "Humacao",
+			"stateCode" : "069",
+			"county" : ""
+		}
+	],
+	"00791" : [
+		{
+			"city" : "Humacao",
+			"stateName" : "Humacao",
+			"stateCode" : "069",
+			"county" : ""
+		}
+	],
+	"00792" : [
+		{
+			"city" : "Humacao",
+			"stateName" : "Humacao",
+			"stateCode" : "069",
+			"county" : ""
+		}
+	],
+	"00662" : [
+		{
+			"city" : "Isabela",
+			"stateName" : "Isabela",
+			"stateCode" : "071",
+			"county" : ""
+		}
+	],
+	"00664" : [
+		{
+			"city" : "Jayuya",
+			"stateName" : "Jayuya",
+			"stateCode" : "073",
+			"county" : ""
+		}
+	],
+	"00795" : [
+		{
+			"city" : "Juana Diaz",
+			"stateName" : "Juana Diaz",
+			"stateCode" : "075",
+			"county" : ""
+		}
+	],
+	"00777" : [
+		{
+			"city" : "Juncos",
+			"stateName" : "Juncos",
+			"stateCode" : "077",
+			"county" : ""
+		}
+	],
+	"00667" : [
+		{
+			"city" : "Lajas",
+			"stateName" : "Lajas",
+			"stateCode" : "079",
+			"county" : ""
+		}
+	],
+	"00631" : [
+		{
+			"city" : "Castaner",
+			"stateName" : "Lares",
+			"stateCode" : "081",
+			"county" : ""
+		}
+	],
+	"00669" : [
+		{
+			"city" : "Lares",
+			"stateName" : "Lares",
+			"stateCode" : "081",
+			"county" : ""
+		}
+	],
+	"00670" : [
+		{
+			"city" : "Las Marias",
+			"stateName" : "Las Marias",
+			"stateCode" : "083",
+			"county" : ""
+		}
+	],
+	"00771" : [
+		{
+			"city" : "Las Piedras",
+			"stateName" : "Las Piedras",
+			"stateCode" : "085",
+			"county" : ""
+		}
+	],
+	"00772" : [
+		{
+			"city" : "Loiza",
+			"stateName" : "Loiza",
+			"stateCode" : "087",
+			"county" : ""
+		}
+	],
+	"00773" : [
+		{
+			"city" : "Luquillo",
+			"stateName" : "Luquillo",
+			"stateCode" : "089",
+			"county" : ""
+		}
+	],
+	"00674" : [
+		{
+			"city" : "Manati",
+			"stateName" : "Manati",
+			"stateCode" : "091",
+			"county" : ""
+		}
+	],
+	"00606" : [
+		{
+			"city" : "Maricao",
+			"stateName" : "Maricao",
+			"stateCode" : "093",
+			"county" : ""
+		}
+	],
+	"00707" : [
+		{
+			"city" : "Maunabo",
+			"stateName" : "Maunabo",
+			"stateCode" : "095",
+			"county" : ""
+		}
+	],
+	"00680" : [
+		{
+			"city" : "Mayaguez",
+			"stateName" : "Mayaguez",
+			"stateCode" : "097",
+			"county" : ""
+		}
+	],
+	"00681" : [
+		{
+			"city" : "Mayaguez",
+			"stateName" : "Mayaguez",
+			"stateCode" : "097",
+			"county" : ""
+		}
+	],
+	"00682" : [
+		{
+			"city" : "Mayaguez",
+			"stateName" : "Mayaguez",
+			"stateCode" : "097",
+			"county" : ""
+		}
+	],
+	"00676" : [
+		{
+			"city" : "Moca",
+			"stateName" : "Moca",
+			"stateCode" : "099",
+			"county" : ""
+		}
+	],
+	"00687" : [
+		{
+			"city" : "Morovis",
+			"stateName" : "Morovis",
+			"stateCode" : "101",
+			"county" : ""
+		}
+	],
+	"00718" : [
+		{
+			"city" : "Naguabo",
+			"stateName" : "Naguabo",
+			"stateCode" : "103",
+			"county" : ""
+		}
+	],
+	"00744" : [
+		{
+			"city" : "Rio Blanco",
+			"stateName" : "Naguabo",
+			"stateCode" : "103",
+			"county" : ""
+		}
+	],
+	"00719" : [
+		{
+			"city" : "Naranjito",
+			"stateName" : "Naranjito",
+			"stateCode" : "105",
+			"county" : ""
+		}
+	],
+	"00720" : [
+		{
+			"city" : "Orocovis",
+			"stateName" : "Orocovis",
+			"stateCode" : "107",
+			"county" : ""
+		}
+	],
+	"00723" : [
+		{
+			"city" : "Patillas",
+			"stateName" : "Patillas",
+			"stateCode" : "109",
+			"county" : ""
+		}
+	],
+	"00624" : [
+		{
+			"city" : "Penuelas",
+			"stateName" : "Penuelas",
+			"stateCode" : "111",
+			"county" : ""
+		}
+	],
+	"00715" : [
+		{
+			"city" : "Mercedita",
+			"stateName" : "Ponce",
+			"stateCode" : "113",
+			"county" : ""
+		}
+	],
+	"00716" : [
+		{
+			"city" : "Ponce",
+			"stateName" : "Ponce",
+			"stateCode" : "113",
+			"county" : ""
+		}
+	],
+	"00717" : [
+		{
+			"city" : "Ponce",
+			"stateName" : "Ponce",
+			"stateCode" : "113",
+			"county" : ""
+		}
+	],
+	"00728" : [
+		{
+			"city" : "Ponce",
+			"stateName" : "Ponce",
+			"stateCode" : "113",
+			"county" : ""
+		}
+	],
+	"00730" : [
+		{
+			"city" : "Ponce",
+			"stateName" : "Ponce",
+			"stateCode" : "113",
+			"county" : ""
+		}
+	],
+	"00731" : [
+		{
+			"city" : "Ponce",
+			"stateName" : "Ponce",
+			"stateCode" : "113",
+			"county" : ""
+		}
+	],
+	"00732" : [
+		{
+			"city" : "Ponce",
+			"stateName" : "Ponce",
+			"stateCode" : "113",
+			"county" : ""
+		}
+	],
+	"00733" : [
+		{
+			"city" : "Ponce",
+			"stateName" : "Ponce",
+			"stateCode" : "113",
+			"county" : ""
+		}
+	],
+	"00734" : [
+		{
+			"city" : "Ponce",
+			"stateName" : "Ponce",
+			"stateCode" : "113",
+			"county" : ""
+		}
+	],
+	"00780" : [
+		{
+			"city" : "Coto Laurel",
+			"stateName" : "Ponce",
+			"stateCode" : "113",
+			"county" : ""
+		}
+	],
+	"00678" : [
+		{
+			"city" : "Quebradillas",
+			"stateName" : "Quebradillas",
+			"stateCode" : "115",
+			"county" : ""
+		}
+	],
+	"00677" : [
+		{
+			"city" : "Rincon",
+			"stateName" : "Rincon",
+			"stateCode" : "117",
+			"county" : ""
+		}
+	],
+	"00721" : [
+		{
+			"city" : "Palmer",
+			"stateName" : "Rio Grande",
+			"stateCode" : "119",
+			"county" : ""
+		}
+	],
+	"00745" : [
+		{
+			"city" : "Rio Grande",
+			"stateName" : "Rio Grande",
+			"stateCode" : "119",
+			"county" : ""
+		}
+	],
+	"00637" : [
+		{
+			"city" : "Sabana Grande",
+			"stateName" : "Sabana Grande",
+			"stateCode" : "121",
+			"county" : ""
+		}
+	],
+	"00751" : [
+		{
+			"city" : "Salinas",
+			"stateName" : "Salinas",
+			"stateCode" : "123",
+			"county" : ""
+		}
+	],
+	"00636" : [
+		{
+			"city" : "Rosario",
+			"stateName" : "San German",
+			"stateCode" : "125",
+			"county" : ""
+		}
+	],
+	"00683" : [
+		{
+			"city" : "San German",
+			"stateName" : "San German",
+			"stateCode" : "125",
+			"county" : ""
+		}
+	],
+	"00901" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00902" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00906" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00907" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00908" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00909" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00910" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00911" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00912" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00913" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00914" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00915" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00916" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00917" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00918" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00919" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00920" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00921" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00922" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00923" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00924" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00925" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00926" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00927" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00928" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00929" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00930" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00931" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00933" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00935" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00936" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00937" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00938" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00939" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00940" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00955" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00968" : [
+		{
+			"city" : "Guaynabo",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00975" : [
+		{
+			"city" : "San Juan",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00979" : [
+		{
+			"city" : "Carolina",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00981" : [
+		{
+			"city" : "Carolina",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00982" : [
+		{
+			"city" : "Carolina",
+			"stateName" : "San Juan",
+			"stateCode" : "127",
+			"county" : ""
+		}
+	],
+	"00754" : [
+		{
+			"city" : "San Lorenzo",
+			"stateName" : "San Lorenzo",
+			"stateCode" : "129",
+			"county" : ""
+		}
+	],
+	"00685" : [
+		{
+			"city" : "San Sebastian",
+			"stateName" : "San Sebastian",
+			"stateCode" : "131",
+			"county" : ""
+		}
+	],
+	"00757" : [
+		{
+			"city" : "Santa Isabel",
+			"stateName" : "Santa Isabel",
+			"stateCode" : "133",
+			"county" : ""
+		}
+	],
+	"00953" : [
+		{
+			"city" : "Toa Alta",
+			"stateName" : "Toa Alta",
+			"stateCode" : "135",
+			"county" : ""
+		}
+	],
+	"00954" : [
+		{
+			"city" : "Toa Alta",
+			"stateName" : "Toa Alta",
+			"stateCode" : "135",
+			"county" : ""
+		}
+	],
+	"00949" : [
+		{
+			"city" : "Toa Baja",
+			"stateName" : "Toa Baja",
+			"stateCode" : "137",
+			"county" : ""
+		}
+	],
+	"00950" : [
+		{
+			"city" : "Toa Baja",
+			"stateName" : "Toa Baja",
+			"stateCode" : "137",
+			"county" : ""
+		}
+	],
+	"00951" : [
+		{
+			"city" : "Toa Baja",
+			"stateName" : "Toa Baja",
+			"stateCode" : "137",
+			"county" : ""
+		}
+	],
+	"00952" : [
+		{
+			"city" : "Sabana Seca",
+			"stateName" : "Toa Baja",
+			"stateCode" : "137",
+			"county" : ""
+		}
+	],
+	"00976" : [
+		{
+			"city" : "Trujillo Alto",
+			"stateName" : "Trujillo Alto",
+			"stateCode" : "139",
+			"county" : ""
+		}
+	],
+	"00977" : [
+		{
+			"city" : "Trujillo Alto",
+			"stateName" : "Trujillo Alto",
+			"stateCode" : "139",
+			"county" : ""
+		}
+	],
+	"00978" : [
+		{
+			"city" : "St Just",
+			"stateName" : "Trujillo Alto",
+			"stateCode" : "139",
+			"county" : ""
+		}
+	],
+	"00611" : [
+		{
+			"city" : "Angeles",
+			"stateName" : "Utuado",
+			"stateCode" : "141",
+			"county" : ""
+		}
+	],
+	"00641" : [
+		{
+			"city" : "Utuado",
+			"stateName" : "Utuado",
+			"stateCode" : "141",
+			"county" : ""
+		}
+	],
+	"00692" : [
+		{
+			"city" : "Vega Alta",
+			"stateName" : "Vega Alta",
+			"stateCode" : "143",
+			"county" : ""
+		}
+	],
+	"00693" : [
+		{
+			"city" : "Vega Baja",
+			"stateName" : "Vega Baja",
+			"stateCode" : "145",
+			"county" : ""
+		}
+	],
+	"00694" : [
+		{
+			"city" : "Vega Baja",
+			"stateName" : "Vega Baja",
+			"stateCode" : "145",
+			"county" : ""
+		}
+	],
+	"00765" : [
+		{
+			"city" : "Vieques",
+			"stateName" : "Vieques",
+			"stateCode" : "147",
+			"county" : ""
+		}
+	],
+	"00766" : [
+		{
+			"city" : "Villalba",
+			"stateName" : "Villalba",
+			"stateCode" : "149",
+			"county" : ""
+		}
+	],
+	"00767" : [
+		{
+			"city" : "Yabucoa",
+			"stateName" : "Yabucoa",
+			"stateCode" : "151",
+			"county" : ""
+		}
+	],
+	"00698" : [
+		{
+			"city" : "Yauco",
+			"stateName" : "Yauco",
+			"stateCode" : "153",
+			"county" : ""
+		}
+	]
+}

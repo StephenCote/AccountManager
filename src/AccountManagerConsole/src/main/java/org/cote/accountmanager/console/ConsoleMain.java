@@ -59,6 +59,9 @@ public class ConsoleMain {
 	///
 	public static boolean enableUnauthenticatedResets = true;
 	
+	private static final String defaultSchema = "../../db/postgres/AM6_PG9_Schema.sql";
+	private static final String defaultRocketSchema = "../../db/postgres/Rocket_PG9_Schema.sql";
+	
 	public static void main(String[] args){
 		
 		Properties props = new Properties();
@@ -92,6 +95,7 @@ public class ConsoleMain {
 		options.addOption("thumbnail",false,"Generate thumbnails for the supplied path");
 		options.addOption("configureApi",false,"Apply the API Configuration");
 		options.addOption("file",true,"File reference");
+		options.addOption("skipRocket",false,"Bit used to indicate to skip setting up the rocket library");
 		options.addOption("action",true,"Variable used for specific actions (currently Vault)");
 		//options.addOption("create",false,"Bit used for specific create options (currently Vault)");
 		//options.addOption("delete",false,"Bit used for specific delete options (currently Vault)");
@@ -110,6 +114,7 @@ public class ConsoleMain {
 		options.addOption("email",true,"Email address");
 		options.addOption("confirm",false,"Confirm the activity");
 		options.addOption("schema",true,"Account Manager Database Schema");
+		options.addOption("rocketSchema",true,"Rocket Database Schema extension");
 		options.addOption("rootPassword",true,"Account Manager Root Password");
 		options.addOption("adminPassword",true,"Account Manager Admin Password");
 		
@@ -141,6 +146,8 @@ public class ConsoleMain {
 		options.addOption("path",true,"AccountManager directory group");
 		// options.addOption("test",false,"Run Tests");
 		
+
+		
 		
 		AuditDataMaintenance auditThread = null;
 		CommandLineParser parser = new PosixParser();
@@ -154,70 +161,25 @@ public class ConsoleMain {
 			logger.debug("Completed warm up in " + (stopWarmUp - startWarmUp) + "ms");
 			auditThread = new AuditDataMaintenance();
 			CommandLine cmd = parser.parse( options, args);
+			
+			String schemaPath = (cmd.hasOption("schema") ? cmd.getOptionValue("schema") : defaultSchema);
+			String rocketSchemaPath = (cmd.hasOption("rocketSchema") ? cmd.getOptionValue("rocketSchema") : defaultRocketSchema);
+			
 			if(cmd.hasOption("patch") && cmd.hasOption("organization")){
-				logger.debug("Applying patch ...");
-				try {
-					OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(cmd.getOptionValue("organization"));
-					logger.info("Patching " + org.getName());
-					logger.info("Updating permissions ...");
-					if(org != null){
-						FactoryDefaults.createPermissionsForAuthorizationFactories(org.getId());
+				logger.info("Placeholder for patching installations");
 
-						/*
-						
-						SecurityBean asymmKey = KeyService.getPrimaryAsymmetricKey(org.getId());
-						if(asymmKey == null){
-							logger.info("Creating primary asymmetric key");
-							KeyService.newOrganizationAsymmetricKey(org.getId(), true);
-						}
-						else{
-							logger.info("Checked asymmetric key");
-						}
-						SecurityBean symmKey = KeyService.getPrimarySymmetricKey(org.getId());
-						if(symmKey == null){
-							logger.info("Creating primary symmetric key");
-							KeyService.newOrganizationSymmetricKey(org.getId(), true);
-						}
-						else{
-							logger.info("Checked symmetric key");
-						}
-						List<UserType> users = Factories.getNameIdFactory(FactoryEnumType.USER).getUserList(0, 0, org.getId());
-						logger.info("Checking " + users.size() + " users for valid credentials");
-						for(int i = 0; i < users.size();i++){
-							CredentialType cred = CredentialService.getPrimaryCredential(users.get(i));
-							if(cred == null){
-								if(users.get(i).getName().equals(Factories.getDocumentControlName())){
-									logger.info("Resetting Document Control credential");
-									CredentialService.newHashedPasswordCredential(users.get(i), users.get(i), UUID.randomUUID().toString(), true,false);
-								}
-								else{
-									logger.warn("Missing primary credential for " + users.get(i).getName() + " (#" + users.get(i).getId() + ")");
-								}
-							}
-						}
-						*/
-					}
-					else{
-						logger.error("Organization does not exist");
-					}
-				} catch (FactoryException e) {
-					
-					logger.error(e.getMessage());
-					logger.error("Error",e);
-				} catch (ArgumentException e) {
-					
-					logger.error(e.getMessage());
-					logger.error("Error",e);
-				}
 			}
-			else if(cmd.hasOption("setup") && cmd.hasOption("rootPassword") && cmd.hasOption("schema")){
+			else if(cmd.hasOption("setup") && cmd.hasOption("rootPassword")){
 				if(cmd.hasOption("confirm") == false){
 					logger.warn("Setting up Account Manager will completely replace the Account Manager schema.  Any data will be lost.  If you are sure, add the -confirm parameter and try again.");
 				}
 				else{
 					
-					if(SetupAction.setupAccountManager(cmd.getOptionValue("rootPassword"),cmd.getOptionValue("schema"))){
+					if(SetupAction.setupAccountManager(cmd.getOptionValue("rootPassword"),schemaPath)){
 						logger.info("Configured Account Manager");
+						if(cmd.hasOption("skipRocket") == false){
+							RocketSetupAction.setupRocket(cmd.getOptionValue("rootPassword"), rocketSchemaPath);
+						}
 					}
 					else{
 						logger.error("Failed to configure Account Manager");

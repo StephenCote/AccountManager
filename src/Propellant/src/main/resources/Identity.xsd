@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/propellant/objects" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.cote.org/propellant/objects">
+
+      <complexType name="IdentityConnectionType">
+    	<sequence>
+    		<element name="applicationPermissionMaps" type="tns:MapType"
+    			minOccurs="0" maxOccurs="unbounded">
+    		</element>
+    		<element name="filterPerson" type="string"></element>
+    		<element name="filterBase" type="string"></element>
+    		<element name="filterSystemUser" type="string"></element>
+    		<element name="filterApplication" type="string"></element>
+    		<element name="filterApplicationGroup" type="string"></element>
+    		<element name="filterApplicationAccount" type="string"></element>
+    		<element name="filterRole" type="string"></element>
+    		<element name="filterSystemRole" type="string"></element>
+    	</sequence>
+    	<attribute name="managementUserName" type="string"></attribute>
+    	<attribute name="managementPassword" type="string"></attribute>
+    	<attribute name="managementServer" type="string"></attribute>
+    	<attribute name="directoryBindUser" type="string"></attribute>
+    	<attribute name="directoryBindPassword" type="string"></attribute>
+    	<attribute name="directoryServer" type="string"></attribute>
+    	<attribute name="projectId" type="long"></attribute>
+    </complexType>
+        <complexType name="MapType">
+    	<attribute name="name" type="string"></attribute>
+    	<attribute name="value" type="string"></attribute>
+    </complexType>
+
+        <simpleType name="IdentityDataEnumType">
+        	<restriction base="string">
+        		<enumeration value="UNKNOWN"></enumeration>
+        		<enumeration value="MAP"></enumeration>
+        		<enumeration value="ACCOUNT"></enumeration>
+        		<enumeration value="PERMISSION"></enumeration>
+        		<enumeration value="PERSON"></enumeration>
+        		<enumeration value="GROUP"></enumeration>
+        		<enumeration value="GROUPMAP"></enumeration>
+        		<enumeration value="ENTITLEMENTMAP"></enumeration>
+        	</restriction>
+        </simpleType>
+
+        <complexType name="IdentityDataImportType">
+        	<sequence>
+        		<element name="header" type="string" minOccurs="0" maxOccurs="unbounded"></element>
+        	</sequence>
+        	<attribute name="name" type="string"></attribute>
+        	<attribute name="type" type="tns:IdentityDataEnumType"></attribute>
+        </complexType>
+</schema>

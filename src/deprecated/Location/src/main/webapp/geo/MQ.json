@@ -1,0 +1,797 @@
+{
+	"97200" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97201 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97202 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97203 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97204 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97205 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97206 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97207 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97208 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97209 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97210 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97211" : [
+		{
+			"city" : "Rivière-Pilote",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97212" : [
+		{
+			"city" : "Saint-Joseph",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97213" : [
+		{
+			"city" : "Le Gros-Morne",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97214" : [
+		{
+			"city" : "Le Lorrain",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97215" : [
+		{
+			"city" : "Rivière-Salée",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97216" : [
+		{
+			"city" : "Ajoupa-Bouillon",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97217" : [
+		{
+			"city" : "Les Anses-d'Arlet",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97218" : [
+		{
+			"city" : "Macouba",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+,
+		{
+			"city" : "Grand'Rivière",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+,
+		{
+			"city" : "Basse-Pointe",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97219 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97220" : [
+		{
+			"city" : "La Trinité",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97221" : [
+		{
+			"city" : "Le Carbet",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97222" : [
+		{
+			"city" : "Bellefontaine",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+,
+		{
+			"city" : "Case-Pilote",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97223" : [
+		{
+			"city" : "Le Diamant",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97224" : [
+		{
+			"city" : "Ducos",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97225" : [
+		{
+			"city" : "Marigot",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97226" : [
+		{
+			"city" : "Le Morne-Vert",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97227" : [
+		{
+			"city" : "Sainte-Anne",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97228" : [
+		{
+			"city" : "Sainte-Luce",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97229" : [
+		{
+			"city" : "Les Trois-Îlets",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97230" : [
+		{
+			"city" : "Sainte-Marie",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97231" : [
+		{
+			"city" : "Le Robert",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97232" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97233" : [
+		{
+			"city" : "Schœlcher",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97234" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97240" : [
+		{
+			"city" : "Le François",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97241 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97242 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97243 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97244 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97245 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97246 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97247 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97248 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97249 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97250" : [
+		{
+			"city" : "Le Prêcheur",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+,
+		{
+			"city" : "Fonds-Saint-Denis",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+,
+		{
+			"city" : "Saint-Pierre",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97251 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97252 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97253 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97254 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97255 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97256 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97257 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97258 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97259 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97260" : [
+		{
+			"city" : "Le Morne-Rouge",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97261 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97262 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97263 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97264 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97265 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97266 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97267 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97268 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97269 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97270" : [
+		{
+			"city" : "Saint-Esprit",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97271 CEDEX" : [
+		{
+			"city" : "Schœlcher",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97272 CEDEX" : [
+		{
+			"city" : "Schœlcher",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97273 CEDEX" : [
+		{
+			"city" : "Schœlcher",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97274 CEDEX" : [
+		{
+			"city" : "Schœlcher",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97275 CEDEX" : [
+		{
+			"city" : "Schœlcher",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97276 CEDEX" : [
+		{
+			"city" : "Schœlcher",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97277 CEDEX" : [
+		{
+			"city" : "Schœlcher",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97278 CEDEX" : [
+		{
+			"city" : "Schœlcher",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97279 CEDEX" : [
+		{
+			"city" : "Schœlcher",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97280" : [
+		{
+			"city" : "Le Vauclin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97281 CEDEX 1" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97282 CEDEX 1" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97283 CEDEX 1" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97284 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97285 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97286 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97287 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97288 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97289 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97290" : [
+		{
+			"city" : "Le Marin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97291 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97292 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97293 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97294 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97295 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97296 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97297 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97298 CEDEX 2" : [
+		{
+			"city" : "Le Lamentin",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	],
+	"97299 CEDEX" : [
+		{
+			"city" : "Fort-de-France",
+			"stateName" : "Martinique",
+			"stateCode" : "MQ",
+			"county" : "Martinique"
+		}
+	]
+}

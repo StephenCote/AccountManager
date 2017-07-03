@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.cote.org/propellant/objects" xmlns:tns="http://www.cote.org/propellant/objects" xmlns:Q1="http://www.cote.org/accountmanager/objects">
+    <xsd:include schemaLocation="Process.xsd"></xsd:include>
+    <xsd:import schemaLocation="../../../../AccountManagerObjects/src/main/resources/NameId.xsd" namespace="http://www.cote.org/accountmanager/objects"></xsd:import>
+    <xsd:complexType name="MethodologyType">
+    	<xsd:complexContent>
+    		<xsd:extension base="Q1:NameIdDirectoryGroupType">
+    			<xsd:sequence>
+    				<xsd:element name="processes" type="tns:ProcessType"
+    					minOccurs="0" maxOccurs="unbounded">
+    				</xsd:element>
+    				<xsd:element name="budgets" type="tns:BudgetType" minOccurs="0" maxOccurs="unbounded"></xsd:element>
+    			</xsd:sequence>
+    			<xsd:attribute name="description" type="xsd:string"></xsd:attribute>
+    		</xsd:extension>
+    	</xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

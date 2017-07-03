@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.cote.org/propellant/objects"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.cote.org/propellant/objects"
+	xmlns:Q1="http://www.cote.org/accountmanager/objects">
+
+
+
+    <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/GroupType.xsd" namespace="http://www.cote.org/accountmanager/objects"></import>
+    <include schemaLocation="Assembly.xsd"></include>
+	<include schemaLocation="Model.xsd"></include>
+	<include schemaLocation="Blueprint.xsd"></include>
+	<include schemaLocation="Pledge.xsd"></include>
+	<include schemaLocation="Project.xsd"></include>
+	<include schemaLocation="Resource.xsd"></include>
+	<include schemaLocation="Schedule.xsd"></include>
+
+	<include schemaLocation="Budget.xsd"></include>
+
+	<import
+		schemaLocation="../../../../AccountManagerObjects/src/main/resources/NameId.xsd"
+		namespace="http://www.cote.org/accountmanager/objects">
+	</import>
+
+	<complexType name="LifecycleType">
+		<complexContent>
+			<extension base="Q1:NameIdDirectoryGroupType">
+				<sequence>
+					<element name="schedules" type="tns:ScheduleType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+					<element name="budgets" type="tns:BudgetType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+					<element name="projects" type="tns:ProjectType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+					<element name="goals" type="tns:GoalType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+				</sequence>
+				<attribute name="description" type="string"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

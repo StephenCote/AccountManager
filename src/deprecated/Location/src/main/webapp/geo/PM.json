@@ -1,0 +1,17 @@
+{
+	"97500" : [
+		{
+			"city" : "Miquelon",
+			"stateName" : "Miquelon-Langlade",
+			"stateCode" : "97501",
+			"county" : "Miquelon-Langlade"
+		}
+,
+		{
+			"city" : "Saint-Pierre",
+			"stateName" : "Saint-Pierre",
+			"stateCode" : "97502",
+			"county" : ""
+		}
+	]
+}

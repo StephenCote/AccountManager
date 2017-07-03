@@ -1,0 +1,10586 @@
+{
+	"1000" : [
+		{
+			"city" : "Dhaka GPO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1100" : [
+		{
+			"city" : "Dhaka Main PO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1203" : [
+		{
+			"city" : "Wari TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1204" : [
+		{
+			"city" : "Gendaria TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1205" : [
+		{
+			"city" : "New Market TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1206" : [
+		{
+			"city" : "Dhaka CantonmentTSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1207" : [
+		{
+			"city" : "Mohammadpur Housing",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1208" : [
+		{
+			"city" : "Dhaka Politechnic",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1209" : [
+		{
+			"city" : "Jigatala TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1211" : [
+		{
+			"city" : "Posta TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1212" : [
+		{
+			"city" : "Gulshan Model Town",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1213" : [
+		{
+			"city" : "Banani TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1214" : [
+		{
+			"city" : "Basabo TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1215" : [
+		{
+			"city" : "Tejgaon TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1217" : [
+		{
+			"city" : "Shantinagr TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1218" : [
+		{
+			"city" : "Mirpur TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1219" : [
+		{
+			"city" : "KhilgaonTSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1222" : [
+		{
+			"city" : "BangabhabanTSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1223" : [
+		{
+			"city" : "DilkushaTSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1225" : [
+		{
+			"city" : "Sangsad BhabanTSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1229" : [
+		{
+			"city" : "KhilkhetTSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1231" : [
+		{
+			"city" : "Uttara Model TwonTSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1232" : [
+		{
+			"city" : "Dhania TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1310" : [
+		{
+			"city" : "Keraniganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1311" : [
+		{
+			"city" : "Dhaka Jute Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1312" : [
+		{
+			"city" : "Ati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1313" : [
+		{
+			"city" : "Kalatia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1320" : [
+		{
+			"city" : "Nawabganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1321" : [
+		{
+			"city" : "Hasnabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1322" : [
+		{
+			"city" : "Daudpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1323" : [
+		{
+			"city" : "Agla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1324" : [
+		{
+			"city" : "Khalpar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1325" : [
+		{
+			"city" : "Churain",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1330" : [
+		{
+			"city" : "Joypara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1331" : [
+		{
+			"city" : "Palamganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1332" : [
+		{
+			"city" : "Narisha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1333" : [
+		{
+			"city" : "Haridia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1334" : [
+		{
+			"city" : "Gouragonj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1335" : [
+		{
+			"city" : "Madini Mandal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1340" : [
+		{
+			"city" : "Savar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1341" : [
+		{
+			"city" : "Dairy Farm",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1342" : [
+		{
+			"city" : "Jahangirnagar Univer",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1343" : [
+		{
+			"city" : "Saver P.A.T.C",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1344" : [
+		{
+			"city" : "Savar Canttonment",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1345" : [
+		{
+			"city" : "Shimulia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1346" : [
+		{
+			"city" : "Kashem Cotton Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1347" : [
+		{
+			"city" : "Rajphulbaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1348" : [
+		{
+			"city" : "Amin Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1349" : [
+		{
+			"city" : "EPZ",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1350" : [
+		{
+			"city" : "Dhamrai",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1351" : [
+		{
+			"city" : "Kamalpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1360" : [
+		{
+			"city" : "Demra",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1361" : [
+		{
+			"city" : "Sarulia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1362" : [
+		{
+			"city" : "Matuail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dhaka"
+		}
+	],
+	"1400" : [
+		{
+			"city" : "Narayanganj Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1410" : [
+		{
+			"city" : "Bandar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1411" : [
+		{
+			"city" : "D.C Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1412" : [
+		{
+			"city" : "Nabiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1413" : [
+		{
+			"city" : "BIDS",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1414" : [
+		{
+			"city" : "Madanganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1420" : [
+		{
+			"city" : "Fatullah",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1421" : [
+		{
+			"city" : "Fatulla Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1430" : [
+		{
+			"city" : "Siddirganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1431" : [
+		{
+			"city" : "Adamjeenagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1432" : [
+		{
+			"city" : "LN Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1440" : [
+		{
+			"city" : "Baidder Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1441" : [
+		{
+			"city" : "Bara Nagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1442" : [
+		{
+			"city" : "Barodi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1450" : [
+		{
+			"city" : "Araihazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1451" : [
+		{
+			"city" : "Gopaldi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1460" : [
+		{
+			"city" : "Rupganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1461" : [
+		{
+			"city" : "Kanchan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1462" : [
+		{
+			"city" : "Bhulta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1463" : [
+		{
+			"city" : "Nagri",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1464" : [
+		{
+			"city" : "Murapara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narayanganj"
+		}
+	],
+	"1500" : [
+		{
+			"city" : "Munshiganj Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1501" : [
+		{
+			"city" : "Rikabibazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1502" : [
+		{
+			"city" : "Mirkadim",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1503" : [
+		{
+			"city" : "Kathakhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1510" : [
+		{
+			"city" : "Gajaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1511" : [
+		{
+			"city" : "Hossendi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1512" : [
+		{
+			"city" : "Rasulpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1520" : [
+		{
+			"city" : "Tangibari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1521" : [
+		{
+			"city" : "Betkahat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1522" : [
+		{
+			"city" : "Baligao",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1523" : [
+		{
+			"city" : "Bajrajugini",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1524" : [
+		{
+			"city" : "Hasail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1525" : [
+		{
+			"city" : "Dighirpar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1526" : [
+		{
+			"city" : "Pura EDSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1527" : [
+		{
+			"city" : "Pura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1530" : [
+		{
+			"city" : "Lohajang",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1531" : [
+		{
+			"city" : "Korhati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1532" : [
+		{
+			"city" : "Haldia SO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1533" : [
+		{
+			"city" : "Haridia DESO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1534" : [
+		{
+			"city" : "Gouragonj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1535" : [
+		{
+			"city" : "Medini Mandal EDSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1540" : [
+		{
+			"city" : "Sirajdikhan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1541" : [
+		{
+			"city" : "Kola",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1542" : [
+		{
+			"city" : "Ichapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1543" : [
+		{
+			"city" : "Malkha Nagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1544" : [
+		{
+			"city" : "Shekher Nagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1550" : [
+		{
+			"city" : "Srinagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1551" : [
+		{
+			"city" : "Barikhal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1552" : [
+		{
+			"city" : "Mazpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1553" : [
+		{
+			"city" : "Hashara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1554" : [
+		{
+			"city" : "Kolapara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1555" : [
+		{
+			"city" : "Kumarbhog",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1556" : [
+		{
+			"city" : "Vaggyakul SO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1557" : [
+		{
+			"city" : "Baghra",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1558" : [
+		{
+			"city" : "Bhaggyakul",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Munshiganj"
+		}
+	],
+	"1600" : [
+		{
+			"city" : "Narshingdi Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1601" : [
+		{
+			"city" : "UMC Jute Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1602" : [
+		{
+			"city" : "Narshingdi College",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1603" : [
+		{
+			"city" : "Panchdona",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1604" : [
+		{
+			"city" : "Madhabdi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1605" : [
+		{
+			"city" : "Karimpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1610" : [
+		{
+			"city" : "Palash",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1611" : [
+		{
+			"city" : "Ghorashal Urea Facto",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1612" : [
+		{
+			"city" : "Char Sindhur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1613" : [
+		{
+			"city" : "Ghorashal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1620" : [
+		{
+			"city" : "Shibpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1630" : [
+		{
+			"city" : "Raypura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1631" : [
+		{
+			"city" : "Bazar Hasnabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1632" : [
+		{
+			"city" : "Radhaganj bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1640" : [
+		{
+			"city" : "Belabo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1650" : [
+		{
+			"city" : "Monohordi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1651" : [
+		{
+			"city" : "Hatirdia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1652" : [
+		{
+			"city" : "Katabaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narshingdi"
+		}
+	],
+	"1700" : [
+		{
+			"city" : "Gazipur Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1701" : [
+		{
+			"city" : "B.R.R",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1702" : [
+		{
+			"city" : "Chandna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1703" : [
+		{
+			"city" : "B.O.F",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1704" : [
+		{
+			"city" : "National University",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1710" : [
+		{
+			"city" : "Monnunagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1711" : [
+		{
+			"city" : "Nishat Nagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1712" : [
+		{
+			"city" : "Ershad Nagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1720" : [
+		{
+			"city" : "Kaliganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1721" : [
+		{
+			"city" : "Pubail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1722" : [
+		{
+			"city" : "Santanpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1723" : [
+		{
+			"city" : "Vaoal Jamalpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1730" : [
+		{
+			"city" : "kapashia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1740" : [
+		{
+			"city" : "Shipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1741" : [
+		{
+			"city" : "Rajendrapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1742" : [
+		{
+			"city" : "Rajendrapur Canttome",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1743" : [
+		{
+			"city" : "Barmi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1744" : [
+		{
+			"city" : "Satkhamair",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1745" : [
+		{
+			"city" : "Kawraid",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1747" : [
+		{
+			"city" : "Bashamur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1748" : [
+		{
+			"city" : "Boubi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1750" : [
+		{
+			"city" : "Kaliakaar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1751" : [
+		{
+			"city" : "Safipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gazipur"
+		}
+	],
+	"1800" : [
+		{
+			"city" : "Manikganj Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1801" : [
+		{
+			"city" : "Manikganj Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1802" : [
+		{
+			"city" : "Gorpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1803" : [
+		{
+			"city" : "Mahadebpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1804" : [
+		{
+			"city" : "Barangail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1810" : [
+		{
+			"city" : "Saturia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1811" : [
+		{
+			"city" : "Baliati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1820" : [
+		{
+			"city" : "Singair",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1821" : [
+		{
+			"city" : "Baira",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1822" : [
+		{
+			"city" : "joymantop",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1830" : [
+		{
+			"city" : "Lechhraganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1831" : [
+		{
+			"city" : "Jhitka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1840" : [
+		{
+			"city" : "Gheor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1850" : [
+		{
+			"city" : "Shibaloy",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1851" : [
+		{
+			"city" : "Aricha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1852" : [
+		{
+			"city" : "Tewta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1853" : [
+		{
+			"city" : "Uthli",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1860" : [
+		{
+			"city" : "Doulatpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Manikganj"
+		}
+	],
+	"1900" : [
+		{
+			"city" : "Tangail Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1901" : [
+		{
+			"city" : "Kagmari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1902" : [
+		{
+			"city" : "Santosh",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1903" : [
+		{
+			"city" : "Korotia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1904" : [
+		{
+			"city" : "Purabari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1910" : [
+		{
+			"city" : "Delduar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1911" : [
+		{
+			"city" : "Jangalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1912" : [
+		{
+			"city" : "Patharail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1913" : [
+		{
+			"city" : "Elasin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1914" : [
+		{
+			"city" : "Hinga Nagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1915" : [
+		{
+			"city" : "Lowhati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1920" : [
+		{
+			"city" : "Basail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1930" : [
+		{
+			"city" : "Kashkawlia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1936" : [
+		{
+			"city" : "Nagarpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1937" : [
+		{
+			"city" : "Dhuburia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1938" : [
+		{
+			"city" : "Salimabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1940" : [
+		{
+			"city" : "Mirzapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1941" : [
+		{
+			"city" : "Gorai",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1942" : [
+		{
+			"city" : "M.C. College",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1943" : [
+		{
+			"city" : "Warri paikpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1944" : [
+		{
+			"city" : "Jarmuki",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1945" : [
+		{
+			"city" : "Mohera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1950" : [
+		{
+			"city" : "Sakhipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1951" : [
+		{
+			"city" : "Kochua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1960" : [
+		{
+			"city" : "Bhuapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1970" : [
+		{
+			"city" : "Kalihati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1971" : [
+		{
+			"city" : "Rajafair",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1972" : [
+		{
+			"city" : "Nagbari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1973" : [
+		{
+			"city" : "Ballabazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1974" : [
+		{
+			"city" : "Elinga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1975" : [
+		{
+			"city" : "Palisha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1976" : [
+		{
+			"city" : "Nagarbari SO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1977" : [
+		{
+			"city" : "Nagarbari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1980" : [
+		{
+			"city" : "Ghatial",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1981" : [
+		{
+			"city" : "Zahidganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1982" : [
+		{
+			"city" : "D. Pakutia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1983" : [
+		{
+			"city" : "Dhalapara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1984" : [
+		{
+			"city" : "Lohani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1990" : [
+		{
+			"city" : "Gopalpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1991" : [
+		{
+			"city" : "Jhowail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1992" : [
+		{
+			"city" : "Hemnagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1996" : [
+		{
+			"city" : "Madhupur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"1997" : [
+		{
+			"city" : "Dhobari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Tangail"
+		}
+	],
+	"2000" : [
+		{
+			"city" : "Jamalpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2001" : [
+		{
+			"city" : "Nandina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2002" : [
+		{
+			"city" : "Narundi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2010" : [
+		{
+			"city" : "Malandah",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2011" : [
+		{
+			"city" : "Jamalpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2012" : [
+		{
+			"city" : "Malancha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2013" : [
+		{
+			"city" : "Mahmoodpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2020" : [
+		{
+			"city" : "Islampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2021" : [
+		{
+			"city" : "Durmoot",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2022" : [
+		{
+			"city" : "Gilabari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2030" : [
+		{
+			"city" : "Dewangonj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2031" : [
+		{
+			"city" : "Dewangonj S. Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2040" : [
+		{
+			"city" : "Mathargonj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2041" : [
+		{
+			"city" : "Balijhuri",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2050" : [
+		{
+			"city" : "Shorishabari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2051" : [
+		{
+			"city" : "Gunerbari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2052" : [
+		{
+			"city" : "Bausee",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2053" : [
+		{
+			"city" : "Jagannath Ghat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2054" : [
+		{
+			"city" : "Pingna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2055" : [
+		{
+			"city" : "Jamuna Sar Karkhana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jamalpur"
+		}
+	],
+	"2100" : [
+		{
+			"city" : "Sherpur Shadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sherpur"
+		}
+	],
+	"2110" : [
+		{
+			"city" : "Nalitabari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sherpur"
+		}
+	],
+	"2111" : [
+		{
+			"city" : "Hatibandha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sherpur"
+		}
+	],
+	"2120" : [
+		{
+			"city" : "Jhinaigati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sherpur"
+		}
+	],
+	"2130" : [
+		{
+			"city" : "Shribardi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sherpur"
+		}
+	],
+	"2140" : [
+		{
+			"city" : "Bakshigonj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sherpur"
+		}
+	],
+	"2150" : [
+		{
+			"city" : "Nakla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sherpur"
+		}
+	],
+	"2151" : [
+		{
+			"city" : "Gonopaddi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sherpur"
+		}
+	],
+	"2200" : [
+		{
+			"city" : "Mymensingh Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2201" : [
+		{
+			"city" : "Kawatkhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2202" : [
+		{
+			"city" : "Agriculture Universi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2203" : [
+		{
+			"city" : "Shombhuganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2204" : [
+		{
+			"city" : "Biddyaganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2205" : [
+		{
+			"city" : "Pearpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2210" : [
+		{
+			"city" : "Muktagachha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2216" : [
+		{
+			"city" : "Fulbaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2220" : [
+		{
+			"city" : "Trishal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2221" : [
+		{
+			"city" : "Ahmadbad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2222" : [
+		{
+			"city" : "Ram Amritaganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2223" : [
+		{
+			"city" : "Dhala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2230" : [
+		{
+			"city" : "Gaforgaon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2231" : [
+		{
+			"city" : "Shibganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2232" : [
+		{
+			"city" : "Usti",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2233" : [
+		{
+			"city" : "Kandipara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2234" : [
+		{
+			"city" : "Duttarbazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2240" : [
+		{
+			"city" : "Bhaluka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2250" : [
+		{
+			"city" : "Phulpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2251" : [
+		{
+			"city" : "Beltia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2252" : [
+		{
+			"city" : "Tarakanda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2260" : [
+		{
+			"city" : "Haluaghat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2261" : [
+		{
+			"city" : "Dhara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2262" : [
+		{
+			"city" : "Munshirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2270" : [
+		{
+			"city" : "Gouripur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2271" : [
+		{
+			"city" : "Ramgopalpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2280" : [
+		{
+			"city" : "Isshwargonj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2281" : [
+		{
+			"city" : "Sohagi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2282" : [
+		{
+			"city" : "Atharabari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2290" : [
+		{
+			"city" : "Nandail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2291" : [
+		{
+			"city" : "Gangail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Mymensingh"
+		}
+	],
+	"2300" : [
+		{
+			"city" : "Kishoreganj Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2301" : [
+		{
+			"city" : "Kishoreganj S.Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2302" : [
+		{
+			"city" : "Maizhati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2303" : [
+		{
+			"city" : "Nilganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2310" : [
+		{
+			"city" : "Karimganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2316" : [
+		{
+			"city" : "Tarial",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2320" : [
+		{
+			"city" : "Hossenpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2326" : [
+		{
+			"city" : "Pakundia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2330" : [
+		{
+			"city" : "Katiadi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2331" : [
+		{
+			"city" : "Gochhihata",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2336" : [
+		{
+			"city" : "Bajitpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2337" : [
+		{
+			"city" : "Sararchar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2338" : [
+		{
+			"city" : "Laksmipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2340" : [
+		{
+			"city" : "Kuliarchar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2341" : [
+		{
+			"city" : "Chhoysuti",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2350" : [
+		{
+			"city" : "Bhairab",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2360" : [
+		{
+			"city" : "Nikli",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2370" : [
+		{
+			"city" : "MIthamoin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2371" : [
+		{
+			"city" : "Abdullahpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2380" : [
+		{
+			"city" : "Ostagram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2390" : [
+		{
+			"city" : "Itna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kishoreganj"
+		}
+	],
+	"2400" : [
+		{
+			"city" : "Netrakona Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2401" : [
+		{
+			"city" : "Baikherhati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2410" : [
+		{
+			"city" : "Purbadhola",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2411" : [
+		{
+			"city" : "Shamgonj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2412" : [
+		{
+			"city" : "Jaria Jhanjhail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2416" : [
+		{
+			"city" : "Dhobaura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2417" : [
+		{
+			"city" : "Sakoai",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2420" : [
+		{
+			"city" : "Susnng Durgapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2430" : [
+		{
+			"city" : "Kalmakanda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2440" : [
+		{
+			"city" : "Barhatta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2446" : [
+		{
+			"city" : "Mohanganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2450" : [
+		{
+			"city" : "Dharampasha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2456" : [
+		{
+			"city" : "Moddoynagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2460" : [
+		{
+			"city" : "Khaliajhri",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2462" : [
+		{
+			"city" : "Shaldigha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2470" : [
+		{
+			"city" : "Atpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2480" : [
+		{
+			"city" : "Kendua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"2490" : [
+		{
+			"city" : "Madan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Netrakona"
+		}
+	],
+	"3000" : [
+		{
+			"city" : "Sunamganj Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3001" : [
+		{
+			"city" : "Pagla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3002" : [
+		{
+			"city" : "Patharia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3010" : [
+		{
+			"city" : "Bishamsapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3020" : [
+		{
+			"city" : "Sachna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3030" : [
+		{
+			"city" : "Tahirpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3040" : [
+		{
+			"city" : "Dhirai Chandpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3041" : [
+		{
+			"city" : "Jagdal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3050" : [
+		{
+			"city" : "Ghungiar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3060" : [
+		{
+			"city" : "Jagnnathpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3061" : [
+		{
+			"city" : "Syedpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3062" : [
+		{
+			"city" : "Atuajan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3063" : [
+		{
+			"city" : "Hasan Fatemapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3064" : [
+		{
+			"city" : "Rasulganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3065" : [
+		{
+			"city" : "Shiramsi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3070" : [
+		{
+			"city" : "Duara bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3080" : [
+		{
+			"city" : "Chhatak",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3081" : [
+		{
+			"city" : "Chhatak Cement Facto",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3082" : [
+		{
+			"city" : "Chhatak Paper Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3083" : [
+		{
+			"city" : "Gabindaganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3084" : [
+		{
+			"city" : "Gabindaganj Natun Ba",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3085" : [
+		{
+			"city" : "Khurma",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3086" : [
+		{
+			"city" : "Moinpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3087" : [
+		{
+			"city" : "jahidpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3088" : [
+		{
+			"city" : "Islamabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3100" : [
+		{
+			"city" : "Sylhe Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3101" : [
+		{
+			"city" : "Sylhet Cadet Col",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3102" : [
+		{
+			"city" : "Sylhet Biman Bondar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3103" : [
+		{
+			"city" : "Khadimnagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3104" : [
+		{
+			"city" : "Jamalpur Cantoment",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3105" : [
+		{
+			"city" : "Silam",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3106" : [
+		{
+			"city" : "Birahimpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3107" : [
+		{
+			"city" : "Jalalabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3108" : [
+		{
+			"city" : "Mogla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3109" : [
+		{
+			"city" : "Ranga Hajiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3111" : [
+		{
+			"city" : "Kadamtali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3112" : [
+		{
+			"city" : "Kamalbazer",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3113" : [
+		{
+			"city" : "Lalbazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3114" : [
+		{
+			"city" : "Shahajalal Science &",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3116" : [
+		{
+			"city" : "Fenchuganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3117" : [
+		{
+			"city" : "Fenchuganj SareKarkh",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3120" : [
+		{
+			"city" : "Balaganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3121" : [
+		{
+			"city" : "Karua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3122" : [
+		{
+			"city" : "Brahman Shashon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3123" : [
+		{
+			"city" : "Tajpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3124" : [
+		{
+			"city" : "Goala Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3125" : [
+		{
+			"city" : "Begumpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3126" : [
+		{
+			"city" : "Omarpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3127" : [
+		{
+			"city" : "Kathal Khair",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3128" : [
+		{
+			"city" : "Gaharpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3129" : [
+		{
+			"city" : "Natun Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3130" : [
+		{
+			"city" : "Bishwanath",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3131" : [
+		{
+			"city" : "Dashghar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3132" : [
+		{
+			"city" : "Doulathpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3133" : [
+		{
+			"city" : "Deokalas",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3134" : [
+		{
+			"city" : "Singer kanch",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3140" : [
+		{
+			"city" : "Kompanyganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3150" : [
+		{
+			"city" : "Goainhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3151" : [
+		{
+			"city" : "Jaflong",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3152" : [
+		{
+			"city" : "Chiknagul",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3156" : [
+		{
+			"city" : "Jainthapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3160" : [
+		{
+			"city" : "Gopalgannj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3161" : [
+		{
+			"city" : "Dhaka Dakkhin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3162" : [
+		{
+			"city" : "Dakkhin Bhadashore",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3163" : [
+		{
+			"city" : "Ranaping",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3164" : [
+		{
+			"city" : "banigram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3165" : [
+		{
+			"city" : "Chandanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3170" : [
+		{
+			"city" : "Bianibazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3171" : [
+		{
+			"city" : "jaldup",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3172" : [
+		{
+			"city" : "Mathiura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3173" : [
+		{
+			"city" : "Kurar bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3174" : [
+		{
+			"city" : "Salia bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3175" : [
+		{
+			"city" : "Churkai",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3180" : [
+		{
+			"city" : "Kanaighat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3181" : [
+		{
+			"city" : "Chatulbazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3182" : [
+		{
+			"city" : "Manikganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3183" : [
+		{
+			"city" : "Gachbari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3190" : [
+		{
+			"city" : "Jakiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3191" : [
+		{
+			"city" : "Ichhamati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sylhet"
+		}
+	],
+	"3200" : [
+		{
+			"city" : "Moulvibazar Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3201" : [
+		{
+			"city" : "Barakapan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3202" : [
+		{
+			"city" : "Monumukh",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3203" : [
+		{
+			"city" : "Afrozganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3210" : [
+		{
+			"city" : "Srimangal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3211" : [
+		{
+			"city" : "Narain Chora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3212" : [
+		{
+			"city" : "Kalighat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3213" : [
+		{
+			"city" : "Khejurichhara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3214" : [
+		{
+			"city" : "Satgaon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3220" : [
+		{
+			"city" : "Kamalganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3221" : [
+		{
+			"city" : "Keramatnaga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3222" : [
+		{
+			"city" : "Patrakhola",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3223" : [
+		{
+			"city" : "Shamsher Nagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3224" : [
+		{
+			"city" : "Munshibazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3230" : [
+		{
+			"city" : "Kulaura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3231" : [
+		{
+			"city" : "Tillagaon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3232" : [
+		{
+			"city" : "Langla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3233" : [
+		{
+			"city" : "Prithimpasha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3234" : [
+		{
+			"city" : "Kajaldhara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3235" : [
+		{
+			"city" : "Karimpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3237" : [
+		{
+			"city" : "Baramchal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3240" : [
+		{
+			"city" : "Rajnagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3250" : [
+		{
+			"city" : "Baralekha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3251" : [
+		{
+			"city" : "Juri",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3252" : [
+		{
+			"city" : "Dhakkhinbag",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3253" : [
+		{
+			"city" : "Purbashahabajpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Moulvibazar"
+		}
+	],
+	"3300" : [
+		{
+			"city" : "Hobiganj Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3301" : [
+		{
+			"city" : "Shaestaganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3302" : [
+		{
+			"city" : "Gopaya",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3310" : [
+		{
+			"city" : "Bahubal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3320" : [
+		{
+			"city" : "Chunarughat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3321" : [
+		{
+			"city" : "Chandpurbagan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3322" : [
+		{
+			"city" : "Narapati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3330" : [
+		{
+			"city" : "Madhabpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3331" : [
+		{
+			"city" : "Itakhola",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3332" : [
+		{
+			"city" : "Shahajibazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3333" : [
+		{
+			"city" : "Saihamnagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3340" : [
+		{
+			"city" : "Kalauk",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3341" : [
+		{
+			"city" : "Lakhai",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3350" : [
+		{
+			"city" : "Baniachang",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3351" : [
+		{
+			"city" : "Jatrapasha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3352" : [
+		{
+			"city" : "Kadirganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3360" : [
+		{
+			"city" : "Azmireeganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3370" : [
+		{
+			"city" : "Nabiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3371" : [
+		{
+			"city" : "Goplarbazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3372" : [
+		{
+			"city" : "Golduba",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3373" : [
+		{
+			"city" : "Digalbak",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3374" : [
+		{
+			"city" : "Inathganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Hobiganj"
+		}
+	],
+	"3400" : [
+		{
+			"city" : "Brahamanbaria Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3401" : [
+		{
+			"city" : "Talshahar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3402" : [
+		{
+			"city" : "Ashuganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3403" : [
+		{
+			"city" : "Ashuganj Share",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3404" : [
+		{
+			"city" : "Poun",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3410" : [
+		{
+			"city" : "Nabinagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3411" : [
+		{
+			"city" : "Laubfatehpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3412" : [
+		{
+			"city" : "Rasullabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3413" : [
+		{
+			"city" : "Shamgram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3414" : [
+		{
+			"city" : "Ratanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3415" : [
+		{
+			"city" : "Shahapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3417" : [
+		{
+			"city" : "Kaitala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3418" : [
+		{
+			"city" : "Salimganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3419" : [
+		{
+			"city" : "Jibanganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3420" : [
+		{
+			"city" : "Banchharampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3430" : [
+		{
+			"city" : "Sarial",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3431" : [
+		{
+			"city" : "Shahbajpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3432" : [
+		{
+			"city" : "Chandura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3440" : [
+		{
+			"city" : "Nasirnagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3441" : [
+		{
+			"city" : "Fandauk",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3450" : [
+		{
+			"city" : "Akhaura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3451" : [
+		{
+			"city" : "Azampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3452" : [
+		{
+			"city" : "Gangasagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3460" : [
+		{
+			"city" : "Kasba",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3461" : [
+		{
+			"city" : "Kuti",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3462" : [
+		{
+			"city" : "Chandidar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3463" : [
+		{
+			"city" : "Chargachh",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3464" : [
+		{
+			"city" : "Gopinathpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Brahmanbaria"
+		}
+	],
+	"3500" : [
+		{
+			"city" : "Comilla Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3501" : [
+		{
+			"city" : "Comilla Contoment",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3502" : [
+		{
+			"city" : "Halimanagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3503" : [
+		{
+			"city" : "Courtbari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3504" : [
+		{
+			"city" : "Suaganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3510" : [
+		{
+			"city" : "Chandia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3511" : [
+		{
+			"city" : "Madhaiabazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3516" : [
+		{
+			"city" : "Daudkandi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3517" : [
+		{
+			"city" : "Gouripur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3518" : [
+		{
+			"city" : "Dashpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3519" : [
+		{
+			"city" : "Eliotganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3520" : [
+		{
+			"city" : "Burichang",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3521" : [
+		{
+			"city" : "Maynamoti bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3526" : [
+		{
+			"city" : "Brahmanpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3530" : [
+		{
+			"city" : "Davidhar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3531" : [
+		{
+			"city" : "Gangamandal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3532" : [
+		{
+			"city" : "Barashalghar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3533" : [
+		{
+			"city" : "Dhamtee",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3540" : [
+		{
+			"city" : "Muradnagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3541" : [
+		{
+			"city" : "Ramchandarpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3542" : [
+		{
+			"city" : "Companyganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3543" : [
+		{
+			"city" : "Bangra",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3544" : [
+		{
+			"city" : "Sonakanda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3545" : [
+		{
+			"city" : "Pantibazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3546" : [
+		{
+			"city" : "Homna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3550" : [
+		{
+			"city" : "Chouddagram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3551" : [
+		{
+			"city" : "Batisa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3552" : [
+		{
+			"city" : "Chiora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3560" : [
+		{
+			"city" : "Barura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3561" : [
+		{
+			"city" : "Poyalgachha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3562" : [
+		{
+			"city" : "Murdafarganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3570" : [
+		{
+			"city" : "Laksam",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3571" : [
+		{
+			"city" : "Lakshamanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3572" : [
+		{
+			"city" : "Bipulasar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3580" : [
+		{
+			"city" : "Langalkot",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3581" : [
+		{
+			"city" : "Dhalua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3582" : [
+		{
+			"city" : "Chhariabazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3583" : [
+		{
+			"city" : "Gunabati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Comilla"
+		}
+	],
+	"3700" : [
+		{
+			"city" : "Lakshimpur Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3701" : [
+		{
+			"city" : "Dalal Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3702" : [
+		{
+			"city" : "Bhabaniganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3703" : [
+		{
+			"city" : "Mandari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3704" : [
+		{
+			"city" : "Keramatganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3705" : [
+		{
+			"city" : "Rupchara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3706" : [
+		{
+			"city" : "Duttapara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3707" : [
+		{
+			"city" : "Choupalli",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3708" : [
+		{
+			"city" : "Chandraganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3709" : [
+		{
+			"city" : "Amani Lakshimpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3710" : [
+		{
+			"city" : "Raypur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3711" : [
+		{
+			"city" : "Rakhallia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3712" : [
+		{
+			"city" : "Nagerdighirpar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3713" : [
+		{
+			"city" : "Haydarganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3714" : [
+		{
+			"city" : "Bhuabari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3720" : [
+		{
+			"city" : "Ramganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3721" : [
+		{
+			"city" : "Alipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3722" : [
+		{
+			"city" : "Panpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3723" : [
+		{
+			"city" : "Kanchanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3724" : [
+		{
+			"city" : "Naagmud",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3725" : [
+		{
+			"city" : "Dolta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3730" : [
+		{
+			"city" : "Char Alexgander",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3731" : [
+		{
+			"city" : "Hajirghat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3732" : [
+		{
+			"city" : "Ramgatirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lakshmipur"
+		}
+	],
+	"3800" : [
+		{
+			"city" : "Noakhali Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3801" : [
+		{
+			"city" : "Noakhali College",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3802" : [
+		{
+			"city" : "Sonapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3803" : [
+		{
+			"city" : "Din Monir Hat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3804" : [
+		{
+			"city" : "Pak Kishoreganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3806" : [
+		{
+			"city" : "Mriddarhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3807" : [
+		{
+			"city" : "Kabirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3808" : [
+		{
+			"city" : "Khalifar Hat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3809" : [
+		{
+			"city" : "Charam Tua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3811" : [
+		{
+			"city" : "Chaprashir Hat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3812" : [
+		{
+			"city" : "Char Jabbar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3820" : [
+		{
+			"city" : "Begumganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3821" : [
+		{
+			"city" : "Choumohani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3822" : [
+		{
+			"city" : "Banglabazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3823" : [
+		{
+			"city" : "Mir Owarishpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3824" : [
+		{
+			"city" : "Bazra",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3825" : [
+		{
+			"city" : "Jamidar Hat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3827" : [
+		{
+			"city" : "Sonaimuri",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3828" : [
+		{
+			"city" : "Gopalpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3829" : [
+		{
+			"city" : "Joynarayanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3831" : [
+		{
+			"city" : "Alaiarpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3832" : [
+		{
+			"city" : "Tangirpar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3833" : [
+		{
+			"city" : "Khalafat Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3834" : [
+		{
+			"city" : "Rajganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3835" : [
+		{
+			"city" : "Oachhekpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3837" : [
+		{
+			"city" : "Bhabani Jibanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3838" : [
+		{
+			"city" : "Maheshganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3839" : [
+		{
+			"city" : "Nadona",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3841" : [
+		{
+			"city" : "Nandiapara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3842" : [
+		{
+			"city" : "Khalishpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3843" : [
+		{
+			"city" : "Dauti",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3844" : [
+		{
+			"city" : "Joyag",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3845" : [
+		{
+			"city" : "Thanar Hat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3847" : [
+		{
+			"city" : "Amisha Para",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3848" : [
+		{
+			"city" : "Durgapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3850" : [
+		{
+			"city" : "Basur Hat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3851" : [
+		{
+			"city" : "Charhajari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3860" : [
+		{
+			"city" : "Senbag",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3861" : [
+		{
+			"city" : "Kallyandi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3862" : [
+		{
+			"city" : "Beezbag",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3863" : [
+		{
+			"city" : "Kankirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3864" : [
+		{
+			"city" : "Chatarpaia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3865" : [
+		{
+			"city" : "T.P. Lamua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3870" : [
+		{
+			"city" : "Chatkhil",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3871" : [
+		{
+			"city" : "Palla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3872" : [
+		{
+			"city" : "Khilpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3873" : [
+		{
+			"city" : "Bodalcourt",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3874" : [
+		{
+			"city" : "Rezzakpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3875" : [
+		{
+			"city" : "Solla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3877" : [
+		{
+			"city" : "Karihati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3878" : [
+		{
+			"city" : "Dosh Gharia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3879" : [
+		{
+			"city" : "Bansa Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3881" : [
+		{
+			"city" : "Sahapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3882" : [
+		{
+			"city" : "Sampara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3883" : [
+		{
+			"city" : "Shingbahura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3890" : [
+		{
+			"city" : "Hatiya",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3891" : [
+		{
+			"city" : "Afazia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3892" : [
+		{
+			"city" : "Tamoraddi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Noakhali"
+		}
+	],
+	"3893" : [
+		{
+			"city" : "Chourangi Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sunamganj"
+		}
+	],
+	"3900" : [
+		{
+			"city" : "Feni Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3901" : [
+		{
+			"city" : "Fazilpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3902" : [
+		{
+			"city" : "Sharshadie",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3903" : [
+		{
+			"city" : "Laskarhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3910" : [
+		{
+			"city" : "Chhagalnaia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3911" : [
+		{
+			"city" : "Maharajganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3912" : [
+		{
+			"city" : "Daraga Hat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3913" : [
+		{
+			"city" : "Puabashimulia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3920" : [
+		{
+			"city" : "Dagondhuia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3921" : [
+		{
+			"city" : "Dudmukha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3922" : [
+		{
+			"city" : "Chhilonia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3923" : [
+		{
+			"city" : "Rajapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3930" : [
+		{
+			"city" : "Sonagazi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3931" : [
+		{
+			"city" : "Motiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3932" : [
+		{
+			"city" : "Ahmadpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3933" : [
+		{
+			"city" : "Kazirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3940" : [
+		{
+			"city" : "Pashurampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3941" : [
+		{
+			"city" : "Shuarbazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3942" : [
+		{
+			"city" : "Fulgazi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"3943" : [
+		{
+			"city" : "Munshirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Feni"
+		}
+	],
+	"4000" : [
+		{
+			"city" : "Chittagong GPO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4100" : [
+		{
+			"city" : "Chittagong Bandar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4202" : [
+		{
+			"city" : "Pahartoli",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4203" : [
+		{
+			"city" : "Chawkbazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4204" : [
+		{
+			"city" : "Patenga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4205" : [
+		{
+			"city" : "Chittagong Airport",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4206" : [
+		{
+			"city" : "Jaldia Merine Accade",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4207" : [
+		{
+			"city" : "Firozshah",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4208" : [
+		{
+			"city" : "Mohard",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4209" : [
+		{
+			"city" : "Chitt. Politechnic In",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4210" : [
+		{
+			"city" : "Bayezid Bostami",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4211" : [
+		{
+			"city" : "Amin Jute Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4212" : [
+		{
+			"city" : "Chandgaon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4213" : [
+		{
+			"city" : "Wazedia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4214" : [
+		{
+			"city" : "Jalalabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4215" : [
+		{
+			"city" : "Anandabazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4216" : [
+		{
+			"city" : "Halishahar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4217" : [
+		{
+			"city" : "North Katuli",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4218" : [
+		{
+			"city" : "Chitt. Sailers Colon",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4219" : [
+		{
+			"city" : "Chitt. Customs Acca",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4220" : [
+		{
+			"city" : "Chitt. Cantonment",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4221" : [
+		{
+			"city" : "Al- Amin Baria Madra",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4222" : [
+		{
+			"city" : "Middle Patenga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4223" : [
+		{
+			"city" : "Export Processing",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4224" : [
+		{
+			"city" : "Rampura TSO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4225" : [
+		{
+			"city" : "Halishshar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4226" : [
+		{
+			"city" : "North Halishahar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4300" : [
+		{
+			"city" : "Sandwip",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4301" : [
+		{
+			"city" : "Shiberhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4302" : [
+		{
+			"city" : "Urirchar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4310" : [
+		{
+			"city" : "Sitakunda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4311" : [
+		{
+			"city" : "Baroidhala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4312" : [
+		{
+			"city" : "Barabkunda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4313" : [
+		{
+			"city" : "Bawashbaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4314" : [
+		{
+			"city" : "Kumira",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4315" : [
+		{
+			"city" : "Bhatiari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4316" : [
+		{
+			"city" : "Fouzdarhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4317" : [
+		{
+			"city" : "Jafrabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4320" : [
+		{
+			"city" : "Mirsharai",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4321" : [
+		{
+			"city" : "Abutorab",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4322" : [
+		{
+			"city" : "Darrogahat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4323" : [
+		{
+			"city" : "Bharawazhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4324" : [
+		{
+			"city" : "Joarganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4325" : [
+		{
+			"city" : "Azampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4327" : [
+		{
+			"city" : "Korerhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4328" : [
+		{
+			"city" : "Mohazanhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4330" : [
+		{
+			"city" : "Hathazari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4331" : [
+		{
+			"city" : "Chitt.University",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4332" : [
+		{
+			"city" : "Gorduara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4333" : [
+		{
+			"city" : "Katirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4334" : [
+		{
+			"city" : "Mirzapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4335" : [
+		{
+			"city" : "Fatahabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4337" : [
+		{
+			"city" : "Nuralibari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4338" : [
+		{
+			"city" : "Yunus Nagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4339" : [
+		{
+			"city" : "Madrasa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4340" : [
+		{
+			"city" : "Rouzan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4341" : [
+		{
+			"city" : "Beenajuri",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4342" : [
+		{
+			"city" : "Kundeshwari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4343" : [
+		{
+			"city" : "Gahira",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4344" : [
+		{
+			"city" : "jagannath Hat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4345" : [
+		{
+			"city" : "Fatepur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4346" : [
+		{
+			"city" : "Guzra Noapara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4347" : [
+		{
+			"city" : "Dewanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4348" : [
+		{
+			"city" : "Mohamuni",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4349" : [
+		{
+			"city" : "B.I.T Post Office",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4350" : [
+		{
+			"city" : "Fatikchhari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4351" : [
+		{
+			"city" : "Nanupur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4352" : [
+		{
+			"city" : "Bhandar Sharif",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4353" : [
+		{
+			"city" : "Najirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4354" : [
+		{
+			"city" : "Harualchhari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4355" : [
+		{
+			"city" : "Narayanhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4360" : [
+		{
+			"city" : "Rangunia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4361" : [
+		{
+			"city" : "Dhamair",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4363" : [
+		{
+			"city" : "Kanungopara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4364" : [
+		{
+			"city" : "Saroatoli",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4365" : [
+		{
+			"city" : "Iqbal Park",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4366" : [
+		{
+			"city" : "Boalkhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4367" : [
+		{
+			"city" : "Sakpura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4368" : [
+		{
+			"city" : "Kadurkhal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4369" : [
+		{
+			"city" : "Charandwip",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4370" : [
+		{
+			"city" : "Patia Head Office",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4371" : [
+		{
+			"city" : "Budhpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4376" : [
+		{
+			"city" : "Anowara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4377" : [
+		{
+			"city" : "Paroikora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4378" : [
+		{
+			"city" : "Battali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4380" : [
+		{
+			"city" : "East Joara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4381" : [
+		{
+			"city" : "Gachbaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4382" : [
+		{
+			"city" : "Dohazari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4383" : [
+		{
+			"city" : "Barma",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4386" : [
+		{
+			"city" : "Satkania",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4387" : [
+		{
+			"city" : "Baitul Ijjat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4388" : [
+		{
+			"city" : "Bazalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4390" : [
+		{
+			"city" : "Jaldi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4391" : [
+		{
+			"city" : "Khan Bahadur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4392" : [
+		{
+			"city" : "Gunagari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4393" : [
+		{
+			"city" : "Banigram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4396" : [
+		{
+			"city" : "Lohagara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4397" : [
+		{
+			"city" : "Padua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4398" : [
+		{
+			"city" : "Chunti",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chittagong"
+		}
+	],
+	"4400" : [
+		{
+			"city" : "Khagrachari Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khagrachari"
+		}
+	],
+	"4410" : [
+		{
+			"city" : "Panchhari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khagrachari"
+		}
+	],
+	"4420" : [
+		{
+			"city" : "Diginala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khagrachari"
+		}
+	],
+	"4430" : [
+		{
+			"city" : "Mahalchhari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khagrachari"
+		}
+	],
+	"4440" : [
+		{
+			"city" : "Ramghar Head Office",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khagrachari"
+		}
+	],
+	"4450" : [
+		{
+			"city" : "Matiranga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khagrachari"
+		}
+	],
+	"4460" : [
+		{
+			"city" : "Manikchhari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khagrachari"
+		}
+	],
+	"4470" : [
+		{
+			"city" : "Laxmichhari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khagrachari"
+		}
+	],
+	"4500" : [
+		{
+			"city" : "Rangamati Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4510" : [
+		{
+			"city" : "Kalampati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4511" : [
+		{
+			"city" : "Betbunia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4520" : [
+		{
+			"city" : "Nanichhar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4530" : [
+		{
+			"city" : "Kaptai",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4531" : [
+		{
+			"city" : "Chandraghona",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4532" : [
+		{
+			"city" : "Kaptai Project",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4533" : [
+		{
+			"city" : "Kaptai Nuton Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4540" : [
+		{
+			"city" : "Rajsthali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4550" : [
+		{
+			"city" : "Bilaichhari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4560" : [
+		{
+			"city" : "Jarachhari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4570" : [
+		{
+			"city" : "Barakal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4580" : [
+		{
+			"city" : "Longachh",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4590" : [
+		{
+			"city" : "Marishya",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangamati"
+		}
+	],
+	"4600" : [
+		{
+			"city" : "Bandarban Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bandarban"
+		}
+	],
+	"4610" : [
+		{
+			"city" : "Roanchhari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bandarban"
+		}
+	],
+	"4620" : [
+		{
+			"city" : "Ruma",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bandarban"
+		}
+	],
+	"4630" : [
+		{
+			"city" : "Thanchi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bandarban"
+		}
+	],
+	"4641" : [
+		{
+			"city" : "Lama",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bandarban"
+		}
+	],
+	"4650" : [
+		{
+			"city" : "Alikadam",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bandarban"
+		}
+	],
+	"4660" : [
+		{
+			"city" : "Naikhong",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bandarban"
+		}
+	],
+	"4700" : [
+		{
+			"city" : "Coxs Bazar Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4701" : [
+		{
+			"city" : "Zhilanja",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4702" : [
+		{
+			"city" : "Eidga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4710" : [
+		{
+			"city" : "Gorakghat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4720" : [
+		{
+			"city" : "Kutubdia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4730" : [
+		{
+			"city" : "Ramu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4740" : [
+		{
+			"city" : "Chiringga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4741" : [
+		{
+			"city" : "Chiringga S.O",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4742" : [
+		{
+			"city" : "Badarkali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4743" : [
+		{
+			"city" : "Malumghat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4750" : [
+		{
+			"city" : "Ukhia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4760" : [
+		{
+			"city" : "Teknaf",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4761" : [
+		{
+			"city" : "Hnila",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"4762" : [
+		{
+			"city" : "St.Martin",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Cox’s Bazar"
+		}
+	],
+	"5000" : [
+		{
+			"city" : "Panchagar Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Panchagarh"
+		}
+	],
+	"5010" : [
+		{
+			"city" : "Boda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Panchagarh"
+		}
+	],
+	"5020" : [
+		{
+			"city" : "Dabiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Panchagarh"
+		}
+	],
+	"5030" : [
+		{
+			"city" : "Tetulia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Panchagarh"
+		}
+	],
+	"5040" : [
+		{
+			"city" : "Chotto Dab",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Panchagarh"
+		}
+	],
+	"5041" : [
+		{
+			"city" : "Mirjapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Panchagarh"
+		}
+	],
+	"5100" : [
+		{
+			"city" : "Thakurgaon Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5101" : [
+		{
+			"city" : "Thakurgaon Road",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5102" : [
+		{
+			"city" : "Shibganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5103" : [
+		{
+			"city" : "Ruhia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5110" : [
+		{
+			"city" : "Pirganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5120" : [
+		{
+			"city" : "Rani Sankail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5121" : [
+		{
+			"city" : "Nekmarad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5130" : [
+		{
+			"city" : "Jibanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5140" : [
+		{
+			"city" : "Baliadangi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5141" : [
+		{
+			"city" : "Lahiri",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5200" : [
+		{
+			"city" : "Dinajpur Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5201" : [
+		{
+			"city" : "Dinajpur Rajbari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5210" : [
+		{
+			"city" : "Biral",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5216" : [
+		{
+			"city" : "Setabganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5220" : [
+		{
+			"city" : "Birganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5226" : [
+		{
+			"city" : "Maharajganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5230" : [
+		{
+			"city" : "Khansama",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5231" : [
+		{
+			"city" : "Pakarhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5240" : [
+		{
+			"city" : "Chrirbandar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5241" : [
+		{
+			"city" : "Ranirbandar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5250" : [
+		{
+			"city" : "Parbatipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5260" : [
+		{
+			"city" : "Phulbari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5266" : [
+		{
+			"city" : "Birampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5270" : [
+		{
+			"city" : "Bangla Hili",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5280" : [
+		{
+			"city" : "Nababganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5281" : [
+		{
+			"city" : "Daudpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5282" : [
+		{
+			"city" : "Gopalpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5290" : [
+		{
+			"city" : "Osmanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5291" : [
+		{
+			"city" : "Ghoraghat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Dinajpur"
+		}
+	],
+	"5300" : [
+		{
+			"city" : "Nilphamari Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Nilphamari"
+		}
+	],
+	"5301" : [
+		{
+			"city" : "Nilphamari Sugar Mil",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Nilphamari"
+		}
+	],
+	"5310" : [
+		{
+			"city" : "Syedpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Nilphamari"
+		}
+	],
+	"5311" : [
+		{
+			"city" : "Syedpur Upashahar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Nilphamari"
+		}
+	],
+	"5320" : [
+		{
+			"city" : "Kishoriganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Nilphamari"
+		}
+	],
+	"5330" : [
+		{
+			"city" : "Jaldhaka",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Nilphamari"
+		}
+	],
+	"5340" : [
+		{
+			"city" : "Domar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Nilphamari"
+		}
+	],
+	"5341" : [
+		{
+			"city" : "Chilahati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Nilphamari"
+		}
+	],
+	"5350" : [
+		{
+			"city" : "Dimla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Nilphamari"
+		}
+	],
+	"5351" : [
+		{
+			"city" : "Ghaga Kharibari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Nilphamari"
+		}
+	],
+	"5400" : [
+		{
+			"city" : "Rangpur Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5401" : [
+		{
+			"city" : "Rangpur Upa-Shahar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5402" : [
+		{
+			"city" : "Alamnagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5403" : [
+		{
+			"city" : "Mahiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5404" : [
+		{
+			"city" : "Rangpur Cadet Colleg",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5405" : [
+		{
+			"city" : "Rangpur Carmiecal Col",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5410" : [
+		{
+			"city" : "Gangachara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5420" : [
+		{
+			"city" : "Taraganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5430" : [
+		{
+			"city" : "Badarganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5431" : [
+		{
+			"city" : "Shyampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5440" : [
+		{
+			"city" : "Kaunia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5441" : [
+		{
+			"city" : "Haragachh",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5450" : [
+		{
+			"city" : "Pirgachha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5460" : [
+		{
+			"city" : "Mithapukur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rangpur"
+		}
+	],
+	"5470" : [
+		{
+			"city" : "Pirganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Thakurgaon"
+		}
+	],
+	"5500" : [
+		{
+			"city" : "Lalmonirhat Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lalmonirhat"
+		}
+	],
+	"5501" : [
+		{
+			"city" : "Moghalhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lalmonirhat"
+		}
+	],
+	"5502" : [
+		{
+			"city" : "Kulaghat SO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lalmonirhat"
+		}
+	],
+	"5510" : [
+		{
+			"city" : "Aditmari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lalmonirhat"
+		}
+	],
+	"5520" : [
+		{
+			"city" : "Tushbhandar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lalmonirhat"
+		}
+	],
+	"5530" : [
+		{
+			"city" : "Hatibandha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lalmonirhat"
+		}
+	],
+	"5540" : [
+		{
+			"city" : "Patgram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lalmonirhat"
+		}
+	],
+	"5541" : [
+		{
+			"city" : "Baura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lalmonirhat"
+		}
+	],
+	"5542" : [
+		{
+			"city" : "Burimari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Lalmonirhat"
+		}
+	],
+	"5600" : [
+		{
+			"city" : "Kurigram Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5601" : [
+		{
+			"city" : "Pandul",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5610" : [
+		{
+			"city" : "Rajarhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5611" : [
+		{
+			"city" : "Nazimkhan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5620" : [
+		{
+			"city" : "Ulipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5621" : [
+		{
+			"city" : "Bazarhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5630" : [
+		{
+			"city" : "Chilmari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5631" : [
+		{
+			"city" : "Jorgachh",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5640" : [
+		{
+			"city" : "Roumari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5650" : [
+		{
+			"city" : "Rajibpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5660" : [
+		{
+			"city" : "Nageshwar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5670" : [
+		{
+			"city" : "Bhurungamari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5680" : [
+		{
+			"city" : "Phulbari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kurigram"
+		}
+	],
+	"5700" : [
+		{
+			"city" : "Gaibandha Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5710" : [
+		{
+			"city" : "Saadullapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5711" : [
+		{
+			"city" : "Naldanga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5720" : [
+		{
+			"city" : "Sundarganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5721" : [
+		{
+			"city" : "Bamandanga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5730" : [
+		{
+			"city" : "Palashbari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5740" : [
+		{
+			"city" : "Gobindhaganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5741" : [
+		{
+			"city" : "Mahimaganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5750" : [
+		{
+			"city" : "Bonarpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5751" : [
+		{
+			"city" : "saghata",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5760" : [
+		{
+			"city" : "Phulchhari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5761" : [
+		{
+			"city" : "Bharatkhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gaibandha"
+		}
+	],
+	"5800" : [
+		{
+			"city" : "Bogra Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5801" : [
+		{
+			"city" : "Bogra Canttonment",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5810" : [
+		{
+			"city" : "Shibganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5820" : [
+		{
+			"city" : "Gabtoli",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5821" : [
+		{
+			"city" : "Sukhanpukur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5826" : [
+		{
+			"city" : "Sonatola",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5830" : [
+		{
+			"city" : "Sariakandi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5831" : [
+		{
+			"city" : "Chandan Baisha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5840" : [
+		{
+			"city" : "Sherpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5841" : [
+		{
+			"city" : "Chandaikona",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5842" : [
+		{
+			"city" : "Palli Unnyan Accadem",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5850" : [
+		{
+			"city" : "Dhunat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5851" : [
+		{
+			"city" : "Gosaibari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5860" : [
+		{
+			"city" : "Nandigram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5870" : [
+		{
+			"city" : "Kahalu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5880" : [
+		{
+			"city" : "Dupchachia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5881" : [
+		{
+			"city" : "Talora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5890" : [
+		{
+			"city" : "Adamdighi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5891" : [
+		{
+			"city" : "Santahar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5892" : [
+		{
+			"city" : "Nasharatpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bogra"
+		}
+	],
+	"5900" : [
+		{
+			"city" : "Joypurhat Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Joypurhat"
+		}
+	],
+	"5910" : [
+		{
+			"city" : "Panchbibi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Joypurhat"
+		}
+	],
+	"5920" : [
+		{
+			"city" : "Khetlal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Joypurhat"
+		}
+	],
+	"5930" : [
+		{
+			"city" : "kalai",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Joypurhat"
+		}
+	],
+	"5940" : [
+		{
+			"city" : "Akklepur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Joypurhat"
+		}
+	],
+	"5941" : [
+		{
+			"city" : "jamalganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Joypurhat"
+		}
+	],
+	"5942" : [
+		{
+			"city" : "Tilakpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Joypurhat"
+		}
+	],
+	"6000" : [
+		{
+			"city" : "Rajshahi Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6100" : [
+		{
+			"city" : "Ghuramara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6201" : [
+		{
+			"city" : "Rajshahi Court",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6202" : [
+		{
+			"city" : "Rajshahi Canttonment",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6203" : [
+		{
+			"city" : "Sapura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6204" : [
+		{
+			"city" : "Kazla",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6205" : [
+		{
+			"city" : "Rajshahi University",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6206" : [
+		{
+			"city" : "Binodpur Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6210" : [
+		{
+			"city" : "Lalitganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6211" : [
+		{
+			"city" : "Rajshahi Sugar Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6212" : [
+		{
+			"city" : "Shyampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6220" : [
+		{
+			"city" : "Khodmohanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6230" : [
+		{
+			"city" : "Tanor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6240" : [
+		{
+			"city" : "Durgapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6250" : [
+		{
+			"city" : "Bhabaniganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6251" : [
+		{
+			"city" : "Taharpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6260" : [
+		{
+			"city" : "Putia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6270" : [
+		{
+			"city" : "Charghat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6271" : [
+		{
+			"city" : "Sarda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6280" : [
+		{
+			"city" : "Bagha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6281" : [
+		{
+			"city" : "Arani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6290" : [
+		{
+			"city" : "Godagari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6291" : [
+		{
+			"city" : "Premtoli",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajshahi"
+		}
+	],
+	"6300" : [
+		{
+			"city" : "Chapinawbganj Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6301" : [
+		{
+			"city" : "Rajarampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6302" : [
+		{
+			"city" : "Ramchandrapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6303" : [
+		{
+			"city" : "Amnura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6310" : [
+		{
+			"city" : "Nachol",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6311" : [
+		{
+			"city" : "Mandumala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6320" : [
+		{
+			"city" : "Rohanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6321" : [
+		{
+			"city" : "Gomashtapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6330" : [
+		{
+			"city" : "Bholahat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6340" : [
+		{
+			"city" : "Shibganj U.P.O",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6341" : [
+		{
+			"city" : "Kansart",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6342" : [
+		{
+			"city" : "Manaksha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chapinawabganj"
+		}
+	],
+	"6400" : [
+		{
+			"city" : "Natore Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6401" : [
+		{
+			"city" : "Digapatia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6402" : [
+		{
+			"city" : "Baiddyabal Gharia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6403" : [
+		{
+			"city" : "Madhnagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6410" : [
+		{
+			"city" : "Laxman",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6420" : [
+		{
+			"city" : "Gopalpur U.P.O",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6421" : [
+		{
+			"city" : "Lalpur S.O",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6422" : [
+		{
+			"city" : "Abdulpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6430" : [
+		{
+			"city" : "Harua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6431" : [
+		{
+			"city" : "Dayarampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6432" : [
+		{
+			"city" : "Baraigram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6440" : [
+		{
+			"city" : "Hatgurudaspur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6450" : [
+		{
+			"city" : "Singra",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Natore"
+		}
+	],
+	"6500" : [
+		{
+			"city" : "Naogaon Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6510" : [
+		{
+			"city" : "Prasadpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6511" : [
+		{
+			"city" : "Manda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6512" : [
+		{
+			"city" : "Balihar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6520" : [
+		{
+			"city" : "Niamatpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6530" : [
+		{
+			"city" : "Mahadebpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6540" : [
+		{
+			"city" : "Patnitala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6550" : [
+		{
+			"city" : "Nitpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6551" : [
+		{
+			"city" : "Porsa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6552" : [
+		{
+			"city" : "Panguria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6560" : [
+		{
+			"city" : "Sapahar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6561" : [
+		{
+			"city" : "Moduhil",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6570" : [
+		{
+			"city" : "Badalgachhi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6580" : [
+		{
+			"city" : "Dhamuirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6590" : [
+		{
+			"city" : "Raninagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6591" : [
+		{
+			"city" : "Kashimpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6596" : [
+		{
+			"city" : "Ahsanganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6597" : [
+		{
+			"city" : "Bandai",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Naogaon"
+		}
+	],
+	"6600" : [
+		{
+			"city" : "Pabna Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6601" : [
+		{
+			"city" : "Kaliko Cotton Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6602" : [
+		{
+			"city" : "Hamayetpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6610" : [
+		{
+			"city" : "Debottar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6620" : [
+		{
+			"city" : "Ishwardi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6621" : [
+		{
+			"city" : "Dhapari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6622" : [
+		{
+			"city" : "Pakshi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6623" : [
+		{
+			"city" : "Rajapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6630" : [
+		{
+			"city" : "Chatmohar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6640" : [
+		{
+			"city" : "Bhangura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6650" : [
+		{
+			"city" : "Banwarinagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6660" : [
+		{
+			"city" : "Sujanagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6661" : [
+		{
+			"city" : "Sagarkandi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6670" : [
+		{
+			"city" : "Sathia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6680" : [
+		{
+			"city" : "Bera",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6681" : [
+		{
+			"city" : "Nakalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6682" : [
+		{
+			"city" : "Kashinathpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6683" : [
+		{
+			"city" : "Puran Bharenga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pabna"
+		}
+	],
+	"6700" : [
+		{
+			"city" : "Sirajganj Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6701" : [
+		{
+			"city" : "Raipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6702" : [
+		{
+			"city" : "Rashidabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6710" : [
+		{
+			"city" : "Kazipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6711" : [
+		{
+			"city" : "Shuvgachha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6712" : [
+		{
+			"city" : "Gandail",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6720" : [
+		{
+			"city" : "Dhangora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6721" : [
+		{
+			"city" : "Malonga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6730" : [
+		{
+			"city" : "Baiddya Jam Toil",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6740" : [
+		{
+			"city" : "Belkuchi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6741" : [
+		{
+			"city" : "Sohagpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6742" : [
+		{
+			"city" : "Rajapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6751" : [
+		{
+			"city" : "Enayetpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6752" : [
+		{
+			"city" : "Sthal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6760" : [
+		{
+			"city" : "Ullapara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6761" : [
+		{
+			"city" : "Ullapara R.S",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6762" : [
+		{
+			"city" : "Lahiri Mohanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6763" : [
+		{
+			"city" : "Salap",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6770" : [
+		{
+			"city" : "Shahjadpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6771" : [
+		{
+			"city" : "Porjana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6772" : [
+		{
+			"city" : "Jamirta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6773" : [
+		{
+			"city" : "Kaijuri",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"6780" : [
+		{
+			"city" : "Tarash",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Sirajganj"
+		}
+	],
+	"7000" : [
+		{
+			"city" : "Kustia Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7001" : [
+		{
+			"city" : "Kushtia Mohini",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7002" : [
+		{
+			"city" : "Jagati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7003" : [
+		{
+			"city" : "Islami University",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7010" : [
+		{
+			"city" : "Kumarkhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7011" : [
+		{
+			"city" : "Panti",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7020" : [
+		{
+			"city" : "Janipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7021" : [
+		{
+			"city" : "Khoksa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7030" : [
+		{
+			"city" : "Mirpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7031" : [
+		{
+			"city" : "Poradaha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7032" : [
+		{
+			"city" : "Amla Sadarpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7040" : [
+		{
+			"city" : "Bheramara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7041" : [
+		{
+			"city" : "Ganges Bheramara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7042" : [
+		{
+			"city" : "Allardarga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7050" : [
+		{
+			"city" : "Rafayetpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7051" : [
+		{
+			"city" : "Taragunia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7052" : [
+		{
+			"city" : "Khasmathurapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Kustia"
+		}
+	],
+	"7100" : [
+		{
+			"city" : "Meherpur Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Meherpur"
+		}
+	],
+	"7101" : [
+		{
+			"city" : "Amjhupi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Meherpur"
+		}
+	],
+	"7102" : [
+		{
+			"city" : "Mujib Nagar Complex",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Meherpur"
+		}
+	],
+	"7110" : [
+		{
+			"city" : "Gangni",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Meherpur"
+		}
+	],
+	"7152" : [
+		{
+			"city" : "Amjhupi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Meherpur"
+		}
+	],
+	"7200" : [
+		{
+			"city" : "Chuadanga Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chuadanga"
+		}
+	],
+	"7201" : [
+		{
+			"city" : "Munshiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chuadanga"
+		}
+	],
+	"7210" : [
+		{
+			"city" : "Alamdanga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chuadanga"
+		}
+	],
+	"7211" : [
+		{
+			"city" : "Hardi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chuadanga"
+		}
+	],
+	"7220" : [
+		{
+			"city" : "Damurhuda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chuadanga"
+		}
+	],
+	"7221" : [
+		{
+			"city" : "Darshana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chuadanga"
+		}
+	],
+	"7222" : [
+		{
+			"city" : "Andulbaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chuadanga"
+		}
+	],
+	"7230" : [
+		{
+			"city" : "Doulatganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Chuadanga"
+		}
+	],
+	"7300" : [
+		{
+			"city" : "Jinaidaha Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jinaidaha"
+		}
+	],
+	"7301" : [
+		{
+			"city" : "Jinaidaha Cadet College",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jinaidaha"
+		}
+	],
+	"7310" : [
+		{
+			"city" : "Harinakundu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jinaidaha"
+		}
+	],
+	"7320" : [
+		{
+			"city" : "Shailakupa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jinaidaha"
+		}
+	],
+	"7321" : [
+		{
+			"city" : "Kumiradaha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jinaidaha"
+		}
+	],
+	"7330" : [
+		{
+			"city" : "Kotchandpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jinaidaha"
+		}
+	],
+	"7340" : [
+		{
+			"city" : "Maheshpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jinaidaha"
+		}
+	],
+	"7350" : [
+		{
+			"city" : "Naldanga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jinaidaha"
+		}
+	],
+	"7351" : [
+		{
+			"city" : "Hatbar Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jinaidaha"
+		}
+	],
+	"7400" : [
+		{
+			"city" : "Jessore Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7401" : [
+		{
+			"city" : "Jessore Upa-Shahar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7402" : [
+		{
+			"city" : "Chanchra",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7403" : [
+		{
+			"city" : "Jessore canttonment",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7404" : [
+		{
+			"city" : "Jessore Airbach",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7405" : [
+		{
+			"city" : "Rupdia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7406" : [
+		{
+			"city" : "Basundia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7407" : [
+		{
+			"city" : "Churamankathi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7410" : [
+		{
+			"city" : "Chougachha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7420" : [
+		{
+			"city" : "Jhikargachha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7430" : [
+		{
+			"city" : "Sarsa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7431" : [
+		{
+			"city" : "Benapole",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7432" : [
+		{
+			"city" : "Jadabpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7433" : [
+		{
+			"city" : "Bag Achra",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7440" : [
+		{
+			"city" : "Monirampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7450" : [
+		{
+			"city" : "Keshobpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7460" : [
+		{
+			"city" : "Noapara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7461" : [
+		{
+			"city" : "Rajghat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7462" : [
+		{
+			"city" : "Bhugilhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7470" : [
+		{
+			"city" : "Bagharpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7471" : [
+		{
+			"city" : "Gouranagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jessore"
+		}
+	],
+	"7500" : [
+		{
+			"city" : "Narail Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narail"
+		}
+	],
+	"7501" : [
+		{
+			"city" : "Ratanganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narail"
+		}
+	],
+	"7510" : [
+		{
+			"city" : "Laxmipasha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narail"
+		}
+	],
+	"7511" : [
+		{
+			"city" : "Lohagora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narail"
+		}
+	],
+	"7512" : [
+		{
+			"city" : "Itna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narail"
+		}
+	],
+	"7513" : [
+		{
+			"city" : "Naldi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narail"
+		}
+	],
+	"7514" : [
+		{
+			"city" : "Baradia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narail"
+		}
+	],
+	"7520" : [
+		{
+			"city" : "Kalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narail"
+		}
+	],
+	"7521" : [
+		{
+			"city" : "Mohajan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Narail"
+		}
+	],
+	"7600" : [
+		{
+			"city" : "Magura Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Magura"
+		}
+	],
+	"7610" : [
+		{
+			"city" : "Shripur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Magura"
+		}
+	],
+	"7611" : [
+		{
+			"city" : "Langalbadh",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Magura"
+		}
+	],
+	"7612" : [
+		{
+			"city" : "Nachol",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Magura"
+		}
+	],
+	"7620" : [
+		{
+			"city" : "Arpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Magura"
+		}
+	],
+	"7630" : [
+		{
+			"city" : "Mohammadpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Magura"
+		}
+	],
+	"7631" : [
+		{
+			"city" : "Binodpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Magura"
+		}
+	],
+	"7632" : [
+		{
+			"city" : "Nahata",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Magura"
+		}
+	],
+	"7700" : [
+		{
+			"city" : "Rajbari Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajbari"
+		}
+	],
+	"7710" : [
+		{
+			"city" : "Goalanda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajbari"
+		}
+	],
+	"7711" : [
+		{
+			"city" : "Khankhanapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajbari"
+		}
+	],
+	"7720" : [
+		{
+			"city" : "Pangsha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajbari"
+		}
+	],
+	"7721" : [
+		{
+			"city" : "Ramkol",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajbari"
+		}
+	],
+	"7722" : [
+		{
+			"city" : "Ratandia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajbari"
+		}
+	],
+	"7723" : [
+		{
+			"city" : "Mrigibazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajbari"
+		}
+	],
+	"7730" : [
+		{
+			"city" : "Baliakandi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajbari"
+		}
+	],
+	"7731" : [
+		{
+			"city" : "Nalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Rajbari"
+		}
+	],
+	"7800" : [
+		{
+			"city" : "Faridpursadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7801" : [
+		{
+			"city" : "Kanaipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7802" : [
+		{
+			"city" : "Ambikapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7803" : [
+		{
+			"city" : "Baitulaman Politecni",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7804" : [
+		{
+			"city" : "Shriangan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7810" : [
+		{
+			"city" : "Charbadrashan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7820" : [
+		{
+			"city" : "Sadarpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7821" : [
+		{
+			"city" : "Hat Krishapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7822" : [
+		{
+			"city" : "Bishwa jaker Manjil",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7830" : [
+		{
+			"city" : "Bhanga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7840" : [
+		{
+			"city" : "Nagarkanda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7841" : [
+		{
+			"city" : "Talma",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7850" : [
+		{
+			"city" : "Madukhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7851" : [
+		{
+			"city" : "Kamarkali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7860" : [
+		{
+			"city" : "Boalmari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7861" : [
+		{
+			"city" : "Rupatpat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7870" : [
+		{
+			"city" : "Alfadanga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Faridpur"
+		}
+	],
+	"7900" : [
+		{
+			"city" : "Madaripur Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7901" : [
+		{
+			"city" : "Charmugria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7902" : [
+		{
+			"city" : "Kulpaddi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7903" : [
+		{
+			"city" : "Habiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7904" : [
+		{
+			"city" : "Mustafapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7910" : [
+		{
+			"city" : "Rajoir",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7911" : [
+		{
+			"city" : "Khalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7920" : [
+		{
+			"city" : "Kalkini",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7921" : [
+		{
+			"city" : "Sahabrampur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7930" : [
+		{
+			"city" : "Barhamganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7931" : [
+		{
+			"city" : "Nilaksmibandar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7932" : [
+		{
+			"city" : "Bahadurpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"7933" : [
+		{
+			"city" : "Umedpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Madaripur"
+		}
+	],
+	"8000" : [
+		{
+			"city" : "Shariatpur Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8001" : [
+		{
+			"city" : "Angaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8002" : [
+		{
+			"city" : "Chikandi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8010" : [
+		{
+			"city" : "Jajira",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8013" : [
+		{
+			"city" : "Chandradighalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8020" : [
+		{
+			"city" : "Naria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8021" : [
+		{
+			"city" : "Bhozeshwar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8022" : [
+		{
+			"city" : "Gharisar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8023" : [
+		{
+			"city" : "Upshi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8024" : [
+		{
+			"city" : "Kartikpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8030" : [
+		{
+			"city" : "Bhedorganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8040" : [
+		{
+			"city" : "Damudhya",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8050" : [
+		{
+			"city" : "Gosairhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Shariatpur"
+		}
+	],
+	"8100" : [
+		{
+			"city" : "Gopalganj Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8101" : [
+		{
+			"city" : "Ulpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8102" : [
+		{
+			"city" : "Barfa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8110" : [
+		{
+			"city" : "Kotalipara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8120" : [
+		{
+			"city" : "Tungipara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8121" : [
+		{
+			"city" : "Patgati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8130" : [
+		{
+			"city" : "Kashiani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8131" : [
+		{
+			"city" : "Ramdia College",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8132" : [
+		{
+			"city" : "Ratoil",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8133" : [
+		{
+			"city" : "Jonapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8140" : [
+		{
+			"city" : "Maksudpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8141" : [
+		{
+			"city" : "Batkiamari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8142" : [
+		{
+			"city" : "Khandarpara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Gopalganj"
+		}
+	],
+	"8200" : [
+		{
+			"city" : "Barishal Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8201" : [
+		{
+			"city" : "Bukhainagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8202" : [
+		{
+			"city" : "Saheberhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8203" : [
+		{
+			"city" : "Sugandia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8204" : [
+		{
+			"city" : "Patang",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8205" : [
+		{
+			"city" : "Kashipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8206" : [
+		{
+			"city" : "Jaguarhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8210" : [
+		{
+			"city" : "Babuganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8211" : [
+		{
+			"city" : "Rahamatpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8212" : [
+		{
+			"city" : "Chandpasha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8213" : [
+		{
+			"city" : "Madhabpasha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8214" : [
+		{
+			"city" : "Thakur Mallik",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8215" : [
+		{
+			"city" : "Nizamuddin College",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8216" : [
+		{
+			"city" : "Barishal Cadet",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8220" : [
+		{
+			"city" : "Uzirpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8221" : [
+		{
+			"city" : "Dhamura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8222" : [
+		{
+			"city" : "Jugirkanda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8223" : [
+		{
+			"city" : "Dakuarhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8224" : [
+		{
+			"city" : "Shikarpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8230" : [
+		{
+			"city" : "Gouranadi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8231" : [
+		{
+			"city" : "Tarki Bandar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8232" : [
+		{
+			"city" : "Kashemabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8233" : [
+		{
+			"city" : "Batajor",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8240" : [
+		{
+			"city" : "Agailzhara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8241" : [
+		{
+			"city" : "Gaila",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8242" : [
+		{
+			"city" : "Paisarhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8250" : [
+		{
+			"city" : "Muladi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8251" : [
+		{
+			"city" : "Kazirchar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8252" : [
+		{
+			"city" : "Charkalekhan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8260" : [
+		{
+			"city" : "Barajalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8261" : [
+		{
+			"city" : "Osman Manjil",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8270" : [
+		{
+			"city" : "Mahendiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8271" : [
+		{
+			"city" : "Laskarpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8272" : [
+		{
+			"city" : "Ulania",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8273" : [
+		{
+			"city" : "Nalgora",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8274" : [
+		{
+			"city" : "Langutia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8280" : [
+		{
+			"city" : "Sahebganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8281" : [
+		{
+			"city" : "Charamandi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8282" : [
+		{
+			"city" : "Padri Shibpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8283" : [
+		{
+			"city" : "Shialguni",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8284" : [
+		{
+			"city" : "kalaskati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barishal"
+		}
+	],
+	"8300" : [
+		{
+			"city" : "Bhola Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8301" : [
+		{
+			"city" : "Joynagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8310" : [
+		{
+			"city" : "Doulatkhan",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8311" : [
+		{
+			"city" : "Hajipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8320" : [
+		{
+			"city" : "Borhanuddin UPO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8321" : [
+		{
+			"city" : "Mirzakalu",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8330" : [
+		{
+			"city" : "Lalmohan UPO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8331" : [
+		{
+			"city" : "Daurihat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8332" : [
+		{
+			"city" : "Gazaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8340" : [
+		{
+			"city" : "Charfashion",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8341" : [
+		{
+			"city" : "Dularhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8342" : [
+		{
+			"city" : "Keramatganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8350" : [
+		{
+			"city" : "Hatshoshiganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8360" : [
+		{
+			"city" : "Hajirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Bhola"
+		}
+	],
+	"8400" : [
+		{
+			"city" : "Jhalokathi Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8401" : [
+		{
+			"city" : "Nabagram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8402" : [
+		{
+			"city" : "Baukathi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8403" : [
+		{
+			"city" : "Gabha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8404" : [
+		{
+			"city" : "Shekherhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8410" : [
+		{
+			"city" : "Rajapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8420" : [
+		{
+			"city" : "Nalchhiti",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8421" : [
+		{
+			"city" : "Beerkathi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8430" : [
+		{
+			"city" : "Kathalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8431" : [
+		{
+			"city" : "Amua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8432" : [
+		{
+			"city" : "Niamatee",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8433" : [
+		{
+			"city" : "Shoulajalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jhalokathi"
+		}
+	],
+	"8500" : [
+		{
+			"city" : "Pirojpur Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8501" : [
+		{
+			"city" : "Hularhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8502" : [
+		{
+			"city" : "Parerhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8510" : [
+		{
+			"city" : "Kaukhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8511" : [
+		{
+			"city" : "Keundia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8512" : [
+		{
+			"city" : "Joykul",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8513" : [
+		{
+			"city" : "Jolagati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8520" : [
+		{
+			"city" : "Swarupkathi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8521" : [
+		{
+			"city" : "Darus Sunnat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8522" : [
+		{
+			"city" : "Kaurikhara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8523" : [
+		{
+			"city" : "Jalabari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8530" : [
+		{
+			"city" : "Banaripara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8531" : [
+		{
+			"city" : "Chakhar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8540" : [
+		{
+			"city" : "Nazirpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8541" : [
+		{
+			"city" : "Sriramkathi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8550" : [
+		{
+			"city" : "Bhandaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8551" : [
+		{
+			"city" : "Kanudashkathi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8552" : [
+		{
+			"city" : "Dhaoa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8560" : [
+		{
+			"city" : "Mathbaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8561" : [
+		{
+			"city" : "Tushkhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8562" : [
+		{
+			"city" : "Halta",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8563" : [
+		{
+			"city" : "Gulishakhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8564" : [
+		{
+			"city" : "Tiarkhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8565" : [
+		{
+			"city" : "Betmor Natun Hat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8566" : [
+		{
+			"city" : "Shilarganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Pirojpur"
+		}
+	],
+	"8600" : [
+		{
+			"city" : "Patuakhali Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8601" : [
+		{
+			"city" : "Moukaran",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8602" : [
+		{
+			"city" : "Dumkee",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8603" : [
+		{
+			"city" : "Rahimabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8610" : [
+		{
+			"city" : "Subidkhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8620" : [
+		{
+			"city" : "Bauphal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8621" : [
+		{
+			"city" : "Bagabandar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8622" : [
+		{
+			"city" : "Birpasha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8623" : [
+		{
+			"city" : "Kalishari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8624" : [
+		{
+			"city" : "Kalaia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8630" : [
+		{
+			"city" : "Dashmina",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8640" : [
+		{
+			"city" : "Galachipa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8641" : [
+		{
+			"city" : "Gazipur Bandar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8650" : [
+		{
+			"city" : "Khepupara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8651" : [
+		{
+			"city" : "Mahipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Patuakhali"
+		}
+	],
+	"8700" : [
+		{
+			"city" : "Barguna Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barguna"
+		}
+	],
+	"8701" : [
+		{
+			"city" : "Nali Bandar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barguna"
+		}
+	],
+	"8710" : [
+		{
+			"city" : "Amtali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barguna"
+		}
+	],
+	"8720" : [
+		{
+			"city" : "Patharghata",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barguna"
+		}
+	],
+	"8721" : [
+		{
+			"city" : "Kakchira",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barguna"
+		}
+	],
+	"8730" : [
+		{
+			"city" : "Bamna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barguna"
+		}
+	],
+	"8740" : [
+		{
+			"city" : "Betagi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barguna"
+		}
+	],
+	"8741" : [
+		{
+			"city" : "Darul Ulam",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Barguna"
+		}
+	],
+	"9000" : [
+		{
+			"city" : "Khulna G.P.O",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9100" : [
+		{
+			"city" : "Khula Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9201" : [
+		{
+			"city" : "Khulna Shipyard",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9202" : [
+		{
+			"city" : "Doulatpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9203" : [
+		{
+			"city" : "BIT Khulna",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9204" : [
+		{
+			"city" : "Siramani",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9205" : [
+		{
+			"city" : "Jahanabad Canttonmen",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9206" : [
+		{
+			"city" : "Sonali Jute Mills",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9207" : [
+		{
+			"city" : "Atra Shilpa Area",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9208" : [
+		{
+			"city" : "Khulna University",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9210" : [
+		{
+			"city" : "Phultala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9220" : [
+		{
+			"city" : "Digalia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9221" : [
+		{
+			"city" : "Chandni Mahal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9222" : [
+		{
+			"city" : "Senhati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9223" : [
+		{
+			"city" : "Ghoshghati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9224" : [
+		{
+			"city" : "Gazirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9230" : [
+		{
+			"city" : "Terakhada",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9231" : [
+		{
+			"city" : "Pak Barasat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9240" : [
+		{
+			"city" : "Alaipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9241" : [
+		{
+			"city" : "Rupsha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9242" : [
+		{
+			"city" : "Belphulia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9250" : [
+		{
+			"city" : "Sajiara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9251" : [
+		{
+			"city" : "Ghonabanda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9252" : [
+		{
+			"city" : "Chuknagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9253" : [
+		{
+			"city" : "Shahapur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9260" : [
+		{
+			"city" : "Batiaghat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9261" : [
+		{
+			"city" : "Surkalee",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9270" : [
+		{
+			"city" : "Chalna Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9271" : [
+		{
+			"city" : "Dakup",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9272" : [
+		{
+			"city" : "Bajua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9273" : [
+		{
+			"city" : "Nalian",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9280" : [
+		{
+			"city" : "Paikgachha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9281" : [
+		{
+			"city" : "Godaipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9282" : [
+		{
+			"city" : "Kapilmoni",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9283" : [
+		{
+			"city" : "Katipara",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9284" : [
+		{
+			"city" : "Chandkhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9285" : [
+		{
+			"city" : "Garaikhali",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9290" : [
+		{
+			"city" : "Madinabad",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9291" : [
+		{
+			"city" : "Amadee",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Khulna"
+		}
+	],
+	"9300" : [
+		{
+			"city" : "Bagerhat Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9301" : [
+		{
+			"city" : "P.C College",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9302" : [
+		{
+			"city" : "Rangdia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9310" : [
+		{
+			"city" : "Kachua",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9311" : [
+		{
+			"city" : "Sonarkola",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9320" : [
+		{
+			"city" : "Morelganj",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9321" : [
+		{
+			"city" : "Sannasi Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9322" : [
+		{
+			"city" : "Telisatee",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9330" : [
+		{
+			"city" : "Rayenda",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9340" : [
+		{
+			"city" : "Rampal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9341" : [
+		{
+			"city" : "Foylahat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9342" : [
+		{
+			"city" : "Sonatunia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9343" : [
+		{
+			"city" : "Gourambha",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9350" : [
+		{
+			"city" : "Chalna Ankorage",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9351" : [
+		{
+			"city" : "Mongla Port",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9360" : [
+		{
+			"city" : "Chitalmari",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9361" : [
+		{
+			"city" : "Barabaria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9370" : [
+		{
+			"city" : "Fakirhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9371" : [
+		{
+			"city" : "Mansa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9372" : [
+		{
+			"city" : "Bhanganpar Bazar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9380" : [
+		{
+			"city" : "Mollahat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9381" : [
+		{
+			"city" : "Kahalpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9382" : [
+		{
+			"city" : "Dariala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9383" : [
+		{
+			"city" : "Charkulia",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9384" : [
+		{
+			"city" : "Nagarkandi",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9385" : [
+		{
+			"city" : "Pak Gangni",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "IBH WAs Here"
+		}
+	],
+	"9400" : [
+		{
+			"city" : "Satkhira Sadar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9401" : [
+		{
+			"city" : "Satkhira Islamia Acc",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9402" : [
+		{
+			"city" : "Gunakar kati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9403" : [
+		{
+			"city" : "Budhhat",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9410" : [
+		{
+			"city" : "kalaroa",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9411" : [
+		{
+			"city" : "Murarikati",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9412" : [
+		{
+			"city" : "Jhaudanga",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9413" : [
+		{
+			"city" : "Hamidpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9414" : [
+		{
+			"city" : "Khordo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9415" : [
+		{
+			"city" : "Chandanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9420" : [
+		{
+			"city" : "Taala",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9421" : [
+		{
+			"city" : "Patkelghata",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9430" : [
+		{
+			"city" : "Debbhata",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9431" : [
+		{
+			"city" : "Gurugram",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9440" : [
+		{
+			"city" : "Kaliganj UPO",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9441" : [
+		{
+			"city" : "Nalta Mubaroknagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9442" : [
+		{
+			"city" : "Ratanpur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9450" : [
+		{
+			"city" : "Nakipur",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9451" : [
+		{
+			"city" : "Noornagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9452" : [
+		{
+			"city" : "Naobeki",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9453" : [
+		{
+			"city" : "Buri Goalini",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9454" : [
+		{
+			"city" : "Gabura",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9455" : [
+		{
+			"city" : "Habinagar",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9460" : [
+		{
+			"city" : "Ashashuni",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	],
+	"9461" : [
+		{
+			"city" : "Baradal",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Satkhira"
+		}
+	]
+}

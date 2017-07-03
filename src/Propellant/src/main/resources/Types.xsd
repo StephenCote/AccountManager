@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.cote.org/propellant/objects/types" xmlns:tns="http://www.cote.org/propellant/objects/types">
+    <xsd:simpleType name="GoalEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="GOAL"></xsd:enumeration>
+    		<xsd:enumeration value="STAKE"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ArtifactEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="REQUIREMENT"></xsd:enumeration>
+    		<xsd:enumeration value="DESIGN"></xsd:enumeration>
+    		<xsd:enumeration value="REVIEW"></xsd:enumeration>
+    		<xsd:enumeration value="DEVELOPMENT"></xsd:enumeration>
+    		<xsd:enumeration value="TEST"></xsd:enumeration>
+    		<xsd:enumeration value="RELEASE"></xsd:enumeration>
+    		<xsd:enumeration value="DEPENDENCY"></xsd:enumeration>
+    		<xsd:enumeration value="DATA"></xsd:enumeration>
+    		<xsd:enumeration value="TASK"></xsd:enumeration>
+    		<xsd:enumeration value="FORM"></xsd:enumeration>
+    		<xsd:enumeration value="NOTE"></xsd:enumeration>
+    		<xsd:enumeration value="MODULE"></xsd:enumeration>
+    		<xsd:enumeration value="WORK"></xsd:enumeration>
+    		<xsd:enumeration value="STORY"></xsd:enumeration>
+    		<xsd:enumeration value="TICKET"></xsd:enumeration>
+
+    		<xsd:enumeration value="STAGE"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="RequirementEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="DESIGN"></xsd:enumeration>
+    		<xsd:enumeration value="TECHNICAL"></xsd:enumeration>
+    		<xsd:enumeration value="FUNCTIONAL"></xsd:enumeration>
+    		<xsd:enumeration value="BUSINESS"></xsd:enumeration>
+    		<xsd:enumeration value="CUSTOMER"></xsd:enumeration>
+    		<xsd:enumeration value="MARKETING"></xsd:enumeration>
+    		<xsd:enumeration value="EXECUTIVE"></xsd:enumeration>
+    		<xsd:enumeration value="ARCHITECTURAL"></xsd:enumeration>
+    		<xsd:enumeration value="TEST"></xsd:enumeration>
+    		<xsd:enumeration value="DEVELOPMENT"></xsd:enumeration>
+    		<xsd:enumeration value="DEPENDENCY"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="CaseEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="USE"></xsd:enumeration>
+    		<xsd:enumeration value="CUSTOMER"></xsd:enumeration>
+    		<xsd:enumeration value="BUSINESS"></xsd:enumeration>
+    		<xsd:enumeration value="TECHNICAL"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ResourceEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="ACTOR"></xsd:enumeration>
+    		<xsd:enumeration value="USER"></xsd:enumeration>
+    		<xsd:enumeration value="GROUP"></xsd:enumeration>
+    		<xsd:enumeration value="ROLE"></xsd:enumeration>
+    		<xsd:enumeration value="ACCOUNT"></xsd:enumeration>
+    		<xsd:enumeration value="HARDWARE"></xsd:enumeration>
+    		<xsd:enumeration value="SOFTWARE"></xsd:enumeration>
+    		<xsd:enumeration value="PERSON"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="BudgetEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="COST"></xsd:enumeration>
+    		<xsd:enumeration value="TIME"></xsd:enumeration>
+    		<xsd:enumeration value="MULTIFACTOR"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="CurrencyEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="USD"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:simpleType name="TimeEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="MINUTE"></xsd:enumeration>
+    		<xsd:enumeration value="HOUR"></xsd:enumeration>
+    		<xsd:enumeration value="DAY"></xsd:enumeration>
+    		<xsd:enumeration value="WEEK"></xsd:enumeration>
+    		<xsd:enumeration value="MONTH"></xsd:enumeration>
+    		<xsd:enumeration value="YEAR"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="TaskStatusEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="ESTIMATED"></xsd:enumeration>
+    		<xsd:enumeration value="IN_PROGRESS"></xsd:enumeration>
+    		<xsd:enumeration value="COMPLETED"></xsd:enumeration>
+    		<xsd:enumeration value="BLOCKED"></xsd:enumeration>
+    		<xsd:enumeration value="APPROVED"></xsd:enumeration>
+    		<xsd:enumeration value="WASTE"></xsd:enumeration>
+    		<xsd:enumeration value="UNPLANNED"></xsd:enumeration>
+    		<xsd:enumeration value="REJECTED"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:simpleType name="ReasonEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="PLANNED"></xsd:enumeration>
+    		<xsd:enumeration value="UNPLANNED"></xsd:enumeration>
+    		<xsd:enumeration value="WASTE"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:simpleType name="ModelEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="BLUEPRINT"></xsd:enumeration>
+    		<xsd:enumeration value="ATOMIC"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="EstimateEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="SWAG"></xsd:enumeration>
+    		<xsd:enumeration value="COARSE"></xsd:enumeration>
+    		<xsd:enumeration value="FINE"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ModuleEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="ASSEMBLY"></xsd:enumeration>
+    		<xsd:enumeration value="SCRAP"></xsd:enumeration>
+    		<xsd:enumeration value="COMPONENT"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ElementEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="DATE"></xsd:enumeration>
+    		<xsd:enumeration value="STRING"></xsd:enumeration>
+    		<xsd:enumeration value="STRING_MULTILINE"></xsd:enumeration>
+    		<xsd:enumeration value="BOOLEAN"></xsd:enumeration>
+    		<xsd:enumeration value="INT"></xsd:enumeration>
+    		<xsd:enumeration value="DOUBLE"></xsd:enumeration>
+    		<xsd:enumeration value="SELECT"></xsd:enumeration>
+    		<xsd:enumeration value="RESOURCE"></xsd:enumeration>
+    		<xsd:enumeration value="SCHEDULE"></xsd:enumeration>
+    		<xsd:enumeration value="ESTIMATE"></xsd:enumeration>
+    		<xsd:enumeration value="TIME"></xsd:enumeration>
+    		<xsd:enumeration value="NOTE"></xsd:enumeration>
+    		<xsd:enumeration value="DATA"></xsd:enumeration>
+    		<xsd:enumeration value="FORM"></xsd:enumeration>
+    		<xsd:enumeration value="MULTIPLE_SELECT"></xsd:enumeration>
+    		<xsd:enumeration value="TASK"></xsd:enumeration>
+    		<xsd:enumeration value="TICKET"></xsd:enumeration>
+    		<xsd:enumeration value="MODEL"></xsd:enumeration>
+    		<xsd:enumeration value="ARTIFACT"></xsd:enumeration>
+    		<xsd:enumeration value="STAGE"></xsd:enumeration>
+    		<xsd:enumeration value="CASE"></xsd:enumeration>
+    		<xsd:enumeration value="WORK"></xsd:enumeration>
+    		<xsd:enumeration value="GOAL"></xsd:enumeration>
+    		<xsd:enumeration value="BUDGET"></xsd:enumeration>
+    		<xsd:enumeration value="COST"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ValidationEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="BOOLEAN"></xsd:enumeration>
+    		<xsd:enumeration value="REPLACEMENT"></xsd:enumeration>
+    		<xsd:enumeration value="NONE"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="TicketStatusEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="OPEN"></xsd:enumeration>
+    		<xsd:enumeration value="REVIEW"></xsd:enumeration>
+    		<xsd:enumeration value="CLOSED"></xsd:enumeration>
+    		<xsd:enumeration value="BLOCKED"></xsd:enumeration>
+    		<xsd:enumeration value="REJECTED"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="PriorityEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="LOW"></xsd:enumeration>
+    		<xsd:enumeration value="NORMAL"></xsd:enumeration>
+    		<xsd:enumeration value="HIGH"></xsd:enumeration>
+    		<xsd:enumeration value="VITAL"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="SeverityEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="LOW"></xsd:enumeration>
+    		<xsd:enumeration value="MEDIUM"></xsd:enumeration>
+    		<xsd:enumeration value="HIGH"></xsd:enumeration>
+    		<xsd:enumeration value="CAUTION"></xsd:enumeration>
+    		<xsd:enumeration value="CRITICAL"></xsd:enumeration>
+    		<xsd:enumeration value="FATAL"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="RequirementStatusEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="DEFINED"></xsd:enumeration>
+    		<xsd:enumeration value="UNDEFINED"></xsd:enumeration>
+    		<xsd:enumeration value="IMPLEMENTED"></xsd:enumeration>
+    		<xsd:enumeration value="PENDING"></xsd:enumeration>
+    		<xsd:enumeration value="MISSED"></xsd:enumeration>
+    		<xsd:enumeration value="REJECTED"></xsd:enumeration>
+    		<xsd:enumeration value="APPROVED"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="EventEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="INCEPT"></xsd:enumeration>
+    		<xsd:enumeration value="GRADUATE"></xsd:enumeration>
+    		<xsd:enumeration value="CONCLUDE"></xsd:enumeration>
+    		<xsd:enumeration value="INGRESS"></xsd:enumeration>
+    		<xsd:enumeration value="MOVE"></xsd:enumeration>
+    		<xsd:enumeration value="CONSTRUCT"></xsd:enumeration>
+    		<xsd:enumeration value="DESTRUCT"></xsd:enumeration>
+    		<xsd:enumeration value="OPERATE"></xsd:enumeration>
+    		<xsd:enumeration value="STABLIZE"></xsd:enumeration>
+    		<xsd:enumeration value="DESTABILIZE"></xsd:enumeration>
+    		<xsd:enumeration value="TRANSFER"></xsd:enumeration>
+    		<xsd:enumeration value="EGRESS"></xsd:enumeration>
+    		<xsd:enumeration value="IMMIGRATE"></xsd:enumeration>
+    		<xsd:enumeration value="EMIGRATE"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="GeographyEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="TECHNICAL"></xsd:enumeration>
+    		<xsd:enumeration value="PERSON"></xsd:enumeration>
+    		<xsd:enumeration value="PHYSICAL"></xsd:enumeration>
+    		<xsd:enumeration value="ENVIRONMENTAL"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+
+
+    <xsd:simpleType name="TraitEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+    		<xsd:enumeration value="LOCATION"></xsd:enumeration>
+    		<xsd:enumeration value="TRANSPORT"></xsd:enumeration>
+    		<xsd:enumeration value="PROTOCOL"></xsd:enumeration>
+    		<xsd:enumeration value="EVENT"></xsd:enumeration>
+    		<xsd:enumeration value="PERSON"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="AlignmentEnumType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="LAWFULGOOD"></xsd:enumeration>
+    		<xsd:enumeration value="NEUTRALGOOD"></xsd:enumeration>
+    		<xsd:enumeration value="CHAOTICGOOD"></xsd:enumeration>
+    		<xsd:enumeration value="LAWFULNEUTRAL"></xsd:enumeration>
+    		<xsd:enumeration value="NEUTRAL"></xsd:enumeration>
+    		<xsd:enumeration value="CHAOTICNEUTRAL"></xsd:enumeration>
+    		<xsd:enumeration value="LAWFULEVIL"></xsd:enumeration>
+    		<xsd:enumeration value="NEUTRALEVIL"></xsd:enumeration>
+    		<xsd:enumeration value="CHAOTICEVIL"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>

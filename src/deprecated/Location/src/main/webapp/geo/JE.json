@@ -1,0 +1,33 @@
+{
+	"JE1" : [
+		{
+			"city" : "St Helier",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jersey Channel Islands"
+		}
+	],
+	"JE2" : [
+		{
+			"city" : "St Helier",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jersey Channel Islands"
+		}
+	],
+	"JE3" : [
+		{
+			"city" : "St Lawrence",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jersey Channel Islands"
+		}
+,
+		{
+			"city" : "St Brelades",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : "Jersey Channel Islands"
+		}
+	]
+}

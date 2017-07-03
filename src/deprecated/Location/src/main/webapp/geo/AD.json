@@ -1,0 +1,58 @@
+{
+	"AD100" : [
+		{
+			"city" : "Canillo",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"AD200" : [
+		{
+			"city" : "Encamp",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"AD300" : [
+		{
+			"city" : "Ordino",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"AD400" : [
+		{
+			"city" : "La Massana",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"AD500" : [
+		{
+			"city" : "Andorra la Vella",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"AD600" : [
+		{
+			"city" : "Sant Julià de Lòria",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	],
+	"AD700" : [
+		{
+			"city" : "Escaldes-Engordany",
+			"stateName" : "",
+			"stateCode" : "",
+			"county" : ""
+		}
+	]
+}
