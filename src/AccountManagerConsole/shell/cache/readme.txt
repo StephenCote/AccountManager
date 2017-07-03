@@ -1,0 +1,1 @@
+Cache directory is used to store volatile and transient values.  This directory should be regularly cleaned/purged depending on use.
