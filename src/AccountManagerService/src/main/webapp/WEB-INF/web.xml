@@ -43,7 +43,7 @@
   <context-param>
     <description>Data Generator Dictionary Path</description>
     <param-name>data.generator.dictionary</param-name>
-    <param-value>C:/Projects/DataGenerator/wn3.1.dict.tar/dict/</param-value>
+    <param-value>C:/Projects/DataGenerator/wn3.1.dict/dict/</param-value>
   </context-param>
   <context-param>
     <description>Data Generator Location Path</description>

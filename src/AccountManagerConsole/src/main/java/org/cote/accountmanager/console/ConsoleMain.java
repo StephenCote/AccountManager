@@ -118,6 +118,19 @@ public class ConsoleMain {
 		options.addOption("rootPassword",true,"Account Manager Root Password");
 		options.addOption("adminPassword",true,"Account Manager Admin Password");
 		
+		/// geo data import for use with data generator
+		/// This is the legacy method for manual operationss only.  Use the service features to import data into communities
+		options.addOption("geo",false,"Import geonames data");
+		options.addOption("basePath",true,"Base path for geonames data");
+		options.addOption("clean",false,"Clean import destination before importing");
+		options.addOption("countryInfo",true,"Import country info data");
+		options.addOption("admin1",true,"Import admin1 codes data");
+		options.addOption("admin2",true,"Import admin2 codes data");
+		options.addOption("features",true,"Import feature data");
+		options.addOption("alternate",true,"Include alternate data (inc. postal code) - use with countries import");
+		options.addOption("countries",true,"Import country data");
+		
+		/// certificate generation
 		
 		options.addOption("openssl",false,"Perform openssl activities");
 		options.addOption("dn",true,"DN of the openssl request");
@@ -363,6 +376,10 @@ public class ConsoleMain {
 	*/
 
 	public static void processAction(UserType user, CommandLine cmd){
+		if(cmd.hasOption("geo") && cmd.hasOption("path")){
+			GeoAction.processGeoAction(user, cmd);
+			
+		}
 		if(cmd.hasOption("importData") && cmd.hasOption("path")){
 			if(cmd.hasOption("batchSize")) DataAction.setMaximumLoad(Integer.parseInt(cmd.getOptionValue("batchSize")));
 			DataAction.importDataPath(user, cmd.getOptionValue("importData"), cmd.getOptionValue("path"), cmd.hasOption("pointer"),cmd.hasOption("thumbnail"),cmd.hasOption("vault"),cmd.getOptionValue("urn"));
