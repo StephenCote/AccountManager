@@ -377,6 +377,13 @@ public class AuthorizationService {
 			logger.warn("Invalid test owner object with type " + test_owner.getNameType().toString());
 			return false;
 		}
+		/// Exception to allow for a user object to 'own' itself because it most likely is owned by the admin who created it
+		///
+		if(map.getNameType() == NameEnumType.USER && test_owner.getId().compareTo(map.getId())==0){
+			logger.debug("Exception to indicate a user owns its own user object for purposes of authorization");
+			return true;
+		}
+		
 		//logger.debug("Map Owner == " + test_owner.getId() + "=" + map.getOwnerId() + " == (" + (test_owner.getId() == map.getOwnerId()) + ")");
 		return (test_owner.getId().compareTo(map.getOwnerId())==0);
 	}

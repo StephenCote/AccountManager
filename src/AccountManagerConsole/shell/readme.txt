@@ -1,0 +1,1 @@
+For Windows 10 users, install the Windows 10 linux development feature and then execute these scripts via bash.

@@ -222,6 +222,10 @@ public class ConnectionFactory {
 				logger.error("Error",e);
 			}
 		}
+		if(ds == null){
+			logger.error("DataSource is null.  Check that the database server is started and accessible.");
+			return null;
+		}
 		try{
 			out_connection = ds.getConnection();
 
