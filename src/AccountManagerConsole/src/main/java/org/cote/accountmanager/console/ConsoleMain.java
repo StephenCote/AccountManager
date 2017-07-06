@@ -392,6 +392,7 @@ public class ConsoleMain {
 			DataAction.migrateData(user,Long.parseLong(cmd.getOptionValue("ownerId")));
 		}
 		if(cmd.hasOption("tag") && cmd.hasOption("file")){
+			logger.warn("Using tag from the console is a throw-away import utility from several versions past. It is only kept for debugging purposes.");
 			DataAction.tagData(user, cmd.getOptionValue("file"));
 		} 
 		if(cmd.hasOption("vault") && cmd.hasOption("action")){

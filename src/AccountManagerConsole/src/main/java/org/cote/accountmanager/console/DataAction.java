@@ -189,6 +189,9 @@ public class DataAction {
 		logger.info("Processed directory in " + (stopTime - startTime) + "ms");
 	}
 	
+	
+	/// This is an old migration/throw-away method from two versions back
+	/// 
 	public static void tagData(UserType user, String tagFile){
 		Map<String,Map<String,List<String>>> tagMap = new HashMap<String,Map<String,List<String>>>();
 		((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setBatchSize(1000);
