@@ -18,6 +18,13 @@ function doGallery(){
 	var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");
 	eval(sTxt);
 }
+function selectGroup(){
+	var sForm = document.querySelector("#selectGroup").value;
+	var oS = Hemi.app.space.service.getPrimarySpace();
+	var oA = oS.getSpaceObjectByName("main").object.getApplicationComponent();
+	oA.loadTemplate("/AccountManagerService/Templates/" + sForm + "Main.xml");
+}
+
 (function(){
 	if(!window.uwmServices){
 		window.uwmServices = uwmServices = Hemi.json.rpc.service;
@@ -39,5 +46,9 @@ function doGallery(){
 <div template = "/AccountManagerService/Forms/MainIn.xml"></div>
 <p><input type = "button" value = "Gallery" onclick = "doGallery()" /></p>
 <p><input type = "button" value = "Logout" onclick = "doLogout()" /></p>
+<p><select id = "selectGroup" onchange = "selectGroup()"><option>Business</option><option>Event</option><option>Form</option><option>Identity</option><option>Method</option><option>Policy</option><option>Project</option><option selected = "true">Resource</option></select></p>
+<div id = "main" template = "/AccountManagerService/Templates/ResourceMain.xml">
+</div>
+
 </body>
 </html>

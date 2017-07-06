@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "Fragments/TabTools.xml" id = "TabTools" />
+	<p style = "clear:both;font-size:0px;margin:0px;"></p>
+
+	<div style = "margin:0px;" rid = "lifecycle"></div>
+	<div style = "margin:0px;" rid = "project"></div>	
+	<div style = "margin:0px;" rid = "stage"></div>	
+	<div style = "margin:0px;" rid = "work"></div>
+	<div style = "margin:0px;" rid = "task"></div>
+			
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				//this.serveTransaction("change_bus", Hemi.data.io.service.getBusType().ONLINE);
+				window.dbg = this;
+				this.AddTab("lifecycle","Lifecycles",this.scopeHandler("loadLifecycleTab",0,1,1));
+				this.AddTab("project","Projects",this.scopeHandler("loadProjectTab",0,1,1));
+				this.AddTab("stage","Stages",this.scopeHandler("loadStageTab",0,1,1));
+				this.AddTab("work","Work",this.scopeHandler("loadWorkTab",0,1,1));
+				this.AddTab("task","Tasks",this.scopeHandler("loadTaskTab",0,1,1));
+				this.ShowTab(0);
+				this.loadLifecycleTab();
+			},
+			loadBudgetTab : function(o){
+				this.loadTab("Budget",o);
+			},
+
+			loadTimesTab : function(o){
+				this.loadTab("Time",o);
+			},
+			loadCostsTab : function(o){
+				this.loadTab("Cost",o);
+			},
+
+			loadLifecycleTab : function(o){
+				this.loadTab("Lifecycle",o);
+			},
+			loadProjectTab : function(o){
+				this.loadTab("Project",o);
+			},
+			loadStageTab : function(o){
+				this.loadTab("Stage",o);
+			},
+			loadWorkTab : function(o){
+				this.loadTab("Work",o);
+			},
+			loadTaskTab : function(o){
+				this.loadTab("Task",o);
+			},
+			loadEstimateTab : function(o){
+				this.loadTab("Estimate",o);
+			},
+			loadNoteTab : function(o){
+				this.loadTab("Note",o);
+			},
+			loadArtifactTab : function(o){
+				this.loadTab("Artifact",o);
+			},
+
+			loadScheduleTab : function(o){
+				this.loadTab("Schedule",o);
+			},
+			loadResourceTab : function(o){
+				this.loadTab("Resource",o);
+			},
+
+			loadTab : function(s, o){
+				var c = this.GetElementByRID(s.toLowerCase());
+				if(c.loaded) return;
+				c.loaded = 1;
+				
+				var oDiv = document.createElement("div");
+				c.appendChild(oDiv);
+				var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
+				ac.setTemplateIsSpace(1);
+				ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+			}
+		]]>
+	</embedded-script>
+</Template>

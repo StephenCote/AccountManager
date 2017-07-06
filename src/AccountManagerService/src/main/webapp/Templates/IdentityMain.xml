@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "Fragments/TabTools.xml" id = "TabTools" />
+	<p style = "clear:both;font-size:0px;margin:0px;"></p>
+
+	<div rid = "person">
+	</div>		
+	<div rid = "application">
+	</div>	
+	<!-- 
+	<div rid = "account">
+	</div>
+	-->
+	<div rid = "user">
+	</div>	
+	<div rid = "permission">
+	</div>	
+	<div rid = "role">
+	</div>
+	<div rid = "contact">
+	</div>	
+	<div rid = "address">
+	</div>	
+	<!--
+	<p rid = "genCont" style = "clear:both;"><input type = "button" class = "rocket-button" value = "Generate Identity Data" onclick = "${this}.openGenerator()" /></p>
+	-->
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				//this.GetElementByRID("genCont").style.display = (uwm.debugMode ? "block" : "none");
+				this.AddTab("person","Persons",this.scopeHandler("loadPersonTab",0,1,1));
+				this.AddTab("application","Applications",this.scopeHandler("loadApplicationTab",0,1,1));
+				//this.AddTab("account","Accounts",this.scopeHandler("loadAccountTab",0,1,1));
+				this.AddTab("user","Users",this.scopeHandler("loadUserTab",0,1,1));
+				this.AddTab("permission","Permissions",this.scopeHandler("loadPermissionTab",0,1,1));
+				this.AddTab("role","Roles",this.scopeHandler("loadRoleTab",0,1,1));
+				this.AddTab("contact","Contacts",this.scopeHandler("loadContactTab",0,1,1));
+				this.AddTab("address","Addresses",this.scopeHandler("loadAddressTab",0,1,1));
+				this.ShowTab(0);
+				this.loadPersonTab();
+			},
+			loadContactTab : function(o){
+				this.loadTab("Contact",o);
+			},
+			loadAddressTab : function(o){
+				this.loadTab("Address",o);
+			},
+			loadPersonTab : function(o){
+				this.loadTab("Person",o);
+			},
+			loadApplicationTab : function(o){
+				this.loadTab("Application",o);
+			},
+			loadAccountTab : function(o){
+				this.loadTab("Account",o);
+			},
+			loadUserTab : function(o){
+				this.loadTab("User",o);
+			},
+			loadPermissionTab : function(o){
+				this.loadTab("Permission",o);
+			},
+			loadRoleTab : function(o){
+				this.loadTab("Role",o);
+			},
+
+			loadTab : function(s, o){
+				var c = this.GetElementByRID(s.toLowerCase());
+				if(c.loaded) return;
+				c.loaded = 1;
+				
+				var oDiv = document.createElement("div");
+				c.appendChild(oDiv);
+				var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
+				ac.setTemplateIsSpace(1);
+				ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+			},
+			openGenerator : function(){
+				var oW = Hemi.app.createWindow("Data Generator", "/RocketWeb/Templates/DataGenerator.xml", "Data Generator");
+	            if (oW) {
+	            	oW.resizeTo(475, 400);
+	            	Hemi.app.getWindowManager().CenterWindow(oW);
+	            	oW.setHideOnClose(0);
+	            }
+			},
+			DoLogout : function(){
+				window.uwm.logout();
+				window.uwm.operation("ContinueWorkflow");
+			}
+		]]>
+	</embedded-script>
+</Template>

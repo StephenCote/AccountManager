@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "Fragments/TabTools.xml" id = "TabTools" />
+	<p style = "clear:both;font-size:0px;margin:0px;"></p>
+
+	<div rid = "policy">
+	</div>		
+	<div rid = "rule">
+	</div>	
+	<div rid = "pattern">
+	</div>
+	<div rid = "fact">
+	</div>
+	<div rid = "operation">
+	</div>
+	<div rid = "function">
+	</div>	
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				this.AddTab("policy","Policies",this.scopeHandler("loadPolicyTab",0,1,1));
+				this.AddTab("rule","Rules",this.scopeHandler("loadRuleTab",0,1,1));
+				this.AddTab("pattern","Patterns",this.scopeHandler("loadPatternTab",0,1,1));
+				this.AddTab("fact","Facts",this.scopeHandler("loadFactTab",0,1,1));
+				this.AddTab("operation","Operations",this.scopeHandler("loadOperationTab",0,1,1));
+				this.AddTab("function","Functions",this.scopeHandler("loadFunctionTab",0,1,1));
+				this.ShowTab(0);
+				this.loadPolicyTab();
+			},
+			loadPolicyTab : function(o){
+				this.loadTab("Policy",o);
+			},
+			loadPatternTab : function(o){
+				this.loadTab("Pattern",o);
+			},
+			loadRuleTab : function(o){
+				this.loadTab("Rule",o);
+			},
+			loadFactTab : function(o){
+				this.loadTab("Fact",o);
+			},
+			loadOperationTab : function(o){
+				this.loadTab("Operation",o);
+			},
+			loadFunctionTab : function(o){
+				this.loadTab("Function",o);
+			},
+			loadTab : function(s, o){
+				var c = this.GetElementByRID(s.toLowerCase());
+				if(c.loaded) return;
+				c.loaded = 1;
+				
+				var oDiv = document.createElement("div");
+				c.appendChild(oDiv);
+				var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
+				ac.setTemplateIsSpace(1);
+				ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+			}
+		]]>
+	</embedded-script>
+</Template>

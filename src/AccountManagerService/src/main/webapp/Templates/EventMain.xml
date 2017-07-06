@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "Fragments/TabTools.xml" id = "TabTools" />
+	<p style = "clear:both;font-size:0px;margin:0px;"></p>
+	<div rid = "event">
+	</div>	
+	<div rid = "location">
+	</div>	
+	<div rid = "trait">
+	</div>	
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				this.AddTab("event","Events",this.scopeHandler("loadEventsTab",0,1,1));
+				this.AddTab("location","Locations",this.scopeHandler("loadLocationsTab",0,1,1));
+				this.AddTab("trait","Traits",this.scopeHandler("loadTraitsTab",0,1,1));
+				this.ShowTab(0);
+				this.loadEventsTab();
+			},
+			loadEventsTab : function(o){
+				this.loadTab("Event",o);
+			},
+			loadLocationsTab : function(o){
+				this.loadTab("Location",o);
+			},
+			loadTraitsTab : function(o){
+				this.loadTab("Trait",o);
+			},
+			
+			loadTab : function(s, o){
+				var c = this.GetElementByRID(s.toLowerCase());
+				if(c.loaded) return;
+				c.loaded = 1;
+				
+				var oDiv = document.createElement("div");
+				c.appendChild(oDiv);
+				var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
+				ac.setTemplateIsSpace(1);
+				ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+			},
+			DoLogout : function(){
+				window.uwm.logout();
+				window.uwm.operation("ContinueWorkflow");
+			}
+		]]>
+	</embedded-script>
+</Template>

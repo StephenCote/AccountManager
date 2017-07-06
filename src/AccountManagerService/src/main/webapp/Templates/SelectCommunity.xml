@@ -1,0 +1,118 @@
+<Template>
+<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+<div rid = "ctl" style = "display:none;">
+<select onchange = "${this}.selectMode()" rid = "mode"><option value = "0">Personal</option><option value = "1">Community</option></select>
+<span rid = "lifecycleCont">
+<select onchange = "${this}.selectLifecycle()" rid = "lifecycles"><option value = "0">Unknown</option></select>
+</span>
+<select onchange = "${this}.selectProject()" rid = "projects"><option value = "0">Unknown</option></select>
+</div>
+<embedded-script><![CDATA[
+	template_init : function(){
+		Hemi.message.service.subscribe(this, "onsessionrefresh", "refreshSession");
+		Hemi.message.service.subscribe(this, "oncommunitychange", "refreshCommunity");
+		this.refreshMode(1);
+		this.refreshSession();
+	},
+	refreshCommunity : function(s, v){
+		if(v == this) return;
+		
+		this.getProperties().blockAnnounce = 1;
+		this.refreshLifecycleList();
+		this.refreshProjectList();
+		this.getProperties().blockAnnounce = 0;
+		
+	},
+	refreshSession : function(s,v){
+		var b = uwm.rule("IsLoggedIn");
+		this.GetElementByRID("ctl").style.display = (b ? "block":"none");
+		if(b){
+			
+			this.refreshLifecycleList();
+			this.refreshProjectList();
+			this.selectLifecycle();
+			this.selectProject();
+		}
+	},
+	selectMode : function(b){
+		irocket.setCommunityMode((this.GetElementByRID("mode").value == "1" ? 1 : 0));
+		if(!b) this.refreshSession();
+	},
+	refreshMode : function(){
+		this.GetElementByRID("mode").value = (irocket.getCommunityMode() ? "1" : "0");
+	},
+	refreshLifecycleList : function(bNoUp){
+		this.GetElementByRID("lifecycleCont").style.display = (irocket.getCommunityMode() ? "" : "none");
+
+		var oSel1 = this.GetElementByRID("lifecycles");
+		oSel1.options.length = 1;
+
+		if(irocket.getCommunityMode()){
+			var aLi = irocket.listLifecycles();
+			for(var i = 0; i < aLi.length;i++){
+				oSel1.options[i+1] = new Option(aLi[i].name,"" + aLi[i].id);
+			}
+			if(irocket.getCommunityLifecycle() && irocket.getCommunityLifecycle() != null){
+				oSel1.value = "" + irocket.getCommunityLifecycle().id;
+			}
+			else if(oSel1.options.length > 1) oSel1.selectedIndex = 1;
+			else oSel1.selectedIndex = 0;
+		}
+	},
+	refreshProjectList : function(){
+		var oSel = this.GetElementByRID("projects");
+		oSel.options.length = 1;
+		if(irocket.getCommunityMode() && !irocket.getCommunityLifecycle()) return;
+		
+		var aL = irocket.listProjects();
+		for(var i = 0; i < aL.length;i++){
+			oSel.options[i+1] = new Option(aL[i].name,"" + aL[i].id);
+		}
+		
+		if(!irocket.getCommunityMode()){
+			oSel.options[oSel.options.length] = new Option("New","_new");
+			if(irocket.getCurrentProject()){
+				oSel.value = "" + irocket.getCurrentProject().id;
+			}
+		}
+		else if(irocket.getCommunityMode() && irocket.getCommunityProject() && irocket.getCommunityProject() != null){
+			oSel.value = "" + irocket.getCommunityProject().id;
+		}
+		else if(oSel.options.length > 1) oSel.selectedIndex = 1;
+		else oSel.selectedIndex = 0;
+	},
+	selectLifecycle : function(){
+		var vS = this.GetElementByRID("lifecycles").value;
+		if(vS.match(/^\d+$/)){
+			var oL = rocket.getLifecycleById(vS);
+			irocket.setCommunityLifecycle(oL);
+			this.refreshProjectList();
+			this.selectProject();
+		}
+	},
+	selectProject : function(){
+		var vS = this.GetElementByRID("projects").value;
+
+		if(vS.match(/^\d+$/)){
+			var oP = rocket.getProjectById(vS);
+			if(!irocket.getCommunityMode()) irocket.setCurrentProject(oP);
+			else irocket.setCommunityProject(oP);
+		}
+		else if(vS == "_new"){
+			var o = new org.cote.rocket.beans.projectType();
+			o.name = "";
+			o.description = "";
+			o.id = 0;
+			o.stages = [];
+			irocket.setCurrentProject(o);
+			this.GetElementByRID("projects").selectedIndex = 0;
+		}
+		if(!this.getProperties().blockAnnounce) Hemi.message.service.publish("oncommunitychange",this);
+		
+	},
+	template_destroy : function(){
+		Hemi.message.service.unsubscribe(this, "onsessionrefresh", "refreshSession");
+	}
+
+]]></embedded-script>
+</Template>

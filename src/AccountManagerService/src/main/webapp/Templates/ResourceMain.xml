@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "Fragments/TabTools.xml" id = "TabTools" />
+	<p style = "clear:both;font-size:0px;margin:0px;"></p>
+	<div rid = "group">
+	</div>	
+	<div rid = "data">
+	</div>	
+
+	<div rid = "artifact">
+	</div>	
+	<div rid = "resource">
+	</div>	
+	<div rid = "estimate">
+	</div>	
+	<div rid = "cost">
+	</div>				
+	<div rid = "time">
+	</div>				
+	<div rid = "note">
+	</div>
+	<div rid = "module">
+	</div>
+
+
+	<div rid = "ticket">
+	</div>	
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				//this.serveTransaction("change_bus", Hemi.data.io.service.getBusType().ONLINE);
+				this.AddTab("group","Groups",this.scopeHandler("loadGroupsTab",0,1,1));
+				this.AddTab("data","Data",this.scopeHandler("loadDataTab",0,1,1));
+				this.AddTab("artifact","Artifacts",this.scopeHandler("loadArtifactTab",0,1,1));
+				this.AddTab("resource","Resources",this.scopeHandler("loadResourceTab",0,1,1));
+				this.AddTab("estimate","Estimates",this.scopeHandler("loadEstimateTab",0,1,1));
+				this.AddTab("cost","Costs",this.scopeHandler("loadCostsTab",0,1,1));
+				this.AddTab("time","Times",this.scopeHandler("loadTimesTab",0,1,1));
+				this.AddTab("note","Notes",this.scopeHandler("loadNoteTab",0,1,1));
+				
+				this.AddTab("module","Modules",this.scopeHandler("loadModuleTab",0,1,1));
+				//this.AddTab("model","Model",this.scopeHandler("loadModelTab",0,1,1));
+				this.AddTab("ticket","Tickets",this.scopeHandler("loadTicketTab",0,1,1));
+				this.ShowTab(0);
+				this.loadGroupsTab();
+			},
+			loadTimesTab : function(o){
+				this.loadTab("Time",o);
+			},
+			loadCostsTab : function(o){
+				this.loadTab("Cost",o);
+			},
+			loadGroupsTab : function(o){
+				this.loadTab("Group",o);
+			},
+			loadUsersTab : function(o){
+				this.loadTab("User",o);
+			},
+			loadValidationRuleTab : function(o){
+				this.loadTab("ValidationRule",o);
+			},
+			loadFormTab : function(o){
+				this.loadTab("Form",o);
+			},
+			loadFormElementTab : function(o){
+				this.loadTab("FormElement",o);
+			},
+			loadTicketTab : function(o){
+				this.loadTab("Ticket",o);
+			},
+			loadLifecycleTab : function(o){
+				this.loadTab("Lifecycle",o);
+			},
+			loadStoryTab : function(o){
+				this.loadTab("Story",o);
+			},
+			loadProjectTab : function(o){
+				this.loadTab("Project",o);
+			},
+			loadModuleTab : function(o){
+				this.loadTab("Module",o);
+			},
+			loadStageTab : function(o){
+				this.loadTab("Stage",o);
+			},
+			loadMethodologyTab : function(o){
+				this.loadTab("Methodology",o);
+			},
+			loadProcessTab : function(o){
+				this.loadTab("Process",o);
+			},
+			loadProcessStepTab : function(o){
+				this.loadTab("ProcessStep",o);
+			},
+			loadWorkTab : function(o){
+				this.loadTab("Work",o);
+			},
+			loadTaskTab : function(o){
+				this.loadTab("Task",o);
+			},
+			loadEstimateTab : function(o){
+				this.loadTab("Estimate",o);
+			},
+			loadModelTab : function(o){
+				this.loadTab("Model",o);
+			},
+			loadNoteTab : function(o){
+				this.loadTab("Note",o);
+			},
+			loadDataTab : function(o){
+				this.loadTab("Data",o);
+			},
+			loadArtifactTab : function(o){
+				this.loadTab("Artifact",o);
+			},
+			
+			loadCaseTab : function(o){
+				this.loadTab("Case",o);
+			},
+			loadRequirementTab : function(o){
+				this.loadTab("Requirement",o);
+			},
+			loadResourceTab : function(o){
+				this.loadTab("Resource",o);
+			},
+			loadScheduleTab : function(o){
+				this.loadTab("Schedule",o);
+			},
+			loadBudgetTab : function(o){
+				this.loadTab("Budget",o);
+			},
+			loadGoalTab : function(o){
+				this.loadTab("Goal",o);
+			},
+			loadTab : function(s, o){
+				var c = this.GetElementByRID(s.toLowerCase());
+				if(c.loaded) return;
+				c.loaded = 1;
+				
+				var oDiv = document.createElement("div");
+				c.appendChild(oDiv);
+				var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
+				ac.setTemplateIsSpace(1);
+				ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+			},
+			DoLogout : function(){
+				window.uwm.logout();
+				window.uwm.operation("ContinueWorkflow");
+			}
+		]]>
+	</embedded-script>
+</Template>
