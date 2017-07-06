@@ -90,6 +90,8 @@
 	var sList = sBase + "/list";
 	var sAuthZ = sBase + "/authorization";
 	var sComm = sBase + "/community";
+	var sCred = sBase + "/credential";
+	var sPol = sBase + "/policy";
 	function getCache(){
 		return cache;
 	}
@@ -141,6 +143,13 @@
 		delete cache[sType];
 	   return Hemi.xml.postJSON(sResource + "/" + sType + "/",oObj,fH,(fH ? 1 : 0));
 	}
+	function evaluate(oObj, fH){
+		   return Hemi.xml.postJSON(sPol + "/evaluate",oObj,fH,(fH ? 1 : 0));
+		}
+	function define(sObjectId, fH){
+	   return Hemi.xml.getJSON(sPol + "/define/" + oObjectId,fH,(fH ? 1 : 0));
+	}
+	
 	function getDocumentControl(fH){
 		var o = getFromCache("USER", "GET", "_documentcontrol_");
 		if(o){
@@ -299,6 +308,8 @@
 	}
 	window.AM6Client = {
 		dotPath : getDotPath,
+		define : define,
+		evaluate : evaluate,
 		find : find,
 		community : getCommunity,
 		communityProject : getCommunityProject,

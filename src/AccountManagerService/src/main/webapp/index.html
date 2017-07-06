@@ -23,6 +23,14 @@ function doLogin(){
 	cred.credentialType = "HASHED_PASSWORD";
 	AM6Client.login(cred,doGoLogin);
 }
+function doLogin2(){
+	var cred = new org.cote.objects.credentialType();
+	cred.name = "TestUser3";
+	cred.credential = Base64.encode("password1");
+	cred.organizationPath = "/Development";
+	cred.credentialType = "HASHED_PASSWORD";
+	AM6Client.login(cred,doGoLogin);
+}
 (function(){
 	if(!window.uwmServices){
 		window.uwmServices = uwmServices = Hemi.json.rpc.service;
@@ -74,7 +82,8 @@ function doLogin(){
 <h1>Account Manager Service</h1>
 <div template = "Templates/ToolBar.xml"></div>
 <p><input type = "button" value = "Go Login" onclick = "doGoLogin()" /></p>
-<p><input type = "button" value = "Login" onclick = "doLogin()" /></p>
+<p><input type = "button" value = "Login - test@foo.bar" onclick = "doLogin()" /></p>
+<p><input type = "button" value = "Login - TestUser3" onclick = "doLogin2()" /></p>
 <p><input type = "button" value = "Logout" onclick = "doLogout()" /></p>
 </body>
 </html>

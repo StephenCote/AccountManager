@@ -155,20 +155,20 @@
 	
 	var oProjectGroup, oStepsGroup, oProcessesGroup, oMethodGroup, oStagesGroup, oWorkGroup, oTaskGroup, oCostGroup,oTimeGroup,oEstimateGroup,oBudgetGroup,oPersonGroup,oResourceGroup,oScheduleGroup;
 	function updatePaths(){
-		oProjectGroup = accountManager.getCreatePath("DATA",getBasePathByType("Project"));
-		oStepsGroup = accountManager.getCreatePath("DATA",getBasePathByType("ProcessStep"));
-		oProcessesGroup = accountManager.getCreatePath("DATA",getBasePathByType("Process"));
-		oMethodGroup = accountManager.getCreatePath("DATA",getBasePathByType("Methodology"));
-		oStagesGroup = accountManager.getCreatePath("DATA",getBasePathByType("Stage"));
-		oWorkGroup = accountManager.getCreatePath("DATA",getBasePathByType("Work"));
-		oTaskGroup = accountManager.getCreatePath("DATA",getBasePathByType("Task"));
-		oCostGroup = accountManager.getCreatePath("DATA",getBasePathByType("Cost"));
-		oTimeGroup = accountManager.getCreatePath("DATA",getBasePathByType("Time"));
-		oEstimateGroup = accountManager.getCreatePath("DATA",getBasePathByType("Estimate"));
-		oBudgetGroup = accountManager.getCreatePath("DATA",getBasePathByType("Budget"));
-		oPersonGroup = accountManager.getCreatePath("DATA",getBasePathByType("Person"));
-		oResourceGroup = accountManager.getCreatePath("DATA",getBasePathByType("Resource"));
-		oScheduleGroup = accountManager.getCreatePath("DATA",getBasePathByType("Schedule"));
+		oProjectGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Project"));
+		oStepsGroup = AM6Client.make("GROUP","DATA",getBasePathByType("ProcessStep"));
+		oProcessesGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Process"));
+		oMethodGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Methodology"));
+		oStagesGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Stage"));
+		oWorkGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Work"));
+		oTaskGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Task"));
+		oCostGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Cost"));
+		oTimeGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Time"));
+		oEstimateGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Estimate"));
+		oBudgetGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Budget"));
+		oPersonGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Person"));
+		oResourceGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Resource"));
+		oScheduleGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Schedule"));
 	}
 	
 	/// There are a few bugs here related to retrieving child tasks in the same group when multiple tasks of the same name exists
@@ -439,7 +439,7 @@
 		tl = t.substring(0,1).toLowerCase() + t.substring(1,t.length);
 		_s.typeName = s;
 		
-		var g = accountManager.getCreatePath("DATA",_s.path);
+		var g = AM6Client.make("GROUP","DATA",_s.path);
 		
 		o["get" + t] = function(){ return obj.getObjects()[tl];};
 		o.modify = function(v){
@@ -489,12 +489,12 @@
 		};
 		o.attribute = function(n,v){
 			if(!_o[tl] || _o[tl] == null) return false;
-			var a = accountManager.getAttribute(_o[tl], n);
+			var a = AM6Client.getAttribute(_o[tl], n);
 			/// add a new attribute
-			if(!a && v && v != null) a = accountManager.addAttribute(_o[tl],n,v);
+			if(!a && v && v != null) a = AM6Client.addAttribute(_o[tl],n,v);
 			// remove the attribute
 			else if(!v || v == null){
-				accountManager.removeAttribute(_o[tl],n);
+				AM6Client.removeAttribute(_o[tl],n);
 			}
 			// add a new attribute value
 			else{
@@ -539,7 +539,7 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 	getCommunityMode : function(){ return communityMode;},
 	getBasePath : function(s){return getBasePathByType(s);},
 	getParentByType : function(s,d){return getDefaultParentByType(s,d);},
-	getGroup : function(s){ return accountManager.getGroupByPath("DATA",irocket.getBasePath(s));},
+	getGroup : function(s){ return AM6Client.find("GROUP","DATA",irocket.getBasePath(s));},
 	applyMethodToProject : function(oP, oM){
 		return applyMethodologyToProject(oP, oM);
 	},
@@ -547,7 +547,7 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 		currenProject = 0;
 		contextProject = (p ? p : 0);
 		contextProjectGroup = 0;
-		if(contextProject) contextProjectGroup = accountManager.getGroupById(contextProject.groupId);
+		if(contextProject) contextProjectGroup = AM6Client.get("GROUP",contextProject.groupId);
 		currentRoleBucket = (contextProject ? rocket.getProjectRoleBase(contextProject) : 0);
 		currentPermissionBucket = (contextProject ? rocket.getProjectPermissionBase(contextProject) : 0);
 
@@ -577,7 +577,7 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 		contextProject = 0;
 		contextProjectGroup = 0;
 		lifecycleScope = true;
-		if(contextLifecycle) contextLifecycleGroup = accountManager.getGroupById(contextLifecycle.groupId);
+		if(contextLifecycle) contextLifecycleGroup = AM6Client.get("GROUP",contextLifecycle.groupId);
 		updateBase();
 		Hemi.message.service.publish("onchangecommunity", this);
 	},
@@ -709,7 +709,7 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 	listLifecycles : function(){
 		if(!communityMode) return rocket.listLifecycles(lifecyclePath,0,0);
 		var lifList = [];
-		var a = accountManager.listGroups(0,accountManager.getGroupByPath("DATA",lifecyclePath),"DATA",0,0);
+		var a = AM6Client.list("GROUP",AM6Client.find("GROUP","DATA",lifecyclePath).objectId,"DATA",0,0);
 		for(var i = 0; i < a.length; i++){
 			var oP = rocket.getCommunityLifecycle(a[i].name);
 			if(oP != null)  lifList.push(oP);
@@ -723,7 +723,7 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 			return [];
 		}
 		var projList = [];
-		var a = accountManager.listGroups(0,accountManager.getGroupByPath("DATA",oL.groupPath + "/Projects"),"DATA",0,0);
+		var a = AM6Client.list("GROUP",AM6Client.find("GROUP","DATA",oL.groupPath + "/Projects").objectId,"DATA",0,0);
 		for(var i = 0; i < a.length; i++){
 			var oP = rocket.getCommunityProject(oL.name,a[i].name);
 			if(oP != null)  projList.push(oP);

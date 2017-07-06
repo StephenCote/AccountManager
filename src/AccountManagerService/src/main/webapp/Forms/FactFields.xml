@@ -157,7 +157,7 @@
 		},
 		addType : function(o){
 			Hemi.log("Add fact type: " + o.name + ":" + o.factType);
-			return accountManagerRule.addFact(o.name, o.description,o.score,o.factType, o.factoryType, o.sourceDataType, o.sourceType,o.sourceUrn, o.sourceUrl,o.factData, o.groupPath);
+			return AM6Client.update(o.nameType, o);
 		},
 		findType : function(bData){
 			var sFType = this.GetElementByRID((bData ? "factType" : "factoryType")).value;

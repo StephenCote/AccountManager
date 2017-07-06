@@ -73,7 +73,7 @@
 		},
 	addType : function(o){
 			Hemi.log("Add operation type: " + o.name + ":" + o.operationType);
-			return accountManagerRule.addOperation(o.name, o.description,o.score,o.operationType, o.operation,o.groupPath);
+			return AM6Client.update(o.nameType, o);
 		},
 		prepareSave : function(o){
 

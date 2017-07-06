@@ -207,7 +207,7 @@
 		},
 		loadDetailData : function(){
 			var o = this.getBean("rocketType");
-			o = accountManager["get" + this.getProperties().typeName](o.name,AM6Client.find("GROUP","DATA",o.groupPath));
+			o = AM6Client.get("DATA",o.objectId);
 			if(o != null){
 				this.clearBean("rocketType");
 				this.setBean(o,"rocketType");

@@ -183,8 +183,8 @@ setRulePickerLabel : function(s){
 			return this.GetComponentByRID("rulesList").GetWideSelect();
 		},
 	addType : function(o){
-			Hemi.log("Add pattern type: " + o.name + ":" + o.patternType);
-			return accountManagerRule.addRule(o.name, o.description,o.score,o.logicalOrder,o.ruleType, o.condition, (o.fact ? o.fact.urn : 0), (o.match ? o.match.urn : 0), o.groupPath);
+			Hemi.log("Add rule type: " + o.name + ":" + o.patternType);
+			return AM6Client.update(o.nameType, o);
 		},
 		prepareSave : function(o){
 			var _s = this.getProperties();

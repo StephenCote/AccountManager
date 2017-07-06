@@ -111,7 +111,7 @@
 			this.initRulePicker();
 	},
 	definePolicy : function(){
-		this.sendToDebug(accountManagerRule.define(this.getBean("rocketType")));
+		this.sendToDebug(client.define(this.getBean("rocketType").objectId));
 	},
 setRulePickerLabel : function(s){
 			Hemi.xml.setInnerXHTML(this.GetElementByRID("rulePickerLabel"),s);
@@ -160,7 +160,7 @@ setRulePickerLabel : function(s){
 		},
 	addType : function(o){
 			Hemi.log("Add policy type: " + o.name);
-			return accountManagerRule.addPolicy(o.name, o.enabled, o.description, o.score,o.logicalOrder,o.condition, o.decisionAge, o.createdDate, o.modifiedDate, o.expiresDate, o.rules, o.groupPath);
+			return AM6Client.update(o.nameType, o);
 		},
 		prepareSave : function(o){
 			var _s = this.getProperties();

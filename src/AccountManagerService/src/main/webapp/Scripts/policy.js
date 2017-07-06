@@ -118,7 +118,7 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 					o.score = 0;
 					o.logicalOrder = 0;
 					o.ruleType = "PERMIT";
-					o.condition ="CONDITION";
+					o.condition ="ALL";
 					o.patterns = [];
 					o.rules = [];
 					o.groupPath = g.path;
@@ -181,7 +181,7 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 				_o.pattern = AM6Client.getByName("PATTERN",g.objectId,s);
 				if(_o.pattern == null){
 
-					o = new org.cote.beans.patternType();
+					o = new org.cote.objects.patternType();
 					
 					o.name = s;
 					o.description = "";
@@ -192,8 +192,6 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 					o.comparator = "EQUALS";
 					o.groupPath = g.path;
 
-					return AM6Client.update("PATTERN",o);
-					
 					if(AM6Client.update("PATTERN",o)){
 						_o.pattern = AM6Client.getByName("PATTERN",g.objectId,s);
 					}
@@ -291,14 +289,14 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 			Hemi.logError("Missing policy definition");
 			return;
 		}
-		var r = new org.cote.beans.policyRequestType();
+		var r = new org.cote.objects.policyRequestType();
 		r.urn = d.urn;
 		r.requestType = (s ? s : "DECIDE");
 		r.organizationPath = AM6Client.currentOrganization;
 		r.facts = [];
 		if(d.parameters && d.parameters.length){
 			for(var i = 0; i < d.parameters.length;i++){
-				var f = new org.cote.beans.factType();
+				var f = new org.cote.objects.factType();
 				for(var v in d.parameters[i]) f[v] = d.parameters[i][v];
 				r.facts.push(f);
 			}

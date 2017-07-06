@@ -761,6 +761,7 @@
 				function(s, v){
 					if(typeof v.json == "boolean" && v.json){
 						ctl.log("Deleted " + oObj.name);
+						AM6Client.clearCache(oObj.nameType);
 						oPanel.repaint();
 					}
 					else{
@@ -991,22 +992,10 @@
 			}
 			else{
 				_s.totalCount = AM6Client.count(sObjType.toUpperCase(),_no.currentDirectory.objectId); 
-					//accountManager["count" + sObjType + "s"](_no.currentDirectory.path);
-				/*
-				if(sType == 'Group'){
-					
-					aSub = accountManager["list" + sObjType + "s"](0,_no.currentDirectory,"DATA",_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
-				}
-				
-				else{
-					aSub = accountManager["list" + sObjType + "s"](_no.currentDirectory.path,_s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
-				}
-				*/
 				aSub = AM6Client.list(sObjType.toUpperCase(),_no.currentDirectory.objectId, _s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
 			}
 			
 			_o.currentList = [];
-			///ctl.logDebug("Painting " + aSub.length + " items of " + _s.totalCount + " for " + _no.currentDirectory.path + " from " + _s.startIndex + " to " + _s.suggestedCount);
 			for(var i = 0; aSub && i < aSub.length;i++){
 				if(sType == 'Group' && aSub[i].name.match(/^\.thumbnail$/gi)) continue;
 				_o.currentList.push(aSub[i]);
@@ -1422,7 +1411,7 @@
 			ctl.logDebug("Reparent " + s.name + " to " + t.name);
 			s.parentId = t.id;
 			AM6Client.update("GROUP",s);
-			AM6Client.clear("GROUP");
+			AM6Client.clearCache("GROUP");
 			repaintPanel(oPanel);
 		}
 		function reparentObject(s, t){

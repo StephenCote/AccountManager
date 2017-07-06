@@ -70,7 +70,6 @@
 			oL.clearItems();
 			var o = this.getBean("rocketType");
 			if(!o || o == null || o.id <= 0) return;
-			//var aL = accountManager.listPermissions(o.organizationId,o);
 			var aL = AM6Client.list("PERMISSION",o.objectId,0,0);
 			for(var i = 0; i < aL.length;i++){
 				oL.addItem(aL[i].name + " " + aL[i].permissionType,aL[i]);

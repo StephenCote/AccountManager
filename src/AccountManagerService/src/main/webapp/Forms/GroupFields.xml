@@ -102,7 +102,6 @@
 			var o = this.getBean("rocketType");
 			if(!o || o == null || o.id <= 0) return;
 			var aL = AM6Client.members("GROUP",o.objectId,sType);
-			//accountManager["listGroup" + sType + "s"](o);
 			for(var i = 0; i < aL.length;i++){
 				oL.addItem(aL[i].name,aL[i]);
 			}
