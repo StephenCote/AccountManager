@@ -31,7 +31,6 @@ import org.cote.accountmanager.data.factory.PersonParticipationFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuditService;
-import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseParticipantType;

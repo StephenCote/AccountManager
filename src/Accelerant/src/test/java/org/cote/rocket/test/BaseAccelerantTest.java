@@ -23,8 +23,8 @@
  *******************************************************************************/
 package org.cote.rocket.test;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
@@ -114,7 +114,6 @@ import org.cote.rocket.factory.ValidationRuleFactory;
 import org.cote.rocket.factory.WorkFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Assert;
 public class BaseAccelerantTest{
 	public static final Logger logger = LogManager.getLogger(BaseAccelerantTest.class);
 	private static String testUserName = "RocketQAUser";

@@ -15,7 +15,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
 import org.junit.After;

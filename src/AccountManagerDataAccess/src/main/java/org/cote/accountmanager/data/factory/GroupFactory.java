@@ -53,7 +53,6 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class GroupFactory  extends NameIdFactory {
 	

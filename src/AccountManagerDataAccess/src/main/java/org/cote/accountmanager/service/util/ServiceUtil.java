@@ -24,7 +24,6 @@
 package org.cote.accountmanager.service.util;
 
 import java.security.Principal;
-import java.util.Enumeration;
 import java.util.UUID;
 import java.util.regex.Pattern;
 

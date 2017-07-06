@@ -17,7 +17,6 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.StreamUtil;
 import org.cote.rocket.Factories;
 import org.cote.rocket.Rocket;
-
 import org.cote.rocket.factory.FactoryDefaults;
 
 public class RocketSetupAction {

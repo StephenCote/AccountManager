@@ -45,6 +45,8 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.security.RolePrincipal;
 import org.cote.accountmanager.data.security.UserPrincipal;
 import org.cote.accountmanager.data.services.SessionSecurity;
@@ -53,7 +55,6 @@ import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.data.factory.*;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 public class AM5LoginModule implements LoginModule {
 

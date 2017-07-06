@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
@@ -34,8 +35,8 @@ import org.cote.propellant.objects.types.GeographyEnumType;
 import org.cote.propellant.objects.types.TraitEnumType;
 import org.cote.rocket.BulkFactories;
 import org.cote.rocket.Factories;
-import org.cote.accountmanager.data.factory.*;
-import org.cote.rocket.factory.*;
+import org.cote.rocket.factory.LocationFactory;
+import org.cote.rocket.factory.TraitFactory;
 /// This is a legacy method for manual/console operations only. Use the service for import operations, along with the configuration defined in the service web.xml for the data locations.
 //
 public class GeoAction {

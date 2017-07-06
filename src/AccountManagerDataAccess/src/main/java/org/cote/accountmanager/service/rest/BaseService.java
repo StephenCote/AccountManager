@@ -85,7 +85,6 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.service.util.ServiceUtil;
-import org.cote.accountmanager.util.JSONUtil;
 
 public class BaseService {
 	public static final Logger logger = LogManager.getLogger(BaseService.class);

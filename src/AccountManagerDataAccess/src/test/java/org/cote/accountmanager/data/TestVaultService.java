@@ -1,35 +1,21 @@
 package org.cote.accountmanager.data;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.beans.VaultBean;
-import org.cote.accountmanager.data.factory.DataFactory;
-import org.cote.accountmanager.data.factory.GroupFactory;
-import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
-import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
-import org.cote.accountmanager.objects.DataType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.VaultType;
-import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.util.BinaryUtil;
-import org.cote.accountmanager.util.DataUtil;
-import org.cote.accountmanager.util.FileUtil;
-import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 public class TestVaultService extends BaseDataAccessTest{
 	public static final Logger logger = LogManager.getLogger(TestVaultService.class);

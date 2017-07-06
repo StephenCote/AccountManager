@@ -16,7 +16,6 @@ import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.junit.After;
