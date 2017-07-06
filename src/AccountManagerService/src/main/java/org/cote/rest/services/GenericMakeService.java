@@ -48,6 +48,17 @@ public class GenericMakeService {
 	public Response findMakeObject(@PathParam("type") String type, @PathParam("objectType") String objectType, @PathParam("path") String path, @Context HttpServletRequest request){
 		logger.info("Request to find object from: " + type + " " + path + ", and if it doesn't exist, then make it");
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		if(path.startsWith("~") == false && path.startsWith(".") == false){
+			path = "/" + path;
+			/// Doubled up to allow for actual punctuation use
+			/// Clearly this is a bandaid
+			///
+			if(path.contains("..")) path = path.replaceAll("\\.\\.", "/");
+			else path = path.replace('.', '/');
+			logger.info("Alt path: " + path);
+		}
+		
+
 		Object obj = BaseService.makeFind(auditType, objectType, path, request);
 		return Response.status(200).entity(obj).build();
 	}
