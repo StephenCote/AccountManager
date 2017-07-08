@@ -93,10 +93,10 @@
 	</div>
 	<div rid = "defineCont" style = "display:none;clear:both;" class = "rocket-column-2">
 		<p rid = "lblDebug">
-			Define:
+			Test:
 		</p>
 		<p>
-			<input rid = "btnDefine" type = "button" class = "rocket-button" value = "Define" onclick = "${this}.definePolicy()" />
+			<input rid = "btnDefine" type = "button" class = "rocket-button" value = "Test" onclick = "${this}.evaluatePolicy()" />
 		</p>
 	</div>
 
@@ -110,8 +110,22 @@
 			
 			this.initRulePicker();
 	},
+	evaluatePolicy : function(){
+		
+		var o = this.getBean("rocketType");
+		var oProps = {policy:o};
+		var oW = Hemi.app.createWindow("Evaluate " + o.name, "/AccountManagerService/Forms/EvaluatePolicy.xml", "Evaluate-" + o.urn, 0, 0, oProps, 0);
+        if (oW) {
+           	oW.resizeTo(475, 400);
+           	Hemi.app.getWindowManager().CenterWindow(oW);
+           	// Destroy the window when closed
+           	//
+           	oW.setHideOnClose(0);
+           }
+	},
+
 	definePolicy : function(){
-		this.sendToDebug(client.define(this.getBean("rocketType").objectId));
+		this.sendToDebug(AM6Client.define(this.getBean("rocketType").objectId));
 	},
 setRulePickerLabel : function(s){
 			Hemi.xml.setInnerXHTML(this.GetElementByRID("rulePickerLabel"),s);

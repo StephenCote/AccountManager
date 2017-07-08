@@ -39,6 +39,8 @@
 			</select>
     	</p>
 	</div>
+	<import-xml src = "/AccountManagerService/Forms/OperationPickerSingle.xml" id = "OperationPickerSingle" />
+	<!-- 
 	<div class = "rocket-column-2" rid = "operationContainer" style = "display:none;">
 		<p>
 			Operation:
@@ -47,6 +49,7 @@
 			<input type = "text"  rid = "operationUrn" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
+		-->
 		<div class = "rocket-column-2">
 		<p>
 			Fact:
@@ -58,6 +61,7 @@
 			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openFact()" />
 		</p>
 	</div>
+
 	<div class = "rocket-column-2">
 		<p>
 			Comparator:
@@ -100,9 +104,11 @@
 	embedded_init : function(){
 		if(!this.getProperties().factProp) this.getProperties().factProp = "fact";
 		if(!this.getProperties().matchProp) this.getProperties().matchProp = "match";
+		if(!this.getProperties().operationProp) this.getProperties().operationProp = "operationUrn";
 		var o = this.getBean("rocketType");
 		this.pickFact('Fact',o.fact);
 		this.pickMatch('Match',o.match);
+		this.pickOperation('Operation',o.operationUrn);
 		this.chooseType();
 	},
 	chooseType : function(){

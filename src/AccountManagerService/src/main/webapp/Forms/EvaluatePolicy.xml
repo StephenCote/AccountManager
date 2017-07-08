@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template Title = "Evaluate Policy">
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<div class = "rocket-column-2">
+		<p>
+			Policy:
+		</p>
+		<p>
+			<input placeholder = "policy name" type = "text" disabled = "true" class = "rocket-text" rid = "policyUrn" />
+		</p>
+	</div>
+	<div rid = "parameters">
+	</div>
+		<div class = "rocket-column-2">
+		<p>
+			Evaluate:
+		</p>
+		<p>
+			<select rid = "policyRequestType"><option>UNKNOWN</option><option>AUTHENTICATE</option><option selected = "true">DECIDE</option><option>DEFINE</option><option>SCORE</option></select>
+			<input type = "button" class = "rocket-text" value = "Evaluate" onclick = "${this}.evaluatePolicyRequest()" />
+		</p>
+	</div>
+	<p rid = "statusContainer"><span rid = "status">[ ... ]</span></p>
+<embedded-script><![CDATA[
+	template_init : function(){
+		var oP = this.getProperties().policy;
+		this.GetElementByRID("policyUrn").value = oP.name;
+		AM6Client.define(oP.objectId,this.scopeHandler("loadPolicyDefinition",0,1,1));
+		this._setStatus("Specify any parameter values and then evaluate the policy");
+	},
+	_setStatus : function(s){
+		Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+	},
+	evaluatePolicyRequest : function(){
+		var sPR = this.GetElementByRID("policyRequestType").value;
+		var oP = azn.createPolicyRequest(this.getProperties().policyDef, sPR);
+		
+		for(var i = 0; oP.parameters && i < oP.parameters.length; i++){
+			var sU = oP.parameters[i].urn;
+			oP.parameters[i].factData = this.GetElementByRID(sU).value;
+		}
+		window.policyRequest = oP;
+		var ctl = this;
+		AM6Client.evaluate(oP,function(s,v){
+			if(v && v.json) v = v.json;
+			window.policyResponse = v;
+			Hemi.xml.setInnerXHTML(ctl.GetElementByRID("status"),"Response: " + (v && v != null ? v.response : "Null response"));
+		});
+	},
+	loadPolicyDefinition : function(s, v){
+		if(v && v.json) v = v.json;
+		this.getProperties().policyDef = v;
+		var oP = this.GetElementByRID("parameters");
+		Hemi.xml.removeChildren(oP);
+		for(var i = 0; v.parameters && i < v.parameters.length; i++){
+			var oD = document.createElement("div");
+			oD.setAttribute("class","rocket-column-2");
+			var oL = document.createElement("p");
+			var oI = document.createElement("p");
+			Hemi.xml.setInnerXHTML(oL, v.parameters[i].name);
+			var oIn = document.createElement("input");
+			oIn.setAttribute("type","text");
+			oIn.setAttribute("class","rocket-text");
+			oIn.setAttribute("rid",v.parameters[i].urn);
+			oI.appendChild(oIn);
+			oD.appendChild(oL);
+			oD.appendChild(oI);
+			//oP.appendChild(oD);
+			Hemi.xml.setInnerXHTML(oP,oD,1);
+		}
+   		this.extendSpaceConfiguration(oP);
+   	
+	}
+
+]]></embedded-script>
+</Template>
