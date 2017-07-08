@@ -43,6 +43,8 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
+import org.cote.accountmanager.util.FileUtil;
+import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 public class TestSoD extends BaseDataAccessTest{
 	//
@@ -245,7 +247,10 @@ public class TestSoD extends BaseDataAccessTest{
 		
 		try {
 			logger.info(PolicyDefinitionUtil.printPolicy(sodPolicy));
+			//FileUtil.emitFile("./policy.txt", JSONUtil.exportObject(sodPolicy));
+			
 			PolicyDefinitionType pdt = PolicyDefinitionUtil.generatePolicyDefinition(sodPolicy);
+			
 			PolicyRequestType prt = PolicyDefinitionUtil.generatePolicyRequest(pdt);
 			assertTrue("Params Length Is 0",prt.getFacts().size() > 0);
 			
@@ -266,10 +271,7 @@ public class TestSoD extends BaseDataAccessTest{
 			//assertTrue("Policy response was " + prr.getResponse() + "; was expecting PERMIT",prr.getResponse() == PolicyResponseEnumType.PERMIT);
 			
 			
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ClassCastException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
