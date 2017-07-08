@@ -113,7 +113,7 @@ public class ScriptService {
 		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("logger", logger);
 		params.put("user", user);
-		params.put("organizationPath", user.getOrganizationPath());
+		if(user != null) params.put("organizationPath", user.getOrganizationPath());
 		return params;
 	}
 	public static String processTokens(UserType user, String scriptText){
