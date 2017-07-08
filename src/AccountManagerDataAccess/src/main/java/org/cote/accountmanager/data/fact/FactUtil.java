@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.fact;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
@@ -35,16 +36,23 @@ import org.cote.accountmanager.data.factory.ControlFactory;
 import org.cote.accountmanager.data.factory.CredentialFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
+import org.cote.accountmanager.data.services.ScriptService;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
+import org.cote.accountmanager.objects.FunctionEnumType;
+import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.PolicyRequestType;
+import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
@@ -73,13 +81,16 @@ public class FactUtil {
 		return Factories.getAttributeFactory().getAttributeValueByName(sourceFact.getFactReference(), matchFact.getSourceUrn());
 	}
 	
-	public static String getFactValue(FactType sourceFact, FactType matchFact){
+	public static String getFactValue(PolicyRequestType prt,PolicyResponseType prr, FactType sourceFact, FactType matchFact){
 		String out_val = null;
 		/// Fact value is driven by a combination of what the source fact has and what  the matchFact expects
 		/// The source fact provides context, and the match fact provides specificity
 		///
 		switch(matchFact.getFactType()){
 			case STATIC:
+				out_val = sourceFact.getFactData();
+				break;
+			case FUNCTION:
 				out_val = sourceFact.getFactData();
 				break;
 			case ATTRIBUTE:
@@ -91,7 +102,7 @@ public class FactUtil {
 		}
 		return out_val;
 	}
-	public static String getMatchFactValue(FactType sourceFact, FactType matchFact){
+	public static String getMatchFactValue(PolicyRequestType prt,PolicyResponseType prr, FactType sourceFact, FactType matchFact){
 		String out_val = null;
 		switch(matchFact.getFactType()){
 			/// Note: The match of an attribute fact is presently the static value
@@ -99,6 +110,9 @@ public class FactUtil {
 			case ATTRIBUTE:
 			case STATIC:
 				out_val = matchFact.getFactData();
+				break;
+			case FUNCTION:
+				out_val = (String)evaluateFunctionFact(prt, prr, sourceFact, matchFact);
 				break;
 			default:
 				logger.error("Unhandled fact type: " + matchFact.getFactType());
@@ -227,6 +241,54 @@ public class FactUtil {
 			logger.error("Trace",e);
 		}
 		return out_obj;
+	}
+	public static <T> T evaluateFunctionFact(PolicyRequestType prt,PolicyResponseType prr, FactType fact, FactType matchFact){
+		if(matchFact.getFactType() != FactEnumType.FUNCTION){
+			logger.error("Match fact must be a function fact");
+			return null;
+		}
+		T out_response = null;
+		FunctionType func = Factories.getNameIdFactory(FactoryEnumType.FUNCTION).getByUrn(matchFact.getSourceUrn());
+		if(func == null){
+			logger.error("Function '" + matchFact.getSourceUrn() + "' is null");
+			return null;
+		}
+
+		//params.put("pattern", pattern);
+
+		Object subject = null;
+		try {
+			if(prt.getSubject() != null && prt.getSubjectType() != null && prt.getSubjectType() != FactoryEnumType.UNKNOWN){
+				subject = ((INameIdFactory)Factories.getFactory(prt.getSubjectType())).getByUrn(prt.getSubject());
+				if(subject != null){
+					 ((INameIdFactory)Factories.getFactory(prt.getSubjectType())).populate(subject);
+				}
+			}
+			if(prt.getContextUser() != null){
+				 ((INameIdFactory)Factories.getFactory(FactoryEnumType.USER)).populate(prt.getContextUser());
+			}
+			Map<String,Object> params = ScriptService.getCommonParameterMap(prt.getContextUser());
+			params.put("contextUser", prt.getContextUser());
+			params.put("subject", subject);
+			params.put("fact", fact);
+			params.put("match", matchFact);
+	
+			if(func.getFunctionType() == FunctionEnumType.JAVASCRIPT){
+				//params.put("logger", ScriptService.logger);
+	
+				out_response = (T)ScriptService.run(prt.getContextUser(), params, func);
+				
+			}
+			else{
+				logger.warn("Intentionally ignoring BeanShell.");
+			}
+		}
+		 catch (ArgumentException | FactoryException e) {
+				logger.error(e);
+			}
+
+		return out_response;
+
 	}
 
 }
