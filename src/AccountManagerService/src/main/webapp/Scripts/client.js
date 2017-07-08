@@ -147,7 +147,7 @@
 		   return Hemi.xml.postJSON(sPol + "/evaluate",oObj,fH,(fH ? 1 : 0));
 		}
 	function define(sObjectId, fH){
-	   return Hemi.xml.getJSON(sPol + "/define/" + oObjectId,fH,(fH ? 1 : 0));
+	   return Hemi.xml.getJSON(sPol + "/define/" + sObjectId,fH,(fH ? 1 : 0));
 	}
 	
 	function getDocumentControl(fH){
@@ -285,7 +285,6 @@
 
 	function login(cred, fH){
 		AM6Client.currentOrganization = sCurrentOrganization = cred.organizationPath;
-
 		Hemi.xml.postJSON("/AccountManagerService/rest/login",cred,fH,(fH ? 1 : 0));
 	}
 	
@@ -378,8 +377,9 @@
 		logout : logout
 	};
 	
-	window.addEventListener("load",clientLoad,false);
-	function clientLoad(){
+//	window.addEventListener("load",clientLoad,false);
+//	function clientLoad(){
+
 		Hemi.message.service.subscribe("onspaceconfigload", function (s, v){
 			if(!v.is_primary) return;
 			var oSpace = Hemi.app.space.service.getPrimarySpace();
@@ -394,7 +394,7 @@
 			});
 			
 		});
-	}
+//	}
 	
 }());
 

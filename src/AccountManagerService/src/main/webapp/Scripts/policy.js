@@ -57,6 +57,9 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 					
 				}
 			},
+			define : function(){
+				return AM6Client.define(this.getPolicy().objectId);
+			},
 			getPolicy : function(){ return this.getObjects().policy; },
 			modify : function(v){
 				var p = this.getPolicy();
