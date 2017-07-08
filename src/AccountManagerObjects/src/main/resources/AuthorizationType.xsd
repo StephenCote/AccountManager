@@ -174,7 +174,7 @@
 			<enumeration value="SUBJECT"></enumeration>
 			<enumeration value="CONTEXT"></enumeration>
 			<enumeration value="PARAMETER"></enumeration>
-			<enumeration value="OPERATION"></enumeration>
+			<enumeration value="OPERATION"></enumeration>
 		</restriction>
 	</simpleType>
 
@@ -260,6 +260,7 @@
 			<element name="facts" type="tns:FactType" minOccurs="0"
 				maxOccurs="unbounded">
 			</element>
+			<element name="contextUser" type="tns:UserType"></element>
 		</sequence>
 		<attribute name="urn" type="string"></attribute>
 		<attribute name="subject" type="string"></attribute>
@@ -269,6 +270,7 @@
 		</attribute>
 		<attribute name="asyncRequest" type="boolean" default="false"></attribute>
 		<attribute name="organizationPath" type="string"></attribute>
+		<attribute name="subjectType" type="Q1:FactoryEnumType"></attribute>
 	</complexType>
 
 	<complexType name="PolicyResponseType">
