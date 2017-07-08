@@ -25,6 +25,7 @@ import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyResponseEnumType;
 import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
+import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
@@ -40,6 +41,8 @@ public class PolicyService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public PolicyResponseType evaluate(PolicyRequestType policyRequest, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		policyRequest.setContextUser(user);
 		PolicyResponseType policyResponse = new PolicyResponseType();
 		policyResponse.setResponse(PolicyResponseEnumType.UNKNOWN);
 		policyResponse.setUrn(policyRequest.getUrn());
@@ -51,12 +54,12 @@ public class PolicyService {
 
 		try {
 			policyResponse = PolicyEvaluator.evaluatePolicyRequest(policyRequest);
-			if(policyResponse == null){
+			if(policyResponse ==  null){
 				AuditService.denyResult(audit, "Response is null");
 			}
 			else if(policyResponse.getResponse() == PolicyResponseEnumType.PERMIT || policyResponse.getResponse() == PolicyResponseEnumType.AUTHENTICATED || policyResponse.getResponse() == PolicyResponseEnumType.PENDING || policyResponse.getResponse() == PolicyResponseEnumType.PENDING_OPERATION){
 				AuditService.permitResult(audit, "Permitting result with response " + policyResponse.getResponse().toString());
-			}
+			} 
 			else{
 				AuditService.denyResult(audit, "Denying result with response " +  policyResponse.getResponse().toString());
 			}
@@ -77,9 +80,9 @@ public class PolicyService {
 	@Path("/define/{objectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public PolicyDefinitionType define(@PathParam("id") String id,@Context HttpServletRequest request){
+	public PolicyDefinitionType define(@PathParam("objectId") String id,@Context HttpServletRequest request){
 		PolicyDefinitionType def = null;
-
+		logger.info("Defining policy for " + id);
 		PolicyType policy = BaseService.readByObjectId(AuditEnumType.POLICY, id, request);
 		if(policy != null){
 			try {
