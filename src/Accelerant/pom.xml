@@ -21,7 +21,7 @@
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.3.0.603</version>
       </plugin>
     </plugins>
   </pluginManagement>
@@ -51,7 +51,7 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>true</skipTests>
+  					<skipTests>false</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine> 
   					<includes>
 						<include>**/Test*.java</include>
