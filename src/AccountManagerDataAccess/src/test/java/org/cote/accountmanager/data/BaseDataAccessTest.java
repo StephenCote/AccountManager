@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -361,7 +362,9 @@ public class BaseDataAccessTest{
 		return getCreateRule(user,name,RuleEnumType.PERMIT,dir);
 	}
 	public RuleType getCreateRule(UserType user, String name, RuleEnumType ruleType, DirectoryGroupType dir){
-
+		return getCreateRule(user, name, ruleType, dir, new PatternType[0]);
+	}
+		public RuleType getCreateRule(UserType user, String name, RuleEnumType ruleType, DirectoryGroupType dir, PatternType[] patterns){
 		RuleType rule = null;
 
 		try {
@@ -377,6 +380,7 @@ public class BaseDataAccessTest{
 				rule.setName(name);
 				rule.setRuleType(ruleType);
 				rule.setCondition(ConditionEnumType.ALL);
+				rule.getPatterns().addAll(Arrays.asList(patterns));
 				if(((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).add(rule)){
 					rule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(name, dir);
 				}
@@ -410,8 +414,10 @@ public class BaseDataAccessTest{
 		}
 		return op;
 	}
-	
 	public PolicyType getCreatePolicy(UserType user, String name, DirectoryGroupType dir){
+		return getCreatePolicy(user, name, dir, new RuleType[0]);
+	}
+	public PolicyType getCreatePolicy(UserType user, String name, DirectoryGroupType dir, RuleType[] rules){
 
 		PolicyType policy = null;
 
@@ -427,7 +433,8 @@ public class BaseDataAccessTest{
 				policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).newPolicy(testUser, dir.getId());
 				policy.setCondition(ConditionEnumType.ALL);
 				policy.setName(name);
-
+				policy.setEnabled(true);
+				policy.getRules().addAll(Arrays.asList(rules));
 				if(((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).add(policy)){
 					policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getByNameInGroup(name, dir);
 				}
@@ -443,6 +450,27 @@ public class BaseDataAccessTest{
 		return policy;
 	}
 	
+	public FactType getCreateFunctionFact(UserType user,String name, FunctionType func, DirectoryGroupType fdir) throws ArgumentException, FactoryException{
+		FactType srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name, fdir);
+		if(srcFact != null) return srcFact;
+		srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(user, fdir.getId());
+		srcFact.setName(name);
+		srcFact.setFactType(FactEnumType.FUNCTION);
+		srcFact.setFactoryType(FactoryEnumType.FUNCTION);
+		srcFact.setSourceUrn(func.getUrn());
+		((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(srcFact);
+		return srcFact;
+	}
+	public FactType getCreateParameterFact(UserType user,String name, DirectoryGroupType fdir) throws ArgumentException, FactoryException{
+		FactType srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name, fdir);
+		if(srcFact != null) return srcFact;
+		srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(user, fdir.getId());
+		srcFact.setName(name);
+		srcFact.setFactType(FactEnumType.PARAMETER);
+		srcFact.setFactoryType(FactoryEnumType.UNKNOWN);
+		((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(srcFact);
+		return srcFact;
+	}
 	public FactType getCreateCredentialParamFact(UserType user,String name, DirectoryGroupType fdir) throws ArgumentException, FactoryException{
 		FactType srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name, fdir);
 		if(srcFact != null) return srcFact;
@@ -453,7 +481,7 @@ public class BaseDataAccessTest{
 		((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(srcFact);
 		return srcFact;
 	}
-	public static FunctionType getCreateFunction(UserType user, String name, DataType data, DirectoryGroupType dir){
+	public static FunctionType getCreateFunction(UserType user, String name, FunctionEnumType funcType, DataType data, DirectoryGroupType dir){
 		FunctionType func = null;
 		try{
 			func = ((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).getByNameInGroup(name, dir);
@@ -466,7 +494,7 @@ public class BaseDataAccessTest{
 			if(func == null){
 				func = ((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).newFunction(user, dir.getId());
 				func.setName(name);
-				func.setFunctionType(FunctionEnumType.JAVA);
+				func.setFunctionType(funcType);
 				func.setFunctionData(data);
 				((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).add(func);
 				func = ((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).getByNameInGroup(name, dir);
@@ -490,7 +518,8 @@ public class BaseDataAccessTest{
 			if(bsh != null){
 				String cv = DataUtil.getValueString(bsh);
 				if(cv.equals(script)==false){
-					DataUtil.setValueString(bsh,script);
+					//DataUtil.setValueString(bsh,script);
+					DataUtil.setValue(bsh, script.getBytes());
 					((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(bsh);
 				}
 				//((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).deleteData(bsh);
@@ -501,7 +530,8 @@ public class BaseDataAccessTest{
 				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, ddir.getId());
 				bsh.setName(name);
 				bsh.setMimeType("text/plain");
-				DataUtil.setValueString(bsh,script);
+				//DataUtil.setValueString(bsh,script);
+				DataUtil.setValue(bsh, script.getBytes());
 				((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(bsh);
 				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,false,ddir);
 			}
@@ -551,6 +581,16 @@ public class BaseDataAccessTest{
 		return dir;
 	}
 
+	public DirectoryGroupType getCreatePath(UserType user, String path){
+		DirectoryGroupType dir = null;
+		try {
+			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(user, path, user.getOrganizationId());
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		return dir;
+	}
+	
 	public DirectoryGroupType getApplication(String name){
 		DirectoryGroupType dir = null;
 		try {
