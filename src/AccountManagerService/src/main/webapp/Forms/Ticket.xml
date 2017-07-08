@@ -16,6 +16,7 @@
 					o.ticketStatus = "UNKNOWN";
 					o.priority = "NORMAL";
 					o.severity = "LOW";
+					o.nameType = "TICKET";
 					o.id = 0;
 					o.dueDate = (new Date());
 					o.completedDate = (new Date());

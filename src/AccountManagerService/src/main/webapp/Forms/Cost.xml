@@ -13,6 +13,7 @@
 					o = new org.cote.objects.costType();
 					o.name = "";
 					o.value = 0;
+					o.nameType = "COST";
 					o.currencyType = "USD";
 					o.id = 0;
 				}

@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.stageType();
 					o.name = "";
+					o.nameType = "STAGE";
 					o.description = "";
 					o.logicalOrder = 0;
 					o.id = 0;

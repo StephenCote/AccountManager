@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.requirementType();
 					o.name = "";
+					o.nameType = "REQUIREMENT";
 					o.description = "";
 					o.requirementType = "UNKNOWN";
 					o.requirementStatus = "UNKNOWN";

@@ -18,6 +18,7 @@
 					o = new org.cote.objects.eventType();
 					o.name = "";
 					o.description = "";
+					o.nameType = "EVENT";
 					o.eventType = "UNKNOWN";
 					o.id = 0;
 					o.parentId = 0;

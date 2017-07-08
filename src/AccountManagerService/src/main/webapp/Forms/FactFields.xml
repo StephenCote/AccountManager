@@ -45,6 +45,7 @@
 			<option>CONTEXT</option>
 			<option>PARAMETER</option>
 			<option>OPERATION</option>
+
 			</select>
 		</p>
 	</div>
@@ -70,6 +71,7 @@
 	    		<option>PATTERN</option>
 	    		<option>POLICY</option>
 	    		<option>RULE</option>
+				<option>VALIDATIONRULE</option>
 			</select>
 		</p>
 	</div>
@@ -135,7 +137,7 @@
 	</div>
 	<div class = "rocket-column-2">
 		<p>
-			Source Type:
+			Data Type:
 		</p>
 		<p>
 			<input type = "text" rid = "sourceType" bind = "${bean.rocketType}" class = "rocket-text" />

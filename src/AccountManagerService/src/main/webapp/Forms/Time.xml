@@ -15,6 +15,7 @@
 					o.value = 0;
 					o.basisType = "DAY";
 					o.id = 0;
+					o.nameType = "TIME";
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

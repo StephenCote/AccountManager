@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.lifecycleType();
 					o.name = "";
+					o.nameType = "LIFECYCLE";
 					o.description = "";
 					o.id = 0;
 				}

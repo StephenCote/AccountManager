@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.processStepType();
 					o.name = "";
+					o.nameType = "PROCESSSTEP";
 					o.description = "";
 					o.logicalOrder = 0;
 					o.id = 0;

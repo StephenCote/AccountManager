@@ -12,6 +12,7 @@
 				if(!o){
 					o = new org.cote.objects.personType();
 					o.name = "";
+					o.nameType = "PERSON";
 					o.description = "";
 					o.suffix = "";
 					o.prefix = "";

@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.methodologyType();
 					o.name = "";
+					o.nameType = "METHODOLOGY";
 					o.description = "";
 					o.id = 0;
 				}

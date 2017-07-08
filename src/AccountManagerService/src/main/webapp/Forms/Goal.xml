@@ -19,6 +19,7 @@
 				if(!o){
 					o = new org.cote.objects.goalType();
 					o.name = "";
+					o.nameType = "GOAL";
 					o.priority = "UNKNOWN";
 					o.logicalOrder = 0;
 					o.description = "";

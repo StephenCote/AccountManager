@@ -13,6 +13,7 @@
 					o = new org.cote.objects.taskType();
 					o.name = "";
 					o.description = "";
+					o.nameType = "TASK";
 					o.taskStatus = "UNKNOWN";
 					o.id = 0;
 					o.logicalOrder = 0;

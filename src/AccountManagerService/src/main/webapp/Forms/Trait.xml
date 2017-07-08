@@ -18,6 +18,7 @@
 					o = new org.cote.objects.scheduleType();
 					o.name = "";
 					o.id = 0;
+					o.nameType = "TRAIT";
 					o.description = "";
 					o.score = 0;
 					o.alignmentType = "NEUTRAL";

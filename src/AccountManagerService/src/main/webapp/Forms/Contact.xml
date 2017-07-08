@@ -13,6 +13,7 @@
 					o = new org.cote.objects.contactType();
 					o.name = "";
 					o.id = 0;
+					o.nameType = "CONTACT";
 					o.locationType = "UNKNOWN";
 					o.contactType = "UNKNOWN";
 					o.preferred = false;

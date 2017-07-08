@@ -15,6 +15,7 @@
 					o.description = "";
 					o.logicalOrder = 0;
 					o.id = 0;
+					o.nameType = "WORK";
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

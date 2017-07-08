@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.validationRuleType();
 					o.name = "";
+					o.nameType = "VALIDATIONRULE";
 					o.description = "";
 					o.isReplacementRule = false;
 					o.isRuleSet = false;

@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.scheduleType();
 					o.name = "";
+					o.nameType = "SCHEDULE";
 					o.id = 0;
 					o.startTime = new Date();
 					o.endTime = o.startTime;

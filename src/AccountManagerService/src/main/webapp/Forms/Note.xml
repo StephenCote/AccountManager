@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.noteType();
 					o.name = "";
+					o.nameType = "NOTE";
 					o.text = "";
 					o.id = 0;
 					o.createdDate = new Date();

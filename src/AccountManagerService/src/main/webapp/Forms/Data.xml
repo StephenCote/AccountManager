@@ -13,6 +13,7 @@
 					o = new org.cote.objects.dataType();
 					o.name = "";
 					o.blob = true;
+					o.nameType = "DATA";
 					o.dataBytesStore = "";
 					o.mimeType = "text/plain";
 					o.description = "";

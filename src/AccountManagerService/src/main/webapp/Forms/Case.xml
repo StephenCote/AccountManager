@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.caseType();
 					o.name = "";
+					o.nameType = "CASE";
 					o.description = "";
 					o.caseType = "UNKNOWN";
 					o.id = 0;

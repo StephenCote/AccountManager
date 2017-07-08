@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.modelType();
 					o.name = "";
+					o.nameType = "MODEL";
 					o.id = 0;
 					o.modelType = "ATOMIC";
 					o.description = "";

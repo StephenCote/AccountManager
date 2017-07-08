@@ -12,6 +12,7 @@
 				if(!o){
 					o = new org.cote.objects.ruleType();
 					o.name = "";
+					o.nameType = "RULE";
 					o.score = 0;
 					o.logicalOrder = 0;
 					o.description = "";

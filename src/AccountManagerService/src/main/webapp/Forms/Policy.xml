@@ -12,6 +12,7 @@
 				if(!o){
 					o = new org.cote.objects.policyType();
 					o.name = "";
+					o.nameType = "POLICY";
 					o.logicalOrder = 0;
 					o.score = 0;
 					o.expiresDate = new Date();

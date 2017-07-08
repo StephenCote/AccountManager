@@ -13,6 +13,7 @@
 					o = new org.cote.objects.patternType();
 					o.name = "";
 					o.score = 0;
+					o.nameType = "PATTERN";
 					o.logicalOrder = 0;
 					o.description = "";
 					o.matchUrn = "";

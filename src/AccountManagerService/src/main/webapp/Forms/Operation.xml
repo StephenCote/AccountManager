@@ -13,6 +13,7 @@
 					o = new org.cote.objects.operationType();
 					o.name = "";
 					o.score = 0;
+					o.nameType = "OPERATION";
 					o.description = "";
 					o.operation = "";
 					o.operationType = "UNKNOWN";

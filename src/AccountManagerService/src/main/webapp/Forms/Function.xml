@@ -11,6 +11,7 @@
 				var o = this.getProperties().viewType;
 				if(!o){
 					o = new org.cote.objects.functionType();
+					o.nameType = "FUNCTION";
 					o.name = "";
 					o.description = "";
 					o.sourceUrl = "";

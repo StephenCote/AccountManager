@@ -12,6 +12,7 @@
 				if(!o){
 					o = new org.cote.objects.factType();
 					o.name = "";
+					o.nameType = "FACT";
 					o.description = "";
 					o.sourceUrl = "";
 					o.sourceUrn = "";

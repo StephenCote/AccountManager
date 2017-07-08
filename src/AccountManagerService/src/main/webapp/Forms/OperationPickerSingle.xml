@@ -1,0 +1,37 @@
+<html-fragment>
+	<div class = "rocket-column-2" rid = "operationContainer">
+		<p>
+			Operation:
+		</p>
+		<p>
+			<input type = "text" disable = "true" rid = "operationUrn" class = "rocket-text rocket-text-pick" />
+			<input type = "button" value = "..." class = "rocket-button" onclick = "${this}.chooseOperation()" />
+			<input type = "button" value = "X" class = "rocket-button" onclick = "${this}.pickOperation('Operation')" />
+	<!--
+			<input type = "button" class = "rocket-button" value = ">" onclick = "${this}.openOperation()" />
+   -->
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+	embedded_init : function(){
+		if(!this.getProperties().operationProp){
+			this.getProperties().operationProp = "operationUrn";
+			
+		}
+		this.getProperties().operationAttributeProp = "urn";
+	},
+	chooseOperation : function(){
+		this.manageList("Operation", this.getObjectId(),"pickOperation");
+	},
+
+		openOperation : function(){
+			var o = this.getBean("rocketType");
+			if(o && o[this.getProperties().operationProp] && this.openItem) this.openItem(o[this.getProperties().operationProp],"Operation");
+		},
+	pickOperation : function(s, v){
+		var o = this.getBean("rocketType"), _s = this.getProperties();
+		o[_s.operationProp] = (typeof v == "object" && _s.operationAttributeProp ? v[_s.operationAttributeProp] : v);
+		this.GetElementByRID("operationUrn").value = (v && typeof v == "object" ? v.urn : (v ? v : ""));
+	}
+	]]></embedded-script>
+</html-fragment>

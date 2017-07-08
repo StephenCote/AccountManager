@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.goalType();
 					o.name = "";
+					o.nameType = "BUDGET";
 					o.description = "";
 					o.budgetType = "UNKNOWN";
 					o.id = 0;

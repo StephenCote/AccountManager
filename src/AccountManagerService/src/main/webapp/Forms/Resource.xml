@@ -17,7 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.resourceType();
 					o.name = "";
-					//o.text = "";
+					o.nameType = "RESOURCE";
 					o.id = 0;
 					o.resourceType = "UNKNOWN";
 					o.description = "";

@@ -12,6 +12,7 @@
 				if(!o){
 					o = new org.cote.objects.addressType();
 					o.name = "";
+					o.nameType = "ADDRESS";
 					o.id = 0;
 					o.locationType = "UNKNOWN";
 					o.preferred = false;

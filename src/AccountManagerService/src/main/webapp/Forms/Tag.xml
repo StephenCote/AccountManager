@@ -13,6 +13,7 @@
 					o = new org.cote.objects.baseTagType();
 					o.name = "";
 					o.id = 0;
+					o.nameType = "TAG";
 					o.tagType = "UNKNOWN";
 				}
 				else if(o.groupPath){

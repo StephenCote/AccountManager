@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.artifactType();
 					o.name = "";
+					o.nameType = "ARTIFACT";
 					o.description = "";
 					o.artifactType = "UNKNOWN";
 					o.createdDate = new Date();

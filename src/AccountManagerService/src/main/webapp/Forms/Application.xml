@@ -14,6 +14,7 @@
 				if(!o){
 					o = new org.cote.objects.baseGroupType();
 					o.name = "";
+					o.nameType = "GROUP";
 					var p = AM6Client.find("GROUP","DATA",this.getProperties().defaultPath);
 					o.parentId = (p ? p.id : 0);
 					o.nameType = "GROUP";

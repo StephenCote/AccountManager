@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.moduleType();
 					o.name = "";
+					o.nameType = "MODULE";
 					o.description = "";
 					o.moduleType = "UNKNOWN";
 					o.id = 0;

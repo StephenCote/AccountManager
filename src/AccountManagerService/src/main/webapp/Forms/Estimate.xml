@@ -17,6 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.estimateType();
 					o.name = "";
+					o.nameType = "ESTIMATE";
 					o.description = "";
 					o.estimateType = "UNKNOWN";
 					o.id = 0;

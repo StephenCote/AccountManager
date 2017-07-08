@@ -14,6 +14,7 @@
 					o.name = "";
 					o.description = "";
 					o.taskStatus = "UNKNOWN";
+					o.nameType = "TASK";
 					o.id = 0;
 					o.logicalOrder = 0;
 					o.startDate = (new Date());
