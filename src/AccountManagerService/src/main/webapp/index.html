@@ -31,6 +31,14 @@ function doLogin2(){
 	cred.credentialType = "HASHED_PASSWORD";
 	AM6Client.login(cred,doGoLogin);
 }
+function doLogin3(){
+	var cred = new org.cote.objects.credentialType();
+	cred.name = "RocketQAUser";
+	cred.credential = Base64.encode("password");
+	cred.organizationPath = "/Development";
+	cred.credentialType = "HASHED_PASSWORD";
+	AM6Client.login(cred,doGoLogin);
+}
 (function(){
 	if(!window.uwmServices){
 		window.uwmServices = uwmServices = Hemi.json.rpc.service;
@@ -83,6 +91,7 @@ function doLogin2(){
 <div template = "Templates/ToolBar.xml"></div>
 <p><input type = "button" value = "Go Login" onclick = "doGoLogin()" /></p>
 <p><input type = "button" value = "Login - test@foo.bar" onclick = "doLogin()" /></p>
+<p><input type = "button" value = "Login - Rocket QA User" onclick = "doLogin3()" /></p>
 <p><input type = "button" value = "Login - TestUser3" onclick = "doLogin2()" /></p>
 <p><input type = "button" value = "Logout" onclick = "doLogout()" /></p>
 </body>
