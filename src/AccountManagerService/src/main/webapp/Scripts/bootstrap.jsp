@@ -18,6 +18,7 @@ response.setCharacterEncoding("UTF-8");
 	if(!window.HemiConfig.hemi_base) window.HemiConfig.hemi_base= "/HemiFramework/Hemi/";
 })();
 <c:import url="http://localhost:8080/HemiFramework/Hemi/hemi.comp.js" />
+if(!window.HemiEngine) window.HemiEngine=window.Hemi;
 <%@include file="client.js" %>
 <%@include file="community.js" %>
 <%@include file="policy.js" %>
