@@ -16,6 +16,8 @@ import org.cote.accountmanager.data.factory.PatternFactory;
 import org.cote.accountmanager.data.factory.PolicyFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.factory.RuleFactory;
+import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
+import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.ScriptService;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -26,6 +28,9 @@ import org.cote.accountmanager.objects.OperationEnumType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternType;
+import org.cote.accountmanager.objects.PolicyDefinitionType;
+import org.cote.accountmanager.objects.PolicyRequestType;
+import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserRoleType;
@@ -68,11 +73,8 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			DataType js = getCreateTextData(testUser,"Test.js",getDebugJavaScript(),ddir); 
 			
 			DirectoryGroupType fdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Functions", testUser.getHomeDirectory(), testUser.getOrganizationId());
-			FunctionType func = getCreateFunction(testUser,"TestJS1",js,fdir);
-			if(func.getFunctionType() != FunctionEnumType.JAVASCRIPT){
-				func.setFunctionType(FunctionEnumType.JAVASCRIPT);
-				((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).update(func);
-			}
+			FunctionType func = getCreateFunction(testUser,"TestJS1",FunctionEnumType.JAVASCRIPT,js,fdir);
+
 			assertNotNull("Function is null",func);
 			Map<String,Object> params = new HashMap<String,Object>();
 			params.put("debug",testUser);
@@ -82,9 +84,10 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			logger.info("Ran the script: " + resp.longValue());
 		}
 		catch(RuntimeException | FactoryException | ArgumentException  e) {
-			
+			logger.error("*** START EXPECTED ERROR ***");
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			//logger.error("Error",e);
+			logger.error("*** STOP EXPECTED ERROR ***");
 		} 
 
 	}
@@ -113,7 +116,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 
 	}
 	*/
-	/*
+	
 	@Test
 	public void TestFunctionOperation(){
 		PolicyType policy = getCompuFuncPolicy(testUser);
@@ -135,7 +138,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			logger.error(e.getMessage());
 		} 
 	}
-	*/
+	
 	private PolicyType getCompuFuncPolicy(UserType user){
 		DirectoryGroupType pdir = null;
 		DirectoryGroupType rdir = null;
@@ -172,7 +175,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			//FactType credParamFact = getCreateCredentialParamFact(user,"Credential Parameter",fdir);
 			
 			DataType bsh = getCreateTextData(user,"TestOperation.bsh",getOperationShellScript(),ddir); 
-			FunctionType func = getCreateFunction(user,"TestBshOperation",bsh,fudir);
+			FunctionType func = getCreateFunction(user,"TestBshOperation",FunctionEnumType.JAVA,bsh,fudir);
 			OperationType rgOp = getCreateOperation(user,"Test Function Operation",func.getUrn(),odir);
 			rgOp.setOperationType(OperationEnumType.FUNCTION);
 			((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).update(rgOp);
