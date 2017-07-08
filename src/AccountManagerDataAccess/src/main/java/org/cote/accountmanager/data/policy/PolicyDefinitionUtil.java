@@ -116,7 +116,7 @@ public class PolicyDefinitionUtil {
 		
 	}
 	private static void copyParameters(PolicyDefinitionType pdt, RuleType rule) throws FactoryException, ArgumentException{
-		Factories.getNameIdFactory(FactoryEnumType.ROLE).populate(rule);
+		Factories.getNameIdFactory(FactoryEnumType.RULE).populate(rule);
 		logger.info("Processing " + rule.getPatterns().size() + " patterns");
 		for(int i = 0; i < rule.getPatterns().size();i++){
 			copyParameters(pdt,rule.getPatterns().get(i));
