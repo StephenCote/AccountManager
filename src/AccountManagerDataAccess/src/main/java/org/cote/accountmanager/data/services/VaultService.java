@@ -665,12 +665,12 @@ public class VaultService
 	public DirectoryGroupType getVaultGroup(VaultType vault) throws FactoryException, ArgumentException{
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getVaultGroup", AuditEnumType.USER, vault.getServiceUserUrn());
 		AuditService.targetAudit(audit, AuditEnumType.GROUP, ".vault");
-		return BaseService.readByNameInParent(audit, AuditEnumType.GROUP, vault.getServiceUser(), vault.getServiceUser().getHomeDirectory(), vault.getVaultGroupName(), "DATA",null);
+		return BaseService.readByNameInParent(audit, AuditEnumType.GROUP, vault.getServiceUser(), vault.getServiceUser().getHomeDirectory(), vault.getVaultGroupName(), "DATA");
 	}
 	public DirectoryGroupType getVaultInstanceGroup(VaultType vault) throws FactoryException, ArgumentException{
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getVaultInstanceGroup", AuditEnumType.USER, vault.getServiceUserUrn());
 		AuditService.targetAudit(audit, AuditEnumType.GROUP, vault.getVaultName());
-		return BaseService.readByNameInParent(audit, AuditEnumType.GROUP, vault.getServiceUser(), getVaultGroup(vault), vault.getVaultName(), "DATA",null);
+		return BaseService.readByNameInParent(audit, AuditEnumType.GROUP, vault.getServiceUser(), getVaultGroup(vault), vault.getVaultName(), "DATA");
 	}
 	
 	
@@ -742,7 +742,7 @@ public class VaultService
 	}
 	private DataType getVaultMetaData(VaultBean vault) throws FactoryException, ArgumentException{
 		AuditType audit = beginAudit(vault,ActionEnumType.READ, "getVaultMetaData",true);
-		return BaseService.readByName(audit, AuditEnumType.DATA, vault.getServiceUser(),  getVaultGroup(vault), vault.getVaultName(), null);
+		return BaseService.readByName(audit, AuditEnumType.DATA, vault.getServiceUser(),  getVaultGroup(vault), vault.getVaultName());
 	}
 	
 	/// Creates a new symmetric key within the vault group/data structure 

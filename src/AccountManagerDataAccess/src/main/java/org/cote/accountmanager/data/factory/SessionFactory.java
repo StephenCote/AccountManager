@@ -144,15 +144,15 @@ public class SessionFactory extends FactoryBase {
 		return out_bool;
 	}
 	private boolean clearSessionData(Connection connection, String session_id) throws SQLException, FactoryException{
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		List<QueryField> fields = new ArrayList<QueryField>();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		if(session_id != null) fields.add(QueryFields.getFieldSessionId(session_id));
-		String sql = (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM sessiondata"
+		String sql = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM sessiondata"
 				+ (fields.size() > 0 ? " WHERE  " +  getQueryClause(null,fields.toArray(new QueryField[0]), token) : "")
-				+ ((connection_type == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "") + ";"
+				+ ((connectionType == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "") + ";"
 		;
-		///  || connection_type == CONNECTION_TYPE.POSTGRES
+		///  || connectionType == CONNECTION_TYPE.POSTGRES
 		///
 		PreparedStatement statement = connection.prepareStatement(sql);
 		DBFactory.setStatementParameters(fields.toArray(new QueryField[0]), statement);
@@ -168,15 +168,15 @@ public class SessionFactory extends FactoryBase {
 	}
 	private boolean clearSession(Connection connection, String session_id) throws SQLException, FactoryException{
 
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		List<QueryField> fields = new ArrayList<QueryField>();
 		if(session_id != null) fields.add(QueryFields.getFieldSessionId(session_id));
 		
-		String sql = (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM session"
+		String sql = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM session"
 				+ (fields.size() > 0 ? " WHERE  " +  getQueryClause(null,fields.toArray(new QueryField[0]), token) : "")
-				+ ((connection_type == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "") + ";"
-		///  || connection_type == CONNECTION_TYPE.POSTGRES
+				+ ((connectionType == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "") + ";"
+		///  || connectionType == CONNECTION_TYPE.POSTGRES
 		///	No limit with PG DELETE
 		;
 		//System.out.println(sql);

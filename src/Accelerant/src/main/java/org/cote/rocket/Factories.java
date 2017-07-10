@@ -115,7 +115,6 @@ import org.cote.rocket.services.TypeSanitizer;
 
 
 public class Factories extends org.cote.accountmanager.data.Factories {
-	public static final Logger logger = LogManager.getLogger(Factories.class);
     static{
     	registerClass(FactoryEnumType.ARTIFACT, ArtifactFactory.class); 
 	    registerClass(FactoryEnumType.BUDGET, BudgetFactory.class); 

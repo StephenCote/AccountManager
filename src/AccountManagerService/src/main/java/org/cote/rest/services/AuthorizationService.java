@@ -121,7 +121,7 @@ public class AuthorizationService {
 		AuditEnumType auditType = AuditEnumType.valueOf(objectType);
 		UserType user = ServiceUtil.getUserFromSession(request);
 		//boolean permitted = BaseService.setPermission(user, auditType, objectId, AuditEnumType.valueOf(actorType), actorId, permissionId, permit);
-		boolean permitted = BaseService.setMember(user, auditType, objectId, AuditEnumType.valueOf(actorType), actorId, enable, request);
+		boolean permitted = BaseService.setMember(user, auditType, objectId, AuditEnumType.valueOf(actorType), actorId, enable);
 		return Response.status(200).entity(permitted).build();
 	}
 	

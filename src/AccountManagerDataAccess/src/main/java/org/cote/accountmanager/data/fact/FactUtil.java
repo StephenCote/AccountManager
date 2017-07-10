@@ -61,7 +61,9 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 public class FactUtil {
 	public static final Logger logger = LogManager.getLogger(FactUtil.class);
 	public static final Pattern idPattern = Pattern.compile("^\\d+$");
-	
+	private FactUtil(){
+		
+	}
 	public static void setFactReference(FactType sourceFact, FactType matchFact){
 		if(sourceFact.getFactReference() != null) return;
 		
@@ -82,43 +84,43 @@ public class FactUtil {
 	}
 	
 	public static String getFactValue(PolicyRequestType prt,PolicyResponseType prr, FactType sourceFact, FactType matchFact){
-		String out_val = null;
+		String outVal = null;
 		/// Fact value is driven by a combination of what the source fact has and what  the matchFact expects
 		/// The source fact provides context, and the match fact provides specificity
 		///
 		switch(matchFact.getFactType()){
 			case STATIC:
-				out_val = sourceFact.getFactData();
+				outVal = sourceFact.getFactData();
 				break;
 			case FUNCTION:
-				out_val = sourceFact.getFactData();
+				outVal = sourceFact.getFactData();
 				break;
 			case ATTRIBUTE:
-				out_val = getFactAttributeValue(sourceFact, matchFact);
+				outVal = getFactAttributeValue(sourceFact, matchFact);
 				break;
 			default:
 				logger.error("Unhandled fact type: " + matchFact.getFactType());
 				break;
 		}
-		return out_val;
+		return outVal;
 	}
 	public static String getMatchFactValue(PolicyRequestType prt,PolicyResponseType prr, FactType sourceFact, FactType matchFact){
-		String out_val = null;
+		String outVal = null;
 		switch(matchFact.getFactType()){
 			/// Note: The match of an attribute fact is presently the static value
 			/// This is because the source type got cross-purposed to parameter
 			case ATTRIBUTE:
 			case STATIC:
-				out_val = matchFact.getFactData();
+				outVal = matchFact.getFactData();
 				break;
 			case FUNCTION:
-				out_val = (String)evaluateFunctionFact(prt, prr, sourceFact, matchFact);
+				outVal = evaluateFunctionFact(prt, prr, sourceFact, matchFact);
 				break;
 			default:
 				logger.error("Unhandled fact type: " + matchFact.getFactType());
 				break;
 		}
-		return out_val;
+		return outVal;
 	}
 	
 	private static DirectoryGroupType getDirectoryFromFact(FactType sourceFact, FactType referenceFact) throws FactoryException, ArgumentException{
@@ -147,35 +149,40 @@ public class FactUtil {
 	 */
 
 	public static <T> T factoryRead(FactType sourceFact,final FactType referenceFact){
-		T out_obj = null;
+		T outObj = null;
+		
+		/*
 		boolean lookupRef = false;
 		FactType useRef = (lookupRef ? referenceFact : sourceFact);
+		*/
+		FactType useRef = sourceFact;
+		
 		if(sourceFact.getFactoryType() == FactoryEnumType.UNKNOWN || referenceFact.getFactoryType() == FactoryEnumType.UNKNOWN){
 			logger.error("Source fact (" + sourceFact.getFactoryType() + ") or reference fact (" + referenceFact.getFactoryType() + ") is not configured for a factory read operation");
 			return null;
 		}
 		if(sourceFact.getSourceUrn() == null){
 			logger.error("Source URN is null for " + sourceFact.getUrn());
-			return out_obj;
+			return outObj;
 		}
 		try {
 			NameIdFactory fact = Factories.getFactory(useRef.getFactoryType());
 			DirectoryGroupType dir = null;
 			if(idPattern.matcher(sourceFact.getSourceUrn()).matches()){
-				out_obj = fact.getById(Long.parseLong(sourceFact.getSourceUrn()), referenceFact.getOrganizationId());
+				outObj = fact.getById(Long.parseLong(sourceFact.getSourceUrn()), referenceFact.getOrganizationId());
 			}
 			else{
 				switch(useRef.getFactoryType()){
 					/// User is one of the only organization level schemas with a unique constraint on just the name
 					///
 					case USER:
-						out_obj = (T)((UserFactory)fact).getByName(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
+						outObj = (T)((UserFactory)fact).getByName(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;
 					case CREDENTIAL:
-						out_obj = (T)((CredentialFactory)fact).getByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
+						outObj = (T)((CredentialFactory)fact).getByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;
 					case CONTROL:
-						out_obj = (T)((ControlFactory)fact).getControlByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
+						outObj = (T)((ControlFactory)fact).getControlByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;		
 					/// NameIdGroupFactory types
 					case ACCOUNT:
@@ -183,51 +190,51 @@ public class FactUtil {
 					case PERSON:
 					case ADDRESS:
 						if((sourceFact.getSourceUrl() == null || sourceFact.getSourceUrl().length() == 0) && sourceFact.getSourceUrn() != null){
-							out_obj = (T)((NameIdGroupFactory)fact).getByUrn(sourceFact.getSourceUrn());
+							outObj = (T)((NameIdGroupFactory)fact).getByUrn(sourceFact.getSourceUrn());
 						}
 						else{
 							dir =  getDirectoryFromFact(sourceFact,referenceFact);
-							out_obj = (T)((NameIdGroupFactory)fact).getByNameInGroup(sourceFact.getSourceUrn(), dir);
-							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (out_obj == null ? "Null":"Found"));
+							outObj = (T)((NameIdGroupFactory)fact).getByNameInGroup(sourceFact.getSourceUrn(), dir);
+							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (outObj == null ? "Null":"Found"));
 						}
 						break;
 					/// Data is a predecessor to the NameIdGroupFactory type, but it doesn't inherity from that base class
 					case DATA:
 						if((sourceFact.getSourceUrl() == null || sourceFact.getSourceUrl().length() == 0) && sourceFact.getSourceUrn() != null){
-							out_obj = (T)((DataFactory)fact).getByUrn(sourceFact.getSourceUrn());
+							outObj = (T)((DataFactory)fact).getByUrn(sourceFact.getSourceUrn());
 						}
 						else{
-							out_obj = (T)((DataFactory)fact).getDataByName(sourceFact.getSourceUrn(), getDirectoryFromFact(sourceFact,referenceFact));
+							outObj = (T)((DataFactory)fact).getDataByName(sourceFact.getSourceUrn(), getDirectoryFromFact(sourceFact,referenceFact));
 						}
 						break;
 					case GROUP:
 						if((sourceFact.getSourceUrl() == null || sourceFact.getSourceUrl().length() == 0) && sourceFact.getSourceUrn() != null){
-							out_obj = (T)((GroupFactory)fact).getByUrn(sourceFact.getSourceUrn());
+							outObj = (T)((GroupFactory)fact).getByUrn(sourceFact.getSourceUrn());
 						}
 						else{
 							dir =  getDirectoryFromFact(sourceFact,referenceFact);
-							out_obj = (T)((GroupFactory)fact).getDirectoryByName(sourceFact.getSourceUrn(), dir,referenceFact.getOrganizationId());
-							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (out_obj == null ? "Null":"Found"));
+							outObj = (T)((GroupFactory)fact).getDirectoryByName(sourceFact.getSourceUrn(), dir,referenceFact.getOrganizationId());
+							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (outObj == null ? "Null":"Found"));
 						}
 						break;
 					case ROLE:
 						if((sourceFact.getSourceUrl() == null || sourceFact.getSourceUrl().length() == 0) && sourceFact.getSourceUrn() != null){
-							out_obj = (T)((RoleFactory)fact).getByUrn(sourceFact.getSourceUrn());
+							outObj = (T)((RoleFactory)fact).getByUrn(sourceFact.getSourceUrn());
 						}
 						else{
 							BaseRoleType parent = getRoleFromFact(sourceFact, referenceFact);
-							out_obj = (T)((RoleFactory)fact).getRoleByName(sourceFact.getSourceUrn(), parent, RoleEnumType.fromValue(sourceFact.getSourceType()), referenceFact.getOrganizationId());
-							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (parent != null ? sourceFact.getSourceUrl() : "Null Role") + " - Result is " + (out_obj == null ? "Null":"Found"));
+							outObj = (T)((RoleFactory)fact).getRoleByName(sourceFact.getSourceUrn(), parent, RoleEnumType.fromValue(sourceFact.getSourceType()), referenceFact.getOrganizationId());
+							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (parent != null ? sourceFact.getSourceUrl() : "Null Role") + " - Result is " + (outObj == null ? "Null":"Found"));
 						}
 						break;
 					case PERMISSION:
 						if((sourceFact.getSourceUrl() == null || sourceFact.getSourceUrl().length() == 0) && sourceFact.getSourceUrn() != null){
-							out_obj = (T)((PermissionFactory)fact).getByUrn(sourceFact.getSourceUrn());
+							outObj = (T)((PermissionFactory)fact).getByUrn(sourceFact.getSourceUrn());
 						}
 						else{
 							BasePermissionType perparent = getPermissionFromFact(sourceFact, referenceFact);
-							out_obj = (T)((PermissionFactory)fact).getPermissionByName(sourceFact.getSourceUrn(),PermissionEnumType.fromValue(sourceFact.getSourceType()), perparent, referenceFact.getOrganizationId());
-							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (perparent != null ? sourceFact.getSourceUrl() : "Null Permission") + " - Result is " + (out_obj == null ? "Null":"Found"));
+							outObj = (T)((PermissionFactory)fact).getPermissionByName(sourceFact.getSourceUrn(),PermissionEnumType.fromValue(sourceFact.getSourceType()), perparent, referenceFact.getOrganizationId());
+							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (perparent != null ? sourceFact.getSourceUrl() : "Null Permission") + " - Result is " + (outObj == null ? "Null":"Found"));
 						}
 						break;
 
@@ -240,21 +247,19 @@ public class FactUtil {
 			logger.error(e.getMessage());
 			logger.error("Trace",e);
 		}
-		return out_obj;
+		return outObj;
 	}
 	public static <T> T evaluateFunctionFact(PolicyRequestType prt,PolicyResponseType prr, FactType fact, FactType matchFact){
 		if(matchFact.getFactType() != FactEnumType.FUNCTION){
 			logger.error("Match fact must be a function fact");
 			return null;
 		}
-		T out_response = null;
+		T outResponse = null;
 		FunctionType func = Factories.getNameIdFactory(FactoryEnumType.FUNCTION).getByUrn(matchFact.getSourceUrn());
 		if(func == null){
 			logger.error("Function '" + matchFact.getSourceUrn() + "' is null");
 			return null;
 		}
-
-		//params.put("pattern", pattern);
 
 		Object subject = null;
 		try {
@@ -274,10 +279,7 @@ public class FactUtil {
 			params.put("match", matchFact);
 	
 			if(func.getFunctionType() == FunctionEnumType.JAVASCRIPT){
-				//params.put("logger", ScriptService.logger);
-	
-				out_response = (T)ScriptService.run(prt.getContextUser(), params, func);
-				
+				outResponse = (T)ScriptService.run(prt.getContextUser(), params, func);
 			}
 			else{
 				logger.warn("Intentionally ignoring BeanShell.");
@@ -287,7 +289,7 @@ public class FactUtil {
 				logger.error(e);
 			}
 
-		return out_response;
+		return outResponse;
 
 	}
 

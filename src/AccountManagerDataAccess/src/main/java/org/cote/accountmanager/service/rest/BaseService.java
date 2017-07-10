@@ -92,11 +92,6 @@ public class BaseService {
 	private static boolean allowDataPointers = false;
 	private static boolean checkConfigDataPoint = false;
 	
-	/// TODO: Refactor to use the vaultId vs a single configured instance
-	/// Leaving in place for the moment
-	public static VaultBean contextVault = null;
-	public static VaultService contextVaultService = null;
-	
 	protected static boolean isAllowDataPointers(HttpServletRequest request){
 		if(checkConfigDataPoint) return allowDataPointers;
 		checkConfigDataPoint = true;
@@ -194,40 +189,40 @@ public class BaseService {
 
 	/// don't blindly accept values 
 	///
-	private static <T> boolean sanitizeAddNewObject(AuditEnumType type, UserType user, T in_obj) throws ArgumentException, FactoryException, DataException, DataAccessException{
-		boolean out_bool = false;
+	private static <T> boolean sanitizeAddNewObject(AuditEnumType type, UserType user, T inObj) throws ArgumentException, FactoryException, DataException, DataAccessException{
+		boolean outBool = false;
 		INameIdFactory iFact = Factories.getNameIdFactory(FactoryEnumType.valueOf(type.toString()));
 		ITypeSanitizer sanitizer = Factories.getSanitizer(NameEnumType.valueOf(type.toString()));
 		if(sanitizer == null){
 			logger.error("Sanitizer is null");
 			return false;
 		}
-		T san_obj = sanitizer.sanitizeNewObject(type, user, in_obj);
+		T san_obj = sanitizer.sanitizeNewObject(type, user, inObj);
 		if(sanitizer.useAlternateAdd(type, san_obj)){
-			out_bool = sanitizer.add(type, user, san_obj);
+			outBool = sanitizer.add(type, user, san_obj);
 		}
 		else{
-			out_bool = iFact.add(san_obj);
+			outBool = iFact.add(san_obj);
 		}
-		return out_bool;
+		return outBool;
 	}
-	private static <T> boolean updateObject(AuditEnumType type, T in_obj) throws ArgumentException, FactoryException, DataAccessException {
-		boolean out_bool = false;
+	private static <T> boolean updateObject(AuditEnumType type, T inObj) throws ArgumentException, FactoryException, DataAccessException {
+		boolean outBool = false;
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
-		out_bool = iFact.update(in_obj);
+		outBool = iFact.update(inObj);
 		
-		if(out_bool && enableExtendedAttributes){
-			out_bool = Factories.getAttributeFactory().updateAttributes((NameIdType)in_obj);
+		if(outBool && enableExtendedAttributes){
+			outBool = Factories.getAttributeFactory().updateAttributes((NameIdType)inObj);
 		}
 
-		return out_bool;		
+		return outBool;		
 	}
-	private static <T> boolean deleteObject(AuditEnumType type, T in_obj) throws ArgumentException, FactoryException{
-		boolean out_bool = false;
+	private static <T> boolean deleteObject(AuditEnumType type, T inObj) throws ArgumentException, FactoryException{
+		boolean outBool = false;
 		if(enableExtendedAttributes){
-			out_bool = Factories.getAttributeFactory().deleteAttributes((NameIdType)in_obj);
-			if(out_bool == false){
-				logger.warn("No extended attributes deleted for " + ((NameIdType)in_obj).getName());
+			outBool = Factories.getAttributeFactory().deleteAttributes((NameIdType)inObj);
+			if(outBool == false){
+				logger.warn("No extended attributes deleted for " + ((NameIdType)inObj).getName());
 			}
 		}
 		
@@ -238,14 +233,14 @@ public class BaseService {
 		}
 
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
-		if(sanitizer.useAlternateDelete(type, in_obj)){
-			out_bool = sanitizer.delete(type, in_obj);
+		if(sanitizer.useAlternateDelete(type, inObj)){
+			outBool = sanitizer.delete(type, inObj);
 		}
 		else{
-			out_bool = iFact.delete(in_obj);
+			outBool = iFact.delete(inObj);
 		}
 	
-		return out_bool;
+		return outBool;
 	}
 	public static <T> T getFactory(AuditEnumType type){
 		return Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
@@ -253,10 +248,10 @@ public class BaseService {
 	}
 	private static <T> T getByObjectId(AuditEnumType type, UserType user, String id, long organizationId) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
-		T out_obj = factory.getByObjectId(id, organizationId);
+		T outObj = factory.getByObjectId(id, organizationId);
 		
-		if(out_obj == null) return null;
-		return postFetchObject(type, user, out_obj);
+		if(outObj == null) return null;
+		return postFetchObject(type, user, outObj);
 	}
 	private static <T> T postFetchObject(AuditEnumType type, UserType user, T obj) throws ArgumentException, FactoryException{
 		populate(type, obj);
@@ -279,80 +274,80 @@ public class BaseService {
 	}
 	private static <T> T getById(AuditEnumType type, UserType user, long id, long organizationId) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
-		T out_obj = factory.getById(id, organizationId);
+		T outObj = factory.getById(id, organizationId);
 		
-		if(out_obj == null) return null;
+		if(outObj == null) return null;
 		
-		return postFetchObject(type, user, out_obj);
+		return postFetchObject(type, user, outObj);
 	}
 	private static <T> T getByNameInParent(AuditEnumType type, String name, String otype, NameIdType parent) throws ArgumentException, FactoryException {
 		
-		T out_obj = null;
+		T outObj = null;
 		INameIdFactory factory = getFactory(type);
 		if(factory.isClusterByGroup() && (otype == null || otype.length() == 0 || otype.equalsIgnoreCase("unknown"))){
 			INameIdGroupFactory gfact = (INameIdGroupFactory)factory;
-			out_obj = gfact.getByNameInParent(name, otype, (NameIdDirectoryGroupType)parent);
+			outObj = gfact.getByNameInParent(name, otype, (NameIdDirectoryGroupType)parent);
 		}
 		else if(factory.isClusterByParent() == true){
-			out_obj = factory.getByNameInParent(name, otype, parent.getId(), parent.getOrganizationId());
+			outObj = factory.getByNameInParent(name, otype, parent.getId(), parent.getOrganizationId());
 		}
-		if(out_obj != null){
-			populate(type, out_obj);
-			denormalize(out_obj);
+		if(outObj != null){
+			populate(type, outObj);
+			denormalize(outObj);
 			if(enableExtendedAttributes){
-				Factories.getAttributeFactory().populateAttributes((NameIdType)out_obj);
+				Factories.getAttributeFactory().populateAttributes((NameIdType)outObj);
 			}
 
 		}
-		return out_obj;		
+		return outObj;		
 	}
 	
 	
 	private static <T> T getByNameInGroup(AuditEnumType type, UserType user, String name, DirectoryGroupType group) throws ArgumentException, FactoryException {
 		
-		T out_obj = null;
+		T outObj = null;
 		INameIdFactory iFact = getFactory(type);
 		if(iFact.isClusterByGroup()){
-			out_obj = ((INameIdGroupFactory)iFact).getByNameInGroup(name,group);
+			outObj = ((INameIdGroupFactory)iFact).getByNameInGroup(name,group);
 		}
 		else if(type.equals(AuditEnumType.DATA)){
-			out_obj = (T)((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, group);
-			if(out_obj == null){
+			outObj = (T)((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, group);
+			if(outObj == null){
 				logger.error("Data '" + name + "' is null");
-				return out_obj;
+				return outObj;
 			}
-			out_obj = postFetchObject(type, user, out_obj);
+			outObj = postFetchObject(type, user, outObj);
 		}
 		
-		if(out_obj != null){
-			populate(type, out_obj);
-			denormalize(out_obj);
+		if(outObj != null){
+			populate(type, outObj);
+			denormalize(outObj);
 			if(enableExtendedAttributes){
-				Factories.getAttributeFactory().populateAttributes((NameIdType)out_obj);
+				Factories.getAttributeFactory().populateAttributes((NameIdType)outObj);
 			}
 		}
-		return out_obj;		
+		return outObj;		
 	}
 	private static <T> T getByNameInGroup(AuditEnumType type, String name, long organizationId) throws ArgumentException, FactoryException {
 		logger.error("***** DEPRECATE THIS AND ITS ENTIRE TRACE");
-		T out_obj = null;
+		T outObj = null;
 		switch(type){
 			case ROLE:
-				out_obj = (T)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(name, organizationId);
+				outObj = (T)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(name, organizationId);
 				break;
 			case USER:
-				out_obj = (T)Factories.getNameIdFactory(FactoryEnumType.USER).getByName(name, organizationId);
+				outObj = (T)Factories.getNameIdFactory(FactoryEnumType.USER).getByName(name, organizationId);
 				break;
 		}
-		if(out_obj != null){
-			populate(type, out_obj);
-			denormalize(out_obj);
+		if(outObj != null){
+			populate(type, outObj);
+			denormalize(outObj);
 			if(enableExtendedAttributes){
-				Factories.getAttributeFactory().populateAttributes((NameIdType)out_obj);
+				Factories.getAttributeFactory().populateAttributes((NameIdType)outObj);
 			}
 
 		}
-		return out_obj;		
+		return outObj;		
 	}
 	
 	private static <T> void populate(AuditEnumType type,T object){
@@ -361,34 +356,34 @@ public class BaseService {
 		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(e);
 		}
 	
 	}
 	public static boolean canViewType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(AuthorizationService.isMapOwner(user, obj)) return true;
 		INameIdFactory iFact = getFactory(type);
 		if(type.equals(AuditEnumType.USER)){
 			// allow for user requesting self
 			// this does not register true for 'isMapOwner' for the user object as a user does not own itslef
 			//
-			out_bool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
-			if(!out_bool)  out_bool = AuthorizationService.isMapOwner(user, obj);
-			if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
-			if(!out_bool) out_bool = RoleService.isFactoryReader(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
+			outBool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
+			if(!outBool)  outBool = AuthorizationService.isMapOwner(user, obj);
+			if(!outBool) outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
+			if(!outBool) outBool = RoleService.isFactoryReader(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 		}
 		else if(iFact.isClusterByGroup()){
-			out_bool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+			outBool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 		}
 		else{
-			out_bool = AuthorizationService.canView(user, obj);
+			outBool = AuthorizationService.canView(user, obj);
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	public static boolean canCreateType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		INameIdFactory iFact = getFactory(type);
 		if(iFact.isClusterByGroup()){
 			NameIdDirectoryGroupType nobj = (NameIdDirectoryGroupType)obj;
@@ -396,35 +391,35 @@ public class BaseService {
 				logger.error("Invalid group id");
 			}
 			else{
-				out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(nobj.getGroupId(),obj.getOrganizationId()));
+				outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(nobj.getGroupId(),obj.getOrganizationId()));
 			}
 		}
 		else if(iFact.isClusterByParent()){
 			if(obj.getParentId() > 0L){
 				NameIdType parent = iFact.getById(obj.getParentId(),obj.getOrganizationId());
-				out_bool = AuthorizationService.canChange(user, parent);
+				outBool = AuthorizationService.canChange(user, parent);
 			}
 		}
 		else if(type.equals(AuditEnumType.DATA)){
-			out_bool = AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
+			outBool = AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
 		}
 		else if(type.equals(AuditEnumType.USER)){
-			out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),user.getOrganizationId());
+			outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),user.getOrganizationId());
 		}
 		
-		if(out_bool == false && (type.equals(AuditEnumType.PERMISSION) || type.equals(AuditEnumType.ROLE))){
+		if(outBool == false && (type.equals(AuditEnumType.PERMISSION) || type.equals(AuditEnumType.ROLE))){
 			logger.warn("***** REFACTOR - Why is this role check not in the Authorization service check?");
-			out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
+			outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 		}
 	
-		return out_bool;
+		return outBool;
 	}
 	public static boolean canChangeType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(AuthorizationService.isMapOwner(user, obj)) return true;
 		INameIdFactory iFact = getFactory(type);
 		if(iFact.isClusterByGroup()){
-			out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+			outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 		}
 		else if(type.equals(AuditEnumType.GROUP)){
 			BaseGroupType edir = iFact.getById(obj.getId(), user.getOrganizationId());
@@ -443,63 +438,69 @@ public class BaseService {
 				return false;
 			}
 
-			out_bool = AuthorizationService.canChange(user, obj);
+			outBool = AuthorizationService.canChange(user, obj);
 		}
 		else if(type.equals(AuditEnumType.USER)){
-			out_bool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
-			if(!out_bool)  out_bool = AuthorizationService.isMapOwner(user, obj);
-			if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
+			outBool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
+			if(!outBool)  outBool = AuthorizationService.isMapOwner(user, obj);
+			if(!outBool) outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 		}
 		else{
-			out_bool = AuthorizationService.canChange(user, obj);
+			outBool = AuthorizationService.canChange(user, obj);
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	public static boolean canDeleteType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(AuthorizationService.isMapOwner(user, obj)) return true;
 		INameIdFactory iFact = getFactory(type);
 		if(iFact.isClusterByGroup()){
 			/// NOTE: testing whether the parent group can be changed, which propogates to deleting the contained object
 			///
-			out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
+			outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 		}
 		else if(type.equals(AuditEnumType.USER)){
-			out_bool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
-			if(out_bool) throw new FactoryException("Self deletion not supported via Web interface");
-			if(!out_bool)  out_bool = AuthorizationService.isMapOwner(user, obj);
-			if(!out_bool) out_bool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
+			outBool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
+			if(outBool) throw new FactoryException("Self deletion not supported via Web interface");
+			if(!outBool)  outBool = AuthorizationService.isMapOwner(user, obj);
+			if(!outBool) outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 		}
 		else{
-			out_bool = AuthorizationService.canDelete(user,obj);
+			outBool = AuthorizationService.canDelete(user,obj);
 		}
 	
-		return out_bool;
+		return outBool;
 	}
 	
 	/// Duped in AuthorizationService, except the type is taken from the object instead of from the AuditEnumType
 	private static <T> boolean authorizeRoleType(AuditEnumType type, UserType adminUser, BaseRoleType targetRole, T bucket, boolean view, boolean edit, boolean delete, boolean create) throws FactoryException, DataAccessException, ArgumentException{
-		boolean out_bool = false;
-		out_bool = AuthorizationService.authorizeType(adminUser, targetRole, (NameIdType)bucket, view, edit, delete, create);
-		return out_bool;
+		boolean outBool = false;
+		outBool = AuthorizationService.authorizeType(adminUser, targetRole, (NameIdType)bucket, view, edit, delete, create);
+		return outBool;
 	}
 	/// Duped in AuthorizationService, except the type is taken from the object instead of from the AuditEnumType
 	private static <T> boolean authorizeUserType(AuditEnumType type, UserType adminUser, UserType targetUser, T bucket, boolean view, boolean edit, boolean delete, boolean create) throws FactoryException, DataAccessException, ArgumentException{
-		boolean out_bool = false;
-		out_bool = AuthorizationService.authorizeType(adminUser, targetUser, (NameIdType)bucket, view, edit, delete, create);
-		return out_bool;
+		boolean outBool = false;
+		outBool = AuthorizationService.authorizeType(adminUser, targetUser, (NameIdType)bucket, view, edit, delete, create);
+		return outBool;
 	}
 	
 	public static <T> boolean authorizeRole(AuditEnumType type, long organizationId, long targetRoleId, T bucket, boolean view, boolean edit, boolean delete, boolean create, HttpServletRequest request){
-		boolean out_bool = false;
 
-		BaseRoleType targetRole = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "authorizeRole", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		NameIdType typeBean = (NameIdType)bucket;
-		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : UrnUtil.getUrn(typeBean)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
+		return authorizeRole(type, organizationId, targetRoleId, bucket, view, edit, delete, create, user);
+	}
+	public static <T> boolean authorizeRole(AuditEnumType type, long organizationId, long targetRoleId, T bucket, boolean view, boolean edit, boolean delete, boolean create, UserType user){
+		boolean outBool = false;
+
+		BaseRoleType targetRole = null;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "authorizeRole", AuditEnumType.USER, user.getUrn());
+
+		NameIdType typeBean = (NameIdType)bucket;
+		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : UrnUtil.getUrn(typeBean)));
 
 		try {
 			if(canChangeType(type, user, typeBean)){
@@ -508,7 +509,7 @@ public class BaseService {
 					if(authorizeRoleType(type, user, targetRole, bucket, view, edit, delete, create)){
 						EffectiveAuthorizationService.rebuildPendingRoleCache();
 						AuditService.permitResult(audit, "Applied authorization policy updates for role #" + targetRoleId + " " + targetRole.getName());
-						out_bool = true;
+						outBool = true;
 					}
 				}
 				else{
@@ -517,21 +518,24 @@ public class BaseService {
 			}
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(e);
 			AuditService.denyResult(audit, e.getMessage());
 		}
-		return out_bool;
+		return outBool;
 	}
-	
 	public static <T> boolean authorizeUser(AuditEnumType type, long organizationId, long targetUserId, T bucket, boolean view, boolean edit, boolean delete, boolean create, HttpServletRequest request){
-		boolean out_bool = false;
-
-		UserType targetUser = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "authorizeUser", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		NameIdType typeBean = (NameIdType)bucket;
-		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : UrnUtil.getUrn(typeBean)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
+		return authorizeUser(type, organizationId, targetUserId, bucket, view, edit, delete, create, user);
+	}
+	public static <T> boolean authorizeUser(AuditEnumType type, long organizationId, long targetUserId, T bucket, boolean view, boolean edit, boolean delete, boolean create, UserType user){
+		boolean outBool = false;
+
+		UserType targetUser = null;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHORIZE, "authorizeUser", AuditEnumType.USER, user.getUrn());
+		NameIdType typeBean = (NameIdType)bucket;
+		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : UrnUtil.getUrn(typeBean)));
 
 		try {
 			if(canChangeType(type, user, typeBean)){
@@ -540,47 +544,42 @@ public class BaseService {
 					if(authorizeUserType(type, user, targetUser, bucket, view, edit, delete, create)){
 						EffectiveAuthorizationService.rebuildPendingRoleCache();
 						AuditService.permitResult(audit, "Applied authorization policy updates for user #" + user.getId() + " " + user.getName());
-						out_bool = true;
+						outBool = true;
 					}
 				}
 				else{
 					AuditService.denyResult(audit, "Target user #" + targetUserId + " in organization #" + organizationId + " does not exist");
 				}
 			}
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error("Error",e);
-			AuditService.denyResult(audit, e.getMessage());
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-			AuditService.denyResult(audit, e.getMessage());
-		} catch (DataAccessException e) {
-			
-			logger.error("Error",e);
+			logger.error(e);
 			AuditService.denyResult(audit, e.getMessage());
 		}
-		return out_bool;
+		return outBool;
 	}
-	
 	public static <T> boolean delete(AuditEnumType type, T bean, HttpServletRequest request){
-		
-		boolean out_bool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.DELETE, "delete", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		NameIdType typeBean = (NameIdType)bean;
-		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : UrnUtil.getUrn(typeBean)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
+		return delete(type, bean, user);
+	}	
+	public static <T> boolean delete(AuditEnumType type, T bean, UserType user){
+		
+		boolean outBool = false;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.DELETE, "delete", AuditEnumType.USER, user.getUrn());
+		NameIdType typeBean = (NameIdType)bean;
+		AuditService.targetAudit(audit, type, (typeBean == null ? "null" : UrnUtil.getUrn(typeBean)));
 
 		try {
 			normalize(user,typeBean);
 			if(typeBean.getId() <= 0){
 				AuditService.denyResult(audit,"Bean contains invalid data");
-				return out_bool;
+				return outBool;
 			}
 			if(canDeleteType(type, user, typeBean)){
-				out_bool = deleteObject(type, bean);
-				if(out_bool) AuditService.permitResult(audit, "Deleted " + typeBean.getName());
+				outBool = deleteObject(type, bean);
+				if(outBool) AuditService.permitResult(audit, "Deleted " + typeBean.getName());
 				else AuditService.denyResult(audit, "Unable to delete " + typeBean.getName());
 				
 			}
@@ -588,26 +587,31 @@ public class BaseService {
 				AuditService.denyResult(audit, "User is not authorized");
 				System.out.println("User is not authorized to delete the object object '" + typeBean.getName() + "' #" + typeBean.getId());
 			}
-		} catch (ArgumentException e1) {
+		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
-			AuditService.denyResult(audit, e1.getMessage());
-		} catch (FactoryException e1) {
-			
-			logger.error("Error",e1);
+			logger.error(e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	public static <T> boolean add(AuditEnumType addType, T bean, HttpServletRequest request){
 		
-		boolean out_bool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "add", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		NameIdType dirBean = (NameIdType)bean;
-		AuditService.targetAudit(audit, addType, (dirBean == null ? "null" : dirBean.getName()));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
+		return add(addType, bean, user);
+	}
+	public static <T> boolean add(AuditEnumType addType, T bean, UserType user){
+		
+		boolean outBool = false;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "add", AuditEnumType.USER, user.getUrn());
+		NameIdType dirBean = (NameIdType)bean;
+		AuditService.targetAudit(audit, addType, (dirBean == null ? "null" : dirBean.getName()));
+		if(dirBean == null){
+			AuditService.denyResult(audit, "Null directory");
+			return false;
+		}
 		if(dirBean.getNameType() == NameEnumType.UNKNOWN){
 			logger.warn("NameType not specified.  Setting as " + addType.toString());
 			dirBean.setNameType(NameEnumType.valueOf(addType.toString()));
@@ -615,21 +619,19 @@ public class BaseService {
 		try {
 			
 			normalize(user,bean);
-			
-			//logger.info("Norm: " + JSONUtil.exportObject(bean));
-			//logger.info("Sub: " + JSONUtil.exportObject(dirBean));
+
 			if(canCreateType(addType, user, dirBean) == true){
 
-				out_bool = sanitizeAddNewObject(addType, user, bean);
+				outBool = sanitizeAddNewObject(addType, user, bean);
 
-				if(out_bool && enableExtendedAttributes){
+				if(outBool && enableExtendedAttributes){
 					NameIdType beanObj = (NameIdType)bean;
 					if(beanObj.getAttributes().size() > 0){
 						NameIdType obj = null;
-						if(FactoryService.isDirectoryType(addType)) obj = readByName(addType,((NameIdDirectoryGroupType)bean).getGroupId(),((NameIdDirectoryGroupType)bean).getName(),request);
-						else obj = readByName(addType,beanObj.getName(),request);
+						if(FactoryService.isDirectoryType(addType)) obj = readByName(addType,((NameIdDirectoryGroupType)bean).getGroupId(),((NameIdDirectoryGroupType)bean).getName(),user);
+						else obj = readByName(addType,beanObj.getName(),user);
 						if(obj != null){
-							out_bool = Factories.getAttributeFactory().updateAttributes((NameIdType)obj);
+							outBool = Factories.getAttributeFactory().updateAttributes((NameIdType)obj);
 						}
 						else{
 							logger.warn("Failed to update extended attributes");
@@ -640,7 +642,7 @@ public class BaseService {
 					}
 				}
 
-				if(out_bool) AuditService.permitResult(audit, "Added " + dirBean.getName());
+				if(outBool) AuditService.permitResult(audit, "Added " + dirBean.getName());
 				else AuditService.denyResult(audit, "Unable to add " + dirBean.getName());
 				
 			}
@@ -650,21 +652,24 @@ public class BaseService {
 			}
 		} catch (ArgumentException | FactoryException | DataException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(e);
 			AuditService.denyResult(audit, e.getMessage());
 		}
 
-		return out_bool;
+		return outBool;
 	}
-	
 	public static <T> boolean update(AuditEnumType type, T bean,HttpServletRequest request){
-		boolean out_bool = false;
-		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "update",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		NameIdType dirBean = (NameIdType)bean;
-		AuditService.targetAudit(audit, type, (dirBean == null ? "null" : UrnUtil.getUrn(dirBean)));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return false;
+		return update(type, bean, user);
+	}
+	public static <T> boolean update(AuditEnumType type, T bean,UserType user){
+		boolean outBool = false;
+		
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "update",AuditEnumType.USER, user.getUrn());
+		NameIdType dirBean = (NameIdType)bean;
+		AuditService.targetAudit(audit, type, (dirBean == null ? "null" : UrnUtil.getUrn(dirBean)));
 		
 		if(dirBean == null){
 			AuditService.denyResult(audit, "Null value");
@@ -677,7 +682,7 @@ public class BaseService {
 			/// 2015/06/22
 			/// Add in restriction to block ownership changes via an update
 			///
-			NameIdType matBean = readById(type,dirBean.getId(),request);
+			NameIdType matBean = readById(type,dirBean.getId(),user);
 			if(matBean == null){
 				AuditService.denyResult(audit, "Unable to read original object");
 				return false;
@@ -689,8 +694,8 @@ public class BaseService {
 			}
 
 			if(canChangeType(type, user, dirBean) == true){
-				out_bool = updateObject(type, bean); 	
-				if(out_bool) AuditService.permitResult(audit, "Updated " + dirBean.getName() + " (#" + dirBean.getId() + ")");
+				outBool = updateObject(type, bean); 	
+				if(outBool) AuditService.permitResult(audit, "Updated " + dirBean.getName() + " (#" + dirBean.getId() + ")");
 				else AuditService.denyResult(audit, "Unable to update " + dirBean.getName() + " (#" + dirBean.getId() + ")");
 			}
 			else{
@@ -698,19 +703,23 @@ public class BaseService {
 			}
 		} catch (ArgumentException | FactoryException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(e);
 			AuditService.denyResult(audit, e.getMessage());
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	public static <T> T readByObjectId(AuditEnumType type, String id,HttpServletRequest request){
-		T out_obj = null;
-
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByObjectId",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		AuditService.targetAudit(audit, type, id);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		if(user==null) return out_obj;
+		if(user==null) return null;
+		return readByObjectId(type, id, user);
+	}
+	public static <T> T readByObjectId(AuditEnumType type, String id,UserType user){
+		T outObj = null;
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByObjectId",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, id);
 		
 		try {
 			
@@ -721,10 +730,10 @@ public class BaseService {
 			}		
 			AuditService.targetAudit(audit, type, dirType.getUrn());
 			if(canViewType(type, user, dirType) == true){
-				out_obj = (T)dirType;
-				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)out_obj).getPointer() && isAllowDataPointers(request) == false){
+				outObj = (T)dirType;
+				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)outObj).getPointer() && allowDataPointers == false){
 					AuditService.denyResult(audit, "#" + id + " (" + type + ") is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
-					out_obj = null;
+					outObj = null;
 				}
 				else{
 					AuditService.permitResult(audit, "Read " + dirType.getName() + " (#" + dirType.getId() + ")");
@@ -736,19 +745,23 @@ public class BaseService {
 
 		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
-		return out_obj;
-	}	
+		return outObj;
+	}
 	public static <T> T readById(AuditEnumType type, long id,HttpServletRequest request){
-		T out_obj = null;
-
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readById",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		AuditService.targetAudit(audit, type, Long.toString(id));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		if(user==null) return out_obj;
-		
+		if(user==null) return null;
+		return readById(type, id, user);
+	}
+	public static <T> T readById(AuditEnumType type, long id,UserType user){
+		T outObj = null;
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readById",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, Long.toString(id));
+
 		try {
 			
 			NameIdType dirType = getById(type, user, id, user.getOrganizationId());
@@ -758,10 +771,10 @@ public class BaseService {
 			}		
 			AuditService.targetAudit(audit, type, dirType.getUrn());
 			if(canViewType(type, user, dirType) == true){
-				out_obj = (T)dirType;
-				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)out_obj).getPointer() && isAllowDataPointers(request) == false){
+				outObj = (T)dirType;
+				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)outObj).getPointer() && allowDataPointers == false){
 					AuditService.denyResult(audit, "#" + id + " (" + type + ") is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
-					out_obj = null;
+					outObj = null;
 				}
 				else{
 					AuditService.permitResult(audit, "Read " + dirType.getName() + " (#" + dirType.getId() + ")");
@@ -773,18 +786,23 @@ public class BaseService {
 
 		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
-		return out_obj;
+		return outObj;
 	}	
 	public static <T> T readByName(AuditEnumType type, String name,HttpServletRequest request){
-		DirectoryGroupType dir = null;
-
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		AuditService.targetAudit(audit, type, name);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return null;
+		return readByName(type, name, user);
+	}
+	public static <T> T readByName(AuditEnumType type, String name,UserType user){
+		DirectoryGroupType dir = null;
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, name);
+
 
 		try{
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, getDefaultGroupName(type));
@@ -792,17 +810,22 @@ public class BaseService {
 		 catch (FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(e);
 		} 
-		return readByName(audit,type, user, dir, name, request);
+		return readByName(audit,type, user, dir, name);
 	}
 	public static <T> T readByName(AuditEnumType type, long groupId, String name,HttpServletRequest request){
-		DirectoryGroupType dir = null;
-
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		AuditService.targetAudit(audit, type, name);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return null;
+		return readByName(type, groupId, name, user);
+	}
+	public static <T> T readByName(AuditEnumType type, long groupId, String name,UserType user){
+
+		DirectoryGroupType dir = null;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, name);
+
 
 		try{
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(groupId, user.getOrganizationId());
@@ -810,44 +833,51 @@ public class BaseService {
 		 catch (FactoryException e1) {
 			
 			 logger.error(e1.getMessage());
-			logger.error("Error",e1);
+			logger.error(e1);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(e);
 		} 
-		return readByName(audit,type, user, dir, name, request);
+		return readByName(audit,type, user, dir, name);
 	}
 	public static <T> T readByName(AuditEnumType type, DirectoryGroupType dir, String name,HttpServletRequest request){
-		T out_obj = null;
+		T outObj = null;
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, type, name);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		if(user==null) return out_obj;
-		return readByName(audit,type, user, dir, name, request);
+		if(user==null) return outObj;
+		return readByName(audit,type, user, dir, name);
 	}
-	public static <T> T readByName(AuditType audit,AuditEnumType type, UserType user, DirectoryGroupType dir, String name,HttpServletRequest request){
-		T out_obj = null;
+	public static <T> T readByName(AuditEnumType type, DirectoryGroupType dir, String name,UserType user){
+		T outObj = null;
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, name);
+		return readByName(audit,type, user, dir, name);
+	}
+	public static <T> T readByName(AuditType audit,AuditEnumType type, UserType user, DirectoryGroupType dir, String name){
+		T outObj = null;
 		if(dir == null){
 			logger.error("Directory Group is null");
 			return null;
 		}
 		try {
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir);
-			out_obj = getByNameInGroup(type, user, name, dir);
-			if(out_obj == null){
+			outObj = getByNameInGroup(type, user, name, dir);
+			if(outObj == null){
 				AuditService.denyResult(audit, "'" + name + "' doesn't exist");
 				return null;
 			}
-			AuditService.targetAudit(audit, type, ((NameIdType)out_obj).getUrn());
-			if(canViewType(type, user, (NameIdType)out_obj)){
-				if(((NameIdType)out_obj).getNameType().equals(NameEnumType.DATA) && ((DataType)out_obj).getPointer() && request != null && isAllowDataPointers(request) == false){
+			AuditService.targetAudit(audit, type, ((NameIdType)outObj).getUrn());
+			if(canViewType(type, user, (NameIdType)outObj)){
+				if(((NameIdType)outObj).getNameType().equals(NameEnumType.DATA) && ((DataType)outObj).getPointer() && allowDataPointers == false){
 					AuditService.denyResult(audit, name + " is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
-					out_obj = null;
+					outObj = null;
 				}
 				else{
-					AuditService.permitResult(audit, "Read " + name + " (#" + ((NameIdType)out_obj).getId() + ")");
+					AuditService.permitResult(audit, "Read " + name + " (#" + ((NameIdType)outObj).getId() + ")");
 				}
 
 			}
@@ -856,108 +886,120 @@ public class BaseService {
 			}
 		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
-		return out_obj;
+		return outObj;
 	}
 	
 	public static <T> T readByNameInParent(AuditEnumType type, NameIdType parent, String name, String otype, HttpServletRequest request){
-		T out_obj = null;
-
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByNameInParent",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		AuditService.targetAudit(audit, type, name);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		if(user==null) return out_obj;
-		return readByNameInParent(audit,type, user, parent, name, otype, request);
+		if(user==null) return null;
+		return readByNameInParent(audit,type, user, parent, name, otype);
 	}
-	public static <T> T readByNameInParent(AuditType audit,AuditEnumType type, UserType user, NameIdType parent, String name,String otype, HttpServletRequest request){
-		T out_obj = null;
+	public static <T> T readByNameInParent(AuditEnumType type, NameIdType parent, String name, String otype, UserType user){
+		T outObj = null;
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByNameInParent",AuditEnumType.USER, user.getUrn());
+
+		return readByNameInParent(audit,type, user, parent, name, otype);
+	}
+	public static <T> T readByNameInParent(AuditType audit,AuditEnumType type, UserType user, NameIdType parent, String name,String otype){
+		T outObj = null;
+		AuditService.targetAudit(audit, type, name);
 		try {
 
-			out_obj = getByNameInParent(type, name, otype, parent);
-			if(out_obj == null){
+			outObj = getByNameInParent(type, name, otype, parent);
+			if(outObj == null){
 				AuditService.denyResult(audit, "'" + name + "' doesn't exist");
 				return null;
 			}
-			if(canViewType(type, user, (NameIdType)out_obj)){
-				AuditService.permitResult(audit, "Read " + name + " (#" + ((NameIdType)out_obj).getId() + ")");
+			if(canViewType(type, user, (NameIdType)outObj)){
+				AuditService.permitResult(audit, "Read " + name + " (#" + ((NameIdType)outObj).getId() + ")");
 
 			}
 			else{
 				AuditService.denyResult(audit,"User is not authorized to view object '" + parent.getName() + "' #" + parent.getId());
 			}
-		} catch (ArgumentException e1) {
+		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
-		} catch (FactoryException e1) {
-			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
-		return out_obj;
+		return outObj;
 	}
 	
 	public static <T> T readByNameInOrganization(AuditEnumType type, long organizationId, String name,HttpServletRequest request){
 
-		logger.error("***** DEPRECATE THIS AND ITS ENTIRE TRACE");
+		logger.debug("***** DEPRECATE THIS AND ITS ENTIRE TRACE");
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		AuditService.targetAudit(audit, type, name);
+
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return null;
 
-		return readByName(audit,type, user, organizationId, name, request);
+		return readByName(audit,type, user, organizationId, name);
+	}
+	public static <T> T readByNameInOrganization(AuditEnumType type, long organizationId, String name,UserType user){
+
+		logger.debug("***** DEPRECATE THIS AND ITS ENTIRE TRACE");
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.USER, user.getUrn());
+		return readByName(audit,type, user, organizationId, name);
 	}
 
-	public static <T> T readByName(AuditType audit,AuditEnumType type, UserType user, long organizationId, String name,HttpServletRequest request){
-		T out_obj = null;
-		logger.error("***** DEPRECATE THIS AND ITS ENTIRE TRACE");
+	public static <T> T readByName(AuditType audit,AuditEnumType type, UserType user, long organizationId, String name){
+		T outObj = null;
+		AuditService.targetAudit(audit, type, name);
+		logger.debug("***** DEPRECATE THIS AND ITS ENTIRE TRACE");
 		try {
 			//DirectoryGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, getDefaultGroupName(type));
 
-			out_obj = getByNameInGroup(type, name, organizationId);
-			if(out_obj == null){
+			outObj = getByNameInGroup(type, name, organizationId);
+			if(outObj == null){
 				AuditService.denyResult(audit, "'" + name + "' doesn't exist");
 				return null;
 			}
-			AuditService.targetAudit(audit, type, ((NameIdType)out_obj).getUrn());
-			if(canViewType(type, user, (NameIdType)out_obj)){
-				AuditService.permitResult(audit, "Read " + name + " (#" + ((NameIdType)out_obj).getId() + ")");
+			AuditService.targetAudit(audit, type, ((NameIdType)outObj).getUrn());
+			if(canViewType(type, user, (NameIdType)outObj)){
+				AuditService.permitResult(audit, "Read " + name + " (#" + ((NameIdType)outObj).getId() + ")");
 			}
 			else{
-				AuditService.denyResult(audit,"User is not authorized to view object '" + ((NameIdType)out_obj).getName() + "' #" + ((NameIdType)out_obj).getId());
-				out_obj = null;
+				AuditService.denyResult(audit,"User is not authorized to view object '" + ((NameIdType)outObj).getName() + "' #" + ((NameIdType)outObj).getId());
+				outObj = null;
 			}
-		} catch (ArgumentException e1) {
+		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
-			out_obj = null;
-		} catch (FactoryException e1) {
-			
-			logger.error("Error",e1);
-			out_obj = null;
+			logger.error(e1);
+			outObj = null;
 		} 
 
-		return out_obj;
+		return outObj;
 	}
 	
 	public static int countByGroup(AuditEnumType type, BaseGroupType parentGroup, HttpServletRequest request){
-		//BaseGroupType dir = null;
-
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "count",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, type, parentGroup.getUrn());
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return 0;
-		return count(audit,type, user, parentGroup, request);
+		return count(audit,type, user, parentGroup);
+	}
+	public static int countByGroup(AuditEnumType type, BaseGroupType parentGroup,UserType user){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "count",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, parentGroup.getUrn());
+		return count(audit,type, user, parentGroup);
 	}
 
 	public static int countByGroup(AuditEnumType type, String path, HttpServletRequest request){
-		BaseGroupType dir = null;
-
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "count",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		AuditService.targetAudit(audit, type, path);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return 0;
+		return countByGroup(type, path, request);
+	}
+	public static int countByGroup(AuditEnumType type, String path, UserType user){
+		BaseGroupType dir = null;
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "count",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, path);
 
 		try{
 			dir = (BaseGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.UNKNOWN,path, user.getOrganizationId());
@@ -965,15 +1007,15 @@ public class BaseService {
 		 catch (FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(e);
 		} 
 		if(dir == null){
 			AuditService.denyResult(audit, "Path '" + path + "' does not exist");
 			return 0;
 		}
-		return count(audit,type, user, dir, request);
+		return count(audit,type, user, dir);
 	}
-	public static int count(AuditType audit,AuditEnumType type, UserType user, BaseGroupType dir, HttpServletRequest request){
+	public static int count(AuditType audit,AuditEnumType type, UserType user, BaseGroupType dir){
 		int out_count = 0;
 		try {
 			if(canViewType(AuditEnumType.GROUP, user, dir) == true){
@@ -985,7 +1027,7 @@ public class BaseService {
 			}
 		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
 		return out_count;
@@ -1002,7 +1044,12 @@ public class BaseService {
 		AuditService.targetAudit(audit, type, Long.toString(organizationId));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user==null) return 0;
-		return countByOrganization(audit,type, user, organizationId, request);
+		return countByOrganization(audit,type, user, organizationId);
+	}
+	public static int countByOrganization(AuditEnumType type, long organizationId, UserType user){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "count",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, Long.toString(organizationId));
+		return countByOrganization(audit,type, user, organizationId);
 	}
 	public static int countInParent(AuditEnumType type, NameIdType parent, HttpServletRequest request){
 
@@ -1011,9 +1058,16 @@ public class BaseService {
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		if(user == null) return 0;
 
-		return countInParent(audit,type, user, parent, request);
+		return countInParent(audit,type, user, parent);
 	}
-	public static int countByOrganization(AuditType audit,AuditEnumType type, UserType user, long organizationId, HttpServletRequest request){
+	public static int countInParent(AuditEnumType type, NameIdType parent, UserType user){
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "countByParent",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, UrnUtil.getUrn(parent));
+		return countInParent(audit,type, user, parent);
+	}
+
+	public static int countByOrganization(AuditType audit,AuditEnumType type, UserType user, long organizationId){
 		int out_count = 0;
 		try {
 			if(
@@ -1036,12 +1090,12 @@ public class BaseService {
 			}
 		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
 		return out_count;
 	}
-	public static int countInParent(AuditType audit,AuditEnumType type, UserType user, NameIdType parent, HttpServletRequest request){
+	public static int countInParent(AuditType audit,AuditEnumType type, UserType user, NameIdType parent){
 		int out_count = 0;
 		try {
 			if(canViewType(type,user, parent) == true){
@@ -1053,7 +1107,7 @@ public class BaseService {
 			}
 		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
 		return out_count;
@@ -1070,16 +1124,25 @@ public class BaseService {
 	
 	public static <T> List<T> listByParentObjectId(AuditEnumType type, String parentType, String parentId, long startRecord, int recordCount, HttpServletRequest request){
 
-		List<T> out_obj = new ArrayList<>();
+		List<T> outObj = new ArrayList<>();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listByParentObjectId",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
-		AuditService.targetAudit(audit, type, parentId);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		if(user==null) return out_obj;
+		if(user==null) return outObj;
+		return listByParentObjectId(type, parentType, parentId, startRecord, recordCount, user);
+	}
+	
+	/// TODO: Refactor DataAction and make this private
+	///
+	public static <T> List<T> listByParentObjectId(AuditEnumType type, String parentType, String parentId, long startRecord, int recordCount, UserType user){
 
-		NameIdType parentObj = BaseService.readByObjectId(type, parentId, request);
+		List<T> outObj = new ArrayList<>();
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listByParentObjectId",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, parentId);
+		
+		NameIdType parentObj = BaseService.readByObjectId(type, parentId, user);
 		if(parentObj == null){
 			AuditService.denyResult(audit, "Null parent id");
-			return out_obj;
+			return outObj;
 		}
 		
 		AuditService.targetAudit(audit, type, parentObj.getUrn());
@@ -1091,25 +1154,26 @@ public class BaseService {
 				RoleService.isFactoryReader(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)),parentObj.getOrganizationId())
 			){
 				AuditService.permitResult(audit, "Access authorized to list objects");
-				out_obj = getListByParent(type,parentType,parentObj,startRecord,recordCount,parentObj.getOrganizationId() );
+				outObj = getListByParent(type,parentType,parentObj,startRecord,recordCount,parentObj.getOrganizationId() );
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
-				return out_obj;
+				return outObj;
 			}
 		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
-		return out_obj;
+		return outObj;
 	}
 	
+	/// TODO: Refactor DataAction and make this private
+	///
 	public static <T> List<T> getListByParent(AuditEnumType type,String parentType, NameIdType parentObj, long startIndex, int recordCount, long organizationId){
-		//BaseGroupType dir = findGroup(groupType, path, request);
 		List<T> dirs = new ArrayList<>();
 		INameIdFactory iFact = getFactory(type);
-		//GroupEnumType groupType = GroupEnumType.valueOf(type);
+
 		if(parentObj == null) return dirs;
 		try {
 			if(iFact.isClusterByParent()){
@@ -1125,27 +1189,28 @@ public class BaseService {
 		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(e);
 		}
 
 
 		return dirs;
 	}
 	
-	
+	/// TODO: Refactor DataAction and make this private
+	///
 	public static <T> List<T> getListByGroup(AuditEnumType type, BaseGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
-		List<T> out_obj = new ArrayList<>();
+		List<T> outObj = new ArrayList<>();
 		INameIdFactory iFact = getFactory(type);
 		if(iFact.isClusterByGroup()){
 			INameIdGroupFactory iGFact = (INameIdGroupFactory)iFact;
-			out_obj = iGFact.listInGroup(group, startRecord, recordCount, group.getOrganizationId());
+			outObj = iGFact.listInGroup(group, startRecord, recordCount, group.getOrganizationId());
 		}
 		else if(iFact.getFactoryType().equals(FactoryEnumType.DATA)){
-			out_obj = ((DataFactory)iFact).convertList(((DataFactory)iFact).getDataListByGroup((DirectoryGroupType)group, true,startRecord, recordCount, group.getOrganizationId()));
+			outObj = ((DataFactory)iFact).convertList(((DataFactory)iFact).getDataListByGroup((DirectoryGroupType)group, true,startRecord, recordCount, group.getOrganizationId()));
 		}
-		for(int i = 0; i < out_obj.size();i++){
-			//NameIdDirectoryGroupType ngt = (NameIdDirectoryGroupType)out_obj.get(i);
-			NameIdType nt = (NameIdType)out_obj.get(i);
+		for(int i = 0; i < outObj.size();i++){
+			//NameIdDirectoryGroupType ngt = (NameIdDirectoryGroupType)outObj.get(i);
+			NameIdType nt = (NameIdType)outObj.get(i);
 			denormalize(nt);
 			if(enableExtendedAttributes){
 				Factories.getAttributeFactory().populateAttributes(nt);
@@ -1153,17 +1218,17 @@ public class BaseService {
 
 		}
 
-		return out_obj;			
+		return outObj;			
 	}
 	private static <T> List<T> getListByOrganization(AuditEnumType type, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException{
-		List<T> out_obj = new ArrayList<>();
+		List<T> outObj = new ArrayList<>();
 		INameIdFactory iFact = getFactory(type);
 		if(type.equals(AuditEnumType.USER)){
-			out_obj = ((UserFactory)iFact).convertList(((UserFactory)iFact).getUserList(startRecord, recordCount, organizationId));
+			outObj = ((UserFactory)iFact).convertList(((UserFactory)iFact).getUserList(startRecord, recordCount, organizationId));
 		}
-		for(int i = 0; i < out_obj.size();i++){
-			//NameIdDirectoryGroupType ngt = (NameIdDirectoryGroupType)out_obj.get(i);
-			NameIdType nt = (NameIdType)out_obj.get(i);
+		for(int i = 0; i < outObj.size();i++){
+			//NameIdDirectoryGroupType ngt = (NameIdDirectoryGroupType)outObj.get(i);
+			NameIdType nt = (NameIdType)outObj.get(i);
 			denormalize(nt);
 			if(enableExtendedAttributes){
 				Factories.getAttributeFactory().populateAttributes(nt);
@@ -1171,13 +1236,19 @@ public class BaseService {
 
 		}
 
-		return out_obj;	
+		return outObj;	
 	}
 	public static <T> List<T> listByOrganization(AuditEnumType type, long startRecord, int recordCount, HttpServletRequest request){
-		List<T> out_obj = new ArrayList<>();
-		UserType user = ServiceUtil.getUserFromSession(request);
+		List<T> outObj = new ArrayList<>();
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All objects",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+
+		if(user == null) return outObj;
+		return listByOrganization(type, startRecord, recordCount, user);
+	}
+	public static <T> List<T> listByOrganization(AuditEnumType type, long startRecord, int recordCount, UserType user){
+		List<T> outObj = new ArrayList<>();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All objects",type,(user == null ? "Null" : user.getName()));
-		if(user == null) return out_obj;
 		AuditService.targetAudit(audit, AuditEnumType.USER, user.getUrn());
 
 		try {
@@ -1187,54 +1258,60 @@ public class BaseService {
 				RoleService.isFactoryReader(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == true
 			){
 				AuditService.permitResult(audit, "Access authorized to list users");
-				out_obj = getListByOrganization(type, startRecord,recordCount,user.getOrganizationId());
+				outObj = getListByOrganization(type, startRecord,recordCount,user.getOrganizationId());
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list users.");
-				return out_obj;
+				return outObj;
 			}
 			
 		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
-		return out_obj;
+		return outObj;
 	}
 
 	public static <T> List<T> listByGroup(AuditEnumType type, String groupType, String groupId, long startRecord, int recordCount, HttpServletRequest request){
-		List<T> out_obj = new ArrayList<>();
+		List<T> outObj = new ArrayList<>();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listByGroup",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, type, groupId);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		if(user==null) return out_obj;
+		if(user==null) return outObj;
+		return listByGroup(type, groupType, groupId, startRecord, recordCount, user);
+	}
+	public static <T> List<T> listByGroup(AuditEnumType type, String groupType, String groupId, long startRecord, int recordCount, UserType user){
+		List<T> outObj = new ArrayList<>();
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listByGroup",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, groupId);
 
-		//AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All " + type.toString() + " objects",AuditEnumType.GROUP,(user == null ? "Null" : user.getName()));
-		NameIdType parentObj = BaseService.readByObjectId(AuditEnumType.GROUP, groupId, request);
+		NameIdType parentObj = BaseService.readByObjectId(AuditEnumType.GROUP, groupId, user);
 		if(parentObj == null){
 			AuditService.denyResult(audit, "Null group object");
-			return out_obj;
+			return outObj;
 		}
 		
 		AuditService.targetAudit(audit, type, parentObj.getUrn());
 		try{
 		if(AuthorizationService.canView(user, parentObj) == true){
 			AuditService.permitResult(audit, "Access authorized to group " + parentObj.getName());
-			out_obj = getListByGroup(type,(BaseGroupType)parentObj,startRecord,recordCount);
+			outObj = getListByGroup(type,(BaseGroupType)parentObj,startRecord,recordCount);
 		}
 		else{
 			AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + parentObj.getName() + " (#" + parentObj.getId() + ")");
-			return out_obj;
+			return outObj;
 		}
 		}
 		catch(ArgumentException | FactoryException e){
 			logger.error(e.getMessage());
 			AuditService.denyResult(audit, e.getMessage());
 		}
-		return out_obj;
+		return outObj;
 	}
+	/*
 	public static <T> List<T> getGroupList(AuditEnumType type, UserType user, String path, long startRecord, int recordCount){
-		List<T> out_obj = new ArrayList<T>();
+		List<T> outObj = new ArrayList<T>();
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,(user == null ? "Null" : user.getName()));
 		AuditService.targetAudit(audit, type, path);
@@ -1248,33 +1325,24 @@ public class BaseService {
 			BaseGroupType dir = (BaseGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.UNKNOWN, path, user.getOrganizationId());
 			if(dir == null){
 				AuditService.denyResult(audit, "Invalid path: '" + path + "'");
-				return out_obj;
+				return outObj;
 			}
-			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			if(AuthorizationService.canView(user, dir) == true){
 				AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
-				out_obj = getListByGroup(type,dir,startRecord,recordCount);
-				/*
-				for(int i = 0; i < out_obj.size();i++){
-					delink(type,out_obj.get(i));
-				}
-				*/
-				//out_Lifecycles = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getListByGroup(dir, 0, 0, user.getOrganizationId());
+				outObj = getListByGroup(type,dir,startRecord,recordCount);
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
-				return out_obj;
+				return outObj;
 			}
-		} catch (ArgumentException e1) {
+		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
-		} catch (FactoryException e1) {
-			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
-		return out_obj;
+		return outObj;
 	}
+	*/
 	
 	public static <T> T findGroup(GroupEnumType groupType, String path, HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
@@ -1306,25 +1374,30 @@ public class BaseService {
 			
 			
 			
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
+			logger.error(e);
 		}
 		return bean;
 	}
-	
 	public static <T> T makeFind(AuditEnumType auditType,String type, String path, HttpServletRequest request){
-		T obj = find(auditType, type, path, request);
-		if(obj != null) return obj;
-		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,request.getSession().getId());
 		AuditService.targetAudit(audit, auditType, path);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		if(user==null) return obj;
+		if(user == null) return null;
+		return makeFind(auditType, type, path, user);
+	}
+	public static <T> T makeFind(AuditEnumType auditType,String type, String path, UserType user){
+		T obj = find(auditType, type, path, user);
+		if(obj != null) return obj;
+		
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,user.getUrn());
+		AuditService.targetAudit(audit, auditType, path);
 
+		if(path == null){
+			AuditService.denyResult(audit, "Null path");
+			return null;
+		}
 		
 		INameIdFactory iFact = getFactory(auditType);
 		if(iFact.isClusterByParent()){
@@ -1356,30 +1429,35 @@ public class BaseService {
 	}
 	public static <T> T find(AuditEnumType auditType,String type, String path, HttpServletRequest request){
 
-		T out_obj = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,request.getSession().getId());
-		AuditService.targetAudit(audit, auditType, path);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		if(user==null) return out_obj;
+		if(user==null) return null;
+		return find(auditType, type, path, user);
+	}
+	public static <T> T find(AuditEnumType auditType,String type, String path, UserType user){
+
+		T outObj = null;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,user.getUrn());
+		AuditService.targetAudit(audit, auditType, path);
 
 		if(path == null || path.length() == 0) path = "~";
 		if(path.startsWith("~") == false && path.startsWith("/") == false) path = "/" + path;
 		try {
 			INameIdFactory iFact = getFactory(auditType);
 			if(iFact.isClusterByParent()){
-				out_obj = iFact.find(user, type, path, user.getOrganizationId());
-				if(out_obj == null){
+				outObj = iFact.find(user, type, path, user.getOrganizationId());
+				if(outObj == null){
 					AuditService.denyResult(audit, "Invalid path: " + type + " " + path);
 					return null;
 				}
-				NameIdType objType = (NameIdType)out_obj;
+				NameIdType objType = (NameIdType)outObj;
 				AuditService.targetAudit(audit, auditType, objType.getUrn());
 				if(AuthorizationService.canView(user, objType) == false){
 					AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view object " + objType.getName() + " (#" + objType.getId() + ")");
 					return null;
 				}
-				iFact.populate(out_obj);
-				denormalize(out_obj);
+				iFact.populate(outObj);
+				denormalize(outObj);
 				
 				AuditService.permitResult(audit, "Access authorized to group " + objType.getName());
 			}
@@ -1388,23 +1466,21 @@ public class BaseService {
 			}
 
 
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
+			logger.error(e);
 		}
-		return out_obj;
+		return outObj;
 	}
 	
 	// Convenience method for adding/removing members
 	//
-	public static boolean setMember(UserType user, AuditEnumType containerType, String containerId, AuditEnumType objType, String objId, boolean enable,HttpServletRequest request){
-		boolean out_bool = false;
+	public static boolean setMember(UserType user, AuditEnumType containerType, String containerId, AuditEnumType objType, String objId, boolean enable){
+
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, containerType.toString() + " " + containerId,objType,"Object " + objId);
-		NameIdType container = readByObjectId(containerType, containerId, request);
-		NameIdType object = readByObjectId(objType, objId,request);
+		NameIdType container = readByObjectId(containerType, containerId, user);
+		NameIdType object = readByObjectId(objType, objId,user);
 		if(container == null || object == null){
 			AuditService.denyResult(audit, "Invalid container or object");
 			return false;
@@ -1417,15 +1493,15 @@ public class BaseService {
 			switch(containerType){
 				case GROUP:
 					BaseGroupType group = (BaseGroupType)container;
-					out_bool = GroupService.switchActorInGroup(object, group, enable);
+					outBool = GroupService.switchActorInGroup(object, group, enable);
 					break;
 				case ROLE:
 					BaseRoleType role = (BaseRoleType)container;
-					out_bool = RoleService.switchActorInRole(object, role, enable);
+					outBool = RoleService.switchActorInRole(object, role, enable);
 					break;
 			}
 			
-			if(out_bool){
+			if(outBool){
 				EffectiveAuthorizationService.pendUpdate(container);
 				EffectiveAuthorizationService.pendUpdate(object);
 				EffectiveAuthorizationService.rebuildPendingRoleCache();
@@ -1436,23 +1512,17 @@ public class BaseService {
 			}
 			
 
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
-			
-			logger.error("Error",e);
+			logger.error(e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	
 	// Imported/Adapted from AccountManagerWeb/RoleService
 	public static <T> List<T> listForMember(AuditEnumType type, UserType user, NameIdType obj, FactoryEnumType memberType){
-		List<T> out_obj = new ArrayList<T>();
+		List<T> outObj = new ArrayList<T>();
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All objects for member",type,(user == null ? "Null" : user.getUrn()));
 		AuditService.targetAudit(audit, type, "All objects for member");
@@ -1473,16 +1543,15 @@ public class BaseService {
 						||
 						RoleService.isFactoryAdministrator(user,((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)),user.getOrganizationId())
 						||
-						//(AuthorizationService.isRoleReaderInOrganization(user, type.getOrganizationId()) && AuthorizationService.isAccountReaderInOrganization(user, type.getOrganizationId()))
 						RoleService.isFactoryReader(user,((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)), user.getOrganizationId())
 					){
 						AuditService.permitResult(audit, "Access authorized to list roles");
 						switch(memberType){
 							case GROUP:
-								out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getRolesInGroup((BaseGroupType)obj));
+								outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getRolesInGroup((BaseGroupType)obj));
 								break;
 							case DATA:
-								out_obj = FactoryBase.convertList(((DataParticipationFactory)Factories.getFactory(FactoryEnumType.DATAPARTICIPATION)).getRolesForData((DataType)obj));
+								outObj = FactoryBase.convertList(((DataParticipationFactory)Factories.getFactory(FactoryEnumType.DATAPARTICIPATION)).getRolesForData((DataType)obj));
 								break;
 							
 						}
@@ -1491,7 +1560,7 @@ public class BaseService {
 					}
 					else{
 						AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
-						return out_obj;
+						return outObj;
 					}
 			}
 			else if(memberType == FactoryEnumType.USER){
@@ -1506,36 +1575,33 @@ public class BaseService {
 					switch(memberType){
 	
 						case ACCOUNT:
-							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getAccountRoles((AccountType)obj));
+							outObj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getAccountRoles((AccountType)obj));
 							break;
 						case PERSON:
-							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getPersonRoles((PersonType)obj));
+							outObj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getPersonRoles((PersonType)obj));
 							break;
 						case USER:
-							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUserRoles((UserType)obj));
+							outObj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUserRoles((UserType)obj));
 							break;
 						default:
 							break;
 					}
-					for(int i = 0; i < out_obj.size();i++){
-						((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).denormalize((BaseRoleType)out_obj.get(i));
+					for(int i = 0; i < outObj.size();i++){
+						((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).denormalize((BaseRoleType)outObj.get(i));
 					}
 	
 				}
 				else{
 					AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
-					return out_obj;
+					return outObj;
 				}
 			}
-		} catch (ArgumentException e1) {
+		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
-		} catch (FactoryException e1) {
-			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
-		return out_obj;
+		return outObj;
 		
 	}
 	
@@ -1543,10 +1609,10 @@ public class BaseService {
 	/// Convenience method for populating membership lists, such as members of roles, permissions, etc
 	
 	public static <T> List<T> listMembers(AuditEnumType type, UserType user,NameIdType container, FactoryEnumType memberType){
-		List<T> out_obj = new ArrayList<T>();
+		List<T> outObj = new ArrayList<T>();
 		if(user == null || container == null){
 			logger.error("User or container is null");
-			return out_obj;
+			return outObj;
 		}
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All " + memberType.toString() + "in " + type.toString() + " " + container.getUrn(),AuditEnumType.ROLE,(user == null ? "Null" : user.getUrn()));
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All " + memberType.toString() + "in " + type.toString() + " " + container.getUrn());
@@ -1561,13 +1627,13 @@ public class BaseService {
 				if(type == AuditEnumType.ROLE){
 					switch(memberType){
 						case GROUP:
-							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getGroupsInRole((BaseRoleType)container));
+							outObj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getGroupsInRole((BaseRoleType)container));
 							break;
 						case ACCOUNT:
-							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getAccountsInRole((BaseRoleType)container));
+							outObj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getAccountsInRole((BaseRoleType)container));
 							break;
 						case PERSON:
-							out_obj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getPersonsInRole((BaseRoleType)container));
+							outObj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getPersonsInRole((BaseRoleType)container));
 							break;
 						case USER:
 							break;
@@ -1578,30 +1644,27 @@ public class BaseService {
 				else if(type == AuditEnumType.GROUP){
 					switch(memberType){
 						case ACCOUNT:
-							out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getAccountsInGroup((AccountGroupType)container));
+							outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getAccountsInGroup((AccountGroupType)container));
 							break;
 						case PERSON:
-							out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getPersonsInGroup((PersonGroupType)container));
+							outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getPersonsInGroup((PersonGroupType)container));
 							break;
 						case USER:
-							out_obj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getUsersInGroup((UserGroupType)container));
+							outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getUsersInGroup((UserGroupType)container));
 							break;
 					}
 				}
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getUrn() + " not authorized to list " + memberType.toString());
-				return out_obj;
+				return outObj;
 			}
-		} catch (ArgumentException e1) {
+		} catch (ArgumentException | FactoryException e1) {
 			
-			logger.error("Error",e1);
-		} catch (FactoryException e1) {
-			
-			logger.error("Error",e1);
+			logger.error(e1);
 		} 
 
-		return out_obj;
+		return outObj;
 		
 	}
 	/// src is the object
@@ -1611,7 +1674,7 @@ public class BaseService {
 		NameIdType src = null;
 		NameIdType targ = null;
 		BasePermissionType perm = null;
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Permission " + permissionId,AuditEnumType.PERMISSION,(user == null ? "Null" : user.getName()));
 		try {
 			if(objectType != AuditEnumType.DATA) src = ((NameIdFactory)BaseService.getFactory(objectType)).getByObjectId(objectId, user.getOrganizationId());
@@ -1642,7 +1705,7 @@ public class BaseService {
 				if(set){
 					EffectiveAuthorizationService.pendUpdate(targ);
 					EffectiveAuthorizationService.rebuildPendingRoleCache();
-					out_bool = true;
+					outBool = true;
 					AuditService.permitResult(audit, "User " + user.getUrn() + " is authorized to change the permission.");
 				}
 				else AuditService.denyResult(audit, "User " + user.getUrn() + " did not change the permission.");
@@ -1654,9 +1717,9 @@ public class BaseService {
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 }

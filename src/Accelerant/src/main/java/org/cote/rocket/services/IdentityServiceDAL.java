@@ -62,131 +62,13 @@ public class IdentityServiceDAL {
 		is = isf;
 		servicePermissionMapCache = new HashMap<String,ApplicationPermissionType>();
 	}
-	/*
-	public List<PersonRoleType> getRoleRoleMembers(ProjectType project, PersonRoleType role){
-		List<PersonRoleType> pers = new ArrayList<PersonRoleType>();
-		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
-		String token = DBFactory.getParamToken(connection_type);
-		try {
-			PreparedStatement stat = connection.prepareStatement("SELECT roleid FROM simrolerolemembers where parentdn = " + token + " and projectid = " + token + ";");
-			stat.setString(1, role.getName());
-			stat.setLong(2, project.getId());
-			ResultSet rset = stat.executeQuery();
-			List<Long> ids = new ArrayList<Long>();
-			while(rset.next()){
-				ids.add(rset.getLong("roleid"));
-			}
-			rset.close();
-			pers = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])), project.getOrganization());
-			for(int i = 0; i < pers.size();i++){
-				Factories.getAttributeFactory().populateAttributes(pers.get(i));
-			}
-		} catch (SQLException e) {
-			
-			logger.error("Error",e);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		}
-		finally{
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				
-				logger.error("Error",e);
-			}
-		}
-		return pers;
-	}
-	public List<PersonType> getRolePersonMembers(ProjectType project, PersonRoleType role){
-		List<PersonType> pers = new ArrayList<PersonType>();
-		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
-		String token = DBFactory.getParamToken(connection_type);
-		try {
-			PreparedStatement stat = connection.prepareStatement("SELECT personid FROM simrolepersonmembers where roledn = " + token + " and projectid = " + token + ";");
-			stat.setString(1, role.getName());
-			stat.setLong(2, project.getId());
-			ResultSet rset = stat.executeQuery();
-			List<Long> ids = new ArrayList<Long>();
-			while(rset.next()){
-				ids.add(rset.getLong("personid"));
-			}
-			rset.close();
-			pers = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])), project.getOrganization());
-			for(int i = 0; i < pers.size();i++){
-				Factories.getAttributeFactory().populateAttributes(pers.get(i));
-			}
-		} catch (SQLException e) {
-			
-			logger.error("Error",e);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		}
-		finally{
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				
-				logger.error("Error",e);
-			}
-		}
-		return pers;
-	}
-	public List<ApplicationPermissionType> getPermissionsForRole(ProjectType proj, long roleId, boolean includeInheritence){
-		List<ApplicationPermissionType> perms = new ArrayList<ApplicationPermissionType>();
-		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
-		String token = DBFactory.getParamToken(connection_type);
-		try {
-			PreparedStatement stat = connection.prepareStatement("SELECT servicegroupid FROM simroleservicepermissions where " + (includeInheritence ? "baseroleid" : "effectiveroleid") + " = " + token + ";");
-			stat.setLong(1, roleId);
-			ResultSet rset = stat.executeQuery();
-			List<Long> ids = new ArrayList<Long>();
-			while(rset.next()){
-				ids.add(rset.getLong("servicegroupid"));
-			}
-			rset.close();
-			perms = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])), proj.getOrganization());
-			for(int i = 0; i < perms.size();i++){
-				Factories.getAttributeFactory().populateAttributes(perms.get(i));
-			}
-		} catch (SQLException e) {
-			
-			logger.error("Error",e);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		}
-		finally{
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				
-				logger.error("Error",e);
-			}
-		}
-		
-		return perms;
-	}
-	*/
+
 	public List<List<BaseRoleType>> getRoleHierarchy(long baseId){
 		List<List<BaseRoleType>> out_list = new ArrayList<List<BaseRoleType>>();
 		
 		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
-		String token = DBFactory.getParamToken(connection_type);
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
+		String token = DBFactory.getParamToken(connectionType);
 		Map<Long,Integer> levels = new HashMap<Long,Integer>();
 		long organizationId = 0L;
 		List<Long> ids = new ArrayList<Long>();
@@ -241,8 +123,8 @@ public class IdentityServiceDAL {
 		PersonRoleType role = null;
 		
 		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
-		String token = DBFactory.getParamToken(connection_type);
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
+		String token = DBFactory.getParamToken(connectionType);
 		String sql = "SELECT LRF.level, LRF.leafid, LRF.roleid, LRF.parentid, LRF.organizationid,R.name as roledn,A1.value as rolename FROM leveled_roles_from_leaf(" + token + ") LRF JOIN roles R on R.id=LRF.roleid JOIN attribute A1 on A1.referenceid = R.id AND A1.referenceType = 'ROLE' AND A1.name='name' WHERE (R.name = " + token + " OR A1.value = " + token + ") ORDER BY level,parentid,A1.value;";
 		try {
 			logger.info(sql);

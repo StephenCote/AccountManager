@@ -42,11 +42,11 @@ public class DataMaintenance {
 	
 	public static boolean cleanupExpiredAudits(RetentionEnumType retentionType){
 		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		boolean out_bool = false;
 		try{
-			String sql = (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM audit WHERE auditretentiontype = " + token + " AND auditexpiresdate <= " + token  + (connection_type == CONNECTION_TYPE.MYSQL? " LIMIT 200 " : "") + ";";
+			String sql = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM audit WHERE auditretentiontype = " + token + " AND auditexpiresdate <= " + token  + (connectionType == CONNECTION_TYPE.MYSQL? " LIMIT 200 " : "") + ";";
 			PreparedStatement statement = connection.prepareStatement(sql);
 			statement.setString(1, retentionType.toString());
 			statement.setTimestamp(2, new Timestamp(Calendar.getInstance().getTimeInMillis()));
@@ -76,11 +76,11 @@ public class DataMaintenance {
 	}
 	public static boolean cleanupSessions(){
 		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		boolean out_bool = false;
 		try{
-			String sql = (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM session WHERE sessionexpiration <= " + token  + (connection_type == CONNECTION_TYPE.MYSQL ? " LIMIT 200 " : "") + ";";
+			String sql = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM session WHERE sessionexpiration <= " + token  + (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT 200 " : "") + ";";
 			PreparedStatement statement = connection.prepareStatement(sql);
 			statement.setTimestamp(1, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			int affected = statement.executeUpdate();
@@ -89,7 +89,7 @@ public class DataMaintenance {
 				affected = statement.executeUpdate();
 			}
 			statement.close();
-			sql = (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM sessiondata WHERE expiration <= " + token + (connection_type == CONNECTION_TYPE.MYSQL ? " LIMIT 200 " : "") + ";";
+			sql = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM sessiondata WHERE expiration <= " + token + (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT 200 " : "") + ";";
 			statement = connection.prepareStatement(sql);
 			statement.setTimestamp(1, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			affected = statement.executeUpdate();

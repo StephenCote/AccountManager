@@ -35,6 +35,9 @@ import org.cote.accountmanager.objects.types.CompressionEnumType;
 
 public class DataUtil {
 	public static final Logger logger = LogManager.getLogger(DataUtil.class);
+	private DataUtil(){
+		
+	}
 	public static void clearCipher(DataType data){
 		data.setEncipher(false);
 		data.setCipherKey(null);
@@ -119,8 +122,9 @@ public class DataUtil {
 		
 	}
 
-	public static void setValue(DataType d, byte[] value) throws DataException
+	public static void setValue(DataType d, byte[] inValue) throws DataException
 	{
+		byte[] value = inValue;
 		d.setDataBytesStore(new byte[0]);
 		d.setReadDataBytes(false);
 		d.setShortData(null);

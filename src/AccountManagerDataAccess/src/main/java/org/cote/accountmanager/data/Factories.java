@@ -235,24 +235,6 @@ public class Factories {
 	private static SessionFactory sessionFactory = null;
 	private static SessionDataFactory sessionDataFactory = null;
 
-	
-	static{
-		//getOrganizationFactory();
-		/*
-		 * 2016/05/17 - Warm up added because factories now support registering their own entitlement sets
-		 * 
-		 */
-		
-		/// 2016/11/07 - Refactoring factory references/instances
-		
-		/// warmUp();
-		//AuthorizationService.registerParticipationFactory(FactoryEnumType.DATA,getDataParticipationFactory());
-		//AuthorizationService.registerParticipationFactory(FactoryEnumType.GROUP,getGroupParticipationFactory());
-		//AuthorizationService.registerParticipationFactory(FactoryEnumType.PERSON,getPersonParticipationFactory());
-		//AuthorizationService.registerParticipationFactory(FactoryEnumType.ROLE,getRoleParticipationFactory());
-	}
-	
-	
 	protected static boolean registerNameTypeSanitizer(NameEnumType ntype, Class fClass){
 		if(nameTypeSanitizerClasses.containsKey(ntype)){
 			logger.error("Type " + ntype.toString() + " already registered");
@@ -281,7 +263,6 @@ public class Factories {
 				nameTypeSanitizerInstances.put(name, sanObj);
 			}
 		} catch (InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			logger.error("Error",e);
 			sanObj = null;
 		}
@@ -329,7 +310,6 @@ public class Factories {
 				factoryInstances.put(ftype, newObj);
 			}
 		} catch (InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			logger.error("Error",e);
 			newObj = null;
 		}
@@ -346,7 +326,7 @@ public class Factories {
 		try {
 			user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(documentControlName, organizationId);
 		} catch (FactoryException | ArgumentException e) {
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		return user;
 	}
@@ -356,7 +336,7 @@ public class Factories {
 			u = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
 		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		return u;
 	}
@@ -366,7 +346,7 @@ public class Factories {
 			u = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Root", getSystemOrganization().getId());
 		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		return u;
 	}
@@ -440,13 +420,6 @@ public class Factories {
 		systemOrganization = null;
 		publicOrganization = null;
 		developmentOrganization = null;
-		//factoryInstances.remove(FactoryEnumType.ORGANIZATION);
-		//populate(getFactory(FactoryEnumType.ORGANIZATION));
-		/*
-		if(orgFactory != null) orgFactory.clearCache();
-		orgFactory = null;
-		getOrganizationFactory();
-		*/
 	}
 
 	private static boolean populate(OrganizationFactory orgFactory){
@@ -457,17 +430,16 @@ public class Factories {
 				systemOrganization = orgFactory.addOrganization("System", OrganizationEnumType.SYSTEM, rootOrganization);
 				publicOrganization = orgFactory.addOrganization("Public", OrganizationEnumType.PUBLIC, rootOrganization);
 				developmentOrganization = orgFactory.addOrganization("Development", OrganizationEnumType.DEVELOPMENT, rootOrganization);
-				((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(rootOrganization);
-				((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(systemOrganization);
-				((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(developmentOrganization);
-				((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).denormalize(publicOrganization);
+				orgFactory.denormalize(rootOrganization);
+				orgFactory.denormalize(systemOrganization);
+				orgFactory.denormalize(developmentOrganization);
+				orgFactory.denormalize(publicOrganization);
 				out_bool = true;
 				
 			}
 			catch(FactoryException | ArgumentException e) {
-				//logger.error("Trace",e);
 				logger.error(e.getMessage());
-				logger.error("Trace",e);
+				logger.error(e);
 				rootOrganization = null;
 				systemOrganization = null;
 				publicOrganization = null;
@@ -484,14 +456,14 @@ public class Factories {
 			init = true;
 		} catch (FactoryException e) {
 			
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		finally{
 			try {
 				if(connection != null) connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Trace",e);
+				logger.error(e);
 			}
 		}
 		return init;
@@ -512,7 +484,7 @@ public class Factories {
 			}
 			catch(FactoryException | ArgumentException e){
 				logger.error(e.getMessage());
-				logger.error("Trace",e);
+				logger.error(e);
 			}
 		}
 		else{
@@ -521,7 +493,7 @@ public class Factories {
 		return out_bool;
 	}
 	public static String reportCaches(){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		for(Object fact : factoryInstances.values()){
 			if(fact instanceof INameIdFactory){
 				buff.append(((INameIdFactory)fact).reportCacheSize() + "\n");
@@ -603,8 +575,6 @@ public class Factories {
 		logger.debug("Warming up factory " + factoryClasses.size() + " factory instances");
 		prepare();
 		long startWarmUp = System.currentTimeMillis();
-		//getOrganizationFactory();
-		//getFactory(FactoryEnumType.ORGANIZATION);
 		
 		if(factoryInstances.containsKey(FactoryEnumType.ORGANIZATION) == false){
 			populate(getFactory(FactoryEnumType.ORGANIZATION));
@@ -613,8 +583,7 @@ public class Factories {
 		for(FactoryEnumType f : factoryClasses.keySet()){
 			if(factoryInstances.containsKey(f) || f.equals(FactoryEnumType.ORGANIZATION)) continue;
 			FactoryBase bFact = getFactory(f);
-			//if()
-			bFact.registerProvider();
+			if(bFact != null) bFact.registerProvider();
 		}
 		logger.debug("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
 	}
@@ -622,21 +591,22 @@ public class Factories {
 		boolean out_bool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		logger.debug("Cleanup Orphans");
+		Statement stat = null;
 		try {
-			Statement stat = connection.createStatement();
+			stat = connection.createStatement();
 			stat.execute("SELECT * FROM cleanup_orphans();");
-			stat.close();
 			out_bool = true;
 		} catch (SQLException e) {
 
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		finally{
 			try {
+				if(stat != null) stat.close();
 				connection.close();
 			} catch (SQLException e) {
 
-				logger.error("Trace",e);
+				logger.error(e);
 			}
 		}
 		clearCaches();

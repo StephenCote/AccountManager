@@ -53,7 +53,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class BulkFactory {
 	public static final Logger logger = LogManager.getLogger(BulkFactory.class);
-	//private Map<String,Map<NameEnumType,Integer>> idScanMap = null;
+
 	protected static Map<String,BulkSessionType> sessions = null;
 	protected static Map<Long,String> sessionIdMap = null;
 	protected static Map<Long,Long> idMap = null;
@@ -88,19 +88,11 @@ public class BulkFactory {
 		if(deleteCache == null) deleteCache = new HashMap<>();
 		if(globalLock == null) globalLock = new Object();
 	}
-	/*
-	public String getSessionForPersistentId(FactoryEnumType factoryType, long id){
-		String out_sess = null;
-		String key = factoryType.toString() + "-" + id;
-		if(persistentIdSessionMap.containsKey(key)) out_sess = persistentIdSessionMap.get(key);
-		return out_sess;
-	}
-	*/
+
 	public String getGlobalSessionId(){
 		return globalSessionId;
 	}
 	public void setDirty(FactoryEnumType factoryType){
-		//logger.debug("Marking " + factoryType + " for a dirty write");
 		dirtyWrite.add(factoryType);
 	}
 	public String getSessionForBulkId(long id){
@@ -124,18 +116,17 @@ public class BulkFactory {
 		updateSet.remove(sessionId);
 		deleteSet.remove(sessionId);
 		deleteCache.remove(sessionId);
-		//synchronized(sessionIdMap){
-			//while (persistentIdSessionMap.values().remove(sessionId));
-			Iterator<Long> keys = sessionIdMap.keySet().iterator();
-			while(keys.hasNext()){
-				long val = keys.next();
-				if(sessionIdMap.get(val).equals(sessionId)){
-					//sessionIdMap.remove(val);
-					keys.remove();
-				}
-				if(idMap.containsKey(val)) idMap.remove(val);
+
+
+		Iterator<Long> keys = sessionIdMap.keySet().iterator();
+		while(keys.hasNext()){
+			long val = keys.next();
+			if(sessionIdMap.get(val).equals(sessionId)){
+				keys.remove();
 			}
-		//}
+			if(idMap.containsKey(val)) idMap.remove(val);
+			}
+
 	}
 	public void write(String sessionId) throws ArgumentException, FactoryException, DataAccessException{
 		write(sessionId, 1, 0);
@@ -169,7 +160,7 @@ public class BulkFactory {
 					logger.warn("Skipping persisted entry " + entry.getObject().getName());
 					continue;
 				}
-				if(factoryIds.containsKey(entry.getFactoryType())==false){
+				if(!factoryIds.containsKey(entry.getFactoryType())){
 					long startFact = System.currentTimeMillis();
 					factoryIds.put(entry.getFactoryType(), getFactoryIds(sessionId,entry.getFactoryType()));
 					logger.debug("Retrieved factory ids for " + entry.getFactoryType().toString() + " in " + (System.currentTimeMillis() - startFact) + "ms");
@@ -180,7 +171,6 @@ public class BulkFactory {
 				entry.setPersistentId(id);
 				entry.setPersisted(true);
 				/// don't set id until the cache is cleared for this object
-				/// entry.getObject().setId(id);
 
 				/// 2013/06/26 - moved up from writeObject
 				/// Set the ids before invoking writeObject
@@ -192,10 +182,6 @@ public class BulkFactory {
 				factory.removeFromCache(entry.getObject(),factory.getCacheKeyName(entry.getObject()));
 				entry.getObject().setId(entry.getPersistentId());
 				idMap.put(entry.getTemporaryId(), entry.getPersistentId());
-				//persistentIdSessionMap.put(entry.getFactoryType().toString() + "-" + entry.getPersistentId(), sessionId);
-				
-				//writeObject(session, entry);
-				//eLen = session.getBulkEntries().size();
 			}
 			logger.debug("Pass #1 in " + (System.currentTimeMillis() - startPass) + "ms");
 			startPass = System.currentTimeMillis();
@@ -206,14 +192,12 @@ public class BulkFactory {
 				/// Only map ids if the 'persisted' bit is set to true (see previous iteration)
 				/// The bit indicates that the final DB id has been assigned
 				/// 
-				if(entry.getPersisted() == false){
+				if(!entry.getPersisted()){
 					logger.warn("Skipping unpersisted entry " + entry.getObject().getName());
 					continue;
 				}
 				mapObjectIds(entry);
 			}
-			//logger.info("Pass #2 in " + (System.currentTimeMillis() - startPass) + "ms");
-			//startPass = System.currentTimeMillis();
 
 			/// 2013/06/26 - Third pass, write objects into the bulk table queues
 			/// 2014/08/15 - Add attribute dump
@@ -227,22 +211,17 @@ public class BulkFactory {
 				}
 				/// 2013/06/26 - Second pass, map ids
 				///
-				if(entry.getPersisted() == false){
+				if(!entry.getPersisted()){
 					logger.warn("Skipping unpersisted entry " + entry.getObject().getName());
 					continue;
 				}
 				writeObject(session, entry);
 				/// 2014/01/11  - need to update attributes, but in one bulk pass
 			}
-			//logger.info("Pass #3 in " + (System.currentTimeMillis() - startPass) + "ms");
-			//startPass = System.currentTimeMillis();
 
 			logger.debug("Writing " + totalAttrs + " attributes for " + attrDump.size() + " objects");
 			Factories.getAttributeFactory().addAttributes(attrDump.toArray(new NameIdType[0]));
 			
-			//logger.info("Pass #4 in " + (System.currentTimeMillis() - startPass) + "ms");
-			//startPass = System.currentTimeMillis();
-
 			synchronized(dirtyWrite){
 				Iterator<FactoryEnumType> keys = factoryIds.keySet().iterator();
 				while(keys.hasNext()){
@@ -263,18 +242,14 @@ public class BulkFactory {
 					}
 				}
 			}
-			//logger.info("Pass #5 in " + (System.currentTimeMillis() - startPass) + "ms");
-			//startPass = System.currentTimeMillis();
 
-			/// 2013/09/14 - Don't clear the dirtyWrite queue - it should be cleaned up in the previous pass
-			///dirtyWrite.clear();
+			/// 2013/09/14 - Don't clear the dirtyWrite queue past this point- it should be cleaned up in the previous pass
+			/// 
 
 			/// 2016/07/22 - Add bulk delete
 			/// 
 			if(deleteCache.containsKey(sessionId)){
-				//Iterator<FactoryEnumType> keys = deleteCache.get(sessionId).keySet().iterator();
 				int count = 0;
-				//while(keys.hasNext()){
 				for (Entry<FactoryEnumType,List<NameIdType>> entry : deleteCache.get(sessionId).entrySet()) {
 					FactoryEnumType factoryType = entry.getKey();
 					List<NameIdType> objs = entry.getValue();
@@ -298,9 +273,8 @@ public class BulkFactory {
 			
 			/// 2014/12/23 - Add bulk update hook
 			if(updateCache.containsKey(sessionId)){
-				//Iterator<FactoryEnumType> keys = updateCache.get(sessionId).keySet().iterator();
 				int count = 0;
-				//while(keys.hasNext()){
+
 				/// 2016/07/27 - bug with the modify method where the updateCache gets multiple entries, even though the check catches it
 				///
 
@@ -308,7 +282,6 @@ public class BulkFactory {
 					FactoryEnumType factoryType = entry.getKey();
 					List<NameIdType> objs = entry.getValue();
 					logger.debug("Processing modification cache for " + factoryType.toString() + " having " + objs.size() + " objects");
-					//if(factoryType == FactoryEnumType.LOCATION) for(NameIdType obj : objs) logger.info(obj.getId() + " " + obj.getName());
 					updateSpool(factoryType,objs);
 					NameIdFactory factory = getBulkFactory(factoryType);
 					logger.debug("Processing bulk modifications for " + factoryType.toString());
@@ -325,12 +298,10 @@ public class BulkFactory {
 			else{
 				logger.debug("Modification cache is empty");
 			}
-			//logger.info("Pass #6 in " + (System.currentTimeMillis() - startPass) + "ms");
-			//startPass = System.currentTimeMillis();
 
 		}
 		synchronized(globalLock){
-			if(globalSessionId != null && globalSessionId.equals(sessionId) == false){
+			if(globalSessionId != null && !globalSessionId.equals(sessionId)){
 				logger.info("Writing global session");
 				write(globalSessionId);
 				globalSessionId = null;
@@ -401,7 +372,6 @@ public class BulkFactory {
 		writePreparedObject(session,entry);
 	}
 	protected void mapObjectIds(BulkEntryType entry){
-		/// TODO - Why is this not just looking up the factory type and invoking the method instead of the big switch here?
 		/// Note: Not all types are supported, and operations should gracefully fall through 
 		///
 		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(entry.getFactoryType());
@@ -409,7 +379,7 @@ public class BulkFactory {
 		
 	}
 	protected void writePreparedObject(BulkSessionType session,BulkEntryType entry) throws FactoryException, ArgumentException, DataAccessException{
-		BaseParticipantType part = null;
+
 		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(entry.getFactoryType());
 		if(iFact.isParticipation()){
 			updateParticipantIds((BaseParticipantType)entry.getObject());
@@ -432,7 +402,6 @@ public class BulkFactory {
 	protected void updateParticipantIds(BaseParticipantType part) throws ArgumentException{
 		if(part.getParticipantId() < 0L){
 			if(idMap.containsKey(part.getParticipantId())){
-				//logger.debug("Remapping Participant Id " + part.getParticipantId() + " to " + idMap.get(part.getParticipantId()));
 				part.setParticipantId(idMap.get(part.getParticipantId()));
 			}
 			else{
@@ -441,7 +410,6 @@ public class BulkFactory {
 		}
 		if(part.getParticipationId() < 0L){
 			if(idMap.containsKey(part.getParticipationId())){
-				//logger.debug("Remapping Participation Id " + part.getParticipationId() + " to " + idMap.get(part.getParticipationId()));
 				part.setParticipationId(idMap.get(part.getParticipationId()));
 			}
 			else{
@@ -517,7 +485,7 @@ public class BulkFactory {
 		String key = factory.getCacheKeyName(object);
 		factory.removeFromCache(object,key);
 		if(deleteSet.get(sessionId).get(factoryType).contains(key)){
-			//logger.debug("Object '" + object.getName() + "' is already marked for deletion");
+
 			return;
 		}
 		deleteCache.get(sessionId).get(factoryType).add(object);
@@ -562,26 +530,20 @@ public class BulkFactory {
 			logger.warn("Failed to add object '" + object.getName() + "' to factory cache with key name " + factory.getCacheKeyName(object));
 		}
 		
-		//if(updateCache.get(sessionId).get(factoryType).contains(object)){
 		if(updateSet.get(sessionId).get(factoryType).contains(key)){
-			
-			//updateCache.get(sessionId).get(factoryType).remove(object);
-			//logger.debug("Object " + factoryType.toString() + " '" + object.getName() + "' is already marked for modification");
 			return;
 		}
-		//logger.info("Adding " + object.getName() + " as " + factoryType + " to modification cache");
+
 		/// Add the object to the updateCache
 		updateCache.get(sessionId).get(factoryType).add(object);
 		updateSet.get(sessionId).get(factoryType).add(key);
 	}
 	public void createBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException{
 		long bulkId = (long)(rand.nextDouble()*1000000000L) * -1;
-				///rand.nextLong() * -1;
 		
 		if(sessionId == null){
 			synchronized(globalLock){
 				if(globalSessionId != null){
-					//logger.info("Pushing write into global session.");
 					sessionId = globalSessionId;
 				}
 				else{
@@ -633,19 +595,6 @@ public class BulkFactory {
 		
 
 		sessionIdMap.put(bulkId,sessionId);
-		/*
-		if(idScanMap.containsKey(sessionId) == false){
-			logger.error("Scan map is unavailable");
-			throw new ArgumentException("Scan map is unavailable");			
-		}
-		int currentCount = 0;
-		Map<NameEnumType,Integer> scanMap = idScanMap.get(sessionId);
-		if(scanMap.containsKey(object.getNameType()) == true){
-			currentCount = scanMap.get(object.getNameType());
-		}
-		scanMap.put(object.getNameType(), currentCount + 1);
-		*/
-		/// logger.debug("Creating Bulk Entry #" + bulkId + " for " + object.getNameType().toString() + " " + object.getName());
 		
 		object.setId(bulkId);
 		/// 2015/06/25 - Assign object id for factories with the bit set to true
@@ -668,8 +617,6 @@ public class BulkFactory {
 		if(object.getName() != null && factory.updateToCache(object,factory.getCacheKeyName(object))==false){
 			logger.warn("Failed to add object '" + object.getName() + "' to factory cache with key name " + factory.getCacheKeyName(object));
 		}
-		
-		//sessionIdMap.put(bulkId, sessionId);
 	}
 	public String newBulkSession(){
 		String sessionId = UUID.randomUUID().toString();
@@ -680,7 +627,6 @@ public class BulkFactory {
 		now.add(Calendar.MINUTE, 5);
 		sess.setSessionExpires(CalendarUtil.getXmlGregorianCalendar(now.getTime()));
 		sessions.put(sessionId, sess);
-		//idScanMap.put(sessionId, new HashMap<NameEnumType,Integer>());
 		logger.debug("Created Bulk Session '" + sessionId + "'.  Expires: " + sess.getSessionExpires().toString());
 		return sessionId;
 	}

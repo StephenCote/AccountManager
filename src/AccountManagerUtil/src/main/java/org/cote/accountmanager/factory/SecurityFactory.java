@@ -116,12 +116,9 @@ public class SecurityFactory {
 			RSAPublicKeySpec keySpec = keyFactory.getKeySpec(bean.getPublicKey(), RSAPublicKeySpec.class);
 			buff.append("<Modulus>" + BinaryUtil.toBase64Str(keySpec.getModulus().toByteArray()) + "</Modulus>");
 			buff.append("<Exponent>" + BinaryUtil.toBase64Str(keySpec.getPublicExponent().toByteArray()) + "</Exponent>");
-		} catch (NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
-		} catch (InvalidKeySpecException e) {
-			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		buff.append("</RSAKeyValue>\r\n");
 		return buff.toString().getBytes();
@@ -129,15 +126,15 @@ public class SecurityFactory {
 
 	/// TODO: 2015/06/23 - Need to refactor to use a CredentialType
 	///
-	public void setPassKey(SecurityBean bean, String passKey, boolean encrypted_pass_key){
+	public void setPassKey(SecurityBean bean, String passKey, boolean encryptedPassKey){
 
 		logger.warn("Static default salt needs to be refactored");
-		setPassKey(bean, passKey, defaultSalt, encrypted_pass_key);
+		setPassKey(bean, passKey, defaultSalt, encryptedPassKey);
 	}
 	
 	/// TODO: Remove hard coded algorithm reference
 	///
-	public void setPassKey(SecurityBean bean, String passKey, byte[] salt, boolean encrypted_pass_key){
+	public void setPassKey(SecurityBean bean, String passKey, byte[] salt, boolean encryptedPassKey){
 		long start = System.currentTimeMillis();
 		try{
 			// PBKDF2WithHmacSHA512
@@ -152,30 +149,27 @@ public class SecurityFactory {
 			cipher.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(salt, 0, 16));
 			AlgorithmParameters params = cipher.getParameters();
 			byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-			setSecretKey(bean, secret.getEncoded(), iv, encrypted_pass_key);
+			setSecretKey(bean, secret.getEncoded(), iv, encryptedPassKey);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | InvalidParameterSpecException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 		}  
 		logger.debug("Generate Pass Key: " + (System.currentTimeMillis() - start) + "ms");
 	}
-	public void setSecretKey(SecurityBean bean, byte[] key, byte iv[], boolean encrypted_cipher){
-		byte[] dec_key = new byte[0];
-		byte[] dec_iv = new byte[0];
-		if(encrypted_cipher){
+	public void setSecretKey(SecurityBean bean, byte[] key, byte[] iv, boolean encryptedCipher){
+		byte[] decKey = key;
+		byte[] decIv = iv;
+		if(encryptedCipher){
 			bean.setEncryptCipherKey(true);
 			bean.setEncryptedCipherIV(iv);
 			bean.setEncryptedCipherKey(key);
-			dec_key = SecurityUtil.decrypt(bean, key);
-			dec_iv = SecurityUtil.decrypt(bean,  iv);	
+			decKey = SecurityUtil.decrypt(bean, key);
+			decIv = SecurityUtil.decrypt(bean,  iv);	
 		}
-		else{
-			dec_key = key;
-			dec_iv = iv;
-		}
-		bean.setSecretKey(new SecretKeySpec(dec_key, bean.getSymmetricCipherKeySpec()));
-		bean.setCipherIV(dec_iv);
-		bean.setCipherKey(dec_key);
+
+		bean.setSecretKey(new SecretKeySpec(decKey, bean.getSymmetricCipherKeySpec()));
+		bean.setCipherIV(decIv);
+		bean.setCipherKey(decKey);
 	}
 	
 	public void setPublicKey(SecurityBean bean, byte[] publicKey){
@@ -186,7 +180,7 @@ public class SecurityFactory {
 			pubKey = factory.generatePublic(x509KeySpec);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		bean.setPublicKey(pubKey);
 		
@@ -201,7 +195,7 @@ public class SecurityFactory {
 		}
 		catch(Exception e){
 			logger.error("DSAKeyUtil:: decodeX509PrivateKey: " + e.toString());
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		bean.setPrivateKey(privKey);
 	}
@@ -219,7 +213,7 @@ public class SecurityFactory {
 			pubKey = factory.generatePublic(pubSpec);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		bean.setPublicKey(pubKey);
 	}
@@ -252,17 +246,17 @@ public class SecurityFactory {
 			priKey = factory.generatePrivate(privSpec);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		bean.setPrivateKey(priKey);
 
 	}
-	public SecurityBean createSecurityBean(byte[] keys, boolean encrypted_cipher){
+	public SecurityBean createSecurityBean(byte[] keys, boolean encryptedCipher){
 		SecurityBean bean = new SecurityBean();
-		importSecurityBean(bean, keys, encrypted_cipher);
+		importSecurityBean(bean, keys, encryptedCipher);
 		return bean;
 	}
-	public void importSecurityBean(SecurityBean bean, byte[] keys, boolean encrypted_cipher){
+	public void importSecurityBean(SecurityBean bean, byte[] keys, boolean encryptedCipher){
 		Document d = XmlUtil.GetDocumentFromBytes(keys);
 		if(d == null)
 			return;
@@ -278,7 +272,7 @@ public class SecurityFactory {
 		String cipKey = XmlUtil.FindElementText(d.getDocumentElement(), "cipher", "key");
 		String cipIv = XmlUtil.FindElementText(d.getDocumentElement(), "cipher", "iv");
 		if(cipKey != null && cipIv != null){
-			setSecretKey(bean, BinaryUtil.fromBase64(cipKey.getBytes()),BinaryUtil.fromBase64(cipIv.getBytes()), encrypted_cipher);
+			setSecretKey(bean, BinaryUtil.fromBase64(cipKey.getBytes()),BinaryUtil.fromBase64(cipIv.getBytes()), encryptedCipher);
 		}
 	}
 	public Cipher getEncryptCipherKey(SecurityBean bean){
@@ -292,39 +286,28 @@ public class SecurityFactory {
 			return null;
 		}
 
-		Cipher cipher_key = null;
+		Cipher cipherKey = null;
        try {
-		cipher_key = Cipher.getInstance(bean.getSymmetricCipherKeySpec());
+		cipherKey = Cipher.getInstance(bean.getSymmetricCipherKeySpec());
 
 		int mode = Cipher.ENCRYPT_MODE;
 		if(decrypt) mode = Cipher.DECRYPT_MODE;
 		if(bean.getCipherIV() != null && bean.getCipherIV().length > 0){
 			IvParameterSpec iv = new IvParameterSpec(bean.getCipherIV());
-			cipher_key.init(mode, bean.getSecretKey(), iv);
+			cipherKey.init(mode, bean.getSecretKey(), iv);
 
 		}
 		else{
-			cipher_key.init(mode,  bean.getSecretKey());
-			bean.setCipherIV(cipher_key.getIV());
+			cipherKey.init(mode,  bean.getSecretKey());
+			bean.setCipherIV(cipherKey.getIV());
 		}
 
        }
-       catch (NoSuchAlgorithmException e) {
-
-    	   logger.error(e.getMessage());
-			logger.error("Trace",e);
-		}
-       catch (NoSuchPaddingException e) {
-    	   logger.error(e.getMessage());
-			logger.error("Trace",e);
-		} catch (InvalidKeyException e) {
+       catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
-		} catch (InvalidAlgorithmParameterException e) {
-			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 		}
-       return cipher_key;
+       return cipherKey;
 	}
 	public boolean generateSecretKey(SecurityBean bean){
 		boolean ret = false;
@@ -334,19 +317,14 @@ public class SecurityFactory {
 			return false;
 		}
 		KeyGenerator kgen;
-		SecretKey secret_key = null;
+		SecretKey secretKey = null;
 		try {
 			kgen = KeyGenerator.getInstance(bean.getCipherKeySpec());
 
-			//logger.warn("Key generation size is static at 128. Bean is set for: " + bean.getKeySize());
-			// TODO: Make key size configurable - 128 is only for dev/debug
-			//
-			//kgen.init(128);
-			
 			kgen.init(bean.getCipherKeySize());
-			secret_key = kgen.generateKey();
-			bean.setSecretKey(secret_key);
-			bean.setCipherKey(secret_key.getEncoded());
+			secretKey = kgen.generateKey();
+			bean.setSecretKey(secretKey);
+			bean.setCipherKey(secretKey.getEncoded());
 			Cipher cipher = getCipherKey(bean, false);
 			bean.setCipherIV(cipher.getIV());
 			if(bean.getEncryptCipherKey()){
@@ -356,7 +334,7 @@ public class SecurityFactory {
 			ret = true;
 		} catch (NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 			
 		}
 		return ret;
@@ -365,19 +343,19 @@ public class SecurityFactory {
 
 		boolean ret = false;
 		try{
-	        KeyPairGenerator key_gen = KeyPairGenerator.getInstance(bean.getAsymmetricCipherKeySpec());
-	        key_gen.initialize(bean.getKeySize());
-        	KeyPair key_pair = key_gen.generateKeyPair();
-        	bean.setPublicKey(key_pair.getPublic());
-        	bean.setPrivateKey(key_pair.getPrivate());
+	        KeyPairGenerator keyGen = KeyPairGenerator.getInstance(bean.getAsymmetricCipherKeySpec());
+	        keyGen.initialize(bean.getKeySize());
+        	KeyPair keyPair = keyGen.generateKeyPair();
+        	bean.setPublicKey(keyPair.getPublic());
+        	bean.setPrivateKey(keyPair.getPrivate());
 			/* the public key */
-			bean.setPublicKeyBytes(key_pair.getPublic().getEncoded());
-			bean.setPrivateKeyBytes(key_pair.getPrivate().getEncoded());
+			bean.setPublicKeyBytes(keyPair.getPublic().getEncoded());
+			bean.setPrivateKeyBytes(keyPair.getPrivate().getEncoded());
 
 			ret = true;
 		}
 		catch(Exception e){
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		return ret;
 	}

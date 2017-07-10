@@ -142,7 +142,7 @@ public class DBFactory {
 		}
 		catch (SQLException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 			throw new FactoryException(e.getMessage());
 		}
 	}
@@ -154,7 +154,7 @@ public class DBFactory {
 			}
 			setStatementParameter(ps, cell.getDataType(), cell.getValue(), index);
 		} catch (DataAccessException e) {
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 
 	}
@@ -174,54 +174,60 @@ public class DBFactory {
 		if (!isInstructionReadyForPagination(instruction))
 			return "";
 
-		String out_prefix = "";
+		String outPrefix = "";
 		switch (connectionType)
 		{
 			case SQL:
-				out_prefix = "SELECT * FROM (";
+				outPrefix = "SELECT * FROM (";
 				break;
 			case ORACLE:
 			case POSTGRES:
 			case MYSQL:
 				break;
+			default:
+				break;
 		}
-		return out_prefix;
+		return outPrefix;
 	}
 	public static String getPaginationField(ProcessingInstructionType instruction, CONNECTION_TYPE connectionType)
 	{
 		if (!isInstructionReadyForPagination(instruction))
 			return "";
-		String out_field = "";
+		String outField = "";
 		switch (connectionType)
 		{
 			case SQL:
-				out_field = ",ROW_NUMBER() OVER (ORDER BY " + instruction.getOrderClause() + ") AS ROW_NUM";
+				outField = ",ROW_NUMBER() OVER (ORDER BY " + instruction.getOrderClause() + ") AS ROW_NUM";
 				break;
 			case ORACLE:
 			case POSTGRES:				
 			case MYSQL:
 				break;
+			default:
+				break;
 		}
-		return out_field;
+		return outField;
 	}
 	public static String getPaginationSuffix(ProcessingInstructionType instruction, CONNECTION_TYPE connectionType)
 	{
-		String order_clause = (instruction != null && instruction.getOrderClause() != null ? " ORDER BY " + instruction.getOrderClause() : "");
+		String orderClause = (instruction != null && instruction.getOrderClause() != null ? " ORDER BY " + instruction.getOrderClause() : "");
 		if (!isInstructionReadyForPagination(instruction))
-			return order_clause;
-		String out_suffix = "";
+			return orderClause;
+		String outSuffix = "";
 		switch (connectionType)
 		{
 			case SQL:
-				out_suffix = ") as RowCursor WHERE ROW_NUM >= " + instruction.getStartIndex() + " AND ROW_NUM < " + (instruction.getStartIndex() + instruction.getRecordCount()) + order_clause;
+				outSuffix = ") as RowCursor WHERE ROW_NUM >= " + instruction.getStartIndex() + " AND ROW_NUM < " + (instruction.getStartIndex() + instruction.getRecordCount()) + orderClause;
 				break;
 			case ORACLE:
 			case POSTGRES:					
 			case MYSQL:
-				out_suffix = order_clause + " LIMIT " + instruction.getRecordCount() + " OFFSET " + instruction.getStartIndex();
+				outSuffix = orderClause + " LIMIT " + instruction.getRecordCount() + " OFFSET " + instruction.getStartIndex();
+				break;
+			default:
 				break;
 		}
-		return out_suffix;
+		return outSuffix;
 	}
 	public static long getAdjustedStartRecord(long startRecord, CONNECTION_TYPE connectionType)
 	{
@@ -230,64 +236,72 @@ public class DBFactory {
 		return startRecord;
 	}
 	
-	public static String getParamToken(CONNECTION_TYPE connection_type)
+	public static String getParamToken(CONNECTION_TYPE connectionType)
 	{
 
-		if (connection_type == CONNECTION_TYPE.SQL)
+		if (connectionType == CONNECTION_TYPE.SQL)
 			return "@";
-		else if(connection_type == CONNECTION_TYPE.POSTGRES || connection_type == CONNECTION_TYPE.MYSQL || connection_type == CONNECTION_TYPE.ORACLE)
+		else if(connectionType == CONNECTION_TYPE.POSTGRES || connectionType == CONNECTION_TYPE.MYSQL || connectionType == CONNECTION_TYPE.ORACLE)
 			return "?";
 		return "";
 		
 	}
-	public static String getNoLockHint(CONNECTION_TYPE connection_type)
+	public static String getNoLockHint(CONNECTION_TYPE connectionType)
 	{
 
-		if (connection_type == CONNECTION_TYPE.SQL)
+		if (connectionType == CONNECTION_TYPE.SQL)
 			return " with (nolock) ";
-		else if (connection_type == CONNECTION_TYPE.MYSQL || connection_type == CONNECTION_TYPE.ORACLE)
+		else if (connectionType == CONNECTION_TYPE.MYSQL || connectionType == CONNECTION_TYPE.ORACLE)
 			return "";
 		return "";
 
 	}
 	public static CONNECTION_TYPE getConnectionType(Connection connection){
-		CONNECTION_TYPE out_type = CONNECTION_TYPE.UNKNOWN;
+		CONNECTION_TYPE outType = CONNECTION_TYPE.UNKNOWN;
 		String dbName = null;
 		try {
 			dbName = connection.getMetaData().getDatabaseProductName();
 		} catch (SQLException e) {
 
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		if(dbName != null && dbName.matches("^(?i)postgresql$"))
-			out_type = CONNECTION_TYPE.POSTGRES;
-		return out_type;
+			outType = CONNECTION_TYPE.POSTGRES;
+		return outType;
 	}
 
-	public static boolean dropTable(Connection connection, String table_name){
+	public static boolean dropTable(Connection connection, String tableName){
 		int update = 0;
 		CONNECTION_TYPE connectionType = getConnectionType(connection);
+		Statement stat = null;
 		try{
-			Statement stat = connection.createStatement();
-			StringBuffer buff = new StringBuffer();
-			buff.append("DROP TABLE IF EXISTS " + table_name + ";");
+			stat = connection.createStatement();
+			StringBuilder buff = new StringBuilder();
+			buff.append("DROP TABLE IF EXISTS " + tableName + ";");
 			if(connectionType == CONNECTION_TYPE.POSTGRES){
-				buff.append(" DROP SEQUENCE IF EXISTS " + table_name + "_id_seq;");
+				buff.append(" DROP SEQUENCE IF EXISTS " + tableName + "_id_seq;");
 			}
 			update = stat.executeUpdate(buff.toString());
 			stat.close();
 		}
 		catch(SQLException sqe){
-			logger.error("Trace",sqe);
+			logger.error(sqe);
+		}
+		finally{
+			try {
+				if(stat != null) stat.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
 		}
 		return (update != 0);
 	}
-	public static boolean getTableExists(Connection connection, String table_name){
+	public static boolean getTableExists(Connection connection, String tableName){
 		boolean exists = false;
 		DatabaseMetaData dmd = null;
 		try{
 			dmd = connection.getMetaData();
-			ResultSet rset = dmd.getTables(null, null, table_name,null);
+			ResultSet rset = dmd.getTables(null, null, tableName,null);
 			if(rset == null){
 				return false;
 			}
@@ -296,10 +310,10 @@ public class DBFactory {
 			while(rset.next() && !exists){
 				int count=rsetMD.getColumnCount();
 				for(int i = 1;i <= count; i++){
-					String column_name = rsetMD.getColumnName(i);
-					if(column_name.equalsIgnoreCase("TABLE_NAME")){
-						String compare_name = rset.getString(i);
-						if(compare_name != null && compare_name.equalsIgnoreCase(table_name)){
+					String columnName = rsetMD.getColumnName(i);
+					if(columnName.equalsIgnoreCase("TABLE_NAME")){
+						String compareName = rset.getString(i);
+						if(compareName != null && compareName.equalsIgnoreCase(tableName)){
 							exists = true;
 						}
 						break;
@@ -315,20 +329,28 @@ public class DBFactory {
 	}
 	public static int executeStatement(Connection connection, String statement){
 		int update = 0;
+		Statement stat = null;
 		try{
-			Statement stat = connection.createStatement();
+			stat = connection.createStatement();
 			update = stat.executeUpdate(statement);
-			stat.close();
+
 		}
 		catch(SQLException sqe){
-			logger.error("Trace",sqe);
+			logger.error(sqe);
+		}
+		finally{
+			try {
+				if(stat != null) stat.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
 		}
 		return update;
 	}
 	
 	public static DataTable getDataTable(Connection connection, String tableName) throws DataAccessException{
-		DataTable out_table = new DataTable();
-		out_table.setName(tableName);
+		DataTable outTable = new DataTable();
+		outTable.setName(tableName);
 		int colIndex = 0;
 		CONNECTION_TYPE connectionType = getConnectionType(connection);
 		try{
@@ -341,15 +363,15 @@ public class DBFactory {
 				int colSize = rset.getInt("COLUMN_SIZE");
 				
 				SqlDataEnumType dataType = SqlTypeUtil.translateSqlType(connectionType, colType);
-				out_table.addColumn(colName,  colIndex++, colSize, dataType);
+				outTable.addColumn(colName,  colIndex++, colSize, dataType);
 			}
 			rset.close();
 		}
 		catch(SQLException sqe){
 			throw new DataAccessException(sqe.getMessage());
 		}
-		out_table.setColumnSize(colIndex);
-		return out_table;
+		outTable.setColumnSize(colIndex);
+		return outTable;
 	}
 
 }

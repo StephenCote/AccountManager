@@ -340,10 +340,12 @@ public class TypeSanitizer implements ITypeSanitizer{
 				new_rec.setMimeType(rbean.getMimeType());
 				
 				new_rec.setRating(rbean.getRating());
-				if(BaseService.contextVault != null && rbean.getVaulted()){
+				if(rbean.getVaulted() && rbean.getVaultId() != null){
 					rbean.setVaulted(false);
+					VaultBean vaultBean = vaultService.getVaultByUrn(user, rbean.getVaultId());
+					if(vaultBean == null) throw new ArgumentException("Vault '" + rbean.getVaultId() + "' does not exist");
 					try {
-						BaseService.contextVaultService.setVaultBytes(BaseService.contextVault, new_rec, DataUtil.getValue(rbean));
+						vaultService.setVaultBytes(vaultBean, new_rec, DataUtil.getValue(rbean));
 					} catch (UnsupportedEncodingException e) {
 						logger.error(e);
 					}

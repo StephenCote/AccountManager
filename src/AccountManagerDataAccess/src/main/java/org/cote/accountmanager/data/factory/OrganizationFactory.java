@@ -100,11 +100,11 @@ public class OrganizationFactory extends NameIdFactory {
 		{
 			KeyService.deleteKeys(organization.getId());
 			Connection conn = ConnectionFactory.getInstance().getConnection();
-			CONNECTION_TYPE connection_type = DBFactory.getConnectionType(conn);
+			CONNECTION_TYPE connectionType = DBFactory.getConnectionType(conn);
 			logger.warn("TODO: Refactor this query to better handle tables without organization_id");
 			try {
 				int delLimit = 1000;
-				String buildDeleteQuery = "SELECT '" + (connection_type == CONNECTION_TYPE.SQL ? "SET ROWCOUNT " + 1000 + " " : "") + "DELETE FROM ' || tablename || ' WHERE organizationid = ?" + (connection_type == CONNECTION_TYPE.MYSQL ? " LIMIT " + delLimit + " " : "") + ";' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations' AND NOT tablename = 'objectreference' AND NOT tablename = 'objectscore' AND NOT tablename = 'objectdescription' AND NOT tablename = 'objectlocation' AND NOT tablename = 'objectdate'  AND NOT tablename = 'objectorderscore' AND NOT tablename = 'vaultkey';";
+				String buildDeleteQuery = "SELECT '" + (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT " + 1000 + " " : "") + "DELETE FROM ' || tablename || ' WHERE organizationid = ?" + (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT " + delLimit + " " : "") + ";' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations' AND NOT tablename = 'objectreference' AND NOT tablename = 'objectscore' AND NOT tablename = 'objectdescription' AND NOT tablename = 'objectlocation' AND NOT tablename = 'objectdate'  AND NOT tablename = 'objectorderscore' AND NOT tablename = 'vaultkey';";
 				logger.debug(buildDeleteQuery);
 				Statement stat = conn.createStatement();
 				ResultSet rset = stat.executeQuery(buildDeleteQuery);

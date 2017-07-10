@@ -32,19 +32,9 @@ import org.cote.accountmanager.objects.SecurityType;
 
 public class SecurityBean extends SecurityType {
 	private SecretKey secretKey = null;
-	/// private Cipher cipher = null;
 	private PublicKey publicKey = null;
 	private PrivateKey privateKey = null;
 	
-	/*
-	public Cipher getCipher() {
-		return cipher;
-	}
-
-	public void setCipher(Cipher cipher) {
-		this.cipher = cipher;
-	}
-*/
 	public PublicKey getPublicKey() {
 		return publicKey;
 	}

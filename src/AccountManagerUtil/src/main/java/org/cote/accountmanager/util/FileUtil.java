@@ -40,16 +40,19 @@ public class FileUtil {
 	public static String getFileAsString(String path){
 		return getFileAsString(new File(path));
 	}
+	private FileUtil(){
+		
+	}
 	public static String getFileAsString(File f){		
-		String out_str = null;
+		String outStr = null;
 		byte[] data = getFile(f);
 		try {
-			out_str = new String(data,"UTF-8");
+			outStr = new String(data,"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 		}
-		return out_str;
+		return outStr;
 	}
 	public static byte[] getFile(String path){
 		return getFile(new File(path));
@@ -67,7 +70,7 @@ public class FileUtil {
 		}
 		catch(IOException ie){
 			logger.error(ie.getMessage());
-			logger.error("Trace",ie);
+			logger.error(ie);
 		}
 		return baos.toByteArray();
 	}
@@ -94,47 +97,56 @@ public class FileUtil {
 	}
 	public static boolean emitFile(String path, String contents, String encoding){
 		byte[] cont = new byte[0];
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
 			cont = contents.getBytes(encoding);
-			out_bool = emitFile(path, cont);
+			outBool = emitFile(path, cont);
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		
-		return out_bool;
+		return outBool;
 		
 	}
 	public static boolean makePath(String path){
-		boolean out_bool = false;
+		boolean outBool = false;
 		File f = new File(path);
 		if(f.exists() == false)
-			out_bool = f.mkdirs();
-		else out_bool = true;
+			outBool = f.mkdirs();
+		else outBool = true;
 		
-		return out_bool;
+		return outBool;
 	}
 	public static boolean emitFile(String path, byte[] contents){
-		boolean out_bool = false;
+		boolean outBool = false;
 		File f = new File(path);
 		File p = f.getParentFile();
 		if(p.exists() == false)
 			p.mkdirs();
 		if(f.exists() == true)
 			f.delete();
+		FileOutputStream fos = null;
 		try{
-			FileOutputStream fos = new FileOutputStream(f);
+			fos = new FileOutputStream(f);
 			fos.write(contents);
 			fos.flush();
 			fos.close();
-			out_bool = true;
+			outBool = true;
 		}
 		catch(IOException ie){
 			logger.error(ie.getMessage());
-			logger.error("Trace",ie);
+			logger.error(ie);
 		}
-		return out_bool;
+		finally{
+
+			try {
+				if(fos != null) fos.close();
+			} catch (IOException e) {
+				logger.error(e);
+			}
+		}
+		return outBool;
 		
 	}
 }

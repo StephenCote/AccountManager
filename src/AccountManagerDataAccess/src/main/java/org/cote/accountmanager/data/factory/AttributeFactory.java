@@ -31,8 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
@@ -49,7 +47,7 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 
 public class AttributeFactory extends NameIdFactory{
-	public static final Logger logger = LogManager.getLogger(AttributeFactory.class);
+
 	private int maximumInsBatch = 2000;
 	public AttributeFactory(){
 		super();
@@ -87,35 +85,35 @@ public class AttributeFactory extends NameIdFactory{
 		if(obj.getAttributesPopulated())
 			return;
 		try {
-			if(obj.getAttributes().size() > 0){
+			if(!obj.getAttributes().isEmpty()){
 				logger.warn("Populating attributes for object " + obj.getName() + " (" + obj.getUrn() + ") which already includes attribute values.  This will wipe out the original attribute set.");
 			}
 			obj.getAttributes().clear();
 			obj.getAttributes().addAll(getAttributes(obj));
 			obj.setAttributesPopulated(true);
-		} catch (FactoryException  | ArgumentException e) {
+		} catch (FactoryException e) {
 
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 	}
 	public boolean hasAttribute(NameIdType obj, String name, String value){
 		return hasAttribute(obj.getAttributes(), name, value);
 	}
 	public boolean hasAttribute(List<AttributeType> attrs, String name, String value){
-		boolean out_bool = false;
+		boolean outBool = false;
 		AttributeType comp = null;
 		for(int i = 0; i < attrs.size();i++){
 			comp = attrs.get(i);
 			if(comp.getName().equals(name)){
 				for(int v = 0; v < comp.getValues().size();v++){
 					if(comp.getValues().get(v).equals(value)){
-						out_bool = true;
+						outBool = true;
 						break;
 					}
 				}
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	public String getAttributeValueByName(NameIdType obj, String name){
 		return getAttributeValueByName(obj.getAttributes(), name);
@@ -155,8 +153,8 @@ public class AttributeFactory extends NameIdFactory{
 		List<Long> ids = new ArrayList<>();
 
 		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
-		String token = DBFactory.getParamToken(connection_type);
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
+		String token = DBFactory.getParamToken(connectionType);
 		String queryClause = getQueryClause(null,fields, token);
 		if(queryClause == null || queryClause.length() == 0){
 			throw new ArgumentException("Invalid query fields");
@@ -185,24 +183,21 @@ public class AttributeFactory extends NameIdFactory{
 				logger.error(e.getMessage());
 			}
 		}
-		//logger.info("Out Bool = " + out_bool);
 		return ArrayUtils.toPrimitive(ids.toArray(new Long[0]));
 	}
 	public boolean addAttributes(NameIdType[] objs){
-		boolean out_bool = false;
+		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connection_type = DBFactory.getConnectionType(connection);
-		String token = DBFactory.getParamToken(connection_type);
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
+		String token = DBFactory.getParamToken(connectionType);
 
 		String sql = "INSERT INTO attribute (referenceid, referencetype, name, datatype, valueindex, value, organizationid) VALUES (" + token + ", " + token + ", " + token + ", " + token + ", " + token + ", " + token + ", " + token + ");";
-
+		PreparedStatement psa = null;
 		try{
-			PreparedStatement psa = connection.prepareStatement(sql);
+			psa = connection.prepareStatement(sql);
 			int aiter = 0;
-			for(int o = 0; o < objs.length;o++){
-				NameIdType obj = objs[o];
-				for(int a = 0; a < obj.getAttributes().size();a++){
-					AttributeType attr = obj.getAttributes().get(a);
+			for(NameIdType obj : objs){
+				for(AttributeType attr : obj.getAttributes()){
 					for(int v = 0; v < attr.getValues().size();v++){
 						psa.setLong(1, obj.getId());
 						psa.setString(2, obj.getNameType().toString());
@@ -214,7 +209,6 @@ public class AttributeFactory extends NameIdFactory{
 						psa.addBatch();
 						if(aiter++ >= maximumInsBatch){
 							psa.executeBatch();
-							//connection.commit();
 							psa.clearBatch();
 							aiter=0;
 						}
@@ -224,11 +218,9 @@ public class AttributeFactory extends NameIdFactory{
 			}
 				if(aiter > 0){
 					psa.executeBatch();
-					//connection.commit();
 					psa.clearBatch();
 				}
-				psa.close();
-				out_bool = true;
+				outBool = true;
 			}
 			catch (SQLException e) {
 				
@@ -237,6 +229,7 @@ public class AttributeFactory extends NameIdFactory{
 			}
 		finally{
 			try{
+				if(psa != null) psa.close();
 				if(connection != null) connection.close();
 			}
 			catch (SQLException e) {
@@ -244,11 +237,10 @@ public class AttributeFactory extends NameIdFactory{
 				logger.error(e.getMessage());
 			}
 		}
-		//logger.info("Out Bool = " + out_bool);
-		return out_bool;
+		return outBool;
 	}
 
-	public List<AttributeType> getAttributes(NameIdType obj) throws FactoryException, ArgumentException{
+	public List<AttributeType> getAttributes(NameIdType obj) throws FactoryException {
 		List<AttributeType> attributes = new ArrayList<>();
 		List<QueryField> fieldList = new ArrayList<>();
 		fieldList.add(QueryFields.getFieldReferenceId(obj.getId()));
@@ -256,7 +248,6 @@ public class AttributeFactory extends NameIdFactory{
 		QueryField[] fields = fieldList.toArray(new QueryField[0]);
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setOrderClause("NAME ASC");
-		List<AttributeType> out_list = new ArrayList<>();
 
 		if(this.dataTables.size() > 1)
 			throw new FactoryException("Multiple table select statements not yet supported");
@@ -276,7 +267,7 @@ public class AttributeFactory extends NameIdFactory{
 			int valueIndex = 0;
 			while(rset.next()){
 				String name = rset.getString("name");
-				if(lastName == null || lastName.equals(name) == false){
+				if(lastName == null || !lastName.equals(name)){
 					currentAttribute = new AttributeType();
 					valueIndex = 0;
 					lastName = name;
@@ -296,7 +287,7 @@ public class AttributeFactory extends NameIdFactory{
 		} catch (SQLException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -305,7 +296,7 @@ public class AttributeFactory extends NameIdFactory{
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
 				
-				logger.error("Trace",e);
+				logger.error(e);
 			}
 		}
 
@@ -320,33 +311,33 @@ public class AttributeFactory extends NameIdFactory{
 		fields.add(QueryFields.getFieldReferenceId(object.getId()));
 		fields.add(QueryFields.getFieldReferenceType(object.getNameType()));
 
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
 			int delCount = deleteByField(fields.toArray(new QueryField[0]),object.getOrganizationId());
-			out_bool = (delCount > 0);
+			outBool = (delCount > 0);
 			if(!preserveValues) object.getAttributes().clear();
 		} catch (FactoryException e) {
 			
-			logger.error("Trace",e);
+			logger.error(e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	public <T> boolean deleteAttributesForObjects(T[] objects){
 		long[] ids = new long[objects.length];
 		if(ids.length == 0) return true;
 		NameEnumType ntype = NameEnumType.UNKNOWN;
 		NameIdType nobj = null;
-		long organization_id = 0L;
+		long organizationId = 0L;
 
 		for(int i = 0; i < ids.length;i++){
 			nobj = (NameIdType)objects[i];
 			if(i==0){
 				ntype = nobj.getNameType();
-				organization_id = nobj.getOrganizationId();
+				organizationId = nobj.getOrganizationId();
 			}
 			ids[i] = nobj.getId();
 		}
-		return (deleteByReferenceId(ids, ntype, organization_id) > 0);
+		return (deleteByReferenceId(ids, ntype, organizationId) > 0);
 	}	
 
 	public boolean deleteAttribute(AttributeType attribute){
@@ -354,28 +345,28 @@ public class AttributeFactory extends NameIdFactory{
 		fields.add(QueryFields.getFieldReferenceId(attribute.getReferenceId()));
 		fields.add(QueryFields.getFieldReferenceType(attribute.getReferenceType()));
 		fields.add(QueryFields.getFieldName(attribute.getName()));
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
 			int delCount = deleteByField(fields.toArray(new QueryField[0]),attribute.getOrganizationId());
-			out_bool = (delCount > 0);
+			outBool = (delCount > 0);
 		} catch (FactoryException e) {
 			
-			logger.error("Trace",e);
+			logger.error(e);
 		}
-		return out_bool;
+		return outBool;
 	}
-	protected int deleteByReferenceId(long[] ids, NameEnumType nType, long organization_id)
+	protected int deleteByReferenceId(long[] ids, NameEnumType nType, long organizationId)
 	{
 		if (ids.length == 0)
 			return 0;
 		
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		DataTable table = this.dataTables.get(0);
-
-		int deleted_records = 0;
+		PreparedStatement statement = null;
+		int deletedRecords = 0;
 		try {
 			String sql = "DELETE FROM " + table.getName() + " WHERE referencetype = ? AND referenceid = ?";
-			PreparedStatement statement = connection.prepareStatement(sql);
+			statement = connection.prepareStatement(sql);
 			for (int i = 0; i < ids.length; i++)
 			{
 				statement.setString(1, nType.toString());
@@ -384,26 +375,27 @@ public class AttributeFactory extends NameIdFactory{
 				if((i > 0 || ids.length ==1 ) && ((i % 250 == 0) || i == ids.length - 1)){
 					int[] del = statement.executeBatch();
 					for(int d = 0; d < del.length; d++)
-						deleted_records += del[d];
+						deletedRecords += del[d];
 				}
 			}
 			statement.close();
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 			
-			logger.error("Trace",e);
+			logger.error(e);
 		}
 		finally{
 			try {
+				if(statement != null) statement.close();
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
 				
-				logger.error("Trace",e);
+				logger.error(e);
 			}
 		}
 
-		return deleted_records;
+		return deletedRecords;
 	}
 	
 	

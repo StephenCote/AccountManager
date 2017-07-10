@@ -1,21 +1,27 @@
 package org.cote.accountmanager.beans;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.cote.accountmanager.objects.VaultType;
 
 public class VaultBean extends VaultType {
 	private SecurityBean activeKeyBean = null;
 	private SecurityBean vaultKeyBean = null;
-	private HashMap<String, SecurityBean> symmetricKeyMap = new HashMap<>();
+	private Map<String, SecurityBean> symmetricKeyMap = null;
+	
+	public VaultBean(){
+		symmetricKeyMap =  Collections.synchronizedMap(new HashMap<>());
+	}
 	
 	
 	
 	
-	public HashMap<String, SecurityBean> getSymmetricKeyMap() {
+	public Map<String, SecurityBean> getSymmetricKeyMap() {
 		return symmetricKeyMap;
 	}
-	public void setSymmetricKeyMap(HashMap<String, SecurityBean> symmetricKeyMap) {
+	public void setSymmetricKeyMap(Map<String, SecurityBean> symmetricKeyMap) {
 		this.symmetricKeyMap = symmetricKeyMap;
 	}
 	public SecurityBean getActiveKeyBean() {
