@@ -86,26 +86,20 @@ import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.service.util.ServiceUtil;
 
+
 public class BaseService {
 	public static final Logger logger = LogManager.getLogger(BaseService.class);
-	public static boolean enableExtendedAttributes = false;
+	private static boolean enableExtendedAttributes = false;
 	private static boolean allowDataPointers = false;
 	private static boolean checkConfigDataPoint = false;
 	
-	protected static boolean isAllowDataPointers(HttpServletRequest request){
-		if(checkConfigDataPoint) return allowDataPointers;
-		checkConfigDataPoint = true;
-		allowDataPointers = getBoolParam(request,"data.pointers.enabled");
-		return allowDataPointers;
+	public static void setEnableExtendedAttributes(boolean b){
+		enableExtendedAttributes = b;
 	}
-	protected static boolean getBoolParam(HttpServletRequest request, String name){
-		boolean ret = false;
-		String iV = request.getServletContext().getInitParameter(name);
-		if(iV != null && iV.length() > 0){
-			ret = Boolean.parseBoolean(iV);
-		}
-		return ret;
+	public static void setAllowDataPointers(boolean b){
+		allowDataPointers = b;
 	}
+
 	public static String getDefaultGroupName(AuditEnumType type){
 		String out_path = "~";
 		switch(type){

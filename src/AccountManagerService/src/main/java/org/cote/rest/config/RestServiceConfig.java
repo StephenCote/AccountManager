@@ -150,37 +150,9 @@ public class RestServiceConfig extends ResourceConfig{
 				}
 			}
 		
-			BaseService.enableExtendedAttributes = Boolean.parseBoolean(context.getInitParameter("extended.attributes.enabled"));
-			logger.info("Extended attributes enabled: " + BaseService.enableExtendedAttributes);
+			BaseService.setEnableExtendedAttributes(Boolean.parseBoolean(context.getInitParameter("extended.attributes.enabled")));
+			BaseService.setAllowDataPointers(Boolean.parseBoolean(context.getInitParameter("data.pointers.enabled")));
 
-			
-			/// Set any default vault on the BaseService
-			///
-			/*
-			String vaultName = context.getInitParameter("vault.name");
-			String vaultPath = context.getInitParameter("vault.path");
-			String vaultCredential = context.getInitParameter("vault.credential");
-			
-			if(vaultName != null && vaultPath != null && vaultCredential != null){
-				logger.info("Initializing vault '" + vaultName + "'");
-				VaultService service = new VaultService();
-				VaultBean vault = service.loadVault(vaultPath, vaultName, true);
-				CredentialType cred = service.loadProtectedCredential(vaultCredential);
-				if(cred != null && vault != null){
-					try {
-						service.initialize(vault, cred);
-						BaseService.contextVault = vault;
-						BaseService.contextVaultService = service;
-						logger.info("Initialized vault");
-					} catch (ArgumentException | FactoryException e) {
-						logger.error(e);
-					}
-				}
-				else{
-					logger.error("Failed to initialize vault from " + vaultPath + " or credential from " + vaultCredential);
-				}
-			}
-			*/
 			String roleAuth = context.getInitParameter("amauthrole");
 			if(roleAuth != null && roleAuth.length() > 0){
 				AM5LoginModule.setAuthenticatedRole(roleAuth);
