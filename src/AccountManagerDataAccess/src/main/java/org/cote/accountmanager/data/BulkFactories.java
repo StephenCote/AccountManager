@@ -64,6 +64,7 @@ import org.cote.accountmanager.data.factory.bulk.BulkSymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkTagFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkTagParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkUserFactory;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public class BulkFactories{
@@ -169,6 +170,28 @@ public class BulkFactories{
 			bulkFactory = new BulkFactory();
 		}
 		return bulkFactory;
+	}
+	
+	public static void warmUp(){
+		logger.debug("Warming up bulk factory " + factoryClasses.size() + " factory instances");
+		prepare();
+		long startWarmUp = System.currentTimeMillis();
+		
+		for(FactoryEnumType f : factoryClasses.keySet()){
+			if(factoryInstances.containsKey(f) || f.equals(FactoryEnumType.ORGANIZATION)) continue;
+			FactoryBase bFact = getInstance(f);
+		}
+		logger.debug("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
+	}
+	
+	public static void coolDown(){
+		for(Object o : factoryInstances.values()){
+			if(o instanceof INameIdFactory){
+				INameIdFactory iFact = (INameIdFactory)o;
+				iFact.clearCache();
+			}
+		}
+		factoryInstances.clear();
 	}
 
 	

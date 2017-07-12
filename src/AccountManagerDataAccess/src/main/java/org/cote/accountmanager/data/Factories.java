@@ -546,6 +546,9 @@ public class Factories {
 	}
 	
 	public static void coolDown(){
+		
+		BulkFactories.coolDown();
+		
 		AuthorizationService.clearProviders();
 		rootOrganization = null;
 		developmentOrganization = null;
@@ -585,7 +588,8 @@ public class Factories {
 			FactoryBase bFact = getFactory(f);
 			if(bFact != null) bFact.registerProvider();
 		}
-		logger.debug("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
+		BulkFactories.warmUp();
+		logger.info("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
 	}
 	public static boolean cleanupOrphans(){
 		boolean out_bool = false;

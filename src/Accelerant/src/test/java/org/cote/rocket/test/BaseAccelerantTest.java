@@ -26,7 +26,11 @@ package org.cote.rocket.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -38,6 +42,7 @@ import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
@@ -136,19 +141,35 @@ public class BaseAccelerantTest{
 	protected static TaskType task2 = null;
 	private static String taskName1 = "Task QA #1";
 	private static String taskName2 = "Task QA #2";
-	
+	protected static Properties testProperties = null;
 	protected static OrganizationType testOrganization = null;
 	
 	@Before
 	public void setUp() throws Exception {
-		try{
 		
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName("org.postgresql.Driver");
-		cf.setUserName("devuser");
-		cf.setUserPassword("password");
-		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
+		File cacheDir = new File("./cache");
+		if(cacheDir.exists() == false) cacheDir.mkdirs();
+		FactoryBase.setEnableSchemaCache(true);
+		FactoryBase.setSchemaCachePath("./cache");
+		
+		if(testProperties == null){
+			testProperties = new Properties();
+		
+			try {
+				InputStream fis = ClassLoader.getSystemResourceAsStream("./resource.properties"); 
+						//new FileInputStream("./resource.properties");
+				
+				testProperties.load(fis);
+				fis.close();
+			} catch (IOException e) {
+				
+				logger.error("Error",e);
+				return;
+			}
+		}
+		ConnectionFactory.setupConnectionFactory(testProperties);
+		
+		
 		sessionId = UUID.randomUUID().toString();
 		sessionId2 = UUID.randomUUID().toString();
 		sessionId3 = UUID.randomUUID().toString();
@@ -277,12 +298,7 @@ public class BaseAccelerantTest{
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
 		}
-		
-		//logger.info("Setup session: " + sessionId);
-		}
-		catch(Exception e){
-			logger.error("Error", e);
-		}
+
 	}
 	
 	@After

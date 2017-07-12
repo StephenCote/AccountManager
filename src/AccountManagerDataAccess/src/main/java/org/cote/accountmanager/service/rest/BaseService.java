@@ -1125,8 +1125,6 @@ public class BaseService {
 		return listByParentObjectId(type, parentType, parentId, startRecord, recordCount, user);
 	}
 	
-	/// TODO: Refactor DataAction and make this private
-	///
 	public static <T> List<T> listByParentObjectId(AuditEnumType type, String parentType, String parentId, long startRecord, int recordCount, UserType user){
 
 		List<T> outObj = new ArrayList<>();
@@ -1162,9 +1160,8 @@ public class BaseService {
 		return outObj;
 	}
 	
-	/// TODO: Refactor DataAction and make this private
-	///
-	public static <T> List<T> getListByParent(AuditEnumType type,String parentType, NameIdType parentObj, long startIndex, int recordCount, long organizationId){
+
+	private static <T> List<T> getListByParent(AuditEnumType type,String parentType, NameIdType parentObj, long startIndex, int recordCount, long organizationId){
 		List<T> dirs = new ArrayList<>();
 		INameIdFactory iFact = getFactory(type);
 
@@ -1190,9 +1187,7 @@ public class BaseService {
 		return dirs;
 	}
 	
-	/// TODO: Refactor DataAction and make this private
-	///
-	public static <T> List<T> getListByGroup(AuditEnumType type, BaseGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
+	private static <T> List<T> getListByGroup(AuditEnumType type, BaseGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
 		List<T> outObj = new ArrayList<>();
 		INameIdFactory iFact = getFactory(type);
 		if(iFact.isClusterByGroup()){

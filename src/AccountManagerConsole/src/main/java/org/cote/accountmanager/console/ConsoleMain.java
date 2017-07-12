@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.console;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -38,6 +39,7 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
@@ -62,6 +64,11 @@ public class ConsoleMain {
 	private static final String defaultRocketSchema = "../../db/postgres/Rocket_PG9_Schema.sql";
 	
 	public static void main(String[] args){
+		
+		File cacheDir = new File("./cache");
+		if(cacheDir.exists() == false) cacheDir.mkdirs();
+		FactoryBase.setEnableSchemaCache(true);
+		FactoryBase.setSchemaCachePath("./cache");
 		
 		Properties props = new Properties();
 		try {
@@ -168,6 +175,7 @@ public class ConsoleMain {
 			ConnectionFactory.setupConnectionFactory(props);
 			logger.debug("Warming up factories");
 			long startWarmUp = System.currentTimeMillis();
+			org.cote.rocket.Factories.prepare();
 			Factories.warmUp();
 			long stopWarmUp = System.currentTimeMillis();
 			logger.debug("Completed warm up in " + (stopWarmUp - startWarmUp) + "ms");

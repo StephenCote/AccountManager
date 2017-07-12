@@ -4,6 +4,7 @@ package org.cote.accountmanager.data;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.FactFactory;
+import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.FunctionFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OperationFactory;
@@ -88,6 +90,11 @@ public class BaseDataAccessTest{
 	@Before
 	public void setUp() throws Exception {
 
+		File cacheDir = new File("./cache");
+		if(cacheDir.exists() == false) cacheDir.mkdirs();
+		FactoryBase.setEnableSchemaCache(false);
+		FactoryBase.setSchemaCachePath("./cache");
+		
 		if(testProperties == null){
 			testProperties = new Properties();
 		
@@ -109,6 +116,7 @@ public class BaseDataAccessTest{
 		sessionId2 = UUID.randomUUID().toString();
 		
 		Factories.warmUp();
+		BulkFactories.getInstance(FactoryEnumType.ACCOUNT);
 
 		try{
 			testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,"password", Factories.getDevelopmentOrganization().getId());

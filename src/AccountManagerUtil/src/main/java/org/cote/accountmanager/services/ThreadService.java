@@ -48,6 +48,14 @@ public abstract class ThreadService implements Runnable {
 
 	public void requestStop(){
 		stopRequested=true;
+		svcThread.interrupt();
+		try{
+			execute();
+		}
+		catch(Exception e){
+			logger.error(e.getMessage());
+		}
+		
 	}
 	
 	public void execute(){

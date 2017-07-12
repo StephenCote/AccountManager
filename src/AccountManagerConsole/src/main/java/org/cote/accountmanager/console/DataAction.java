@@ -96,7 +96,8 @@ public class DataAction {
 		fact.populate(dir);
 		logger.info("Processing " + dir.getPath());
 		processThumbnails(user, dir);
-		List<DirectoryGroupType> subs = BaseService.getListByParent(AuditEnumType.GROUP, "DATA", dir, 0L, 0, dir.getOrganizationId());
+
+		List<DirectoryGroupType> subs = BaseService.listByParentObjectId(AuditEnumType.GROUP, "DATA", dir.getObjectId(), 0L, 0, user);
 		//logger.info("Sub count: " + subs.size());
 		//FileUtil.emitFile("./cacheReport.txt", Factories.reportCaches().getBytes());
 		for(DirectoryGroupType sdir : subs){
@@ -116,7 +117,8 @@ public class DataAction {
 			fact.delete(thumbDir);
 		}
 		thumbDir = fact.getCreateDirectory(user, ".thumbnail", dir, dir.getOrganizationId());
-		List<DataType> dataList = BaseService.getListByGroup(AuditEnumType.DATA, dir, 0L, 0);
+
+		List<DataType> dataList = BaseService.listByGroup(AuditEnumType.DATA, "UNKNOWN", dir.getObjectId(), 0L, 0,user);
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 		
 		int thumbWidth = 128;

@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,6 +52,8 @@ import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
+import org.cote.accountmanager.util.FileUtil;
+import org.cote.accountmanager.util.JSONUtil;
 
 public abstract class FactoryBase {
 	public static final Logger logger = LogManager.getLogger(FactoryBase.class);
@@ -70,12 +73,21 @@ public abstract class FactoryBase {
 	private int addCounter = 0;
 	protected boolean bulkMode = false;
 	private int batchSize = 250;
+	private static boolean enableSchemaCache = false;
+	private static String schemaCachePath = null;
 	
 	/// PostGres sequence name
 	///
 	protected String sequenceName = "orgid_id_seq";
 	
 	private Map<String,List<Long>> bulkMap = null;
+	
+	public static void setEnableSchemaCache(boolean enable){
+		enableSchemaCache = enable;
+	}
+	public static void setSchemaCachePath(String path){
+		schemaCachePath = path;
+	}
 	
 	public FactoryBase()
 	{
@@ -212,6 +224,16 @@ public abstract class FactoryBase {
 			String tableName = tableNames.get(i);
 			
 			DataTable table = null;
+			
+			String schemaCacheFile = schemaCachePath + "/schema." + (bulkMode ? "bulk." : "") + tableName + ".json";
+			
+			if(enableSchemaCache && (new File(schemaCacheFile)).exists()){
+				table = JSONUtil.importObject(FileUtil.getFileAsString(schemaCacheFile), DataTable.class);
+				dataTableMap.put(tableName, i);
+				dataTables.add(table);
+				continue;
+			}
+			
 			try{
 				table = DBFactory.getDataTable(connection, tableName);
 			}
@@ -263,6 +285,11 @@ public abstract class FactoryBase {
 			table.setSelectAggregateTemplate("SELECT %AGGREGATE%" + table_clause);
 			table.setSelectNameTemplate("SELECT name" + table_clause);
 			//table.setUpdateFullTemplate(ubuff.toString());
+			
+			if(enableSchemaCache){
+				logger.info("Caching schema to " + schemaCacheFile);
+				FileUtil.emitFile(schemaCacheFile,JSONUtil.exportObject(table));
+			}
 
 		
 		}
