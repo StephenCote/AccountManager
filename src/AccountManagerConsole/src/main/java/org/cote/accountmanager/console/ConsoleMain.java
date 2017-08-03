@@ -196,9 +196,17 @@ public class ConsoleMain {
 				else{
 					
 					if(SetupAction.setupAccountManager(cmd.getOptionValue("rootPassword"),schemaPath)){
+						GenerateAction.generate(NameEnumType.POLICY,true, false,null);
 						logger.info("Configured Account Manager");
+
 						if(cmd.hasOption("skipRocket") == false){
-							RocketSetupAction.setupRocket(cmd.getOptionValue("rootPassword"), rocketSchemaPath);
+							if(RocketSetupAction.setupRocket(cmd.getOptionValue("rootPassword"), rocketSchemaPath)){		
+								GenerateAction.generate(NameEnumType.POLICY,true, false,null);
+								logger.info("Configured Rocket Schema Extension");
+							}
+							else{
+								logger.error("Failed to configure Rocket Schema Extension");
+							}
 						}
 					}
 					else{
