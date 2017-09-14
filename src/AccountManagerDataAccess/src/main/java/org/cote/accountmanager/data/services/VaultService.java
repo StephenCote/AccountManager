@@ -960,7 +960,10 @@ public class VaultService
 			logger.error("Vault reference is null");
 			return out_bytes;
 		}
-		if (vault.getHaveVaultKey() == false || in_data.getVaulted() == false) return out_bytes;
+		if (vault.getHaveVaultKey() == false || in_data.getVaulted() == false){
+			logger.warn("Data is not vaulted or the vault key is not specified");
+			return out_bytes;
+		}
 
 		// If the data vault id isn't the same as this vault name, then it can't be decrypted.
 		//
@@ -1022,7 +1025,9 @@ public class VaultService
 		/// Using the default group location ("~/.vault)
 		///
 		DirectoryGroupType dir = getVaultGroup(vault);
-
+		if(dir == null){
+			return new ArrayList<VaultType>();
+		}
 		//List<BaseGroupType> groupList = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).listInParent("DATA", dir.getId(), 0L, 0, dir.getOrganizationId());
 		List<DataType> dataList = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(dir, false, 0L, 0, owner.getOrganizationId());
 		
