@@ -103,8 +103,6 @@ public class ConsoleMain {
 		options.addOption("file",true,"File reference");
 		options.addOption("skipRocket",false,"Bit used to indicate to skip setting up the rocket library");
 		options.addOption("action",true,"Variable used for specific actions (currently Vault)");
-		//options.addOption("create",false,"Bit used for specific create options (currently Vault)");
-		//options.addOption("delete",false,"Bit used for specific delete options (currently Vault)");
 		options.addOption("batchSize",true,"Maximum data batch size");
 		options.addOption("patch",false,"Patch the current system");
 		options.addOption("reset",false,"Bit indicating a reset operation");
