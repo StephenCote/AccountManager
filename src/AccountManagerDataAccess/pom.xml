@@ -64,9 +64,10 @@
 											
 								
 						<!-- 
-						<exclude>**/TestFunctionFactPolicy.java</exclude>
 					
+					<exclude>**/TestVaultService.java</exclude>
 						-->
+							<exclude>**/TestFunctionFactPolicy.java</exclude>
 						<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 						<exclude>**/TestControlFactory.java</exclude>
 						<exclude>**/TestSoD.java</exclude>

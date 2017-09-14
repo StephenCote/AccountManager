@@ -23,9 +23,13 @@
  *******************************************************************************/
 package org.cote.rest.services;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import javax.annotation.security.RolesAllowed;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -41,22 +45,35 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.data.services.VaultService;
+import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.AuthenticationResponseEnumType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.JSONUtil;
+import org.cote.accountmanager.util.StreamUtil;
 import org.cote.jaas.AM5SigningKeyResolver;
 import org.cote.jaas.TokenUtil;
 
@@ -68,7 +85,17 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class TokenService {
 	public static final Logger logger = LogManager.getLogger(TokenService.class);
 
+	private static VaultService vaultService = new VaultService();
 	private static SchemaBean schemaBean = null;
+	private String tokenizerVaultUrn = null;
+	private String getTokenizerVaultUrn(){
+		if(tokenizerVaultUrn == null){
+			tokenizerVaultUrn = context.getInitParameter("tokenizer.vault.urn");
+		}
+		return tokenizerVaultUrn;
+	}
+	@Context
+	ServletContext context;
 	
 	@GET @Path("/smd") @Produces(MediaType.APPLICATION_JSON)
 	 public SchemaBean getSmdSchema(@Context UriInfo uri){
@@ -76,6 +103,89 @@ public class TokenService {
 		 schemaBean = ServiceSchemaBuilder.modelRESTService(this.getClass(),uri.getAbsolutePath().getRawPath().replaceAll("/smd$", ""));
 		 return schemaBean;
 	 }
+	
+	
+
+	@RolesAllowed({"api","user","admin"})
+	@GET
+	@Path("/resource/{tokenId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response getTokenizedResource(@PathParam("tokenId") String tokenId, @Context HttpServletRequest request){
+		String outToken = null;
+		UserType user = ServiceUtil.getUserFromSession(request);
+		DataType tokenData = BaseService.readByObjectId(AuditEnumType.DATA, tokenId, request);
+
+		if(tokenData == null){
+			logger.error("Failed to retrieve token data with id '" + tokenId + "'");
+		}
+		else{
+			/// TODO: There's a bug/caveat to reading vaulted data - by using BaseService, TypeSanitizer's postFetch for data will decrypt, decipher, and decompress the data and return a volatile copy with the decrypted value
+			/// But the meta data still indicates it's enciphered
+			try {
+				/// 2017/09/14
+				/// TODO: there appears to be an issue with the way vaulted data is being extracted through TypeSanitizer - it's not being decrypted for some reason (even though the call is being made).
+				/// This isn't consistent with the behavior through GenericResource which does make use of TypeSanitizer, so there's either an obvious glaring issue, a caching issue, or I'm missing something (obvious)
+				VaultBean vaultBean = vaultService.getVaultByUrn(user, tokenData.getVaultId());
+				outToken = new String(vaultService.extractVaultData(vaultBean, tokenData));
+			}
+			catch (DataException | FactoryException | ArgumentException e) {
+				logger.info(e.getMessage());
+			}
+		}
+		return Response.status(outToken == null || outToken.length() == 0 ? 500 : 200).entity(outToken).build();
+	}
+	
+	@RolesAllowed({"api","user","admin"})
+	@POST
+	@Path("/resource")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response tokenizeResource(String json, @Context HttpServletRequest request){
+		String outToken = null;
+		UserType user = ServiceUtil.getUserFromSession(request);
+
+		DirectoryGroupType dir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/TokenizedResources", request);
+		if(dir == null){
+			logger.error("Failed to find ./TokenizedResources path");
+		}
+		else{
+			try {
+				BaseService.normalize(user, dir);
+				String vaultUrn = getTokenizerVaultUrn();
+				VaultBean vaultBean = (vaultUrn == null || vaultUrn.length() == 0 ? null : vaultService.getVaultByUrn(user, vaultUrn));
+				if(vaultBean == null){
+					logger.error("Invalid vault urn: '" + vaultUrn + "'");
+				}
+				else{
+					DataType tokenData = new DataType();
+					String dataName = UUID.randomUUID().toString();
+					tokenData.setName(dataName);
+					tokenData.setMimeType("text/plain");
+					tokenData.setGroupPath(dir.getPath());
+					if(vaultBean.getActiveKeyId() == null) vaultService.newActiveKey(vaultBean);
+					vaultService.setVaultBytes(vaultBean, tokenData, json.getBytes());
+					if(BaseService.add(AuditEnumType.DATA, tokenData, request)){
+						tokenData = BaseService.readByName(AuditEnumType.DATA, dir, dataName, request);
+						if(tokenData != null){
+							outToken = tokenData.getObjectId();
+						}
+						else{
+							logger.error("Failed to find tokenized data with name '" + dataName + "'");
+						}
+					}
+					else{
+						logger.error("Failed to add tokenized data with name '" + dataName + "'");
+					}
+				}
+			} catch (UnsupportedEncodingException | DataException | FactoryException | ArgumentException e) {
+				logger.error(e.getMessage());
+			}
+			
+		}
+		
+		return Response.status(outToken == null || outToken.length() == 0 ? 500 : 200).entity(outToken).build();
+	}
+	
+
 	
 	@POST
 	@Path("/jwt/authenticate")

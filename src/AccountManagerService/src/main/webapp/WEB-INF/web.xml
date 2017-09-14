@@ -103,6 +103,13 @@
     <param-name>ssl.ca.path</param-name>
     <param-value>c:/Projects/ssl</param-value>
   </context-param>
+  
+    <context-param>
+    <description>Tokenizer Vault Urn</description>
+    <param-name>tokenizer.vault.urn</param-name>
+    <param-value>am:data:development:data:home.tokenuser..vault:dg9rzw5z</param-value>
+  </context-param>
+  
 <!-- 
 	Placeholder partly for default values
     <context-param>
