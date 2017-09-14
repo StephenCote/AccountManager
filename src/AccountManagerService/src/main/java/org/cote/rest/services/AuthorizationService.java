@@ -82,7 +82,7 @@ public class AuthorizationService {
 	@Context
 	SecurityContext securityCtx;
 	
-	private static final Logger logger = LogManager.getLogger(GenericResourceService.class);
+	private static final Logger logger = LogManager.getLogger(AuthorizationService.class);
 
 	@GET @Path("/smd") @Produces(MediaType.APPLICATION_JSON)
 	 public SchemaBean getSmdSchema(@Context UriInfo uri){
