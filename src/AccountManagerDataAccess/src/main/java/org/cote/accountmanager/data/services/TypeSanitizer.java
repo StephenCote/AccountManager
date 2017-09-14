@@ -76,6 +76,7 @@ import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.JAXBUtil;
+import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.MapUtil;
 import org.cote.accountmanager.util.MimeUtil;
 
@@ -101,6 +102,10 @@ public class TypeSanitizer implements ITypeSanitizer{
 	public <T> boolean update(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException{
 		return false;
 	}
+	
+	/// 2017/09/14
+	/// TODO: there appears to be an issue with the way vaulted data is being extracted through TypeSanitizer - it's not being decrypted for some reason (even though the call is being made).
+	///
 	public <T> T postFetch(AuditEnumType type, UserType user, T object){
 		T outObj = object;
 		if(type.equals(AuditEnumType.DATA)){
@@ -119,8 +124,6 @@ public class TypeSanitizer implements ITypeSanitizer{
 						try {
 							VaultBean vaultBean = vaultService.getVaultByUrn(user, d.getVaultId());
 							data = vaultService.extractVaultData(vaultBean, d);
-							
-							//data = BaseService.contextVaultService.extractVaultData(BaseService.contextVault, d);
 						} catch (FactoryException | ArgumentException e) {
 							logger.error(e);
 						}
@@ -131,6 +134,7 @@ public class TypeSanitizer implements ITypeSanitizer{
 					d.setCompressed(false);
 					d.setDataBytesStore(data);
 					d.setReadDataBytes(false);
+
 					outObj = (T)d;
 				} catch (DataException e) {
 					
