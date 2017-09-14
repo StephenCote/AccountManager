@@ -1,0 +1,6 @@
+REM Create a vault for a given user.  Note: the name is only helpful for the file name.  Otherwise, the urn value is what is required for use
+REM java -jar AccountManagerConsole.jar -organization /Development -username TokenUser -password password -vault -action create -name tokens -path "c:/projects/vault" -credential "c:/projects/vault/credentials/tokens.credential.json"
+
+REM List vaults for a given user
+REM java -jar AccountManagerConsole.jar -organization /Development -username TokenUser -password password -vault -action list
+REM Example output: tokens (am:data:development:data:home.tokenuser..vault:dg9rzw5z) - the value between the parenthesis (...) is the urn
