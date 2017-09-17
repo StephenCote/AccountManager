@@ -72,7 +72,7 @@
 						<exclude>**/TestControlFactory.java</exclude>
 						<exclude>**/TestSoD.java</exclude>
 						<exclude>**/TestFunctionFactory.java</exclude>	
-						<exclude>**/TestVaultService.java</exclude>
+
 						<exclude>**/TestBulkUpdate.java</exclude>
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
 						

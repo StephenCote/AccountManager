@@ -171,7 +171,7 @@ CREATE TABLE grouprolecache (
 DROP TABLE IF EXISTS vaultkey CASCADE;
 CREATE TABLE vaultkey(
 	KeyId varchar(64),
-	VaultId varchar(64),
+	VaultId text,
 	IsVaulted boolean not null default false,
 	IsEnciphered boolean not null default false
 
