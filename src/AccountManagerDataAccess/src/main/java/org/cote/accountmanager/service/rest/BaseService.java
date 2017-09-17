@@ -240,6 +240,13 @@ public class BaseService {
 		return Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 		
 	}
+	private static <T> T getByUrn(AuditEnumType type, UserType user, String urn) throws ArgumentException, FactoryException {
+		NameIdFactory factory = getFactory(type);
+		T outObj = factory.getByUrn(urn);
+		
+		if(outObj == null) return null;
+		return postFetchObject(type, user, outObj);
+	}
 	private static <T> T getByObjectId(AuditEnumType type, UserType user, String id, long organizationId) throws ArgumentException, FactoryException {
 		NameIdFactory factory = getFactory(type);
 		T outObj = factory.getByObjectId(id, organizationId);
@@ -703,6 +710,49 @@ public class BaseService {
 
 		return outBool;
 	}
+	
+	public static <T> T readByUrn(AuditEnumType type, String urn,HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByUrn",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		if(user==null) return null;
+		return readByUrn(type, urn, user);
+	}
+	public static <T> T readByUrn(AuditEnumType type, String urn,UserType user){
+		T outObj = null;
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByUrn",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, urn);
+		
+		try {
+			
+			NameIdType dirType = getByUrn(type,user, urn);
+			if(dirType == null){
+				AuditService.denyResult(audit, urn + " (" + type + ") doesn't exist in organization " + user.getOrganizationId());
+				return null;
+			}		
+			AuditService.targetAudit(audit, type, dirType.getUrn());
+			if(canViewType(type, user, dirType) == true){
+				outObj = (T)dirType;
+				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)outObj).getPointer() && allowDataPointers == false){
+					AuditService.denyResult(audit, urn + " (" + type + ") is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
+					outObj = null;
+				}
+				else{
+					AuditService.permitResult(audit, "Read " + dirType.getName() + " (#" + dirType.getId() + ")");
+				}
+			}
+			else{
+				AuditService.denyResult(audit,"User is not authorized to view object '" + dirType.getName() + "' #" + dirType.getId());
+			}
+
+		} catch (ArgumentException | FactoryException e1) {
+			
+			logger.error(e1);
+		} 
+
+		return outObj;
+	}
+	
 	public static <T> T readByObjectId(AuditEnumType type, String id,HttpServletRequest request){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByObjectId",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);

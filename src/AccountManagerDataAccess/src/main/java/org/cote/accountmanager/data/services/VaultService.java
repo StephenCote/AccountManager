@@ -903,7 +903,7 @@ public class VaultService
 		return v_sm;
 	}
 	
-	public SecurityBean getVaultCipher(VaultBean vault, String keyId) throws FactoryException, ArgumentException, DataException{
+	private SecurityBean getVaultCipher(VaultBean vault, String keyId) throws FactoryException, ArgumentException, DataException{
 		if(vault.getSymmetricKeyMap().containsKey(keyId) == true){
 			return vault.getSymmetricKeyMap().get(keyId);
 		}
@@ -1001,7 +1001,7 @@ public class VaultService
 		DataType out_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(dataOwner, group.getId());
 		out_data.setName(name);
 		out_data.setMimeType(mime_type);
-
+		out_data.setGroupPath(group.getPath());
 		if (encipher && clientCipher.length > 0)
 		{
 			out_data.setCipherKey(clientCipher);
@@ -1022,43 +1022,57 @@ public class VaultService
 		((NameIdFactory)Factories.getFactory(FactoryEnumType.USER)).populate(owner);
 		vault.setServiceUser(owner);
 		vault.setServiceUserUrn(owner.getUrn());
+
 		/// Using the default group location ("~/.vault)
 		///
 		DirectoryGroupType dir = getVaultGroup(vault);
 		if(dir == null){
 			return new ArrayList<VaultType>();
 		}
-		//List<BaseGroupType> groupList = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).listInParent("DATA", dir.getId(), 0L, 0, dir.getOrganizationId());
-		List<DataType> dataList = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(dir, false, 0L, 0, owner.getOrganizationId());
-		
-		//BaseService.listByGroup(AuditEnumType.DATA, "DATA", dir.getId(), 0, 0L, null);
+
+		List<DataType> dataList = BaseService.listByGroup(AuditEnumType.DATA, "DATA", dir.getObjectId(), 0L, 0, owner);
 		
 		List<VaultType> vaults = new ArrayList<>();
 		for(DataType data : dataList){
-			vaults.add(JSONUtil.importObject(DataUtil.getValueString(data), VaultType.class));
+			//DataType datad = BaseService.readByUrn(AuditEnumType.DATA, data.getUrn(), owner);
+			//if(datad != null) vaults.add(JSONUtil.importObject(DataUtil.getValueString(datad), VaultType.class));
+			VaultBean vaultb = getVaultByUrn(owner, data.getUrn());
+			if(vaultb != null) vaults.add(vaultb);
 		}
-		//for(BaseGroupType group : groupList) vaultNames.add(group.getName());
+
 		return vaults;
 	}
 	
 	/// User provided for context authorization
 	///
 	public VaultBean getVaultByUrn(UserType user, String urn){
-		VaultBean vault = null;
-		VaultType pubVault = null;
-		
 		if(cacheByUrn.containsKey(urn)) return cacheByUrn.get(urn);
 		
-		/// TODO: Switch to BaseService call to include AuthZ check
-		///
-		logger.debug("Missing authorization check for getVaultByUrn");
-		DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(urn);
-
+		DataType data = BaseService.readByUrn(AuditEnumType.DATA, urn, user);
 		if(data == null){
 			logger.error("Data is null for urn '" + urn + "'");
 			return null;
 		}
+		return getVault(user, data);
+	}
+	/// User provided for context authorization
+	///
+	public VaultBean getVaultByObjectId(UserType user, String objectId){
+		if(cacheByUrn.containsKey(objectId)) return cacheByUrn.get(objectId);
 		
+		DataType data = BaseService.readByObjectId(AuditEnumType.DATA, objectId, user);
+		if(data == null){
+			logger.error("Data is null for object id '" + objectId + "'");
+			return null;
+		}
+		return getVault(user, data);
+	}
+	
+	private VaultBean getVault(UserType user, DataType data){
+		VaultBean vault = null;
+		VaultType pubVault = null;
+
+
 		try {
 			pubVault = JSONUtil.importObject(new String(DataUtil.getValue(data)), VaultType.class);
 			initialize(pubVault, null);
@@ -1093,11 +1107,12 @@ public class VaultService
 			logger.error(e);
 			vault = null;
 		}
-		cacheByUrn.put(urn, vault);
+		cacheByUrn.put(data.getUrn(), vault);
 		return vault;
 	}
 	
-	public List<SecurityBean> getCiphers(VaultBean vault){
+	/// TODO: Deprecate?
+	private List<SecurityBean> getCiphers(VaultBean vault){
 		List<SecurityBean> beans = new ArrayList<SecurityBean>();
 		
 		try {
@@ -1110,7 +1125,8 @@ public class VaultService
 	}
 	
 	
-	public boolean updateImprovedData(VaultBean vault, DataType in_data, byte[] in_bytes) throws FactoryException, ArgumentException, UnsupportedEncodingException, DataException, DataAccessException
+	/// TODO: Deprecate?
+	private boolean updateImprovedData(VaultBean vault, DataType in_data, byte[] in_bytes) throws FactoryException, ArgumentException, UnsupportedEncodingException, DataException, DataAccessException
 	{
 
 		if (in_data == null) return false;
