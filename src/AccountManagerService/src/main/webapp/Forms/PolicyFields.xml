@@ -74,7 +74,10 @@
     		<option>ALL</option>
     		<option>ANY</option>
     		<option>NONE</option>
-    		
+      		<option>LESS_THAN</option>
+    		<option>LESS_THAN_OR_EQUALS</option>
+    		<option>GREATER_THAN</option>
+    		<option>GREATER_THAN_OR_EQUALS</option>
     		</select>
     	</p>
 	</div>

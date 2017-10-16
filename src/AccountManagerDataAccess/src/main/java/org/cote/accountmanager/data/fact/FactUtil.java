@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
@@ -42,9 +43,11 @@ import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.ScriptService;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
@@ -57,6 +60,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
+import org.cote.accountmanager.util.DataUtil;
 
 public class FactUtil {
 	public static final Logger logger = LogManager.getLogger(FactUtil.class);
@@ -291,6 +295,22 @@ public class FactUtil {
 
 		return outResponse;
 
+	}
+	
+	public static <T> T getFactSource(FactType f){
+		T obj = ((INameIdFactory)Factories.getFactory(f.getFactoryType())).getByUrn(f.getSourceUrn());
+		if(f.getFactoryType() == FactoryEnumType.DATA){
+			DataType data = (DataType)obj;
+			if(data.getEnciphered()){
+				SecurityBean cipher = KeyService.getSymmetricKeyByObjectId(data.getKeyId(), data.getOrganizationId());
+				if(cipher == null){
+					logger.error("Cipher is null for '" + data.getUrn() + "'");
+					return null;
+				}
+				DataUtil.setCipher(data,cipher);
+			}
+		}
+		return obj;
 	}
 
 }

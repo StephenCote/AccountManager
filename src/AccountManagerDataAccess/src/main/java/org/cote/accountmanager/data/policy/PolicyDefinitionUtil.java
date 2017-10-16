@@ -27,13 +27,20 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.fact.FactUtil;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.security.KeyService;
+import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.OperationType;
+import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PolicyDefinitionType;
 import org.cote.accountmanager.objects.PolicyRequestEnumType;
@@ -42,6 +49,7 @@ import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.util.DataUtil;
 
 public class PolicyDefinitionUtil {
 	public static final Logger logger = LogManager.getLogger(PolicyDefinitionUtil.class);
@@ -137,6 +145,7 @@ public class PolicyDefinitionUtil {
 		}
 		return out_bool;
 	}
+
 	private static void copyParameters(PolicyDefinitionType pdt, PatternType pattern) throws FactoryException, ArgumentException{
 		Factories.getNameIdFactory(FactoryEnumType.PATTERN).populate(pattern);
 		if(pattern.getFact() != null && pattern.getFact().getFactType() == FactEnumType.PARAMETER){
@@ -155,6 +164,20 @@ public class PolicyDefinitionUtil {
 			parmFact.setSourceDataType(pattern.getFact().getSourceDataType());
 			parmFact.setSourceUrn(pattern.getFact().getSourceUrn());
 			parmFact.setSourceUrl(pattern.getFact().getSourceUrl());
+			if(pattern.getPatternType() == PatternEnumType.VERIFICATION && pattern.getFact().getFactoryType() == FactoryEnumType.DATA){
+				DataType data = FactUtil.getFactSource(parmFact);
+				if(data != null){
+					try{
+						parmFact.setFactData(DataUtil.getValueString(data));
+					}
+					catch(DataException e){
+						logger.error(e);
+					}
+				}
+				else{
+					logger.error("Null fact data reference");
+				}
+			}
 			logger.info("Defining Parameter " + parmFact.getUrn());
 			pdt.getParameters().add(parmFact);
 		}
@@ -162,6 +185,84 @@ public class PolicyDefinitionUtil {
 			logger.info("SKIP " + pdt.getUrn() + " Fact " + pattern.getFactUrn());
 		}
 		
+	}
+	public static String printPattern(PatternType pattern, int depth) throws FactoryException, ArgumentException{
+		StringBuffer buff = new StringBuffer();
+		StringBuffer baseTabBuff = new StringBuffer();
+		for(int i = 0; i < depth; i++) baseTabBuff.append("\t");
+		String baseTab = baseTabBuff.toString();
+		String tab = baseTab.toString() + "\t";
+		String subTab = tab + "\t";
+		Factories.getNameIdFactory(FactoryEnumType.PATTERN).populate(pattern);
+		buff.append(baseTab + "PATTERN " + pattern.getName()+ "\n");
+		buff.append(tab + "urn\t" + pattern.getUrn()+ "\n");
+		buff.append(tab + "type\t" + pattern.getPatternType()+ "\n");
+		buff.append(tab + "order\t" + pattern.getLogicalOrder()+ "\n");
+		if(pattern.getOperationUrn() != null) buff.append(tab + "operation\t" + pattern.getOperationUrn()+ "\n");
+		FactType srcFact = pattern.getFact();
+		FactType mFact = pattern.getMatch();
+		buff.append(tab + "SOURCE FACT " + (srcFact != null ? srcFact.getName() : "IS NULL")+ "\n");
+		if(srcFact != null){
+			buff.append(subTab + "urn\t" + srcFact.getUrn()+ "\n");
+			buff.append(subTab + "type\t" + srcFact.getFactType()+ "\n");
+			buff.append(subTab + "factoryType\t" + srcFact.getFactoryType()+ "\n");
+			buff.append(subTab + "sourceUrl\t" + srcFact.getSourceUrl()+ "\n");
+			buff.append(subTab + "sourceUrn\t" + srcFact.getSourceUrn()+ "\n");
+			buff.append(subTab + "sourceType\t" + srcFact.getSourceType()+ "\n");
+			buff.append(subTab + "sourceDataType\t" + srcFact.getSourceDataType().toString()+ "\n");
+			buff.append(subTab + "factData\t" + srcFact.getFactData()+ "\n");
+		}
+		buff.append(tab + "COMPARATOR " + pattern.getComparator()+ "\n");
+		buff.append(tab + "MATCH FACT " + (mFact != null ? mFact.getName() : "IS NULL")+ "\n");
+		if(mFact != null){
+			buff.append(subTab + "urn\t" + mFact.getUrn()+ "\n");
+			buff.append(subTab + "type\t" + mFact.getFactType()+ "\n");
+			buff.append(subTab + "factoryType\t" + mFact.getFactoryType()+ "\n");
+			buff.append(subTab + "sourceUrl\t" + mFact.getSourceUrl()+ "\n");
+			buff.append(subTab + "sourceUrn\t" + mFact.getSourceUrn()+ "\n");
+			buff.append(subTab + "sourceType\t" + mFact.getSourceType()+ "\n");
+			buff.append(subTab + "sourceDataType\t" + mFact.getSourceDataType().toString()+ "\n");
+			buff.append(subTab + "factData\t" + mFact.getFactData()+ "\n");
+			if(mFact.getFactType() == FactEnumType.OPERATION){
+				buff.append(subTab + "OPERATION\t" + (mFact.getSourceUrl() != null ? mFact.getSourceUrl() : "IS NULL")+ "\n");
+				if(mFact.getSourceUrl() != null){
+					OperationType op = Factories.getNameIdFactory(FactoryEnumType.OPERATION).getByUrn(mFact.getSourceUrl());
+					buff.append(subTab + "urn\t" + op.getUrn()+ "\n");
+					buff.append(subTab + "operationType\t" + op.getOperationType()+ "\n");
+					buff.append(subTab + "operation\t" + op.getOperation()+ "\n");
+				}
+				
+			}
+		}
+		return buff.toString();
+	}
+	public static String printRule(RuleType rule, int depth) throws FactoryException, ArgumentException{
+		
+		Factories.getNameIdFactory(FactoryEnumType.RULE).populate(rule);
+		StringBuffer buff = new StringBuffer();
+		StringBuffer baseTabBuff = new StringBuffer();
+		for(int i = 0; i < depth; i++) baseTabBuff.append("\t");
+		String baseTab = baseTabBuff.toString();
+		String tab = baseTab.toString() + "\t";
+
+		buff.append(baseTab + "RULE " + rule.getName()+ "\n");
+		buff.append(tab + "urn\t" + rule.getUrn()+ "\n");
+		buff.append(tab + "type\t" + rule.getRuleType()+ "\n");
+		buff.append(tab + "condition\t" + rule.getCondition()+ "\n");
+		buff.append(tab + "order\t" + rule.getLogicalOrder()+ "\n");
+		
+		List<RuleType> rules = rule.getRules();
+		for(int p = 0; p < rules.size();p++){
+			RuleType crule = rules.get(p);
+			buff.append(printRule(crule,depth+1));
+		}
+		
+		List<PatternType> patterns = rule.getPatterns();
+		for(int p = 0; p < patterns.size();p++){
+			PatternType pattern = patterns.get(p);
+			buff.append(printPattern(pattern,depth+1));
+		}
+		return buff.toString();
 	}
 	public static String printPolicy(PolicyType pol) throws FactoryException, ArgumentException{
 		StringBuffer buff = new StringBuffer();
@@ -174,59 +275,7 @@ public class PolicyDefinitionUtil {
 		List<RuleType> rules = pol.getRules();
 		for(int i = 0; i < rules.size();i++){
 			RuleType rule = rules.get(i);
-			Factories.getNameIdFactory(FactoryEnumType.RULE).populate(rule);
-			buff.append("\tRULE " + rule.getName()+ "\n");
-			buff.append("\t\turn\t" + rule.getUrn()+ "\n");
-			buff.append("\t\ttype\t" + rule.getRuleType()+ "\n");
-			buff.append("\t\tcondition\t" + rule.getCondition()+ "\n");
-			buff.append("\t\torder\t" + rule.getLogicalOrder()+ "\n");
-			List<PatternType> patterns = rule.getPatterns();
-			for(int p = 0; p < patterns.size();p++){
-				PatternType pattern = patterns.get(p);
-				Factories.getNameIdFactory(FactoryEnumType.PATTERN).populate(pattern);
-				buff.append("\t\tPATTERN " + pattern.getName()+ "\n");
-				buff.append("\t\t\turn\t" + pattern.getUrn()+ "\n");
-				buff.append("\t\t\ttype\t" + pattern.getPatternType()+ "\n");
-				buff.append("\t\t\torder\t" + pattern.getLogicalOrder()+ "\n");
-				if(pattern.getOperationUrn() != null) buff.append("\t\t\toperation\t" + pattern.getOperationUrn()+ "\n");
-				FactType srcFact = pattern.getFact();
-				FactType mFact = pattern.getMatch();
-				buff.append("\t\t\tSOURCE FACT " + (srcFact != null ? srcFact.getName() : "IS NULL")+ "\n");
-				if(srcFact != null){
-					buff.append("\t\t\t\turn\t" + srcFact.getUrn()+ "\n");
-					buff.append("\t\t\t\ttype\t" + srcFact.getFactType()+ "\n");
-					buff.append("\t\t\t\tfactoryType\t" + srcFact.getFactoryType()+ "\n");
-					buff.append("\t\t\t\tsourceUrl\t" + srcFact.getSourceUrl()+ "\n");
-					buff.append("\t\t\t\tsourceUrn\t" + srcFact.getSourceUrn()+ "\n");
-					buff.append("\t\t\t\tsourceType\t" + srcFact.getSourceType()+ "\n");
-					buff.append("\t\t\t\tsourceDataType\t" + srcFact.getSourceDataType().toString()+ "\n");
-					buff.append("\t\t\t\tfactData\t" + srcFact.getFactData()+ "\n");
-				}
-				buff.append("\t\t\tCOMPARATOR " + pattern.getComparator()+ "\n");
-				buff.append("\t\t\tMATCH FACT " + (mFact != null ? mFact.getName() : "IS NULL")+ "\n");
-				if(mFact != null){
-					buff.append("\t\t\t\turn\t" + mFact.getUrn()+ "\n");
-					buff.append("\t\t\t\ttype\t" + mFact.getFactType()+ "\n");
-					buff.append("\t\t\t\tfactoryType\t" + mFact.getFactoryType()+ "\n");
-					buff.append("\t\t\t\tsourceUrl\t" + mFact.getSourceUrl()+ "\n");
-					buff.append("\t\t\t\tsourceUrn\t" + mFact.getSourceUrn()+ "\n");
-					buff.append("\t\t\t\tsourceType\t" + mFact.getSourceType()+ "\n");
-					buff.append("\t\t\t\tsourceDataType\t" + mFact.getSourceDataType().toString()+ "\n");
-					buff.append("\t\t\t\tfactData\t" + mFact.getFactData()+ "\n");
-					if(mFact.getFactType() == FactEnumType.OPERATION){
-						buff.append("\t\t\t\tOPERATION\t" + (mFact.getSourceUrl() != null ? mFact.getSourceUrl() : "IS NULL")+ "\n");
-						if(mFact.getSourceUrl() != null){
-							OperationType op = Factories.getNameIdFactory(FactoryEnumType.OPERATION).getByUrn(mFact.getSourceUrl());
-							buff.append("\t\t\t\turn\t" + op.getUrn()+ "\n");
-							buff.append("\t\t\t\toperationType\t" + op.getOperationType()+ "\n");
-							buff.append("\t\t\t\toperation\t" + op.getOperation()+ "\n");
-						}
-						
-					}
-				}
-
-			}
-			
+			buff.append(printRule(rule, 1));
 		}
 		return buff.toString();
 	}

@@ -148,6 +148,7 @@
 			<enumeration value="EXPRESSION"></enumeration>
 			<enumeration value="AUTHORIZATION"></enumeration>
 			<enumeration value="SEPARATION_OF_DUTY"></enumeration>
+			<enumeration value="VERIFICATION"></enumeration>
 		</restriction>
 	</simpleType>
 
@@ -252,6 +253,11 @@
 			<enumeration value="ALL"></enumeration>
 			<enumeration value="ANY"></enumeration>
 			<enumeration value="NONE"></enumeration>
+    		<enumeration value="LESS_THAN"></enumeration>
+    		<enumeration value="LESS_THAN_OR_EQUALS"></enumeration>
+    		<enumeration value="GREATER_THAN"></enumeration>
+    		<enumeration value="GREATER_THAN_OR_EQUALS"></enumeration>
+			
 		</restriction>
 	</simpleType>
 
@@ -315,6 +321,7 @@
 			<enumeration value="SIGNATURE"></enumeration>
 			<enumeration value="SESSION"></enumeration>
 			<enumeration value="KEY"></enumeration>
+			<enumeration value="KNOWLEDGE"></enumeration>
 		</restriction>
 	</simpleType>
 

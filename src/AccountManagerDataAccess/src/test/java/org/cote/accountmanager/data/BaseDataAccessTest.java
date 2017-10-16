@@ -37,6 +37,7 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.FactFactory;
@@ -53,6 +54,7 @@ import org.cote.accountmanager.data.factory.RuleFactory;
 import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.PersonService;
 import org.cote.accountmanager.data.services.ServiceUtil;
@@ -563,6 +565,48 @@ public class BaseDataAccessTest{
 				bsh.setMimeType("text/plain");
 				//DataUtil.setValueString(bsh,script);
 				DataUtil.setValue(bsh, script.getBytes());
+				((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(bsh);
+				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,false,ddir);
+			}
+		}
+		catch(FactoryException | ArgumentException | DataException e) {
+			
+			logger.error("Error",e);
+		}
+		return bsh;
+	}
+	public static DataType getCreateProtectedData(UserType user, String name, byte[] data, DirectoryGroupType dir){
+		
+		DataType bsh = null;
+		try{
+			bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,false,dir);
+			DirectoryGroupType ddir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganizationId());
+			
+			if(bsh != null){
+				SecurityBean cipher = KeyService.getSymmetricKeyByObjectId(bsh.getKeyId(), bsh.getOrganizationId());
+				if(cipher == null){
+					logger.error("Cipher is null for key id '" + bsh.getKeyId() + "'");
+				}
+				DataUtil.setCipher(bsh,cipher);
+				/// Reading the enciphered data to test it will nullify the key reference
+				/// So it must be reset on the data object
+				///
+				if(Arrays.equals(data, DataUtil.getValue(bsh))==false){
+					DataUtil.setCipher(bsh,cipher);
+					DataUtil.setValue(bsh, data);
+					((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(bsh);
+				}
+			}
+			else{
+				SecurityBean cipher = KeyService.newPersonalSymmetricKey(user,false);
+				
+				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, ddir.getId());
+				bsh.setName(name);
+				bsh.setMimeType("text/plain");
+				bsh.setKeyId(cipher.getObjectId());
+				DataUtil.setCipher(bsh,KeyService.promote(cipher));
+				bsh.setEncipher(true);
+				DataUtil.setValue(bsh, data);
 				((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(bsh);
 				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,false,ddir);
 			}
