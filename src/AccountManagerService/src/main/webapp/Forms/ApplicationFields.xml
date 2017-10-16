@@ -66,13 +66,53 @@
 				ac.getProperties().defaultPath = oBean.path;
 			}
 			else if(s.match(/^permission$/gi)){
-				ac.getProperties().defaultParent = rocket.getApplicationPermissionBase(oBean); 
+				ac.getProperties().defaultParent = this.getApplicationPermissionBase(); 
 			}
 			if(s.match(/^account$/gi)) ac.decorateListItemName = this.decorateAccountItem;
 			//if(s.match(/^group$/gi)) ac.getProperties().listGroupType = "ACCOUNT";
 
 			ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
 		},
+		addPermission : function(o, sName, sType){
+			var oNP = new org.cote.objects.basePermissionType();
+			oNP.id = 0;
+			oNP.name = sName;
+			oNP.parentId = o.id;
+			oNP.nameType = "PERMISSION";
+			oNP.permissionType = (sType ? sType : "USER");
+			oNP.parentPath = o.parentPath + "/" + o.name;
+			return AM6Client.update("PERMISSION", oNP);
+		},
+		getApplicationPermissionBase : function(){
+			var oBean = this.getBean("rocketType");
+			
+			var oPB = uwm.getDefaultParentForType("Permission",AM6Client.user("PERMISSION","USER"));
+				if(!oPB){
+					alert("Invalid parent permission")
+					return 0;
+				}
+				var oPA = AM6Client.getByName("PERMISSION",oPB.objectId,"Applications");
+
+				if(oPA == null && this.addPermission(oPB,"Applications","APPLICATION")){
+					oPA =  AM6Client.getByName("PERMISSION",oPB.objectId,"Applications");
+				}
+				if(oPA == null){
+					alert("Invalid permission root");
+					return 0;
+				}
+				var oPA1 = AM6Client.getByName("PERMISSION",oPA.objectId,oBean.name);
+				if(oPA1 == null && this.addPermission(oPA,oBean.name,"APPLICATION")){
+					oPA1 =AM6Client.getByName("PERMISSION",oPA.objectId,oBean.name);
+				}	
+				if(oPA1 == null){
+					alert("Invalid permission base");
+					return;
+				}
+				return oPA1;
+
+			},
+		
+		
 		decorateAccountItem : function(o){
 			var sF = AM6Client.getAttributeValue(o,"firstName");
 			var sM = AM6Client.getAttributeValue(o,"middleName");
@@ -81,9 +121,21 @@
 			return o.name;
 		},
 		addType : function(o){
-			Hemi.log("Add group type: " + o.name + ":" + o.mimeType);
+			Hemi.log("Add group type: " + o.name + ":" + o.parentId);
 
-			return rocket.addApplication(o.name, o.parentId);
+			//return rocket.addApplication(o.name, o.parentId);
+			//window.dbg = o;
+			var b = AM6Client.update("GROUP",o);
+			
+			if(b && irocket.getCommunityMode() && irocket.getCommunityLifecycle() && irocket.getCommunityProject()){
+				var oP = AM6Client.get("GROUP",o.parentId),g;
+				if(oP) g = AM6Client.find("GROUP","DATA",oP.path + "/" + o.name);
+				if(g){
+					b = AM6Client.configureCommunityProjectGroupEntitlements(irocket.getCommunityLifecycle().objectId, irocket.getCommunityProject().objectId, g.objectId);
+				}
+				else b = 0;
+			}
+			return b;
 
 		}
 	]]></embedded-script>

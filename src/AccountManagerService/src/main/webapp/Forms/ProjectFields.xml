@@ -67,11 +67,12 @@
 					this.setStatus("Invalid community lifecycle selection");
 					return false;
 				}
-				var oP = rocket.createCommunityProject(oL,o.name);
+				var oP = AM6Client.addCommunityProject(oL.objectId,o.name);
 				if(!oP || oP == null){
 					this.setStatus("Failed to create community project");
 					return false;
 				}
+				oP = AM6Client.communityProject(oL.name, o.name);
 				oP.description = o.description;
 				oP.blueprints = o.blueprints;
 				oP.requirements = o.requirements;
@@ -90,7 +91,7 @@
 			}
 			else{
 				uwmServiceCache.clearCache();
-				return rocket.addProject(o.name, o.description,o.blueprints, o.requirements, o.dependencies, o.artifacts, o.modules, o.stages, o.schedule,o.groupPath);
+				return AM6Client.add("PROJECT",o);
 			}
 		},
 		prepareSave : function(o){

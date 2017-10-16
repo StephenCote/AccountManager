@@ -46,7 +46,7 @@ function selectGroup(){
 <div template = "/AccountManagerService/Forms/MainIn.xml"></div>
 <p><input type = "button" value = "Gallery" onclick = "doGallery()" /></p>
 <p><input type = "button" value = "Logout" onclick = "doLogout()" /></p>
-<p><select id = "selectGroup" onchange = "selectGroup()"><option>Business</option><option>Event</option><option>Form</option><option>Identity</option><option>Method</option><option selected = "true">Policy</option><option>Project</option><option>Resource</option></select></p>
+<p><span template = "/AccountManagerService/Templates/SelectCommunity.xml"></span> <select id = "selectGroup" onchange = "selectGroup()"><option>Business</option><option>Event</option><option>Form</option><option>Identity</option><option>Method</option><option selected = "true">Policy</option><option>Project</option><option>Resource</option></select></p>
 <div id = "main" template = "/AccountManagerService/Templates/PolicyMain.xml">
 </div>
 

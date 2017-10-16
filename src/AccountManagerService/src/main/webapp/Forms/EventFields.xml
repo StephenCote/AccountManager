@@ -427,7 +427,6 @@
 				var oP;
 				if(o.parentId){
 					oP = AM6Client.get("EVENT",o.parentId);
-					//oT = rocket.getEventByParent(o.name,oP);
 					oT = AM6Client.getByNameInGroupParent("EVENT",oP.objectId,o.name);
 				}
 				else{

@@ -15,7 +15,7 @@
 	<embedded-script><![CDATA[
 		addType : function(o){
 			Hemi.log("Add cost type: " + o.name + ":" + o.text);
-			return rocket.addCost(o.name, o.currencyType, o.value, o.groupPath);
+			return  AM6Client.update("COST",o);
 		},
 
 		prepareSave : function(o){

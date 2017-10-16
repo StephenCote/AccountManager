@@ -193,6 +193,48 @@
 		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("USER","GET","_principal_",v.json);} if(f) f(s,v);};
 	   return Hemi.xml.getJSON(sPrincipal + "/",fc,(fH ? 1 : 0));
 	}
+	function configureCommunityProjectGroupEntitlements(sLid, sPid, sGid,fH){
+		var f = fH;
+		var fc = function(s,v){if(f) f(s,v);};
+
+	   return Hemi.xml.getJSON(sComm + "/configure/" + sLid + "/" + sPid + "/" + sGid,fc,(fH ? 1 : 0));	
+	}
+	function getCommunityProjectRoleBase(oP, fH){
+		var sType = "ROLE";
+		var o = getFromCache(sType, "GET", oP.objectId);
+		if(o){
+			if(fH) fH("",o);
+			return o;
+		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",oP.objectId,v.json);} if(f) f(s,v);};
+
+	   return Hemi.xml.getJSON(sComm + "/role/base/" + oP.objectId,fc,(fH ? 1 : 0));
+	}
+	function getCommunityProjectPermissionBase(oP, fH){
+		var sType = "PERMISSION";
+		var o = getFromCache(sType, "GET", oP.objectId);
+		if(o){
+			if(fH) fH("",o);
+			return o;
+		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",oP.objectId,v.json);} if(f) f(s,v);};
+
+	   return Hemi.xml.getJSON(sComm + "/permission/base/" + oP.objectId,fc,(fH ? 1 : 0));
+	}
+	function addCommunity(sCommunityName, fH){
+		var sType = "COMMUNITY";
+		var o = getFromCache(sType, "GET", sCommunityName);
+		if(o){
+			if(fH) fH("",o);
+			return o;
+		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sCommunityName,v.json);} if(f) f(s,v);};
+
+	   return Hemi.xml.getJSON(sComm + "/new/" + sCommunityName,fc,(fH ? 1 : 0));
+	}
 	function getCommunity(sCommunityName, fH){
 		var sType = "COMMUNITY";
 		var o = getFromCache(sType, "GET", sCommunityName);
@@ -216,6 +258,18 @@
 		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sProjectName,v.json);} if(f) f(s,v);};
 
 	   return Hemi.xml.getJSON(sComm + "/find/" + sCommunityName + "/" + sProjectName,fc,(fH ? 1 : 0));
+	}
+	function addCommunityProject(sCommunityId, sProjectName,fH){
+		var sType = "COMMUNITY." + sCommunityId + ".PROJECT";
+		var o = getFromCache(sType, "GET", sProjectName);
+		if(o){
+			if(fH) fH("",o);
+			return o;
+		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sProjectName,v.json);} if(f) f(s,v);};
+
+	   return Hemi.xml.getJSON(sComm + "/new/" + sCommunityId + "/" + sProjectName,fc,(fH ? 1 : 0));
 	}
 	
 	function get(sType,sObjectId,fH){
@@ -333,8 +387,12 @@
 		define : define,
 		evaluate : evaluate,
 		find : find,
+		addCommunityProject : addCommunityProject,
+		addCommunity : addCommunity,
 		community : getCommunity,
 		communityProject : getCommunityProject,
+		communityProjectPermissionBase : getCommunityProjectPermissionBase,
+		communityProjectRoleBase : getCommunityProjectRoleBase,
 		findByTag : findByTag,
 		countByTag : countByTag,
 		make : make,
@@ -350,6 +408,7 @@
 		principal : getPrincipal,
 		anonymous : getDocumentControl,
 		entitlements : listEntitlementsForType,
+		configureCommunityProjectGroupEntitlements : configureCommunityProjectGroupEntitlements,
 		members : listMembers,
 		member : setMember,
 		user: getUserObject,

@@ -84,7 +84,7 @@
 	selectLifecycle : function(){
 		var vS = this.GetElementByRID("lifecycles").value;
 		if(vS.match(/^\d+$/)){
-			var oL = rocket.getLifecycleById(vS);
+			var oL = AM6Client.get("LIFECYCLE",vS);
 			irocket.setCommunityLifecycle(oL);
 			this.refreshProjectList();
 			this.selectProject();
@@ -94,12 +94,12 @@
 		var vS = this.GetElementByRID("projects").value;
 
 		if(vS.match(/^\d+$/)){
-			var oP = rocket.getProjectById(vS);
+			var oP = AM6Client.get("PROJECT",vS);
 			if(!irocket.getCommunityMode()) irocket.setCurrentProject(oP);
 			else irocket.setCommunityProject(oP);
 		}
 		else if(vS == "_new"){
-			var o = new org.cote.rocket.beans.projectType();
+			var o = new org.cote.objects.projectType();
 			o.name = "";
 			o.description = "";
 			o.id = 0;

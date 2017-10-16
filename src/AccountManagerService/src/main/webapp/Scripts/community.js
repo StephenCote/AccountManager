@@ -116,10 +116,10 @@
 		var o = d;
 		switch(s){
 			case "Permission":
-				o = rocket.getProjectPermissionBase(contextProject);
+				o = AM6Client.communityProjectPermissionBase(contextProject);
 				break;
 			case "Role":
-				o = rocket.getProjectRoleBase(contextProject);
+				o = AM6Client.communityProjectRoleBase(contextProject);
 				break;
 		}
 		return o;
@@ -193,7 +193,7 @@
 		oResourceGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Resource"));
 		oScheduleGroup = AM6Client.make("GROUP","DATA",getBasePathByType("Schedule"));
 	}
-	
+	/*
 	/// There are a few bugs here related to retrieving child tasks in the same group when multiple tasks of the same name exists
 	/// the fix is to add readByParent APIs to the server and client
 	/// In the meantime, the task name is prefaced with the parent name
@@ -222,26 +222,12 @@
 				}
 				var oD = (oTask.due ? new Date(oTask.due) : new Date());
 				var aD = [];
-				/*
-				 /// these are artifacts
-				if(oTask.dependencies){
-					for(var d = 0; d < oTask.dependencies.length;d++){
-						var oDep = rocket.getTask(oTask.dependencies[d],oTaskGroup);
-						if(oDep && oDep != null) aD.push(oDep);
-					}
-				}
-				*/
+
 				if(rocket.addTask(sName, oTask.description, (oE ? "ESTIMATED" : "UNPLANNED"), (i+1), oD, oD, oD, oE, 0, aD, 0, 0, 0, 0, 0, aR, (oParent ? oParent.id : 0),oTaskGroup)){
 					if(oParent) oT = rocket.getTaskByParent(sName,oParent);
 					else oT = rocket.getTask(sName,oTaskGroup);
 					if(oTask.tasks){
 						var aC = importTaskModel(oTask,bOverwrite,sPref,oT);
-						/*
-						for(var c = 0; c < aC.length;c++){
-							aC[c].parentId = oT.id;
-							rocket.updateTask(aC[c]);
-						}
-						*/
 					}
 				}
 
@@ -454,7 +440,7 @@
 		}
 	    return rocket.updateProject(oProj);
 	}
-
+	*/
 	
 	function instrumentApi(o,s){
 		var _s = o.getProperties(),t,tl,obj = o,_o = o.getObjects();
@@ -571,8 +557,8 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 		contextProject = (p ? p : 0);
 		contextProjectGroup = 0;
 		if(contextProject) contextProjectGroup = AM6Client.get("GROUP",contextProject.groupId);
-		currentRoleBucket = (contextProject ? rocket.getProjectRoleBase(contextProject) : 0);
-		currentPermissionBucket = (contextProject ? rocket.getProjectPermissionBase(contextProject) : 0);
+		currentRoleBucket = (contextProject ? AM6Client.communityProjectRoleBase(contextProject) : 0);
+		currentPermissionBucket = (contextProject ? AM6Client.communityProjectPermissionBase(contextProject) : 0);
 
 		lifecycleScope = (b ? true : false);
 		updateBase();
@@ -730,25 +716,31 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 		return v;
 	},
 	listLifecycles : function(){
-		if(!communityMode) return rocket.listLifecycles(lifecyclePath,0,0);
+		var oG = AM6Client.find("GROUP","DATA",lifecyclePath);
+		if(!oG || oG == null) return [];
+		if(!communityMode) return AM6Client.list("LIFECYCLE",oG.objectId,0,0);
 		var lifList = [];
-		var a = AM6Client.list("GROUP",AM6Client.find("GROUP","DATA",lifecyclePath).objectId,"DATA",0,0);
+		var a = AM6Client.list("GROUP",oG.objectId,0,0);
 		for(var i = 0; i < a.length; i++){
-			var oP = rocket.getCommunityLifecycle(a[i].name);
+			var oP =  AM6Client.getByName("LIFECYCLE",a[i].objectId,a[i].name);
 			if(oP != null)  lifList.push(oP);
 		}
 		return lifList;
 	},
 	listProjects : function(){
-		if(!communityMode) return rocket.listProjects(projectPath,0,0);
+		if(!communityMode){
+			var oG = AM6Client.find("GROUP","DATA",projectPath);
+			if(!oG || oG == null) return [];
+			return AM6Client.list("PROJECT",oG.objectId,0,0);
+		}
 		var oL = contextLifecycle;
 		if(!oL || oL == null){
 			return [];
 		}
 		var projList = [];
-		var a = AM6Client.list("GROUP",AM6Client.find("GROUP","DATA",oL.groupPath + "/Projects").objectId,"DATA",0,0);
+		var a = AM6Client.list("GROUP",AM6Client.find("GROUP","DATA",oL.groupPath + "/Projects").objectId,0,0);
 		for(var i = 0; i < a.length; i++){
-			var oP = rocket.getCommunityProject(oL.name,a[i].name);
+			var oP = AM6Client.getByName("PROJECT",a[i].objectId,a[i].name);
 			if(oP != null)  projList.push(oP);
 		}
 		return projList;

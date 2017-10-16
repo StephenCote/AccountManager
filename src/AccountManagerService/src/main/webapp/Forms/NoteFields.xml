@@ -114,7 +114,8 @@
 			}
 			for(var i = 0; i < a.length;i++){
 				if(typeof a[i]=="object"){
-					rocket.deleteNote(a[i]);
+					AM6Client.delete("NOTE",a[i].objectId);
+					//rocket.deleteNote(a[i]);
 					iUp++;
 				}
 			}

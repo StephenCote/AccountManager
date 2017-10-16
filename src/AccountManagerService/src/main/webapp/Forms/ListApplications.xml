@@ -8,7 +8,13 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-			this.initGrid("Application",uwm.getPathForType("Application"),"Application");
+			if(!this.getProperties().listGroupType) this.getProperties().listGroupType = "DATA";
+			// this.initGrid("Group",uwm.getPathForType("Application"),"Application");
+			this.initGrid("Group",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Application","~/")),"Application");
+
+		},
+		_provideList : function(sP, sF, iS, iC){
+			return this.getObjects().lifList.slice(iS,iS + iC); 
 		},
 		template_destroy : function(){
 			

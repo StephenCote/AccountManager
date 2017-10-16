@@ -101,7 +101,7 @@
 			*/
 			if(o.id){
 				this.updateChildLocations(o);
-				rocket.flushLocation(o);
+				AM6Client.clearCache("LOCATION");
 			}	
 			return 1;
 		}
