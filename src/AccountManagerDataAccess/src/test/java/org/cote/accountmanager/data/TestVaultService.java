@@ -243,7 +243,9 @@ public class TestVaultService extends BaseDataAccessTest{
 
 	}
 */
-	
+	/*
+	 * TODO: Refactor. 2017/09/16 - once the authZ checks were added in, this test is failing because the test user is trying to read a vault it's not authorized to accesss
+	 */
 	@Test
 	public void TestVault2Data(){
 		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
