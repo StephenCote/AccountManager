@@ -111,6 +111,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		person.getNotes().addAll(ppFact.getDatasFromParticipation(person));
 		person.getAccounts().addAll(ppFact.getAccountsFromParticipation(person));
 		person.getUsers().addAll(ppFact.getUsersFromParticipation(person));
+		person.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForPerson(person));
 		if(person.getContactInformation() != null) ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).populate(person.getContactInformation());
 		person.setPopulated(true);
 		
@@ -262,8 +263,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		new_obj.setNameType(NameEnumType.PERSON);
 		super.read(rset, new_obj);
 		readGroup(rset, new_obj);
-		new_obj.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForPerson(new_obj));
-		
+	
 		new_obj.setBirthDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("birthdate")));
 		new_obj.setDescription(rset.getString("description"));
 		new_obj.setFirstName(rset.getString("firstname"));
@@ -293,7 +293,6 @@ public class PersonFactory extends NameIdGroupFactory {
 				if(bulkMode) BulkFactories.getBulkFactory().setDirty(FactoryEnumType.PERSONPARTICIPATION);
 				Set<Long> set = new HashSet<Long>();
 				BaseParticipantType[] maps = ppFact.getPartnerParticipations(data).toArray(new BaseParticipantType[0]);
-				//logger.info("Updating " + maps.length + " Partner References");
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getPartners().size();i++){
@@ -306,7 +305,6 @@ public class PersonFactory extends NameIdGroupFactory {
 						set.remove(data.getPartners().get(i).getId());
 					}
 				}
-				//ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				/// Dependents
 				///
@@ -324,7 +322,6 @@ public class PersonFactory extends NameIdGroupFactory {
 						set.remove(data.getDependents().get(i).getId());
 					}
 				}
-				//ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				
 				/// Datas
@@ -343,7 +340,6 @@ public class PersonFactory extends NameIdGroupFactory {
 						set.remove(data.getNotes().get(i).getId());
 					}
 				}
-				//ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				
 				/// Accounts
@@ -362,7 +358,6 @@ public class PersonFactory extends NameIdGroupFactory {
 						set.remove(data.getAccounts().get(i).getId());
 					}
 				}
-				//ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				
 				/// Users
@@ -381,7 +376,6 @@ public class PersonFactory extends NameIdGroupFactory {
 						set.remove(data.getUsers().get(i).getId());
 					}
 				}
-				//ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				if(delIds.size() > 0) ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), data, data.getOrganizationId());
 				/// 2014/09/10
@@ -400,7 +394,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		PersonType use_map = (PersonType)map;
-		fields.add(QueryFields.getFieldContactInformationId(use_map.getContactInformation()));
+		if(use_map.getContactInformation() != null) fields.add(QueryFields.getFieldContactInformationId(use_map.getContactInformation()));
 		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
 		fields.add(QueryFields.getFieldBirthDate(use_map.getBirthDate()));
 		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
@@ -533,57 +527,6 @@ public class PersonFactory extends NameIdGroupFactory {
 	@Override
 	public <T> List<T> search(QueryField[] filters, ProcessingInstructionType instruction, long organizationId){
 		return searchByIdInView("personContact", filters,instruction,organizationId);
-
-/*
-		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
-		String sqlQuery = assembleQueryString("SELECT id FROM personContact", filters, connectionType, instruction, organization.getId());
-		logger.info("Query=" + sqlQuery);
-		List<Long> ids = new ArrayList<Long>();
-		List<T> persons = new ArrayList<T>();
-		
-		try{
-			PreparedStatement statement = connection.prepareStatement(sqlQuery);
-			DBFactory.setStatementParameters(filters, statement);
-			ResultSet rset = statement.executeQuery();
-			while(rset.next()){
-				ids.add(rset.getLong("id"));
-			}
-			rset.close();
-			
-			/// don't paginate the subsequent search for ids because it was already filtered.
-			/// Create a new instruction and just copy the order clause
-			///
-			ProcessingInstructionType pi2 = new ProcessingInstructionType();
-			pi2.setOrderClause(instruction.getOrderClause());
-			persons = listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organizationId);
-			logger.info("Retrieved " + persons.size() + " from " + ids.size() + " ids");
-		}
-		catch(SQLException sqe){
-			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
-		} catch (FactoryException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		}
-		finally{
-			
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-				
-				logger.error("Error",e);
-			}
-		}
-		//return search(fields, instruction, organizationId);
-		return persons;
-*/
 	}
 	
 	public UserType getUserPerson(PersonType person){

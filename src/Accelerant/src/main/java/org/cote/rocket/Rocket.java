@@ -116,6 +116,11 @@ public class Rocket {
 		rocketGroupToTypeMap.put("FunctionFacts", FactoryEnumType.FUNCTIONFACT);
 		rocketGroupToTypeMap.put("Operations", FactoryEnumType.OPERATION);
 		rocketGroupToTypeMap.put("Rules", FactoryEnumType.RULE);
+		
+		rocketGroupToTypeMap.put("Locations", FactoryEnumType.LOCATION);
+		rocketGroupToTypeMap.put("Events", FactoryEnumType.EVENT);
+		rocketGroupToTypeMap.put("Traits", FactoryEnumType.TRAIT);
+
 	}
 	
 	
@@ -272,13 +277,7 @@ public class Rocket {
 				}
 				EffectiveAuthorizationService.rebuildPendingRoleCache();
 			}
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -292,11 +291,7 @@ public class Rocket {
 		try {
 			out_lc = Rocket.getLifecycle(lifecycleName, user.getOrganizationId());
 			if(out_lc != null) out_proj = Rocket.getProject(projectName, out_lc, user.getOrganizationId());
-		} catch (FactoryException e1) {
-			
-			logger.error("Error",e1);
-			return false;
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -314,10 +309,7 @@ public class Rocket {
 		UserType adminUser = null;
 		try {
 			adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", user.getOrganizationId());
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -329,13 +321,7 @@ public class Rocket {
 			if(out_bool){
 				EffectiveAuthorizationService.rebuildPendingRoleCache();
 			}
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}

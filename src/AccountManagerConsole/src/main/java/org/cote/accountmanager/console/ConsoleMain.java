@@ -67,7 +67,10 @@ public class ConsoleMain {
 		
 		File cacheDir = new File("./cache");
 		if(cacheDir.exists() == false) cacheDir.mkdirs();
-		FactoryBase.setEnableSchemaCache(true);
+		/// Don't cache schema for setup, obviously, or the cached values won't be accurate
+		/// alternately, ignore or nuke cache on setup
+		///
+		FactoryBase.setEnableSchemaCache(false);
 		FactoryBase.setSchemaCachePath("./cache");
 		
 		Properties props = new Properties();

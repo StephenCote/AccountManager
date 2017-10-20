@@ -73,6 +73,7 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.GroupParticipantType;
@@ -114,7 +115,7 @@ public class IdentityService {
 
 	private static String lifecycleName = "Identity Service";
 	private static String lifecycleAdmin = "identityadmin";
-	private static String lifecycleAdminDefaultPassword = "password";
+	private static CredentialType lifecycleAdminCredential = null;
 	public static final int MAX_ATTRIBUTES = 10;
 	public static final String [] HEADER_ACCOUNT = {"uid","owner","accountType","email","attribute1","attribute2","attribute3","attribute4","attribute5","attribute6","attribute7","attribute8","attribute9","attribute10"};
 	public static final String [] HEADER_PERSON = {"uid","firstName","middleName","lastName","gender","birthdate","personType","email","manager","homeAddress","homeCity","homeRegion","homeState","homePostalCode","homeCountry","workAddress","workCity","workRegion","workState","workPostalCode","workCountry","attribute1","attribute2","attribute3","attribute4","attribute5","attribute6","attribute7","attribute8","attribute9","attribute10"};
@@ -141,8 +142,8 @@ public class IdentityService {
 	public static void setLifecycleAdmin(String lifecycleAdmin) {
 		IdentityService.lifecycleAdmin = lifecycleAdmin;
 	}
-	public static void setLifecycleAdminDefaultPassword(String lifecycleAdminDefaultPassword) {
-			IdentityService.lifecycleAdminDefaultPassword = lifecycleAdminDefaultPassword;
+	public static void setLifecycleAdminCredential(CredentialType lifecycleAdminDefaultPassword) {
+			IdentityService.lifecycleAdminCredential = lifecycleAdminDefaultPassword;
 	}
 	public boolean isInitialized(){
 		return initialized;
@@ -164,10 +165,7 @@ public class IdentityService {
 		DirectoryGroupType dir = null;
 		try {
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(getAdminUser(), "Config",((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(),proj.getOrganizationId()), productOrganization.getId());
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -223,15 +221,8 @@ public class IdentityService {
 				out_bool = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data);
 			}
 			else out_bool = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(data);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		} catch (DataException e) {
-			
-			logger.error("Error",e);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
+		} catch (ArgumentException | DataException | FactoryException e) {
+			logger.error(e);
 		} 
 		return out_bool;
 	}
@@ -247,8 +238,6 @@ public class IdentityService {
 			logger.info("Deleting IdentityService Project " + project.getName() + " Data");
 			
 			try {
-				//AccountType projAccount = getProjectAccount(project);
-				
 				if(deleteConfiguration){
 					logger.info("Deleting configuration");
 					((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).delete(getConfigDirectory(project));
@@ -271,8 +260,6 @@ public class IdentityService {
 						((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).deletePermissionsByIds(ids,productOrganization.getId());
 						((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(perParent);
 					}
-					
-					//deleteProjectAccounts(project,svcs.get(i),projAccount);
 				}
 				if(svcDir == null){
 					logger.warn("Service directory does not exist");
@@ -292,17 +279,8 @@ public class IdentityService {
 				Factories.cleanupOrphans();
 				
 				out_bool = true;
-			} catch (FactoryException e) {
-				
-				logger.error(e.getMessage());
-				logger.error("Error",e);
-			} catch (ArgumentException e) {
-				
-				logger.error(e.getMessage());
-				logger.error("Error",e);
-			} catch (DataAccessException e) {
-				
-				logger.error("Error",e);
+			} catch (FactoryException | ArgumentException | DataAccessException e) {
+				logger.error(e);
 			}
 		
 		return out_bool;
@@ -313,17 +291,15 @@ public class IdentityService {
 		return RocketSecurity.getProjectDirectory(adminUser, project, "Persons");
 	}
 	public DirectoryGroupType getApplicationsRoot(ProjectType project){
+		
+		// Note: Applications is a pre-allocated project group
 		return RocketSecurity.getProjectDirectory(adminUser,project,"Applications");
 	}
 	public DirectoryGroupType getApplication(ProjectType project, String name){
 		DirectoryGroupType out_dir = null;
 		try {
 			out_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(name, getApplicationsRoot(project), project.getOrganizationId());
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
+		} catch (FactoryException | ArgumentException e) {
 			logger.error("Error",e);
 		}
 		return out_dir;
@@ -337,19 +313,8 @@ public class IdentityService {
 		ProjectType proj = null;
 		try {
 			proj = Rocket.createProject(adminUser, lifecycle, name);
-		} catch (FactoryException e) {
-			
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-			
-		} catch (DataAccessException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
 		}
 		return proj;
 	}
@@ -362,15 +327,8 @@ public class IdentityService {
 		ProjectType proj = null;
 		try {
 			proj = Rocket.getProject(name, lifecycle, productOrganization.getId());
-		} catch (FactoryException e) {
-			
+		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-			
 		}
 		return proj;
 	}
@@ -397,10 +355,10 @@ public class IdentityService {
 					return false;
 				}
 				chkUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(lifecycleAdmin, productOrganization.getId());
-				CredentialService.newHashedPasswordCredential(chkUser, chkUser,lifecycleAdminDefaultPassword, true,false);
+				CredentialService.newHashedPasswordCredential(chkUser, chkUser,new String(lifecycleAdminCredential.getCredential()), true,false);
 			}
 			adminUser = chkUser;
-			/*
+			
 			LifecycleType chkLife = Rocket.getLifecycle(lifecycleName, productOrganization.getId());
 			if(chkLife == null){
 				chkLife = Rocket.createLifecycle(adminUser, lifecycleName);
@@ -411,19 +369,12 @@ public class IdentityService {
 			}
 			
 			lifecycle = chkLife;
-			*/
+			
 			initialized = true;
 			out_bool = true;
 		}
-		catch (FactoryException e) {
-			
+		catch (FactoryException | ArgumentException | DataAccessException e) {
 			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} 
-		catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
 		} 
 
 		return out_bool;
@@ -452,15 +403,9 @@ public class IdentityService {
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(svc);
 			ApplicationPermissionType parent = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).findPermission(PermissionEnumType.APPLICATION, svc.getPath(), productOrganization.getId());
 			permissions = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionList(parent, PermissionEnumType.APPLICATION, 0, 0, productOrganization.getId());
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
-			
-			logger.error("Error",e);
+			logger.error(e);
 		}
 		return permissions;
 
@@ -470,8 +415,8 @@ public class IdentityService {
 		try{
 			outList = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getListByParent(GroupEnumType.DATA, svc, 0, 0, productOrganization.getId());
 		}
-		catch(Exception e){
-			logger.error(e.getMessage());
+		catch (FactoryException | ArgumentException  e) {
+			logger.error(e);
 		}
 		return outList;
 	}
@@ -485,7 +430,7 @@ public class IdentityService {
 		try{
 			outList = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).listInGroup(svc, 0, 0, productOrganization.getId());
 		}
-		catch(Exception e){
+		catch (FactoryException | ArgumentException  e) {
 			logger.error(e.getMessage());
 		}
 		return outList;
@@ -493,7 +438,7 @@ public class IdentityService {
 
 	/// Note: for role import, it's currently expecting the role structure to be purged before the import
 	///
-	private int importRoles(String sessionId, ProjectType project, List<PersonRoleType> roles){
+	public int importRoles(String sessionId, ProjectType project, List<PersonRoleType> roles){
 		int out_rec = 0;
 		try {
 			PersonRoleType baseRole = getProjectRoleBucket(project);
@@ -543,24 +488,20 @@ public class IdentityService {
 			}
 			Factories.getAttributeFactory().populateAttributes(grp);
 			for(int i = 0; i < importSet.size();i++){
-				//String projId = Factories.getAttributeFactory().getAttributeValueByName(grp, "projectid");
 				importSet.get(i).getAttributes().add(Factories.getAttributeFactory().newAttribute(importSet.get(i),"projectid",Long.toString(proj.getId())));
 				importSet.get(i).getAttributes().add(Factories.getAttributeFactory().newAttribute(importSet.get(i),"applicationid",Long.toString(grp.getId())));
 
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERMISSION, importSet.get(i));
 			}
 
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
+			logger.error(e);
 		} 
 		
 		return out_rec;
 	}
-	private int importDirectoryGroups(String sessionId, DirectoryGroupType grp, List<DirectoryGroupType> groups){
+	public int importDirectoryGroups(String sessionId, DirectoryGroupType grp, List<DirectoryGroupType> groups){
 		int out_rec = 0;
 		Set<String> currentSet = new HashSet<String>();
 		List<DirectoryGroupType> importSet = new ArrayList<DirectoryGroupType>();
@@ -578,10 +519,7 @@ public class IdentityService {
 			for(int i = 0; i < importSet.size();i++){
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, importSet.get(i));
 			}
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		} 
@@ -593,11 +531,7 @@ public class IdentityService {
 	public int importAccounts(String sessionId, ProjectType project, DirectoryGroupType svc, List<AccountType> accounts){
 		return importAccountType(sessionId, project, svc, accounts);
 	}
-	/*
-	public int importGroupMembers(String sessionId, ProjectType project, DirectoryGroupType svc, BasePermissionType perm, List<AccountType> members){
-		return importPermissionMembers(sessionId, project, svc, perm,members);
-	}
-	*/
+
 	public int importPermissionMembers(String sessionId, ProjectType project, DirectoryGroupType svc, BasePermissionType perm,List<AccountType> accounts, boolean replace){
 		int out_rec = 0;
 		try {
@@ -605,15 +539,12 @@ public class IdentityService {
 			//
 			if(replace) ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteParticipationsByAffect(svc,perm);
 			
-			//logger.info("Importing " + accounts.size() + " members for " + perm.getName());
 			for(int i = 0; i < accounts.size();i++){
 
 				/// Authorization participants are automatically mapped to bulk records 
 				///
 				AccountType rec = accounts.get(i);
-				//logger.debug("Grant permission " + perm.getName() + " to " + rec.getName() + " on " + svc.getName());
 				if(rec.getId().compareTo(0L) == 0){
-					//logger.warn("Invalid account object.  Account object must be an existing account, or have a bulk id assigned.");
 					continue;
 				}
 				/*
@@ -627,12 +558,8 @@ public class IdentityService {
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, part);
 				out_rec++;
 			}
-			//out_rec = accounts.size();
 
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -642,19 +569,15 @@ public class IdentityService {
 	public int importEntitlementMembers(String sessionId, ProjectType project, DirectoryGroupType svc, BasePermissionType perm,List<AccountGroupType> groups, boolean replace){
 		int out_rec = 0;
 		try {
-			// 2015/04/24 - Moved delete op up one level to batch them together
+			// 2015/04/24 - Moved delete operation up one level to batch them together
 			//
 			if(replace) ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteParticipationsByAffect(svc,perm);
-			
-			//logger.info("Importing " + groups.size() + " members for " + perm.getName());
 			for(int i = 0; i < groups.size();i++){
 
 				/// Authorization participants are automatically mapped to bulk records 
 				///
 				AccountGroupType rec = groups.get(i);
-				//logger.debug("Grant permission " + perm.getName() + " to " + rec.getName() + " on " + svc.getName());
 				if(rec.getId().compareTo(0L) == 0){
-					//logger.warn("Invalid account object.  Account object must be an existing account, or have a bulk id assigned.");
 					continue;
 				}
 				/*
@@ -670,12 +593,9 @@ public class IdentityService {
 			}
 			//out_rec = groups.size();
 
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
+			logger.error(e);
 		}
 		
 		return out_rec;
@@ -686,28 +606,19 @@ public class IdentityService {
 			// 2015/04/24 - Moved delete op up one level to batch them together
 			//
 			if(replace) ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteParticipations(group);
-			
-			//logger.info("Importing " + accounts.size() + " members for " + perm.getName());
 			for(int i = 0; i < accounts.size();i++){
-
 				/// Authorization participants are automatically mapped to bulk records 
 				///
 				AccountType rec = accounts.get(i);
 				if(rec.getId().compareTo(0L) == 0){
 					continue;
 				}
-
 				AccountParticipantType part = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(group, rec);
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, part);
 				out_rec++;
 			}
-			//out_rec = accounts.size();
 
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
+		} catch (FactoryException | ArgumentException e) {
 			logger.error("Error",e);
 		}
 		
@@ -719,10 +630,8 @@ public class IdentityService {
 		int out_rec = 0;
 		Set<String> currentSet = new HashSet<String>();
 		List<AccountType> importSet = new ArrayList<AccountType>();
-		//Set<PersonType> updateSet = new HashSet<PersonType>();
 		DirectoryGroupType personDir = RocketSecurity.getProjectDirectory(adminUser, project, "Persons");
 		try {
-			//AccountType serviceAccountBase = getServiceAccount(project, svc);
 			ProcessingInstructionType pi = new ProcessingInstructionType();
 			pi.setOrderClause("NAME ASC");
 			logger.info("Scanning " + importSet.size() + " potential imports for existing entries");
@@ -750,13 +659,6 @@ public class IdentityService {
 					if(person != null){
 						BaseParticipantType part = ((PersonParticipationFactory)Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION)).newAccountPersonParticipation(person,importSet.get(i));
 						((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
-						/*
-						if(person.getId() > 0L){
-							((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(person);
-							updateSet.add(person);
-						}
-						person.getAccounts().add(importSet.get(i));
-						*/
 					}
 					else{
 						logger.debug("Detected orphan account. No person exists for owner " + owner);
@@ -766,23 +668,10 @@ public class IdentityService {
 					logger.debug("Detected orphan account. No owner value specified");
 				}
 			}
-			/*
-			if(updateSet.size() > 0){
-				logger.info("Applying " + updateSet.size() + " delta owner<->account updates");
-				PersonType[] upPer = updateSet.toArray(new PersonType[0]);
-				for(int p = 0; p < upPer.length;p++){
-					((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).updatePerson(upPer[p]);
-				}
-			}
-			*/
-			
 
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
+			logger.error(e);
 		}
 		
 		return out_rec;
@@ -816,12 +705,8 @@ public class IdentityService {
 				 RocketSecurity.configureProjectDirectory(user, lc, project, new_group);
 
 			}
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e);
 		} 
 		
 		return out_rec;
@@ -854,11 +739,10 @@ public class IdentityService {
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, new_person);
 				
 				ContactInformationType cit = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(new_person);
-				cit.setOwnerId(tmpCinfo.getOwnerId());
+				cit.setOwnerId(tmpCinfo != null ? tmpCinfo.getOwnerId() : project.getOwnerId());
 				new_person.setContactInformation(cit);
 				
-				//logger.info("Buffering Cinfo " + cit.getId() + " for person " + new_person.getId() + " owned by user " + tmpCinfo.getOwnerId());
-				for(int c = 0; c < tmpCinfo.getContacts().size();c++){
+				for(int c = 0; tmpCinfo != null && c < tmpCinfo.getContacts().size();c++){
 					ContactType tmp = tmpCinfo.getContacts().get(c);
 					ContactType newContact = new ContactType();
 					newContact.setDescription("");
@@ -873,7 +757,7 @@ public class IdentityService {
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT, newContact);
 					cit.getContacts().add(newContact);
 				}
-				for(int c = 0; c < tmpCinfo.getAddresses().size();c++){
+				for(int c = 0;  tmpCinfo != null && c < tmpCinfo.getAddresses().size();c++){
 					AddressType tmp = tmpCinfo.getAddresses().get(c);
 					AddressType newAddress = new AddressType();
 					newAddress.setDescription("");
@@ -896,12 +780,9 @@ public class IdentityService {
 				}
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
 			}
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e);
+			logger.error(e.getStackTrace());
 		} 
 		
 		return out_rec;
@@ -913,7 +794,7 @@ public class IdentityService {
 		return project.getName() + " Roles";
 	}
 
-	private void clearRoleParticipations(BaseRoleType roleBase) throws FactoryException, ArgumentException{
+	public void clearRoleParticipations(BaseRoleType roleBase) throws FactoryException, ArgumentException{
 		IdentityServiceDAL sd = new IdentityServiceDAL(this);
 		List<List<BaseRoleType>> broles = sd.getRoleHierarchy(roleBase.getId());
 		for(int p = 0; p < broles.size();p++){
@@ -928,10 +809,13 @@ public class IdentityService {
 	}
 	
 	public boolean synchronizeEntitlements(ProjectType project, boolean replace){
+		/// TODO: This needs to be an extensible interface, not hard-coded
+		///
 		logger.warn("TODO: Import and load entitlements from identity service");
 		return false;
 	}
 	/*
+	 * EXAMPLE Synchronize
 	public boolean synchronizeRoles(ProjectType project){
 		boolean out_bool = false;
 		logger.warn("TODO: Implement synchronize roles");
@@ -1028,13 +912,7 @@ public class IdentityService {
 		try {
 			BasePermissionType appBase = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getCreatePermission(adminUser, "Applications",PermissionEnumType.APPLICATION,parent, productOrganization.getId());
 			outPer = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getCreatePermission(adminUser, svc.getName(),PermissionEnumType.APPLICATION,appBase, productOrganization.getId());
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			logger.error("Error",e);
 		}
@@ -1064,13 +942,7 @@ public class IdentityService {
 				return null;
 			}
 
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			logger.error("Error",e);
 		}
@@ -1081,10 +953,7 @@ public class IdentityService {
 		if(parent == null) parent = getProjectRoleBucket(project);
 		try {
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getPersonRoleByName(name, parent,productOrganization.getId());
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -1095,13 +964,7 @@ public class IdentityService {
 		if(parent == null) parent = getProjectRoleBucket(project);
 		try {
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreatePersonRole(adminUser, name, parent);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -1111,13 +974,7 @@ public class IdentityService {
 		PersonRoleType role = null;
 		try {
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreatePersonRole(adminUser, getLifecycleRoleBucketName(), null);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -1127,13 +984,7 @@ public class IdentityService {
 		PersonRoleType role = null;
 		try {
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreatePersonRole(adminUser, getProjectRoleBucketName(project), getLifecycleRoleBucket());
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			
 			logger.error("Error",e);
 		}
@@ -1201,6 +1052,7 @@ public class IdentityService {
 
 		boolean currentGroupPartAggression = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).isAggressiveKeyFlush();
 		boolean currentGroupPartSafety = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).isUseThreadSafeCollections();
+	
 		((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).setAggressiveKeyFlush(false);
 		((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).setUseThreadSafeCollections(false);
 		((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).setAggressiveKeyFlush(false);
@@ -1212,13 +1064,8 @@ public class IdentityService {
 		DirectoryGroupType contactDir = RocketSecurity.getProjectDirectory(user,pj, "Contacts");
 		DirectoryGroupType addressDir = RocketSecurity.getProjectDirectory(user,pj, "Addresses");
 		
-		
-		
 
 		try {
-			//logger.info("Preparing entitlements for application directory");
-			//RocketSecurity.configureProjectDirectory(user, lc, pj, application);
-			
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(application);
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(application);
 			BasePermissionType permissionParent = getApplicationPermissionBase(pj, application);
@@ -1293,11 +1140,6 @@ public class IdentityService {
 							 bufferSize += mapAccounts.size();
 							 mapAccounts.clear();
 							 if(bufferSize > maxRecordCount || (i == csvRecords.size() - 1)){
-								 	/*
-								 logger.info("Preparing to replace " + replaceGroups.size() + " group entries");
-								 ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteParticipants(ArrayUtils.toPrimitive(replacePerms.toArray(new Long[0])));
-								 
-								 */
 								 replacePerms.clear();
 								 BulkFactories.getBulkFactory().write(sessionId);
 								 BulkFactories.getBulkFactory().close(sessionId);
@@ -1420,8 +1262,6 @@ public class IdentityService {
 							 bufferSize += mapGroups.size();
 							 mapGroups.clear();
 							 if(bufferSize > maxRecordCount || (i == csvRecords.size() - 1)){
-								 //logger.info("Preparing to replace " + replacePerms.size() + " entitlement entries");
-								 //((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteParticipationsByAffects(application,ArrayUtils.toPrimitive(replacePerms.toArray(new Long[0])));
 								 replacePerms.clear();
 								 BulkFactories.getBulkFactory().write(sessionId);
 								 BulkFactories.getBulkFactory().close(sessionId);
@@ -1458,15 +1298,8 @@ public class IdentityService {
 					 }
 					 else if(imports[d].getType() == IdentityDataEnumType.ACCOUNT){
 						 AccountType newAccount = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(user, record.get("uid"), AccountEnumType.NORMAL, AccountStatusEnumType.NORMAL, application.getId());
-						 //BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ACCOUNT, newAccount);
 						 newAccount.getAttributes().add(Factories.getAttributeFactory().newAttribute(newAccount, "owner", record.get("owner")));
-						 //newAccount.getAttributes().add(Factories.getAttributeFactory().newAttribute(newAccount, "gender", record.get("gender")));
-						 //newAccount.getAttributes().add(Factories.getAttributeFactory().newAttribute(newAccount, "age", record.get("age")));
 						 newAccount.getAttributes().add(Factories.getAttributeFactory().newAttribute(newAccount, "accountType", record.get("accountType")));
-						 //newAccount.getAttributes().add(Factories.getAttributeFactory().newAttribute(newAccount, "firstName", record.get("firstName")));
-						 //newAccount.getAttributes().add(Factories.getAttributeFactory().newAttribute(newAccount, "middleName", record.get("middleName")));
-						 //newAccount.getAttributes().add(Factories.getAttributeFactory().newAttribute(newAccount, "lastName", record.get("lastName")));
-						 //newAccount.getAttributes().add(Factories.getAttributeFactory().newAttribute(newAccount, "email", record.get("email")));
 						 for(int a = 0; a < MAX_ATTRIBUTES; a++){
 							 String attrPair = record.get("attribute" + (a + 1));
 							 if(attrPair==null || attrPair.length() == 0) continue;
@@ -1490,10 +1323,8 @@ public class IdentityService {
 						 newPerson.setAlias("");
 						 newPerson.setPrefix("");
 						 newPerson.setTitle("");
-
-						//newPerson.getAttributes().add(Factories.getAttributeFactory().newAttribute(newPerson, "age", record.get("age")));
 						 newPerson.getAttributes().add(Factories.getAttributeFactory().newAttribute(newPerson, "manager", record.get("manager")));
-						newPerson.getAttributes().add(Factories.getAttributeFactory().newAttribute(newPerson, "email", record.get("email")));
+						 newPerson.getAttributes().add(Factories.getAttributeFactory().newAttribute(newPerson, "email", record.get("email")));
 						 for(int a = 0; a < MAX_ATTRIBUTES; a++){
 							 String attrPair = record.get("attribute" + (a + 1));
 							 if(attrPair==null || attrPair.length() == 0) continue;
@@ -1538,7 +1369,7 @@ public class IdentityService {
 						 persons.add(newPerson);
 
 					 } // end type					 
-					 //
+					 
 	
 				 } // end records
 				reader.close();
@@ -1571,25 +1402,10 @@ public class IdentityService {
 				
 			} // end imports
 			
-			//identityService.importAccounts(sessionId, pj, oApp, accounts);
-			//identityService.importPermissions(sessionId, pj, oApp, permissions);
-			
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
 			
 		}
-		catch(FactoryException e){
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (DataException e) {
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
+		catch(FactoryException | ArgumentException | IOException | DataException | DataAccessException e) {
 			logger.error(e.getMessage());
 			logger.error("Error",e);
 		}
