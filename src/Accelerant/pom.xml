@@ -58,8 +58,10 @@
 					</includes>
 					<excludes>
 						<!-- 
-	<exclude>**/TestRocket.java</exclude>
+<exclude>**/TestIdentityService.java</exclude>
 						-->
+<exclude>**/TestAuthorization.java</exclude>
+							<exclude>**/TestRocket.java</exclude>
 						<exclude>**/TestBulkFactory.java</exclude>
 						<exclude>**/TestCapabilities.java</exclude>
 						
@@ -75,8 +77,8 @@
 						<exclude>**/TestFormElementValue.java</exclude>
 						
 						<!--  RETEST -->
-						<exclude>**/TestAuthorization.java</exclude>
-						<exclude>**/TestIdentityService.java</exclude>
+						
+						
 						
 						
 						
