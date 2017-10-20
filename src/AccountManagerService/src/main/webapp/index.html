@@ -15,29 +15,26 @@ function doLogout(){
 function doGoLogin(){
 	location.href = "/AccountManagerService/Protected/";
 }
-function doLogin(){
+function login(sOrg, sName, sCred){
 	var cred = new org.cote.objects.credentialType();
-	cred.name = "test@foo.bar";
-	cred.credential = Base64.encode("password");
-	cred.organizationPath = "/FirstContact";
+	cred.name = sName;
+	cred.credential = Base64.encode(sCred);
+	cred.organizationPath = sOrg;
 	cred.credentialType = "HASHED_PASSWORD";
 	AM6Client.login(cred,doGoLogin);
+}
+function doLogin(){
+	login("/FirstContact","test@foo.bar","password");
 }
 function doLogin2(){
-	var cred = new org.cote.objects.credentialType();
-	cred.name = "TestUser3";
-	cred.credential = Base64.encode("password1");
-	cred.organizationPath = "/Development";
-	cred.credentialType = "HASHED_PASSWORD";
-	AM6Client.login(cred,doGoLogin);
+	login("/Development","TestUser3","password1");
+
 }
 function doLogin3(){
-	var cred = new org.cote.objects.credentialType();
-	cred.name = "RocketQAUser";
-	cred.credential = Base64.encode("password");
-	cred.organizationPath = "/Development";
-	cred.credentialType = "HASHED_PASSWORD";
-	AM6Client.login(cred,doGoLogin);
+	login("/Development","RocketQAUser","password");
+}
+function doLogin4(){
+	login("/Development","Admin","password");
 }
 (function(){
 	if(!window.uwmServices){
@@ -51,45 +48,15 @@ function doLogin3(){
 			true,
 			false
 		);
-	/*
-	uwmServices.addService(
-			"Principal",
-			"/AccountManagerService/rest/principal/smd",
-			true,
-			true,
-			false
-		);
-	uwmServices.addService(
-			"Logout",
-			"/AccountManagerService/rest/logout/smd",
-			true,
-			true,
-			false
-		);
-	uwmServices.addService(
-			"Login",
-			"/AccountManagerService/rest/login/smd",
-			true,
-			true,
-			false
-		);
-*/
 }());
 </script>
-<!-- 
-<script type = "text/javascript">
-(function(){
-		if(!window.g_application_path) window.g_application_path = "/AccountManagerService";
-		if(!window.HemiConfig) window.HemiConfig = {};
-		if(!window.HemiConfig.hemi_base) window.HemiConfig.hemi_base = "/HemiFramework/Hemi/";
-})();
-</script>
--->
+
 </head>
 <body>
-<h1>Account Manager Service</h1>
+<h1>Unprotected - Account Manager Service</h1>
 <div template = "Templates/ToolBar.xml"></div>
 <p><input type = "button" value = "Go Login" onclick = "doGoLogin()" /></p>
+<p><input type = "button" value = "Login - Admin" onclick = "doLogin4()" /></p>
 <p><input type = "button" value = "Login - test@foo.bar" onclick = "doLogin()" /></p>
 <p><input type = "button" value = "Login - Rocket QA User" onclick = "doLogin3()" /></p>
 <p><input type = "button" value = "Login - TestUser3" onclick = "doLogin2()" /></p>
