@@ -56,6 +56,12 @@ import org.cote.propellant.objects.ProjectType;
 import org.cote.rocket.factory.LifecycleFactory;
 import org.cote.rocket.factory.ProjectFactory;
 
+/*
+ * 2017/10/16 - AUTHORIZATION NOTE
+ * TODO: Community authorization for lifecycles will get bridged to direct authorization checks due to the Policy Extension being applied on initial setup
+ * This means that authorization checks targeting the lifecycle itself versus its containment group will fail for anyone other than the owner because the authorization was not set
+ */
+
 public class RocketSecurity {
 	public static final Logger logger = LogManager.getLogger(RocketSecurity.class);
 	private static String[] containerPermissions = new String[]{};

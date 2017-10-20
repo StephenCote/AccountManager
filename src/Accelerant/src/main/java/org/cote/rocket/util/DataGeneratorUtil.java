@@ -46,6 +46,10 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.AddressFactory;
+import org.cote.accountmanager.data.factory.ContactFactory;
+import org.cote.accountmanager.data.factory.ContactInformationFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
@@ -54,9 +58,13 @@ import org.cote.accountmanager.data.factory.PersonParticipationFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseParticipantType;
+import org.cote.accountmanager.objects.ContactInformationType;
+import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -64,14 +72,20 @@ import org.cote.accountmanager.objects.PersonGroupType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.AccountEnumType;
+import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
+import org.cote.accountmanager.objects.types.ContactEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
+import org.cote.accountmanager.objects.types.LocationEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.JSONUtil;
+import org.cote.accountmanager.util.TextUtil;
+import org.cote.accountmanager.util.ObjectUtil;
 import org.cote.propellant.objects.EventType;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.LocationType;
@@ -106,7 +120,7 @@ public class DataGeneratorUtil {
 	private String lifecycleName = null;
 	private String projectName = null;
 	private UserType user = null;
-	
+	private int idBase = 999999;
 	
 	/// baseWordPath refers to the Princeton word dictionary location, such as: c:\\users\\swcot\\Downloads\\wn3.1.dict.tar\\dict\\
 	private String baseWordPath = null;
@@ -133,30 +147,25 @@ public class DataGeneratorUtil {
     private static final long DAY = 24 * HOUR;
     private static final long YEAR = 365 * DAY;
     
+    private boolean randomizeSeedPopulation = false;
+    private boolean organizePersonManagement = false;
+    
 	
 	private Set<String> nameHash = new HashSet<>();
 	private Map<String,String[]> traits = null;
 	private Map<String,String[]> names = null;
 	private Map<String,TradeType[]> trades = null;
-    
-    private static Map<AlignmentEnumType,Integer> alignmentScoreMap = new HashMap<>();
-    static{
-    	alignmentScoreMap.put(AlignmentEnumType.CHAOTICEVIL, -4);
-    	alignmentScoreMap.put(AlignmentEnumType.NEUTRALEVIL, -3);
-    	alignmentScoreMap.put(AlignmentEnumType.LAWFULEVIL, -2);
-    	alignmentScoreMap.put(AlignmentEnumType.CHAOTICNEUTRAL, -1);
-    	alignmentScoreMap.put(AlignmentEnumType.NEUTRAL, 0);
-    	alignmentScoreMap.put(AlignmentEnumType.LAWFULNEUTRAL, 1);
-    	alignmentScoreMap.put(AlignmentEnumType.CHAOTICGOOD, 2);
-    	alignmentScoreMap.put(AlignmentEnumType.NEUTRALGOOD, 3);
-    	alignmentScoreMap.put(AlignmentEnumType.LAWFULGOOD, 4);
-    }
+	private Set<String> idHash = new HashSet<>();
+	
+
     
 	private Random rand = new Random();
 	
 
 	private DirectoryGroupType populationDir = null;
 	private DirectoryGroupType personsDir = null;
+	private DirectoryGroupType addressesDir = null;
+	private DirectoryGroupType contactsDir = null;
 	private DirectoryGroupType eventsDir = null;
 	private DirectoryGroupType locationsDir = null;
 	private DirectoryGroupType traitsDir = null;
@@ -187,7 +196,7 @@ public class DataGeneratorUtil {
 	///
 	private double emmigrateRate = 0.01;
 	
-
+	private String[] leaderPopulation = new String[]{"Political","Religious","Military","Business","Social","Trade"};
 	private Map<Long,List<PersonType>> populationCache = new HashMap<>();
 	
 	public DataGeneratorUtil(UserType u, String lcName, String pjName, String srcLocationPath, String srcTraitPath, String wordPath, String namePath){
@@ -208,7 +217,24 @@ public class DataGeneratorUtil {
 		
 		configureDataPaths();
 	}
+	public UserType getUser(){
+		return user;
+	}
 	
+	public boolean isOrganizePersonManagement() {
+		return organizePersonManagement;
+	}
+	public void setOrganizePersonManagement(boolean organizePersonManagement) {
+		this.organizePersonManagement = organizePersonManagement;
+	}
+	public boolean isRandomizeSeedPopulation() {
+		return randomizeSeedPopulation;
+	}
+
+	public void setRandomizeSeedPopulation(boolean randomizeSeedPopulation) {
+		this.randomizeSeedPopulation = randomizeSeedPopulation;
+	}
+
 	public DirectoryGroupType getPopulationDir() {
 		return populationDir;
 	}
@@ -266,6 +292,8 @@ public class DataGeneratorUtil {
 		}
 		populationDir = RocketSecurity.getProjectDirectory(user, proj, "Populations");
 		personsDir = RocketSecurity.getProjectDirectory(user, proj, "Persons");
+		addressesDir = RocketSecurity.getProjectDirectory(user, proj, "Addresses");
+		contactsDir = RocketSecurity.getProjectDirectory(user, proj, "Contacts");
 		eventsDir = RocketSecurity.getProjectDirectory(user, proj, "Events");
 		locationsDir = RocketSecurity.getProjectDirectory(user, proj, "Locations");
 		traitsDir = RocketSecurity.getProjectDirectory(user, proj, "Traits");
@@ -437,48 +465,36 @@ public class DataGeneratorUtil {
 		return person.getName() + " " + person.getGender() + " aged " + age + " is a " + trade;
 	}
 	
-	/// From stackoverflow: http://stackoverflow.com/questions/1972392/java-pick-a-random-value-from-an-enum
-	///
-    public static <T extends Enum<?>> T randomEnum(Class<T> cls){
-        int x = (new Random()).nextInt(cls.getEnumConstants().length);
-        return cls.getEnumConstants()[x];
-    }
-    
-    public static AlignmentEnumType getAlignmentFromScore(int alignment){
-		AlignmentEnumType aType = AlignmentEnumType.NEUTRAL;
-		for(Map.Entry<AlignmentEnumType,Integer> aet : alignmentScoreMap.entrySet()){
-			if(aet.getValue() == alignment){
-				aType = aet.getKey();
-				break;
-			}
-		}
-		return aType;
-    }
-	public static int getAlignmentScore(NameIdType obj){
-		return getAlignmentScore(Factories.getAttributeFactory().getAttributeValueByName(obj, "alignment"));
+
+
+	public AddressType randomAddress(LocationType location) throws ArgumentException{
+		return DataGeneratorData.randomAddress(this, location, addressesDir);
 	}
-	public static int getAlignmentScore(String alignment){
-		if(alignment != null && alignment.length() > 0){
-			return getAlignmentScore(AlignmentEnumType.valueOf(alignment));
-		}
-		else{
-			logger.error("Invalid alignmnet");
-		}
-		return 0;
+
+	private String randomId(String sPref, int iLen){
+		Random r = new Random();
+		String id = sPref.substring(0,1) + TextUtil.padString(Integer.toString((int)(r.nextDouble()*(double)idBase)),iLen);
+		while(idHash.contains(id)){
+			id = sPref + TextUtil.padString(Integer.toString((int)(r.nextDouble()*(double)idBase)),iLen);
+		} 
+		idHash.add(id);
+		return id;
 	}
-	public static int getAlignmentScore(AlignmentEnumType alignment){
-		if(alignment != null){
-			return alignmentScoreMap.get(alignment);
-		}
-		else{
-			logger.error("Invalid alignment");
-		}
-		return 0;
+
+
+	
+	
+	public AccountType randomAccount(UserType user, DirectoryGroupType dir){
+		Random r = new Random();
+		String sType = DataGeneratorData.ACCOUNT_TYPES[r.nextInt(DataGeneratorData.ACCOUNT_TYPES.length)];
+		AccountType acct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(user, randomId(sType, 6), AccountEnumType.DEVELOPMENT, AccountStatusEnumType.REGISTERED, dir.getId());
+		return acct;
 	}
-	private PersonType randomPerson(UserType user, DirectoryGroupType dir) throws ArgumentException{
+	
+	public PersonType randomPerson(UserType user, DirectoryGroupType dir) throws ArgumentException{
 		return randomPerson(user,dir,null);
 	}
-	private PersonType randomPerson(UserType user, DirectoryGroupType dir, String preferredLastName) throws ArgumentException{
+	public PersonType randomPerson(UserType user, DirectoryGroupType dir, String preferredLastName) throws ArgumentException{
 		PersonType person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(user, dir.getId());
 		boolean isMale = (Math.random() < 0.5);
 		TradeType[] trades = getTrades().get("trades");
@@ -520,34 +536,80 @@ public class DataGeneratorUtil {
 		AttributeType attr2 = new AttributeType();
 		attr2.setName("alignment");
 		attr2.setDataType(SqlDataEnumType.VARCHAR);
-		AlignmentEnumType alignment = randomEnum(AlignmentEnumType.class);
+		AlignmentEnumType alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
 		/// People can't be neutral
-		while(alignment == AlignmentEnumType.NEUTRAL) alignment = randomEnum(AlignmentEnumType.class);
+		while(alignment == AlignmentEnumType.NEUTRAL) alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
 		attr2.getValues().add(alignment.toString());
 		person.getAttributes().add(attr2);
+		
+		String sType = DataGeneratorData.ACCOUNT_TYPES[r.nextInt(DataGeneratorData.ACCOUNT_TYPES.length)];
+		person.getAttributes().add(Factories.getAttributeFactory().newAttribute(person, "uid", randomId(sType,6)));
 		
 		nameHash.add(name);
 		
 		return person;
 	}
-	/*
-	public EventType organizePopulation(UserType user, LocationType location, DirectoryGroupType personsDir, List<PersonType> persons) throws ArgumentException{
-		EventType event = new EventType();
-		
-		event.setEventType(EventEnumType.STABLIZE);
+	
+	public static void generatePersonOrganization(PersonType[] persons){
 
-		event.setName("Stabilize " + getObjectLabel(location,"name"));
-		int len = persons.size();
-		PersonGroupType leaders = new PersonGroupType();
-		
-		for(int i = 0; i < len; i++){
-			PersonType person = randomPerson(user, personsDir);
-			event.getActors().add(person);
+		/// limits the top n depth to these positional values
+		///
+		Random rand = new Random();
+		int[] iDepthLimits = new int[]{3, 5, 10, 20};
+		int iDefaultLimit = 7;
+		int iDepth = 0;
+		int iRepC = 1;
+		int iNewDepth = 0;
+		int r = 0;
+		for(int i = 0; i < persons.length && iRepC < persons.length; i++){
+			int iWidth = (iDepth < iDepthLimits.length ? iDepthLimits[iDepth] : iDefaultLimit);
+
+			int iRep = rand.nextInt(iWidth);
+			/// take the next 'iRep' number people offset by previously reported people and make them report to person 'i'
+			///
+			for(r = 0; r < iRep; r++){
+				if((iRepC + r) >= persons.length) break;
+				persons[iRepC + r].getAttributes().add(Factories.getAttributeFactory().newAttribute(persons[iRepC + r], "manager", persons[i].getObjectId()));
+			}
+			iRepC += r;
+			if(i >= iNewDepth){
+				iDepth++;
+				iNewDepth += iWidth;
+			}
 		}
-		return event;
 	}
-	*/
-	private String[] leaderPopulation = new String[]{"Political","Religious","Military","Business","Social","Trade"};
+
+	
+
+	private void addressPerson(PersonType person, LocationType location, String sessionId) throws ArgumentException{
+		 ContactInformationType cit = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(person);
+		 BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
+		 
+		 person.setContactInformation(cit);
+		 
+		 ContactType email = ((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).newContact(user, contactsDir.getId());
+		 String tradeName = Factories.getAttributeFactory().getAttributeValueByName(person, "trade").replaceAll("[^A-Za-z0-9]", "");
+		 email.setContactValue((person.getFirstName() + (person.getMiddleName() != null ? "." + person.getMiddleName() : "") + "." + person.getLastName() + "@" + tradeName + ".com").toLowerCase());
+		 email.setName(person.getName() + " Work Email");
+		 email.setLocationType(LocationEnumType.WORK);
+		 BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT, email);
+		 cit.getContacts().add(email);
+		 person.getAttributes().add(Factories.getAttributeFactory().newAttribute(person, "email", email.getContactValue()));
+		 
+		 AddressType home = DataGeneratorData.randomAddress(this, location, addressesDir);
+		 home.setName(person.getName() + " Home Address");
+		 home.setLocationType(LocationEnumType.HOME);
+		 BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ADDRESS, home);
+		 cit.getAddresses().add(home);
+		 
+		 AddressType work =  DataGeneratorData.randomAddress(this, location, addressesDir);
+		 work.setGroupId(addressesDir.getId());
+		 work.setName(person.getName() + " Work Address");
+		 work.setLocationType(LocationEnumType.WORK);
+		 BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ADDRESS, work);
+		 cit.getAddresses().add(work);
+ 
+	}
 	public EventType populateRegion(String sessionId, LocationType location, int popCount){
 		EventType event = null;
 		try {
@@ -564,8 +626,12 @@ public class DataGeneratorUtil {
 			event.setName("Populate " + getObjectLabel(location,"name"));
 			event.setLocation(location);
 			event.getGroups().add(populationGroup);
-			Random r = new Random();
-			int len = r.nextInt(popCount);
+			
+			int len = popCount;
+			if(randomizeSeedPopulation){
+				Random r = new Random();
+				len = r.nextInt(popCount);
+			}
 			if(len == 0){
 				logger.error("Empty population");
 				event.setDescription("Decimated");
@@ -574,9 +640,11 @@ public class DataGeneratorUtil {
 				long totalAge = 0;
 				int totalAlignment = 0;
 				int totalAbsoluteAlignment = 0;
+				logger.info("Populating '" + popCount + '"');
 				for(int i = 0; i < len; i++){
 					PersonType person = randomPerson(user, personsDir);
-					int alignment = getAlignmentScore(person);
+					person.setContactInformation(null);
+					int alignment = DataGeneratorData.getAlignmentScore(person);
 					long years = Math.abs(CalendarUtil.getTimeSpanFromNow(person.getBirthDate())) / YEAR;
 					totalAge += years;
 					totalAlignment += alignment;
@@ -585,10 +653,14 @@ public class DataGeneratorUtil {
 					event.getActors().add(person);
 					BaseParticipantType bpt = ((GroupParticipationFactory)Factories.getBulkFactory(FactoryEnumType.GROUPPARTICIPATION)).newPersonGroupParticipation(populationGroup, person);
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, bpt);
+					addressPerson(person,location, sessionId);
+				}
+				if(organizePersonManagement){
+					generatePersonOrganization(event.getActors().toArray(new PersonType[0]));
 				}
 				long avgAge = (totalAge > 0 ? (totalAge / len) : 0);
 				int eventAlignment = (totalAbsoluteAlignment / len) - 4;
-				AlignmentEnumType aType = getAlignmentFromScore(eventAlignment);
+				AlignmentEnumType aType = DataGeneratorData.getAlignmentFromScore(eventAlignment);
 				AttributeType attr = new AttributeType();
 				attr.setName("alignment");
 				attr.setDataType(SqlDataEnumType.VARCHAR);
@@ -904,13 +976,13 @@ public class DataGeneratorUtil {
 			return null;
 		}
 		
-		AlignmentEnumType alignment = randomEnum(AlignmentEnumType.class);
+		AlignmentEnumType alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
 		/// Epoch's can't be neutral
-		while(alignment == AlignmentEnumType.NEUTRAL) alignment = randomEnum(AlignmentEnumType.class);
+		while(alignment == AlignmentEnumType.NEUTRAL) alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
 
-		int alignmentScore = getAlignmentScore(alignment);
+		int alignmentScore = DataGeneratorData.getAlignmentScore(alignment);
 		int invertedScore = -1 * alignmentScore;
-		AlignmentEnumType invertedAlignment = getAlignmentFromScore(invertedScore);
+		AlignmentEnumType invertedAlignment = DataGeneratorData.getAlignmentFromScore(invertedScore);
 
 		String title = generateEpochTitle(alignment);
 		try {

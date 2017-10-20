@@ -30,6 +30,10 @@
 package org.cote.rocket;
 
 import java.io.BufferedReader;
+import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.factory.INameIdGroupFactory;
+import org.cote.accountmanager.data.factory.IParticipationFactory;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,6 +42,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
@@ -51,9 +56,12 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.GroupParticipationFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
+import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.data.factory.PersonParticipationFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.query.QueryField;
@@ -65,11 +73,16 @@ import org.cote.accountmanager.data.services.ICommunityProvider;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.ScriptService;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.objects.AccountParticipantType;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
@@ -77,10 +90,12 @@ import org.cote.accountmanager.objects.UserPermissionType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
+import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.DataUtil;
@@ -96,18 +111,41 @@ import org.cote.rocket.factory.LifecycleFactory;
 import org.cote.rocket.factory.LocationFactory;
 import org.cote.rocket.factory.ProjectFactory;
 import org.cote.rocket.factory.TraitFactory;
+import org.cote.rocket.util.DataGeneratorData;
 import org.cote.rocket.util.DataGeneratorUtil;
 
-
+/*
+ * 2017/10/16 - AUTHORIZATION NOTE
+ * TODO: Community authorization for lifecycles will get bridged to direct authorization checks due to the Policy Extension being applied on initial setup
+ * This means that authorization checks targeting the lifecycle itself versus its containment group will fail for anyone other than the owner because the authorization was not set
+ */
 
 public class RocketCommunity implements ICommunityProvider {
 	private static Map<String,String> geoIdToPost = new HashMap<>();
 	private static Map<String,LocationType> locByCode = new HashMap<>();
 	
 	public static final Logger logger = LogManager.getLogger(RocketCommunity.class);
-	private static final CSVFormat csvFileFormat = CSVFormat.DEFAULT.withDelimiter('\t').withAllowMissingColumnNames(true).withQuote(null);
+	private static final  CSVFormat csvFileFormat = CSVFormat.DEFAULT.withDelimiter('\t').withAllowMissingColumnNames(true).withQuote(null);
+	private boolean randomizeSeedPopulation = false;
+	private boolean organizePersonManagement = false;
 	public RocketCommunity(){
 		
+	}
+	
+	public boolean isOrganizePersonManagement() {
+		return organizePersonManagement;
+	}
+
+	public void setOrganizePersonManagement(boolean organizePersonManagement) {
+		this.organizePersonManagement = organizePersonManagement;
+	}
+
+	public boolean isRandomizeSeedPopulation() {
+		return randomizeSeedPopulation;
+	}
+
+	public void setRandomizeSeedPopulation(boolean randomizeSeedPopulation) {
+		this.randomizeSeedPopulation = randomizeSeedPopulation;
 	}
 	public void clearCache(){
 		geoIdToPost.clear();
@@ -116,10 +154,10 @@ public class RocketCommunity implements ICommunityProvider {
 	public boolean importLocationTraits(UserType user, AuditEnumType auditType, String objectId, String locationPath, String featuresFileName){
 		boolean out_bool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
-		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
+		AuditService.targetAudit(audit, auditType, objectId);
 		NameIdDirectoryGroupType obj = null;
 		try {
-			obj = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
+			obj = ((INameIdFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
 				AuditService.denyResult(audit, "Null community object");
 				return out_bool;
@@ -980,7 +1018,7 @@ public class RocketCommunity implements ICommunityProvider {
 		try {
 			user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByObjectId(userId,adminUser.getOrganizationId());
 			if(user == null){
-				AuditService.denyResult(audit, "Invalid user id");
+				AuditService.denyResult(audit, "Invalid user id '" + userId + "' in organization #" + adminUser.getOrganizationId());
 				return false;
 			}
 			permission = AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP,adminUser.getOrganizationId());
@@ -1233,6 +1271,146 @@ public class RocketCommunity implements ICommunityProvider {
 		return out_bool;
 	}
 	
+	private BasePermissionType getApplicationPermissionBase(UserType user, ProjectType project, DirectoryGroupType svc){
+		BasePermissionType parent = RocketSecurity.getProjectPermissionBucket(project);
+		BasePermissionType outPer = null;
+		try {
+			BasePermissionType appBase = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getCreatePermission(user, "Applications",PermissionEnumType.APPLICATION,parent, project.getOrganizationId());
+			outPer = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getCreatePermission(user, svc.getName(),PermissionEnumType.APPLICATION,appBase, project.getOrganizationId());
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
+			
+			logger.error("Error",e);
+		}
+		return outPer;
+	}
+	
+	public boolean generateCommunityProjectApplication(UserType user, String communityId, String projectId, String appName, boolean usePermissions, boolean useGroups, int seed, int max, double distribution, String dictionaryPath, String namesPath){
+		boolean out_bool = false;
+		Random r = new Random();
+		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Generate Application",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, AuditEnumType.PROJECT, projectId);
+
+		try {
+			LifecycleType lc = getLifecycle(audit, user, communityId);
+			if(lc == null){
+				logger.error("Failed to retrieve lifecycle");
+				return false;
+			}
+			ProjectType proj = getProjectToChange(audit, user, projectId);
+			if(proj == null){
+				logger.error("Failed to retrieve project");
+				return false;
+			}
+			
+			DirectoryGroupType appDir = RocketSecurity.getProjectDirectory(user, proj, "Applications");
+			if(appDir == null){
+				logger.error("Failed to retrieve applications root");
+				return false;
+			}
+			
+			DirectoryGroupType newDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(appName, appDir, appDir.getOrganizationId());
+			if(BaseService.add(AuditEnumType.GROUP, newDir, user) == false){
+				logger.error("Failed to create application group");
+				return false;
+			}
+			
+			newDir = BaseService.readByNameInParent(AuditEnumType.GROUP, appDir, appName, "DATA", user);
+			if(newDir == null){
+				logger.error("Failed to find application group");
+				return false;
+			}
+			
+			if(configureEntitlements(user, communityId, projectId, newDir.getObjectId()) ==  false){
+				logger.error("Failed to configure application group");
+				return false;
+			}
+			
+			DataGeneratorUtil dutil = getGenerator(audit, user, lc.getName(), proj.getName(), lc.getGroupPath() + "/Locations", lc.getGroupPath() + "/Traits", dictionaryPath, namesPath);
+			if(dutil == null) return false;
+			dutil.setRandomizeSeedPopulation(randomizeSeedPopulation);
+			
+			BasePermissionType[] permissions = (usePermissions ? DataGeneratorData.randomApplicationPermissions(seed, max) : new BasePermissionType[0]);
+			BaseGroupType[] groups = (useGroups ? DataGeneratorData.randomAccountGroups(seed, max) : new BaseGroupType[0]);
+			
+			List<PersonType> persons = BaseService.listByGroup(AuditEnumType.PERSON, "DATA", dutil.getPersonsDir().getObjectId(), 0L, 0, user);
+			//List<PersonType> persons = ((INameIdGroupFactory)Factories.getFactory(FactoryEnumType.PERSON)).listInGroup(dutil.getPersonsDir(), 0, 0, user.getOrganizationId());
+			//long[] personIds = ((INameIdGroupFactory)Factories.getFactory(FactoryEnumType.PERSON)).getIdsInGroup(dutil.getPersonsDir());
+			//String[] personNames = ((INameIdGroupFactory)Factories.getFactory(FactoryEnumType.PERSON)).getNamesInGroup(dutil.getPersonsDir());
+			//int count = BaseService.countByGroup(AuditEnumType.PERSON, dutil.getPersonsDir(), user);
+			int plen = persons.size();
+			logger.info("Working with " + plen + " people");
+			
+			BasePermissionType basePerm = getApplicationPermissionBase(user, proj, newDir);
+			if(basePerm == null){
+				logger.error("Invalid base permission");
+				return false;
+			}
+			
+			List<AccountType> accounts = new ArrayList<>();
+			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
+			
+			for(int i = 0; i < plen; i++){
+				AccountType acct = dutil.randomAccount(user, newDir);
+				acct.getAttributes().add(Factories.getAttributeFactory().newAttribute(acct, "owner", persons.get(i).getObjectId()));
+				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ACCOUNT, acct);
+				BaseParticipantType part = ((PersonParticipationFactory)Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION)).newAccountPersonParticipation(persons.get(i),acct);
+				((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
+				accounts.add(acct);
+			}
+
+			for(int i = 0; i < groups.length; i++){
+				// if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+				BaseGroupType g = groups[i];
+				g.setOwnerId(user.getId());
+				g.setParentId(newDir.getId());
+				g.setOrganizationId(proj.getOrganizationId());
+				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, g);
+				for(int a = 0; a < accounts.size();a++){
+					if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+					AccountParticipantType part = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(g, accounts.get(a));
+					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, part);
+				}
+			}
+			
+			for(int i = 0; i < permissions.length; i++){
+				// if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+				BasePermissionType p = permissions[i];
+				p.setOwnerId(user.getId());
+				p.setParentId(basePerm.getId());
+				p.setOrganizationId(proj.getOrganizationId());
+				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERMISSION, p);
+				if(groups.length > 0){
+					for(int a = 0; a < groups.length;a++){
+						if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+						GroupParticipantType part = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newGroupGroupParticipation(newDir, groups[a], p, AffectEnumType.GRANT_PERMISSION);
+						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, part);
+					}
+				}
+				else{
+					for(int a = 0; a < accounts.size();a++){
+						if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+						AccountParticipantType part = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(newDir, accounts.get(a), p, AffectEnumType.GRANT_PERMISSION);
+						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, part);
+					}
+				}
+			}
+			
+
+			
+			BulkFactories.getBulkFactory().write(sessionId);
+			BulkFactories.getBulkFactory().close(sessionId);
+			
+				
+			out_bool = true;
+
+			
+		} catch (ArgumentException | FactoryException | DataAccessException  e) {
+			
+			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			logger.error("Error",e);
+		}
+		return out_bool;
+	}
 	
 	public boolean generateCommunityProjectRegion(UserType user, String communityId, String projectId, int locationSize, int seedSize, String dictionaryPath, String namesPath){
 		boolean out_bool = false;
@@ -1248,7 +1426,8 @@ public class RocketCommunity implements ICommunityProvider {
 			
 			DataGeneratorUtil dutil = getGenerator(audit, user, lc.getName(), proj.getName(), lc.getGroupPath() + "/Locations", lc.getGroupPath() + "/Traits", dictionaryPath, namesPath);
 			if(dutil == null) return false;
-			
+			dutil.setRandomizeSeedPopulation(randomizeSeedPopulation);
+			dutil.setOrganizePersonManagement(organizePersonManagement);
 			int eventCount = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).countInGroup(dutil.getEventsDir());
 			boolean initSetup = (eventCount == 0);
 			if(initSetup == false){

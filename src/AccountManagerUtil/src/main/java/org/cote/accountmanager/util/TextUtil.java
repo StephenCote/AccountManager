@@ -60,4 +60,15 @@ public class TextUtil {
 		outStr = regGreaterThan.matcher(outStr).replaceAll("&gt;");
 		return outStr;
 	}
+	
+	public static String padString(String value, int padLength){
+		StringBuffer outVal = new StringBuffer();
+		int len = value.length();
+		for(int i = len; i < padLength;i++){
+			outVal.append("0");
+		}
+		outVal.append(value);
+		return outVal.toString();
+		
+	}
 }

@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 
@@ -56,6 +57,7 @@ public interface ICommunityProvider {
 	public boolean importLocationAdmin2Codes(UserType user, AuditEnumType type, String objectId, String locationPath, String fileName);
 	public boolean importLocationCountryData(UserType user, AuditEnumType type, String objectId, String locationPath, String codes, String alternate);
 	
+	public boolean generateCommunityProjectApplication(UserType user, String communityId, String projectId, String appName, boolean usePermissions, boolean useGroups, int seed, int max, double distribution, String dictionaryPath, String namesPath);
 	public boolean generateCommunityProjectRegion(UserType user, String communityId, String projectId, int locationSize, int seedSize, String dictionaryPath, String namesPath);
 	public boolean evolveCommunityProjectRegion(UserType user, String communityId, String projectId, int epochSize, int epochEvolutions, String dictionaryPath, String namesPath);
 	public String reportCommunityProjectRegion(UserType user, String communityId, String projectId, String dictionaryPath, String namesPath);
@@ -64,5 +66,10 @@ public interface ICommunityProvider {
 
 	public String getCommunityProjectScript(UserType user, String communityId, String projectId, String name);
 	public boolean updateCommunityProjectScript(UserType user, String communityId, String projectId, String name, String dataStr);
+	public boolean isRandomizeSeedPopulation();
+	public void setRandomizeSeedPopulation(boolean randomizeSeedPopulation);
+	public boolean isOrganizePersonManagement();
+
+	public void setOrganizePersonManagement(boolean organizePersonManagement);
 
 }

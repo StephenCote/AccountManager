@@ -40,5 +40,6 @@ public interface INameIdGroupFactory extends INameIdFactory {
 	public <T> T getByNameInGroup(String name, long parentId, long parentGroupId, long organizationId) throws FactoryException, ArgumentException;
 	public <T> List<T> search(String searchValue, long startRecord, int recordCount, DirectoryGroupType dir) throws FactoryException, ArgumentException;
 	public <T> T getByNameInParent(String name, String type, NameIdDirectoryGroupType parentObj) throws FactoryException, ArgumentException;
-
+	public long[] getIdsInGroup(BaseGroupType group) throws FactoryException;
+	public String[] getNamesInGroup(BaseGroupType group) throws FactoryException;
 }

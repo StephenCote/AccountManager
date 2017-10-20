@@ -25,6 +25,7 @@ package org.cote.rest.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
@@ -78,8 +79,9 @@ public class CommunityService {
 			Class cls = Class.forName(pcls);
 			ICommunityProvider f = (ICommunityProvider)cls.newInstance();
 			provider = f;
+			provider.setRandomizeSeedPopulation(false);
+			provider.setOrganizePersonManagement(true);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			logger.error("Trace", e);
 		}
 		
@@ -394,6 +396,23 @@ public class CommunityService {
 	private int testEpochEvolutions = 10;
 	private int testEpochCount = 15;
 	 */
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/generate/application/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}/{appName: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}/{usePermissions:(true|false)}/{useGroups:(true|false)}/{seedSize:[\\d]+}/{maxSize:[\\d]+}/{distribution:[\\d\\.]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response generateCommunityProjectApplication(@PathParam("communityId") String communityId, @PathParam("projectId") String projectId, @PathParam("appName") String appName, @PathParam("usePermissions") boolean usePermissions, @PathParam("useGroups") boolean useGroups, @PathParam("seedSize") int seedSize,  @PathParam("maxSize") int maxSize,  @PathParam("distribution") double distribution, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		
+		boolean enrolled = false;
+		if(cp != null){
+			enrolled = cp.generateCommunityProjectApplication(user, communityId, projectId, appName, usePermissions, useGroups, seedSize, maxSize, distribution, context.getInitParameter("data.generator.dictionary"),context.getInitParameter("data.generator.names"));
+		}
+		return Response.status(200).entity(enrolled).build();
+	}
+	
 	@RolesAllowed({"admin","user"})
 	@GET
 	@Path("/generate/region/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}/{locationSize:[\\d]+}/{seedSize:[\\d]+}")
@@ -402,8 +421,12 @@ public class CommunityService {
 	public Response generateCommunityProjectRegion(@PathParam("communityId") String communityId, @PathParam("projectId") String projectId, @PathParam("locationSize") int locationSize,  @PathParam("seedSize") int seedSize, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		ICommunityProvider cp = getProvider();
+		
 		boolean enrolled = false;
-		if(cp != null) enrolled = cp.generateCommunityProjectRegion(user, communityId, projectId, locationSize, seedSize, context.getInitParameter("data.generator.dictionary"), context.getInitParameter("data.generator.names"));
+		if(cp != null){
+			cp.setRandomizeSeedPopulation(false);
+			enrolled = cp.generateCommunityProjectRegion(user, communityId, projectId, locationSize, seedSize, context.getInitParameter("data.generator.dictionary"), context.getInitParameter("data.generator.names"));
+		}
 		return Response.status(200).entity(enrolled).build();
 	}
 	

@@ -44,11 +44,14 @@ import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.ServiceUtil;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -117,6 +120,7 @@ import org.cote.rocket.factory.TicketParticipationFactory;
 import org.cote.rocket.factory.TimeFactory;
 import org.cote.rocket.factory.ValidationRuleFactory;
 import org.cote.rocket.factory.WorkFactory;
+import org.cote.rocket.util.DataGeneratorUtil;
 import org.junit.After;
 import org.junit.Before;
 public class BaseAccelerantTest{
@@ -149,8 +153,8 @@ public class BaseAccelerantTest{
 		
 		File cacheDir = new File("./cache");
 		if(cacheDir.exists() == false) cacheDir.mkdirs();
-		FactoryBase.setEnableSchemaCache(true);
-		FactoryBase.setSchemaCachePath("./cache");
+		//FactoryBase.setEnableSchemaCache(true);
+		//FactoryBase.setSchemaCachePath("./cache");
 		
 		if(testProperties == null){
 			testProperties = new Properties();
@@ -306,7 +310,44 @@ public class BaseAccelerantTest{
 		//logger.info("Cleanup session: " + sessionId);
 		SessionSecurity.logout(sessionId, testOrganization.getId());
 	}
+
+	public DataGeneratorUtil getGenerator(AuditType audit, UserType user, String communityName, String projectName, String locationPath, String traitPath, String dictionaryPath, String namesPath){
+		DataGeneratorUtil dutil = new DataGeneratorUtil(
+				user,
+				communityName,
+				projectName,
+				locationPath,
+				traitPath,
+				dictionaryPath,
+				namesPath
+			);
+		try{
+			if(dutil.initialize() == false){
+				AuditService.denyResult(audit, "Failed to initialize data generator");
+				return null;
+			}
+			if(dutil.getProject() == null){
+				AuditService.denyResult(audit, "Failed to load project via data generator");
+				return null;
+			}
+		}
+		catch(ArgumentException | FactoryException e){
+			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			logger.error("Error",e);
+			dutil = null;
+		}
+		return dutil;
+	}
 	
+	public UserType getAdminUser(long organizationId){
+		UserType admin = null;
+		 try {
+			admin = ((INameIdFactory)Factories.getFactory(FactoryEnumType.USER)).getByName("Admin", testUser.getOrganizationId());
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		 return admin;
+	}
 	public HttpServletRequestMock getRequestMock(UserType user){
 		HttpServletRequestMock request = new HttpServletRequestMock(user.getSession().getSessionId());
 		request.addCookie("OrganizationId", user.getOrganizationId().toString());
@@ -1127,13 +1168,7 @@ public class BaseAccelerantTest{
 			if(proj == null){
 				proj = Rocket.createProject(user, lifecycle, name);
 			}
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			logger.error("Error",e);
 		}

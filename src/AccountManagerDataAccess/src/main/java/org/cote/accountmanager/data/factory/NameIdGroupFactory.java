@@ -211,6 +211,9 @@ public abstract class NameIdGroupFactory extends NameIdFactory implements INameI
 		}
 		return getCountByField(this.getDataTables().get(0), fields.toArray(new QueryField[0]), group.getOrganizationId());
 	}
+	public long[] getIdsInGroup(BaseGroupType group) throws FactoryException{
+		return getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
+	}
 	public String[] getNamesInGroup(BaseGroupType group) throws FactoryException{
 		return getNamesByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
 	}
