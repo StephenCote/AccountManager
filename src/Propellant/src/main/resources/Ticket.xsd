@@ -6,10 +6,10 @@
     <import schemaLocation="Types.xsd" namespace="http://www.cote.org/propellant/objects/types"></import>
     <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/AuditType.xsd" namespace="http://www.cote.org/accountmanager/objects"></import>
     <include schemaLocation="Form.xsd"></include>
-    <import schemaLocation="Note.xsd" namespace="http://www.cote.org/propellant/objects"></import>
-    <import schemaLocation="Artifact.xsd" namespace="http://www.cote.org/propellant/objects"></import>
-    <import schemaLocation="Estimate.xsd" namespace="http://www.cote.org/propellant/objects"></import>
-    <import schemaLocation="Resource.xsd" namespace="http://www.cote.org/propellant/objects"></import>
+    <include schemaLocation="Note.xsd"></include>
+    <include schemaLocation="Artifact.xsd"></include>
+    <include schemaLocation="Estimate.xsd"></include>
+    <include schemaLocation="Resource.xsd"></include>
     <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/ParticipantType.xsd" namespace="http://www.cote.org/accountmanager/objects"></import>
     <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/NameId.xsd" namespace="http://www.cote.org/accountmanager/objects"></import>
     <import schemaLocation="../../../../AccountManagerObjects/src/main/resources/Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>

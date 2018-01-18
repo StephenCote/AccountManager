@@ -49,7 +49,7 @@
 		costPath,timePath,estimatePath,budgetPath,personPath,accountPath,resourcePath, dataPath,artifactPath,casePath,formPath,formElementPath
 		,validationPath,goalPath,modelPath,modulePath,notePath,requirementPath,schedulePath,storyPath,ticketPath
 		,policyPath,patternPath,rulePath,factPath,operationPath,functionPath,permissionPath,rolePath,
-		contextBasePath,applicationPath,contactPath,addressPath,tagPath,eventPath,locationPath,traitPath
+		contextBasePath,applicationPath,contactPath,addressPath,tagPath,eventPath,locationPath,traitPath,dwacPath
 	;
 	/// 
 	function updateBase(){
@@ -110,6 +110,7 @@
 		eventPath = basePath + "/Events";
 		locationPath = basePath + "/Locations";
 		traitPath = basePath + "/Traits";
+		dwacPath = basePath + "/DWAC";
 	}
 	function getDefaultParentByType(s,d){
 		if(!communityMode || !contextProject) return d;
@@ -172,6 +173,7 @@
 			case "Event": return eventPath;break;
 			case "Location": return locationPath;break;
 			case "Trait": return traitPath;break;
+			case "DWAC": return dwacPath;break;
 		}
 	}
 	

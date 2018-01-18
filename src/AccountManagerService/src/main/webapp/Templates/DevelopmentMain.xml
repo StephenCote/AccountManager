@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<import-xml src = "Fragments/TabTools.xml" id = "TabTools" />
+	<p style = "clear:both;font-size:0px;margin:0px;"></p>
+	<div rid = "components">
+	</div>	
+	<div rid = "fragments">
+	</div>	
+	<div rid = "modules">
+	</div>
+	<div rid = "projects">
+	</div>	
+	<div rid = "pub">
+	</div>	
+		<div rid = "tasks">
+	</div>
+		<div rid = "tests">
+	</div>
+		<div rid = "templates">
+	</div>	
+		<div rid = "workers">
+	</div>	
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				this.scopeHandler("template_loaded", 0, 0, 1);
+				this.AddTab("components","Components",this.scopeHandler("loadComponentsTab",0,1,1));
+				this.AddTab("fragments","Fragments",this.scopeHandler("loadFragmentsTab",0,1,1));
+				this.AddTab("modules","Modules",this.scopeHandler("loadModulesTab",0,1,1));
+				this.AddTab("projects","Projects",this.scopeHandler("loadProjectsTab",0,1,1));
+				this.AddTab("pub","Pub",this.scopeHandler("loadPubTab",0,1,1));
+				this.AddTab("tasks","Tasks",this.scopeHandler("loadTasksTab",0,1,1));
+				this.AddTab("tests","Tests",this.scopeHandler("loadTestsTab",0,1,1));
+				this.AddTab("templates","Templates",this.scopeHandler("loadTemplatesTab",0,1,1));
+				this.AddTab("workers","Workers",this.scopeHandler("loadWorkersTab",0,1,1));
+
+				this.ShowTab(0);
+				this.loadComponentsTab();
+			},
+			/*
+			ontabclick : function(o){
+				this.getProperties().current_tab = o.tab_name;
+			},
+			*/
+			_handle_template_loaded: function (v) {
+				if (v && v.getProperties().local_invoke) {
+					if (v.getProperties().local_invoke_params) v[v.getProperties().local_invoke].apply(v, v.getProperties().local_invoke_params);
+					else v[v.getProperties().local_invoke]();
+					v.getProperties().local_invoke = 0;
+					v.getProperties().local_invoke_params = 0;
+				}
+			},
+			getProps: function () {
+				var _p = this.getProperties(),sBPath = uwm.getPathForType("DWAC");
+								
+				var sPath = sBPath + "/" + this.getProperties().current_tab;
+				var oP = AM6Client.find("GROUP","DATA",sPath);
+				
+				return {
+					application: "DWAC",
+					current_group_id: (oP ? oP.objectId : 0),
+					current_group_name: (oP ? oP.name : null),
+					current_path: (oP ? oP.path : null),
+					openerId : this.getObjectId()
+				};
+			},
+			provideItem : function(vS){
+				//alert(s + ":" + this.getProperties().current_tab + ":" + this.provideCreateItem);
+				var oW, sId = Hemi.guid(), oProps = this.getProps();
+				
+				if(typeof vS == "object"){
+					if(vS.detailsOnly) vS = AM6Client.get("DATA", vS.objectId);
+					sId = vS.objectId;
+					oProps.local_invoke_params = [sId];
+					oProps.local_invoke = "LoadObject";
+					oProps.data_object = vS;
+					
+				}
+
+				switch(this.getProperties().current_tab){
+					case "Components":
+						oW = Hemi.app.createWindow("Component Builder", "Templates/ComponentBuilder.xml", "component-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+					
+						break;
+				}
+				if (oW) {
+					oW.resizeTo(650, 650);
+					Hemi.app.getWindowManager().CenterWindow(oW);
+					// Destroy the window when finished
+					//
+					oW.setHideOnClose(0);
+				}
+			},
+			loadComponentsTab : function(o){
+				this.loadTab("Components",o);
+			},
+			loadFragmentsTab : function(o){
+				this.loadTab("Fragments",o);
+			},
+			loadModulesTab : function(o){
+				this.loadTab("Modules",o);
+			},
+			loadProjectsTab : function(o){
+				this.loadTab("Projects",o);
+			},
+			loadPubTab : function(o){
+				this.loadTab("Pub",o);
+			},
+			loadTasksTab : function(o){
+				this.loadTab("Tasks",o);
+			},
+			loadTestsTab : function(o){
+				this.loadTab("Tests",o);
+			},
+			loadTemplatesTab : function(o){
+				this.loadTab("Templates",o);
+			},
+			loadWorkersTab : function(o){
+				this.loadTab("Workers",o);
+			},
+			
+			loadTab : function(s, o){
+				var c = this.GetElementByRID(s.toLowerCase());
+				this.getProperties().current_tab = s;
+
+				if(c.loaded) return;
+				c.loaded = 1;
+				
+				var oDiv = document.createElement("div");
+				c.appendChild(oDiv);
+				var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
+				ac.setTemplateIsSpace(1);
+				ac.provideCreateItem = this.scopeHandler("provideItem",0,1,1);
+				ac.provideOpenItem = ac.provideCreateItem;
+				var sBPath = uwm.getPathForType("DWAC");
+				var sPath = sBPath + "/" + s;
+				
+				var oP = AM6Client.find("GROUP","DATA",sPath);
+				if(!oP){
+					oP = AM6Client.make("GROUP","DATA",sPath);
+					if(oP && irocket.getCommunityMode() && irocket.getCommunityLifecycle() && irocket.getCommunityProject()){
+						AM6Client.configureCommunityProjectGroupEntitlements(irocket.getCommunityLifecycle().objectId, irocket.getCommunityProject().objectId, oP.objectId);
+
+					}
+				}
+				ac.getProperties().defaultPath = sPath;
+				ac.loadTemplate(uwm.getApiTypeView("Data") + "/Forms/ListDatas.xml");
+			},
+			DoLogout : function(){
+				window.uwm.logout();
+				window.uwm.operation("ContinueWorkflow");
+			}
+		]]>
+	</embedded-script>
+</Template>

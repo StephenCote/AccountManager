@@ -138,7 +138,7 @@ public class GenericResourceService {
 				obj = BaseService.readByNameInParent(auditType, parentObj, name, "UNKNOWN", request);
 			}
 		}
-		else if(iFact.isClusterByGroup()){
+		else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup()){
 			logger.info("Request to get " + type + " object by name in GROUP " + parentId);
 			DirectoryGroupType dir = (DirectoryGroupType)getObject("GROUP",parentId,request).getEntity();
 			if(dir != null) obj = BaseService.readByName(auditType, dir, name, request);

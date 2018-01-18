@@ -347,7 +347,8 @@
 			else this.openWindow(this.getProperties().viewTypeName, o, v, (b ? o.path : 0));
 		},
 		createItem : function(){
-			this.openWindow(this.getProperties().viewTypeName);
+			if(this.provideCreateItem) this.provideCreateItem(this.getProperties().viewTypeName);
+			else this.openWindow(this.getProperties().viewTypeName);
 		},
 		openWindow : function(sType,oType,v, p){
 			var oProps = {parentRef:this.getObjects().parentRef,defaultPath:(p ? p : this.getPath()),openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:this.getList().getObjectId()};

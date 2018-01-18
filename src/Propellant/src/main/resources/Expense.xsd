@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pref="http://www.cote.org/propellant/objects/types" xmlns:Q1="http://www.cote.org/accountmanager/objects" targetNamespace="http://www.cote.org/propellant/objects" xmlns:tns="http://www.cote.org/propellant/objects">
-    <xsd:import schemaLocation="Budget.xsd" namespace="http://www.cote.org/propellant/objects"></xsd:import>
+    <xsd:include schemaLocation="Budget.xsd"></xsd:include>
     <xsd:import schemaLocation="../../../../AccountManagerObjects/src/main/resources/ParticipantType.xsd" namespace="http://www.cote.org/accountmanager/objects"></xsd:import>
     <xsd:import schemaLocation="../../../../AccountManagerObjects/src/main/resources/NameId.xsd" namespace="http://www.cote.org/accountmanager/objects"></xsd:import>
     <xsd:include schemaLocation="Time.xsd"></xsd:include>

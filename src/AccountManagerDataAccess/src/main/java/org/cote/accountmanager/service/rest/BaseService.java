@@ -330,7 +330,7 @@ public class BaseService {
 		return outObj;		
 	}
 	private static <T> T getByNameInGroup(AuditEnumType type, String name, long organizationId) throws ArgumentException, FactoryException {
-		logger.error("***** DEPRECATE THIS AND ITS ENTIRE TRACE");
+		logger.error("***** DEPRECATE getByNameInGroup AND ITS ENTIRE TRACE");
 		T outObj = null;
 		switch(type){
 			case ROLE:
@@ -976,7 +976,7 @@ public class BaseService {
 	
 	public static <T> T readByNameInOrganization(AuditEnumType type, long organizationId, String name,HttpServletRequest request){
 
-		logger.debug("***** DEPRECATE THIS AND ITS ENTIRE TRACE");
+		logger.debug("***** DEPRECATE readByNameInOrganization AND ITS ENTIRE TRACE");
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
@@ -986,7 +986,7 @@ public class BaseService {
 	}
 	public static <T> T readByNameInOrganization(AuditEnumType type, long organizationId, String name,UserType user){
 
-		logger.debug("***** DEPRECATE THIS AND ITS ENTIRE TRACE");
+		logger.debug("***** DEPRECATE readByNameInOrganization AND ITS ENTIRE TRACE");
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.USER, user.getUrn());
 		return readByName(audit,type, user, organizationId, name);
 	}
@@ -994,7 +994,7 @@ public class BaseService {
 	public static <T> T readByName(AuditType audit,AuditEnumType type, UserType user, long organizationId, String name){
 		T outObj = null;
 		AuditService.targetAudit(audit, type, name);
-		logger.debug("***** DEPRECATE THIS AND ITS ENTIRE TRACE");
+		logger.debug("***** DEPRECATE readByName AND ITS ENTIRE TRACE");
 		try {
 			//DirectoryGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, getDefaultGroupName(type));
 
