@@ -83,7 +83,7 @@
 	},
 	selectLifecycle : function(){
 		var vS = this.GetElementByRID("lifecycles").value;
-		if(vS.match(/^\d+$/)){
+		if(vS.match(/^\d+$/) && vS != "0"){
 			var oL = AM6Client.get("LIFECYCLE",vS);
 			irocket.setCommunityLifecycle(oL);
 			this.refreshProjectList();
@@ -93,7 +93,7 @@
 	selectProject : function(){
 		var vS = this.GetElementByRID("projects").value;
 
-		if(vS.match(/^\d+$/)){
+		if(vS.match(/^\d+$/) && vS != "0"){
 			var oP = AM6Client.get("PROJECT",vS);
 			if(!irocket.getCommunityMode()) irocket.setCurrentProject(oP);
 			else irocket.setCommunityProject(oP);
