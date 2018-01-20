@@ -95,7 +95,7 @@
 			if(oSel.selectedIndex == -1) oSel.value = "binary";
 			this.displayData();
 			this.changeDataType();
-
+			this.updateURL();
 			//this.local_handle_resize = this.resizers;
 			
 		},
@@ -143,7 +143,7 @@
 				var g = o.groupPath;
 				var sUrl =
 					location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "")
-					+ "/AccountManagerService/Media/" + o.organizationPath + "/Data" + g + "/" + o.name
+					+ g_application_path + "media/" + AM6Client.dotPath(AM6Client.currentOrganization) + "/Data" + g + "/" + o.name
 				;
 				/*
 				var oC = this.GetElementByRID("urlLabel");
@@ -157,6 +157,7 @@
 				this.GetElementByRID("urlText").value = sUrl;
 				b = "block";
 			}
+			this.GetElementByRID("urlContainer").style.display = b;
 		},
 		displayData : function(){
 			var o = this.getBean("rocketType");
@@ -175,7 +176,7 @@
 				}
 			}
 		},
-		isBinary : function(){ var v = this.GetElementByRID("mimeType").value; return (v.match(/^binary$/) || v.match(/^image\//gi)); },
+		isBinary : function(){ var v = this.GetElementByRID("mimeType").value; return (v.match(/^binary$/) || v.match(/^image\//gi) || v.match(/^video\//gi)); },
 		addType : function(o){
 			Hemi.log("Add data type: " + o.name + ":" + o.mimeType);
 
@@ -237,11 +238,17 @@
 		viewData : function(){
 			var o = this.getBean("rocketType");
 			if(!o.id) return;
-			if(o.detailsOnly){
+			var bVid = o.mimeType.match(/^video\//gi);
+			if(o.detailsOnly && !bVid){
 				this.loadDetailData();
 				o = this.getBean("rocketType");
 			}
-			var vData = {media_name:o.name,media_id:o.id,maxWidth:500,maxHeight:500,media_url:"data:" + o.mimeType + ";base64," + o.dataBytesStore};
+			var sUrl = "data:" + o.mimeType + ";base64," + o.dataBytesStore;
+			if(bVid){
+				sUrl = location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "") + g_application_path + "media/" + AM6Client.dotPath(AM6Client.currentOrganization) + "/Data" +  o.groupPath + "/" + o.name
+			}
+
+			var vData = {media_name:o.name,media_id:o.id,maxWidth:500,maxHeight:500,video:bVid,mimeType:o.mimeType,media_url:sUrl};
 			var oW = Hemi.app.createWindow("View " + o.name, "/AccountManagerService/Forms/ImageViewer.xml", "BinaryView-" + o.id, 0, 0, vData);
             if (oW) {
             	oW.resizeTo(475, 300);
@@ -259,11 +266,13 @@
 			//alert(bBin + "\n" + oSel.selectedIndex);
 			var bDet = (o.id && o.detailsOnly);
 			//this.GetElementByRID("detailsOnlyContainer").style.display = (bDet ? "block" : "none");
+			/// Intentionally NOT allowing video to be loaded here
+			///
 			this.GetElementByRID("loadBtn").disabled = (bDet && (!bBin || !o.mimeType.match(/^image/)) ? false : true);
 			this.GetElementByRID("clearBtn").disabled = (!bDet ? true : false);
 			this.GetElementByRID("binaryContainer").style.display = (!bDet && bBin ? "block" : "none");
 			this.GetElementByRID("textContainer").style.display = (!bDet && !bBin ? "block" : "none");
-			this.GetElementByRID("viewBtn").disabled = (bBin && o.mimeType.match(/^image/) ? false : true);
+			this.GetElementByRID("viewBtn").disabled = (bBin && (o.mimeType.match(/^image/) || o.mimeType.match(/^video/)) ? false : true);
 			this.GetElementByRID("designBtn").disabled = (o.mimeType.match(/^text/) ? false : true);
 			if(bBin) this.initFrame();
 		},
