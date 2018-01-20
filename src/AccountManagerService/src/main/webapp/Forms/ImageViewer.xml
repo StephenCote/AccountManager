@@ -13,34 +13,71 @@
 			}
 			this.setTitle(_s.media_name + " (" + _s.media_id + ")");
 			this.scopeHandler("imageviewer_load",0,0,1);
+			this.scopeHandler("video_load",0,0,1);
 			
-			var oI = document.createElement("img");
-			oI.onload = this._prehandle_imageviewer_load;
+			var oI = document.createElement(_s.video ? "video" : "img");
+			var oC = this.GetElementByRID("image-field");
+			if(_s.video){
+				oI.setAttribute("autoplay","true");
+				var oS = document.createElement("source");
+				oS.setAttribute("src",_s.media_url);
+				oS.setAttribute("type", _s.mimeType);
+				oI.appendChild(oS);
+				oI.onloadedmetadata = this._prehandle_video_load;
+				oC.appendChild(oI);
+
+			}
+			else{
+				oI.onload = this._prehandle_imageviewer_load;
+				oC.appendChild(oI);
+				oI.src = _s.media_url;
+			}
 			var t = this;
 			oI.onclick = function(){
 				t.Close();
 			};
-			this.GetElementByRID("image-field").appendChild(oI);
-			oI.src = _s.media_url;
+
+		},
+		_handle_video_load : function(e){
+			var o = this.GetElementByRID("image-field").getElementsByTagName("video")[0],_s = this.getProperties();
+		    var width = this.videoWidth,
+        	height = this.videoHeight;
+        	Hemi.log("Start dimen: " + o.videoWidth + "X" + o.videoHeight);
+        	if(width > _s.maxWidth || height > _s.maxHeight){
+        		var iS1 = (_s.maxWidth / width);
+				var iS2 = (_s.maxHeight / height);
+				var iW = (iS1 * width);
+				var iH = (iS1 * height);
+				if(_s.maxHeight < iH){
+					iW = (iS2 * width);
+					iH = (iS2 * height);
+				}
+				o.videoWidth = iW;
+				o.videoHeight = iH;
+        	}
+        	Hemi.log("End dimen: " + o.videoWidth + "X" + o.videoHeight);
+        	this.resizeTo(o.videoWidth, o.videoHeight + 50);
+			Hemi.app.getWindowManager().CenterWindow(this);
+
 		},
 		_handle_imageviewer_load : function(e){
-			var o = this.GetElementByRID("image-field").getElementsByTagName("img")[0];
+			var o = this.GetElementByRID("image-field").getElementsByTagName("img")[0],_s = this.getProperties();
 			//alert(o.nodeName);
 			// Add 40px to accomodate title and status bar
 			//
 			Hemi.log("Start dimen: " + o.width + "X" + o.height);
-			if(o.width > this.getProperties().maxWidth || o.height > this.getProperties().maxHeight){
+			if(o.width > _s.maxWidth || o.height > _s.maxHeight){
 				/*
-				var iS = (this.getProperties().maxWidth / o.width);
-				if(o.height > o.width) iS = (this.getProperties().maxHeight / o.height);
+				var iS = (_s.maxWidth / o.width);
+				if(o.height > o.width) iS = (_s.maxHeight / o.height);
 				var iW = (iS * o.width);
 				var iH = (iS * o.height); 
 				*/
-				var iS1 = (this.getProperties().maxWidth / o.width);
-				var iS2 = (this.getProperties().maxHeight / o.height);
+				var iS1 = (_s.maxWidth / o.width);
+				var iS2 = (_s.maxHeight / o.height);
 				var iW = (iS1 * o.width);
 				var iH = (iS1 * o.height);
-				if(this.getProperties().maxHeight < iH){
+				if(_s.maxHeight < iH){
 					iW = (iS2 * o.width);
 					iH = (iS2 * o.height);
 				}
