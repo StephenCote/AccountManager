@@ -35,6 +35,11 @@
     <param-name>factories.add</param-name>
     <param-value>org.cote.rocket.Factories</param-value>
   </context-param>
+   	 	 <context-param>
+    <description>Maximum Data Cache Size</description>
+    <param-name>factories.data.cache</param-name>
+    <param-value>524288000</param-value>
+  </context-param>
     <context-param>
     <description>Data Generator Names Path</description>
     <param-name>data.generator.names</param-name>
