@@ -40,6 +40,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
@@ -145,7 +146,7 @@ public class RestServiceConfig extends ResourceConfig{
 					
 				}
 			}
-			
+
 			Object obj = Factories.getBulkFactory(FactoryEnumType.LIFECYCLE);
 			if(obj == null){
 				logger.error("Failed to load bulk factory from extension library");
@@ -173,6 +174,15 @@ public class RestServiceConfig extends ResourceConfig{
 				}
 			}
 		
+			try{
+				Long dataCacheSize = Long.parseLong(context.getInitParameter("factories.data.cache"));
+				((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).setMaximumCacheSize(dataCacheSize);
+			}
+			catch(Exception e){
+				logger.error(e.getStackTrace());
+				
+			}
+			
 			BaseService.setEnableExtendedAttributes(Boolean.parseBoolean(context.getInitParameter("extended.attributes.enabled")));
 			BaseService.setAllowDataPointers(Boolean.parseBoolean(context.getInitParameter("data.pointers.enabled")));
 
