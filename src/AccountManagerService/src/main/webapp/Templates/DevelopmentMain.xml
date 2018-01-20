@@ -13,14 +13,19 @@
 	</div>	
 	<div rid = "pub">
 	</div>	
-		<div rid = "tasks">
+	<div rid = "tasks">
 	</div>
-		<div rid = "tests">
+	<div rid = "tests">
 	</div>
-		<div rid = "templates">
+	<div rid = "templates">
 	</div>	
-		<div rid = "workers">
-	</div>	
+	<!--
+	<div rid = "workers">
+	</div>
+	-->	
+	<p>
+	<input type = "button" value = "Load Demos" onclick = "${this}.LoadDemo()" />
+	</p>
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
@@ -33,16 +38,84 @@
 				this.AddTab("tasks","Tasks",this.scopeHandler("loadTasksTab",0,1,1));
 				this.AddTab("tests","Tests",this.scopeHandler("loadTestsTab",0,1,1));
 				this.AddTab("templates","Templates",this.scopeHandler("loadTemplatesTab",0,1,1));
-				this.AddTab("workers","Workers",this.scopeHandler("loadWorkersTab",0,1,1));
+				//this.AddTab("workers","Workers",this.scopeHandler("loadWorkersTab",0,1,1));
 
 				this.ShowTab(0);
 				this.loadComponentsTab();
 			},
-			/*
-			ontabclick : function(o){
-				this.getProperties().current_tab = o.tab_name;
+			LoadDemo : function(){
+				var aStaticComponents = ["reflected","reflector"];
+				var aStaticTemplates = ["form","setbeanform","getbeanform","elform","scriptform","reflect","formfieldsget","formfieldsset"];
+				var aStaticFragments = ["contact","color","demobean"];
+				var aStaticProjects = ["reflect"];
+				var aStaticTasks = ["scriptxml","script","bootstrap"];
+				var aStaticTests = ["asyncxml.js"];
+				var aStaticModules = ["basic.js"];
+
+			    this.AddDemoList("Component",aStaticComponents);
+			    this.AddDemoList("Template",aStaticTemplates);
+			    this.AddDemoList("Fragment",aStaticFragments);
+			    this.AddDemoList("Project",aStaticProjects);
+			    this.AddDemoList("Task",aStaticTasks);
+			    this.AddDemoList("Test",aStaticTests);
+			    this.AddDemoList("Module",aStaticModules);
+				
+				
 			},
-			*/
+			AddDemoList : function(sType, aL){
+				var sDBase = uwm.getPathForType("DWAC");
+				var sBase = sDBase + "/" + sType + "s";
+				var sSPath = "/HemiFramework/Hemi/Examples/Runnable/";
+				var oGB = AM6Client.find("GROUP","DATA",sDBase);
+				var oG = AM6Client.find("GROUP","DATA",sBase);
+				var bScript = sType.match(/^(module|test)/gi);
+				var sExt = (bScript ? "" : ".xml");
+				var rReg = /dwac:(Fragments|Templates|Components|Modules|Tasks)+/;
+				var m;
+				for(var i = 0; i < aL.length; i++){
+					var sName = sType.toLowerCase() + "." + aL[i] + sExt;
+					var sOName = aL[i];
+					var sText = Hemi.xml.getText(sSPath + sName);
+					if(!sText || sText == null || sText.length == 0){
+						Hemi.logError("Invalid file: " + sName);
+						continue;
+					}
+					sText = sText.replace(/dwac:\/DWAC\/Anonymous/g,g_application_path + "media/" + AM6Client.dotPath(AM6Client.currentOrganization) + "/Data" + oGB.path);
+					while ((m = sText.match(rReg)) && m.length > 1){
+						sText = sText.replace(rReg, g_application_path + "media/" + AM6Client.dotPath(AM6Client.currentOrganization) + "/Data" + oGB.path + "/" + m[1]);
+					}
+					if(sText.match(/DWAC/)){
+						window.debugStr = sText;
+					}
+					var o = AM6Client.getByName("DATA", oG.objectId, sOName);
+					if(o != null){
+						AM6Client.delete("DATA", o.objectId);
+						o = null;
+					}
+					if(o == null){
+						o = new org.cote.objects.dataType();
+						o.name = sOName;
+						o.blob = true;
+						o.nameType = "DATA";
+						o.mimeType = "text/" + (bScript ? "javascript" : "xml");
+						o.description = "";
+						o.id = 0;
+						o.createdDate = new Date();
+						o.modifiedDate = o.createdDate;
+						o.expiryDate = o.createdDate;
+						o.groupPath = oG.path;
+					}
+					o.dataBytesStore = uwm.base64Encode(sText);
+
+					if(AM6Client.update("DATA",o)){
+						Hemi.log("Loaded example " + sName);
+					}
+					else{
+						Hemi.logError("Failed to load example " + sName);
+					}
+					
+				}
+			},
 			_handle_template_loaded: function (v) {
 				if (v && v.getProperties().local_invoke) {
 					if (v.getProperties().local_invoke_params) v[v.getProperties().local_invoke].apply(v, v.getProperties().local_invoke_params);
@@ -81,7 +154,25 @@
 				switch(this.getProperties().current_tab){
 					case "Components":
 						oW = Hemi.app.createWindow("Component Builder", "Templates/ComponentBuilder.xml", "component-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
-					
+						break;
+					case "Templates":
+						oW = Hemi.app.createWindow("Template Builder", "Templates/TemplateBuilder.xml", "template-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						break;
+					case "Fragments":
+						oW = Hemi.app.createWindow("Fragment Builder", "Templates/FragmentBuilder.xml", "fragment-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						break;
+					case "Modules":
+						oW = Hemi.app.createWindow("Module Builder", "Templates/ModuleBuilder.xml", "module-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						break;
+					case "Tests":
+						oProps.testFeat = 1;
+						oW = Hemi.app.createWindow("Test Builder", "Templates/ModuleBuilder.xml", "test-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						break;
+					case "Tasks":
+						oW = Hemi.app.createWindow("Task Builder", "Templates/TaskBuilder.xml", "task-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						break;
+					case "Projects":
+						oW = Hemi.app.createWindow("Project Builder", "Templates/ProjectBuilder.xml", "project-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
 						break;
 				}
 				if (oW) {
