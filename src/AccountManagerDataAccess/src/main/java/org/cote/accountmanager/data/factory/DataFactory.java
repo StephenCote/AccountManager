@@ -63,13 +63,19 @@ import org.cote.accountmanager.util.CalendarUtil;
 public class DataFactory extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
 	
+	/// Default data memory cache size is 100MB.  This will cause problems if trying to stream large files
+	/// The mechanism by which large files are streams needs to be reset - in previous versions it used to be handled, but in the current version it hasn't been added back in yet
+	///
 	private long maximumCacheSize = 1048576L*100L;
 	private long currentCacheSize = 0L;
 
 	static{
 		//registerProvider();
 	}
-	
+	public void setMaximumCacheSize(long l){
+		maximumCacheSize = l;
+		
+	}
 	@Override
 	public void registerProvider(){
 		AuthorizationService.registerAuthorizationProviders(
