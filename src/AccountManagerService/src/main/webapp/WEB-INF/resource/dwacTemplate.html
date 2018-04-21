@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>%TITLE%</title>
+   		<link rel="stylesheet" href="/AccountManagerService/Style/uwm.css" type="text/css" title = "uwm" />
+   		<link rel="stylesheet" href="/AccountManagerService/Style/rocket.css" type="text/css" />
+
+<script type = "text/javascript" src = "/AccountManagerService/Scripts/bootstrap.jsp"></script>
+
+<script type = "text/javascript">
+(function(){
+	if(!window.uwmServices){
+		window.uwmServices = uwmServices = Hemi.json.rpc.service;
+		window.uwmServiceCache = uwmServiceCache = Hemi.json.rpc.cache.service;
+	}
+	uwmServices.addService(
+			"AMSchema",
+			"/AccountManagerService/rest/schema/smd",
+			true,
+			true,
+			false
+		);
+}());
+</script>
+
+</head>
+<body>
+<div is-dwac = "1" DWacControlUri = "%CONTENT%"></div>
+</div>
+
+</body>
+</html>

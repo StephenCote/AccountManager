@@ -23,7 +23,11 @@
  *******************************************************************************/
 package org.cote.accountmanager.service.util;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,8 +57,11 @@ import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
+import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.GraphicsUtil;
+import org.cote.accountmanager.util.JSONUtil;
+import org.cote.accountmanager.util.StreamUtil;
 
 public class MediaUtil {
 	public static final Logger logger = LogManager.getLogger(MediaUtil.class);
@@ -67,6 +74,7 @@ public class MediaUtil {
 	private static boolean allowDataPointers = false;
 	private static boolean checkConfig = false;
 	private static boolean checkConfigDataPoint = false;
+	private static Map<String,String> templateContents = new HashMap<>();
 	protected static boolean getRestrictImageSize(HttpServletRequest request){
 		if(checkConfig) return restrictImageSize;
 		restrictImageSize = getBoolParam(request,"image.restrict.size");
@@ -434,10 +442,53 @@ public class MediaUtil {
 			
 			logger.error("Error",e);
 		}
+		if(options.isEncodeData()){
+			value = BinaryUtil.toBase64(value);
+		}
+		if(options.isUseTemplate() && options.getTemplatePath() != null){
+			
+			InputStream resourceContent = null;
+			Map<String,String> roleMap = new HashMap<>();
+			String template = null;
+			if(templateContents.containsKey(options.getTemplatePath())) template = templateContents.get(options.getTemplatePath());
+			else{
+				try {
+
+					resourceContent = request.getServletContext().getResourceAsStream(options.getTemplatePath());
+					template = StreamUtil.streamToString(new BufferedInputStream(resourceContent));
+					if(template != null && template.length() > 0){
+						templateContents.put(options.getTemplatePath(), template);
+					}
+				} catch (IOException e) {
+					
+					logger.error("Error",e);
+				}
+				finally{
+					if(resourceContent != null)
+						try {
+							resourceContent.close();
+						} catch (IOException e) {
+							
+							logger.error("Error",e);
+						}
+				}
+
+			}
+			if(template == null){
+				response.sendError(500);
+				AuditService.denyResult(audit, "Template is invalid: '" + options.getTemplatePath() + "'");
+			}
+			template = template.replaceAll("%TITLE%", data.getName() + " (" + data.getObjectId() + ") - Distributed Web Application Component");
+			//template = template.replaceAll("%CONTENT%", (options.isEncodeData() ? BinaryUtil.toBase64Str(value) : new String(value)));
+			template = template.replaceAll("%CONTENT%", request.getRequestURI().replaceAll("/dwac/", "/media/"));
+			value = template.getBytes();
+			if(options.getTemplateContentType() != null) response.setContentType(options.getTemplateContentType());
+		}
 		response.setContentLength(value.length);
 		response.getOutputStream().write(value); 
 		response.flushBuffer();
 	}
+
 
 	
 }

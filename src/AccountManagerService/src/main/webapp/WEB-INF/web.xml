@@ -36,7 +36,6 @@
     <param-value>org.cote.rocket.Factories</param-value>
   </context-param>
    	 	 <context-param>
-    <description>Maximum Data Cache Size</description>
     <param-name>factories.data.cache</param-name>
     <param-value>524288000</param-value>
   </context-param>
@@ -235,6 +234,13 @@
     <enabled>true</enabled>
     <async-supported>false</async-supported>
   </servlet>
+    <servlet>
+    <display-name>DWACServlet</display-name>
+    <servlet-name>DWACServlet</servlet-name>
+    <servlet-class>org.cote.servlets.DWACServlet</servlet-class>
+    <enabled>true</enabled>
+    <async-supported>false</async-supported>
+  </servlet>
   <servlet-mapping>
     <servlet-name>MediaFormServlet</servlet-name>
     <url-pattern>/mediaForm</url-pattern>
@@ -246,6 +252,10 @@
   <servlet-mapping>
     <servlet-name>ThumbnailServlet</servlet-name>
     <url-pattern>/thumbnail/*</url-pattern>
+  </servlet-mapping>
+    <servlet-mapping>
+    <servlet-name>DWACServlet</servlet-name>
+    <url-pattern>/dwac/*</url-pattern>
   </servlet-mapping>
     <servlet-mapping>
         <servlet-name>JerseyService</servlet-name>

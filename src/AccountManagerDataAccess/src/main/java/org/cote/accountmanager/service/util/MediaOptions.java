@@ -28,14 +28,45 @@ public class MediaOptions {
 	private int thumbWidth = 100;
 	private int thumbHeight = 100;
 	private String mediaBase = null;
+	private boolean useTemplate = false;
+	private boolean encodeData = false;
+	private String templatePath = null;
+	private String templateContentType = null;
 	
 	public MediaOptions(){
 		
 	}
+	
 	public MediaOptions(String type){
 		mediaBase = type;
 	}
 	
+	public String getTemplateContentType() {
+		return templateContentType;
+	}
+
+	public void setTemplateContentType(String templateContentType) {
+		this.templateContentType = templateContentType;
+	}
+
+	public String getTemplatePath() {
+		return templatePath;
+	}
+	public void setTemplatePath(String templatePath) {
+		this.templatePath = templatePath;
+	}
+	public boolean isUseTemplate() {
+		return useTemplate;
+	}
+	public void setUseTemplate(boolean useTemplate) {
+		this.useTemplate = useTemplate;
+	}
+	public boolean isEncodeData() {
+		return encodeData;
+	}
+	public void setEncodeData(boolean encodeData) {
+		this.encodeData = encodeData;
+	}
 	public String getMediaBase() {
 		return mediaBase;
 	}

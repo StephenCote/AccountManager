@@ -24,6 +24,7 @@
 	</div>
 	-->	
 	<p>
+	<input type = "button" value = "Configure Community" onclick = "${this}.configureGroups()" />
 	<input type = "button" value = "Load Demos" onclick = "${this}.LoadDemo()" />
 	</p>
 	<embedded-script>
@@ -39,7 +40,7 @@
 				this.AddTab("tests","Tests",this.scopeHandler("loadTestsTab",0,1,1));
 				this.AddTab("templates","Templates",this.scopeHandler("loadTemplatesTab",0,1,1));
 				//this.AddTab("workers","Workers",this.scopeHandler("loadWorkersTab",0,1,1));
-
+				this.configureGroups();
 				this.ShowTab(0);
 				this.loadComponentsTab();
 			},
@@ -174,6 +175,10 @@
 					case "Projects":
 						oW = Hemi.app.createWindow("Project Builder", "Templates/ProjectBuilder.xml", "project-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
 						break;
+					case "Pub":
+						var sUrl = g_application_path + "dwac/" + AM6Client.dotPath(AM6Client.currentOrganization) + "/Data" + vS.groupPath + "/" + vS.name;
+						window.open(sUrl, vS.objectId);
+						break;
 				}
 				if (oW) {
 					oW.resizeTo(650, 650);
@@ -224,19 +229,57 @@
 				ac.setTemplateIsSpace(1);
 				ac.provideCreateItem = this.scopeHandler("provideItem",0,1,1);
 				ac.provideOpenItem = ac.provideCreateItem;
+				this.configureGroup(s);
+				var sBPath = uwm.getPathForType("DWAC");
+				var sPath = sBPath + "/" + s;
+				ac.getProperties().defaultPath = sPath;
+				ac.loadTemplate(uwm.getApiTypeView("Data") + "/Forms/ListDatas.xml");
+			},
+			configureGroups : function(){
+				var aG = ["Components","Fragments","Modules","Projects","Pub","Tasks","Tests","Templates"];
+				for(var i = 0; i < aG.length; i++){
+					this.configureGroup(aG[i]);
+				}
+			},
+			configureGroup : function(s){
 				var sBPath = uwm.getPathForType("DWAC");
 				var sPath = sBPath + "/" + s;
 				
 				var oP = AM6Client.find("GROUP","DATA",sPath);
 				if(!oP){
-					oP = AM6Client.make("GROUP","DATA",sPath);
-					if(oP && irocket.getCommunityMode() && irocket.getCommunityLifecycle() && irocket.getCommunityProject()){
-						AM6Client.configureCommunityProjectGroupEntitlements(irocket.getCommunityLifecycle().objectId, irocket.getCommunityProject().objectId, oP.objectId);
+					if(irocket.getCommunityMode()){
+						var oBP = AM6Client.find("GROUP","DATA",sBPath);
+						if(!oBP){
+							var oBPP = AM6Client.find("GROUP","DATA", sBPath.substring(0, sBPath.lastIndexOf("/")));
+							
+							oBP = new org.cote.objects.baseGroupType();
+							oBP.name = "DWAC";
+							oBP.parentId = oBPP.id;
+							oBP.nameType = "GROUP";
+							oBP.groupType = "DATA";
+							if(AM6Client.update("GROUP",oBP)){
+								oBP = AM6Client.find("GROUP","DATA",sPath);
+								AM6Client.configureCommunityProjectGroupEntitlements(irocket.getCommunityLifecycle().objectId, irocket.getCommunityProject().objectId, oBP.objectId);
 
+							}
+						}
+						oP = new org.cote.objects.baseGroupType();
+						oP.name = s;
+						oP.parentId = oBP.id;
+						oP.nameType = "GROUP";
+						oP.groupType = "DATA";
+						if(AM6Client.update("GROUP",oP)){
+							oP = AM6Client.find("GROUP","DATA",sPath);
+							AM6Client.configureCommunityProjectGroupEntitlements(irocket.getCommunityLifecycle().objectId, irocket.getCommunityProject().objectId, oP.objectId);
+
+						}
+					}
+					else{
+						/// Make is intentionally restricted to paths within a users home directory
+						///
+						oP = AM6Client.make("GROUP","DATA",sPath);
 					}
 				}
-				ac.getProperties().defaultPath = sPath;
-				ac.loadTemplate(uwm.getApiTypeView("Data") + "/Forms/ListDatas.xml");
 			},
 			DoLogout : function(){
 				window.uwm.logout();
