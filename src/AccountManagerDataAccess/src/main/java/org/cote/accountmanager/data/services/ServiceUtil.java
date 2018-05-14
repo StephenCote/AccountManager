@@ -38,7 +38,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 public class ServiceUtil {
 	public static final Logger logger = LogManager.getLogger(FactoryService.class);
 	public static boolean isFactorySetup(){
-		boolean out_bool = false;
+		boolean outBool = false;
 		AccountType rootAcct = null;
 		AccountType adminAcct = null;
 		UserType root = null;
@@ -51,17 +51,17 @@ public class ServiceUtil {
 			adminRole = RoleService.getAccountAdministratorUserRole(Factories.getPublicOrganization().getId());
 			if(dataRole == null){
 				logger.error("Data role in public org is null");
-				return out_bool;
+				return outBool;
 			}
 			if(adminRole == null){
 				logger.error("Admin role in public org is null");
-				return out_bool;
+				return outBool;
 			}
 			rootAcct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountByName("Root", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
 			root = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Root", Factories.getSystemOrganization().getId());
 			if(rootAcct == null || root == null){
 				logger.error("Root account or root user is null");
-				return out_bool;
+				return outBool;
 			}
 			
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(root);
@@ -70,7 +70,7 @@ public class ServiceUtil {
 			doc = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Document Control", Factories.getPublicOrganization().getId());
 			if(admin == null || doc == null){
 				logger.error("Admin or Document Control user in public org was null");
-				return out_bool;
+				return outBool;
 			}
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(admin);
 			boolean adminHasRole = RoleService.getIsUserInRole(adminRole, admin);
@@ -90,10 +90,10 @@ public class ServiceUtil {
 				///  || RoleService.getIsUserInRole(dataRole, doc) == false
 				if(RoleService.getIsUserInRole(adminRole, admin) == false || RoleService.getIsUserInRole(adminRole, root) == false){
 					logger.error("Root, Admin, or Document Control were not in the admin role in the public org.");
-					return out_bool;
+					return outBool;
 				}
 			}
-			out_bool = true;
+			outBool = true;
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -103,6 +103,6 @@ public class ServiceUtil {
 			logger.error(e.getMessage());
 			logger.error("Error",e);
 		}
-		return out_bool;
+		return outBool;
 	}
 }

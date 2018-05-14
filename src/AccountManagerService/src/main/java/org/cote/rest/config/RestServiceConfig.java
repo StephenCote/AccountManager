@@ -57,7 +57,7 @@ public class RestServiceConfig extends ResourceConfig{
 	private static final Logger logger = LogManager.getLogger(RestServiceConfig.class);
 	
 	public RestServiceConfig(@Context ServletContext servletContext){
-		ServiceUtil.useAccountManagerSession = false;
+		ServiceUtil.setUseAccountManagerSession(false);
 		register(StartupHandler.class);
 		packages("org.cote.rest.services");
 		register(RolesAllowedDynamicFeature.class);

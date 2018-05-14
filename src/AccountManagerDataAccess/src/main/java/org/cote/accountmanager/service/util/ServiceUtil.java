@@ -51,9 +51,16 @@ public class ServiceUtil {
 	/// Bit indicating that the session id should be generated independent of the application server
 	/// This in no way mitigates the need for any secondary credential or token
 	///
-	public static boolean useAccountManagerSession = true;
-	public static String AM5_COOKIE_NAME = "am5";
-	public static int AM5_COOKIE_EXPIRY = 7200;
+	private static boolean useAccountManagerSession = true;
+	private static String am5CookieName = "am5";
+	private static int am5CookieExpiry = 7200;
+	
+	public static void setUseAccountManagerSession(boolean b){
+		useAccountManagerSession = b;
+	}
+	public static void setCookieExpiration(int ms){
+		am5CookieExpiry = ms;
+	}
 	
 	private static Pattern jerseyCookie = Pattern.compile(",\\$Version");
 	
@@ -63,11 +70,11 @@ public class ServiceUtil {
 	public static String getSessionId(HttpServletRequest request, HttpServletResponse response, boolean create){
 		String sessionId = null;
 		if(useAccountManagerSession){
-			sessionId = getCookieValue(request,AM5_COOKIE_NAME);
+			sessionId = getCookieValue(request,am5CookieName);
 			if((sessionId == null || sessionId.length() == 0) && response != null && create){
 				
 				sessionId = UUID.randomUUID().toString();
-				addCookie(response,AM5_COOKIE_NAME,sessionId);
+				addCookie(response,am5CookieName,sessionId);
 				logger.info("Assigning AM5 Session Id: " + sessionId);
 			}
 		}
@@ -77,14 +84,7 @@ public class ServiceUtil {
 		}
 		if(sessionId == null){
 			logger.debug("Null Session Id. AM5 Session Mode Is " + (useAccountManagerSession ? "On":"Off") + ". This is expected for service calls");
-			/*
-			logger.error("NULL SESSION ID. AM5 Session Mode Is " + (useAccountManagerSession ? "On":"Off"));
-			Enumeration<String> headers = request.getHeaderNames();
-			while(headers.hasMoreElements()){
-				String hname = headers.nextElement();
-				logger.error(hname + "=" + request.getHeader(hname));
-			}
-			*/
+
 		}
 		return sessionId;
 	}
@@ -148,7 +148,7 @@ public class ServiceUtil {
 		Cookie c = new Cookie(name, value);
 		c.setPath("/");
 		c.setVersion(1);
-		c.setMaxAge(AM5_COOKIE_EXPIRY);
+		c.setMaxAge(am5CookieExpiry);
 		response.addCookie(c);
 		logger.info("Creating cookie: " + name + "=" + value);
 	}

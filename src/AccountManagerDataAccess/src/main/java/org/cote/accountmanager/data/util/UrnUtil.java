@@ -52,14 +52,9 @@ public class UrnUtil {
 	/// AM 5 URN Syntax
 	/// am:type:org.path:parent.path:name
 	
-	public static String urnPrefix = "am";
-	public static String urnSeparator = ":";
-	
-	public static Pattern factoryPattern = Pattern.compile("^am:(\\S[^:]+):(\\S[^:]+)");
-	/*
-	public static Pattern bucketPattern = Pattern.compile("^am:(\\S[^:]+):(\\S[^:]+):(\\S[^:]+):(\\S[^:]+)");
-	public static Pattern groupedObjectPattern = Pattern.compile("^am:(\\S[^:]+):(\\S[^:]+):(\\S[^:]+):(\\S[^:]+):(\\S[^:]+)");
-	*/
+	public static final String urnPrefix = "am";
+	public static final String urnSeparator = ":";
+	public static final Pattern factoryPattern = Pattern.compile("^am:(\\S[^:]+):(\\S[^:]+)");
 
 	private static String getEncodedGroupPath(BaseGroupType group) throws FactoryException, ArgumentException{
 		return group.getGroupType().toString().toLowerCase() + urnSeparator + getDotGroupPath(group);
@@ -224,34 +219,7 @@ public class UrnUtil {
 		}
 		return path.substring(1,path.length()).replace('/', '.');
 	}
-	/*
-	public static OrganizationType getOrganization(String urn) throws FactoryException, ArgumentException{
-		String orgPath = extractOrganizationPath(urn);
-		if(orgPath == null){
-			logger.error("Null organization path in urn " + urn);
-			return null;
-		}
-		orgPath = "/" + orgPath.replace('.', '/');
-		return ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
-	}
-	public static String extractOrganizationPath(String urn){
-		Matcher m = organizationPattern.matcher(urn);
 
-		if(m.find()){
-			if(m.groupCount() > 1){
-		
-				return m.group(2);
-			}
-			else{
-				logger.error("Unexpceted group count: " + m.groupCount());
-			}
-		}
-		else{
-			logger.error("No match from urn " + urn);
-		}
-		return null;
-	}
-	*/
 	public static <T> T getByUrn(String urn) {
 
 		Matcher m = factoryPattern.matcher(urn);
@@ -271,95 +239,5 @@ public class UrnUtil {
 	public static boolean isUrn(String possibleUrn){
 		return factoryPattern.matcher(possibleUrn).find();
 	}
-	/*
-	private static <T> T getObject(Pattern pattern, String urn) throws FactoryException, ArgumentException { 
-		T obj = null;
-		String bucketPath = null;
-		String bucketType = null;
-		//String orgPath = null;
-		String objType = null;
-		Matcher m = bucketPattern.matcher(urn);
-		if(m.find() && m.groupCount() > 3){
-			objType = m.group(1);
-			//orgPath = m.group(2);
-			bucketType = m.group(3);
-			bucketPath = m.group(4);
-		}
-		if( bucketPath == null || bucketType == null){
-			logger.error("Null bucket path or type with " + bucketPath + " as type " + bucketType);
-			return null;
-		}
-		//orgPath = "/" + orgPath.replace('.', '/');
-		bucketPath = "/" + bucketPath.replace('.', '/');
-		OrganizationType org = getOrganization(urn);
-		///((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
-		NameEnumType nameType = NameEnumType.fromValue(objType.toUpperCase());
-		try{
-			switch(nameType){
-				case PERMISSION:
-					obj = (T)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).findPermission(PermissionEnumType.fromValue(bucketType.toUpperCase()), bucketPath, org);
-					break;
-				case ROLE:
-					obj = (T)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).findRole(RoleEnumType.fromValue(bucketType.toUpperCase()), bucketPath, org);
-					break;
-			}
-		}
-		catch(DataAccessException e){
-			logger.error(e.getMessage());
-		}
-		return obj;
-	}
-	public static <T> T getGroupObject(String urn) throws FactoryException, ArgumentException{
-		T obj = null;
-
-		String groupPath = null;
-		String groupType = null;
-		String itemName = null;
-		//String orgPath = null;
-		String objType = null;
-		Matcher m = bucketPattern.matcher(urn);
-		if(m.find() && m.groupCount() > 3){
-			objType = m.group(1);
-			//orgPath = m.group(2);
-			groupType = m.group(3);
-			groupPath = m.group(4);
-			//if(m.groupCount() > 4) itemName = m.group(5);
-		}
-		m = groupedObjectPattern.matcher(urn);
-		if(m.find() && m.groupCount() > 4){
-			itemName = m.group(5);
-		}
-		if( groupPath == null || groupType == null){
-			logger.error("Null group path or type from " + urn + " with " + groupPath + " as type " + groupType);
-			return null;
-		}
-		
-		//orgPath = "/" + orgPath.replace('.', '/');
-		groupPath = "/" + groupPath.replace('.', '/');
-		OrganizationType org = getOrganization(urn);
-		///((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
-		NameEnumType nameType = NameEnumType.fromValue(objType.toUpperCase());
-
-		BaseGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null,GroupEnumType.fromValue(groupType.toUpperCase()),groupPath,getOrganization(urn));
-
-		switch(nameType){
-
-			default:
-				NameIdGroupFactory fact = Factories.getFactory(FactoryEnumType.fromValue(objType.toUpperCase()));
-				obj = fact.getByNameInGroup(itemName, (DirectoryGroupType)group);
-				break;
-		}
-
-		return obj;
-	}
 	
-	public static String extractGroupPath(String urn){
-		Matcher m = bucketPattern.matcher(urn);
-
-		if(m.matches() && m.groupCount() > 3){
-			return m.group(4);
-		}
-		return null;
-	}
-	*/
 }

@@ -35,25 +35,26 @@ import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 import org.cote.accountmanager.util.SecurityUtil;
 import org.junit.After;
 import org.junit.Test;
-public class TestOrganizationFactory{
+public class TestOrganizationFactory extends BaseDataAccessTest{
 	private static String testOrgName = null;
 	public static final Logger logger = LogManager.getLogger(TestOrganizationFactory.class);
-	public void setUp() throws Exception {
 
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName("org.postgresql.Driver");
-		cf.setUserName("devuser");
-		cf.setUserPassword("password");
-		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
-	}
-	
 
 	@Test
+	public void runTests(){
+		testAddOrganization();
+		testGetOrganization();
+		testOrganizationCipher();
+		testUpdateOrganization();
+		testAddOrphanOrganization();
+		testDeleteOrganization();
+	}
+	
 	public void testAddOrganization(){
 		boolean error = false;
 	
@@ -61,6 +62,7 @@ public class TestOrganizationFactory{
 		testOrgName = "Example " + System.currentTimeMillis();
 		OrganizationType new_org = new OrganizationType();
 		new_org.setName(testOrgName);
+		new_org.setNameType(NameEnumType.ORGANIZATION);
 		new_org.setOrganizationType(OrganizationEnumType.DEVELOPMENT);
 		
 		logger.info("Id: " + new_org.getId());
@@ -71,6 +73,8 @@ public class TestOrganizationFactory{
 		try {
 			if(org_factory.add(new_org)){
 				new_org = org_factory.getByNameInParent(testOrgName,devOrg.getId(), 0L);
+				KeyService.newOrganizationAsymmetricKey(new_org.getId(), true);
+				KeyService.newOrganizationSymmetricKey(new_org.getId(), true);
 			}
 		} catch (FactoryException e2) {
 			
@@ -85,13 +89,13 @@ public class TestOrganizationFactory{
 		assertFalse("An error occurred", error);
 	}
 	
-	@Test
 	public void testAddOrphanOrganization(){
 		boolean error = false;
 
 		String orgName = "Example " + System.currentTimeMillis();
 		OrganizationType new_org = new OrganizationType();
 		new_org.setName(orgName);
+		new_org.setNameType(NameEnumType.ORGANIZATION);
 		new_org.setOrganizationType(OrganizationEnumType.DEVELOPMENT);
 
 		OrganizationFactory org_factory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
@@ -101,11 +105,15 @@ public class TestOrganizationFactory{
 
 		try {
 			parentOrg = org_factory.getByNameInParent(testOrgName, devOrg.getId(),0L);
+			assertNotNull("Test organization " + testOrgName + " is null in " + devOrg.getUrn(),parentOrg);
 			new_org.setParentId(parentOrg.getId());
+
 			if(org_factory.add(new_org)){
-				new_org = org_factory.getByNameInParent(testOrgName, parentOrg.getId(), 0L);
+				new_org = org_factory.getByNameInParent(orgName, parentOrg.getId(), 0L);
+				assertNotNull("New organization is null",new_org);
 			}
 			else{
+				logger.error("Failed to add new organization " + testOrgName);
 				new_org = null;
 			}
 		} catch (FactoryException e2) {
@@ -121,7 +129,6 @@ public class TestOrganizationFactory{
 		assertFalse("An error occurred", error);
 	}
 	
-	@Test
 	public void testGetOrganization(){
 		boolean error = false;
 		
@@ -152,7 +159,7 @@ public class TestOrganizationFactory{
 		
 	}
 	
-	@Test
+	
 	public void testOrganizationCipher(){
 		boolean error = false;
 
@@ -173,11 +180,11 @@ public class TestOrganizationFactory{
 		assertNotNull("Org is null", new_org);
 		
 
-		SecurityBean bean = KeyService.getPrimaryAsymmetricKey(new_org.getId()); 
+		SecurityBean bean = KeyService.getPrimarySymmetricKey(new_org.getId()); 
 				//OrganizationSecurity.getSecurityBean(new_org);
 		String test_data = "This is some test data.";
 		byte[] enc = SecurityUtil.encipher(bean, test_data.getBytes());
-
+		assertTrue("Enciphered data is empty or null",enc != null && enc.length > 0);
 		((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).clearCache();
 		try{
 			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
@@ -196,13 +203,14 @@ public class TestOrganizationFactory{
 		logger.info("Bean: " + (bean == null ? "Null":"Retrieved"));
 		assertNotNull("Bean is null", bean);
 	}
-	@Test
+
 	public void testUpdateOrganization(){
 		boolean updated = false;
 		boolean error = false;
 		String newName = "Updated Example - " + System.currentTimeMillis();
 		try{
 			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			assertNotNull("Org " + testOrgName + " is null in parent " + Factories.getDevelopmentOrganization().getUrn(),org);
 			org.setName(newName);
 			updated = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).update(org);
 			if(updated){
@@ -221,7 +229,7 @@ public class TestOrganizationFactory{
 		assertFalse("An error occurred", error);
 		assertTrue("Organization was not updated", updated);
 	}
-	@Test
+
 	public void testDeleteOrganization(){
 		boolean deleted = false;
 		boolean error = false;
@@ -243,7 +251,4 @@ public class TestOrganizationFactory{
 		logger.info("Deleted organizations " + testOrgName);
 	}
 
-	@After
-	public void tearDown() throws Exception {
-	}
 }

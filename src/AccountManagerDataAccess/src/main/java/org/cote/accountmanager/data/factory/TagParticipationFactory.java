@@ -65,8 +65,9 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.objects.types.TagEnumType;
 
 public class TagParticipationFactory extends ParticipationFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.TAGPARTICIPATION, TagParticipationFactory.class); }
+
 	public TagParticipationFactory(){
+
 		super(ParticipationEnumType.TAG, "tagparticipation");
 		this.haveAffect = false;
 		factoryType = FactoryEnumType.TAG;
@@ -170,7 +171,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 	public List<BaseTagType> getAccountTags(AccountType account) throws FactoryException, ArgumentException
 	{
 		List<AccountParticipantType> list = getAccountParticipants(account);
-		if(list.size() == 0) return new ArrayList<BaseTagType>();
+		if(list.isEmpty()) return new ArrayList<>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
 		return ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).listInGroup(null, TagEnumType.ACCOUNT, field, 0, 0,account.getOrganizationId());
 	}
@@ -178,28 +179,28 @@ public class TagParticipationFactory extends ParticipationFactory {
 	public List<BaseTagType> getUserTags(UserType user) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> list = getUserParticipants(user);
-		if(list.size() == 0) return new ArrayList<BaseTagType>();
+		if(list.isEmpty()) return new ArrayList<>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
 		return ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).listInGroup(null, TagEnumType.USER, field, 0, 0,user.getOrganizationId());
 	}
 	public List<BaseTagType> getPersonTags(PersonType person) throws FactoryException, ArgumentException
 	{
 		List<PersonParticipantType> list = getPersonParticipants(person);
-		if(list.size() == 0) return new ArrayList<BaseTagType>();
+		if(list.isEmpty()) return new ArrayList<>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
 		return ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).listInGroup(null, TagEnumType.PERSON, field, 0, 0,person.getOrganizationId());
 	}
 	public List<BaseTagType> getDataTags(DataType data) throws FactoryException, ArgumentException
 	{
 		List<DataParticipantType> list = getDataParticipants(data);
-		if(list.size() == 0) return new ArrayList<BaseTagType>();
+		if(list.isEmpty()) return new ArrayList<>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
 		return ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).listInGroup(null, TagEnumType.DATA, field, 0, 0,data.getOrganizationId());
 	}
 	public List<BaseTagType> getGroupTags(BaseGroupType group) throws FactoryException, ArgumentException
 	{
 		List<GroupParticipantType> list = getGroupParticipants(group);
-		if(list.size() == 0) return new ArrayList<BaseTagType>();
+		if(list.isEmpty()) return new ArrayList<>();
 		QueryField field = QueryFields.getFieldParticipationIds(list.toArray(new BaseParticipantType[0]));
 		return ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).listInGroup(null, TagEnumType.GROUP, field, 0, 0,group.getOrganizationId());
 	}
@@ -225,7 +226,6 @@ public class TagParticipationFactory extends ParticipationFactory {
 	}
 	public <T> List<T> getTagParticipations(BaseTagType tag, ParticipantEnumType type) throws FactoryException, ArgumentException
 	{
-		//return getTagParticipations(new BaseTagType[] { tag });
 		return convertList(getParticipations(new BaseTagType[]{tag}, type));
 	}
 	
@@ -241,13 +241,12 @@ public class TagParticipationFactory extends ParticipationFactory {
 	{
 		
 		List<T> out_list = new ArrayList<T>();
-		///return convertList(getParticipations(tags,ParticipantEnumType.DATA));
 		if(tags.length == 0) return out_list;
 		if(instruction == null) instruction = new ProcessingInstructionType();
 		long org = tags[0].getOrganizationId();
 		
 		
-		List<QueryField> matches = new ArrayList<QueryField>();
+		List<QueryField> matches = new ArrayList<>();
 		if(type != ParticipantEnumType.UNKNOWN) matches.add(QueryFields.getFieldParticipantType(type));
 		StringBuilder buff = new StringBuilder();
 		for (int i = 0; i < tags.length; i++)
@@ -261,52 +260,28 @@ public class TagParticipationFactory extends ParticipationFactory {
 		instruction.setHavingClause("count(participantid) = " + tags.length);
 		instruction.setGroupClause("participantid");
 		instruction.setOrderClause("participantid");
+
 		// Get a list of participantids 
 		//
-		//StringBuilder id_buff = new StringBuilder();
-		
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
-		//String token = DBFactory.getParamToken(connectionType);
-		//int id_count = 0;
+		PreparedStatement statement = null;
+		ResultSet rset = null;
 		try{
 			String sql = assembleQueryString("SELECT participantid FROM " + dataTables.get(0).getName(),matches.toArray(new QueryField[0]),connectionType,instruction,org);
-			/*
-			String sql = "SELECT participantid FROM " + dataTables.get(0).getName()
-				+ " WHERE participationid IN (" + buff.toString() + ")"
-				+ " AND participanttype = " + token
-				+ " AND organizationid = " + token
-				+ " GROUP BY participantid HAVING count(*) = " + token
-				+ " ORDER BY participantid"
-			;
-			*/
+
 			logger.info("Tag Sql for type " + type.toString() + " and length " + tags.length + ": " + sql);
-			PreparedStatement statement = connection.prepareStatement(sql);
+			statement = connection.prepareStatement(sql);
 			DBFactory.setStatementParameters(matches.toArray(new QueryField[0]), statement);
-			/*
-			statement.setString(1, type.toString());
-			statement.setLong(2, org.getId());
-			statement.setInt(3, tags.length);
-			*/
-			ResultSet rset = statement.executeQuery();
+			rset = statement.executeQuery();
 		
 			while (rset.next())
 			{
 				BaseParticipantType bpt = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).newParticipant(type);
 				bpt.setOrganizationId(org);
-				//bpt.setParticipationId(rset.getLong(1));
 				bpt.setParticipantId(rset.getLong(1));
 				out_list.add((T)bpt);
-				//logger.info(bpt.getParticipantId());
-				
-				/*
-				if (id_count > 0) id_buff.append(",");
-				id_buff.append(rset.getLong(1));
-				id_count++;
-				*/
 			}
-			rset.close();
-			
 		}
 		catch(SQLException sqe){
 			logger.error("Error",sqe);
@@ -314,6 +289,8 @@ public class TagParticipationFactory extends ParticipationFactory {
 		}
 		finally{
 			try {
+				if(rset != null) rset.close();
+				if(statement != null) statement.close();
 				connection.close();
 			} catch (SQLException e) {
 				
@@ -338,25 +315,20 @@ public class TagParticipationFactory extends ParticipationFactory {
 			buff.append(tags[i].getId());
 		}
 
-		StringBuilder id_buff = new StringBuilder();
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
-		int id_count = 0;
+		String partType =  (type != ParticipantEnumType.UNKNOWN? " AND participanttype = " + token : "");
+		PreparedStatement statement = null;
+		ResultSet rset = null;
 		try{
-			String sql = "SELECT count(participantid) FROM (SELECT participantid FROM " + dataTables.get(0).getName()
-				+ " WHERE participationid IN (" + buff.toString() + ")"
-				+ (type != ParticipantEnumType.UNKNOWN? " AND participanttype = " + token : "")
-				+ " AND organizationid = " + token
-				+ " GROUP BY participantid HAVING count(*) = " + token
-				+ "ORDER BY participantid) as tc"
-			;
+			String sql = String.format("SELECT count(participantid) FROM (SELECT participantid FROM %s WHERE participationid IN (%s) %s AND organizationid = %s GROUP BY participantid HAVING count(*) = %s ORDER BY participantid) as tc",this.primaryTableName,buff.toString(),partType,token,token);
 
-			PreparedStatement statement = connection.prepareStatement(sql);
+			statement = connection.prepareStatement(sql);
 			int paramCount = 1;
 			if(type != ParticipantEnumType.UNKNOWN) statement.setString(paramCount++, type.toString());
 			statement.setLong(paramCount++, org);
 			statement.setInt(paramCount++, tags.length);
-			ResultSet rset = statement.executeQuery();
+			rset = statement.executeQuery();
 		
 			if (rset.next())
 			{
@@ -371,6 +343,8 @@ public class TagParticipationFactory extends ParticipationFactory {
 		}
 		finally{
 			try {
+				if(rset != null) rset.close();
+				if(statement != null) statement.close();
 				connection.close();
 			} catch (SQLException e) {
 				
@@ -384,14 +358,14 @@ public class TagParticipationFactory extends ParticipationFactory {
 	{
 
 		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(group), QueryFields.getFieldParticipantType(ParticipantEnumType.GROUP), QueryFields.getFieldParticipationId(tag)}, group.getOrganizationId());
-		if(list.size() == 0) return null;
+		if(list.isEmpty()) return null;
 		return (GroupParticipantType)list.get(0);
 	}
 	public DataParticipantType getDataParticipant(BaseTagType tag,DataType data) throws FactoryException, ArgumentException
 	{
 
 		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(data), QueryFields.getFieldParticipantType(ParticipantEnumType.DATA), QueryFields.getFieldParticipationId(tag)}, data.getOrganizationId());
-		if(list.size() == 0) return null;
+		if(list.isEmpty()) return null;
 		return (DataParticipantType)list.get(0);
 	}
 
@@ -399,21 +373,21 @@ public class TagParticipationFactory extends ParticipationFactory {
 	{
 
 		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(account), QueryFields.getFieldParticipantType(ParticipantEnumType.ACCOUNT), QueryFields.getFieldParticipationId(tag) }, account.getOrganizationId());
-		if (list.size() == 0) return null;
+		if (list.isEmpty()) return null;
 		return (AccountParticipantType)list.get(0);
 	}
 	public UserParticipantType getUserParticipant(BaseTagType tag, UserType user) throws FactoryException, ArgumentException
 	{
 
 		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(user), QueryFields.getFieldParticipantType(ParticipantEnumType.USER), QueryFields.getFieldParticipationId(tag) }, user.getOrganizationId());
-		if (list.size() == 0) return null;
+		if (list.isEmpty()) return null;
 		return (UserParticipantType)list.get(0);
 	}
 	public PersonParticipantType getPersonParticipant(BaseTagType tag, PersonType person) throws FactoryException, ArgumentException
 	{
 
 		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(person), QueryFields.getFieldParticipantType(ParticipantEnumType.PERSON), QueryFields.getFieldParticipationId(tag) }, person.getOrganizationId());
-		if (list.size() == 0) return null;
+		if (list.isEmpty()) return null;
 		return (PersonParticipantType)list.get(0);
 	}
 }

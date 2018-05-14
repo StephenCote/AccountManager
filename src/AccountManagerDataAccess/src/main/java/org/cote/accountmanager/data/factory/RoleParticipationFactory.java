@@ -87,7 +87,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 
 		if (list.size() == 0) return new ArrayList<BaseRoleType>();
 /*
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		for (int i = 0; i < list.size(); i++)
 		{
 			if (i > 0) buff.append(",");

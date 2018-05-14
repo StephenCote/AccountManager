@@ -248,7 +248,7 @@ public class XmlUtil {
 	public static String getNodeText(Node node){
 		if(node == null)
 			return null;
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		for(int c = 0; c < node.getChildNodes().getLength();c++){
 			Node cn = node.getChildNodes().item(c);
 			if(cn.getNodeType() == Node.TEXT_NODE || cn.getNodeType() == Node.CDATA_SECTION_NODE){

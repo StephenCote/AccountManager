@@ -52,7 +52,7 @@ public class DBFactory {
 		MYSQL,
 		POSTGRES
 	}
-	public static CONNECTION_TYPE defaultConnectionType = CONNECTION_TYPE.UNKNOWN;
+	private static CONNECTION_TYPE defaultConnectionType = CONNECTION_TYPE.UNKNOWN;
 	
 	public static CONNECTION_TYPE getDefaultConnectionType() {
 		return defaultConnectionType;

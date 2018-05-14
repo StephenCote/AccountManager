@@ -51,7 +51,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 
 public class OrganizationFactory extends NameIdFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ORGANIZATION, OrganizationFactory.class); }
+	
 	public OrganizationFactory(){
 		super();
 		this.scopeToOrganization = false;
@@ -60,7 +60,8 @@ public class OrganizationFactory extends NameIdFactory {
 		this.hasUrn = true;
 		this.hasObjectId = true;
 		this.factoryType = FactoryEnumType.ORGANIZATION;
-		this.tableNames.add("organizations");
+		this.primaryTableName = "organizations";
+		this.tableNames.add(primaryTableName);
 	}
 	
 	@Override
@@ -70,13 +71,6 @@ public class OrganizationFactory extends NameIdFactory {
 		}
 	}
 	
-	/*
-	@Override
-	protected String getSelectTemplate(DataTable table, ProcessingInstructionType instruction){
-		return table.getSelectFullTemplate();
-	}
-	*/
-
 	@Override
 	public void initialize(Connection connection) throws FactoryException{
 		super.initialize(connection);
@@ -102,12 +96,18 @@ public class OrganizationFactory extends NameIdFactory {
 			Connection conn = ConnectionFactory.getInstance().getConnection();
 			CONNECTION_TYPE connectionType = DBFactory.getConnectionType(conn);
 			logger.warn("TODO: Refactor this query to better handle tables without organization_id");
+			Statement stat = null;
+			ResultSet rset = null;
+			int delLimit = 1000;
+			String limit1 =  (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT " + delLimit + " " : "");
+			String limit2 = (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT " + delLimit + " " : "");
 			try {
-				int delLimit = 1000;
-				String buildDeleteQuery = "SELECT '" + (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT " + 1000 + " " : "") + "DELETE FROM ' || tablename || ' WHERE organizationid = ?" + (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT " + delLimit + " " : "") + ";' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations' AND NOT tablename = 'objectreference' AND NOT tablename = 'objectscore' AND NOT tablename = 'objectdescription' AND NOT tablename = 'objectlocation' AND NOT tablename = 'objectdate'  AND NOT tablename = 'objectorderscore' AND NOT tablename = 'vaultkey';";
+
+				// String buildDeleteQuery = "SELECT '" + (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT " + 1000 + " " : "") + "DELETE FROM ' || tablename || ' WHERE organizationid = ?" + (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT " + delLimit + " " : "") + ";' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations' AND NOT tablename = 'objectreference' AND NOT tablename = 'objectscore' AND NOT tablename = 'objectdescription' AND NOT tablename = 'objectlocation' AND NOT tablename = 'objectdate'  AND NOT tablename = 'objectorderscore' AND NOT tablename = 'vaultkey';";
+				String buildDeleteQuery = String.format("SELECT '%s DELETE FROM ' || tablename || ' WHERE organizationid = ?%s;' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations' AND NOT tablename = 'objectreference' AND NOT tablename = 'objectscore' AND NOT tablename = 'objectdescription' AND NOT tablename = 'objectlocation' AND NOT tablename = 'objectdate'  AND NOT tablename = 'objectorderscore' AND NOT tablename = 'vaultkey';",limit1,limit2);
 				logger.debug(buildDeleteQuery);
-				Statement stat = conn.createStatement();
-				ResultSet rset = stat.executeQuery(buildDeleteQuery);
+				stat = conn.createStatement();
+				rset = stat.executeQuery(buildDeleteQuery);
 				while(rset.next()){
 					String delQuery = rset.getString(1);
 					delQuery.replaceAll("\"","");
@@ -120,15 +120,16 @@ public class OrganizationFactory extends NameIdFactory {
 					}
 					pstat.close();
 				}
-				rset.close();
-				stat.close();
-				//conn.commit();
+
 			} catch (SQLException e) {
 				
 				logger.error("Trace",e);
 			}
 			finally{
 				try {
+					if(rset != null) rset.close();
+					if(stat != null) stat.close();
+					
 					conn.close();
 				} catch (SQLException e) {
 					
@@ -144,10 +145,10 @@ public class OrganizationFactory extends NameIdFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		OrganizationType use_map = (OrganizationType)map;
-		fields.add(QueryFields.getFieldReferenceId(use_map));
-		fields.add(QueryFields.getFieldLogicalId(use_map));
-		fields.add(QueryFields.getFieldOrganizationType(use_map));
+		OrganizationType useMap = (OrganizationType)map;
+		fields.add(QueryFields.getFieldReferenceId(useMap));
+		fields.add(QueryFields.getFieldLogicalId(useMap));
+		fields.add(QueryFields.getFieldOrganizationType(useMap));
 	}
 
 	public OrganizationType getOrganizationByName(String name, OrganizationType parent) throws FactoryException, ArgumentException
@@ -159,15 +160,15 @@ public class OrganizationFactory extends NameIdFactory {
 	public OrganizationType getOrganizationById(long id) throws FactoryException, ArgumentException
 	{
 
-		OrganizationType out_org = readCache(id);
-		if (out_org != null) return out_org;
+		OrganizationType outOrg = readCache(id);
+		if (outOrg != null) return outOrg;
 
 		List<NameIdType> orgs = getByField(new QueryField[] { QueryFields.getFieldId(id) }, 0);
 
-		if (orgs.isEmpty() == false)
+		if (!orgs.isEmpty())
 		{
-			String key_name = id + "-" + orgs.get(0).getParentId();
-			addToCache(orgs.get(0),key_name);
+			String keyName = id + "-" + orgs.get(0).getParentId();
+			addToCache(orgs.get(0),keyName);
 			return (OrganizationType)orgs.get(0);
 		}
 		return null;
@@ -177,47 +178,47 @@ public class OrganizationFactory extends NameIdFactory {
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
 
-		OrganizationType new_map = new OrganizationType();
-		new_map.setNameType(NameEnumType.ORGANIZATION);
-		new_map.setLogicalId(rset.getLong("logicalid"));
-		new_map.setReferenceId(rset.getLong("referenceid"));
-		new_map.setOrganizationType(OrganizationEnumType.valueOf(rset.getString("organizationtype")));
-		return super.read(rset,  new_map);
+		OrganizationType newMap = new OrganizationType();
+		newMap.setNameType(NameEnumType.ORGANIZATION);
+		newMap.setLogicalId(rset.getLong("logicalid"));
+		newMap.setReferenceId(rset.getLong("referenceid"));
+		newMap.setOrganizationType(OrganizationEnumType.valueOf(rset.getString("organizationtype")));
+		return super.read(rset,  newMap);
 	}
 	public OrganizationType addOrganization(String orgName, OrganizationEnumType orgType, OrganizationType orgParent) throws FactoryException, ArgumentException
 	{
 		long parentId = (orgParent != null ? orgParent.getId() : 0);
-		OrganizationType new_org = getByNameInParent(orgName, parentId,0L);
-		if(new_org == null){
-			new_org = new OrganizationType();
-			new_org.setNameType(NameEnumType.ORGANIZATION);
-			new_org.setOrganizationType(orgType);
-			new_org.setParentId(parentId);
-			new_org.setName(orgName);
-			if(add(new_org)){
-				new_org = this.getByNameInParent(orgName, parentId, 0L);
+		OrganizationType newOrg = getByNameInParent(orgName, parentId,0L);
+		if(newOrg == null){
+			newOrg = new OrganizationType();
+			newOrg.setNameType(NameEnumType.ORGANIZATION);
+			newOrg.setOrganizationType(orgType);
+			newOrg.setParentId(parentId);
+			newOrg.setName(orgName);
+			if(add(newOrg)){
+				newOrg = this.getByNameInParent(orgName, parentId, 0L);
 			}
 		}
-		return new_org;
+		return newOrg;
 
 	}
 	@Override
 	public <T> boolean add(T object) throws FactoryException, ArgumentException
 	{
-		boolean out_bool = false;
-		OrganizationType new_org = (OrganizationType)object;
-		DataRow row = prepareAdd(new_org, "organizations");
+		boolean outBool = false;
+		OrganizationType newOrg = (OrganizationType)object;
+		DataRow row = prepareAdd(newOrg, "organizations");
 		try{
-			row.setCellValue("organizationtype", new_org.getOrganizationType().toString());
-			row.setCellValue("logicalid", new_org.getLogicalId());
-			row.setCellValue("referenceid", new_org.getReferenceId());
+			row.setCellValue("organizationtype", newOrg.getOrganizationType().toString());
+			row.setCellValue("logicalid", newOrg.getLogicalId());
+			row.setCellValue("referenceid", newOrg.getReferenceId());
 			if(insertRow(row)){
-				new_org = getByNameInParent(new_org.getName(), new_org.getParentId(),0L);
-				if(KeyService.newOrganizationAsymmetricKey(new_org.getId(), true) == null){
-					throw new FactoryException("Unable to generate organization security keys for " + new_org.getName() + "(#" + new_org.getId() + ")");
+				newOrg = getByNameInParent(newOrg.getName(), newOrg.getParentId(),0L);
+				if(KeyService.newOrganizationAsymmetricKey(newOrg.getId(), true) == null){
+					throw new FactoryException("Unable to generate organization security keys for " + newOrg.getName() + "(#" + newOrg.getId() + ")");
 				}
-				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).addDefaultGroups(new_org.getId());
-				out_bool = true;
+				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).addDefaultGroups(newOrg.getId());
+				outBool = true;
 			}
 		}
 		catch(DataAccessException e){
@@ -225,7 +226,7 @@ public class OrganizationFactory extends NameIdFactory {
 			throw new FactoryException(e.getMessage());
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	public String getOrganizationPath(long organizationId) throws FactoryException, ArgumentException{
 		OrganizationType org = getOrganizationById(organizationId);
@@ -246,6 +247,7 @@ public class OrganizationFactory extends NameIdFactory {
 		return path;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException
 	{
@@ -255,12 +257,12 @@ public class OrganizationFactory extends NameIdFactory {
 	public OrganizationType findOrganization(String path) throws FactoryException, ArgumentException
 	{
 		
-		OrganizationType out_org = null;
+		OrganizationType outOrg = null;
 		if (path == null || path.length() == 0) throw new FactoryException("Invalid path");
 
 		String[] paths = path.split("/");
 
-		OrganizationType nested_org = null;
+		OrganizationType nestedOrg = null;
 
 		if (paths.length == 0 || path.equals("/"))
 		{
@@ -275,7 +277,7 @@ public class OrganizationFactory extends NameIdFactory {
 			
 			if (paths[i].length() == 0 && i == 0)
 			{
-				nested_org = Factories.getRootOrganization();
+				nestedOrg = Factories.getRootOrganization();
 				if (paths.length == 1)
 				{
 					logger.warn("Returning root for single path pair with zero length");
@@ -283,12 +285,12 @@ public class OrganizationFactory extends NameIdFactory {
 				}
 			}
 			else{
-				nested_org = getOrganizationByName(paths[i], nested_org);
+				nestedOrg = getOrganizationByName(paths[i], nestedOrg);
 			}
 		}
-		out_org = nested_org;
+		outOrg = nestedOrg;
 
-		return out_org;
+		return outOrg;
 	}
 
 }

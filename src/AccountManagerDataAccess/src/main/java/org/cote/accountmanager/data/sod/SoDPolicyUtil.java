@@ -48,7 +48,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public class SoDPolicyUtil {
 	public static final Logger logger = LogManager.getLogger(SoDPolicyUtil.class);
-	private static Map<String,List<Long>> activityPermissions = new HashMap<String,List<Long>>();
+	private static Map<String,List<Long>> activityPermissions = new HashMap<>();
 	public static List<Long> getActivityPermissions(String activityUrn){
 		if(activityPermissions.containsKey(activityUrn) == false){
 			activityPermissions.put(activityUrn, new ArrayList<Long>());

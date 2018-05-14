@@ -448,7 +448,7 @@ public class MediaUtil {
 		if(options.isUseTemplate() && options.getTemplatePath() != null){
 			
 			InputStream resourceContent = null;
-			Map<String,String> roleMap = new HashMap<>();
+			// Map<String,String> roleMap = new HashMap<>();
 			String template = null;
 			if(templateContents.containsKey(options.getTemplatePath())) template = templateContents.get(options.getTemplatePath());
 			else{
@@ -474,15 +474,17 @@ public class MediaUtil {
 				}
 
 			}
-			if(template == null){
+			if(template != null){
+				template = template.replaceAll("%TITLE%", data.getName() + " (" + data.getObjectId() + ") - Distributed Web Application Component");
+				//template = template.replaceAll("%CONTENT%", (options.isEncodeData() ? BinaryUtil.toBase64Str(value) : new String(value)));
+				template = template.replaceAll("%CONTENT%", request.getRequestURI().replaceAll("/dwac/", "/media/"));
+				value = template.getBytes();
+				if(options.getTemplateContentType() != null) response.setContentType(options.getTemplateContentType());
+			}
+			else{
 				response.sendError(500);
 				AuditService.denyResult(audit, "Template is invalid: '" + options.getTemplatePath() + "'");
 			}
-			template = template.replaceAll("%TITLE%", data.getName() + " (" + data.getObjectId() + ") - Distributed Web Application Component");
-			//template = template.replaceAll("%CONTENT%", (options.isEncodeData() ? BinaryUtil.toBase64Str(value) : new String(value)));
-			template = template.replaceAll("%CONTENT%", request.getRequestURI().replaceAll("/dwac/", "/media/"));
-			value = template.getBytes();
-			if(options.getTemplateContentType() != null) response.setContentType(options.getTemplateContentType());
 		}
 		response.setContentLength(value.length);
 		response.getOutputStream().write(value); 

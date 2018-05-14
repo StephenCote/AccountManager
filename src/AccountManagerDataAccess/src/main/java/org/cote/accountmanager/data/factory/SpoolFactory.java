@@ -69,7 +69,8 @@ public abstract class SpoolFactory extends FactoryBase {
 	public SpoolFactory(){
 		super();
 		this.scopeToOrganization = true;
-		this.tableNames.add("spool");
+		this.primaryTableName = "spool";
+		this.tableNames.add(primaryTableName);
 		typeNameIdMap = Collections.synchronizedMap(new HashMap<String,String>());
 		typeNameMap = Collections.synchronizedMap(new HashMap<String,Integer>());
 		typeIdMap = Collections.synchronizedMap(new HashMap<String,Integer>());
@@ -77,7 +78,7 @@ public abstract class SpoolFactory extends FactoryBase {
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("spool")){
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
 			table.setRestrictUpdateColumn("spoolguid", true);
 		}
 	}

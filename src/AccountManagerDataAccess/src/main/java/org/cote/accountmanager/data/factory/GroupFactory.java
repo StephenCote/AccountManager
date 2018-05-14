@@ -854,7 +854,7 @@ public class GroupFactory  extends NameIdFactory {
 			populate(leaf_group);
 		}
 		Collections.reverse(group_list);
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		for (int i = 0; i < group_list.size(); i++)
 		{
 			BaseGroupType group = group_list.get(i);

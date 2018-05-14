@@ -39,7 +39,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class AuditService {
 	public static final Logger logger = LogManager.getLogger(AuditService.class);
-	public static int maximumAuditSpoolSize = 1000;
+	public static final int maximumAuditSpoolSize = 1000;
 	public static String getAuditString(AuditType audit){
 		return audit.getAuditResultType() + " (" + audit.getAuditResultData() + ") "
 				+ audit.getAuditSourceType() + " (" + audit.getAuditSourceData() + ") "
@@ -47,11 +47,6 @@ public class AuditService {
 				+ audit.getAuditTargetType() + " (" + audit.getAuditTargetData() + ") "
 				+ " in " + ((audit.getAuditResultDate().toGregorianCalendar().getTimeInMillis() - audit.getAuditDate().toGregorianCalendar().getTimeInMillis())) + " ms"
 			;
-		//return audit.getAuditActionType() + " (" + audit.getAuditActionSource() + ") "
-		//+ audit.getAuditSourceType() + " (" + audit.getAuditSourceData() + ") "
-		// + audit.getAuditTargetType() + " (" + audit.getAuditTargetData() + ") "
-		// + audit.getAuditResultType() + " (" + audit.getAuditResultData() + ")";
-		// *** Audit *** READ (~/Lifecycles) USER (devuser2) LIFECYCLE (~/Lifecycles) PERMIT (Access authorized to group Lifecycles)
 	}
 	private static boolean add(AuditType audit){
 		boolean added = false;

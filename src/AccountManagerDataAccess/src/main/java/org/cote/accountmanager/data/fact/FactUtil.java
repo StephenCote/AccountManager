@@ -152,6 +152,7 @@ public class FactUtil {
 	 * NOTE: Authorization factories intentionally not included in the lookup by name for rules
 	 */
 
+	@SuppressWarnings("unchecked")
 	public static <T> T factoryRead(FactType sourceFact,final FactType referenceFact){
 		T outObj = null;
 		
@@ -228,7 +229,7 @@ public class FactUtil {
 						else{
 							BaseRoleType parent = getRoleFromFact(sourceFact, referenceFact);
 							outObj = (T)((RoleFactory)fact).getRoleByName(sourceFact.getSourceUrn(), parent, RoleEnumType.fromValue(sourceFact.getSourceType()), referenceFact.getOrganizationId());
-							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (parent != null ? sourceFact.getSourceUrl() : "Null Role") + " - Result is " + (outObj == null ? "Null":"Found"));
+							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + sourceFact.getSourceUrl()  + " - Result is " + (outObj == null ? "Null":"Found"));
 						}
 						break;
 					case PERMISSION:
@@ -238,7 +239,7 @@ public class FactUtil {
 						else{
 							BasePermissionType perparent = getPermissionFromFact(sourceFact, referenceFact);
 							outObj = (T)((PermissionFactory)fact).getPermissionByName(sourceFact.getSourceUrn(),PermissionEnumType.fromValue(sourceFact.getSourceType()), perparent, referenceFact.getOrganizationId());
-							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (perparent != null ? sourceFact.getSourceUrl() : "Null Permission") + " - Result is " + (outObj == null ? "Null":"Found"));
+							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + sourceFact.getSourceUrl() + " - Result is " + (outObj == null ? "Null":"Found"));
 						}
 						break;
 

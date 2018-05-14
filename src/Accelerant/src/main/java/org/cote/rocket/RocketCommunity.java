@@ -1507,7 +1507,7 @@ public class RocketCommunity implements ICommunityProvider {
 	
 	
 	public String reportCommunityProjectRegion(UserType user, String communityId, String projectId, String dictionaryPath, String namesPath){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		
 		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Generate Region",AuditEnumType.USER, user.getUrn());
@@ -1714,7 +1714,7 @@ public class RocketCommunity implements ICommunityProvider {
 	}
 	
 	private String generateCommunityProjectScript(UserType user, LifecycleType lifecycle, ProjectType project){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		buff.append("/*\n\t" + lifecycle.getUrn() + "\n\t" + project.getUrn() + "\n*/\n\nvar result;\n\n");
 		buff.append("/// HELP\n");
 		buff.append("logger.info(\"${communityName} - ${projectName} - ${scriptName}\");\n");
@@ -1724,7 +1724,7 @@ public class RocketCommunity implements ICommunityProvider {
 	}
 	
 	public String getCommunityProjectScript(UserType user, String communityId, String projectId, String name){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		
 		DataType data = getCommunityProjectScriptData(user, communityId, projectId, name);
 		if(data == null) return buff.toString();

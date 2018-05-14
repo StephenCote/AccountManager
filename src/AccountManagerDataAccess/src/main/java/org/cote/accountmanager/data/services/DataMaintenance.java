@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.objects.types.RetentionEnumType;
 
 public class DataMaintenance {
@@ -44,10 +45,14 @@ public class DataMaintenance {
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
-		boolean out_bool = false;
+		boolean outBool = false;
+		PreparedStatement statement = null;
+		
 		try{
-			String sql = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM audit WHERE auditretentiontype = " + token + " AND auditexpiresdate <= " + token  + (connectionType == CONNECTION_TYPE.MYSQL? " LIMIT 200 " : "") + ";";
-			PreparedStatement statement = connection.prepareStatement(sql);
+			String limit1 = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "");
+			String limit2 = (connectionType == CONNECTION_TYPE.MYSQL? " LIMIT 200 " : "");
+			String sql = String.format("%sDELETE FROM audit WHERE auditretentiontype = %s AND auditexpiresdate <= %s %s;",limit1,token,token,limit2);
+			statement = connection.prepareStatement(sql);
 			statement.setString(1, retentionType.toString());
 			statement.setTimestamp(2, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			int affected = statement.executeUpdate();
@@ -58,30 +63,33 @@ public class DataMaintenance {
 				logger.debug("Removed " + affected + " expired audit entries");
 			}
 			statement.close();
-			out_bool = true;
+			outBool = true;
 		}
 		catch(SQLException sqe){
-			System.out.println(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
+				if(statement != null) statement.close();
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean cleanupSessions(){
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
-		boolean out_bool = false;
+		boolean outBool = false;
+		PreparedStatement statement = null;
 		try{
-			String sql = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM session WHERE sessionexpiration <= " + token  + (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT 200 " : "") + ";";
-			PreparedStatement statement = connection.prepareStatement(sql);
+			String limit1 = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "");
+			String limit2 = (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT 200 " : "");
+			String sql = String.format("%sDELETE FROM session WHERE sessionexpiration <= %s%s;",limit1,token,limit2);
+			statement = connection.prepareStatement(sql);
 			statement.setTimestamp(1, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			int affected = statement.executeUpdate();
 			while (affected > 0)
@@ -89,7 +97,7 @@ public class DataMaintenance {
 				affected = statement.executeUpdate();
 			}
 			statement.close();
-			sql = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM sessiondata WHERE expiration <= " + token + (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT 200 " : "") + ";";
+			sql = String.format("%sDELETE FROM sessiondata WHERE expiration <= %s%s;",limit1,token,limit2);
 			statement = connection.prepareStatement(sql);
 			statement.setTimestamp(1, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			affected = statement.executeUpdate();
@@ -98,20 +106,20 @@ public class DataMaintenance {
 				affected = statement.executeUpdate();
 			}
 			
-			out_bool = true;
+			outBool = true;
 		}
 		catch(SQLException sqe){
-			System.out.println(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
+				if(statement != null) statement.close();
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 }

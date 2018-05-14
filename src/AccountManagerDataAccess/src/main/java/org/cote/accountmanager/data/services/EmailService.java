@@ -90,7 +90,7 @@ public class EmailService {
 	///
 	protected static boolean sendEmail(Properties emailServerProperties, ContactType fromContact,ContactType[] contacts, String server, String identity, String credential, String title, String content){
 		boolean out_bool = false;
-		StringBuffer addrBuff = new StringBuffer();
+		StringBuilder addrBuff = new StringBuilder();
 		int iter = 0;
 		for(int i = 0; i < contacts.length; i++){
 			ContactType contact = contacts[i];

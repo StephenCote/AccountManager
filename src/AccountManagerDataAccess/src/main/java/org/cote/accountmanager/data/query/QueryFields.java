@@ -820,7 +820,7 @@ public class QueryFields {
 		return match;
 	}
 	public static String getFilteredLongList(long[] longs){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		Map<Long,Boolean> id_map = new HashMap<Long, Boolean>();
 		int counter = 0;
 		for(int i = 0; i < longs.length; i++){
@@ -833,7 +833,7 @@ public class QueryFields {
 		return buff.toString();
 	}
 	public static String getFilteredIntList(int[] ints){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		Map<Integer,Boolean> id_map = new HashMap<Integer, Boolean>();
 		int counter = 0;
 		for(int i = 0; i < ints.length; i++){

@@ -154,7 +154,7 @@ public class BulkFactories{
 		return newObj;
 	}
 	public static String reportCacheSize(){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		for(Object fact : factoryInstances.values()){
 			if(fact instanceof INameIdFactory){
 				NameIdFactory ifact = ((NameIdFactory)fact);
@@ -179,7 +179,7 @@ public class BulkFactories{
 		
 		for(FactoryEnumType f : factoryClasses.keySet()){
 			if(factoryInstances.containsKey(f) || f.equals(FactoryEnumType.ORGANIZATION)) continue;
-			FactoryBase bFact = getInstance(f);
+			getInstance(f);
 		}
 		logger.debug("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
 	}

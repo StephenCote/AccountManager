@@ -92,7 +92,7 @@ public class ContactInformationFactory extends NameIdFactory {
 	{
 		return deleteContactInformationByReferenceIds(new long[]{map.getId()},map.getOrganizationId());
 	}
-	public boolean deleteContactInformationByReferenceIds(long[] ids, long organizationId){
+	public boolean deleteContactInformationByReferenceIds(long[] ids, long organizationId) throws FactoryException{
 		
 		int deleted = deleteByBigIntField("referenceid",ids,organizationId);
 		return (deleted > 0);

@@ -62,7 +62,7 @@ public class TextUtil {
 	}
 	
 	public static String padString(String value, int padLength){
-		StringBuffer outVal = new StringBuffer();
+		StringBuilder outVal = new StringBuilder();
 		int len = value.length();
 		for(int i = len; i < padLength;i++){
 			outVal.append("0");

@@ -46,9 +46,9 @@ public class BulkInsertUtil {
 	public static BulkInsertMeta getInsertTemplate(Connection connection, DataRow row) throws FactoryException
 	{
 		
-		StringBuffer buff = new StringBuffer();
-		StringBuffer nameBuff = new StringBuffer();
-		StringBuffer valBuff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
+		StringBuilder nameBuff = new StringBuilder();
+		StringBuilder valBuff = new StringBuilder();
 		int cellCount = row.getCells().size();
 		int insCount = 0;
 		List<DataCell> insCells = new ArrayList<DataCell>();
@@ -79,8 +79,8 @@ public class BulkInsertUtil {
 	/*
 	public static BulkInsertMeta getUpdateTemplate(Connection connection, DataRow row) throws FactoryException
 	{
-		StringBuffer buff = new StringBuffer();
-		StringBuffer valBuff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
+		StringBuilder valBuff = new StringBuilder();
 		int cellCount = row.getCells().size();
 		int insCount = 0;
 		List<DataCell> insCells = new ArrayList<DataCell>();

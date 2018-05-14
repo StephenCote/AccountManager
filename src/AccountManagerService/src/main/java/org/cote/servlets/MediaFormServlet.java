@@ -176,7 +176,7 @@ public class MediaFormServlet extends HttpServlet {
 		response.flushBuffer();
 	}
 	private static String getResponseScript(String responseId, boolean success){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		buff.append("window.onload = Init;");
 		buff.append("function Init(){");
 		buff.append("if(window != window.parent && typeof window.parent.Hemi == \"object\"){");

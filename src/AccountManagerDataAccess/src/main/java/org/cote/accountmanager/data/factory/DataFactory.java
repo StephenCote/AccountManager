@@ -207,8 +207,8 @@ public class DataFactory extends NameIdFactory {
 
 			configureTableRestrictions(table);
 
-			StringBuffer buff = new StringBuffer();
-			//StringBuffer ubuff = new StringBuffer();
+			StringBuilder buff = new StringBuilder();
+			//StringBuilder ubuff = new StringBuilder();
 
 			String lock_hint = DBFactory.getNoLockHint(connectionType);
 			String token = DBFactory.getParamToken(connectionType);
@@ -562,7 +562,7 @@ public class DataFactory extends NameIdFactory {
 	
 	public List<DataType> getDataListByIds(long[] data_ids, boolean detailsOnly, long organizationId) throws FactoryException, ArgumentException
 	{
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		int deleted = 0;
 		List<DataType> out_list = new ArrayList<DataType>();
 		for (int i = 0; i < data_ids.length; i++)

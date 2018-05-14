@@ -847,7 +847,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	public <T> List<T> listByIds(long[] ids, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException
 	{
 
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		
 		List<NameIdType> out_list = new ArrayList<NameIdType>();
 		for (int i = 0; i < ids.length; i++)

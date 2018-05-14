@@ -181,7 +181,7 @@ public class BaseAccelerantTest{
 
 		org.cote.rocket.Factories.warmUp();
 
-		org.cote.accountmanager.service.util.ServiceUtil.useAccountManagerSession = false;
+		org.cote.accountmanager.service.util.ServiceUtil.setUseAccountManagerSession(false);
 		
 		try{
 			testOrganization = Factories.getDevelopmentOrganization();

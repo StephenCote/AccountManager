@@ -58,22 +58,25 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 public class ScriptService {
 	public static final Logger logger = LogManager.getLogger(ScriptService.class);
-	public static String SCRIPT_ENGINE_JAVASCRIPT = "javascript";
-	public static String SCRIPT_ENGINE_NASHORN = "nashorn";
-	public static String SCRIPT_ENGINE_NAME = SCRIPT_ENGINE_NASHORN;
+	private static String scriptEngineJavaScript = "javascript";
+	private static String scriptEngineNashorn = "nashorn";
+	private static String scriptEngineName = scriptEngineNashorn;
 	private static ScriptEngine jsEngine = null;
+	public static void setScriptEngineName(String s){
+		scriptEngineName = s;
+	}
 	private static Map<String,CompiledScript> jsCompiled = new HashMap<String,CompiledScript>();
 	
 	public static ScriptEngine getJavaScriptEngine(){
 		if(jsEngine == null){
-			if(SCRIPT_ENGINE_NAME.equals(SCRIPT_ENGINE_NASHORN)){
+			if(scriptEngineName.equals(scriptEngineNashorn)){
 			    NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
 
 			    jsEngine = factory.getScriptEngine(
 			      new ScriptServiceFilter());
 			}
 			else{
-				jsEngine = new ScriptEngineManager().getEngineByName(SCRIPT_ENGINE_NAME);
+				jsEngine = new ScriptEngineManager().getEngineByName(scriptEngineName);
 		
 			}
 		}

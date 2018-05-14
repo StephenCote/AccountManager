@@ -649,7 +649,7 @@ public class RoleFactory extends NameIdFactory {
 	
 	public List<BaseRoleType> getRoleListByIds(long[] Role_ids, long organizationId) throws FactoryException, ArgumentException
 	{
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		List<BaseRoleType> out_list = new ArrayList<BaseRoleType>();
 		for (int i = 0; i < Role_ids.length; i++)
 		{

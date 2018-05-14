@@ -73,7 +73,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 	protected String permissionPrefix = null;
 	protected PermissionEnumType defaultPermissionType = PermissionEnumType.OBJECT;
 
-	public ParticipationFactory(ParticipationEnumType type, String table_name){
+	public ParticipationFactory(ParticipationEnumType type, String tableName){
 		super();
 		this.isParticipation = true;
 		this.scopeToOrganization = true;
@@ -81,7 +81,8 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		this.hasOwnerId = true;
 		this.hasName = false;
 		this.participationType = type;
-		this.tableNames.add(table_name);
+		this.primaryTableName = tableName;
+		this.tableNames.add(tableName);
 	}
 	
 	public PermissionEnumType getDefaultPermissionType() {
@@ -123,7 +124,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		return (count > 0);
 	}
 	public boolean deleteParticipationsByAffects(NameIdType source, long[] permissions) throws FactoryException{
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		int count = 0;
 		for (int i = 0; i < permissions.length; i++)
 		{
@@ -168,7 +169,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 	}
 	protected boolean deleteParts(long[] ids, String field_name, QueryField query, long organizationId) throws FactoryException
 	{
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		int deleted = 0;
 		for (int i = 0; i < ids.length; i++)
 		{
@@ -388,7 +389,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 
 		List<QueryField> matches = new ArrayList<QueryField>();
 		matches.add(QueryFields.getFieldParticipantType(participant_type));
-		//StringBuffer buff = new StringBuffer();
+		//StringBuilder buff = new StringBuilder();
 		List<Long> ids = new ArrayList<Long>();
 		for (int i = 0; i < maps.length; i++)
 		{

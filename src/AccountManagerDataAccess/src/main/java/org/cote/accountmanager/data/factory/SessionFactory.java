@@ -65,18 +65,23 @@ public class SessionFactory extends FactoryBase {
 	private List<UserSessionType> typeMap = null;
 	private long cacheExpires = 0;
 	private int cacheExpiry = 5;
-	
+
 	public SessionFactory(){
 		super();
 		this.scopeToOrganization = true;
-		this.tableNames.add("session");
-		this.tableNames.add("sessiondata");
+		this.primaryTableName = "session";
+		this.secondaryTableName = "sessiondata";
+
+		this.tableNames.add(primaryTableName);
+		this.tableNames.add(secondaryTableName);
 		typeIdMap = Collections.synchronizedMap(new HashMap<String,Integer>());
-		typeMap = new ArrayList<UserSessionType>();
+		typeMap = new ArrayList<>();
 	}
+	
+	@Override
 	public void initialize(Connection connection) throws FactoryException{
 		super.initialize(connection);
-		DataTable table = this.getDataTable("sessiondata");
+		DataTable table = this.getDataTable(secondaryTableName);
 		table.setBulkInsert(true);
 		
 	}
@@ -85,75 +90,71 @@ public class SessionFactory extends FactoryBase {
 		return clearSession(null);
 	}
 
-	public boolean clearSession(String session_id)
+	public boolean clearSession(String sessionId)
 	{
 		
-		boolean out_bool = false;
+		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 
 		try
 		{
-			clearSession(connection, session_id);
-			clearSessionData(connection, session_id);
-			connection.close();
-			if(session_id != null) removeFromCache(session_id);
+			clearSession(connection, sessionId);
+			clearSessionData(connection, sessionId);
+			if(sessionId != null) removeFromCache(sessionId);
 			else clearCache();
-			out_bool = true;
+			outBool = true;
 		}
 		catch (Exception sqe)
 		{
-			System.out.println(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
-	public boolean clearSessionData(String session_id)
+	public boolean clearSessionData(String sessionId)
 	{
 		
-		boolean out_bool = false;
+		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		
 		try
 		{
-			clearSessionData(connection, session_id);
+			clearSessionData(connection, sessionId);
 			connection.close();
-			removeFromCache(session_id);
-			out_bool = true;
+			removeFromCache(sessionId);
+			outBool = true;
 		}
 		catch (Exception sqe)
 		{
 			System.out.println(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
-	private boolean clearSessionData(Connection connection, String session_id) throws SQLException, FactoryException{
+	private boolean clearSessionData(Connection connection, String sessionId) throws SQLException, FactoryException{
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		List<QueryField> fields = new ArrayList<QueryField>();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
-		if(session_id != null) fields.add(QueryFields.getFieldSessionId(session_id));
-		String sql = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM sessiondata"
-				+ (fields.size() > 0 ? " WHERE  " +  getQueryClause(null,fields.toArray(new QueryField[0]), token) : "")
-				+ ((connectionType == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "") + ";"
-		;
-		///  || connectionType == CONNECTION_TYPE.POSTGRES
-		///
+		if(sessionId != null) fields.add(QueryFields.getFieldSessionId(sessionId));
+		String limit1 = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "");
+		String limit2 = ((connectionType == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "");
+		String where = (!fields.isEmpty() ? " WHERE  " +  getQueryClause(null,fields.toArray(new QueryField[0]), token) : "");
+		String sql = String.format("%s DELETE FROM %s %s %s;",limit1,secondaryTableName,where,limit2);
 		PreparedStatement statement = connection.prepareStatement(sql);
 		DBFactory.setStatementParameters(fields.toArray(new QueryField[0]), statement);
 		
@@ -166,20 +167,16 @@ public class SessionFactory extends FactoryBase {
 		return true;
 
 	}
-	private boolean clearSession(Connection connection, String session_id) throws SQLException, FactoryException{
+	private boolean clearSession(Connection connection, String sessionId) throws SQLException, FactoryException{
 
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		List<QueryField> fields = new ArrayList<QueryField>();
-		if(session_id != null) fields.add(QueryFields.getFieldSessionId(session_id));
-		
-		String sql = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "") + "DELETE FROM session"
-				+ (fields.size() > 0 ? " WHERE  " +  getQueryClause(null,fields.toArray(new QueryField[0]), token) : "")
-				+ ((connectionType == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "") + ";"
-		///  || connectionType == CONNECTION_TYPE.POSTGRES
-		///	No limit with PG DELETE
-		;
-		//System.out.println(sql);
+		if(sessionId != null) fields.add(QueryFields.getFieldSessionId(sessionId));
+		String limit1 = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "");
+		String limit2 = ((connectionType == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "");
+		String where = (!fields.isEmpty() ? " WHERE  " +  getQueryClause(null,fields.toArray(new QueryField[0]), token) : "");
+		String sql = String.format("%s DELETE FROM %s %s %s;", limit1, primaryTableName, where, limit2);
 		PreparedStatement statement = connection.prepareStatement(sql);
 		DBFactory.setStatementParameters(fields.toArray(new QueryField[0]), statement);
 		
@@ -195,7 +192,7 @@ public class SessionFactory extends FactoryBase {
 	public UserSessionType newUserSession(){
 		return newUserSession(UUID.randomUUID().toString());
 	}
-	public UserSessionType newUserSession(String session_id){
+	public UserSessionType newUserSession(String sessionId){
 		UserSessionType session = new UserSessionType();
 		Calendar now = Calendar.getInstance();
  
@@ -205,14 +202,14 @@ public class SessionFactory extends FactoryBase {
 		session.setSessionExpires(CalendarUtil.getXmlGregorianCalendar(now.getTime()));
 
 		session.setSessionStatus(SessionStatusEnumType.UNKNOWN);
-		session.setSessionId(session_id);
+		session.setSessionId(sessionId);
 		return session;
 	}
 	public UserSessionType newUserSession(UserType user){
 		return newUserSession(user, UUID.randomUUID().toString());
 	}
-	public UserSessionType newUserSession(UserType user, String session_id){
-		UserSessionType session = newUserSession(session_id);
+	public UserSessionType newUserSession(UserType user, String sessionId){
+		UserSessionType session = newUserSession(sessionId);
 		if(user != null){
 			session.setUserId(user.getId());
 			session.setOrganizationId(user.getOrganizationId());
@@ -226,8 +223,9 @@ public class SessionFactory extends FactoryBase {
 		return insertRow(prepareAdd(new_session,"session"));
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("session") || table.getName().equalsIgnoreCase("sessiondata")){
+		if(table.getName().equalsIgnoreCase(primaryTableName) || table.getName().equalsIgnoreCase(secondaryTableName)){
 			table.setRestrictUpdateColumn("sessionid", true);
 			table.setRestrictUpdateColumn("organizationid", true);
 		}
@@ -295,11 +293,11 @@ public class SessionFactory extends FactoryBase {
 	public boolean update(UserSessionType map, ProcessingInstructionType instruction, boolean recover) throws FactoryException
 	{
 		DataTable table = getDataTable("session");
-		boolean out_bool = false;
+		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
-		List<QueryField> queryFields = new ArrayList<QueryField>();
-		List<QueryField> updateFields = new ArrayList<QueryField>();
+		List<QueryField> queryFields = new ArrayList<>();
+		List<QueryField> updateFields = new ArrayList<>();
 
 		queryFields.add(QueryFields.getFieldSessionId(map.getSessionId()));
 		queryFields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
@@ -307,34 +305,33 @@ public class SessionFactory extends FactoryBase {
 		setFactoryFields(updateFields, map, instruction);
 		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(instruction,queryFields.toArray(new QueryField[0]), token);
 
-		//System.out.println("Update String = " + sql);
-		
 		updateFields.addAll(queryFields);
 		
 		int updated = 0;
+		PreparedStatement statement = null;
 		try{
-			PreparedStatement statement = connection.prepareStatement(sql);
+			statement = connection.prepareStatement(sql);
 			DBFactory.setStatementParameters(updateFields.toArray(new QueryField[0]), statement);
 			updated = statement.executeUpdate();
 			removeFromCache(map);
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
+				if(statement != null) statement.close();
 				connection.close();
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		if(recover == false && updated <= 0){
 			logger.error("Session Error Detected.  Attempting to Recover "  + map.getSessionId() + " in organization id " + map.getOrganizationId());
 			Factories.getSessionFactory().clearSession(map.getSessionId());
-			///return update(map, instruction, true);
 			return addSession(map);
 		}
 		return (updated > 0);
@@ -364,11 +361,11 @@ public class SessionFactory extends FactoryBase {
 	public boolean updateData(UserSessionType map, ProcessingInstructionType instruction) throws FactoryException
 	{
 		List<UserSessionDataType> changes = map.getChangeSessionData();
-		List<UserSessionDataType> filtered = new ArrayList<UserSessionDataType>();
+		List<UserSessionDataType> filtered = new ArrayList<>();
 		if(changes.size() == 0) return true;
 		
-		DataTable table = getDataTable("sessiondata");
-		boolean out_bool = false;
+		DataTable table = getDataTable(secondaryTableName);
+		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		
@@ -378,32 +375,32 @@ public class SessionFactory extends FactoryBase {
 		/// Why is this not a dictionary?
 		///
 
-		Hashtable changed = new Hashtable();
+		Map<String,Boolean> changed = new HashMap<>();
 		
-		int change_count = 0;
+		int changeCount = 0;
 		for (int i = changes.size() - 1; i >=0; i--)
 		{
 			if(changed.containsKey(changes.get(i).getName())) continue;
 			changed.put(changes.get(i).getName(), true);
-			if (change_count > 0) buff.append(" OR ");
+			if (changeCount > 0) buff.append(" OR ");
 			buff.append("Name = " + token);
 			filtered.add(changes.get(i));
-			change_count++;
+			changeCount++;
 		}
 		buff.append(")");
+		PreparedStatement statement = null;
 		try{
-			PreparedStatement statement = connection.prepareStatement(buff.toString());
+			statement = connection.prepareStatement(buff.toString());
 			DBFactory.setStatementParameter(statement, SqlDataEnumType.VARCHAR, map.getSessionId(), 1);
-			for (int i = 0; i < change_count; i++)
+			for (int i = 0; i < changeCount; i++)
 			{
 				DBFactory.setStatementParameter(statement, SqlDataEnumType.VARCHAR, filtered.get(i).getName(), (i + 2));
 			}
-			int removed = statement.executeUpdate();
-			statement.close();
-			connection.close();
+			statement.executeUpdate();
+
 			
-			//System.out.println("Change Count:" + change_count);
-			for(int i = 0; i < change_count; i++){
+
+			for(int i = 0; i < changeCount; i++){
 				UserSessionDataType data = filtered.get(i);
 				if(data.getValue() == null) continue;
 				DataRow new_row = table.addNewRow();
@@ -417,20 +414,29 @@ public class SessionFactory extends FactoryBase {
 			}
 			writeSpool("sessiondata");
 			removeFromCache(map);
+			outBool = true;
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		catch(DataAccessException de){
-			logger.error("Error",de);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,de);
 		}
-		
-		return true;
+		finally{
+			try {
+				if(statement != null) statement.close();
+				connection.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
+			
+		}
+		return outBool;
 	}
 	/// 2014/03/13 - made this synchronized due to race condition from initial session sending in multiple requests
 	///
-	public synchronized UserSessionType getCreateSession(String session_id, long organizationId) throws FactoryException{
-		if(session_id == null){
+	public synchronized UserSessionType getCreateSession(String sessionId, long organizationId) throws FactoryException{
+		if(sessionId == null){
 			logger.error("Session ID is null");
 			return null;
 		}
@@ -438,50 +444,50 @@ public class SessionFactory extends FactoryBase {
 			logger.error("Organization is null");
 			return null;
 		}
-		UserSessionType session = getSession(session_id, organizationId);
+		UserSessionType session = getSession(sessionId, organizationId);
 		if(session != null) return session;
-		session = this.newUserSession(session_id);
+		session = this.newUserSession(sessionId);
 		session.setOrganizationId(organizationId);
 		if(addSession(session)) return session;
 		return null;
 	}
-	public UserSessionType getSession(String session_id, long organizationId) throws FactoryException
+	public UserSessionType getSession(String sessionId, long organizationId) throws FactoryException
 	{
-		UserSessionType out_session = readCache(session_id);
-		if(out_session != null) return out_session;
+		UserSessionType outSession = readCache(sessionId);
+		if(outSession != null) return outSession;
 		ProcessingInstructionType instruction = getPagingInstruction(0);
-		List<UserSessionType> sessions = getByField(new QueryField[]{QueryFields.getFieldSessionId(session_id)}, instruction, organizationId);
-		if(sessions.size() > 0){
-			UserSessionType session = sessions.get(0);
+		List<UserSessionType> sessions = getByField(new QueryField[]{QueryFields.getFieldSessionId(sessionId)}, instruction, organizationId);
+		UserSessionType session = null;
+		if(!sessions.isEmpty()){
+			session = sessions.get(0);
 			if(isValid(session) == false){
-				System.out.println("Session is invalid; deleting session.");
-				System.out.println("Session Id: " + session.getSessionId());
-				System.out.println("Session Created: " + session.getSessionCreated().toString());
-				System.out.println("Session Expires: " + session.getSessionExpires().toString());
+				logger.error("Session is invalid; deleting session.");
+				logger.error("Session Id: " + session.getSessionId());
+				logger.error("Session Created: " + session.getSessionCreated().toString());
+				logger.error("Session Expires: " + session.getSessionExpires().toString());
 				clearSession(session.getSessionId());
 				removeFromCache(session);
-				return null;
+				session = null;
 			}
 			else{
 				populateSessionData(session);
 				addToCache(session);
-				return session;
 			}
 			
 		}
-		return null;
+		return session;
 	}
 	public boolean populateSessionData(UserSessionType session) throws FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
-		DataTable table = getDataTable("sessiondata");
+		DataTable table = getDataTable(secondaryTableName);
 		QueryField[] fields = new QueryField[]{QueryFields.getFieldSessionId(session.getSessionId())};
 		ProcessingInstructionType instruction = getPagingInstruction(0);
 		instruction.setOrderClause("name ASC");
 		String selectString = getSelectTemplate(table, instruction);
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, session.getOrganizationId());
-		//System.out.println(sqlQuery);
+
 		try {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
@@ -490,16 +496,16 @@ public class SessionFactory extends FactoryBase {
 				UserSessionDataType obj = new UserSessionDataType(); 
 				obj.setName(rset.getString("name"));
 				obj.setValue(rset.getString("data"));
-				//System.out.println("Fetching data: " + obj.getName());
+
 				session.getSessionData().add(obj);
 			}
 			session.setDataSize(session.getSessionData().size());
 			rset.close();
 			
-			out_bool = true;
+			outBool = true;
 		} catch (SQLException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -507,34 +513,33 @@ public class SessionFactory extends FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 
-		return out_bool;
+		return outBool;
 	}
-	protected List<UserSessionType> getByField(QueryField[] fields, ProcessingInstructionType instruction, long organization_id) throws FactoryException{
-		List<UserSessionType> out_list = new ArrayList<UserSessionType>();
+	protected List<UserSessionType> getByField(QueryField[] fields, ProcessingInstructionType instruction, long organizationId) throws FactoryException{
+		List<UserSessionType> outList = new ArrayList<>();
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
-		//if(this.dataTables.size() > 1) throw new FactoryException("Multiple table select statements not yet supported");
-		DataTable table = getDataTable("session");
+		DataTable table = getDataTable(primaryTableName);
 		String selectString = getSelectTemplate(table, instruction);
-		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, organization_id);
-		//System.out.println(sqlQuery);
+		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, organizationId);
+
 		try {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
 			ResultSet rset = statement.executeQuery();
 			while(rset.next()){
 				UserSessionType obj = this.read(rset, instruction);
-				out_list.add(obj);
+				outList.add(obj);
 			}
 			rset.close();
 			
 		} catch (SQLException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -542,10 +547,10 @@ public class SessionFactory extends FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		return out_list;
+		return outList;
 	}
 	
 	public ProcessingInstructionType getPagingInstruction(long startIndex)
@@ -569,7 +574,6 @@ public class SessionFactory extends FactoryBase {
 	
 	protected UserSessionType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException
 	{
-			/// throw new FactoryException("This is an artifact from java<->c#<->java conversions - should be an abstract class + interface, not an override");
 			UserSessionType session = new UserSessionType();
 			return read(rset, session);
 	}
@@ -590,10 +594,7 @@ public class SessionFactory extends FactoryBase {
 		return obj;
 	}
 	
-	/// TODO: Find a better pattern for creating these slight variations of caching without having to duplicate the code
 	public void updateSessionToCache(UserSessionType session){
-		//String key_name = session.getSessionId();
-		//System.out.println("Update user to cache: " + key_name);
 		logger.info("Updating Session To Cache: " + session.getSessionId() + " / Remove: " + (haveCacheId(session.getSessionId()) ? "true":"false"));
 		if(this.haveCacheId(session.getSessionId())) removeFromCache(session.getSessionId());
 		addToCache(session);
@@ -617,18 +618,15 @@ public class SessionFactory extends FactoryBase {
 		if(obj != null) removeFromCache(obj);
 	}
 	public synchronized void removeFromCache(UserSessionType obj){
-		//synchronized(typeMap){
-
-			//System.out.println("Remove from cache: " + obj.getSessionId() + " : " + typeIdMap.containsKey(obj.getSessionId()));
-			if(typeIdMap.containsKey(obj.getSessionId())){
-				int indexId = typeIdMap.get(obj.getSessionId());
-				typeMap.set(indexId, null);
-				typeIdMap.remove(obj.getSessionId());
-			}
-		//}
+		if(typeIdMap.containsKey(obj.getSessionId())){
+			int indexId = typeIdMap.get(obj.getSessionId());
+			typeMap.set(indexId, null);
+			typeIdMap.remove(obj.getSessionId());
+		}
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public <T> T readCache(String id){
 		checkCacheExpires();
 		if(typeIdMap.containsKey(id)){
@@ -638,15 +636,12 @@ public class SessionFactory extends FactoryBase {
 	}
 
 	public synchronized boolean addToCache(UserSessionType map){
-		//System.out.println("Add to cache: " + (map == null ? "NULL" : map.getName()) + " AT " + key_name);
-		//synchronized(typeMap){
-			int length = typeMap.size();
-			if(typeIdMap.containsKey(map.getSessionId())){
-				return false;
-			}
-			typeMap.add(map);
-			typeIdMap.put(map.getSessionId(), length);
-		//}
+		int length = typeMap.size();
+		if(typeIdMap.containsKey(map.getSessionId())){
+			return false;
+		}
+		typeMap.add(map);
+		typeIdMap.put(map.getSessionId(), length);
 		return true;
 	}
 }

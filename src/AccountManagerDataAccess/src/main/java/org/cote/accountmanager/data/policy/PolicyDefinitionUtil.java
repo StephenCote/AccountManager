@@ -187,8 +187,8 @@ public class PolicyDefinitionUtil {
 		
 	}
 	public static String printPattern(PatternType pattern, int depth) throws FactoryException, ArgumentException{
-		StringBuffer buff = new StringBuffer();
-		StringBuffer baseTabBuff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
+		StringBuilder baseTabBuff = new StringBuilder();
 		for(int i = 0; i < depth; i++) baseTabBuff.append("\t");
 		String baseTab = baseTabBuff.toString();
 		String tab = baseTab.toString() + "\t";
@@ -239,8 +239,8 @@ public class PolicyDefinitionUtil {
 	public static String printRule(RuleType rule, int depth) throws FactoryException, ArgumentException{
 		
 		Factories.getNameIdFactory(FactoryEnumType.RULE).populate(rule);
-		StringBuffer buff = new StringBuffer();
-		StringBuffer baseTabBuff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
+		StringBuilder baseTabBuff = new StringBuilder();
 		for(int i = 0; i < depth; i++) baseTabBuff.append("\t");
 		String baseTab = baseTabBuff.toString();
 		String tab = baseTab.toString() + "\t";
@@ -265,7 +265,7 @@ public class PolicyDefinitionUtil {
 		return buff.toString();
 	}
 	public static String printPolicy(PolicyType pol) throws FactoryException, ArgumentException{
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		Factories.getNameIdFactory(FactoryEnumType.POLICY).populate(pol);
 		buff.append("\nPOLICY " + pol.getName()+ "\n");
 		buff.append("\turn\t" + pol.getUrn()+ "\n");

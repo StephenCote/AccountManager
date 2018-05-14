@@ -281,7 +281,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	public <T> boolean update(T object) throws FactoryException
 	{
 		PersonType data = (PersonType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		if(super.update(data, null)){
 			try{
@@ -381,14 +381,16 @@ public class PersonFactory extends NameIdGroupFactory {
 				/// 2014/09/10
 				/// Contact information is updated along with the parent object because it's a foreign-keyed object that is not otherwise easily referenced
 				///
-				out_bool = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).update(data.getContactInformation());
+				if(data.getContactInformation() != null){
+					outBool = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).update(data.getContactInformation());
+				}
 			
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override

@@ -109,7 +109,7 @@ public class TokenService {
 	}
 	/*
 	public static String newMaterializedToken(UserType owner, NameIdType object){
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		buff.append(owner.getUrn());
 		buff.append("-");
 		buff.append(object.getUrn());

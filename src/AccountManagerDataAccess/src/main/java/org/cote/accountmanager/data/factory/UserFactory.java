@@ -328,7 +328,7 @@ public class UserFactory extends NameIdFactory {
 	/*
 	public List<UserType> getUserListByIds(int[] User_ids, long organizationId) throws FactoryException, ArgumentException
 	{
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		int deleted = 0;
 		List<UserType> out_list = new ArrayList<UserType>();
 		for (int i = 0; i < User_ids.length; i++)

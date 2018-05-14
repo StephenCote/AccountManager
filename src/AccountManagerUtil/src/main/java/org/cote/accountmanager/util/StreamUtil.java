@@ -76,7 +76,7 @@ public class StreamUtil {
 		int bytes_read=0;
 		String ret="";
 		int totalBytes=0;
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 
 		int max=in.available();
 		boolean breakOut=false;

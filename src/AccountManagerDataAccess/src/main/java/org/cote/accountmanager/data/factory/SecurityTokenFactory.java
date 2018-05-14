@@ -45,13 +45,12 @@ import org.cote.accountmanager.objects.types.ValueEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class SecurityTokenFactory extends SpoolFactory {
-	/// Expiry in hours
-	///
+
 	private int defaultTokenExpiry = 6;
-	public static int TOKEN_EXPIRY_10_MINUTES = 600;
-	public static int TOKEN_EXPIRY_1_HOUR = 3600;
-	public static int TOKEN_EXPIRY_6_HOURS = 21600;
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.SECURITYTOKEN, SecurityTokenFactory.class); }
+	public static final int TOKEN_EXPIRY_10_MINUTES = 600;
+	public static final int TOKEN_EXPIRY_1_HOUR = 3600;
+	public static final int TOKEN_EXPIRY_6_HOURS = 21600;
+
 	public SecurityTokenFactory()
 	{
 		super();
@@ -59,7 +58,7 @@ public class SecurityTokenFactory extends SpoolFactory {
 	}
 	public void initialize(Connection connection) throws FactoryException{
 		super.initialize(connection);
-		DataTable table = this.getDataTable("spool");
+		DataTable table = this.getDataTable(this.primaryTableName);
 		table.setBulkInsert(true);
 		
 	}
@@ -87,20 +86,20 @@ public class SecurityTokenFactory extends SpoolFactory {
 	public SecuritySpoolType[] getSecurityTokens(String spoolName, long organizationId) throws FactoryException, ArgumentException
 	{
 		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldName(spoolName), QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organizationId);
-		if (tokens.size() == 0) return new SecuritySpoolType[0];
+		if (tokens.isEmpty()) return new SecuritySpoolType[0];
 		return tokens.toArray(new SecuritySpoolType[0]);
 	}
 	public SecuritySpoolType popSecurityToken(String guid, long organizationId) throws FactoryException, ArgumentException
 	{
 		SecuritySpoolType token = getSecurityToken(guid, organizationId);
-		if (token == null || deleteToken(token) == false) return null;
+		if (token == null || !deleteToken(token)) return null;
 		return token;
 	}
 
 	public SecuritySpoolType getSecurityTokenById(String guid, long organizationId) throws FactoryException, ArgumentException
 	{
 		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldGuid(guid),QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organizationId);
-		if (tokens.size() == 0) return null;
+		if (tokens.isEmpty()) return null;
 		return (SecuritySpoolType)tokens.get(0);
 	}
 
@@ -117,29 +116,29 @@ public class SecurityTokenFactory extends SpoolFactory {
 	}
 	public SecuritySpoolType generateSecurityToken(String referenceId, byte[] data, long organizationId) throws FactoryException, ArgumentException
 	{
-		SecuritySpoolType new_token = newSecurityToken(referenceId, organizationId);
-		new_token.setData(data);
-		if (new_token == null || addSecurityToken(new_token) == false) return null;
-		return new_token;
+		SecuritySpoolType newToken = newSecurityToken(referenceId, organizationId);
+		newToken.setData(data);
+		if (addSecurityToken(newToken) == false) return null;
+		return newToken;
 		
 	}
 	public SecuritySpoolType newSecurityToken(String referenceId, long organizationId) throws FactoryException, ArgumentException
 	{
 		if ( organizationId <=0L) throw new FactoryException("Invalid organization");
 
-		SecuritySpoolType new_token = (SecuritySpoolType)newSpoolEntry(SpoolBucketEnumType.SECURITY_TOKEN);
-		new_token.setSpoolBucketName(SpoolNameEnumType.GENERAL);
-		new_token.setOrganizationId(organizationId);
-		new_token.setName(referenceId);
+		SecuritySpoolType newToken = newSpoolEntry(SpoolBucketEnumType.SECURITY_TOKEN);
+		newToken.setSpoolBucketName(SpoolNameEnumType.GENERAL);
+		newToken.setOrganizationId(organizationId);
+		newToken.setName(referenceId);
 
-		new_token.setValueType(ValueEnumType.STRING);
+		newToken.setValueType(ValueEnumType.STRING);
 
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.HOUR, defaultTokenExpiry);
-		new_token.setExpiration(CalendarUtil.getXmlGregorianCalendar(cal.getTime()));
-		new_token.setExpires(true);
+		newToken.setExpiration(CalendarUtil.getXmlGregorianCalendar(cal.getTime()));
+		newToken.setExpires(true);
 
-		return new_token;
+		return newToken;
 	}
 	
 	public boolean isValid(BaseSpoolType message)
@@ -158,35 +157,34 @@ public class SecurityTokenFactory extends SpoolFactory {
 
 	protected BaseSpoolType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-			SecuritySpoolType new_message = new SecuritySpoolType();
-			return super.read(rset, new_message);
+			SecuritySpoolType newMessage = new SecuritySpoolType();
+			return super.read(rset, newMessage);
 	}
 
-	public boolean addSecurityToken(SecuritySpoolType new_token) throws FactoryException
+	public boolean addSecurityToken(SecuritySpoolType newToken) throws FactoryException
 	{
-		if (!isValid(new_token)) throw new FactoryException("Token is invalid");
+		if (!isValid(newToken)) throw new FactoryException("Token is invalid");
 		/// Bulk insert note: prepareAdd and insertRow won't add the row to the local table row cache, so it must be added manually
 		///
-		DataRow row = prepareAdd(new_token, "spool");
+		DataRow row = prepareAdd(newToken, "spool");
 		getDataTable("spool").getRows().add(row);
 		boolean ins = insertRow(row);
 		
-		writeSpool("spool");
+		writeSpool(this.primaryTableName);
 		return ins;
 	}
-	public boolean addSecurityTokens(SecuritySpoolType[] new_tokens) throws FactoryException
+	public boolean addSecurityTokens(SecuritySpoolType[] newTokens) throws FactoryException
 	{
 		int error = 0;
-		System.out.println("Inserting tokens: " + new_tokens.length + " into table with rows " + getDataTable("spool").getRows().size());
-		for(int i = 0; i < new_tokens.length; i++){
-			if (!isValid(new_tokens[i])) throw new FactoryException("Token is invalid");
+		logger.info("Inserting tokens: " + newTokens.length + " into table with rows " + getDataTable(this.primaryTableName).getRows().size());
+		for(int i = 0; i < newTokens.length; i++){
+			if (!isValid(newTokens[i])) throw new FactoryException("Token is invalid");
 			/// Bulk insert note: prepareAdd and insertRow won't add the row to the local table row cache, so it must be added manually
 			///
-			DataRow row = prepareAdd(new_tokens[i], "spool");
+			DataRow row = prepareAdd(newTokens[i], "spool");
 			getDataTable("spool").getRows().add(row);
 			boolean ins = insertRow(row);
 
-			//System.out.println("Adding: " + new_tokens[i].getGuid());
 			if(!ins) error++;
 		}
 
