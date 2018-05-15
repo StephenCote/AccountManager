@@ -35,7 +35,7 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.ContactInformationType;
@@ -66,7 +66,8 @@ public class UserFactory extends NameIdFactory {
 		this.hasName = true;
 		this.hasObjectId = true;
 		this.hasUrn = true;
-		this.tableNames.add("users");
+		this.primaryTableName = "users";
+		this.tableNames.add(this.primaryTableName);
 		this.factoryType = FactoryEnumType.USER;
 		
 		systemRoleNameReader = "AccountUsersReaders";
@@ -75,7 +76,6 @@ public class UserFactory extends NameIdFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		UserType user = (UserType)obj;
-		if(user.getPopulated() == true || user.getDatabaseRecord() == false) return;
 		user.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForUser(user));
 		user.setHomeDirectory(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(user));
 		user.setStatistics(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(user));
@@ -89,7 +89,6 @@ public class UserFactory extends NameIdFactory {
 		removeFromCache(user);
 		/// Refactor into external credential capability 
 		///
-		//if(user.getPassword() != null && user.getPassword().length() < 42) throw new FactoryException("Password hash is not strong enough.  Must be at least 42 characters");
 		boolean b =  super.update(user);
 		
 		/// 2014/09/10
@@ -100,40 +99,18 @@ public class UserFactory extends NameIdFactory {
 		}
 		return b;
 	}
-	@Override
-	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		UserType user = (UserType)map;
-		/*
-		if(user.getPassword() != null){
-			fields.add(QueryFields.getFieldPassword(user.getPassword()));
-			user.setPassword(null);
-		}
-		*/
 
-	}
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		UserType t = (UserType)obj;
 		return t.getName() + "-" + t.getAccountId() + "-" + t.getOrganizationId();
 	}
 
-	/*
-	public void updateUserToCache(UserType user) throws ArgumentException{
-		updateToCache(user);
-	}
-	public void removeUserFromCache(UserType user){
-		removeFromCache(user);
-	}
-	*/
+
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("userid")){
+		if(table.getName().equalsIgnoreCase(this.primaryTableName)){
 			table.setRestrictUpdateColumn("userid", true);
 		}
-		/*
-		if(table.getName().equalsIgnoreCase("password")){
-			table.setRestrictSelectColumn("password", true);
-		}
-		*/
 	}
 	
 	@Override
@@ -144,9 +121,6 @@ public class UserFactory extends NameIdFactory {
 		int deleted = deleteById(user.getId(), user.getOrganizationId());
 		if (deleted > 0)
 		{
-			/// TODO
-			/// Delete users for Account
-			///
 			((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).deleteContactInformationByReferenceType(user);
 			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).deleteUserParticipations(user);
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).deleteRolesByUser(user);
@@ -170,25 +144,24 @@ public class UserFactory extends NameIdFactory {
 	}
 	public UserType newUser(String name, UserEnumType type, UserStatusEnumType status, long organizationId)
 	{
-		UserType new_user = new UserType();
-		new_user.setNameType(NameEnumType.USER);
-		new_user.setUserStatus(status);
-		new_user.setUserType(type);
-		//new_user.setOrganization(organization);
-		new_user.setOrganizationId(organizationId);
-		new_user.setName(name);
-		new_user.setUserId(UUID.randomUUID().toString());
-		return new_user;
+		UserType newUser = new UserType();
+		newUser.setNameType(NameEnumType.USER);
+		newUser.setUserStatus(status);
+		newUser.setUserType(type);
+		newUser.setOrganizationId(organizationId);
+		newUser.setName(name);
+		newUser.setUserId(UUID.randomUUID().toString());
+		return newUser;
 	}
 	
 	public UserType getUserBySession(UserSessionType session) throws FactoryException, ArgumentException{
 		if(!Factories.getSessionFactory().isValid(session)) return null;
 		if(session.getOrganizationId() == null || session.getOrganizationId() <= 0) throw new FactoryException("Invalid organization id");
 		if(session.getUserId() == null || session.getUserId() <= 0) throw new FactoryException("Invalid user id");
-		UserType out_type = readCache(session.getUserId());
-		if(out_type != null){
+		UserType outType = readCache(session.getUserId());
+		if(outType != null){
 			logger.debug("Session " + session.getSessionId() + " --> user #" + session.getUserId());
-			return out_type;
+			return outType;
 		}
 		return getById(session.getUserId(), session.getOrganizationId());
 	}
@@ -202,71 +175,71 @@ public class UserFactory extends NameIdFactory {
 	{
 		return add(object, false);
 	}
-	public <T> boolean add(T object, boolean allot_contact_info) throws FactoryException, ArgumentException
+	public <T> boolean add(T object, boolean allotContactInfo) throws FactoryException, ArgumentException
 	{
-		UserType new_user = (UserType)object;
-		if (new_user.getOrganizationId() == null || new_user.getOrganizationId() <= 0) throw new FactoryException("Cannot add user to invalid organization");
-		if (!bulkMode && getUserNameExists(new_user.getName(), new_user.getOrganizationId()))
+		UserType newUser = (UserType)object;
+		if (newUser.getOrganizationId() == null || newUser.getOrganizationId() <= 0) throw new FactoryException("Cannot add user to invalid organization");
+		if (!bulkMode && getUserNameExists(newUser.getName(), newUser.getOrganizationId()))
 		{
-			throw new FactoryException("User name " + new_user.getName() + " already exists");
+			throw new FactoryException("User name " + newUser.getName() + " already exists");
 		}
-		DataRow row = prepareAdd(new_user, "users");
+		DataRow row = prepareAdd(newUser, "users");
 		try{
-			row.setCellValue("userstatus", new_user.getUserStatus().toString());
-			row.setCellValue("usertype", new_user.getUserType().toString());
-			row.setCellValue("accountid", new_user.getAccountId());
-			row.setCellValue("userid",new_user.getUserId());
+			row.setCellValue("userstatus", newUser.getUserStatus().toString());
+			row.setCellValue("usertype", newUser.getUserType().toString());
+			row.setCellValue("accountid", newUser.getAccountId());
+			row.setCellValue("userid",newUser.getUserId());
 			if (insertRow(row)){
-				new_user = (bulkMode ? new_user : getByName(new_user.getName(), new_user.getOrganizationId()));
-				if(new_user == null) throw new FactoryException("Failed to retrieve new user object");
-				StatisticsType stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).newStatistics(new_user);
-				DirectoryGroupType home_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(new_user, new_user.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getHomeDirectory(new_user.getOrganizationId()), new_user.getOrganizationId());
+				newUser = (bulkMode ? newUser : getByName(newUser.getName(), newUser.getOrganizationId()));
+				if(newUser == null) throw new FactoryException("Failed to retrieve new user object");
+				StatisticsType stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).newStatistics(newUser);
+				DirectoryGroupType homeDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(newUser, newUser.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getHomeDirectory(newUser.getOrganizationId()), newUser.getOrganizationId());
 				String sessionId = null;
 				if(bulkMode){
 					BulkFactories.getBulkFactory().setDirty(FactoryEnumType.STATISTICS);
 					((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.STATISTICS)).add(stats);
 					BulkFactories.getBulkFactory().setDirty(FactoryEnumType.GROUP);
-					BulkFactories.getBulkFactory().createBulkEntry(null,FactoryEnumType.GROUP,home_dir);
-					if(allot_contact_info){
-						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(new_user);
-						if(new_user.getId() > 0L){
+					BulkFactories.getBulkFactory().createBulkEntry(null,FactoryEnumType.GROUP,homeDir);
+					if(allotContactInfo){
+						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(newUser);
+						if(newUser.getId() > 0L){
 							sessionId = BulkFactories.getBulkFactory().getGlobalSessionId();
 							BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATION);
 							((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.CONTACTINFORMATION)).add(cinfo);
 						}
 						else{
 							if(this.factoryType == FactoryEnumType.UNKNOWN) throw new FactoryException("Invalid Factory Type for Bulk Identifiers");
-							sessionId = BulkFactories.getBulkFactory().getSessionForBulkId(new_user.getId());
+							sessionId = BulkFactories.getBulkFactory().getSessionForBulkId(newUser.getId());
 							if(sessionId == null){
 								logger.error("Invalid bulk session id");
 								throw new FactoryException("Invalid bulk session id");
 							}
-							((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.GROUP)).add(home_dir);
-							logger.debug("Bulk id discovered.  User=" + new_user.getId() + ". Diverting to Bulk " + FactoryEnumType.CONTACTINFORMATION + " Operation");
+							((INameIdFactory)Factories.getBulkFactory(FactoryEnumType.GROUP)).add(homeDir);
+							logger.debug("Bulk id discovered.  User=" + newUser.getId() + ". Diverting to Bulk " + FactoryEnumType.CONTACTINFORMATION + " Operation");
 							BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cinfo);
 						}
 					}
 				}
 				else{
-					if(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).add(stats) == false) throw new FactoryException("Failed to add statistics to new user #" + new_user.getId());
-					stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(new_user);
-					if(stats == null) throw new FactoryException("Failed to retrieve statistics for user #" + new_user.getId());
-					if(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).add(home_dir) == false) throw new FactoryException("Failed to add home directory for #" + new_user.getId());
-					if(allot_contact_info){
-						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(new_user);
-						logger.debug("Adding cinfo for user in org " + new_user.getOrganizationId());
-						if(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).add(cinfo) == false) throw new FactoryException("Failed to assign contact information for user #" + new_user.getId());
-						cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForUser(new_user);
-						if(cinfo == null) throw new FactoryException("Failed to retrieve contact information for user #" + new_user.getId());
-						new_user.setContactInformation(cinfo);
+					if(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).add(stats) == false) throw new FactoryException("Failed to add statistics to new user #" + newUser.getId());
+					stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(newUser);
+					if(stats == null) throw new FactoryException("Failed to retrieve statistics for user #" + newUser.getId());
+					if(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).add(homeDir) == false) throw new FactoryException("Failed to add home directory for #" + newUser.getId());
+					if(allotContactInfo){
+						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(newUser);
+						logger.debug("Adding cinfo for user in org " + newUser.getOrganizationId());
+						if(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).add(cinfo) == false) throw new FactoryException("Failed to assign contact information for user #" + newUser.getId());
+						cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForUser(newUser);
+						if(cinfo == null) throw new FactoryException("Failed to retrieve contact information for user #" + newUser.getId());
+						newUser.setContactInformation(cinfo);
 					}
-					new_user.setStatistics(stats);
+					newUser.setStatistics(stats);
 				}
 				/// re-read home dir to get the right id / bulk id
 				///
-				home_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(new_user.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getHomeDirectory(new_user.getOrganizationId()), new_user.getOrganizationId());
-				if(home_dir == null) throw new FactoryException("Missing home directory");
-				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).addDefaultUserGroups(new_user, home_dir, bulkMode,sessionId);
+				homeDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(newUser.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getHomeDirectory(newUser.getOrganizationId()), newUser.getOrganizationId());
+				if(homeDir == null) throw new FactoryException("Missing home directory");
+				((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).addDefaultUserGroups(newUser, homeDir, bulkMode,sessionId);
 				return true;
 			}
 		}
@@ -279,14 +252,14 @@ public class UserFactory extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		UserType new_user = new UserType();
-		new_user.setDatabaseRecord(true);
-		new_user.setNameType(NameEnumType.USER);
-		new_user.setAccountId(rset.getLong("accountid"));
-		new_user.setUserId(rset.getString("userid"));
-		new_user.setUserStatus(UserStatusEnumType.valueOf(rset.getString("userstatus")));
-		new_user.setUserType(UserEnumType.valueOf(rset.getString("usertype")));
-		return super.read(rset, new_user);
+		UserType newUser = new UserType();
+		newUser.setDatabaseRecord(true);
+		newUser.setNameType(NameEnumType.USER);
+		newUser.setAccountId(rset.getLong("accountid"));
+		newUser.setUserId(rset.getString("userid"));
+		newUser.setUserStatus(UserStatusEnumType.valueOf(rset.getString("userstatus")));
+		newUser.setUserType(UserEnumType.valueOf(rset.getString("usertype")));
+		return super.read(rset, newUser);
 	}
 	
 	public List<UserType>  getUserList(long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
@@ -320,53 +293,29 @@ public class UserFactory extends NameIdFactory {
 
 		if(instruction == null) instruction = new ProcessingInstructionType();
 
-		List<NameIdType> UserList = getByField(fields, instruction, organizationId);
-		return convertList(UserList);
+		List<NameIdType> userList = getByField(fields, instruction, organizationId);
+		return convertList(userList);
 
 	}
 	
-	/*
-	public List<UserType> getUserListByIds(int[] User_ids, long organizationId) throws FactoryException, ArgumentException
-	{
-		StringBuilder buff = new StringBuilder();
-		int deleted = 0;
-		List<UserType> out_list = new ArrayList<UserType>();
-		for (int i = 0; i < User_ids.length; i++)
-		{
-			if (buff.length() > 0) buff.append(",");
-			buff.append(User_ids[i]);
-			if ((i > 0 || User_ids.length == 1) && ((i % 250 == 0) || i == User_ids.length - 1))
-			{
-				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
-				match.setComparator(ComparatorEnumType.IN);
-				List<UserType> tmp_User_list = getUserList(new QueryField[] { match }, null, organizationId);
-				out_list.addAll(tmp_User_list);
-				buff.delete(0,  buff.length());
-			}
-		}
-		return out_list;
-	}
-	*/
-
 	/// User search uses a different query to join in contact information
 	/// Otherwise, this could be the paginateList method
 	///
-	/// public List<UserType> search(QueryField[] filters, long organizationId){
 	@Override
-	public List<QueryField> buildSearchQuery(String searchValue, long organizationId) throws FactoryException{
+	public List<QueryField> buildSearchQuery(String inSearchValue, long organizationId) throws FactoryException{
 		
-		searchValue = searchValue.replaceAll("\\*","%");
+		String searchValue = inSearchValue.replaceAll("\\*","%");
 		
-		List<QueryField> filters = new ArrayList<QueryField>();
-		QueryField search_filters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
-		search_filters.setComparator(ComparatorEnumType.GROUP_OR);
-		QueryField name_filter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
-		name_filter.setComparator(ComparatorEnumType.LIKE);
-		search_filters.getFields().add(name_filter);
-		QueryField first_name_filter = new QueryField(SqlDataEnumType.VARCHAR,"firstname",searchValue);
-		first_name_filter.setComparator(ComparatorEnumType.LIKE);
-		search_filters.getFields().add(first_name_filter);
-		filters.add(search_filters);
+		List<QueryField> filters = new ArrayList<>();
+		QueryField searchFilters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
+		searchFilters.setComparator(ComparatorEnumType.GROUP_OR);
+		QueryField nameFilter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
+		nameFilter.setComparator(ComparatorEnumType.LIKE);
+		searchFilters.getFields().add(nameFilter);
+		QueryField firstNameFilter = new QueryField(SqlDataEnumType.VARCHAR,"firstname",searchValue);
+		firstNameFilter.setComparator(ComparatorEnumType.LIKE);
+		searchFilters.getFields().add(firstNameFilter);
+		filters.add(searchFilters);
 		return filters;
 	}
 	

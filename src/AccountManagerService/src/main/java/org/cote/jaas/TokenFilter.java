@@ -36,8 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.rocket.Factories;
@@ -53,24 +53,24 @@ public class TokenFilter implements Filter{
 	    
 	    int idx = -1;
 	    if (stringToken != null && (idx = stringToken.indexOf("Bearer")) > -1) {
-	            //throw new ServletException("Authorization header not found");
 	    	String token = stringToken.substring(idx + 7, stringToken.length()).trim();
 	    	logger.info("Filtering: '" + token + "'");
 	    	String urn = Jwts.parser().setSigningKeyResolver(new AM5SigningKeyResolver()).parseClaimsJws(token).getBody().getId();
 	    	logger.info("Processing: " + urn);
-	    	INameIdFactory iFact = Factories.getFactory(FactoryEnumType.USER);
-	    	UserType user = iFact.getByUrn(urn);
-	    	if(user != null){
-	    		try {
+	    	UserType user = null;
+	    	try{
+		    	INameIdFactory iFact = Factories.getFactory(FactoryEnumType.USER);
+		    	user = iFact.getByUrn(urn);
+
+		    	if(user != null){
 					iFact.denormalize(user);
-				} catch (ArgumentException | FactoryException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	    		didChain = true;
-	    		chain.doFilter(new AM5RequestWrapper(user, (HttpServletRequest)request), response);
+		    		didChain = true;
+		    		chain.doFilter(new AM5RequestWrapper(user, (HttpServletRequest)request), response);
+		    	}
 	    	}
-	    	
+	    	catch(FactoryException | ArgumentException f){
+	    		logger.error(f);
+	    	}	    	
 	    }
 	    if(didChain == false){
 	    	chain.doFilter(request, response);

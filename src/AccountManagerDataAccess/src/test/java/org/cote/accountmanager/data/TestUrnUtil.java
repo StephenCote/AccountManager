@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.util.UrnUtil;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.junit.Test;
@@ -79,10 +80,10 @@ public class TestUrnUtil extends BaseDataAccessTest {
 			org = UrnUtil.getOrganization(orgUrn);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Org is null for path " + organizationPath,org);
 		
@@ -103,10 +104,10 @@ public class TestUrnUtil extends BaseDataAccessTest {
 
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		DirectoryGroupType dir = testUser.getHomeDirectory();
 
@@ -120,7 +121,11 @@ public class TestUrnUtil extends BaseDataAccessTest {
 			org = UrnUtil.getOrganization(testUrn);
 			assertNotNull("Org was null from test urn " + testUrn,org);
 			*/
-			tdir = UrnUtil.getByUrn(testUrn);
+			try {
+				tdir = UrnUtil.getByUrn(testUrn);
+			} catch (FactoryException e) {
+				logger.error(e);
+			}
 	
 		assertNotNull("Group is null for urn " + testUrn,tdir);
 		assertTrue("Group ids " + tdir.getId() + " and " + dir.getId() + " don't match",tdir.getId().equals(dir.getId()));

@@ -32,9 +32,9 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.StreamUtil;
@@ -44,7 +44,7 @@ import org.cote.rocket.factory.FactoryDefaults;
 
 public class RocketSetupAction {
 	public static final Logger logger = LogManager.getLogger(SetupAction.class);
-	public static boolean setupRocket(String adminPassword, String schemaFile){
+	public static boolean setupRocket(String adminPassword, String schemaFile) throws FactoryException{
 		boolean out_bool = false;
 		boolean error = false;
 		logger.info("Setting up Rocket");
@@ -72,7 +72,7 @@ public class RocketSetupAction {
 		catch(SQLException sqe){
 			error = true;
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			if(connection != null){
@@ -80,7 +80,7 @@ public class RocketSetupAction {
 					connection.close();
 				} catch (SQLException e) {
 					
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 			}
 		}
@@ -107,7 +107,7 @@ public class RocketSetupAction {
 				((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).delete(aOrg);
 			}
 		} catch (FactoryException | ArgumentException e1) {
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 			return false;
 		}
 
@@ -151,7 +151,7 @@ public class RocketSetupAction {
 
 			out_bool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(FactoryDefaults.getAccelerantOrganization(), adminPassword);
 		} catch (ArgumentException | DataAccessException | FactoryException e) {
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		
@@ -165,13 +165,13 @@ public class RocketSetupAction {
 				out_bool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(Rocket.getRocketOrganization(),adminPassword);
 			} catch (ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (DataAccessException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (FactoryException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		Factories.clearCaches();
@@ -182,13 +182,13 @@ public class RocketSetupAction {
 				Rocket.configureApplicationEnvironment(adminPassword);
 			}  catch (DataAccessException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (FactoryException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return out_bool;

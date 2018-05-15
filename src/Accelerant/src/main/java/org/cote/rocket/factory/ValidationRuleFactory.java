@@ -34,11 +34,11 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.IParticipationFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -129,7 +129,7 @@ public class ValidationRuleFactory extends NameIdGroupFactory {
 					return true;
 				}
 				catch(ArgumentException ae){
-					logger.error("Error",ae);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,ae);
 					throw new FactoryException(ae.getMessage());
 					
 				}

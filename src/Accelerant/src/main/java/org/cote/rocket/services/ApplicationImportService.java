@@ -30,9 +30,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -66,7 +66,7 @@ public class ApplicationImportService extends ThreadService {
 			logger.info("Processes currently pending");
 			return;
 		}
-		if(queue.size() == 0){
+		if(queue.isEmpty()){
 			return;
 		}
 		processing = true;
@@ -103,7 +103,7 @@ public class ApplicationImportService extends ThreadService {
 					logger.warn("Invalid application id");
 					continue;
 				}
-				if(art.getImports().size() == 0){
+				if(art.getImports().isEmpty()){
 					logger.warn("No imports were specified");
 					continue;
 				}
@@ -120,16 +120,16 @@ public class ApplicationImportService extends ThreadService {
 				}
 				catch(FactoryException e){
 					logger.error(e.getMessage());
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				} catch (ArgumentException e) {
 					logger.error(e.getMessage());
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 			}
 		}
 		catch(Exception e){
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
 			logger.info("Completed data processing");

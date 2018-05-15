@@ -38,9 +38,9 @@ import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ControlActionEnumType;
 import org.cote.accountmanager.objects.ControlEnumType;
 import org.cote.accountmanager.objects.ControlType;
@@ -55,7 +55,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class ControlFactory extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.CONTROL, ControlFactory.class); }
+
 	public ControlFactory(){
 		super();
 		this.hasOwnerId = true;
@@ -66,8 +66,8 @@ public class ControlFactory extends NameIdFactory {
 		this.aggressiveKeyFlush = false;
 		this.useThreadSafeCollections = false;
 		this.scopeToOrganization = true;
-
-		this.tableNames.add("control");
+		this.primaryTableName = "control";
+		this.tableNames.add(primaryTableName);
 
 		factoryType = FactoryEnumType.CONTROL;
 		
@@ -75,17 +75,16 @@ public class ControlFactory extends NameIdFactory {
 			dtFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	@Override
 	public void mapBulkIds(NameIdType map){
 		super.mapBulkIds(map);
 		ControlType cit = (ControlType)map;
-		Long tmpId = 0L;
 		if(cit.getReferenceId().compareTo(0L) < 0){
-			tmpId = BulkFactories.getBulkFactory().getMappedId(cit.getReferenceId());
-			if(tmpId.compareTo(0L) > 0) cit.setReferenceId(tmpId.longValue());
+			Long tmpId = BulkFactories.getBulkFactory().getMappedId(cit.getReferenceId());
+			if(tmpId.compareTo(0L) > 0) cit.setReferenceId(tmpId);
 		}
 	}
 	@Override
@@ -93,9 +92,11 @@ public class ControlFactory extends NameIdFactory {
 		ControlType t = (ControlType)obj;
 		return t.getControlType().toString() + "-" + t.getControlAction().toString() + "-" + t.getReferenceType().toString() + "-" + t.getReferenceId();
 	}
+	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("control")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+
 		}
 	}
 
@@ -115,7 +116,6 @@ public class ControlFactory extends NameIdFactory {
 		/// It's ok if targetObject has no ID - this will be used to indicate its organization level
 		/// This is needed for create operations of a given type
 		///
-		/// targetObject.getId().compareTo(0L) == 0 || 
 		ControlType cred = new ControlType();
 		cred.setNameType(NameEnumType.CREDENTIAL);
 		cred.setControlType(ControlEnumType.UNKNOWN);
@@ -183,19 +183,19 @@ public class ControlFactory extends NameIdFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ControlType use_map = (ControlType)map;
-		fields.add(QueryFields.getFieldModifiedDate(use_map.getModifiedDate()));
-		fields.add(QueryFields.getFieldExpirationDate(use_map.getExpiryDate()));
-		fields.add(QueryFields.getFieldCreatedDate(use_map.getCreatedDate()));
-		fields.add(QueryFields.getFieldReferenceId(use_map.getReferenceId()));
-		fields.add(QueryFields.getFieldReferenceType(use_map.getReferenceType()));
-		fields.add(QueryFields.getFieldControlId(use_map.getControlId()));
-		fields.add(QueryFields.getFieldControlType(use_map.getControlType()));
-		fields.add(QueryFields.getFieldControlAction(use_map.getControlAction()));
+		ControlType useMap = (ControlType)map;
+		fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
+		fields.add(QueryFields.getFieldExpirationDate(useMap.getExpiryDate()));
+		fields.add(QueryFields.getFieldCreatedDate(useMap.getCreatedDate()));
+		fields.add(QueryFields.getFieldReferenceId(useMap.getReferenceId()));
+		fields.add(QueryFields.getFieldReferenceType(useMap.getReferenceType()));
+		fields.add(QueryFields.getFieldControlId(useMap.getControlId()));
+		fields.add(QueryFields.getFieldControlType(useMap.getControlType()));
+		fields.add(QueryFields.getFieldControlAction(useMap.getControlAction()));
 	}
 	public ControlType getControlByObjectId(String id, long organizationId) throws FactoryException, ArgumentException{
 		List<NameIdType> sec = getByObjectId(id, organizationId);
-		if(sec.size() > 0) return (ControlType)sec.get(0);
+		if(!sec.isEmpty()) return (ControlType)sec.get(0);
 		return null;
 	}
 	@Override
@@ -207,9 +207,8 @@ public class ControlFactory extends NameIdFactory {
 	}
 	
 	public List<ControlType> getControlsForType(NameIdType obj,boolean includeGlobal,boolean onlyGlobal) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		// allow id of 0 for global control checks
-		// || obj.getId().compareTo(0L) == 0
 		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganizationId() == null) throw new ArgumentException("Invalid object reference");
 		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));
 		
@@ -229,7 +228,6 @@ public class ControlFactory extends NameIdFactory {
 	public boolean deleteControlsForType(NameIdType obj) throws FactoryException, ArgumentException{
 		List<QueryField> fields = new ArrayList<QueryField>();
 		// allow id of 0 for global controls
-		// || obj.getId().compareTo(0L) == 0
 		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganizationId() == null) throw new ArgumentException("Invalid object reference");
 		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));
 		

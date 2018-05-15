@@ -40,6 +40,7 @@ import javax.crypto.spec.IvParameterSpec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.junit.After;
 import org.junit.Before;
@@ -98,31 +99,9 @@ public class TestSecurityFactory {
 				logger.info("IV=" + (cipher_key.getIV() == null ? " null " : cipher_key.getIV().length));
 				pass = true;
 			}
-		} catch (NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
 			
-			logger.error("Error",e);
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (NoSuchPaddingException e) {
-			
-			logger.error("Error",e);
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		}
-
-		catch (InvalidKeyException e) {
-			
-			logger.error("Error",e);
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} 
-
-		
-		catch (InvalidAlgorithmParameterException e) {
-			
-			logger.error("Error",e);
-			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		assertTrue("Didn't pass", pass);

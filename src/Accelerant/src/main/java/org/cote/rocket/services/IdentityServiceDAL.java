@@ -40,11 +40,11 @@ import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.PersonRoleType;
@@ -98,20 +98,20 @@ public class IdentityServiceDAL {
 			
 		} catch (SQLException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		
@@ -142,22 +142,22 @@ public class IdentityServiceDAL {
 		} catch (SQLException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		
@@ -191,17 +191,17 @@ public class IdentityServiceDAL {
 			rset.close();
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
 			try{
 				connection.close();
 			}
 			catch(SQLException sqe){
-				logger.error("Error",sqe);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			}
 		}
 		///((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getList(fields, instruction, startRecord, recordCount, organization);
@@ -243,20 +243,20 @@ public class IdentityServiceDAL {
 			rset.close();
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
 			try{
 				connection.close();
 			}
 			catch(SQLException sqe){
-				logger.error("Error",sqe);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			}
 		}
 		return dir;
@@ -294,20 +294,20 @@ public class IdentityServiceDAL {
 			rset.close();
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
 			try{
 				connection.close();
 			}
 			catch(SQLException sqe){
-				logger.error("Error",sqe);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			}
 		}
 		///((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getList(fields, instruction, startRecord, recordCount, organization);
@@ -350,20 +350,20 @@ public class IdentityServiceDAL {
 			rset.close();
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
 			try{
 				connection.close();
 			}
 			catch(SQLException sqe){
-				logger.error("Error",sqe);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			}
 		}
 		///((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getList(fields, instruction, startRecord, recordCount, organization);

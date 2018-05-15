@@ -49,10 +49,10 @@ import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -253,7 +253,8 @@ public class EffectiveAuthorizationService {
 			}
 			return;
 		}
-		logger.debug("OLD PEND SYSTEM " + map.getNameType() + " #" + map.getId());
+
+		logger.warn("OLD PEND SYSTEM " + map.getNameType() + " #" + map.getId());
 		switch(map.getNameType()){
 			case ACCOUNT: pendAccountUpdate((AccountType)map); break;
 			case USER: pendUserUpdate((UserType)map); break;
@@ -265,7 +266,7 @@ public class EffectiveAuthorizationService {
 				logger.error("Invalid NameIdType: " + map.getNameType());
 				break;
 		}
-
+		
 	}
 	
 	public static void pendRoleUpdate(BaseRoleType role){
@@ -308,6 +309,7 @@ public class EffectiveAuthorizationService {
 				aMap.getMap().clear();
 			}
 		}
+
 		logger.debug("OLD OLD OLD Clear Authorization Cache");
 		accountRoleMap.clear();
 		accountRolePerMap.clear();
@@ -330,6 +332,7 @@ public class EffectiveAuthorizationService {
 		rebuildGroups.clear();
 		rebuildRoles.clear();
 		rebuildData.clear();
+
 	}
 	
 	public static void clearCache(NameIdType object) throws ArgumentException{
@@ -340,6 +343,7 @@ public class EffectiveAuthorizationService {
 			}
 			return;
 		}
+		
 		logger.debug("OLD CACHE SYSTEM");
 		switch(object.getNameType()){
 			case GROUP:
@@ -389,6 +393,7 @@ public class EffectiveAuthorizationService {
 			default:
 				throw new ArgumentException("Invalid name type " + object.getNameType() + " for object " + object.getName() + " (" + object.getId() + ")");
 		}
+		
 	}
 
 	private static void clearPerCache(Map<Long,Map<Long,Map<Long,Boolean>>> map,NameIdType obj){
@@ -503,7 +508,7 @@ public class EffectiveAuthorizationService {
 			return objectMap.get(objectType).get(actorType).getMap();
 		}
 		if(actorMap.containsKey(actorType) && actorMap.get(actorType).containsKey(objectType)){
-			logger.info("OLD OLD getActorMap for " + actorType + " " + objectType);
+			logger.warn("OLD OLD getActorMap for " + actorType + " " + objectType);
 			return actorMap.get(actorType).get(objectType);
 		}
 		return null;
@@ -525,8 +530,10 @@ public class EffectiveAuthorizationService {
 			}
 			return hasPerCache(map.getMap(),actor,object,permission);
 		}
-		logger.debug("OLD OLD PER CACHE");
-		return hasPerCache(getActorMap(actor.getNameType(),object.getNameType()), actor, object, permission);
+		logger.warn("OLD OLD PER CACHE");
+		Map<Long,Map<Long,Map<Long,Boolean>>> map = getActorMap(actor.getNameType(), object.getNameType());
+		if(map != null) return hasPerCache(map, actor, object, permission);
+		return false;
 	}
 
 	private static boolean getPerCacheValue(Map<Long,Map<Long,Map<Long,Boolean>>> map, NameIdType actor, NameIdType obj, BasePermissionType[] permissions){
@@ -550,9 +557,11 @@ public class EffectiveAuthorizationService {
 		boolean outBool = false;
 		if(map == null){
 			logger.error("Null map");
+			return outBool;
 		}
 		if(actor == null || obj == null){
 			logger.error("Null actor or target object");
+			return outBool;
 		}
 		if(map.containsKey(actor.getId()) && map.get(actor.getId()).containsKey(obj.getId())){
 			Map<Long,Boolean> pmap = map.get(actor.getId()).get(obj.getId());
@@ -602,8 +611,10 @@ public class EffectiveAuthorizationService {
 			addToPerCache(map.getMap(),actor,object,permissions,val);
 			return;
 		}
-		logger.debug("OLD OLD PER CACHE");
-		addToPerCache(getActorMap(actor.getNameType(),object.getNameType()),actor,object,permissions,val);
+		logger.warn("OLD OLD PER CACHE");
+		Map<Long,Map<Long,Map<Long,Boolean>>> map = getActorMap(actor.getNameType(), object.getNameType());
+		if(map != null) addToPerCache(map,actor,object,permissions,val);
+		
 	}
 
 	private static void addToCache(Map<Long,Map<Long,Boolean>> map, NameIdType actor, NameIdType obj, boolean val){
@@ -651,10 +662,12 @@ public class EffectiveAuthorizationService {
 		boolean cache = (isMemberCacheable(member) && isObjectCacheable(object));
 		String entChkStr = getEntitlementCheckString(object,member,permissions);
 		if(cache && hasPerCache(member, object, permissions)){
-			
-			boolean cachedAuth = getPerCacheValue(getActorMap(member.getNameType(),object.getNameType()), member, object, permissions);
-			logger.debug("*** CACHED AUTHORIZATION: " + entChkStr + " == " + cachedAuth);
-			return cachedAuth;
+			Map<Long,Map<Long,Map<Long,Boolean>>> map = getActorMap(member.getNameType(), object.getNameType());
+			if(map != null){
+				boolean cachedAuth = getPerCacheValue(map, member, object, permissions);
+				logger.debug("*** CACHED AUTHORIZATION: " + entChkStr + " == " + cachedAuth);
+				return cachedAuth;
+			}
 		}
 		
 		List<EntitlementType> ents = getEffectiveMemberEntitlements(object, member, permissions,false);
@@ -671,7 +684,7 @@ public class EffectiveAuthorizationService {
 				Factories.getNameIdFactory(FactoryEnumType.PERSON).populate(person);
 			} catch (FactoryException | ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 			for(int i = 0; i < person.getAccounts().size();i++){
 				if(getEntitlementsGrantAccess(object, person.getAccounts().get(i),permissions)){
@@ -851,7 +864,7 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
@@ -861,7 +874,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return out_ents;
@@ -920,7 +933,7 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
@@ -930,7 +943,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return outBool;
@@ -952,7 +965,10 @@ public class EffectiveAuthorizationService {
 			throw new ArgumentException("Actor type " + actor.getNameType() + " is not registered with " + object.getNameType() + " for authorization");
 		}
 		if(hasPerCache(actor, object, permissions)){
-			return getPerCacheValue(getAuthorizationMap(object.getNameType(),actor.getNameType()).getMap(),actor,object,permissions);
+			AuthorizationMapType map = getAuthorizationMap(actor.getNameType(), object.getNameType());
+			if(map != null){
+				return getPerCacheValue(map.getMap(),actor,object,permissions);
+			}
 		}
 		String objType = object.getNameType().toString().toLowerCase();
 		if(actor.getNameType() == NameEnumType.ROLE){
@@ -1251,7 +1267,7 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
@@ -1261,7 +1277,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return outBool;
@@ -1332,7 +1348,7 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
@@ -1342,7 +1358,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return roles;
@@ -1399,7 +1415,7 @@ public class EffectiveAuthorizationService {
 				clearCache(roles.get(i));
 			}
 			logger.info("Rebuilding role cache for " + roles.size() + " roles");
-			if(roles.size() > 0){
+			if(!roles.isEmpty()){
 				rebuildRoleRoleCache(roles,roles.get(0).getOrganizationId());
 				rebuildRoles.clear();
 			}
@@ -1409,14 +1425,14 @@ public class EffectiveAuthorizationService {
 				group = groups.get(i);
 				/// negative id indicates possible bulk entry
 				/// 
-				if(group.getId() < 0){
+				if(group.getId() < 0L){
 					logger.error("Group BulkEntry with id " + group.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
 					throw new ArgumentException("Group BulkEntry with id " + group.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
 				}
 				if(group.getGroupType() == GroupEnumType.USER){
 					List<UserType> gusers = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getUsersInGroup((UserGroupType)group);
 					for(int g = 0; g < gusers.size();g++){
-						if(rebuildUsers.containsKey(gusers.get(g).getId()) == false){
+						if(!rebuildUsers.containsKey(gusers.get(g).getId())){
 							rebuildUsers.put(gusers.get(g).getId(), gusers.get(g));
 						}
 					}
@@ -1424,7 +1440,7 @@ public class EffectiveAuthorizationService {
 				else if(group.getGroupType() == GroupEnumType.ACCOUNT){
 					List<AccountType> gaccounts = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getAccountsInGroup((AccountGroupType)group);
 					for(int g = 0; g < gaccounts.size();g++){
-						if(rebuildAccounts.containsKey(gaccounts.get(g).getId()) == false){
+						if(!rebuildAccounts.containsKey(gaccounts.get(g).getId())){
 							rebuildAccounts.put(gaccounts.get(g).getId(), gaccounts.get(g));
 						}
 					}
@@ -1432,7 +1448,7 @@ public class EffectiveAuthorizationService {
 				else if(group.getGroupType() == GroupEnumType.PERSON){
 					List<PersonType> gpersons = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getPersonsInGroup((PersonGroupType)group);
 					for(int g = 0; g < gpersons.size();g++){
-						if(rebuildPersons.containsKey(gpersons.get(g).getId()) == false){
+						if(!rebuildPersons.containsKey(gpersons.get(g).getId())){
 							rebuildPersons.put(gpersons.get(g).getId(), gpersons.get(g));
 						}
 					}
@@ -1586,17 +1602,16 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
-				if(rset != null) rset.close();
 				if(stat != null) stat.close();
 				conn.close();
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		logger.info("Rebuilt role cache with " + updated + " operations");
@@ -1652,7 +1667,7 @@ public class EffectiveAuthorizationService {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
@@ -1662,7 +1677,7 @@ public class EffectiveAuthorizationService {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return outBool;
@@ -1677,7 +1692,7 @@ public class EffectiveAuthorizationService {
 			outBool = true;
 		} catch (SQLException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
 			try {
@@ -1690,35 +1705,6 @@ public class EffectiveAuthorizationService {
 		
 		return outBool;
 	}
-	/// TODO: Remove. Not currently used
-	///
-	public static boolean rebuildEntitlementsCache(){
-		boolean outBool = false;
-		logger.warn("DEV DEV - Still Under Development");
-		long start = System.currentTimeMillis();
-		Connection connection = ConnectionFactory.getInstance().getConnection();
-		Statement stat = null;
-		try {
-			stat = connection.createStatement();
-			stat.executeQuery("SELECT * FROM cache_group_entitlements();");
-			stat.executeQuery("SELECT * FROM cache_data_entitlements();");
-			outBool = true;
-		} catch (SQLException e) {
-			
-			logger.error("Error",e);
-		}
-		finally{
-			try {
-				if(stat != null) stat.close();
-				connection.close();
-			} catch (SQLException e) {
-				logger.error(e);
-			}
-		}
-		logger.info("Rebuilt Entitlements Cache in " + (System.currentTimeMillis() - start) + "ms");
-		return outBool;
-	}
-
 	
 }
 class RebuildMap{

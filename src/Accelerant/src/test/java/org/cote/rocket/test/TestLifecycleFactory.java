@@ -31,8 +31,8 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.propellant.objects.LifecycleType;
@@ -79,7 +79,7 @@ public class TestLifecycleFactory extends BaseAccelerantTest{
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Lifecycle '" + lifecycleName + "' in group '" + dir.getId() + "' was not found", lifecycle);
 		lifecycleId = lifecycle.getId();
@@ -95,7 +95,7 @@ public class TestLifecycleFactory extends BaseAccelerantTest{
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Lifecycle '" + lifecycleId + "' was not found", lifecycle);
 

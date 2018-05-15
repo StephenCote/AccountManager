@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
@@ -75,13 +76,13 @@ public class TestAggregateCount extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Test directory is null");
 		logger.info("Counted " + count + " data");

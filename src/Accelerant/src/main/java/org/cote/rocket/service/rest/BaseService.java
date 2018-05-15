@@ -32,7 +32,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.INameIdGroupFactory;
@@ -44,6 +43,7 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -70,105 +70,102 @@ public class BaseService  {
 	public static boolean enableExtendedAttributes = false;
 	
 	public static String getDefaultGroupName(AuditEnumType type){
-		String out_path = "~";
+		String outPath = "~";
 		logger.warn("TODO: Refactor this method out for type " + type.toString());
 		
 		switch(type){
 			case FORM:
-				out_path = "Forms";
+				outPath = "Forms";
 				break;
 			case TRAIT:
-				out_path = "Traits";
+				outPath = "Traits";
 				break;
 			case LOCATION:
-				out_path = "Locations";
+				outPath = "Locations";
 				break;
 			case EVENT:
-				out_path = "Events";
+				outPath = "Events";
 				break;
 			case VALIDATIONRULE:
-				out_path = "ValidationRules";
+				outPath = "ValidationRules";
 				break;
 			case FORMELEMENT:
-				out_path = "FormElements";
+				outPath = "FormElements";
 				break;
 			case PROJECT:
-				out_path = "Projects";
+				outPath = "Projects";
 				break;
 			case MODULE:
-				out_path = "Modules";
+				outPath = "Modules";
 				break;
 			case STAGE:
-				out_path = "Stages";
+				outPath = "Stages";
 				break;
 			case METHODOLOGY:
-				out_path = "Methodologies";
+				outPath = "Methodologies";
 				break;
 			case PROCESS:
-				out_path = "Processes";
+				outPath = "Processes";
 				break;
 			case PROCESSSTEP:
-				out_path = "ProcessSteps";
+				outPath = "ProcessSteps";
 				break;
 			case WORK:
-				out_path = "Work";
+				outPath = "Work";
 				break;
 			case TASK:
-				out_path = "Tasks";
+				outPath = "Tasks";
 				break;
 			case TICKET:
-				out_path = "Tickets";
+				outPath = "Tickets";
 				break;
 			case ESTIMATE:
-				out_path = "Estimates";
+				outPath = "Estimates";
 				break;
 			case MODEL:
-				out_path = "Models";
+				outPath = "Models";
 				break;
 			case ARTIFACT:
-				out_path = "Artifacts";
+				outPath = "Artifacts";
 				break;
 			case REQUIREMENT:
-				out_path = "Requirements";
+				outPath = "Requirements";
 				break;
 			case CASE:
-				out_path= "Cases";
+				outPath= "Cases";
 				break;
 			case LIFECYCLE:
-				out_path = "Lifecycles";
+				outPath = "Lifecycles";
 				break;
 			case NOTE:
-				out_path = "Notes";
+				outPath = "Notes";
 				break;
 			case RESOURCE:
-				out_path = "Resources";
+				outPath = "Resources";
 				break;
 			case BUDGET:
-				out_path = "Budgets";
+				outPath = "Budgets";
 				break;
 			case GOAL:
-				out_path = "Goals";
+				outPath = "Goals";
 				break;
 			case TIME:
-				out_path = "Times";
+				outPath = "Times";
 				break;
 			case COST:
-				out_path = "Costs";
+				outPath = "Costs";
 				break;
 			case SCHEDULE:
-				out_path = "Schedules";
+				outPath = "Schedules";
 				break;
 			default:
-				out_path = org.cote.accountmanager.service.rest.BaseService.getDefaultGroupName(type);
+				outPath = org.cote.accountmanager.service.rest.BaseService.getDefaultGroupName(type);
 				break;
 		}
-		return out_path;
+		return outPath;
 	}
-	/*
-	public static String getDefaultPath(AuditEnumType type){
-		return "~/" + getDefaultGroupName(type);
-	}
-	*/
+
+
 	/// Restore organization and group ids from 'path' values on inbound objects
 	///
 	public static <T> void normalize(UserType user, T object) throws ArgumentException, FactoryException{
@@ -177,7 +174,7 @@ public class BaseService  {
 			throw new ArgumentException("Null object");
 		}
 		NameIdType obj = (NameIdType)object;
-		/* obj.getOrganizationPath() == null ||  */
+
 		if(obj.getNameType() == NameEnumType.UNKNOWN){
 			throw new ArgumentException("Invalid object");
 		}
@@ -221,66 +218,66 @@ public class BaseService  {
 	/// don't blindly accept values 
 	///
 	private static <T> boolean sanitizeAddNewObject(AuditEnumType type, UserType user, T in_obj) throws ArgumentException, FactoryException, DataException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		INameIdFactory iFact = getFactory(type);
 		ITypeSanitizer sanitizer = Factories.getSanitizer(NameEnumType.valueOf(type.toString()));
 		if(sanitizer == null){
 			logger.error("Sanitizer is null");
 			return false;
 		}
-		T san_obj = sanitizer.sanitizeNewObject(type, user, in_obj);
-		if(sanitizer.useAlternateAdd(type, san_obj)){
-			out_bool = sanitizer.add(type, user, san_obj);
+		T sanObj = sanitizer.sanitizeNewObject(type, user, in_obj);
+		if(sanitizer.useAlternateAdd(type, sanObj)){
+			outBool = sanitizer.add(type, user, sanObj);
 		}
 		else{
-			out_bool = iFact.add(san_obj);
+			outBool = iFact.add(sanObj);
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	private static <T> boolean updateObject(AuditEnumType type, UserType user, T in_obj) throws ArgumentException, FactoryException, DataAccessException {
-		boolean out_bool = false;
+		boolean outBool = false;
 		INameIdFactory iFact = getFactory(type);
 		if(type.equals(AuditEnumType.FORM)){
-			out_bool = ValidationService.validateForm(user,(FormType)in_obj);
-			if(out_bool == false){
+			outBool = ValidationService.validateForm(user,(FormType)in_obj);
+			if(outBool == false){
 				logger.warn("Failed to validate form");
 				return false;
 			}
-			out_bool = ((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).update((FormType)in_obj);
-			if(out_bool == false){
+			outBool = ((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).update((FormType)in_obj);
+			if(outBool == false){
 				logger.warn("Failed to update form");
 				return false;
 			}
-			out_bool = FormService.updateFormValues(user,(FormType)in_obj,false);
-			if(out_bool == false) logger.warn("Failed to update form values");
+			outBool = FormService.updateFormValues(user,(FormType)in_obj,false);
+			if(outBool == false) logger.warn("Failed to update form values");
 
 		}
 		else{
-			out_bool = iFact.update(in_obj);
+			outBool = iFact.update(in_obj);
 		}
 
-		if(out_bool && enableExtendedAttributes){
+		if(outBool && enableExtendedAttributes){
 			NameIdType attrUpObj = (NameIdType)in_obj;
-			out_bool = Factories.getAttributeFactory().updateAttributes(attrUpObj);
+			outBool = Factories.getAttributeFactory().updateAttributes(attrUpObj);
 		}
 
-		return out_bool;		
+		return outBool;		
 	}
 	private static <T> boolean deleteObject(AuditEnumType type, T in_obj) throws ArgumentException, FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(enableExtendedAttributes){
-			out_bool = Factories.getAttributeFactory().deleteAttributes((NameIdType)in_obj);
-			if(out_bool == false){
+			outBool = Factories.getAttributeFactory().deleteAttributes((NameIdType)in_obj);
+			if(outBool == false){
 				logger.warn("No extended attributes deleted for " + ((NameIdType)in_obj).getName());
 			}
 		}
 		INameIdFactory iFact = getFactory(type);
-		out_bool = iFact.delete(in_obj);
+		outBool = iFact.delete(in_obj);
 		
-		return out_bool;
+		return outBool;
 	}
-	public static <T> T getFactory(AuditEnumType type){
+	public static <T> T getFactory(AuditEnumType type) throws FactoryException{
 		return Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 	}
 	private static <T> T getById(AuditEnumType type, long id, long organizationId) throws ArgumentException, FactoryException {
@@ -337,10 +334,10 @@ public class BaseService  {
 			populate(aType, obj, true);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	
@@ -354,11 +351,12 @@ public class BaseService  {
 	}
 	public static <T> void populate(AuditEnumType type,T object, boolean deep) throws ArgumentException{
 		if(object == null) return;
-		INameIdFactory iFact = getFactory(type);
+
 		if(deep){
 			logger.warn("Deep populate currently disabled  while refactoring");
 		}
 		try {
+			INameIdFactory iFact = getFactory(type);
 			iFact.populate(object);
 			if(deep){
 				switch(type){
@@ -406,7 +404,7 @@ public class BaseService  {
 			}
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		/*
@@ -565,7 +563,7 @@ public class BaseService  {
 	
 	public static <T> boolean delete(AuditEnumType type, T bean, HttpServletRequest request){
 		
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.DELETE, "delete", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		NameIdDirectoryGroupType dirBean = (NameIdDirectoryGroupType)bean;
 		AuditService.targetAudit(audit, type, (dirBean == null ? "null" : dirBean.getUrn()));
@@ -576,7 +574,7 @@ public class BaseService  {
 			normalize(user,dirBean);
 			if(dirBean.getId() <= 0 || dirBean.getGroupId() == null){
 				AuditService.denyResult(audit,"Bean contains invalid data");
-				return out_bool;
+				return outBool;
 			}
 			T check = readById(type, dirBean.getId(),request);
 			if(check == null){
@@ -589,8 +587,8 @@ public class BaseService  {
 			}
 			if(AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirBean.getGroupId(), dirBean.getOrganizationId())) == true || AuthorizationService.isMapOwner(user, dirBean)){
 
-				out_bool = deleteObject(type, bean);
-				if(out_bool) AuditService.permitResult(audit, "Deleted " + dirBean.getName());
+				outBool = deleteObject(type, bean);
+				if(outBool) AuditService.permitResult(audit, "Deleted " + dirBean.getName());
 				else AuditService.denyResult(audit, "Unable to delete " + dirBean.getName());
 				
 			}
@@ -600,19 +598,19 @@ public class BaseService  {
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	public static <T> boolean add(AuditEnumType addType, T bean, HttpServletRequest request){
 		
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "add", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		NameIdDirectoryGroupType dirBean = (NameIdDirectoryGroupType)bean;
 		AuditService.targetAudit(audit, addType, (dirBean == null ? "null" : dirBean.getName()));
@@ -630,19 +628,19 @@ public class BaseService  {
 			normalize(user,dirBean);
 			if(AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirBean.getGroupId(), dirBean.getOrganizationId())) == true){
 
-				out_bool = sanitizeAddNewObject(addType, user, bean);
+				outBool = sanitizeAddNewObject(addType, user, bean);
 				
-				if(out_bool && enableExtendedAttributes){
+				if(outBool && enableExtendedAttributes){
 					NameIdType obj = readByName(addType,((NameIdDirectoryGroupType)bean).getGroupId(),((NameIdDirectoryGroupType)bean).getName(),request);
 					if(obj != null){
-						out_bool = Factories.getAttributeFactory().updateAttributes((NameIdType)obj);
+						outBool = Factories.getAttributeFactory().updateAttributes((NameIdType)obj);
 					}
 					else{
 						logger.warn("Failed to update extended attributes");
 					}
 					
 				}
-				if(out_bool){
+				if(outBool){
 					AuditService.permitResult(audit, "Added " + dirBean.getName());
 				}
 				else AuditService.denyResult(audit, "Unable to add " + dirBean.getName());
@@ -654,14 +652,14 @@ public class BaseService  {
 			}
 		} catch (ArgumentException | FactoryException | DataException e) {
 			// TODO Auto-generated catch block
-			logger.error("Trace", e);
+			logger.error(FactoryException.TRACE_EXCEPTION, e);
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	
 	public static <T> boolean update(AuditEnumType type, T bean,HttpServletRequest request){
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "update",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		NameIdDirectoryGroupType dirBean = (NameIdDirectoryGroupType)bean;
 		AuditService.targetAudit(audit, type, (dirBean == null ? "null" : dirBean.getUrn()));
@@ -694,8 +692,8 @@ public class BaseService  {
 				return false;
 			}
 			if(AuthorizationService.isMapOwner(user, (NameIdType)dirBean) || AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirBean.getGroupId(),dirBean.getOrganizationId())) == true){
-				out_bool = updateObject(type, user, bean); 	
-				if(out_bool) AuditService.permitResult(audit, "Updated " + dirBean.getName() + " (#" + dirBean.getId() + ")");
+				outBool = updateObject(type, user, bean); 	
+				if(outBool) AuditService.permitResult(audit, "Updated " + dirBean.getName() + " (#" + dirBean.getId() + ")");
 				else AuditService.denyResult(audit, "Unable to update " + dirBean.getName() + " (#" + dirBean.getId() + ")");
 			}
 			else{
@@ -703,19 +701,19 @@ public class BaseService  {
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 			AuditService.denyResult(audit, e1.getMessage());
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit, e.getMessage());
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	public static <T> T readById(AuditEnumType type, long id,HttpServletRequest request){
 		T out_obj = null;
@@ -742,10 +740,10 @@ public class BaseService  {
 
 		} catch (ArgumentException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} catch (FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} 
 
 		return out_obj;
@@ -763,10 +761,10 @@ public class BaseService  {
 		}
 	 catch (FactoryException e1) {
 		
-		logger.error("Error",e1);
+		logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 	} catch (ArgumentException e) {
 		
-		logger.error("Error",e);
+		logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 	} 
 		return readByName(audit,type, user, dir, name, request);
 	}
@@ -783,10 +781,10 @@ public class BaseService  {
 		}
 		 catch (FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		return readByName(audit,type, user, dir, name, request);
 	}
@@ -819,10 +817,10 @@ public class BaseService  {
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} catch (FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} 
 
 		return out_obj;
@@ -856,10 +854,10 @@ public class BaseService  {
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} catch (FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} 
 
 		return out_obj;
@@ -879,10 +877,10 @@ public class BaseService  {
 		}
 		 catch (FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		if(dir == null){
 			AuditService.denyResult(audit, "Path '" + path + "' does not exist");
@@ -902,10 +900,10 @@ public class BaseService  {
 			}
 		} catch (ArgumentException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} catch (FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} 
 
 		return out_count;
@@ -927,16 +925,9 @@ public class BaseService  {
 				AuditService.denyResult(audit, "Invalid path: '" + path + "'");
 				return out_obj;
 			}
-			///AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getName() + " (#" + dir.getId() + ")");
 			if(AuthorizationService.canView(user, dir) == true){
 				AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 				out_obj = getListByGroup(type,dir,startRecord,recordCount);
-				/*
-				for(int i = 0; i < out_obj.size();i++){
-					delink(out_obj.get(i));
-				}
-				*/
-				//out_Lifecycles = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getListByGroup(dir, 0, 0, user.getOrganizationId());
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
@@ -944,13 +935,13 @@ public class BaseService  {
 			}
 		} catch (ArgumentException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 
 		return out_obj;
 	}
-	public static boolean flushFactoryCache(AuditEnumType auditType, HttpServletRequest request){
-		boolean out_bool = false;
+	public static boolean flushFactoryCache(AuditEnumType auditType, HttpServletRequest request) throws FactoryException{
+		boolean outBool = false;
 		NameIdGroupFactory f = getFactory(auditType);
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "flushAll",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		AuditService.targetAudit(audit, auditType, "Flush factory cache");
@@ -958,6 +949,6 @@ public class BaseService  {
 		if(user==null) return false;
 		f.clearCache();
 		AuditService.permitResult(audit, "Flushed factory cache");	
-		return out_bool;
+		return outBool;
 	}
 }

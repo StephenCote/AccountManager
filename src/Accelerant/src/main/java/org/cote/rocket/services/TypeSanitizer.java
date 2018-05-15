@@ -26,11 +26,11 @@ package org.cote.rocket.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.INameIdGroupFactory;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -154,7 +154,8 @@ public class TypeSanitizer implements ITypeSanitizer{
 		}
 		return out_bool;
 	}
-	public <T> T sanitizeNewObject(AuditEnumType type, UserType owner, T in_obj) throws ArgumentException{
+	@SuppressWarnings("unchecked")
+	public <T> T sanitizeNewObject(AuditEnumType type, UserType owner, T in_obj) throws ArgumentException, FactoryException{
 		T out_obj = null;
 		switch(type){
 			case VALIDATIONRULE:

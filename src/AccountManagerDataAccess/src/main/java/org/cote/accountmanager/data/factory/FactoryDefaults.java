@@ -31,13 +31,13 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.CredentialType;
@@ -63,54 +63,26 @@ public class FactoryDefaults {
 	
 	public static final Logger logger = LogManager.getLogger(FactoryDefaults.class);
 	
-	protected static String[] default_application_permissions = new String[]{
+	protected static final String[] DEFAULT_APPLICATION_PERMISSIONS = new String[]{
 		"ApplicationView",
 		"ApplicationEdit",
 		"ApplicationDelete",
 		"ApplicationCreate"
 	};
-	protected static String[] default_object_permissions = new String[]{
+	protected static final String[] DEFAULT_OBJECT_PERMISSIONS = new String[]{
 		"ObjectView",
 		"ObjectEdit",
 		"ObjectDelete",
 		"ObjectCreate"
 	};
-	protected static String[] default_account_permissions = new String[]{
-		"AccountView",
-		"AccountEdit",
-		"AccountDelete",
-		"AccountCreate"
-	};
-	/*
-	protected static String[] default_person_permissions = new String[]{
+	protected static final String[] DEFAULT_ACCOUNT_PERMISSIONS = new String[]{
 		"AccountView",
 		"AccountEdit",
 		"AccountDelete",
 		"AccountCreate"
 	};
 	
-	protected static String[] default_data_permissions = new String[]{
-			"DataView",
-			"DataEdit",
-			"DataDelete",
-			"DataCreate"
-	};
-	protected static String[] default_role_permissions = new String[]{
-			"RoleView",
-			"RoleEdit",
-			"RoleCreate",
-			"RoleDelete"
-	};
-	protected static String[] default_group_permissions = new String[]{
-			"GroupView",
-			"GroupEdit",
-			"GroupCreate",
-			"GroupDelete"
-	};
-	*/
 	/// Changing this to be a random string
-	/// private static String DocumentControlPassword = "$%##@austh@#$09au$gks'<>";
-	
 	public static boolean setupAccountManager(String root_password) throws ArgumentException, DataAccessException, FactoryException
 	{
 		// 2016/07/27 - Bug: Because the factory starts automatically, it will throw an error
@@ -121,8 +93,7 @@ public class FactoryDefaults {
 		logger.info("Begin Setup Account Manager");
 		
 		Factories.clearCaches();
-		
-		//String root_hash = SecurityUtil.getSaltedDigest(root_password);
+
 		
 		logger.info("Create default organizations");
 		
@@ -132,19 +103,19 @@ public class FactoryDefaults {
 		
 		AccountFactory aFact = Factories.getFactory(FactoryEnumType.ACCOUNT);
 		UserFactory uFact = Factories.getFactory(FactoryEnumType.USER);
-		AccountType root_account = aFact.getAccountByName(ROOT_USER_NAME, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
-		if(root_account == null){
-			root_account = aFact.newAccount(null,ROOT_USER_NAME, AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()).getId(),Factories.getSystemOrganization().getId());
-			if (!aFact.add(root_account)) throw new FactoryException("Unable to add root account");
+		AccountType rootAccount = aFact.getAccountByName(ROOT_USER_NAME, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
+		if(rootAccount == null){
+			rootAccount = aFact.newAccount(null,ROOT_USER_NAME, AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()).getId(),Factories.getSystemOrganization().getId());
+			if (!aFact.add(rootAccount)) throw new FactoryException("Unable to add root account");
 	
-			UserType root_user = uFact.newUserForAccount(ROOT_USER_NAME, root_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
-			if (!uFact.add(root_user)) throw new FactoryException("Unable to add root user");
-			root_user = uFact.getByName(ROOT_USER_NAME, root_account.getOrganizationId());
-			if (root_user == null) throw new FactoryException("Failed to retrieve to add root user");
+			UserType rootUser = uFact.newUserForAccount(ROOT_USER_NAME, rootAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+			if (!uFact.add(rootUser)) throw new FactoryException("Unable to add root user");
+			rootUser = uFact.getByName(ROOT_USER_NAME, rootAccount.getOrganizationId());
+			if (rootUser == null) throw new FactoryException("Failed to retrieve to add root user");
 			/// 2015/06/23 - New Credential System
 			/// I intentionally left the credential operation decoupled from object creation
 			///
-			CredentialType cred = CredentialService.newHashedPasswordCredential(root_user, root_user, root_password, true,false);
+			CredentialType cred = CredentialService.newHashedPasswordCredential(rootUser, rootUser, root_password, true,false);
 			if(cred == null) throw new FactoryException("Failed to persist root credential");
 		}
 		setupOrganization(Factories.getDevelopmentOrganization(), root_password);
@@ -175,22 +146,22 @@ public class FactoryDefaults {
 		}
 		// Create administration user
 		//
-		AccountType admin_account = aFact.newAccount(null,ADMIN_USER_NAME, AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, agroup.getId(),organization.getId());
-		if (!aFact.add(admin_account)) throw new FactoryException("Unable to add admin account");
-		admin_account = aFact.getAccountByName(ADMIN_USER_NAME, agroup);
+		AccountType adminAccount = aFact.newAccount(null,ADMIN_USER_NAME, AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, agroup.getId(),organization.getId());
+		if (!aFact.add(adminAccount)) throw new FactoryException("Unable to add admin account");
+		adminAccount = aFact.getAccountByName(ADMIN_USER_NAME, agroup);
 
-		UserType admin_user = uFact.newUserForAccount(ADMIN_USER_NAME, admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
-		if (!uFact.add(admin_user)) throw new FactoryException("Unable to add admin user");
-		admin_user = uFact.getByName(ADMIN_USER_NAME, organization.getId());
+		UserType adminUser = uFact.newUserForAccount(ADMIN_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		if (!uFact.add(adminUser)) throw new FactoryException("Unable to add admin user");
+		adminUser = uFact.getByName(ADMIN_USER_NAME, organization.getId());
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
 		///
-		CredentialType cred = CredentialService.newHashedPasswordCredential(admin_user, admin_user, admin_password, true, false);
+		CredentialType cred = CredentialService.newHashedPasswordCredential(adminUser, adminUser, admin_password, true, false);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
 
 		// Create the document control user
 		//
-		UserType dc_user = uFact.newUserForAccount(DOCUMENT_CONTROL_USER_NAME, admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		UserType dc_user = uFact.newUserForAccount(DOCUMENT_CONTROL_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (uFact.add(dc_user) == false) return false;
 		dc_user = uFact.getByName(DOCUMENT_CONTROL_USER_NAME, organization.getId());
 
@@ -201,7 +172,7 @@ public class FactoryDefaults {
 		cred = CredentialService.newHashedPasswordCredential(dc_user, dc_user, UUID.randomUUID().toString(), true, false);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
 		
-		if(dc_user.getId() <= 0 || admin_user.getId() <= 0){
+		if(dc_user.getId() <= 0 || adminUser.getId() <= 0){
 			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
 			return false;
 		}
@@ -210,24 +181,24 @@ public class FactoryDefaults {
 		
 		/// Feedback user
 		///
-		UserType fb_user = uFact.newUserForAccount(FEEDBACK_USER_NAME, admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		UserType fb_user = uFact.newUserForAccount(FEEDBACK_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (uFact.add(fb_user) == false) return false;
 		fb_user = uFact.getByName(FEEDBACK_USER_NAME, organization.getId());
 		cred = CredentialService.newHashedPasswordCredential(fb_user, fb_user, UUID.randomUUID().toString(), true, false);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
-		if(fb_user.getId() <= 0 || admin_user.getId() <= 0){
+		if(fb_user.getId() <= 0 || adminUser.getId() <= 0){
 			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
 			return false;
 		}
 		
 		/// Vault user
 		///
-		UserType vl_user = uFact.newUserForAccount(VAULT_USER_NAME, admin_account, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		UserType vl_user = uFact.newUserForAccount(VAULT_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (uFact.add(vl_user) == false) return false;
 		vl_user = uFact.getByName(VAULT_USER_NAME, organization.getId());
 		cred = CredentialService.newHashedPasswordCredential(vl_user, vl_user, UUID.randomUUID().toString(), true, false);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
-		if(vl_user.getId() <= 0 || admin_user.getId() <= 0){
+		if(vl_user.getId() <= 0 || adminUser.getId() <= 0){
 			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
 			return false;
 		}
@@ -235,23 +206,23 @@ public class FactoryDefaults {
 		
 		// Create default permission sets
 		//
-		for (int i = 0; i < default_account_permissions.length; i++)
+		for (int i = 0; i < DEFAULT_ACCOUNT_PERMISSIONS.length; i++)
 		{
 			pFact.add(
-				pFact.newPermission(default_account_permissions[i], PermissionEnumType.ACCOUNT, organization.getId())
+				pFact.newPermission(DEFAULT_ACCOUNT_PERMISSIONS[i], PermissionEnumType.ACCOUNT, organization.getId())
 			);
 		}
 
-		for (int i = 0; i < default_object_permissions.length; i++)
+		for (int i = 0; i < DEFAULT_OBJECT_PERMISSIONS.length; i++)
 		{
 			pFact.add(
-					pFact.newPermission(default_object_permissions[i], PermissionEnumType.OBJECT, organization.getId())
+					pFact.newPermission(DEFAULT_OBJECT_PERMISSIONS[i], PermissionEnumType.OBJECT, organization.getId())
 			);
 		}
-		for (int i = 0; i < default_application_permissions.length; i++)
+		for (int i = 0; i < DEFAULT_APPLICATION_PERMISSIONS.length; i++)
 		{
 			pFact.add(
-					pFact.newPermission(default_application_permissions[i], PermissionEnumType.APPLICATION, organization.getId())
+					pFact.newPermission(DEFAULT_APPLICATION_PERMISSIONS[i], PermissionEnumType.APPLICATION, organization.getId())
 			);
 		}
 		/// 2016/05/18 - Moved default permission construction into the Participation Factories
@@ -261,65 +232,67 @@ public class FactoryDefaults {
 
 		// Request the person roles to create them
 		//
-		PersonRoleType person_admin_role = RoleService.getAccountAdministratorPersonRole(admin_user);
-		PersonRoleType per_data_admin_role = RoleService.getDataAdministratorPersonRole(admin_user);
-		PersonRoleType per_obj_admin_role = RoleService.getObjectAdministratorPersonRole(admin_user);
-		PersonRoleType per_sys_admin_role = RoleService.getSystemAdministratorPersonRole(admin_user);
-		PersonRoleType per_users_role = RoleService.getAccountUsersPersonRole(admin_user);
-		
+		PersonRoleType personAdminRole = RoleService.getAccountAdministratorPersonRole(adminUser);
+		PersonRoleType personDataAdminRole = RoleService.getDataAdministratorPersonRole(adminUser);
+		PersonRoleType personObjectAdminRole = RoleService.getObjectAdministratorPersonRole(adminUser);
+		PersonRoleType personSystemAdminRole = RoleService.getSystemAdministratorPersonRole(adminUser);
+		PersonRoleType personUserAdminRole = RoleService.getAccountUsersPersonRole(adminUser);
+		if(personAdminRole == null || personDataAdminRole == null || personObjectAdminRole == null || personSystemAdminRole == null || personUserAdminRole == null){
+			logger.error("Failed to retrieve one or more person roles");
+		}
 		// Add admin account and root account to Administrators and Users account roles
 		//
-		AccountType root_account = aFact.getAccountByName("Root",((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
-		AccountRoleType account_admin_role = RoleService.getAccountAdministratorAccountRole(admin_user);
-		AccountRoleType data_admin_role = RoleService.getDataAdministratorAccountRole(admin_user);
-		AccountRoleType obj_admin_role = RoleService.getObjectAdministratorAccountRole(admin_user);
-		AccountRoleType sys_admin_role = RoleService.getSystemAdministratorAccountRole(admin_user);
-		AccountRoleType users_role = RoleService.getAccountUsersAccountRole(admin_user);
-
-		RoleService.addAccountToRole(root_account, obj_admin_role);
-		RoleService.addAccountToRole(root_account,account_admin_role);
-		RoleService.addAccountToRole(root_account,data_admin_role);
-		RoleService.addAccountToRole(root_account,sys_admin_role);
-		RoleService.addAccountToRole(admin_account, obj_admin_role);
-		RoleService.addAccountToRole(admin_account, account_admin_role);
-		RoleService.addAccountToRole(admin_account, data_admin_role);
-		RoleService.addAccountToRole(admin_account,sys_admin_role);
+		AccountType rootAccount = aFact.getAccountByName("Root",((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
+		AccountRoleType accountAdminRole = RoleService.getAccountAdministratorAccountRole(adminUser);
+		AccountRoleType dataAdminRole = RoleService.getDataAdministratorAccountRole(adminUser);
+		AccountRoleType objectAdminRole = RoleService.getObjectAdministratorAccountRole(adminUser);
+		AccountRoleType systemAdminRole = RoleService.getSystemAdministratorAccountRole(adminUser);
+		AccountRoleType usersRole = RoleService.getAccountUsersAccountRole(adminUser);
+		if(usersRole == null){
+			logger.error("User role is null");
+		}
+		RoleService.addAccountToRole(rootAccount, objectAdminRole);
+		RoleService.addAccountToRole(rootAccount,accountAdminRole);
+		RoleService.addAccountToRole(rootAccount,dataAdminRole);
+		RoleService.addAccountToRole(rootAccount,systemAdminRole);
+		RoleService.addAccountToRole(adminAccount, objectAdminRole);
+		RoleService.addAccountToRole(adminAccount, accountAdminRole);
+		RoleService.addAccountToRole(adminAccount, dataAdminRole);
+		RoleService.addAccountToRole(adminAccount,systemAdminRole);
 		
 		// Add admin user and root user to Administrators and Users user roles
 		//
-		UserType root_user = uFact.getByName("Root",Factories.getSystemOrganization().getId());
-		UserRoleType user_admin_role = RoleService.getAccountAdministratorUserRole(admin_user);
-		UserRoleType user_data_admin_role = RoleService.getDataAdministratorUserRole(admin_user);
-		UserRoleType user_obj_admin_role = RoleService.getObjectAdministratorUserRole(admin_user);
-		UserRoleType user_sys_admin_role = RoleService.getSystemAdministratorUserRole(admin_user);
-		UserRoleType user_users_role = RoleService.getAccountUsersRole(admin_user);
-		
-		RoleService.getAccountUsersReaderAccountRole(admin_user);
-		RoleService.getPermissionReaderAccountRole(admin_user);
-		RoleService.getRoleReaderAccountRole(admin_user);
-		RoleService.getDataReaderAccountRole(admin_user);
-		RoleService.getGroupReaderAccountRole(admin_user);
-		RoleService.getObjectReaderAccountRole(admin_user);
-		RoleService.getApiUserUserRole(admin_user);
-		RoleService.getAccountUsersReaderUserRole(admin_user);
-		RoleService.getRoleReaderUserRole(admin_user);
-		RoleService.getPermissionReaderUserRole(admin_user);
-		RoleService.getDataReaderUserRole(admin_user);
-		RoleService.getGroupReaderUserRole(admin_user);
-		RoleService.getObjectReaderUserRole(admin_user);
+		UserType rootUser = uFact.getByName("Root",Factories.getSystemOrganization().getId());
+		UserRoleType userAdminRole = RoleService.getAccountAdministratorUserRole(adminUser);
+		UserRoleType userDataAdminRole = RoleService.getDataAdministratorUserRole(adminUser);
+		UserRoleType userObjectAdminRole = RoleService.getObjectAdministratorUserRole(adminUser);
+		UserRoleType userSystemAdminRole = RoleService.getSystemAdministratorUserRole(adminUser);
+		UserRoleType usersUsersRole = RoleService.getAccountUsersRole(adminUser);
+		if(usersUsersRole == null){
+			logger.error("Failed to retrieve users users role");
+		}
+		RoleService.getAccountUsersReaderAccountRole(adminUser);
+		RoleService.getPermissionReaderAccountRole(adminUser);
+		RoleService.getRoleReaderAccountRole(adminUser);
+		RoleService.getDataReaderAccountRole(adminUser);
+		RoleService.getGroupReaderAccountRole(adminUser);
+		RoleService.getObjectReaderAccountRole(adminUser);
+		RoleService.getApiUserUserRole(adminUser);
+		RoleService.getAccountUsersReaderUserRole(adminUser);
+		RoleService.getRoleReaderUserRole(adminUser);
+		RoleService.getPermissionReaderUserRole(adminUser);
+		RoleService.getDataReaderUserRole(adminUser);
+		RoleService.getGroupReaderUserRole(adminUser);
+		RoleService.getObjectReaderUserRole(adminUser);
 
-		/// 2014/03/03 - Document control shouldn't be an admin, it should be delegated as needed
-		///
-		/// RoleService.addUserToRole(dc_user, user_data_admin_role);
-		/// RoleService.addUserToRole(dc_user, user_obj_admin_role);
-		RoleService.addUserToRole(root_user,user_admin_role);
-		RoleService.addUserToRole(root_user,user_data_admin_role);
-		RoleService.addUserToRole(root_user,user_obj_admin_role);
-		RoleService.addUserToRole(root_user,user_sys_admin_role);
-		RoleService.addUserToRole(admin_user, user_admin_role);
-		RoleService.addUserToRole(admin_user, user_data_admin_role);
-		RoleService.addUserToRole(admin_user, user_obj_admin_role);
-		RoleService.addUserToRole(admin_user,user_sys_admin_role);
+		RoleService.addUserToRole(rootUser,userAdminRole);
+		RoleService.addUserToRole(rootUser,userDataAdminRole);
+		RoleService.addUserToRole(rootUser,userObjectAdminRole);
+		RoleService.addUserToRole(rootUser,userSystemAdminRole);
+		RoleService.addUserToRole(adminUser, userAdminRole);
+		RoleService.addUserToRole(adminUser, userDataAdminRole);
+		RoleService.addUserToRole(adminUser, userObjectAdminRole);
+		RoleService.addUserToRole(adminUser,userSystemAdminRole);
 		
 		RoleFactory rFact = Factories.getFactory(FactoryEnumType.ROLE);
 		rFact.addDefaultRoles(organization.getId());
@@ -330,13 +303,15 @@ public class FactoryDefaults {
 		KeyService.newOrganizationSymmetricKey(organization.getId(), true);
 		
 		UserType apiUser = ApiConnectionConfigurationService.getApiUser(organization.getId());
-		
+		if(apiUser == null){
+			logger.error("Failed to retrieve API user");
+		}
 		return true;
 	}
 	
-	public static void createPermissionsForAuthorizationFactories(long organizationId){
+	public static void createPermissionsForAuthorizationFactories(long organizationId) throws FactoryException{
 		Map<FactoryEnumType, FactoryEnumType> factories = AuthorizationService.getAuthorizationFactories();
-		if(factories.keySet().size() == 0){
+		if(factories.keySet().isEmpty()){
 			logger.error("No factories registered with authorization service");
 		}
 		PermissionFactory pfact = Factories.getFactory(FactoryEnumType.PERMISSION);
@@ -359,11 +334,14 @@ public class FactoryDefaults {
 		}
 	}
 
-	private static void setupOrganizations()
+	private static void setupOrganizations() throws FactoryException
 	{
 
 		/// requesting org factory forces population of default orgs
 		///
-		OrganizationFactory org_fact = Factories.getFactory(FactoryEnumType.ORGANIZATION);
+		OrganizationFactory orgFact = Factories.getFactory(FactoryEnumType.ORGANIZATION);
+		if(orgFact == null){
+			logger.error("Failed to retrieve organization factory");
+		}
 	}
 }

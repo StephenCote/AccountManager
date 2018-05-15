@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -48,7 +49,7 @@ public class SimpleGeography {
 			ctr.setRegions(mapper.readValue(fileStr, t.constructMapType(Map.class, String.class, RegionType[].class)));
 		} catch (IOException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return ctr.getRegions();
 	}
@@ -62,7 +63,7 @@ public class SimpleGeography {
 			countries = mapper.readValue(fileStr, t.constructMapType(Map.class, String.class, CountryType.class));
 		} catch (IOException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return countries;
 	}

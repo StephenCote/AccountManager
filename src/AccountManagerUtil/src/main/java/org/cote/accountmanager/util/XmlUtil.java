@@ -54,6 +54,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -85,12 +86,12 @@ public class XmlUtil {
 		}
 		catch(TransformerConfigurationException tce){
 			logger.error(tce.getMessage());
-			logger.error("Trace",tce);
+			logger.error(FactoryException.TRACE_EXCEPTION,tce);
 	
 		}
 		catch(IOException e){
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return transformer;
 	}
@@ -111,7 +112,7 @@ public class XmlUtil {
 		catch(TransformerException | IOException e){
 			logger.error(e.getMessage());
 			returnData=e.toString().getBytes();
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return returnData;
 	}
@@ -123,7 +124,7 @@ public class XmlUtil {
 			outNode = (Node)xPath.compile(expression).evaluate(refNode, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return outNode;
 	}	
@@ -134,7 +135,7 @@ public class XmlUtil {
 			outNode = (Node)xPath.compile(expression).evaluate(refNode, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return outNode;
 	}
@@ -146,7 +147,7 @@ public class XmlUtil {
 			outNodes = (NodeList)xPath.compile(expression).evaluate(refNode, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return outNodes;
 	}	
@@ -157,7 +158,7 @@ public class XmlUtil {
 			outNodes = (NodeList)xPath.compile(expression).evaluate(refNode, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return outNodes;
 	}
@@ -172,15 +173,9 @@ public class XmlUtil {
 		try {
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
 			transformer.transform(new DOMSource(d.getDocumentElement()), new StreamResult(output));
-		} catch (TransformerConfigurationException e) {
+		} catch (TransformerFactoryConfigurationError | TransformerException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
-		} catch (TransformerFactoryConfigurationError e) {
-			logger.error(e.getMessage());
-			logger.error("Trace",e);
-		} catch (TransformerException e) {
-			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 	    
 
@@ -201,20 +196,20 @@ public class XmlUtil {
 		}
 		catch (ParserConfigurationException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		} catch (SAXException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		finally{
 			try {
 				bais.close();
 			} catch (IOException e) {
 				
-				logger.error("Trace",e);
+				logger.error(FactoryException.TRACE_EXCEPTION,e);
 			}
 		}
 		return doc;

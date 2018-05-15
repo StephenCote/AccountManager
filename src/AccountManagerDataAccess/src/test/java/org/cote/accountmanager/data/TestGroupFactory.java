@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -49,22 +50,23 @@ public class TestGroupFactory extends BaseDataAccessTest{
 			dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(testUser, GroupEnumType.DATA, "~", testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("~ path is null",dir);
 	}
 	@Test
 	public void testAddDirectoryGroup(){
 		testDirGroupName = "Example - " + System.currentTimeMillis();
-		OrganizationFactory orgFactory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
-		OrganizationType dev = Factories.getDevelopmentOrganization();
-		assertNotNull("Development organization is null", dev);
 		boolean error = false;
 		boolean addDir = false;
 		try{
+			OrganizationFactory orgFactory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
+			OrganizationType dev = Factories.getDevelopmentOrganization();
+			assertNotNull("Development organization is null", dev);
+
 			DirectoryGroupType parentDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", dev.getId());
 			assertNotNull("Root dir is null", parentDir);
 			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(testDirGroupName, parentDir, dev.getId());
@@ -73,11 +75,11 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("Error occurred", error);
 		assertTrue("Directory not added", addDir);
@@ -86,12 +88,13 @@ public class TestGroupFactory extends BaseDataAccessTest{
 	@Test
 	public void testUpdateGroup(){
 		String newTestDirGroupName = "Changed Example - " + System.currentTimeMillis();
-		OrganizationFactory orgFactory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
-		OrganizationType dev = Factories.getDevelopmentOrganization();
-		assertNotNull("Development organization is null", dev);
 		boolean error = false;
 		boolean editDir = false;
 		try{
+			OrganizationFactory orgFactory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
+			OrganizationType dev = Factories.getDevelopmentOrganization();
+			assertNotNull("Development organization is null", dev);
+
 			DirectoryGroupType parentDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", dev.getId());
 			assertNotNull("Root dir is null", parentDir);
 			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(testDirGroupName, parentDir, parentDir.getOrganizationId());
@@ -101,11 +104,11 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("Error occurred", error);
 		assertTrue("Directory not changed", editDir);
@@ -114,13 +117,14 @@ public class TestGroupFactory extends BaseDataAccessTest{
 	
 	@Test
 	public void testGetGroupPath(){
-		OrganizationFactory orgFactory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
-		OrganizationType dev = Factories.getDevelopmentOrganization();
-		assertNotNull("Development organization is null", dev);
 		boolean error = false;
 		boolean editDir = false;
 		String path = null;
 		try{
+			OrganizationFactory orgFactory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
+			OrganizationType dev = Factories.getDevelopmentOrganization();
+			assertNotNull("Development organization is null", dev);
+
 			DirectoryGroupType parentDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", dev.getId());
 			assertNotNull("Root dir is null", parentDir);
 			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(testDirGroupName, parentDir, parentDir.getOrganizationId());
@@ -130,11 +134,11 @@ public class TestGroupFactory extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("Error occurred", error);
 		assertNotNull("Path is null", path);
@@ -143,12 +147,13 @@ public class TestGroupFactory extends BaseDataAccessTest{
 	
 	@Test
 	public void testMakePath(){
-		OrganizationFactory orgFactory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
-		OrganizationType dev = Factories.getDevelopmentOrganization();
 		boolean error = false;
 		boolean path = false;
 		boolean cleanUp = false;
 		try {
+			OrganizationFactory orgFactory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
+			OrganizationType dev = Factories.getDevelopmentOrganization();
+
 			DirectoryGroupType dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null,  GroupEnumType.DATA,"/Example1", dev.getId());
 			if(dir != null){
 				logger.info("Cleanup example path");
@@ -163,12 +168,12 @@ public class TestGroupFactory extends BaseDataAccessTest{
 			path = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).makePath(null, GroupEnumType.DATA,"/Example1/Example2/Example3/Example4", dev.getId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			logger.error(e.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("Error occurred", error);
 		assertTrue("Directory path not made", path);

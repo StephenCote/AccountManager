@@ -37,7 +37,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.fact.FactUtil;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.operation.IOperation;
@@ -46,6 +45,7 @@ import org.cote.accountmanager.data.rule.RuleUtil;
 import org.cote.accountmanager.data.services.BshService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.sod.SoDPolicyUtil;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -80,10 +80,12 @@ public class PolicyEvaluator {
 			dtFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
-	
+	private PolicyEvaluator(){
+		
+	}
 	public static PolicyResponseType evaluatePolicyRequest(PolicyRequestType prt) throws FactoryException, ArgumentException{
 		PolicyResponseType prr = new PolicyResponseType();
 		if(prt.getUrn() == null){
@@ -107,7 +109,7 @@ public class PolicyEvaluator {
 		prr.setExpiresDate(dtFactory.newXMLGregorianCalendar(cal));
 		
 		List<FactType> facts = prt.getFacts();
-		if(pol.getEnabled() == false){
+		if(!pol.getEnabled()){
 			prr.setResponse(PolicyResponseEnumType.DISABLED);
 			prr.setMessage("Policy is disabled");
 			logger.error("Policy is disabled");
@@ -229,7 +231,7 @@ public class PolicyEvaluator {
 		
 		if(rule.getRuleType() == RuleEnumType.DENY){
 			logger.info("Inverting rule success for DENY condition");
-			success = (success == false);
+			success = (!success);
 		}
 		
 
@@ -244,7 +246,7 @@ public class PolicyEvaluator {
 		FactType mfact = pattern.getMatch();
 		FactType pfact = fact;
 		OperationResponseEnumType opr = OperationResponseEnumType.UNKNOWN;
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(fact == null){
 			throw new ArgumentException("Pattern fact is null");
 		}
@@ -284,26 +286,24 @@ public class PolicyEvaluator {
 		}
 
 		if(opr == OperationResponseEnumType.SUCCEEDED){
-			out_bool = true;
+			outBool = true;
 			prr.setScore(prr.getScore() + pattern.getScore());
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	private static OperationResponseEnumType evaluateExpression(PolicyRequestType prt,PolicyResponseType prr, PatternType pattern, FactType fact, FactType matchFact) throws ArgumentException{
-		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
+		OperationResponseEnumType outResponse;
 		
 		String chkData = FactUtil.getFactValue(prt, prr, fact, matchFact);
 		String mData = FactUtil.getMatchFactValue(prt, prr,fact, matchFact);
 
-		if(RuleUtil.compareValue(chkData, pattern.getComparator(), mData)) out_response = OperationResponseEnumType.SUCCEEDED;
-		else out_response = OperationResponseEnumType.FAILED;
-		return out_response;
+		if(RuleUtil.compareValue(chkData, pattern.getComparator(), mData)) outResponse = OperationResponseEnumType.SUCCEEDED;
+		else outResponse = OperationResponseEnumType.FAILED;
+		return outResponse;
 	}
 	private static OperationResponseEnumType evaluateSoD(PolicyRequestType prt,PolicyResponseType prr, PatternType pattern, FactType fact, FactType matchFact) throws ArgumentException{
-		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
-		PersonType person = null;
-		AccountType account = null;
+		OperationResponseEnumType outResponse;
 		NameIdType p = FactUtil.factoryRead(fact, matchFact);
 		NameIdType g = FactUtil.factoryRead(matchFact, matchFact);
 		if(p == null || g == null){
@@ -319,15 +319,14 @@ public class PolicyEvaluator {
 			logger.error("Match fact of group is expected");
 			return OperationResponseEnumType.ERROR;			
 		}
-		List<Long> perms = new ArrayList<Long>();
-		perms = SoDPolicyUtil.getActivityPermissionsForType(g.getUrn(), p);
+		List<Long> perms = SoDPolicyUtil.getActivityPermissionsForType(g.getUrn(), p);
 
-		if(perms.size() > 0) out_response = OperationResponseEnumType.SUCCEEDED;
-		else out_response = OperationResponseEnumType.FAILED;
-		return out_response;
+		if(!perms.isEmpty()) outResponse = OperationResponseEnumType.SUCCEEDED;
+		else outResponse = OperationResponseEnumType.FAILED;
+		return outResponse;
 	}	
 	private static OperationResponseEnumType evaluateAuthorization(PolicyRequestType prt,PolicyResponseType prr, PatternType pattern, FactType fact, FactType matchFact) throws ArgumentException, NumberFormatException, FactoryException{
-		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
+		OperationResponseEnumType outResponse = OperationResponseEnumType.UNKNOWN;
 		if(fact.getFactoryType() == FactoryEnumType.UNKNOWN || matchFact.getFactoryType() == FactoryEnumType.UNKNOWN){
 			logger.error("Expected both fact and match fact to define a factory type");
 			return OperationResponseEnumType.ERROR;
@@ -348,16 +347,16 @@ public class PolicyEvaluator {
 				logger.error("Permission reference does not exist");
 				return OperationResponseEnumType.ERROR;
 			}
-			out_response = evaluatePermissionAuthorization(prt,prr,pattern, p, g, perm);
+			outResponse = evaluatePermissionAuthorization(prt,prr,pattern, p, g, perm);
 		}
 		else if(matchFact.getFactType() == FactEnumType.ROLE && matchFact.getFactoryType() == FactoryEnumType.ROLE){
-			out_response = evaluateRoleAuthorization(prt,prr,pattern, p, g, (BaseRoleType)g);
+			outResponse = evaluateRoleAuthorization(prt,prr,pattern, p, g, (BaseRoleType)g);
 		}
 
-		return out_response;
+		return outResponse;
 	}
 	private static OperationResponseEnumType evaluateRoleAuthorization(PolicyRequestType prt,PolicyResponseType prr, PatternType pattern, NameIdType src, NameIdType targ, BaseRoleType role) throws ArgumentException, FactoryException{
-		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
+		OperationResponseEnumType outResponse = OperationResponseEnumType.UNKNOWN;
 		boolean authZ = false;
 		if(targ.getNameType() == NameEnumType.ROLE){
 			switch(src.getNameType()){
@@ -377,12 +376,12 @@ public class PolicyEvaluator {
 			}
 		}
 		if(authZ){
-			out_response = OperationResponseEnumType.SUCCEEDED;
+			outResponse = OperationResponseEnumType.SUCCEEDED;
 		}
-		return out_response;
+		return outResponse;
 	}
 	private static OperationResponseEnumType evaluatePermissionAuthorization(PolicyRequestType prt,PolicyResponseType prr, PatternType pattern, NameIdType src, NameIdType targ, BasePermissionType permission) throws ArgumentException, FactoryException{
-		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
+		OperationResponseEnumType outResponse = OperationResponseEnumType.UNKNOWN;
 		boolean authZ = false;
 		logger.info("Evaluating Permission Authorization on " + targ.getNameType() + " (#" + targ.getId() + ") for " + src.getNameType() + " (#" + src.getId() + ") having " + permission.getName() + " (#" + permission.getId() + ")");
 		if(targ.getNameType() == NameEnumType.GROUP){
@@ -447,13 +446,13 @@ public class PolicyEvaluator {
 			}
 		}
 		if(authZ){
-			out_response = OperationResponseEnumType.SUCCEEDED;
+			outResponse = OperationResponseEnumType.SUCCEEDED;
 		}
-		return out_response;
+		return outResponse;
 	}
 
-	private static OperationResponseEnumType evaluateOperation(PolicyRequestType prt,PolicyResponseType prr, PatternType pattern, FactType fact, FactType matchFact, String operation) throws ArgumentException{
-		OperationResponseEnumType out_response = OperationResponseEnumType.UNKNOWN;
+	private static OperationResponseEnumType evaluateOperation(PolicyRequestType prt,PolicyResponseType prr, PatternType pattern, FactType fact, FactType matchFact, String operation) throws ArgumentException, FactoryException{
+		OperationResponseEnumType outResponse = OperationResponseEnumType.UNKNOWN;
 		logger.info("Evaluating operation: " + operation);
 		OperationType op = Factories.getNameIdFactory(FactoryEnumType.OPERATION).getByUrn(operation);
 		if(op == null){
@@ -462,8 +461,8 @@ public class PolicyEvaluator {
 		switch(op.getOperationType()){
 			case INTERNAL:
 				IOperation oper = OperationUtil.getOperationInstance(op.getOperation());
-				if(oper == null) out_response = OperationResponseEnumType.ERROR;
-				else out_response = oper.operate(pattern, fact, matchFact);
+				if(oper == null) outResponse = OperationResponseEnumType.ERROR;
+				else outResponse = oper.operate(pattern, fact, matchFact);
 				break;
 			case FUNCTION:
 				logger.error("NEED TO REFACTOR. THIS IS ONLY AN INITIAL STUB");
@@ -471,24 +470,24 @@ public class PolicyEvaluator {
 				if(func == null){
 					throw new ArgumentException("Operation Function '" + op.getOperation() + "' is null");
 				}
-				Map<String,Object> params = new HashMap<String,Object>();
+				Map<String,Object> params = new HashMap<>();
 				params.put("pattern", pattern);
 				params.put("fact", fact);
 				params.put("match", matchFact);
 				Object resp = BshService.run(null, params, func);
 				if(resp == null){
 					logger.error("BeanShell did not return an OperationResponseEnumType value");
-					out_response = OperationResponseEnumType.ERROR;
+					outResponse = OperationResponseEnumType.ERROR;
 				}
 				else{
-					out_response = (OperationResponseEnumType)resp;
+					outResponse = (OperationResponseEnumType)resp;
 				}
 				
 				break;
 			default:
 				logger.error("Unhandled operation type: " + op.getOperationType());
 		}
-		return out_response;
+		return outResponse;
 	}
 	private static FactType getFactParameter(FactType fact, List<FactType> facts){
 		FactType ofact = fact;

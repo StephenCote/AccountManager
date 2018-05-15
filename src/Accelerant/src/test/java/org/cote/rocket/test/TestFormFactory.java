@@ -31,7 +31,7 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.propellant.objects.FormElementType;
 import org.cote.propellant.objects.FormElementValueType;
@@ -102,10 +102,10 @@ public class TestFormFactory extends BaseAccelerantTest{
 			((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).populate(form);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Elements not populated", form.getElements().size() > 0);
 		FormElementValueType val = newFormElementValue(form.getElements().get(0).getName(), "Example text", false, form, form.getElements().get(0));
@@ -134,10 +134,10 @@ public class TestFormFactory extends BaseAccelerantTest{
 			((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).populate(form);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Elements not populated", form.getElements().size() > 0);
 
@@ -161,13 +161,13 @@ public class TestFormFactory extends BaseAccelerantTest{
 			updated = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).updateData(FormElementValue.getBinaryValue());
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 

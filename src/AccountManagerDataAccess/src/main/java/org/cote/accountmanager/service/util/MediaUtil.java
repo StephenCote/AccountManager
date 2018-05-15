@@ -39,7 +39,6 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
@@ -48,6 +47,7 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -183,12 +183,12 @@ public class MediaUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(org == null){
 			AuditService.denyResult(audit, "Organization is invalid: '" + orgPath + "'");
@@ -219,11 +219,11 @@ public class MediaUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(dir == null){
 			AuditService.denyResult(audit, "Path '" + objPath + "' is invalid for " + (user == null ? "null user":user.getName()) + " in organization " + org.getName());
@@ -407,7 +407,7 @@ public class MediaUtil {
 		catch(FactoryException| ArgumentException | DataException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(data == null){
 			AuditService.denyResult(audit, "Data is invalid: '" + objName + "'");
@@ -440,7 +440,7 @@ public class MediaUtil {
 			}
 		} catch (DataException | FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(options.isEncodeData()){
 			value = BinaryUtil.toBase64(value);
@@ -461,7 +461,7 @@ public class MediaUtil {
 					}
 				} catch (IOException e) {
 					
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 				finally{
 					if(resourceContent != null)
@@ -469,7 +469,7 @@ public class MediaUtil {
 							resourceContent.close();
 						} catch (IOException e) {
 							
-							logger.error("Error",e);
+							logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 						}
 				}
 

@@ -33,8 +33,8 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.util.StreamUtil;
 
 public class SetupAction {
@@ -75,7 +75,7 @@ public class SetupAction {
 		catch(SQLException sqe){
 			error = true;
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			if(connection != null){
@@ -83,29 +83,24 @@ public class SetupAction {
 					connection.close();
 				} catch (SQLException e) {
 					
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 			}
 		}
 
 		if(error == true) return out_bool;
 
-		Factories.coolDown();
-		Factories.warmUp();
+
 		
 		try {
+			Factories.coolDown();
+			Factories.warmUp();
 			if(FactoryDefaults.setupAccountManager(rootPassword)){
 				out_bool = true;
 			}
-		} catch (ArgumentException e) {
+		} catch (ArgumentException | DataAccessException | FactoryException e) {
 			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
-			
-			logger.error("Error",e);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		return out_bool;

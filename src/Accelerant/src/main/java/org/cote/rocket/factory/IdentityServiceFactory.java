@@ -27,7 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.rocket.Rocket;
 import org.cote.rocket.services.IdentityService;
@@ -51,15 +51,15 @@ public class IdentityServiceFactory {
 				} catch (FactoryException e) {
 					
 					logger.error(e.getMessage());
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				} catch (DataAccessException e) {
 					
 					logger.error(e.getMessage());
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				} catch (ArgumentException e) {
 					
 					logger.error(e.getMessage());
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 			}
 			if(Rocket.isApplicationEnvironmentConfigured(org.getId()) == false){

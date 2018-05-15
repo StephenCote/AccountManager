@@ -32,7 +32,6 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.ControlFactory;
 import org.cote.accountmanager.data.factory.CredentialFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
@@ -45,6 +44,7 @@ import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.ScriptService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataType;
@@ -250,7 +250,7 @@ public class FactUtil {
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return outObj;
 	}
@@ -260,14 +260,14 @@ public class FactUtil {
 			return null;
 		}
 		T outResponse = null;
-		FunctionType func = Factories.getNameIdFactory(FactoryEnumType.FUNCTION).getByUrn(matchFact.getSourceUrn());
-		if(func == null){
-			logger.error("Function '" + matchFact.getSourceUrn() + "' is null");
-			return null;
-		}
 
 		Object subject = null;
 		try {
+			FunctionType func = Factories.getNameIdFactory(FactoryEnumType.FUNCTION).getByUrn(matchFact.getSourceUrn());
+			if(func == null){
+				logger.error("Function '" + matchFact.getSourceUrn() + "' is null");
+				return null;
+			}
 			if(prt.getSubject() != null && prt.getSubjectType() != null && prt.getSubjectType() != FactoryEnumType.UNKNOWN){
 				subject = ((INameIdFactory)Factories.getFactory(prt.getSubjectType())).getByUrn(prt.getSubject());
 				if(subject != null){
@@ -298,7 +298,7 @@ public class FactUtil {
 
 	}
 	
-	public static <T> T getFactSource(FactType f){
+	public static <T> T getFactSource(FactType f) throws FactoryException{
 		T obj = ((INameIdFactory)Factories.getFactory(f.getFactoryType())).getByUrn(f.getSourceUrn());
 		if(f.getFactoryType() == FactoryEnumType.DATA){
 			DataType data = (DataType)obj;

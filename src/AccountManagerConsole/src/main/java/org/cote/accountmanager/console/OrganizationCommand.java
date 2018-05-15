@@ -32,11 +32,11 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
@@ -114,7 +114,7 @@ public class OrganizationCommand {
 			Factories.getAttributeFactory().populateAttributes(org);
 			AttributeType aliasAttr = Factories.getAttributeFactory().getAttributeByName(org, "certificate.alias");
 			String alias = null;
-			if(aliasAttr == null || aliasAttr.getValues().size() == 0) alias = "1";
+			if(aliasAttr == null || aliasAttr.getValues().isEmpty()) alias = "1";
 			else alias = aliasAttr.getValues().get(0);
 			
 			CredentialType cred = CredentialService.getPrimaryCredential(org, CredentialEnumType.CERTIFICATE, true);

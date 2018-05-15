@@ -37,6 +37,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
@@ -64,7 +65,7 @@ public class LoginService {
 			request.login(credential.getOrganizationPath() + "/" + credential.getName(), new String(credential.getCredential()));
 		} catch (ServletException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			loginSuccess = false;
 		}
 		/*

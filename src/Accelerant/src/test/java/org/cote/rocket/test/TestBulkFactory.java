@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.ProjectType;
 import org.cote.rocket.Factories;
@@ -52,13 +52,13 @@ public class TestBulkFactory extends BaseAccelerantTest{
 			logger.info("Lifecycle Id = " + lc.getId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 	}
@@ -90,13 +90,13 @@ public class TestBulkFactory extends BaseAccelerantTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 	}
@@ -108,13 +108,13 @@ public class TestBulkFactory extends BaseAccelerantTest{
 			if(lc == null) lc = Rocket.createLifecycle(testUser,name);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return lc;
@@ -137,13 +137,13 @@ public class TestBulkFactory extends BaseAccelerantTest{
 			logger.info("Project Id = " + proj.getId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 
@@ -187,13 +187,13 @@ public class TestBulkFactory extends BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 
 	}

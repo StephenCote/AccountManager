@@ -37,6 +37,7 @@ import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -371,7 +372,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			//roleRule.getPatterns()
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 	}
@@ -384,7 +385,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			perRole1 = getRole(testUser,"Person Role 1",RoleEnumType.PERSON,baseRole);
 		} catch (FactoryException | ArgumentException | DataAccessException e2) {
 			
-			logger.error("Error",e2);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e2);
 		}
 		return perRole1;
 	}
@@ -405,9 +406,9 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			assertNotNull("Base role is null", baseRole);
 			acctRole1 = getRole(testUser,"Account Role 1",RoleEnumType.ACCOUNT,baseRole);
 			perRole1 = getRole(testUser,"Person Role 1",RoleEnumType.PERSON,baseRole);
-		} catch (FactoryException | ArgumentException | DataAccessException e2) {
+		} catch (FactoryException | ArgumentException  e2) {
 			
-			logger.error("Error",e2);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e2);
 		}
 		
 		
@@ -419,22 +420,22 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		AccountType account3 = getApplicationAccount("Account #3",app1);
 		AccountType account4 = getApplicationAccount("Account #4",app1);
 		
-		if(person1.getAccounts().size() == 0){
+		if(person1.getAccounts().isEmpty()){
 			person1.getAccounts().add(account1);
 			try {
 				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(person1);
 			} catch (FactoryException  e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		if(person2.getAccounts().size() == 0){
+		if(person2.getAccounts().isEmpty()){
 			person2.getAccounts().add(account2);
 			try {
 				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(person2);
 			} catch (FactoryException  e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		
@@ -477,7 +478,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		
 		} catch (NullPointerException | ArgumentException | FactoryException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	
@@ -498,7 +499,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			notAuthZ = AuthorizationService.isAuthorized(checkMember, object, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		assertTrue("Failed to set: " + authZStr,setAuthZ);

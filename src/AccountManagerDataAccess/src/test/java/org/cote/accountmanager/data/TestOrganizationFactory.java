@@ -33,6 +33,7 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.KeyService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -67,10 +68,11 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 		
 		logger.info("Id: " + new_org.getId());
 		logger.info("Ref Id: " + new_org.getReferenceId());
-		OrganizationFactory org_factory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
-		OrganizationType devOrg = Factories.getDevelopmentOrganization();
-		new_org.setParentId(devOrg.getId());
 		try {
+			OrganizationFactory org_factory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
+			OrganizationType devOrg = Factories.getDevelopmentOrganization();
+			new_org.setParentId(devOrg.getId());
+
 			if(org_factory.add(new_org)){
 				new_org = org_factory.getByNameInParent(testOrgName,devOrg.getId(), 0L);
 				KeyService.newOrganizationAsymmetricKey(new_org.getId(), true);
@@ -78,12 +80,12 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 			}
 		} catch (FactoryException e2) {
 			
-			logger.error("Error",e2);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e2);
 			logger.error(e2.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		logger.info("Added " + testOrgName + " as " + new_org.getId());
 		assertFalse("An error occurred", error);
@@ -98,12 +100,13 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 		new_org.setNameType(NameEnumType.ORGANIZATION);
 		new_org.setOrganizationType(OrganizationEnumType.DEVELOPMENT);
 
-		OrganizationFactory org_factory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
-		OrganizationType devOrg = Factories.getDevelopmentOrganization();
 		OrganizationType parentOrg = null;
 		
 
 		try {
+			OrganizationFactory org_factory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
+			OrganizationType devOrg = Factories.getDevelopmentOrganization();
+
 			parentOrg = org_factory.getByNameInParent(testOrgName, devOrg.getId(),0L);
 			assertNotNull("Test organization " + testOrgName + " is null in " + devOrg.getUrn(),parentOrg);
 			new_org.setParentId(parentOrg.getId());
@@ -118,12 +121,12 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 			}
 		} catch (FactoryException e2) {
 			
-			logger.error("Error",e2);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e2);
 			logger.error(e2.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		logger.info("Added " + testOrgName + " as " + new_org.getId());
 		assertFalse("An error occurred", error);
@@ -149,9 +152,9 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		assertFalse("Error",error);
+		assertFalse(FactoryException.LOGICAL_EXCEPTION,error);
 
 		
 		logger.info("Id: " + new_org.getId());
@@ -174,9 +177,9 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		assertFalse("Error",error);
+		assertFalse(FactoryException.LOGICAL_EXCEPTION,error);
 		assertNotNull("Org is null", new_org);
 		
 
@@ -185,8 +188,9 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 		String test_data = "This is some test data.";
 		byte[] enc = SecurityUtil.encipher(bean, test_data.getBytes());
 		assertTrue("Enciphered data is empty or null",enc != null && enc.length > 0);
-		((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).clearCache();
 		try{
+			((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).clearCache();
+
 			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 		}
 		catch(FactoryException fe){
@@ -194,7 +198,7 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		bean = KeyService.getPrimaryAsymmetricKey(new_org.getId());
 				//OrganizationSecurity.getSecurityBean(new_org);
@@ -219,12 +223,12 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 
 		}
 		catch(FactoryException fe){
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("An error occurred", error);
 		assertTrue("Organization was not updated", updated);
@@ -239,12 +243,12 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 			deleted = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).delete(org);
 		}
 		catch(FactoryException fe){
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("An error occurred", error);
 		assertTrue("Did not delete org", deleted);

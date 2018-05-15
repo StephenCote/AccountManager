@@ -36,9 +36,9 @@ import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataTable;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
@@ -55,7 +55,8 @@ public class AttributeFactory extends NameIdFactory{
 		this.hasParentId = false;
 		this.hasOwnerId = false;
 		this.hasName = true;
-		this.tableNames.add("attribute");
+		this.primaryTableName = "attribute";
+		this.tableNames.add(primaryTableName);
 		this.bulkMode = false;
 	}
 	
@@ -149,7 +150,7 @@ public class AttributeFactory extends NameIdFactory{
 	public boolean addAttributes(NameIdType obj){
 		return addAttributes(new NameIdType[]{obj});
 	}
-	public long[] searchForReferenceId(QueryField[] fields, long organizationId) throws ArgumentException{
+	public long[] searchForReferenceId(QueryField[] fields) throws ArgumentException{
 		List<Long> ids = new ArrayList<>();
 
 		Connection connection = ConnectionFactory.getInstance().getConnection();
@@ -159,24 +160,26 @@ public class AttributeFactory extends NameIdFactory{
 		if(queryClause == null || queryClause.length() == 0){
 			throw new ArgumentException("Invalid query fields");
 		}
-		String sql = "SELECT referenceid FROM attribute WHERE " + queryClause + ";";
-
+		String sql = String.format("SELECT referenceid FROM attribute WHERE %s;",queryClause);
+		PreparedStatement psa = null;
+		ResultSet rset = null;
 		try{
-			PreparedStatement psa = connection.prepareStatement(sql);
+			psa = connection.prepareStatement(sql);
 			DBFactory.setStatementParameters(fields, psa);
-			ResultSet rset = psa.executeQuery();
+			rset = psa.executeQuery();
 			while(rset.next()){
 				ids.add(rset.getLong("referenceid"));
 			}
-			rset.close();
-			psa.close();
-			}
-			catch (SQLException | FactoryException e) {
-				logger.error(e.getMessage());
-			}
+
+		}
+		catch (SQLException | FactoryException e) {
+			logger.error(e.getMessage());
+		}
 		finally{
 			try{
-				if(connection != null) connection.close();
+				if(rset != null) rset.close();
+				if(psa != null) psa.close();
+				connection.close();
 			}
 			catch (SQLException e) {
 				
@@ -191,7 +194,7 @@ public class AttributeFactory extends NameIdFactory{
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(connectionType);
 
-		String sql = "INSERT INTO attribute (referenceid, referencetype, name, datatype, valueindex, value, organizationid) VALUES (" + token + ", " + token + ", " + token + ", " + token + ", " + token + ", " + token + ", " + token + ");";
+		String sql = String.format("INSERT INTO attribute (referenceid, referencetype, name, datatype, valueindex, value, organizationid) VALUES (%s,%s,%s,%s,%s,%s,%s);",token,token,token,token,token,token,token);
 		PreparedStatement psa = null;
 		try{
 			psa = connection.prepareStatement(sql);
@@ -214,19 +217,19 @@ public class AttributeFactory extends NameIdFactory{
 						}
 						
 					}
-					}
-			}
-				if(aiter > 0){
-					psa.executeBatch();
-					psa.clearBatch();
 				}
-				outBool = true;
 			}
-			catch (SQLException e) {
-				
-				logger.error(e.getMessage());
-				if(e.getNextException() != null) logger.error(e.getNextException().getMessage());
+			if(aiter > 0){
+				psa.executeBatch();
+				psa.clearBatch();
 			}
+			outBool = true;
+		}
+		catch (SQLException e) {
+			
+			logger.error(e.getMessage());
+			if(e.getNextException() != null) logger.error(e.getNextException().getMessage());
+		}
 		finally{
 			try{
 				if(psa != null) psa.close();
@@ -256,11 +259,12 @@ public class AttributeFactory extends NameIdFactory{
 		DataTable table = this.dataTables.get(0);
 		String selectString = getSelectTemplate(table, instruction);
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, obj.getOrganizationId());
-
+		PreparedStatement statement = null;
+		ResultSet rset = null;
 		try {
-			PreparedStatement statement = connection.prepareStatement(sqlQuery);
+			statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
-			ResultSet rset = statement.executeQuery();
+			rset = statement.executeQuery();
 			
 			String lastName = null;
 			AttributeType currentAttribute = null;
@@ -292,6 +296,8 @@ public class AttributeFactory extends NameIdFactory{
 		}
 		finally{
 			try {
+				if(rset != null) rset.close();
+				if(statement != null) statement.close();
 				connection.close();
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
@@ -361,11 +367,12 @@ public class AttributeFactory extends NameIdFactory{
 			return 0;
 		
 		Connection connection = ConnectionFactory.getInstance().getConnection();
-		DataTable table = this.dataTables.get(0);
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
+		String token = DBFactory.getParamToken(connectionType);
 		PreparedStatement statement = null;
 		int deletedRecords = 0;
 		try {
-			String sql = "DELETE FROM " + table.getName() + " WHERE referencetype = ? AND referenceid = ?";
+			String sql = String.format("DELETE FROM %s WHERE referencetype = %s AND referenceid = %s",this.primaryTableName, token, token);
 			statement = connection.prepareStatement(sql);
 			for (int i = 0; i < ids.length; i++)
 			{

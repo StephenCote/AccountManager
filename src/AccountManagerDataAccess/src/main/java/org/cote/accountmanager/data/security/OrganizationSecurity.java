@@ -54,13 +54,13 @@ public class OrganizationSecurity {
 		List<Long> asym_ids = getAsymmetricKeyIdsForOrganization(connection, organization);
 		List<Long> sym_ids = getSymmetricKeyIdsForOrganization(connection, organization);
 
-		if (asym_ids.size() == 0 || sym_ids.size() == 0)
+		if (asym_ids.isEmpty() || sym_ids.isEmpty())
 		{
 			try {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 			return null;
 		}
@@ -89,7 +89,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			System.out.println(sqe.getMessage());
 		}
 
@@ -109,7 +109,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			System.out.println(sqe.getMessage());
 		}
 		finally{
@@ -117,7 +117,7 @@ public class OrganizationSecurity {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		///System.out.println(new String(public_key));
@@ -158,7 +158,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			System.out.println(sqe.getMessage());
 		}
 
@@ -187,7 +187,7 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException e)
 		{
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			System.out.println(e.getMessage());
 		}
 		finally{
@@ -195,7 +195,7 @@ public class OrganizationSecurity {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return ret;
@@ -210,7 +210,7 @@ public class OrganizationSecurity {
 
 
 		List<Long> key_ids = getSymmetricKeyIdsForOrganization(connection, organization);
-		if (key_ids.size() == 0)
+		if (key_ids.isEmpty())
 		{
 			ret = addDefaultSecurityKeys(connection, organization);
 		}
@@ -224,7 +224,7 @@ public class OrganizationSecurity {
 			connection.close();
 		} catch (SQLException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		return ret;
@@ -275,12 +275,12 @@ public class OrganizationSecurity {
 		}
 		catch (SQLException sqe)
 		{
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			System.out.println(sqe.getMessage());
 		}
 
 		List<Long> key_ids = getAsymmetricKeyIdsForOrganization(connection, organization);
-		if (key_ids.size() == 0)
+		if (key_ids.isEmpty())
 		{
 			///Core.ApplicationContext.GetInstance().LogError("OrganizationSecurity:: addDefaultSecurityKey: Failed to retrieve record id for DSA keys");
 			return false;
@@ -308,7 +308,7 @@ public class OrganizationSecurity {
 		}
 		catch (Exception sqe)
 		{
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			System.out.println(sqe.getMessage());
 		}
 

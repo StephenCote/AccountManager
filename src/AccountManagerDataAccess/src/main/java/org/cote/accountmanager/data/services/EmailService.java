@@ -39,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.security.ApiClientConfigurationBean;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.CredentialEnumType;
@@ -65,7 +66,7 @@ public class EmailService {
 		
 		for(int i = 0; i < apiConfig.getAttributes().size();i++){
 			AttributeType attr = apiConfig.getAttributes().get(i);
-			if(attr.getValues().size() == 0){
+			if(attr.getValues().isEmpty()){
 				logger.error("Null attribute value for " + attr.getName());
 				continue;
 			}
@@ -79,9 +80,9 @@ public class EmailService {
 			credential = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_PASSWORD),"UTF-8");
 			logger.info("Email Server Id: " + identity);
 			logger.info("Email Server Cred: " + credential);
-		} catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		return sendEmail(props, fromContact, contacts, apiConfig.getServiceUrl(),identity,credential,title, content);
@@ -142,11 +143,11 @@ public class EmailService {
 		catch (AddressException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (MessagingException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}

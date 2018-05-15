@@ -32,9 +32,9 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountPermissionType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -268,7 +268,7 @@ public class PermissionFactory extends NameIdFactory {
 		try {
 			return (T)findPermission(PermissionEnumType.valueOf(type),path,organizationId);
 		} catch (DataAccessException e) {
-			logger.error("Trace", e);
+			logger.error(FactoryException.TRACE_EXCEPTION, e);
 		}
 		return null;
 	}

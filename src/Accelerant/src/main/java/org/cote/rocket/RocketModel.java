@@ -33,8 +33,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -293,7 +293,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		addEstimate(user, sessionId, "One Month", "Coarse estimate for one month", EstimateEnumType.SWAG, (TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getByNameInGroup("One Month", timeGroup), (CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getByNameInGroup("Zero", costGroup), groupId);
 		
 	}
-	private static void addDefaultTimes(UserType user, String sessionId, long groupId) throws ArgumentException{
+	private static void addDefaultTimes(UserType user, String sessionId, long groupId) throws ArgumentException, FactoryException{
 		addTime(user, sessionId, "Zero",TimeEnumType.HOUR,0,groupId);
 		addTime(user, sessionId, "Half Hour",TimeEnumType.MINUTE,30,groupId);
 		addTime(user, sessionId, "One Hour",TimeEnumType.HOUR,1,groupId);
@@ -313,7 +313,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 
 	}
 	
-	private static void addDefaultCosts(UserType user, String sessionId, long groupId) throws ArgumentException{
+	private static void addDefaultCosts(UserType user, String sessionId, long groupId) throws ArgumentException, FactoryException{
 		addCost(user, sessionId, "Zero", CurrencyEnumType.USD,0,groupId);
 		addCost(user, sessionId, "Twenty Five", CurrencyEnumType.USD,25,groupId);
 		addCost(user, sessionId, "Fifty", CurrencyEnumType.USD,100,groupId);
@@ -332,7 +332,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 	}
 	
 	
-	public static EstimateType addEstimate(UserType user, String sessionId, String name, String description, EstimateEnumType estimateType, TimeType time, CostType cost, long groupId) throws ArgumentException{
+	public static EstimateType addEstimate(UserType user, String sessionId, String name, String description, EstimateEnumType estimateType, TimeType time, CostType cost, long groupId) throws ArgumentException, FactoryException{
 		if(time == null || cost == null) throw new ArgumentException("Invalid time or cost for estimate " + name);
 		EstimateType estimate = ((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).newEstimate(user, groupId);
 		estimate.setName(name);
@@ -345,7 +345,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		return estimate;
 	}
 
-	public static BudgetType addBudget(UserType user, String sessionId, String name, String description, BudgetEnumType budgetType, TimeType time, CostType cost, long groupId) throws ArgumentException{
+	public static BudgetType addBudget(UserType user, String sessionId, String name, String description, BudgetEnumType budgetType, TimeType time, CostType cost, long groupId) throws ArgumentException, FactoryException{
 		BudgetType budget = ((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).newBudget(user,groupId);
 		budget.setName(name);
 		budget.setDescription(description);
@@ -358,7 +358,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 	}
 
 	
-	public static CostType addCost(UserType user, String sessionId, String name, CurrencyEnumType currencyType, double value, long groupId) throws ArgumentException{
+	public static CostType addCost(UserType user, String sessionId, String name, CurrencyEnumType currencyType, double value, long groupId) throws ArgumentException, FactoryException{
 		CostType cost = ((CostFactory)Factories.getFactory(FactoryEnumType.COST)).newCost(user, groupId);
 		cost.setName(name);
 		cost.setCurrencyType(currencyType);
@@ -369,7 +369,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 
 	
 	
-	public static TimeType addTime(UserType user, String sessionId, String name, TimeEnumType timeType, double value, long groupId) throws ArgumentException{
+	public static TimeType addTime(UserType user, String sessionId, String name, TimeEnumType timeType, double value, long groupId) throws ArgumentException, FactoryException{
 		TimeType time = ((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).newTime(user, groupId);
 		time.setName(name);
 		time.setBasisType(timeType);
@@ -378,7 +378,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		return time;
 	}
 
-	private static ProcessType addProcess(UserType user, String sessionId, String name, String desc, int order, boolean iterates, ProcessStepType[] steps, BudgetType[] budgets, long groupId) throws ArgumentException{
+	private static ProcessType addProcess(UserType user, String sessionId, String name, String desc, int order, boolean iterates, ProcessStepType[] steps, BudgetType[] budgets, long groupId) throws ArgumentException, FactoryException{
 		ProcessType out_step = ((ProcessFactory)Factories.getFactory(FactoryEnumType.PROCESS)).newProcess(user, groupId);
 		out_step.setName(name);
 		out_step.setDescription(desc);
@@ -390,7 +390,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		return out_step;
 	}
 	
-	private static ProcessStepType addProcessStep(UserType user, String sessionId, String name, String desc, int order, long groupId) throws ArgumentException{
+	private static ProcessStepType addProcessStep(UserType user, String sessionId, String name, String desc, int order, long groupId) throws ArgumentException, FactoryException{
 		ProcessStepType out_step = ((ProcessStepFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEP)).newProcessStep(user, groupId);
 		out_step.setName(name);
 		out_step.setDescription(desc);
@@ -398,7 +398,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PROCESSSTEP, out_step);
 		return out_step;
 	}
-	private static MethodologyType addMethodology(UserType user, String sessionId, String name, String desc, ProcessType[] processes, BudgetType[] budgets, long groupId) throws ArgumentException{
+	private static MethodologyType addMethodology(UserType user, String sessionId, String name, String desc, ProcessType[] processes, BudgetType[] budgets, long groupId) throws ArgumentException, FactoryException{
 		MethodologyType method = ((MethodologyFactory)Factories.getFactory(FactoryEnumType.METHODOLOGY)).newMethodology(user, groupId);
 		method.setName(name);
 		method.setDescription(desc);
@@ -408,7 +408,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		return method;
 	}
 	
-	private static ScheduleType addSchedule(UserType user, String sessionId, String name, Calendar startCal, Calendar endCal, long groupId) throws ArgumentException{
+	private static ScheduleType addSchedule(UserType user, String sessionId, String name, Calendar startCal, Calendar endCal, long groupId) throws ArgumentException, FactoryException{
 		ScheduleType sched = ((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).newSchedule(user, groupId);
 		sched.setName(name);
 		sched.setStartTime(CalendarUtil.getXmlGregorianCalendar(startCal.getTime()));
@@ -417,7 +417,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		return sched;
 	}
 
-	private static ResourceType addResource(UserType user, String sessionId, String name, long groupId) throws ArgumentException{
+	private static ResourceType addResource(UserType user, String sessionId, String name, long groupId) throws ArgumentException, FactoryException{
 		ResourceType rec = ((ResourceFactory)Factories.getFactory(FactoryEnumType.RESOURCE)).newResource(user, groupId);
 		rec.setName(name);
 		rec.setResourceType(ResourceEnumType.UNKNOWN);
@@ -425,7 +425,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		return rec;
 	}
 
-	private static WorkType addWork(UserType user, String sessionId, String name, int logicalOrder, List<ResourceType> resources, long groupId) throws ArgumentException{
+	private static WorkType addWork(UserType user, String sessionId, String name, int logicalOrder, List<ResourceType> resources, long groupId) throws ArgumentException, FactoryException{
 		WorkType wrk = ((WorkFactory)Factories.getFactory(FactoryEnumType.WORK)).newWork(user, groupId);
 		wrk.setName(name);
 		wrk.getResources().addAll(resources);
@@ -434,7 +434,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		return wrk;
 	}
 
-	private static StageType addStage(UserType user, String sessionId, String name, int logicalOrder, MethodologyType method, WorkType work, ScheduleType schedule, long groupId) throws ArgumentException{
+	private static StageType addStage(UserType user, String sessionId, String name, int logicalOrder, MethodologyType method, WorkType work, ScheduleType schedule, long groupId) throws ArgumentException, FactoryException{
 		StageType stg = ((StageFactory)Factories.getFactory(FactoryEnumType.STAGE)).newStage(user, groupId);
 		stg.setName(name);
 		stg.setMethodology(method);

@@ -38,6 +38,7 @@ import javax.crypto.SecretKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
 
 
@@ -113,7 +114,7 @@ public class SecurityUtil {
 			digest = MessageDigest.getInstance(HASH_PROVIDER);
 		}
 		catch(NoSuchAlgorithmException e){
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		if(use_singleton && digest != null) hash_algorithm = digest;
 		return digest;
@@ -171,10 +172,10 @@ public class SecurityUtil {
 			ret = cipher.doFinal(data);
 		}
 		catch (IllegalBlockSizeException e) {
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 			logger.error(e.getMessage());
 		} catch (BadPaddingException e) {
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 			logger.error(e.getMessage());
 		}
 		logger.debug("Deciphered in " + (System.currentTimeMillis() - start_enc) + "ms");
@@ -191,10 +192,10 @@ public class SecurityUtil {
 		}
 		catch (IllegalBlockSizeException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		} catch (BadPaddingException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		} 
 		logger.debug("Enciphered in " + (System.currentTimeMillis() - start_enc) + "ms");
 		return ret;
@@ -220,7 +221,7 @@ public class SecurityUtil {
 		}
 		catch(Exception e){
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 
 		return ret;
@@ -240,7 +241,7 @@ public class SecurityUtil {
 		}
 		catch(Exception e){
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		
 		return ret;

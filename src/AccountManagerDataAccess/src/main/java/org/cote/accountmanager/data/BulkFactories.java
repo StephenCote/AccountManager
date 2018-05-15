@@ -65,6 +65,7 @@ import org.cote.accountmanager.data.factory.bulk.BulkTagFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkTagParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkUserFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public class BulkFactories{
@@ -133,13 +134,13 @@ public class BulkFactories{
 		return factoryInstances;
 	}
 
-	public static <T> T getInstance(FactoryEnumType ftype){
+	@SuppressWarnings("unchecked")
+	public static <T> T getInstance(FactoryEnumType ftype) throws FactoryException{
 		T newObj = null;
 		if(factoryClasses.containsKey(ftype) == false){
-			logger.error("Factory type " + ftype.toString() + " not registered out of " + factoryClasses.size() + " total registrations");
-			return newObj;
+			throw new FactoryException(String.format(FactoryException.TYPE_NOT_REGISTERED, ftype.toString()));
 		}
-		if(factoryInstances.containsKey(ftype) == true) return (T)factoryInstances.get(ftype);
+		if(factoryInstances.containsKey(ftype)) return (T)factoryInstances.get(ftype);
 		try {
 			newObj = (T)factoryClasses.get(ftype).newInstance();
 			if(newObj != null){
@@ -147,10 +148,9 @@ public class BulkFactories{
 				factoryInstances.put(ftype, newObj);
 			}
 		} catch (InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error",e);
-			newObj = null;
+			throw new FactoryException(e.getMessage());
 		}
+		if(newObj == null) throw new FactoryException(String.format(FactoryException.TYPE_NOT_REGISTERED, ftype.toString()));
 		return newObj;
 	}
 	public static String reportCacheSize(){
@@ -172,7 +172,7 @@ public class BulkFactories{
 		return bulkFactory;
 	}
 	
-	public static void warmUp(){
+	public static void warmUp() throws FactoryException{
 		logger.debug("Warming up bulk factory " + factoryClasses.size() + " factory instances");
 		prepare();
 		long startWarmUp = System.currentTimeMillis();

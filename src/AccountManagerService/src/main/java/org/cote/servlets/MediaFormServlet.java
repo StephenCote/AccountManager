@@ -38,6 +38,7 @@ import org.apache.commons.fileupload.util.Streams;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -129,24 +130,17 @@ public class MediaFormServlet extends HttpServlet {
 		}
 		catch(Exception e){
 			logger.error("Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
-		/*
-		logger.error("Media info:");
-		logger.error(name);
-		logger.error(description);
-		logger.error(mimeType);
-		logger.error("Group id = " + groupId);
-		logger.error("Data size = " + data.length);
-		*/
-		System.out.println("Media info:");
-		System.out.println(name);
-		System.out.println(description);
-		System.out.println(mimeType);
-		System.out.println("Group id = " + groupId);
-		System.out.println("Group path = " + groupPath);
-		System.out.println("Data size = " + data.length);
+		logger.info("Media info:");
+		logger.info(name);
+		logger.info(description);
+		logger.info(mimeType);
+		logger.info("Group id = " + groupId);
+		logger.info("Group path = " + groupPath);
+		logger.info("Data size = " + data.length);
+		
 		UserType user = ServiceUtil.getUserFromSession(request);
 		if(user != null){
 			try{
@@ -166,7 +160,7 @@ public class MediaFormServlet extends HttpServlet {
 			 catch (DataException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} 
 		}
 		

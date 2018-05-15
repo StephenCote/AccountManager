@@ -36,6 +36,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.MessageFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.MessageSpoolType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
@@ -57,10 +58,10 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Message was not added", add_message);
 	}
@@ -76,7 +77,7 @@ public class TestMessageSpool extends BaseDataAccessTest{
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Expected one or more messages", messages.size() > 0);
 	}
@@ -103,10 +104,10 @@ public class TestMessageSpool extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Expected 1 message, received " + messages.size() + " messages", messages.size() == 1);
 	}
@@ -122,7 +123,7 @@ public class TestMessageSpool extends BaseDataAccessTest{
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Expected one or more messages", messages.size() > 0);
 		MessageSpoolType message = messages.get(0);
@@ -149,7 +150,7 @@ public class TestMessageSpool extends BaseDataAccessTest{
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Failed to deleted", deleted);
 	}

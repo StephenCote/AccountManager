@@ -36,10 +36,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -59,11 +59,8 @@ import bsh.Parser;
 public class BshService {
 
 	public static final Logger logger = LogManager.getLogger(BshService.class);
-	//private static ScriptEngine jsEngine = null;
-	//private static Map<String,CompiledScript> jsCompiled = new HashMap<String,CompiledScript>();
 
-	public static Object run(UserType user,Map<String,Object> params,FunctionType func) throws ArgumentException{
-		//byte[] value = null;
+	public static Object run(UserType user,Map<String,Object> params,FunctionType func) throws ArgumentException, FactoryException{
 		if(func.getFunctionType() != FunctionEnumType.JAVA) throw new ArgumentException("FunctionType '" + func.getFunctionType().toString() + "' is not applicable");
 		DataType data = func.getFunctionData();
 		if(data == null && func.getSourceUrn() != null){
@@ -81,7 +78,7 @@ public class BshService {
 			value = DataUtil.getValue(data);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return runWithParams(user,params,value,false);
 	}
@@ -91,7 +88,7 @@ public class BshService {
 			bytes = script.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return runWithParams(user,params,bytes,parseOnly);
 	}
@@ -116,8 +113,7 @@ public class BshService {
 
 				Parser parser = new Parser(buff);
 				
-				boolean eof = false;
-				while( !(eof=parser.Line()) ) {
+				while( !parser.Line()) {
 				    parser.popNode();
 
 				}
@@ -132,22 +128,10 @@ public class BshService {
 			bComp = true;
 			
 			
-		} catch (EvalError e) {
+		} catch (EvalError | IOException | FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (IOException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (FactoryException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(bComp) AuditService.permitResult(audit, "Completed execution");
 		else AuditService.denyResult(audit, "Failed to complete execution");
@@ -167,7 +151,6 @@ public class BshService {
 				Iterator<String> keys = params.keySet().iterator();
 				while(keys.hasNext()){
 					String key = keys.next();
-					//logger.info("Setting param '" + key + "'");
 					intr.set(key,params.get(key));
 				}
 			}
@@ -175,14 +158,14 @@ public class BshService {
 		catch (EvalError | FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return intr;
 	}
 	
 	private static byte[] getAM5Import(){
 		byte[] outb = new byte[0];
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		buff.append("import org.cote.accountmanager.objects.*;\n");
 		buff.append("import org.cote.accountmanager.objects.types.*;\n");
 		buff.append("import org.cote.accountmanager.data.*;\n");
@@ -192,7 +175,7 @@ public class BshService {
 			outb = buff.toString().getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outb;
 	}

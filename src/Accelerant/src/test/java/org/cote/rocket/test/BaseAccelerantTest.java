@@ -40,7 +40,6 @@ import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.GroupFactory;
@@ -51,6 +50,7 @@ import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.ServiceUtil;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DataType;
@@ -167,7 +167,7 @@ public class BaseAccelerantTest{
 				fis.close();
 			} catch (IOException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				return;
 			}
 		}
@@ -193,7 +193,7 @@ public class BaseAccelerantTest{
 
 		}
 		catch(FactoryException | ArgumentException | NullPointerException fe){
-			logger.error("Trace",fe);
+			logger.error(FactoryException.TRACE_EXCEPTION,fe);
 		}
 
 
@@ -216,7 +216,7 @@ public class BaseAccelerantTest{
 	
 		}
 		catch(FactoryException | ArgumentException | NullPointerException fe){
-			logger.error("Trace",fe);
+			logger.error(FactoryException.TRACE_EXCEPTION,fe);
 		}
 
 		if(testUser2 == null){
@@ -237,7 +237,7 @@ public class BaseAccelerantTest{
 			testUser3 = SessionSecurity.login(sessionId3, testUserName3, CredentialEnumType.HASHED_PASSWORD,"password",testOrganization.getId());
 		}
 		catch(FactoryException | ArgumentException | NullPointerException fe){
-			logger.error("Trace",fe);
+			logger.error(FactoryException.TRACE_EXCEPTION,fe);
 		}
 
 		if(testUser3 == null){
@@ -333,7 +333,7 @@ public class BaseAccelerantTest{
 		}
 		catch(ArgumentException | FactoryException e){
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			dutil = null;
 		}
 		return dutil;
@@ -372,10 +372,10 @@ public class BaseAccelerantTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return ticket;
@@ -386,10 +386,10 @@ public class BaseAccelerantTest{
 			ticket = ((TicketFactory)Factories.getFactory(FactoryEnumType.TICKET)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return ticket;
@@ -401,7 +401,7 @@ public class BaseAccelerantTest{
 			out_bool = ((TicketFactory)Factories.getFactory(FactoryEnumType.TICKET)).update(ticket);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return out_bool;
@@ -415,10 +415,10 @@ public class BaseAccelerantTest{
 			update = ((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).add(fep);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		
 
@@ -436,10 +436,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return form;
 	}
@@ -466,10 +466,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		return form;
@@ -480,7 +480,7 @@ public class BaseAccelerantTest{
 			updated = ((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).update(work);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return updated;
 	}
@@ -491,10 +491,10 @@ public class BaseAccelerantTest{
 			work = ((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return work;
 	}
@@ -510,10 +510,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return FormElement;
 	}
@@ -524,7 +524,7 @@ public class BaseAccelerantTest{
 			updated = ((FormElementFactory)Factories.getFactory(FactoryEnumType.FORMELEMENT)).update(work);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return updated;
 	}
@@ -534,10 +534,10 @@ public class BaseAccelerantTest{
 			work = ((FormElementFactory)Factories.getFactory(FactoryEnumType.FORMELEMENT)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return work;
 	}
@@ -559,10 +559,10 @@ public class BaseAccelerantTest{
 		
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return fet;
 	}
@@ -584,10 +584,10 @@ public class BaseAccelerantTest{
 		
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return fetRule;
 	}
@@ -604,13 +604,13 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return data;
 	}
@@ -638,10 +638,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return FormElementValue;
 	}
@@ -652,7 +652,7 @@ public class BaseAccelerantTest{
 			updated = ((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).update(work);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return updated;
 	}
@@ -662,10 +662,10 @@ public class BaseAccelerantTest{
 			work = ((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return work;
 	}
@@ -684,10 +684,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return resource;
 	}
@@ -697,7 +697,7 @@ public class BaseAccelerantTest{
 			updated = ((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).update(work);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return updated;
 	}
@@ -707,10 +707,10 @@ public class BaseAccelerantTest{
 			work = ((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return work;
 	}
@@ -726,10 +726,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return resource;
 	}
@@ -739,7 +739,7 @@ public class BaseAccelerantTest{
 			updated = ((StageFactory)Factories.getFactory(FactoryEnumType.STAGE)).update(work);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return updated;
 	}
@@ -749,10 +749,10 @@ public class BaseAccelerantTest{
 			work = ((StageFactory)Factories.getFactory(FactoryEnumType.STAGE)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return work;
 	}
@@ -768,10 +768,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return resource;
 	}
@@ -781,7 +781,7 @@ public class BaseAccelerantTest{
 			updated = ((GoalFactory)Factories.getFactory(FactoryEnumType.GOAL)).update(work);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return updated;
 	}
@@ -791,10 +791,10 @@ public class BaseAccelerantTest{
 			work = ((GoalFactory)Factories.getFactory(FactoryEnumType.GOAL)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return work;
 	}
@@ -809,10 +809,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return resource;
 	}
@@ -822,7 +822,7 @@ public class BaseAccelerantTest{
 			updated = ((ProcessStepFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEP)).update(work);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return updated;
 	}
@@ -832,10 +832,10 @@ public class BaseAccelerantTest{
 			work = ((ProcessStepFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEP)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return work;
 	}
@@ -852,10 +852,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return resource;
 	}
@@ -865,7 +865,7 @@ public class BaseAccelerantTest{
 			updated = ((ProcessFactory)Factories.getFactory(FactoryEnumType.PROCESS)).update(work);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return updated;
 	}
@@ -875,10 +875,10 @@ public class BaseAccelerantTest{
 			work = ((ProcessFactory)Factories.getFactory(FactoryEnumType.PROCESS)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return work;
 	}
@@ -895,10 +895,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return resource;
 	}
@@ -908,7 +908,7 @@ public class BaseAccelerantTest{
 			updated = ((MethodologyFactory)Factories.getFactory(FactoryEnumType.METHODOLOGY)).update(work);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return updated;
 	}
@@ -918,10 +918,10 @@ public class BaseAccelerantTest{
 			work = ((MethodologyFactory)Factories.getFactory(FactoryEnumType.METHODOLOGY)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return work;
 	}
@@ -938,10 +938,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return resource;
 	}
@@ -951,7 +951,7 @@ public class BaseAccelerantTest{
 			updated = ((WorkFactory)Factories.getFactory(FactoryEnumType.WORK)).update(work);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return updated;
 	}
@@ -961,10 +961,10 @@ public class BaseAccelerantTest{
 			work = ((WorkFactory)Factories.getFactory(FactoryEnumType.WORK)).getById(id, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return work;
 	}
@@ -980,10 +980,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return Work;
 	}
@@ -999,10 +999,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return Note;
 	}
@@ -1013,7 +1013,7 @@ public class BaseAccelerantTest{
 			((ArtifactFactory)Factories.getFactory(FactoryEnumType.ARTIFACT)).update(depends);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return depends;
 	}
@@ -1029,10 +1029,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return Artifact;
 	}
@@ -1047,10 +1047,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return Requirement;
 	}
@@ -1067,10 +1067,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return Cost;
 	}
@@ -1087,10 +1087,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return time;
 	}
@@ -1110,10 +1110,10 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return est;
 	}
@@ -1129,12 +1129,12 @@ public class BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			obj = null;
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			obj = null;
 		}
 		return obj;
@@ -1170,7 +1170,7 @@ public class BaseAccelerantTest{
 			}
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return proj;
 	}
@@ -1183,13 +1183,13 @@ public class BaseAccelerantTest{
 			}
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		return lc;
@@ -1203,12 +1203,9 @@ public class BaseAccelerantTest{
 			user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,testOrganization.getId());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
 			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, password.getBytes("UTF-8"), true,true,false);
-		} catch (ArgumentException e) {
+		} catch (ArgumentException | UnsupportedEncodingException | FactoryException e) {
 			
-			logger.error("Error",e);
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return user;
 	}	
@@ -1228,10 +1225,10 @@ public class BaseAccelerantTest{
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return user;
 	}

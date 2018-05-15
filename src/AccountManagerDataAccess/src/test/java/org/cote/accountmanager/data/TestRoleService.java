@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.junit.Test;
 
@@ -39,10 +40,10 @@ public class TestRoleService extends BaseDataAccessTest{
 			isDataAdmin =RoleService.isFactoryAdministrator(testUser, ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)));
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("User should not be a data admin",isDataAdmin);
 	}

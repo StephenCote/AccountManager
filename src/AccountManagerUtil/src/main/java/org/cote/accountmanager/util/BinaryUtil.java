@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 
 public class BinaryUtil {
 	public static final Logger logger = LogManager.getLogger(BinaryUtil.class);
@@ -40,7 +41,7 @@ public class BinaryUtil {
 			out_str = (new String(fromBase64(in_base64),"UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return out_str;
 
@@ -54,7 +55,7 @@ public class BinaryUtil {
 			b = in_str.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return toBase64Str(b);
 	}
@@ -64,7 +65,7 @@ public class BinaryUtil {
 			out_str = new String(toBase64(in_str),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return out_str;
 	}

@@ -41,6 +41,7 @@ import java.security.cert.X509Certificate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -157,7 +158,7 @@ public class TestKeyStoreUtil {
 		} catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
 				| SignatureException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Certificate not verified",ver);
 	}

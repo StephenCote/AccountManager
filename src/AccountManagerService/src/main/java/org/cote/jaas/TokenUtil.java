@@ -30,9 +30,9 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.SecuritySpoolType;
@@ -49,13 +49,13 @@ public class TokenUtil {
 		SecurityBean outBean = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.REQUEST, "newSecurityToken", AuditEnumType.USER, user.getUrn());
 		String refId = "jwt";
-		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.USER);
 		
 		try{
+			INameIdFactory iFact = Factories.getFactory(FactoryEnumType.USER);
+
 			iFact.populate(user);
 			List<SecuritySpoolType> tokens = Factories.getSecurityTokenFactory().getSecurityTokenByNameInGroup(refId, user.getHomeDirectory().getId(), user.getOrganizationId());
-//			tokenType = Factories.getSecurityTokenFactory().
-			if(tokens.size() > 0){
+			if(!tokens.isEmpty()){
 				tokenType = tokens.get(0);
 			}
 			if(tokenType == null){
@@ -85,7 +85,7 @@ public class TokenUtil {
 		}
 		catch(FactoryException | ArgumentException e){
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		//return tokenType;
 		return outBean;

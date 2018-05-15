@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -66,7 +67,7 @@ public class TestBulkUpdate extends BaseDataAccessTest{
 		catch(FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return qaAccount;
 	}
@@ -122,7 +123,7 @@ public class TestBulkUpdate extends BaseDataAccessTest{
 		}
 		catch (ArgumentException | FactoryException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 
 		/*
@@ -139,7 +140,7 @@ public class TestBulkUpdate extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} 
 
 		

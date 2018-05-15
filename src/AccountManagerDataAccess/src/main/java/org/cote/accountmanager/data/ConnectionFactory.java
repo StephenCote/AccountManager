@@ -37,6 +37,7 @@ import javax.sql.DataSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 
 public class ConnectionFactory {
 	public static final Logger logger = LogManager.getLogger(ConnectionFactory.class);
@@ -71,7 +72,7 @@ public class ConnectionFactory {
 		    }
 		    catch(Throwable e)
 		    {
-		        logger.error("Error",e);
+		        logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		    }
 	}
 	
@@ -173,7 +174,7 @@ public class ConnectionFactory {
 		} catch (ClassNotFoundException e) {
 			
 			System.out.println("Class Not Found for '" + driverClassName + '"');
-			/// logger.error("Error",e);
+			/// logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	    driverCheck.put(driverClassName, out_bool);
 		return out_bool;
@@ -200,7 +201,7 @@ public class ConnectionFactory {
 		}
 		catch (SQLException e) {
  			System.out.println("Connection Failed! Check output console");
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return connection;
 	}
@@ -215,11 +216,10 @@ public class ConnectionFactory {
 			try {
 				InitialContext ctx = new InitialContext();
 				ds = (DataSource) ctx.lookup(dsFile);
-				//System.out.println("AutoCommit=" + out_connection.getAutoCommit());
 			}
 			catch (NamingException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		if(ds == null){
@@ -231,7 +231,7 @@ public class ConnectionFactory {
 
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
  
   

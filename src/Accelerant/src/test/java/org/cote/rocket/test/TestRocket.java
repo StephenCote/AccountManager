@@ -34,11 +34,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
@@ -89,10 +89,10 @@ public class TestRocket extends BaseAccelerantTest {
 			lc = Rocket.getLifecycle(testLifecycleName, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return lc;
 	}
@@ -102,10 +102,10 @@ public class TestRocket extends BaseAccelerantTest {
 			proj = Rocket.getProject(testProjectName, lc, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return proj;
 	}
@@ -119,7 +119,7 @@ public class TestRocket extends BaseAccelerantTest {
 			lc = Rocket.getLifecycle(testLifecycleName, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		logger.info("Group: " + (dir == null ? true : false));
 		assertNotNull("Test lifecycle directory is null", dir);
@@ -143,19 +143,25 @@ public class TestRocket extends BaseAccelerantTest {
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			String[] groupKeys = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCacheKeys();
-			for(int i = 0; i < groupKeys.length;i++) logger.info("ROCKET KEY " + groupKeys[i]);
-			groupKeys = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCacheKeys();
-			for(int i = 0; i < groupKeys.length;i++) logger.info("AM5 KEY " + groupKeys[i]);
-			logger.error("Error",e);
+			String[] groupKeys = new String[0];
+			try{
+				groupKeys = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCacheKeys();
+				for(int i = 0; i < groupKeys.length;i++) logger.info("ROCKET KEY " + groupKeys[i]);
+				groupKeys = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCacheKeys();
+				for(int i = 0; i < groupKeys.length;i++) logger.info("AM5 KEY " + groupKeys[i]);
+			}
+			catch(FactoryException f1){
+				logger.error(f1);
+			}
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Test lifecycle is null", lc);
 	}
@@ -182,13 +188,13 @@ public class TestRocket extends BaseAccelerantTest {
 			RocketModel.addWaterfallArtifacts(testUser, proj);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Test project is null", proj);
 	}
@@ -231,13 +237,13 @@ public class TestRocket extends BaseAccelerantTest {
 			
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 	}
@@ -289,11 +295,11 @@ public class TestRocket extends BaseAccelerantTest {
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Test user (#" + testUser.getId() + ") is not in the project admin role", in_role);
 		assertFalse("Test user #2 is in the project admin role", in_role2);
@@ -318,13 +324,13 @@ public class TestRocket extends BaseAccelerantTest {
 
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Test user is not in the project admin role", in_role);
 	}

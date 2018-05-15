@@ -44,12 +44,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.security.RolePrincipal;
 import org.cote.accountmanager.data.security.UserPrincipal;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -188,7 +188,7 @@ public class AM5LoginModule implements LoginModule {
 			request = (HttpServletRequest) PolicyContext.getContext("javax.servlet.http.HttpServletRequest");
 		} catch (PolicyContextException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			throw new LoginException("Unable to obtain request context");
 		}
         */
@@ -222,7 +222,7 @@ public class AM5LoginModule implements LoginModule {
 
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
         if (debug())
@@ -315,7 +315,7 @@ public class AM5LoginModule implements LoginModule {
         } catch (Throwable t) {
             if (debug()) {
                 logger.info(t.getMessage());
-                logger.error("Error",t);
+                logger.error(FactoryException.LOGICAL_EXCEPTION,t);
             }
             throw new LoginException(t.toString());
         }

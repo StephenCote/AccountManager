@@ -33,6 +33,7 @@ import org.cote.accountmanager.data.factory.ContactFactory;
 import org.cote.accountmanager.data.factory.ContactInformationFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -59,10 +60,10 @@ public class TestPerson extends BaseDataAccessTest{
 
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		
@@ -81,10 +82,10 @@ public class TestPerson extends BaseDataAccessTest{
 
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		
@@ -103,10 +104,10 @@ public class TestPerson extends BaseDataAccessTest{
 
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	*/
@@ -143,10 +144,10 @@ public class TestPerson extends BaseDataAccessTest{
 		}
 		catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 /*
@@ -172,13 +173,13 @@ public class TestPerson extends BaseDataAccessTest{
 			assertTrue("Partners not retrieved",person.getPartners().size() == 1);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		
@@ -207,13 +208,13 @@ public class TestPerson extends BaseDataAccessTest{
 			assertTrue("Person not deleted",deleted);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		
@@ -249,10 +250,10 @@ public class TestPerson extends BaseDataAccessTest{
 
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	*/
@@ -271,10 +272,10 @@ public class TestPerson extends BaseDataAccessTest{
 		}
 		catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return address;
 	}
@@ -293,10 +294,10 @@ public class TestPerson extends BaseDataAccessTest{
 		}
 		catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return contact;
 	}
@@ -315,24 +316,24 @@ public class TestPerson extends BaseDataAccessTest{
 		}
 		catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return person;
 	}
 	private void addContactValues(PersonType person, String name) throws ArgumentException{
 		boolean bUp = false;
 		try{
-			if(person.getContactInformation().getAddresses().size() == 0){
+			if(person.getContactInformation().getAddresses().isEmpty()){
 				AddressType homeAddr = getCreateAddress(name,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(person.getGroupId(),person.getOrganizationId()));
 				setDemoAddressValues(homeAddr);
 				((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).update(homeAddr);
 				person.getContactInformation().getAddresses().add(homeAddr);
 				bUp = true;
 			}
-			if(person.getContactInformation().getContacts().size() == 0){
+			if(person.getContactInformation().getContacts().isEmpty()){
 				ContactType homeEmail = getCreateContact(name,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(person.getGroupId(),person.getOrganizationId()));
 				setHomeEmailValues(homeEmail);
 				((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).update(homeEmail);
@@ -345,7 +346,7 @@ public class TestPerson extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} 
 	}
 	private void setHomeEmailValues(ContactType ct){

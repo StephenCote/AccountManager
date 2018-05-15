@@ -36,8 +36,8 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.StreamUtil;
@@ -76,7 +76,7 @@ public class TestFactoryInterfaces {
 		catch(SQLException sqe){
 			error = true;
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		assertFalse("Error occurred",error);
 		
@@ -87,15 +87,21 @@ public class TestFactoryInterfaces {
 	public void TestRocketFactoryInterfaces(){
 		//tearDownRocket();
 		//org.cote.accountmanager.data.Factories.coolDown();
-		org.cote.rocket.Factories.prepare();
-		org.cote.rocket.Factories.warmUp();
-		
-		OrganizationFactory oFact1 = org.cote.accountmanager.data.Factories.getFactory(FactoryEnumType.ORGANIZATION);
-		OrganizationFactory oFact2 = org.cote.rocket.Factories.getFactory(FactoryEnumType.ORGANIZATION);
-		assertTrue("Factories should be the same instance",oFact1.equals(oFact2));
-		assertFalse("Factories shouldn't be in bulk mode", oFact1.getBulkMode() || oFact2.getBulkMode());
-		
-		boolean setup = setupRocket("password","/Users/Steve/Projects/Source/db/Rocket_PG9_Schema.sql");
+		boolean setup = false;
+		try{
+			org.cote.rocket.Factories.prepare();
+			org.cote.rocket.Factories.warmUp();
+			
+			OrganizationFactory oFact1 = org.cote.accountmanager.data.Factories.getFactory(FactoryEnumType.ORGANIZATION);
+			OrganizationFactory oFact2 = org.cote.rocket.Factories.getFactory(FactoryEnumType.ORGANIZATION);
+			assertTrue("Factories should be the same instance",oFact1.equals(oFact2));
+			assertFalse("Factories shouldn't be in bulk mode", oFact1.getBulkMode() || oFact2.getBulkMode());
+			
+			setup = setupRocket("password","/Users/Steve/Projects/Source/db/Rocket_PG9_Schema.sql");
+		}
+		catch(FactoryException e){
+			logger.error(e);
+		}
 		assertTrue("Failed to setup",setup);
 		/*
 		logger.info("Registered " + org.cote.accountmanager.data.Factories.getFactoryClasses().size() + "/" + org.cote.rocket.Factories.getFactoryClasses().size() + " factories");
@@ -110,7 +116,7 @@ public class TestFactoryInterfaces {
 			Factories.clearCaches();
 		} catch (FactoryException | ArgumentException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		}
 		
 		assertFalse("Factory should not be setup",FactoryDefaults.getIsSetup());
@@ -125,7 +131,7 @@ public class TestFactoryInterfaces {
 		try {
 			setup = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(FactoryDefaults.getAccelerantOrganization(), "password");
 		} catch (ArgumentException | DataAccessException | FactoryException e) {
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Factories were not setup",setup);
 		*/
@@ -159,7 +165,7 @@ public class TestFactoryInterfaces {
 		catch(SQLException sqe){
 			error = true;
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			if(connection != null){
@@ -167,7 +173,7 @@ public class TestFactoryInterfaces {
 					connection.close();
 				} catch (SQLException e) {
 					
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 			}
 		}
@@ -186,10 +192,10 @@ public class TestFactoryInterfaces {
 			Factories.clearCaches();
 		} catch (FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		} catch (ArgumentException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		}
 		/// Invoking getIsSetup will create /Accelerant organization if it doesn't exist
 		///
@@ -197,10 +203,13 @@ public class TestFactoryInterfaces {
 			logger.error("Internal state is not correctly cleaned up");
 			return false;
 		}
-		
-		Factories.recycleFactories();
-		Factories.clearCaches();
-		
+		try{
+			Factories.recycleFactories();
+			Factories.clearCaches();
+		}
+		catch(FactoryException f){
+			logger.error(f);
+		}
 		OrganizationType aOrg = FactoryDefaults.getAccelerantOrganization();
 		if(aOrg == null){
 			logger.error("Accelerant organization is null");
@@ -211,7 +220,7 @@ public class TestFactoryInterfaces {
 
 			out_bool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(FactoryDefaults.getAccelerantOrganization(), adminPassword);
 		} catch (ArgumentException | DataAccessException | FactoryException e) {
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		
@@ -225,13 +234,13 @@ public class TestFactoryInterfaces {
 				out_bool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(Rocket.getRocketOrganization(),adminPassword);
 			} catch (ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (DataAccessException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (FactoryException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		Factories.clearCaches();
@@ -242,13 +251,13 @@ public class TestFactoryInterfaces {
 				Rocket.configureApplicationEnvironment(adminPassword);
 			}  catch (DataAccessException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (FactoryException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return out_bool;

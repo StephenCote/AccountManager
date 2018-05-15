@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.security.ApiClientConfigurationBean;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ApiClientConfigurationType;
 import org.cote.accountmanager.objects.ApiServiceEnumType;
 import org.cote.accountmanager.objects.AttributeType;
@@ -62,7 +63,7 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 			cred = CredentialService.newCredential(CredentialEnumType.TOKEN, null, testUser, dir, apiTokenValue.getBytes("UTF-8"), true, false);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		*/
 		assertNotNull("Credential is null",cred);
@@ -97,9 +98,9 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 		try {
 			identity = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_IDENTITY),"UTF-8");
 			credential = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_PASSWORD),"UTF-8");
-		} catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Identity is null",identity);
 		assertNotNull("Credential is null",credential);
@@ -128,7 +129,7 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 			del = Factories.getCredentialFactory().deleteCredential(cred2);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		*/
 		//assertTrue("Failed to delete credential",del);
@@ -198,7 +199,7 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("New user security Key is null",userKey);
 		assertNotNull("New org security Key is null",orgKey);

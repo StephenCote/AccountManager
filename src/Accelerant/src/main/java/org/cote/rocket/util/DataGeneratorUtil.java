@@ -45,7 +45,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.AddressFactory;
 import org.cote.accountmanager.data.factory.ContactFactory;
@@ -58,6 +57,7 @@ import org.cote.accountmanager.data.factory.PersonParticipationFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.AttributeType;
@@ -207,15 +207,26 @@ public class DataGeneratorUtil {
 		this.projectName = pjName;
 		this.sourceLocationPath = srcLocationPath;
 		this.sourceTraitPath = srcTraitPath;
-		((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).setUseThreadSafeCollections(false);
-		((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).setUseThreadSafeCollections(false);
-		((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).setUseThreadSafeCollections(false);
-		((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).setUseThreadSafeCollections(false);
-		((TraitFactory)Factories.getFactory(FactoryEnumType.TRAIT)).setUseThreadSafeCollections(false);
-		((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).setUseThreadSafeCollections(false);
-		((PersonParticipationFactory)Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION)).setUseThreadSafeCollections(false);
 		
-		configureDataPaths();
+		prepareGenerator();
+
+	}
+	private void prepareGenerator(){
+		logger.warn("**** Warning: Factory Cache Settings Altered for Performance");
+		try{
+			((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).setUseThreadSafeCollections(false);
+			((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).setUseThreadSafeCollections(false);
+			((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).setUseThreadSafeCollections(false);
+			((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).setUseThreadSafeCollections(false);
+			((TraitFactory)Factories.getFactory(FactoryEnumType.TRAIT)).setUseThreadSafeCollections(false);
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).setUseThreadSafeCollections(false);
+			((PersonParticipationFactory)Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION)).setUseThreadSafeCollections(false);
+			
+			configureDataPaths();
+		}
+		catch(FactoryException f){
+			logger.error(f);
+		}
 	}
 	public UserType getUser(){
 		return user;
@@ -445,7 +456,7 @@ public class DataGeneratorUtil {
 			map = mapper.readValue(data, t.constructMapType(Map.class, String.class, mapClass));
 		} catch (IOException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return map;
 	}
@@ -467,7 +478,7 @@ public class DataGeneratorUtil {
 	
 
 
-	public AddressType randomAddress(LocationType location) throws ArgumentException{
+	public AddressType randomAddress(LocationType location) throws ArgumentException, FactoryException{
 		return DataGeneratorData.randomAddress(this, location, addressesDir);
 	}
 
@@ -484,17 +495,17 @@ public class DataGeneratorUtil {
 
 	
 	
-	public AccountType randomAccount(UserType user, DirectoryGroupType dir){
+	public AccountType randomAccount(UserType user, DirectoryGroupType dir) throws FactoryException{
 		Random r = new Random();
 		String sType = DataGeneratorData.ACCOUNT_TYPES[r.nextInt(DataGeneratorData.ACCOUNT_TYPES.length)];
 		AccountType acct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(user, randomId(sType, 6), AccountEnumType.DEVELOPMENT, AccountStatusEnumType.REGISTERED, dir.getId());
 		return acct;
 	}
 	
-	public PersonType randomPerson(UserType user, DirectoryGroupType dir) throws ArgumentException{
+	public PersonType randomPerson(UserType user, DirectoryGroupType dir) throws ArgumentException, FactoryException{
 		return randomPerson(user,dir,null);
 	}
-	public PersonType randomPerson(UserType user, DirectoryGroupType dir, String preferredLastName) throws ArgumentException{
+	public PersonType randomPerson(UserType user, DirectoryGroupType dir, String preferredLastName) throws ArgumentException, FactoryException{
 		PersonType person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(user, dir.getId());
 		boolean isMale = (Math.random() < 0.5);
 		TradeType[] trades = getTrades().get("trades");
@@ -581,7 +592,7 @@ public class DataGeneratorUtil {
 
 	
 
-	private void addressPerson(PersonType person, LocationType location, String sessionId) throws ArgumentException{
+	private void addressPerson(PersonType person, LocationType location, String sessionId) throws ArgumentException, FactoryException{
 		 ContactInformationType cit = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(person);
 		 BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
 		 
@@ -676,13 +687,13 @@ public class DataGeneratorUtil {
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.EVENT, event);
 			
 
-		} catch (ArgumentException e) {
+		} catch (ArgumentException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return event;
 	}
-	private void cloneObjectToGroup(FactoryEnumType factType, NameIdDirectoryGroupType dObj, DirectoryGroupType newParentGroup){
+	private void cloneObjectToGroup(FactoryEnumType factType, NameIdDirectoryGroupType dObj, DirectoryGroupType newParentGroup) throws FactoryException{
 		NameIdFactory factory = Factories.getFactory(factType);
 		factory.removeFromCache(dObj);
 		Factories.getAttributeFactory().populateAttributes(dObj);
@@ -700,8 +711,9 @@ public class DataGeneratorUtil {
 	}
 	public <T> List<T> getRandomType(UserType owner, FactoryEnumType factType, DirectoryGroupType sourceDir, int count){
 		List<T> objs = new ArrayList<>();
-		NameIdFactory factory = Factories.getFactory(factType);
+
 		try {
+			NameIdFactory factory = Factories.getFactory(factType);
 			objs = factory.list(getRandomByGroup(sourceDir).toArray(new QueryField[0]), getPaginatedInstruction(count), owner.getOrganizationId());
 			for(int i = 0; i < objs.size(); i++){
 				NameIdDirectoryGroupType obj = (NameIdDirectoryGroupType)objs.get(i);
@@ -710,25 +722,25 @@ public class DataGeneratorUtil {
 			
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return objs;
 	}
 	public List<String> getAdvList(){
-		if(advList.size() == 0) advList = loadFile(advPath);
+		if(advList.isEmpty()) advList = loadFile(advPath);
 		return advList;
 	}
 	public List<String> getAdjList(){
-		if(adjList.size() == 0) adjList = loadFile(adjPath);
+		if(adjList.isEmpty()) adjList = loadFile(adjPath);
 		return adjList;
 	}
 	public List<String> getVerList(){
-		if(verList.size() == 0) verList = loadFile(verPath);
+		if(verList.isEmpty()) verList = loadFile(verPath);
 		return verList;
 	}
 	public List<String> getNouList(){
-		if(nouList.size() == 0) nouList = loadFile(nouPath);
+		if(nouList.isEmpty()) nouList = loadFile(nouPath);
 		return nouList;
 	}
 	public String generateEpochTitle(AlignmentEnumType alignment){
@@ -832,7 +844,7 @@ public class DataGeneratorUtil {
 			logger.info("Populated " + names.length + " names");
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	public Map<String,List<PersonType>> getDemographics(EventType parentEvent) throws FactoryException, ArgumentException{
@@ -937,15 +949,15 @@ public class DataGeneratorUtil {
 				
 				event.setLocation(loc);
 				event.setEventType(EventEnumType.CONSTRUCT);
-				//logger.info("Should have " + event.getEntryTraits().size() + " and " + event.getExitTraits().size());
+
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.EVENT, event);
 	
 				events.add(event);
 				
 			}
-		} catch (ArgumentException e) {
+		} catch (ArgumentException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		// return events;
 		return root;
@@ -1066,7 +1078,7 @@ public class DataGeneratorUtil {
 
 		} catch (ArgumentException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		
@@ -1124,21 +1136,7 @@ public class DataGeneratorUtil {
 		}
 		return potentials;
 	}
-	/*
-	private boolean isLeader(PersonType person, PersonGroupType populationGroup) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
-		for(String name : leaderPopulation){
-			PersonGroupType leaderGroup = (PersonGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupByName(name + " Leaders", GroupEnumType.PERSON, populationGroup, populationGroup.getOrganizationId());
-			if(leaderGroup == null){
-				logger.error("Group not found in " + populationGroup.getUrn() + ": " + name);
-				continue;
-			}
-			out_bool = GroupService.getIsPersonInGroup(leaderGroup, person);
-			if(out_bool) break;
-		}
-		return out_bool;
-	}
-	*/
+
 	private boolean rulePersonBirth(AlignmentEnumType eventAlignmentType, PersonGroupType populationGroup, PersonType mother, int age) throws FactoryException, ArgumentException{
 		boolean out_bool = false;
 		if("female".equalsIgnoreCase(mother.getGender()) == false || age < minMarryAge || age > maxFertilityAge) return out_bool;
@@ -1177,7 +1175,7 @@ public class DataGeneratorUtil {
 				populationCache.put(population.getId(), personPopulation);
 			} catch (FactoryException | ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		if(personPopulation.isEmpty()){
@@ -1193,7 +1191,7 @@ public class DataGeneratorUtil {
 			}
 			*/
 		} catch (Exception e) {
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		for(int i = 0; i < iterations; i++){
@@ -1211,9 +1209,9 @@ public class DataGeneratorUtil {
 				}
 			}
 
-		} catch (ArgumentException e) {
+		} catch (ArgumentException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	private void evolvePopulation(String sessionId, EventType parentEvent, AlignmentEnumType eventAlignment, PersonGroupType population, List<PersonType> personPopulation){
@@ -1286,7 +1284,7 @@ public class DataGeneratorUtil {
 		}
 
 	}
-	private void ruleImmigration(String sessionId, EventType parentEvent, PersonGroupType population) throws ArgumentException{
+	private void ruleImmigration(String sessionId, EventType parentEvent, PersonGroupType population) throws ArgumentException, FactoryException{
 		double rand = Math.random();
 		double odds = immigrateRate;
 		List<PersonType> immigration = new ArrayList<>();
@@ -1352,7 +1350,7 @@ public class DataGeneratorUtil {
 		}
 
 	}
-	private void ruleCouples(String sessionId, EventType parentEvent, Map<String,List<PersonType>> demographicMap) throws ArgumentException{
+	private void ruleCouples(String sessionId, EventType parentEvent, Map<String,List<PersonType>> demographicMap) throws ArgumentException, FactoryException{
 		Map<String,List<PersonType>> potentials = getPotentialPartnerMap(demographicMap);
 		if(potentials.get("male").size() > 0 && potentials.get("female").size() > 0){
 			for(int i = 0; i < potentials.get("female").size(); i++){

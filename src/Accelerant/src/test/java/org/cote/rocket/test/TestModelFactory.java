@@ -31,8 +31,8 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.propellant.objects.ModelType;
@@ -81,7 +81,7 @@ public class TestModelFactory extends BaseAccelerantTest{
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Model '" + ModelName + "' in group '" + dir.getId() + "' was not found", Model);
 		ModelId = Model.getId();
@@ -97,7 +97,7 @@ public class TestModelFactory extends BaseAccelerantTest{
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Model '" + ModelId + "' was not found", Model);
 
@@ -115,7 +115,7 @@ public class TestModelFactory extends BaseAccelerantTest{
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Model was not updated",updated);
 

@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -65,7 +66,7 @@ public class TestDBStress{
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 	}
@@ -82,7 +83,7 @@ public class TestDBStress{
 				Factories.getAuditFactory().addAudit(audit);
 			} catch (FactoryException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 			Factories.getAuditFactory().flushSpool();
 		}

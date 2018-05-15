@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,17 +57,23 @@ public class TestFactoryInterfaces {
 		logger.info("Bulk Registration size: " + BulkFactories.getFactoryClasses().size());
 		
 		logger.info("Testing organization factory lookup");
-		OrganizationFactory orgFact = Factories.getFactory(FactoryEnumType.ORGANIZATION);
-		
-		
-		
-		logger.info("Testing discrete factory lookup");
-		INameIdFactory dataFact = Factories.getFactory(FactoryEnumType.DATA);
-		assertNotNull("Data Factory is null", dataFact);
-		
-		logger.info("Testing factory warmup");
-		long start = System.currentTimeMillis();
-		Factories.warmUp();
+		long start = 0L;
+		try{
+			OrganizationFactory orgFact = Factories.getFactory(FactoryEnumType.ORGANIZATION);
+			
+			
+			
+			logger.info("Testing discrete factory lookup");
+			INameIdFactory dataFact = Factories.getFactory(FactoryEnumType.DATA);
+			assertNotNull("Data Factory is null", dataFact);
+			
+			logger.info("Testing factory warmup");
+			start = System.currentTimeMillis();
+			Factories.warmUp();
+		}
+		catch(FactoryException f){
+			logger.error(f);
+		}
 		long stop = System.currentTimeMillis();
 		logger.info("Warmed up in (" + (stop - start) + "ms)");
 		

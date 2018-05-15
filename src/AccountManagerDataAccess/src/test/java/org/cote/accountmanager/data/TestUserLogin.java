@@ -33,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.services.DataMaintenance;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
@@ -62,10 +63,10 @@ public class TestUserLogin extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNull("User #1 is null", user1);
 
@@ -87,10 +88,10 @@ public class TestUserLogin extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("User #1 is null", session1);
 		assertNotNull("Session #1 is null", session1.getSession());
@@ -114,10 +115,10 @@ public class TestUserLogin extends BaseDataAccessTest {
 			user = SessionSecurity.getUserBySession(sessionId, Factories.getDevelopmentOrganization().getId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("User is null", user);
 		assertNotNull("User session is null", user.getSession());
@@ -137,7 +138,7 @@ public class TestUserLogin extends BaseDataAccessTest {
 			logger.error(fe.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue(updated);
 		
@@ -152,7 +153,7 @@ public class TestUserLogin extends BaseDataAccessTest {
 			if(logout) logout = SessionSecurity.logout(sessionId2, Factories.getDevelopmentOrganization().getId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("User session '" + sessionId + "' was not logged out", logout);
 	}
@@ -171,10 +172,10 @@ public class TestUserLogin extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("User #1 is null", user1);
 		assertNotNull("Session #1 is null", session1);
@@ -185,7 +186,7 @@ public class TestUserLogin extends BaseDataAccessTest {
 			logout = SessionSecurity.logout(sessionId, Factories.getDevelopmentOrganization().getId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("User session '" + sessionId + "' was not logged out", logout);
 		Factories.getSessionFactory().clearSessions();
@@ -203,10 +204,10 @@ public class TestUserLogin extends BaseDataAccessTest {
 		}
 		catch(FactoryException fe){
 			logger.info(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("User #1 is null", session1);
 		assertNotNull("Session #1 is null", session1.getSession());

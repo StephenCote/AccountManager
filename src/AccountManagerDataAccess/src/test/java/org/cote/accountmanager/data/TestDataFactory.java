@@ -36,6 +36,7 @@ import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -78,15 +79,15 @@ public class TestDataFactory extends BaseDataAccessTest {
 			logger.info("Data: " + dataList.size());
 		}
 		catch(FactoryException fe){
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	
@@ -111,12 +112,12 @@ public class TestDataFactory extends BaseDataAccessTest {
 			}
 		}
 		catch(FactoryException fe){
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			logger.error(fe.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 	}
@@ -145,7 +146,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 	
@@ -180,7 +181,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		assertFalse("Factory error", error);
@@ -215,7 +216,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		assertFalse("Factory error", error);
@@ -254,7 +255,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		assertFalse("Factory error", error);
@@ -280,7 +281,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		assertFalse("An error occurred", error);
 		assertNotNull("Data is null", data);
@@ -306,7 +307,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		assertFalse("An error occurred", error);
 		assertNotNull("Data is null", data);
@@ -328,11 +329,11 @@ public class TestDataFactory extends BaseDataAccessTest {
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("An error occurred", error);
 		assertTrue("No data returned", data.size() > 0);
@@ -363,16 +364,16 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			logger.error(e.getMessage());
 			error = true;
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		assertFalse("An error occurred", error);
 		assertTrue("Data not updated", updated);
@@ -410,15 +411,15 @@ public class TestDataFactory extends BaseDataAccessTest {
 			error = true;
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			logger.error(e.getMessage());
 			error = true;
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		assertFalse("An error occurred", error);
 		assertTrue("Data not updated", updated);
@@ -447,12 +448,12 @@ public class TestDataFactory extends BaseDataAccessTest {
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			logger.error(e.getMessage());
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("An error occurred", error);
 		

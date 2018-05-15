@@ -39,6 +39,7 @@ import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
@@ -298,7 +299,7 @@ public class TestVaultService extends BaseDataAccessTest{
 			logger.info("Retrieved " + data.length);
 			
 		} catch (FactoryException | ArgumentException | UnsupportedEncodingException | DataException e) {
-			logger.error("Error", e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION, e);
 		}
 	}
 	
@@ -323,7 +324,7 @@ public class TestVaultService extends BaseDataAccessTest{
 		try {
 			service.initialize(vault, cred);
 		} catch (ArgumentException | FactoryException e1) {
-			logger.error("Error", e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION, e1);
 		}
 		//logger.info(VaultService.exportVault(vault));
 		
@@ -357,7 +358,7 @@ public class TestVaultService extends BaseDataAccessTest{
 		try {
 			newKey = service.newActiveKey(vault);
 		} catch (UnsupportedEncodingException | FactoryException | ArgumentException | DataException e) {
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Key is null", newKey);
 		assertNotNull("Key is null", vault.getActiveKeyId());
@@ -368,7 +369,7 @@ public class TestVaultService extends BaseDataAccessTest{
 		try {
 			service.deleteVault(vault);
 		} catch (ArgumentException | FactoryException e) {
-			logger.error("Error", e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION, e);
 		}
 		
 	}	
@@ -472,19 +473,19 @@ public class TestVaultService extends BaseDataAccessTest{
 			
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	*/
@@ -515,16 +516,16 @@ public class TestVaultService extends BaseDataAccessTest{
 			
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	*/
@@ -552,16 +553,16 @@ public class TestVaultService extends BaseDataAccessTest{
 			vs3.createVault("password");
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	*/

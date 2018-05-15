@@ -72,7 +72,6 @@ import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
@@ -80,6 +79,7 @@ import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.CredentialEnumType;
@@ -267,7 +267,7 @@ public class VaultService
 			dir = getVaultInstanceGroup(vault);
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(dir == null) return null;
 		return CredentialService.getPrimaryCredential(dir, CredentialEnumType.SALT, true);
@@ -458,14 +458,10 @@ public class VaultService
 		SecurityFactory.getSecurityFactory().generateKeyPair(sm);
 		SecurityFactory.getSecurityFactory().generateSecretKey(sm);
 
-		byte[] private_key_config = new byte[0];
-		
-		
-		private_key_config = SecurityUtil.serializeToXml(sm, true, true, true).getBytes("UTF-8");
+		byte[] private_key_config = SecurityUtil.serializeToXml(sm, true, true, true).getBytes("UTF-8");
 		
 		String in_password = null;
 		if(vault.getProtectedCredential() != null && (vault.getProtectedCredential().getCredentialType() == CredentialEnumType.ENCRYPTED_PASSWORD || vault.getProtectedCredential().getCredentialType() == CredentialEnumType.HASHED_PASSWORD)){
-			//in_password = new String(CredentialService.decryptCredential(credential));
 			in_password = new String(getProtectedCredentialValue(vault.getProtectedCredential()));
 		}
 		
@@ -554,7 +550,7 @@ public class VaultService
 
 		}
 		catch(UnsupportedEncodingException | DataException | FactoryException | ArgumentException | NullPointerException e){
-			logger.error("Error", e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION, e);
 		}
 		return true;
 	}
@@ -755,18 +751,17 @@ public class VaultService
 		
 		AuditType audit = beginAudit(vault,ActionEnumType.ADD, "Vault key",true);
 		DataType imp_data = getVaultMetaData(vault);
-		//DataType imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), getVaultGroup(vault));
 
 		// Can't make active key
 		//
 		if (imp_data == null){
-			logger.error("Vault implementation data is null");
+			AuditService.denyResult(audit, "Vault implementation data is null");
 			return false;
 		}
-		
+		AuditService.targetAudit(audit, AuditEnumType.DATA, imp_data.getUrn());
 		VaultType pubVault = JSONUtil.importObject(new String(DataUtil.getValue(imp_data)), VaultType.class);
 		if(pubVault == null){
-			logger.error("Cannot restore public vault");
+			AuditService.denyResult(audit, "Cannot restore public vault");
 			return false;
 		}
 
@@ -774,7 +769,7 @@ public class VaultService
 		//
 		SecurityBean sm = SecurityFactory.getSecurityFactory().createSecurityBean(pubVault.getCredential().getCredential(), true);
 		if (sm == null){
-			logger.error("SecurityBean for Vault implementation is null");
+			AuditService.denyResult(audit, "SecurityBean for Vault implementation is null");
 			return false;
 		}
 		sm.setEncryptCipherKey(true);
@@ -797,10 +792,11 @@ public class VaultService
 		if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(new_key)){
 			vault.setActiveKeyId(id);
 			vault.setActiveKeyBean(sm);
+			AuditService.permitResult(audit, "Created new vault key");
 			return true;
 		}
 		else{
-			logger.error("Failed to add new vault key");
+			AuditService.denyResult(audit, "Failed to add new vault key");
 		}
 		return false;
 		
@@ -845,7 +841,7 @@ public class VaultService
 				}
 				catch (Exception e)
 				{
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 			}
 			return vault.getVaultKeyBean();
@@ -955,21 +951,21 @@ public class VaultService
 	}
 	public byte[] extractVaultData(VaultBean vault, DataType in_data) throws FactoryException, ArgumentException, DataException
 	{
-		byte[] out_bytes = new byte[0];
+		byte[] outBytes = new byte[0];
 		if(vault == null){
 			logger.error("Vault reference is null");
-			return out_bytes;
+			return outBytes;
 		}
 		if (vault.getHaveVaultKey() == false || in_data.getVaulted() == false){
 			logger.warn("Data is not vaulted or the vault key is not specified");
-			return out_bytes;
+			return outBytes;
 		}
 
 		// If the data vault id isn't the same as this vault name, then it can't be decrypted.
 		//
 		if (vault.getVaultDataUrn().equals(in_data.getVaultId()) == false){
 			logger.error("Data vault id '" + in_data.getVaultId() + "' does not match the specified vault name '" + vault.getVaultDataUrn() + "'.  This is a precautionary/secondary check, probably due to changing the persisted vault configuration name");
-			return out_bytes;
+			return outBytes;
 		}
 
 		return getVaultBytes(vault,in_data, getVaultCipher(vault,in_data.getKeyId()));
@@ -1034,8 +1030,6 @@ public class VaultService
 		
 		List<VaultType> vaults = new ArrayList<>();
 		for(DataType data : dataList){
-			//DataType datad = BaseService.readByUrn(AuditEnumType.DATA, data.getUrn(), owner);
-			//if(datad != null) vaults.add(JSONUtil.importObject(DataUtil.getValueString(datad), VaultType.class));
 			VaultBean vaultb = getVaultByUrn(owner, data.getUrn());
 			if(vaultb != null) vaults.add(vaultb);
 		}
@@ -1088,14 +1082,9 @@ public class VaultService
 		
 		String vaultPath = getVaultPath(pubVault);
 		String credPath = getProtectedCredentialPath(pubVault);
-		if(vaultPath == null){
-			logger.error("Vault path is null");
-			return null;
-		}
-		CredentialType cred = null;
-		if(credPath != null){
-			cred = loadProtectedCredential(credPath);
-		}
+
+		CredentialType cred = loadProtectedCredential(credPath);
+
 		vault = loadVault(vaultPath, pubVault.getVaultName(), pubVault.getProtected());
 		if(vault == null){
 			logger.error("Failed to restore vault");
@@ -1119,7 +1108,7 @@ public class VaultService
 			List<DataType> dataList = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(getVaultInstanceGroup(vault), false, 0, 0, vault.getServiceUser().getOrganizationId());
 			for(int i = 0; i < dataList.size();i++) beans.add(getCipherFromData(vault,dataList.get(i)));
 		} catch (FactoryException | ArgumentException | DataException e) {
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return beans;
 	}

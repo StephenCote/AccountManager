@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.NameIdFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.FileUtil;
@@ -45,7 +46,7 @@ public class GenerateAction {
 
 		} catch (FactoryException | ArgumentException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		}
 		*/
 		
@@ -61,7 +62,7 @@ public class GenerateAction {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			if(connection != null){
@@ -69,13 +70,13 @@ public class GenerateAction {
 					connection.close();
 				} catch (SQLException e) {
 					
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 			}
 		}
 		return true;
 	}
-	public static String generate(NameEnumType type, boolean exec, boolean export, String path){
+	public static String generate(NameEnumType type, boolean exec, boolean export, String path) throws FactoryException{
 		if(type == null || type == NameEnumType.UNKNOWN){
 			logger.error("Invalid type: " + type);
 			return null;

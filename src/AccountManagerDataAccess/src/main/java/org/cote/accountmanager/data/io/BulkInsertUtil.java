@@ -37,7 +37,7 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataCell;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
-import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataRowType;
 
 public class BulkInsertUtil {
@@ -51,12 +51,11 @@ public class BulkInsertUtil {
 		StringBuilder valBuff = new StringBuilder();
 		int cellCount = row.getCells().size();
 		int insCount = 0;
-		List<DataCell> insCells = new ArrayList<DataCell>();
+		List<DataCell> insCells = new ArrayList<>();
 		for(int i = 0; i < cellCount; i++){
 			DataCell cell = (DataCell)row.getCells().get(i);
 			
 			if(cell.isDirty() == false){
-				//logger.info("Skipping non-dirty cell " + cell.getColumnName());
 				continue;
 			}
 			if(insCount > 0){
@@ -65,7 +64,6 @@ public class BulkInsertUtil {
 			}
 			nameBuff.append(cell.getColumnName());
 			valBuff.append("?");
-			//logger.info("Proto cell: " + cell.getColumnName());
 			insCells.add(cell);
 			insCount++;
 		}
@@ -76,40 +74,9 @@ public class BulkInsertUtil {
 		meta.setParameterCount(insCount);
 		return meta;
 	}
-	/*
-	public static BulkInsertMeta getUpdateTemplate(Connection connection, DataRow row) throws FactoryException
-	{
-		StringBuilder buff = new StringBuilder();
-		StringBuilder valBuff = new StringBuilder();
-		int cellCount = row.getCells().size();
-		int insCount = 0;
-		List<DataCell> insCells = new ArrayList<DataCell>();
-		for(int i = 0; i < cellCount; i++){
-			DataCell cell = (DataCell)row.getCells().get(i);
-			
-			if(cell.isDirty() == false){
-				//logger.info("Skipping non-dirty cell " + cell.getColumnName());
-				continue;
-			}
-			if(insCount > 0){
-
-				valBuff.append(",");
-			}
-			valBuff.append(cell.getColumnName() + " = ?");
-			insCells.add(cell);
-			insCount++;
-		}
-		buff.append("UPDATE " + row.getTable().getName() + " SET " + valBuff.toString());
-		BulkInsertMeta meta = new BulkInsertMeta();
-		meta.setUpdateTemplate(buff.toString());
-		meta.getQueryCells().addAll(insCells);
-		meta.setParameterCount(insCount);
-		return meta;
-	}
-	*/
+	
 	public static PreparedStatement getInsertStatement(Connection connection, DataRow row) throws FactoryException{
 		BulkInsertMeta insStatement = getInsertTemplate(connection, row);
-		//logger.info(insStatement.getParameterCount() + ":" + insStatement.getInsertTemplate());
 		PreparedStatement ps = null;
 		try{
 			ps = connection.prepareStatement(insStatement.getInsertTemplate());
@@ -120,7 +87,7 @@ public class BulkInsertUtil {
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			throw new FactoryException(sqe.getMessage());
 		}
 		return ps;
@@ -132,6 +99,7 @@ public class BulkInsertUtil {
 		PreparedStatement insStatement = getInsertStatement(connection, row);
 
 		int updated = 0;
+		boolean error = false;
 		try{
 			updated = insStatement.executeUpdate();
 			insStatement.close();
@@ -139,8 +107,7 @@ public class BulkInsertUtil {
 		catch(SQLException sqe){
 			
 			logger.error(sqe.getMessage());
-			//logger.error(getInsertTemplate(connection, row).getInsertTemplate());
-			throw new FactoryException("Failed to insert: " + sqe.getMessage());
+			error = true;
 		}
 		finally{
 			try {
@@ -148,18 +115,20 @@ public class BulkInsertUtil {
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
-				throw new FactoryException(e.getMessage());
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+				error = true;
+
 			}
 		}
+		if(error) throw new FactoryException(FactoryException.LOGICAL_EXCEPTION);
 		return (updated > 0);
 	}
 	
 	/// Transactional insert across 1 or more tables of 1 or more rows
 	
 	public static boolean insertBulk(DataTable table, int maxBatchSize){
-		boolean out_bool = false;
-		if(table.getRows().size() == 0){
+		boolean outBool = false;
+		if(table.getRows().isEmpty()){
 			//logger.info("Pending rows to insert are empty");
 			return true;
 		}
@@ -175,6 +144,7 @@ public class BulkInsertUtil {
 		int batch = 0;
 		int rLen = 0;
 		BulkInsertMeta insStatement = null;
+		PreparedStatement statement = null;
 		try {
 
 			boolean lastCommit = connection.getAutoCommit();
@@ -182,22 +152,19 @@ public class BulkInsertUtil {
 
 			insStatement = getInsertTemplate(connection, firstRow);
 			rLen = table.getRows().size();
-			//logger.info("BULK INSERT - " + rLen + " : " + insStatement.getParameterCount() + " : " + insStatement.getInsertTemplate());
 			long start = System.currentTimeMillis();
-			PreparedStatement statement = connection.prepareStatement(insStatement.getInsertTemplate());
+			statement = connection.prepareStatement(insStatement.getInsertTemplate());
 			for(int r = 0; r < rLen; r++){
 				DataRowType row = table.getRows().get(r);
 				for(int i = 0; i < insStatement.getParameterCount(); i++){
 					DataCell mCell = insStatement.getQueryCells().get(i);
 					int iCol = table.getColumnIndex(mCell.getColumnName());
 					DataCell iCell = (DataCell)row.getCells().get(iCol);
-					//insStatement.getCells().get(i)
 					DBFactory.setPreparedStatementValue(statement, iCell, i+1);
 				
 				}
 				statement.addBatch();
 				if(batch++ >= maxBatchSize){
-					//logger.info("Execute batch: " + batch);
 					statement.executeBatch();
 					statement.clearBatch();
 					batch=0;
@@ -209,44 +176,27 @@ public class BulkInsertUtil {
 				statement.executeBatch();
 				statement.clearBatch();
 			}
-			statement.close();
 			connection.commit();
 			connection.setAutoCommit(lastCommit);
 			long stop = System.currentTimeMillis();
 			logger.debug("Inserted " + table.getRows().size() + " rows in " + (stop - start) + "ms.");
-			out_bool = true;
+			outBool = true;
 		}
-		catch(NullPointerException npe){
-			if(insStatement != null) logger.error("Null pointer in: BULK INSERT - " + rLen + " : " + insStatement.getParameterCount() + " : " + insStatement.getInsertTemplate());
-			logger.error(npe.getMessage());
-			logger.error("Error",npe);
-		}
-		catch(DataAccessException dae){
-			logger.error(dae.getMessage());
-			logger.error("Error",dae);
-		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			logger.error("Error",fe);
-		}
-		catch (SQLException e) {
+		catch(NullPointerException | DataAccessException | FactoryException | SQLException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
-			while(( e = e.getNextException()) != null){
-				logger.error("Error",e);
-			}
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
 			try {
+				if(statement != null) statement.close();
 				connection.close();
 			} catch (SQLException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		//logger.info("Bulk Write Time: " + (System.currentTimeMillis() - startInsert));
-		return out_bool;
+		return outBool;
 	}
 }

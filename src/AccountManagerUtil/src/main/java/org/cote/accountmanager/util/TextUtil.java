@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 
 public class TextUtil {
 	public static final Logger logger = LogManager.getLogger(TextUtil.class);
@@ -48,7 +49,7 @@ public class TextUtil {
 			outStr = new String(inStr.getBytes(),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return outStr;
 	}

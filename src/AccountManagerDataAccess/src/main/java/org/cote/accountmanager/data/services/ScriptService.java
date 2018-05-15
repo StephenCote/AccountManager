@@ -41,6 +41,7 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FunctionEnumType;
 import org.cote.accountmanager.objects.FunctionType;
@@ -58,14 +59,14 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 public class ScriptService {
 	public static final Logger logger = LogManager.getLogger(ScriptService.class);
-	private static String scriptEngineJavaScript = "javascript";
-	private static String scriptEngineNashorn = "nashorn";
+	private static final String scriptEngineJavaScript = "javascript";
+	private static final String scriptEngineNashorn = "nashorn";
 	private static String scriptEngineName = scriptEngineNashorn;
 	private static ScriptEngine jsEngine = null;
 	public static void setScriptEngineName(String s){
 		scriptEngineName = s;
 	}
-	private static Map<String,CompiledScript> jsCompiled = new HashMap<String,CompiledScript>();
+	private static Map<String,CompiledScript> jsCompiled = new HashMap<>();
 	
 	public static ScriptEngine getJavaScriptEngine(){
 		if(jsEngine == null){
@@ -82,8 +83,8 @@ public class ScriptService {
 		}
 		return jsEngine;
 	}
-	public static Object run(UserType user,Map<String,Object> params,FunctionType func) throws ArgumentException{
-		//byte[] value = null;
+	public static Object run(UserType user,Map<String,Object> params,FunctionType func) throws FactoryException,ArgumentException{
+
 		if(func.getFunctionType() != FunctionEnumType.JAVASCRIPT) throw new ArgumentException("FunctionType '" + func.getFunctionType().toString() + "' is not applicable");
 		DataType data = func.getFunctionData();
 		if(data == null && func.getSourceUrn() != null){
@@ -128,13 +129,8 @@ public class ScriptService {
 		Object resp = null;
 		if(compScr != null){
 			Bindings bd = compScr.getEngine().createBindings();
-			Iterator<String> keys = params.keySet().iterator();
 			bd.putAll(params);
-			//bd.put("user", user);
-			//DirectoryGroupType homeDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(user);
-			//bd.put("organizationId", user.getOrganizationId());
 			try{
-				//logger.info("Evaluating: " + name);
 				resp = compScr.eval(bd);
 			} catch (ScriptException e) {
 				
@@ -143,7 +139,6 @@ public class ScriptService {
 		}
 		else{
 			throw new ArgumentException("Compiled script for '" + name + "' is null");
-			//logger.error("Compiled script is null for '" + name + "'");
 		}
 		return resp;
 	}

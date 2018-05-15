@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 
 import com.google.common.io.Files;
 
@@ -322,7 +323,7 @@ public class OpenSSLUtil {
 				out_bool = true;
 			} catch (IOException e) {
 				logger.error(e.getMessage());
-				logger.error("Trace",e);
+				logger.error(FactoryException.TRACE_EXCEPTION,e);
 			}
 		}
 

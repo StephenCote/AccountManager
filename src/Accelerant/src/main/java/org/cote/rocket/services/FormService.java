@@ -33,7 +33,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -156,11 +156,11 @@ public class FormService {
 					}
 					catch(FactoryException fe){
 						logger.error(fe.getMessage());
-						logger.error("Error",fe);
+						logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 						
 					} catch (ArgumentException e) {
 						
-						logger.error("Error",e);
+						logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 					}
 				}
 

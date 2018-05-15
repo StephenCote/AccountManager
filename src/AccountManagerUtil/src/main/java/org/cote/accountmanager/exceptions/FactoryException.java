@@ -21,14 +21,20 @@
  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
-package org.cote.accountmanager.data;
+package org.cote.accountmanager.exceptions;
 
 public class FactoryException extends Exception{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final String TRACE_EXCEPTION = "Trace Exception";
+	public static final String OBJECT_UNKNOWN_TYPE = "Object cannot be of an unknown type";
+	public static final String OBJECT_NULL_TYPE = "Object is null for type %s";
+	public static final String TYPE_NOT_REGISTERED = "Type %s is not registered";
+	public static final String TYPE_ALREADY_REGISTERED = "Type %s is already registered";
 	public static final String UNHANDLED_ACTOR_TYPE = "Unhandled actor type: %s";
+	public static final String UNHANDLED_TYPE = "Unhandled type: %s";
 	public static final String LOGICAL_EXCEPTION = "Logical Exception";
 	public static final String PARTICIPATION_FACTORY_REGISTRATION_EXCEPTION = "Participation factory for %s is not registered for authorization";
 	public FactoryException(String msg){

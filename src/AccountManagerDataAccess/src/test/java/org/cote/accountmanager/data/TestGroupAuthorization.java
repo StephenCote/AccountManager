@@ -51,7 +51,7 @@ public class TestGroupAuthorization extends BaseDataAccessTest {
 			logger.info("Id count #2 = " + ids2.size());
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		

@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -59,6 +60,9 @@ public class TestBulkUser extends BaseDataAccessTest{
 
 			logger.info("Retrieving Bulk User");
 			UserType check = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("BulkUser-" + guid, new_user.getOrganizationId());
+			if(check == null){
+				logger.error(Factories.getNameIdFactory(FactoryEnumType.USER).getCacheReport());
+			}
 			assertNotNull("Failed user cache check",check);
 			
 			logger.info("Retrieving User By Id");
@@ -71,18 +75,18 @@ public class TestBulkUser extends BaseDataAccessTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		}  catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Success bit is false",success);
 		// Now try to authenticate as the new bulk loaded user
@@ -93,10 +97,10 @@ public class TestBulkUser extends BaseDataAccessTest{
 			 SessionSecurity.logout(chkUser);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 

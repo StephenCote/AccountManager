@@ -34,9 +34,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.MessageSpoolType;
@@ -51,7 +51,7 @@ import org.cote.accountmanager.objects.types.ValueEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class MessageFactory extends SpoolFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.MESSAGE, MessageFactory.class); }
+
 	public MessageFactory()
 	{
 		super();
@@ -94,19 +94,18 @@ public class MessageFactory extends SpoolFactory {
 	}
 	public MessageSpoolType newMessage(SpoolNameEnumType queue, UserType owner, long groupId) throws ArgumentException
 	{
-		MessageSpoolType new_message = (MessageSpoolType)newSpoolEntry(SpoolBucketEnumType.MESSAGE_QUEUE);
-		new_message.setSpoolBucketName(queue);
-		new_message.setOwnerId(owner.getId());
-		new_message.setOrganizationId(owner.getOrganizationId());
-		new_message.setGroupId(groupId);
-		new_message.setSpoolBucketType(SpoolBucketEnumType.MESSAGE_QUEUE);
-		new_message.setValueType(ValueEnumType.UNKNOWN);
-		Date expDate = Calendar.getInstance().getTime();
+		MessageSpoolType newMessage = (MessageSpoolType)newSpoolEntry(SpoolBucketEnumType.MESSAGE_QUEUE);
+		newMessage.setSpoolBucketName(queue);
+		newMessage.setOwnerId(owner.getId());
+		newMessage.setOrganizationId(owner.getOrganizationId());
+		newMessage.setGroupId(groupId);
+		newMessage.setSpoolBucketType(SpoolBucketEnumType.MESSAGE_QUEUE);
+		newMessage.setValueType(ValueEnumType.UNKNOWN);
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.YEAR, 1);
-		new_message.setExpiration(CalendarUtil.getXmlGregorianCalendar(cal.getTime()));
-		new_message.setExpires(true);
-		return new_message;
+		newMessage.setExpiration(CalendarUtil.getXmlGregorianCalendar(cal.getTime()));
+		newMessage.setExpires(true);
+		return newMessage;
 	}
 	
 	public DirectoryGroupType getUserMessagesGroup(UserType user) throws FactoryException, ArgumentException
@@ -123,13 +122,13 @@ public class MessageFactory extends SpoolFactory {
 	public MessageSpoolType getMessageByName(SpoolNameEnumType queue, String name, DirectoryGroupType group) throws FactoryException, ArgumentException
 	{
 		List<BaseSpoolType> messages = getByField(new QueryField[] { QueryFields.getFieldSpoolBucketName(queue), QueryFields.getFieldName(name), QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
-		if (messages.size() == 0) return null;
+		if (messages.isEmpty()) return null;
 		return (MessageSpoolType)messages.get(0);
 	}
 	public MessageSpoolType getMessageByGuid(String guid, long organizationId) throws FactoryException, ArgumentException
 	{
 		List<BaseSpoolType> messages = getByField(new QueryField[] { QueryFields.getFieldGuid(guid) }, organizationId);
-		if (messages.size() == 0) return null;
+		if (messages.isEmpty()) return null;
 		return (MessageSpoolType)messages.get(0);
 	}
 	public List<MessageSpoolType> getMessages(SpoolNameEnumType queue, long organizationId) throws FactoryException, ArgumentException
@@ -150,7 +149,7 @@ public class MessageFactory extends SpoolFactory {
 	}
 	public List<MessageSpoolType> getMessagesFromUserGroup(String name, SpoolNameEnumType queue, SpoolStatusEnumType status, UserType user, MessageSpoolType parentMessage,DirectoryGroupType group) throws FactoryException, ArgumentException
 	{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldSpoolBucketName(queue));
 		fields.add(QueryFields.getFieldGroup(group.getId()));
 		fields.add(QueryFields.getFieldOwner(user.getId()));
@@ -166,18 +165,18 @@ public class MessageFactory extends SpoolFactory {
 		return convertList(messages);
 	}
 
-
+	@Override
 	protected BaseSpoolType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-			MessageSpoolType new_message = new MessageSpoolType();
-			return super.read(rset, new_message);
+			MessageSpoolType newMessage = new MessageSpoolType();
+			return super.read(rset, newMessage);
 	}
 
 
-	public boolean addMessage(MessageSpoolType new_message) throws FactoryException
+	public boolean addMessage(MessageSpoolType newMessage) throws FactoryException
 	{
-		if(isValid(new_message) == false) throw new FactoryException("Message does not contain valid data.");
-		return insertRow(prepareAdd(new_message,"spool"));
+		if(isValid(newMessage) == false) throw new FactoryException("Message does not contain valid data.");
+		return insertRow(prepareAdd(newMessage,"spool"));
 	}
 
 	public boolean isValid(BaseSpoolType message)

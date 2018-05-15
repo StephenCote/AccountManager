@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Map;
 
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.FileUtil;
@@ -157,7 +158,7 @@ public class TestTraitType extends BaseAccelerantTest {
 						logger.info("Restored: " + events.size() + " events");
 					} catch (IOException e) {
 						
-						logger.error("Error",e);
+						logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 					}
 					*/
 					
@@ -173,7 +174,7 @@ public class TestTraitType extends BaseAccelerantTest {
 		} catch (Exception e) {
 			
 			error = true;
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("An error occurred",error);
 
@@ -233,7 +234,7 @@ public class TestTraitType extends BaseAccelerantTest {
 			
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		//((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).

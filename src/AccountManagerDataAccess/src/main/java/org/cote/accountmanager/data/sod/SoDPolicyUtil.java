@@ -35,9 +35,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.EntitlementType;
@@ -54,7 +54,7 @@ public class SoDPolicyUtil {
 			activityPermissions.put(activityUrn, new ArrayList<Long>());
 		}
 		List<Long> perms = activityPermissions.get(activityUrn);
-		if(perms.size() == 0){
+		if(perms.isEmpty()){
 			try{
 				DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getByUrn(activityUrn);
 				List<EntitlementType> ents = EffectiveAuthorizationService.getEffectiveMemberEntitlements(dir, null, new BasePermissionType[0],false);
@@ -62,7 +62,7 @@ public class SoDPolicyUtil {
 				for(int i = 0; i < ents.size(); i++){
 					EntitlementType ent = ents.get(i);
 					BasePermissionType per = Factories.getNameIdFactory(FactoryEnumType.PERMISSION).getById(ent.getEntitlementId(), ent.getOrganizationId());
-					if(perSet.contains(per.getUrn()) == false){
+					if(perSet.contains(per.getId()) == false){
 						perSet.add(per.getId());
 					}
 				}
@@ -82,7 +82,7 @@ public class SoDPolicyUtil {
 	public static List<Long> getActivityPermissionsForType(String activityUrn, NameIdType reference){
 		List<Long> perms = new ArrayList<Long>();
 		List<Long> actPerms = getActivityPermissions(activityUrn);
-		if(actPerms.size() == 0){
+		if(actPerms.isEmpty()){
 			logger.warn("Zero permissions found for " + activityUrn);
 			return perms;
 		}
@@ -93,7 +93,7 @@ public class SoDPolicyUtil {
 			for(int i = 0; i < ents.size(); i++){
 				EntitlementType ent = ents.get(i);
 				BasePermissionType per = Factories.getNameIdFactory(FactoryEnumType.PERMISSION).getById(ent.getEntitlementId(), ent.getOrganizationId());
-				if(perSet.contains(per.getUrn()) == false){
+				if(perSet.contains(per.getId()) == false){
 					perSet.add(per.getId());
 				}
 			}

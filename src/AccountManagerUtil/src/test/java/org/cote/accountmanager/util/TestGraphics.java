@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.junit.After;
 import org.junit.Test;
 
@@ -58,7 +59,7 @@ public class TestGraphics {
 			fos.close();
 		}
 		catch(IOException e){
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			logger.error(e.getMessage());
 		}
 		

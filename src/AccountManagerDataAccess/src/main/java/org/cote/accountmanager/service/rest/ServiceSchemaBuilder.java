@@ -58,10 +58,6 @@ public class ServiceSchemaBuilder {
 					if(an != null && an.value() != null){
 						altName = an.value().replaceAll("/","");
 						if(altName.indexOf("{") > -1) altName = altName.substring(0,altName.indexOf("{"));
-						//logger.info("Annotated for " + altName);
-					}
-					else{
-						//logger.info("Null path for " + altName);
 					}
 				}
 				else{
@@ -104,14 +100,10 @@ public class ServiceSchemaBuilder {
 			Annotation[] an = m.getDeclaredAnnotations();
 			for(int i = 0; i < an.length;i++){
 				if(an[i].annotationType().getName().equals(c.getName())){
-					//logger.info(an[i].annotationType().getName() + " == " + c.getName());
 					out_bool = true;
 					break;
 				}
 			}
-			//Annotation an = m.getAnnotation(c);
-			//logger.info("Annotation " + c.getName() + " == " + (an == null? an.annotationType().getName() : false));
-			//out_bool = true;
 		}
 		catch(Exception e){
 			/// sink error

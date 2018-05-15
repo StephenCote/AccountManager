@@ -34,11 +34,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.DataParticipationFactory;
@@ -62,9 +60,9 @@ import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
-import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
@@ -91,7 +89,10 @@ public class BaseService {
 	public static final Logger logger = LogManager.getLogger(BaseService.class);
 	private static boolean enableExtendedAttributes = false;
 	private static boolean allowDataPointers = false;
-	private static boolean checkConfigDataPoint = false;
+	
+	private BaseService(){
+		
+	}
 	
 	public static void setEnableExtendedAttributes(boolean b){
 		enableExtendedAttributes = b;
@@ -109,6 +110,8 @@ public class BaseService {
 			case GROUP:
 				out_path = "";
 				break;
+			default:
+				break;
 		}
 		return out_path;
 	}
@@ -124,7 +127,6 @@ public class BaseService {
 			throw new ArgumentException("Null object");
 		}
 		NameIdType obj = (NameIdType)object;
-		/* obj.getOrganizationPath() == null ||  */
 		if(obj.getNameType() == NameEnumType.UNKNOWN){
 			throw new ArgumentException("Invalid object");
 		}
@@ -144,15 +146,11 @@ public class BaseService {
 			}
 			iFact.normalize(obj);
 		}
-		else /*if(iFact.isClusterByParent()){*/ 
+		else
 		{ 
 			iFact.normalize(obj);
 		}
-		/*
-		else{
-			throw new ArgumentException("Unsupported type: " + obj.getNameType().toString());
-		}
-		*/
+
 
 	}
 	
@@ -169,15 +167,6 @@ public class BaseService {
 		}
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(obj.getNameType().toString()));
 		iFact.denormalize(object);
-		/*
-		if(iFact.isClusterByGroup() || iFact.isClusterByParent() || obj.getNameType().equals(NameEnumType.DATA)){
-			iFact.denormalize(object);
-		}
-		
-		else{
-			throw new ArgumentException("Unsupported type: " + obj.getNameType().toString());
-		}
-		*/
 
 	}
 
@@ -188,19 +177,19 @@ public class BaseService {
 		INameIdFactory iFact = Factories.getNameIdFactory(FactoryEnumType.valueOf(type.toString()));
 		ITypeSanitizer sanitizer = Factories.getSanitizer(NameEnumType.valueOf(type.toString()));
 		if(sanitizer == null){
-			logger.error("Sanitizer is null");
+			logger.error(String.format(FactoryException.TYPE_NOT_REGISTERED,"Sanitizer"));
 			return false;
 		}
-		T san_obj = sanitizer.sanitizeNewObject(type, user, inObj);
-		if(sanitizer.useAlternateAdd(type, san_obj)){
-			outBool = sanitizer.add(type, user, san_obj);
+		T sanObj = sanitizer.sanitizeNewObject(type, user, inObj);
+		if(sanitizer.useAlternateAdd(type, sanObj)){
+			outBool = sanitizer.add(type, user, sanObj);
 		}
 		else{
-			outBool = iFact.add(san_obj);
+			outBool = iFact.add(sanObj);
 		}
 		return outBool;
 	}
-	private static <T> boolean updateObject(AuditEnumType type, T inObj) throws ArgumentException, FactoryException, DataAccessException {
+	private static <T> boolean updateObject(AuditEnumType type, T inObj) throws FactoryException {
 		boolean outBool = false;
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 		outBool = iFact.update(inObj);
@@ -222,7 +211,7 @@ public class BaseService {
 		
 		ITypeSanitizer sanitizer = Factories.getSanitizer(NameEnumType.valueOf(type.toString()));
 		if(sanitizer == null){
-			logger.error("Sanitizer is null");
+			logger.error(String.format(FactoryException.TYPE_NOT_REGISTERED,"Sanitizer"));
 			return false;
 		}
 
@@ -236,7 +225,7 @@ public class BaseService {
 	
 		return outBool;
 	}
-	public static <T> T getFactory(AuditEnumType type){
+	public static <T> T getFactory(AuditEnumType type) throws FactoryException{
 		return Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 		
 	}
@@ -260,7 +249,7 @@ public class BaseService {
 
 		ITypeSanitizer sanitizer = Factories.getSanitizer(NameEnumType.valueOf(type.toString()));
 		if(sanitizer == null){
-			logger.error("Sanitizer is null");
+			logger.error(String.format(FactoryException.TYPE_NOT_REGISTERED,"Sanitizer"));
 			return obj;
 		}
 		
@@ -304,6 +293,7 @@ public class BaseService {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	private static <T> T getByNameInGroup(AuditEnumType type, UserType user, String name, DirectoryGroupType group) throws ArgumentException, FactoryException {
 		
 		T outObj = null;
@@ -329,6 +319,8 @@ public class BaseService {
 		}
 		return outObj;		
 	}
+	
+	@SuppressWarnings("unchecked")
 	private static <T> T getByNameInGroup(AuditEnumType type, String name, long organizationId) throws ArgumentException, FactoryException {
 		logger.error("***** DEPRECATE getByNameInGroup AND ITS ENTIRE TRACE");
 		T outObj = null;
@@ -338,6 +330,8 @@ public class BaseService {
 				break;
 			case USER:
 				outObj = (T)Factories.getNameIdFactory(FactoryEnumType.USER).getByName(name, organizationId);
+				break;
+			default:
 				break;
 		}
 		if(outObj != null){
@@ -464,7 +458,7 @@ public class BaseService {
 		else if(type.equals(AuditEnumType.USER)){
 			outBool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
 			if(outBool) throw new FactoryException("Self deletion not supported via Web interface");
-			if(!outBool)  outBool = AuthorizationService.isMapOwner(user, obj);
+			outBool = AuthorizationService.isMapOwner(user, obj);
 			if(!outBool) outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
 		}
 		else{
@@ -586,7 +580,7 @@ public class BaseService {
 			}
 			else{
 				AuditService.denyResult(audit, "User is not authorized");
-				System.out.println("User is not authorized to delete the object object '" + typeBean.getName() + "' #" + typeBean.getId());
+				logger.error("User is not authorized to delete the object object '" + typeBean.getName() + "' #" + typeBean.getId());
 			}
 		} catch (ArgumentException | FactoryException e1) {
 			
@@ -649,7 +643,7 @@ public class BaseService {
 			}
 			else{
 				AuditService.denyResult(audit, "User is not authorized");
-				System.out.println("User is not authorized to add the object  '" + dirBean.getName());
+				logger.error("User is not authorized to add the object  '" + dirBean.getName());
 			}
 		} catch (ArgumentException | FactoryException | DataException | DataAccessException e) {
 			
@@ -702,7 +696,7 @@ public class BaseService {
 			else{
 				AuditService.denyResult(audit,"User is not authorized to change object '" + dirBean.getName() + "' #" + dirBean.getId());
 			}
-		} catch (ArgumentException | FactoryException | DataAccessException e) {
+		} catch (ArgumentException | FactoryException e) {
 			
 			logger.error(e);
 			AuditService.denyResult(audit, e.getMessage());
@@ -717,6 +711,7 @@ public class BaseService {
 		if(user==null) return null;
 		return readByUrn(type, urn, user);
 	}
+	@SuppressWarnings("unchecked")
 	public static <T> T readByUrn(AuditEnumType type, String urn,UserType user){
 		T outObj = null;
 
@@ -759,6 +754,7 @@ public class BaseService {
 		if(user==null) return null;
 		return readByObjectId(type, id, user);
 	}
+	@SuppressWarnings("unchecked")
 	public static <T> T readByObjectId(AuditEnumType type, String id,UserType user){
 		T outObj = null;
 
@@ -800,6 +796,7 @@ public class BaseService {
 		if(user==null) return null;
 		return readById(type, id, user);
 	}
+	@SuppressWarnings("unchecked")
 	public static <T> T readById(AuditEnumType type, long id,UserType user){
 		T outObj = null;
 
@@ -874,11 +871,7 @@ public class BaseService {
 		try{
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getById(groupId, user.getOrganizationId());
 		}
-		 catch (FactoryException e1) {
-			
-			 logger.error(e1.getMessage());
-			logger.error(e1);
-		} catch (ArgumentException e) {
+		 catch (FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
 			logger.error(e);
@@ -895,8 +888,6 @@ public class BaseService {
 		return readByName(audit,type, user, dir, name);
 	}
 	public static <T> T readByName(AuditEnumType type, DirectoryGroupType dir, String name,UserType user){
-		T outObj = null;
-
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByName",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, type, name);
 		return readByName(audit,type, user, dir, name);
@@ -943,10 +934,7 @@ public class BaseService {
 		return readByNameInParent(audit,type, user, parent, name, otype);
 	}
 	public static <T> T readByNameInParent(AuditEnumType type, NameIdType parent, String name, String otype, UserType user){
-		T outObj = null;
-
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByNameInParent",AuditEnumType.USER, user.getUrn());
-
 		return readByNameInParent(audit,type, user, parent, name, otype);
 	}
 	public static <T> T readByNameInParent(AuditType audit,AuditEnumType type, UserType user, NameIdType parent, String name,String otype){
@@ -996,8 +984,6 @@ public class BaseService {
 		AuditService.targetAudit(audit, type, name);
 		logger.debug("***** DEPRECATE readByName AND ITS ENTIRE TRACE");
 		try {
-			//DirectoryGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, getDefaultGroupName(type));
-
 			outObj = getByNameInGroup(type, name, organizationId);
 			if(outObj == null){
 				AuditService.denyResult(audit, "'" + name + "' doesn't exist");
@@ -1060,11 +1046,11 @@ public class BaseService {
 		return count(audit,type, user, dir);
 	}
 	public static int count(AuditType audit,AuditEnumType type, UserType user, BaseGroupType dir){
-		int out_count = 0;
+		int outCount = 0;
 		try {
 			if(canViewType(AuditEnumType.GROUP, user, dir) == true){
-				out_count = count(type, dir);
-				AuditService.permitResult(audit, "Count " + out_count + " of " + type.toString() + " in '" + dir.getName() + "' #" + dir.getId());
+				outCount = count(type, dir);
+				AuditService.permitResult(audit, "Count " + outCount + " of " + type.toString() + " in '" + dir.getName() + "' #" + dir.getId());
 			}
 			else{
 				AuditService.denyResult(audit,"User is not authorized to view objects in the specified group '" + dir.getName() + "' #" + dir.getId());
@@ -1074,7 +1060,7 @@ public class BaseService {
 			logger.error(e1);
 		} 
 
-		return out_count;
+		return outCount;
 	}
 	private static int count(AuditEnumType type, BaseGroupType group) throws ArgumentException, FactoryException {
 		
@@ -1112,7 +1098,7 @@ public class BaseService {
 	}
 
 	public static int countByOrganization(AuditType audit,AuditEnumType type, UserType user, long organizationId){
-		int out_count = 0;
+		int outCount = 0;
 		try {
 			if(
 				RoleService.isFactoryAdministrator(user, ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)),organizationId)
@@ -1126,8 +1112,8 @@ public class BaseService {
 				(type == AuditEnumType.GROUP && RoleService.isFactoryReader(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)),organizationId))
 				
 			){
-				out_count = count(type, organizationId);
-				AuditService.permitResult(audit, "Count " + out_count + " of " + type.toString());
+				outCount = count(type, organizationId);
+				AuditService.permitResult(audit, "Count " + outCount + " of " + type.toString());
 			}
 			else{
 				AuditService.denyResult(audit,"User is not authorized to count directly in organization " + organizationId);
@@ -1137,14 +1123,14 @@ public class BaseService {
 			logger.error(e1);
 		} 
 
-		return out_count;
+		return outCount;
 	}
 	public static int countInParent(AuditType audit,AuditEnumType type, UserType user, NameIdType parent){
-		int out_count = 0;
+		int outCount = 0;
 		try {
 			if(canViewType(type,user, parent) == true){
-				out_count = countInParent(type, parent);
-				AuditService.permitResult(audit, "Count " + out_count + " of " + type.toString());
+				outCount = countInParent(type, parent);
+				AuditService.permitResult(audit, "Count " + outCount + " of " + type.toString());
 			}
 			else{
 				AuditService.denyResult(audit,"User is not authorized to count in parent '" + parent.getName() + "' #" + parent.getId());
@@ -1154,14 +1140,14 @@ public class BaseService {
 			logger.error(e1);
 		} 
 
-		return out_count;
+		return outCount;
 	}
 	
-	private static int count(AuditEnumType type, long organization_id) throws ArgumentException, FactoryException {
+	private static int count(AuditEnumType type, long organizationId) throws FactoryException {
 		NameIdFactory factory = getFactory(type);
-		return factory.countInOrganization(organization_id);
+		return factory.countInOrganization(organizationId);
 	}
-	private static int countInParent(AuditEnumType type, NameIdType parent) throws ArgumentException, FactoryException {
+	private static int countInParent(AuditEnumType type, NameIdType parent) throws FactoryException {
 		NameIdFactory factory = getFactory(type);
 		return factory.countInParent(parent);
 	}
@@ -1213,10 +1199,10 @@ public class BaseService {
 
 	private static <T> List<T> getListByParent(AuditEnumType type,String parentType, NameIdType parentObj, long startIndex, int recordCount, long organizationId){
 		List<T> dirs = new ArrayList<>();
-		INameIdFactory iFact = getFactory(type);
 
 		if(parentObj == null) return dirs;
 		try {
+			INameIdFactory iFact = getFactory(type);
 			if(iFact.isClusterByParent()){
 				dirs = iFact.listInParent(parentType, parentObj.getId(), startIndex, recordCount, organizationId);
 			}
@@ -1245,10 +1231,10 @@ public class BaseService {
 			outObj = iGFact.listInGroup(group, startRecord, recordCount, group.getOrganizationId());
 		}
 		else if(iFact.getFactoryType().equals(FactoryEnumType.DATA)){
-			outObj = ((DataFactory)iFact).convertList(((DataFactory)iFact).getDataListByGroup((DirectoryGroupType)group, true,startRecord, recordCount, group.getOrganizationId()));
+			outObj = FactoryBase.convertList(((DataFactory)iFact).getDataListByGroup((DirectoryGroupType)group, true,startRecord, recordCount, group.getOrganizationId()));
 		}
 		for(int i = 0; i < outObj.size();i++){
-			//NameIdDirectoryGroupType ngt = (NameIdDirectoryGroupType)outObj.get(i);
+
 			NameIdType nt = (NameIdType)outObj.get(i);
 			denormalize(nt);
 			if(enableExtendedAttributes){
@@ -1263,10 +1249,9 @@ public class BaseService {
 		List<T> outObj = new ArrayList<>();
 		INameIdFactory iFact = getFactory(type);
 		if(type.equals(AuditEnumType.USER)){
-			outObj = ((UserFactory)iFact).convertList(((UserFactory)iFact).getUserList(startRecord, recordCount, organizationId));
+			outObj = FactoryBase.convertList(((UserFactory)iFact).getUserList(startRecord, recordCount, organizationId));
 		}
 		for(int i = 0; i < outObj.size();i++){
-			//NameIdDirectoryGroupType ngt = (NameIdDirectoryGroupType)outObj.get(i);
 			NameIdType nt = (NameIdType)outObj.get(i);
 			denormalize(nt);
 			if(enableExtendedAttributes){
@@ -1288,6 +1273,10 @@ public class BaseService {
 	public static <T> List<T> listByOrganization(AuditEnumType type, long startRecord, int recordCount, UserType user){
 		List<T> outObj = new ArrayList<>();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All objects",type,(user == null ? "Null" : user.getName()));
+		if(user == null){
+			AuditService.denyResult(audit, "Null user");
+			return outObj;
+		}
 		AuditService.targetAudit(audit, AuditEnumType.USER, user.getUrn());
 
 		try {
@@ -1348,47 +1337,14 @@ public class BaseService {
 		}
 		return outObj;
 	}
-	/*
-	public static <T> List<T> getGroupList(AuditEnumType type, UserType user, String path, long startRecord, int recordCount){
-		List<T> outObj = new ArrayList<T>();
 
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, path,AuditEnumType.USER,(user == null ? "Null" : user.getName()));
-		AuditService.targetAudit(audit, type, path);
-		
-		if(SessionSecurity.isAuthenticated(user) == false){
-			AuditService.denyResult(audit, "User is null or not authenticated");
-			return null;
-		}
-		
-		try {
-			BaseGroupType dir = (BaseGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.UNKNOWN, path, user.getOrganizationId());
-			if(dir == null){
-				AuditService.denyResult(audit, "Invalid path: '" + path + "'");
-				return outObj;
-			}
-			if(AuthorizationService.canView(user, dir) == true){
-				AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
-				outObj = getListByGroup(type,dir,startRecord,recordCount);
-			}
-			else{
-				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
-				return outObj;
-			}
-		} catch (ArgumentException | FactoryException e1) {
-			
-			logger.error(e1);
-		} 
-
-		return outObj;
-	}
-	*/
-	
 	public static <T> T findGroup(GroupEnumType groupType, String path, HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		if(user == null) return null;
 		return findGroup(user,groupType,path);
 	
 	}
+	@SuppressWarnings("unchecked")
 	public static <T> T findGroup(UserType user,GroupEnumType groupType, String path){
 		T bean = null;
 		if(path == null || path.length() == 0) path = "~";
@@ -1400,7 +1356,7 @@ public class BaseService {
 				AuditService.denyResult(audit, "Invalid path: " + groupType.toString() + " " + path);
 				return bean;
 			}
-			if(AuthorizationService.canView(user, dir) == false){
+			if(!AuthorizationService.canView(user, dir)){
 				AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + dir.getName() + " (#" + dir.getId() + ")");
 				return bean;
 			}
@@ -1438,15 +1394,17 @@ public class BaseService {
 			return null;
 		}
 		
-		INameIdFactory iFact = getFactory(auditType);
-		if(iFact.isClusterByParent()){
-			/// This is a pretty specific implementation limited to paths within the user directory structure
-			///
-			if(path.startsWith("..") == false && path.startsWith("~") == false && path.startsWith("/Home/" + user.getName() + "/")==false){
-				AuditService.denyResult(audit, "Paths can only be created from the home directory");
-				return null;
-			}
-			try{
+		
+		try{
+			INameIdFactory iFact = getFactory(auditType);
+			if(iFact.isClusterByParent()){
+				/// This is a pretty specific implementation limited to paths within the user directory structure
+				///
+				if(path.startsWith("..") == false && path.startsWith("~") == false && path.startsWith("/Home/" + user.getName() + "/")==false){
+					AuditService.denyResult(audit, "Paths can only be created from the home directory");
+					return null;
+				}
+		
 				obj = iFact.makePath(user, type, path, user.getOrganizationId());
 				if(obj != null && canViewType(auditType, user, (NameIdType)obj) == false){
 					AuditService.denyResult(audit, "User is not authorized to view object");
@@ -1458,10 +1416,11 @@ public class BaseService {
 					AuditService.permitResult(audit, "User is authorized to create the path under their own path home");
 				}
 			}
-			catch(ArgumentException | FactoryException | DataAccessException e){
-				logger.error(e.getMessage());
-			}
+
 			
+		}
+		catch(ArgumentException | FactoryException | DataAccessException e){
+			logger.error(e.getMessage());
 		}
 		return obj;
 		
@@ -1538,6 +1497,8 @@ public class BaseService {
 					BaseRoleType role = (BaseRoleType)container;
 					outBool = RoleService.switchActorInRole(object, role, enable);
 					break;
+				default:
+					break;
 			}
 			
 			if(outBool){
@@ -1566,7 +1527,7 @@ public class BaseService {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All objects for member",type,(user == null ? "Null" : user.getUrn()));
 		AuditService.targetAudit(audit, type, "All objects for member");
 		
-		if(SessionSecurity.isAuthenticated(user) == false){
+		if(user == null || SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit, "User is null or not authenticated");
 			return null;
 		}
@@ -1648,12 +1609,12 @@ public class BaseService {
 	/// Convenience method for populating membership lists, such as members of roles, permissions, etc
 	
 	public static <T> List<T> listMembers(AuditEnumType type, UserType user,NameIdType container, FactoryEnumType memberType){
-		List<T> outObj = new ArrayList<T>();
+		List<T> outObj = new ArrayList<>();
 		if(user == null || container == null){
 			logger.error("User or container is null");
 			return outObj;
 		}
-		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All " + memberType.toString() + "in " + type.toString() + " " + container.getUrn(),AuditEnumType.ROLE,(user == null ? "Null" : user.getUrn()));
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All " + memberType.toString() + "in " + type.toString() + " " + container.getUrn(),AuditEnumType.ROLE,user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "All " + memberType.toString() + "in " + type.toString() + " " + container.getUrn());
 		logger.warn("Authorization implementation being reworked, so there is presently a hole here where a user can read objects as members, but may not be able to read the objects directly");
 		try {
@@ -1715,6 +1676,10 @@ public class BaseService {
 		BasePermissionType perm = null;
 		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Permission " + permissionId,AuditEnumType.PERMISSION,(user == null ? "Null" : user.getName()));
+		if(user == null){
+			AuditService.denyResult(audit, "User is null");
+			return outBool;
+		}
 		try {
 			if(objectType != AuditEnumType.DATA) src = ((NameIdFactory)BaseService.getFactory(objectType)).getByObjectId(objectId, user.getOrganizationId());
 			else src = ((DataFactory)BaseService.getFactory(objectType)).getDataByObjectId(objectId, true, user.getOrganizationId());

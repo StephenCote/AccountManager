@@ -43,9 +43,9 @@ import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.MessageSpoolType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
@@ -71,10 +71,10 @@ public abstract class SpoolFactory extends FactoryBase {
 		this.scopeToOrganization = true;
 		this.primaryTableName = "spool";
 		this.tableNames.add(primaryTableName);
-		typeNameIdMap = Collections.synchronizedMap(new HashMap<String,String>());
-		typeNameMap = Collections.synchronizedMap(new HashMap<String,Integer>());
-		typeIdMap = Collections.synchronizedMap(new HashMap<String,Integer>());
-		typeMap = new ArrayList<BaseSpoolType>();
+		typeNameIdMap = Collections.synchronizedMap(new HashMap<>());
+		typeNameMap = Collections.synchronizedMap(new HashMap<>());
+		typeIdMap = Collections.synchronizedMap(new HashMap<>());
+		typeMap = new ArrayList<>();
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
@@ -149,40 +149,40 @@ public abstract class SpoolFactory extends FactoryBase {
 	}
 	
 
-	protected List<BaseSpoolType> getByField(QueryField field, long organization_id) throws FactoryException, ArgumentException
+	protected List<BaseSpoolType> getByField(QueryField field, long organizationId) throws FactoryException, ArgumentException
 	{
-		return getByField(field, null, organization_id);
+		return getByField(field, null, organizationId);
 	}
-	protected List<BaseSpoolType> getByField(QueryField field, ProcessingInstructionType instruction, long organization_id) throws FactoryException, ArgumentException
+	protected List<BaseSpoolType> getByField(QueryField field, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException
 	{
-		return getByField(new QueryField[]{field}, instruction, organization_id);
+		return getByField(new QueryField[]{field}, instruction, organizationId);
 	}
-	protected List<BaseSpoolType> getByField(QueryField[] fields, long organization_id) throws FactoryException, ArgumentException
+	protected List<BaseSpoolType> getByField(QueryField[] fields, long organizationId) throws FactoryException, ArgumentException
 	{
-		return getByField(fields, null, organization_id);
+		return getByField(fields, null, organizationId);
 	}
-	protected List<BaseSpoolType> getByField(QueryField[] fields, ProcessingInstructionType instruction, long organization_id) throws FactoryException, ArgumentException{
-		List<BaseSpoolType> out_list = new ArrayList<BaseSpoolType>();
+	protected List<BaseSpoolType> getByField(QueryField[] fields, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException{
+		List<BaseSpoolType> outList = new ArrayList<>();
 		if(this.dataTables.size() > 1) throw new FactoryException("Multiple table select statements not yet supported");
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		DataTable table = this.dataTables.get(0);
 		String selectString = getSelectTemplate(table, instruction);
-		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, organization_id);
-		//System.out.println(sqlQuery);
+		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, organizationId);
+
 		try {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
 			ResultSet rset = statement.executeQuery();
 			while(rset.next()){
 				BaseSpoolType obj = this.read(rset, instruction);
-				out_list.add(obj);
+				outList.add(obj);
 			}
 			rset.close();
 			
 		} catch (SQLException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			throw new FactoryException(e.getMessage());
 		}
 		finally{
@@ -190,10 +190,10 @@ public abstract class SpoolFactory extends FactoryBase {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		return out_list;
+		return outList;
 	}	
 	
 	protected BaseSpoolType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
@@ -201,7 +201,7 @@ public abstract class SpoolFactory extends FactoryBase {
 		throw new FactoryException("This is an artifact from java<->c#<->java conversions - should be an abstract class + interface, not an override");
 	}
 
-	protected BaseSpoolType read(ResultSet rset, BaseSpoolType obj) throws SQLException, FactoryException, ArgumentException
+	protected BaseSpoolType read(ResultSet rset, BaseSpoolType obj) throws SQLException
 	{
 		obj.setGuid(rset.getString("guid"));
 		obj.setParentGuid(rset.getString("parentguid"));
@@ -239,19 +239,17 @@ public abstract class SpoolFactory extends FactoryBase {
 	public boolean update(BaseSpoolType map, ProcessingInstructionType instruction) throws FactoryException
 	{
 		DataTable table = dataTables.get(0);
-		boolean out_bool = false;
+		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
-		List<QueryField> queryFields = new ArrayList<QueryField>();
-		List<QueryField> updateFields = new ArrayList<QueryField>();
+		List<QueryField> queryFields = new ArrayList<>();
+		List<QueryField> updateFields = new ArrayList<>();
 
 		queryFields.add(QueryFields.getFieldGuid(map.getGuid()));
 		queryFields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
 		setNameIdFields(updateFields, map);
 		setFactoryFields(updateFields, map, instruction);
 		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(instruction,queryFields.toArray(new QueryField[0]), token);
-
-		// System.out.println("Update String = " + sql);
 		
 		updateFields.addAll(queryFields);
 		
@@ -262,14 +260,14 @@ public abstract class SpoolFactory extends FactoryBase {
 			updated = statement.executeUpdate();
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		
 		try {
 			connection.close();
 		} catch (SQLException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return (updated > 0);
@@ -321,11 +319,6 @@ public abstract class SpoolFactory extends FactoryBase {
 		return getPagingInstruction(0, defaultPageSize);
 	}
 	
-	/// TODO: Stop duplicating this - it's centralized in NameIdFactory
-	/// But the factories coming off of FactoryBase
-	/// And the caching for those factories varies slightly between types
-	
-	
 	public void clearCache(){
 		typeNameIdMap.clear();
 		typeNameMap.clear();
@@ -345,22 +338,21 @@ public abstract class SpoolFactory extends FactoryBase {
 	protected void removeFromCache(BaseSpoolType obj){
 		removeFromCache(obj, obj.getName());
 	}
-	protected void removeFromCache(BaseSpoolType obj, String key_name){
+	protected void removeFromCache(BaseSpoolType obj, String keyName){
 		synchronized(typeMap){
-			if(key_name == null){
+			if(keyName == null){
 				Iterator<String> keys = typeNameMap.keySet().iterator();
 				while(keys.hasNext()){
 					String key = keys.next();
-					if(typeNameMap.get(key).equals(obj.getGuid())){
-						key_name = key;
+					if(key.equals(obj.getGuid())){
+						keyName = typeNameIdMap.get(key);
 						break;
 					}
 				}
 			}
-			//System.out.println("Remove from cache: " + key_name + ":" + typeNameMap.containsKey(key_name) + " and " + typeIdMap.containsKey(obj.getGuid()));
-			if(typeNameMap.containsKey(key_name) && typeIdMap.containsKey(obj.getGuid())){
+			if(typeNameMap.containsKey(keyName) && typeIdMap.containsKey(obj.getGuid())){
 				int indexId = typeIdMap.get(obj.getGuid());
-				typeNameMap.remove(key_name);
+				typeNameMap.remove(keyName);
 				typeMap.set(indexId, null);
 				typeIdMap.remove(obj.getGuid());
 				typeNameIdMap.remove(obj.getGuid());
@@ -385,15 +377,14 @@ public abstract class SpoolFactory extends FactoryBase {
 	public boolean addToCache(BaseSpoolType map){
 		return addToCache(map, map.getName());
 	}
-	public boolean addToCache(BaseSpoolType map, String key_name){
-		//System.out.println("Add to cache: " + (map == null ? "NULL" : map.getName()) + " AT " + key_name);
+	public boolean addToCache(BaseSpoolType map, String keyName){
 		synchronized(typeMap){
 			int length = typeMap.size();
-			if(typeNameMap.containsKey(key_name) || typeIdMap.containsKey(map.getGuid())){
+			if(typeNameMap.containsKey(keyName) || typeIdMap.containsKey(map.getGuid())){
 				return false;
 			}
 			typeMap.add(map);
-			typeNameMap.put(key_name, length);
+			typeNameMap.put(keyName, length);
 			typeIdMap.put(map.getGuid(), length);
 			typeNameIdMap.put(map.getGuid(), map.getName());
 		}

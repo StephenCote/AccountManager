@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -41,8 +42,9 @@ public class TestCachePerformance extends BaseDataAccessTest {
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 		Random random = new Random();
 		long start = System.currentTimeMillis();
-		((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setAggressiveKeyFlush(true);
+
 		try{
+			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setAggressiveKeyFlush(true);
 			for(int i = 0; i < 20000; i++){
 				DataParticipantType dpt = new DataParticipantType();
 				dpt.setNameType(NameEnumType.PARTICIPANT);
@@ -66,9 +68,9 @@ public class TestCachePerformance extends BaseDataAccessTest {
 			}
 			logger.info("Time to randomly pull from cache: " + (System.currentTimeMillis() - start) + "ms");
 		}
-		catch (ArgumentException e) {
+		catch (ArgumentException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 }

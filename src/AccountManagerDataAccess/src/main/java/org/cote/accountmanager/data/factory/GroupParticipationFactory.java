@@ -26,9 +26,9 @@ package org.cote.accountmanager.data.factory;
 import java.util.List;
 
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountType;
@@ -115,69 +115,69 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	public boolean deleteRoleGroupParticipants(BaseGroupType group, BaseRoleType role) throws FactoryException, ArgumentException
 	{
 		List<RoleParticipantType> dp = getRoleGroupParticipants(group,role);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), role.getOrganizationId());
 	}
 	public boolean deleteGroupGroupParticipants(BaseGroupType group, BaseGroupType member) throws FactoryException, ArgumentException
 	{
 
 		List<GroupParticipantType> dp = getGroupGroupParticipants(group, member);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), group.getOrganizationId());
 	}
 	public boolean deleteAccountGroupParticipants(AccountGroupType group, AccountType account) throws FactoryException, ArgumentException
 	{
 
 		List<AccountParticipantType> dp = getAccountGroupParticipants(group, account);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), group.getOrganizationId());
 	}
 	public boolean deletePersonGroupParticipants(PersonGroupType group, PersonType person) throws FactoryException, ArgumentException
 	{
 		List<PersonParticipantType> dp = getPersonGroupParticipants(group, person);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), group.getOrganizationId());
 	}
 
 	public boolean deleteUserGroupParticipants(UserGroupType group, UserType user) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> dp = getUserGroupParticipants(group, user);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), group.getOrganizationId());
 	}	
 	public boolean deleteRoleGroupParticipations(BaseRoleType role) throws FactoryException, ArgumentException
 	{
 
 		List<RoleParticipantType> dp = getRoleGroupParticipants(role);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), role.getOrganizationId());
 	}
 	public boolean deletePersonGroupParticipations(PersonType person) throws FactoryException, ArgumentException
 	{
 
 		List<PersonParticipantType> dp = getPersonGroupParticipants(person);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), person.getOrganizationId());
 	}
 	public boolean deleteAccountGroupParticipations(AccountType account) throws FactoryException, ArgumentException
 	{
 
 		List<AccountParticipantType> dp = getAccountGroupParticipants(account);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), account.getOrganizationId());
 	}
 	public boolean deleteUserGroupParticipations(UserType user) throws FactoryException, ArgumentException
 	{
 
 		List<UserParticipantType> dp = getUserGroupParticipants(user);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), user.getOrganizationId());
 	}
 	public boolean deleteDataGroupParticipations(DataType data) throws FactoryException, ArgumentException
 	{
 
 		List<DataParticipantType> dp = getDataGroupParticipants(data);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), data.getOrganizationId());
 	}
 	/*
@@ -192,7 +192,7 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	public boolean deleteDataGroupParticipants(BucketGroupType group, DataType data) throws FactoryException, ArgumentException
 	{
 		List<DataParticipantType> dp = getDataGroupParticipants(group, data);
-		if (dp.size() == 0) return true;
+		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), data.getOrganizationId());
 	}
 

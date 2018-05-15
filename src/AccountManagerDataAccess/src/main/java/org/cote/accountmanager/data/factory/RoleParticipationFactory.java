@@ -28,9 +28,9 @@ import java.util.List;
 
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -85,7 +85,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		List<RoleParticipantType> list = getRoleRoleParticipants(child_role);
 
-		if (list.size() == 0) return new ArrayList<BaseRoleType>();
+		if (list.isEmpty()) return new ArrayList<BaseRoleType>();
 /*
 		StringBuilder buff = new StringBuilder();
 		for (int i = 0; i < list.size(); i++)
@@ -126,7 +126,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 
 		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(child_role), QueryFields.getFieldParticipantType(ParticipantEnumType.ROLE), QueryFields.getFieldParticipationId(role) }, role.getOrganizationId());
-		if (list.size() == 0) return null;
+		if (list.isEmpty()) return null;
 		return (RoleParticipantType)list.get(0);
 	}
 	public boolean getIsRoleInRole(BaseRoleType role, BaseRoleType child_role) throws FactoryException, ArgumentException
@@ -176,7 +176,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public List<UserRoleType> getUserRoles(UserType account) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> list = getUserRoleParticipants(account);
-		if(list.size() == 0) return new ArrayList<UserRoleType>();
+		if(list.isEmpty()) return new ArrayList<UserRoleType>();
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new UserParticipantType[0]));
 		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRoles(match, account.getOrganizationId());
 	}

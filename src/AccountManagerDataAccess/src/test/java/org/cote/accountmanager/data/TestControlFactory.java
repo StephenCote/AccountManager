@@ -37,6 +37,7 @@ import org.cote.accountmanager.data.factory.PolicyFactory;
 import org.cote.accountmanager.data.factory.RuleFactory;
 import org.cote.accountmanager.data.security.ControlService;
 import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ControlActionEnumType;
 import org.cote.accountmanager.objects.ControlEnumType;
 import org.cote.accountmanager.objects.ControlType;
@@ -110,10 +111,10 @@ public class TestControlFactory extends BaseDataAccessTest {
 			
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	

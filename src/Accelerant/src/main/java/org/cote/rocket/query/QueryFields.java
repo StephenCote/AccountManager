@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.propellant.objects.CostType;
 import org.cote.propellant.objects.TimeType;
 import org.cote.propellant.objects.types.AlignmentEnumType;
@@ -284,7 +285,7 @@ public class QueryFields extends org.cote.accountmanager.data.query.QueryFields 
 			out_f = getBytesField("text",s.getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_f;
 		

@@ -30,6 +30,7 @@ import java.sql.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -251,36 +252,34 @@ public class Factories extends org.cote.accountmanager.data.Factories {
     	logger.info("Touch Rocket to initialize static registration");
     	BulkFactories.prepare();
     }
-    /*
-	public static void warmUp(){
-		org.cote.accountmanager.data.Factories.warmUp();
-	}
-	*/
+
 	public static boolean cleanupOrphans(){
 		
 		boolean out_bool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
+		Statement stat = null;
 		try {
-			Statement stat = connection.createStatement();
+			stat = connection.createStatement();
 			stat.executeQuery("SELECT * FROM cleanup_rocket_orphans();");
 			out_bool = true;
 		} catch (SQLException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
 			try {
+				if(stat != null) stat.close();
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		clearCaches();
 		return org.cote.accountmanager.data.Factories.cleanupOrphans();
 	}
 	
-	public static void warmUp(){
+	public static void warmUp() throws FactoryException{
 		prepare();
 		org.cote.accountmanager.data.Factories.warmUp();
 	}

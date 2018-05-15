@@ -29,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
@@ -94,7 +95,7 @@ public class DataUtil {
 				setValue(d, value.getBytes("UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				logger.error(e.getMessage());
-				logger.error("Trace",e);
+				logger.error(FactoryException.TRACE_EXCEPTION,e);
 			}
 			d.setShortData(null);
 			if(d.getMimeType() == null || d.getMimeType().length() == 0){
@@ -115,7 +116,7 @@ public class DataUtil {
 				return (new String(getValue(d),"UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				logger.error(e.getMessage());
-				logger.error("Trace",e);
+				logger.error(FactoryException.TRACE_EXCEPTION,e);
 			}
 		}
 		return d.getShortData();

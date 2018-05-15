@@ -35,6 +35,7 @@ import org.cote.accountmanager.data.factory.AddressFactory;
 import org.cote.accountmanager.data.factory.ContactInformationFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ContactInformationType;
@@ -50,7 +51,7 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 	
 	
 	
-	private UserType getUserTypeMock(){
+	private UserType getUserTypeMock() throws FactoryException{
 		OrganizationFactory of = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
 		
 		UserType type = new UserType();
@@ -123,10 +124,10 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 	}
@@ -138,17 +139,19 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 		if(testRefId < 0) testRefId *= -1;
 		
 		logger.info("Add w/ Ref Id: " + testRefId);
-		UserType user = getUserTypeMock();
-		ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
-		ContactInformationType cit = cif.newContactInformation(user);
-
 		boolean add_cit = false;
 		boolean error = false;
+
+
 		try {
+			UserType user = getUserTypeMock();
+			ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
+			ContactInformationType cit = cif.newContactInformation(user);
+
 			add_cit = cif.add(cit);
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error = true;
 			logger.error(e.getMessage());
 		}
@@ -159,20 +162,21 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 	@Test
 	public void testGetContactInformation(){
 		logger.info("Get w/ Ref Id: " + testRefId);
-		UserType user = getUserTypeMock();
-		ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
 		ContactInformationType cit = null;
 		boolean error = false;
 		try {
+			UserType user = getUserTypeMock();
+			ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
+
 			cit = cif.getContactInformationForUser(user);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error = true;
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("Error occurred", error);
 		assertNotNull("Unable to get contact information", cit);
@@ -182,12 +186,13 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 	@Test
 	public void testUpdateContactInformation(){
 		logger.info("Update w/ Ref Id: " + testRefId);
-		UserType user = getUserTypeMock();
-		ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
 		ContactInformationType cit = null;
 		boolean error = false;
 		boolean updated = false;
 		try {
+			UserType user = getUserTypeMock();
+			ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
+
 			cit = cif.getContactInformationForUser(user);
 			assertNotNull("Unable to get contact information", cit);
 			//cit.setEmail("wranlon@hotmail.com");
@@ -196,12 +201,12 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error = true;
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error = true;
 		}
 		assertFalse("Error occurred", error);
@@ -211,24 +216,25 @@ public class TestContactInformationFactory extends BaseDataAccessTest{
 	@Test
 	public void testDeleteContactInformation(){
 		logger.info("Delete w/ Ref Id: " + testRefId);
-		UserType user = getUserTypeMock();
-		ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
 		ContactInformationType cit = null;
 		boolean error = false;
 		boolean deleted = false;
 		try {
+			UserType user = getUserTypeMock();
+			ContactInformationFactory cif = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION));
+
 			cit = cif.getContactInformationForUser(user);
 			assertNotNull("Unable to get contact information", cit);
 			deleted = cif.delete(cit);
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error = true;
 			logger.error(e.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("Error occurred", error);
 		assertTrue("Unable to delete contact information", deleted);

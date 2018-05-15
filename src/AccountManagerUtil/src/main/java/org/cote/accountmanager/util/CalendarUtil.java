@@ -35,6 +35,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 
 public class CalendarUtil {
 	private static DatatypeFactory dataTypeFactory = null;
@@ -54,7 +55,7 @@ public class CalendarUtil {
 			d = parserSDF.parse(s);
 		} catch (ParseException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return d;
 		
@@ -87,7 +88,7 @@ public class CalendarUtil {
 			dataTypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return dataTypeFactory;
 	}

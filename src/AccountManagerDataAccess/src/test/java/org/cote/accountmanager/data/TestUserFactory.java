@@ -35,6 +35,7 @@ import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
@@ -53,27 +54,23 @@ public class TestUserFactory extends BaseDataAccessTest{
 	
 	@Test
 	public void testAddUser(){
-		OrganizationFactory of = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
-		UserType user1 = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(testUserName1, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
-		UserType user2 = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
 		boolean add = false;
 		boolean error = false;
 		logger.info(testUserPassword + ":" + testUserPassword.length());
 		try{
+			OrganizationFactory of = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
+			UserType user1 = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(testUserName1, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
+			UserType user2 = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
+
 			add = (
 				((UserFactory)Factories.getFactory(FactoryEnumType.USER)).add(user1, true)
 				&&
 				((UserFactory)Factories.getFactory(FactoryEnumType.USER)).add(user2, true)
 			);
 		}
-		catch(ArgumentException fe){
+		catch(ArgumentException | FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
-			error = true;
-		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			error = true;
 		}
 		assertFalse("Error occurred", error);
@@ -93,11 +90,11 @@ public class TestUserFactory extends BaseDataAccessTest{
 
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			error = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("Error occurred", error);
 
@@ -129,17 +126,17 @@ public class TestUserFactory extends BaseDataAccessTest{
 
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			error = true;
 		} catch (DataAccessException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error = true;
 		} catch (ArgumentException e) {
 			
 			error = true;
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("Error occurred", error);
 
@@ -182,17 +179,17 @@ public class TestUserFactory extends BaseDataAccessTest{
 
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			error = true;
 		} catch (DataAccessException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error = true;
 		} catch (ArgumentException e) {
 			
 			error = true;
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("Error occurred", error);
 

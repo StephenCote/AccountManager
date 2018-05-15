@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.types.SessionStatusEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -59,7 +60,7 @@ public class TestUserSession extends BaseDataAccessTest{
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue(add_session);
 		logger.info("Session id: " + sessionId);
@@ -72,7 +73,7 @@ public class TestUserSession extends BaseDataAccessTest{
 			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull(session);
 	}
@@ -88,7 +89,7 @@ public class TestUserSession extends BaseDataAccessTest{
 			updated = Factories.getSessionFactory().update(session);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue(updated);
 	}
@@ -131,7 +132,7 @@ public class TestUserSession extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	
@@ -143,7 +144,7 @@ public class TestUserSession extends BaseDataAccessTest{
 			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNull(session);
 	}

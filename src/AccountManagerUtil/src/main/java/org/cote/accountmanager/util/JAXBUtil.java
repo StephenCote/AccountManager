@@ -37,6 +37,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 
 public class JAXBUtil {
 	public static final Logger logger = LogManager.getLogger(JAXBUtil.class);
@@ -67,7 +68,7 @@ public class JAXBUtil {
 		}
 		catch(JAXBException je){
 			logger.error(je.getMessage());
-			logger.error("Trace",je);
+			logger.error(FactoryException.TRACE_EXCEPTION,je);
 		}
 		return bean;
 	}
@@ -81,11 +82,11 @@ public class JAXBUtil {
 		    obj = (T) context.createUnmarshaller().unmarshal(bais);
 		} catch (JAXBException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 
 	   return obj;
@@ -103,14 +104,14 @@ public class JAXBUtil {
 		    baos.close();
 		} catch (JAXBException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		catch (UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 	    return output;
 	}

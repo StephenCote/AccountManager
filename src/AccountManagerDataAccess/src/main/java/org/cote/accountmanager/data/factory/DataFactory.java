@@ -41,10 +41,10 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DataColumnType;
 import org.cote.accountmanager.objects.DataType;
@@ -69,9 +69,6 @@ public class DataFactory extends NameIdFactory {
 	private long maximumCacheSize = 1048576L*100L;
 	private long currentCacheSize = 0L;
 
-	static{
-		//registerProvider();
-	}
 	public void setMaximumCacheSize(long l){
 		maximumCacheSize = l;
 		
@@ -85,10 +82,6 @@ public class DataFactory extends NameIdFactory {
 			);
 	}
 
-	/// Max cache size = 50MB;
-	///
-
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.DATA, DataFactory.class); }
 	public DataFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -97,7 +90,8 @@ public class DataFactory extends NameIdFactory {
 		this.hasOwnerId = true;
 		this.hasObjectId = true;
 		this.hasUrn = true;
-		this.tableNames.add("data");
+		this.primaryTableName = "data";
+		this.tableNames.add(this.primaryTableName);
 		factoryType = FactoryEnumType.DATA;
 		systemRoleNameReader = "DataReaders";
 		systemRoleNameAdministrator = "DataAdministrators";
@@ -105,16 +99,17 @@ public class DataFactory extends NameIdFactory {
 	@Override
 	protected void checkCacheExpires(){
 		super.checkCacheExpires();
-		//logger.info("Current cache size: " + (currentCacheSize > 0L ? (currentCacheSize / 1024) + " kb" : "0"));
+
 		if(currentCacheSize >= maximumCacheSize){
 			logger.info("Exceeded maximum data cache size " + (maximumCacheSize / 1024) + " KB.  Clearing data cache.");
 			clearCache();
 			currentCacheSize = 0L;
 		}
 	}
+	
 	@Override
-	public synchronized boolean addToCache(NameIdType map, String key_name) throws ArgumentException{
-		boolean ret = super.addToCache(map, key_name);
+	public synchronized boolean addToCache(NameIdType map, String keyName) throws ArgumentException{
+		boolean ret = super.addToCache(map, keyName);
 		if(ret){
 			currentCacheSize += (long)((DataType)map).getSize();
 		}
@@ -162,20 +157,17 @@ public class DataFactory extends NameIdFactory {
 	
 	
 	protected void updateDataToCache(DataType data) throws ArgumentException{
-		String key_name = data.getName() + "-" + data.getGroupId();
-		//System.out.println("Update data to cache: " + key_name);
+		String keyName = data.getName() + "-" + data.getGroupId();
 		if(this.haveCacheId(data.getId())) removeFromCache(data);
-		addToCache(data, key_name);
+		addToCache(data, keyName);
 	}
 	protected void removeDataFromCache(DataType data){
-		String key_name = getCacheKeyName(data);
-		//String key_name = data.getName() + "-" + data.getGroup().getId();
-		//System.out.println("Remove data from cache: " + key_name);
-		removeFromCache(data, key_name);
+		String keyName = getCacheKeyName(data);
+		removeFromCache(data, keyName);
 	}
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("data")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(this.primaryTableName)){
+
 		}
 	}
 	/*
@@ -192,7 +184,7 @@ public class DataFactory extends NameIdFactory {
 			dtFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		int len = dataTables.size();
@@ -200,7 +192,6 @@ public class DataFactory extends NameIdFactory {
 		CONNECTION_TYPE  connectionType = DBFactory.getConnectionType(connection);
 		
 		for(int i = 0; i < len; i++){
-			//String tableName = tableNames.get(i);
 			/// should be cached
 			///
 			DataTable table = dataTables.get(i);
@@ -208,13 +199,10 @@ public class DataFactory extends NameIdFactory {
 			configureTableRestrictions(table);
 
 			StringBuilder buff = new StringBuilder();
-			//StringBuilder ubuff = new StringBuilder();
 
-			String lock_hint = DBFactory.getNoLockHint(connectionType);
-			String token = DBFactory.getParamToken(connectionType);
+			String lockHint = DBFactory.getNoLockHint(connectionType);
 
 			buff.append("SELECT #TOP# ");
-			//ubuff.append("UPDATE " + table.getName() + " SET ");
 			int ucount = 0;
 			int scount = 0;
 			for (int c = 0; c < table.getColumnSize(); c++)
@@ -228,18 +216,10 @@ public class DataFactory extends NameIdFactory {
 					buff.append(column.getColumnName());
 					scount++;
 				}
-				/*
-				if (table.getCanUpdateColumn(column.getColumnName()))
-				{
-					if (ucount > 0) ubuff.append(",");
-					ubuff.append(column.getColumnName() + " = " + token + column.getColumnName());
-					ucount++;
-				}
-				*/
+
 			}
-			String table_clause = " FROM " + table.getName() + lock_hint;
-			table.setSelectDetailsTemplate(buff.toString() + " #PAGE# " + table_clause);
-			//table.setUpdateDetailsTemplate(ubuff.toString());
+			String tableClause = " FROM " + table.getName() + lockHint;
+			table.setSelectDetailsTemplate(buff.toString() + " #PAGE# " + tableClause);
 		}
 
 	}
@@ -254,7 +234,6 @@ public class DataFactory extends NameIdFactory {
 
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(new Date());
-	    //cal.add(GregorianCalendar.YEAR, 1);
 	    
 		data.setCreatedDate(dtFactory.newXMLGregorianCalendar(cal));
 		data.setModifiedDate(dtFactory.newXMLGregorianCalendar(cal));
@@ -266,36 +245,36 @@ public class DataFactory extends NameIdFactory {
 	@Override
 	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
-		DataType new_data = (DataType)object;
-		if(new_data.getName() == null || new_data.getName().length() == 0) throw new FactoryException("Invalid object name");
+		DataType newData = (DataType)object;
+		if(newData.getName() == null || newData.getName().length() == 0) throw new FactoryException("Invalid object name");
 			
 
-		if (new_data.getBlob() && new_data.getReadDataBytes()) throw new FactoryException("Cannot add blob data whose byte store has been read");
-		if (new_data.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new data without a group");
+		if (newData.getBlob() && newData.getReadDataBytes()) throw new FactoryException("Cannot add blob data whose byte store has been read");
+		if (newData.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new data without a group");
 
-		DataRow row = prepareAdd(new_data, "data");
+		DataRow row = prepareAdd(newData, "data");
 		try{
-			row.setCellValue("description",new_data.getDescription());
-			row.setCellValue("mimetype", new_data.getMimeType());
-			row.setCellValue("vaultid",new_data.getVaultId());
-			row.setCellValue("groupid", new_data.getGroupId());
-			row.setCellValue("keyid", new_data.getKeyId());
-			row.setCellValue("isvaulted", new_data.getVaulted());
-			row.setCellValue("isenciphered", new_data.getEnciphered());
-			row.setCellValue("ispasswordprotected", new_data.getPasswordProtected());
-			row.setCellValue("iscompressed",new_data.getCompressed());
-			row.setCellValue("compressiontype", new_data.getCompressionType().toString());
-			row.setCellValue("dimensions", new_data.getDimensions());
-			row.setCellValue("size", new_data.getSize());
-			row.setCellValue("rating", new_data.getRating());
-			row.setCellValue("ispointer", new_data.getPointer());
-			row.setCellValue("hash", new_data.getDataHash());
-			row.setCellValue("createddate", new_data.getCreatedDate());
-			row.setCellValue("modifieddate", new_data.getModifiedDate());
-			row.setCellValue("expirationdate", new_data.getExpiryDate());
-			row.setCellValue("isblob", new_data.getBlob());
-			if(new_data.getBlob()) row.setCellValue("datablob", new_data.getDataBytesStore());
-			else row.setCellValue("datastring", new_data.getShortData());
+			row.setCellValue("description",newData.getDescription());
+			row.setCellValue("mimetype", newData.getMimeType());
+			row.setCellValue("vaultid",newData.getVaultId());
+			row.setCellValue("groupid", newData.getGroupId());
+			row.setCellValue("keyid", newData.getKeyId());
+			row.setCellValue("isvaulted", newData.getVaulted());
+			row.setCellValue("isenciphered", newData.getEnciphered());
+			row.setCellValue("ispasswordprotected", newData.getPasswordProtected());
+			row.setCellValue("iscompressed",newData.getCompressed());
+			row.setCellValue("compressiontype", newData.getCompressionType().toString());
+			row.setCellValue("dimensions", newData.getDimensions());
+			row.setCellValue("size", newData.getSize());
+			row.setCellValue("rating", newData.getRating());
+			row.setCellValue("ispointer", newData.getPointer());
+			row.setCellValue("hash", newData.getDataHash());
+			row.setCellValue("createddate", newData.getCreatedDate());
+			row.setCellValue("modifieddate", newData.getModifiedDate());
+			row.setCellValue("expirationdate", newData.getExpiryDate());
+			row.setCellValue("isblob", newData.getBlob());
+			if(newData.getBlob()) row.setCellValue("datablob", newData.getDataBytesStore());
+			else row.setCellValue("datastring", newData.getShortData());
 	
 			if (insertRow(row)) return true;
 		}
@@ -309,26 +288,22 @@ public class DataFactory extends NameIdFactory {
 		return getDataByName(name, false, parentGroup);
 	}
 	public DataType getDataByName(String name, boolean detailsOnly, DirectoryGroupType parentGroup) throws FactoryException, ArgumentException{
-		//OrganizationType out_org = null;
-		String key_name = name + "-" + parentGroup.getId();
+		String keyName = name + "-" + parentGroup.getId();
 
-		DataType out_data = readCache(key_name);
-		if (out_data != null && out_data.getDetailsOnly() == detailsOnly) return out_data;
+		DataType outData = readCache(keyName);
+		if (outData != null && outData.getDetailsOnly() == detailsOnly) return outData;
 		
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setAlternateQuery(detailsOnly);
 		
 		List<NameIdType> data = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldGroup(parentGroup.getId()) }, instruction,parentGroup.getOrganizationId());
-			//GetByName(name);
-		if (data.size() > 0)
+		if (!data.isEmpty())
 		{
 			updateDataToCache((DataType)data.get(0));
-			out_data = (DataType)data.get(0);
+			outData = (DataType)data.get(0);
 		}
-		else{
-			//System.out.println("No results for " + name + " in " + parentGroup.getId());
-		}
-		return out_data;
+
+		return outData;
 	}
 	public DataType getDataById(long id, long organizationId) throws FactoryException, ArgumentException
 	{
@@ -337,21 +312,20 @@ public class DataFactory extends NameIdFactory {
 	public DataType getDataById(long id, boolean detailsOnly, long organizationId) throws FactoryException, ArgumentException
 	{
 
-		DataType out_data = readCache(id);
-		if (out_data != null && out_data.getDetailsOnly() == detailsOnly) return out_data;
+		DataType outData = readCache(id);
+		if (outData != null && outData.getDetailsOnly() == detailsOnly) return outData;
 		
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setAlternateQuery(detailsOnly);
 
 		List<NameIdType> data = getByField(new QueryField[] { QueryFields.getFieldId(id) }, instruction, organizationId);
 
-		if (data.size() > 0)
+		if (!data.isEmpty())
 		{
-			out_data = (DataType)data.get(0);
-			//String key_name = id + "-" + out_data.getGroup().getId();
-			updateDataToCache(out_data);
+			outData = (DataType)data.get(0);
+			updateDataToCache(outData);
 		}
-		return out_data;
+		return outData;
 	}
 	public DataType getDataByObjectId(String id, long organizationId) throws FactoryException, ArgumentException
 	{
@@ -360,21 +334,21 @@ public class DataFactory extends NameIdFactory {
 	public DataType getDataByObjectId(String id, boolean detailsOnly, long organizationId) throws FactoryException, ArgumentException
 	{
 
-		DataType out_data = readCache(id);
-		if (out_data != null && out_data.getDetailsOnly() == detailsOnly) return out_data;
+		DataType outData = readCache(id);
+		if (outData != null && outData.getDetailsOnly() == detailsOnly) return outData;
 		
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setAlternateQuery(detailsOnly);
 
 		List<NameIdType> data = getByField(new QueryField[] { QueryFields.getFieldObjectId(id) }, instruction, organizationId);
 
-		if (data.size() > 0)
+		if (!data.isEmpty())
 		{
-			out_data = (DataType)data.get(0);
-			//String key_name = id + "-" + out_data.getGroup().getId();
-			updateDataToCache(out_data);
+			outData = (DataType)data.get(0);
+
+			updateDataToCache(outData);
 		}
-		return out_data;
+		return outData;
 	}
 	public int deleteDataByUser(UserType user) throws FactoryException
 	{
@@ -390,68 +364,63 @@ public class DataFactory extends NameIdFactory {
 		if(bulkMode) return true;
 		
 		int deleted = deleteById(data.getId(), data.getOrganizationId());
-		/*
-		if (deleted > 0)
-		{
-			OrganizationSecurity.deleteSecurityKeys(organizationId);
-		}
-		*/
+
 		return (deleted > 0);
 	}
 	
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		DataType new_data = new DataType();
-		new_data.setNameType(NameEnumType.DATA);
-		super.read(rset, new_data);
+		DataType newData = new DataType();
+		newData.setNameType(NameEnumType.DATA);
+		super.read(rset, newData);
 	
-		new_data.setDetailsOnly((instruction != null && instruction.getAlternateQuery()));
-		new_data.setPopulated(!new_data.getDetailsOnly());
-		new_data.setMimeType(rset.getString("mimetype"));
-		new_data.setVaultId(rset.getString("vaultid"));
-		new_data.setKeyId(rset.getString("keyid"));
-		new_data.setVaulted(rset.getBoolean("isvaulted"));
+		newData.setDetailsOnly((instruction != null && instruction.getAlternateQuery()));
+		newData.setPopulated(!newData.getDetailsOnly());
+		newData.setMimeType(rset.getString("mimetype"));
+		newData.setVaultId(rset.getString("vaultid"));
+		newData.setKeyId(rset.getString("keyid"));
+		newData.setVaulted(rset.getBoolean("isvaulted"));
 		
 		// Make a note that if the data is marked as being encrypted, then the internal data buffer is coming in encrypted.
 		// This bit is unset when the data is accessed and decrypted
 		//
-		new_data.setEnciphered(rset.getBoolean("isenciphered"));
-		new_data.setPasswordProtected(rset.getBoolean("ispasswordprotected"));
+		newData.setEnciphered(rset.getBoolean("isenciphered"));
+		newData.setPasswordProtected(rset.getBoolean("ispasswordprotected"));
 		
-		new_data.setCompressed(rset.getBoolean("iscompressed"));
-		new_data.setCompressionType(CompressionEnumType.valueOf(rset.getString("compressiontype")));
-		new_data.setDescription(rset.getString("description"));
+		newData.setCompressed(rset.getBoolean("iscompressed"));
+		newData.setCompressionType(CompressionEnumType.valueOf(rset.getString("compressiontype")));
+		newData.setDescription(rset.getString("description"));
 		
-		new_data.setDimensions(rset.getString("dimensions"));
-		new_data.setSize(rset.getInt("size"));
-		new_data.setRating(rset.getDouble("rating"));
-		new_data.setPointer(rset.getBoolean("ispointer"));
-		new_data.setDataHash(rset.getString("hash"));
+		newData.setDimensions(rset.getString("dimensions"));
+		newData.setSize(rset.getInt("size"));
+		newData.setRating(rset.getDouble("rating"));
+		newData.setPointer(rset.getBoolean("ispointer"));
+		newData.setDataHash(rset.getString("hash"));
 
-		new_data.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		newData.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
 		
-		new_data.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		new_data.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		newData.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
+		newData.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
 
-		long group_id = rset.getLong("groupid");
-		new_data.setBlob(rset.getBoolean("isblob"));
+		long groupId = rset.getLong("groupid");
+		newData.setBlob(rset.getBoolean("isblob"));
 
-		if(new_data.getDetailsOnly() == false){
-			if(new_data.getBlob()){
+		if(newData.getDetailsOnly() == false){
+			if(newData.getBlob()){
 				
-				new_data.setDataBytesStore(rset.getBytes("datablob"));
+				newData.setDataBytesStore(rset.getBytes("datablob"));
 			}
 			else{
-				new_data.setShortData(rset.getString("datastring"));
+				newData.setShortData(rset.getString("datastring"));
 			}
 		}
 		
 		/// 2008/01/28
 		/// Moved to bottom for Mono; Mono throws an 'array index' error on any sibling read operation
 		///
-		new_data.setGroupId(group_id);
-		return new_data;
+		newData.setGroupId(groupId);
+		return newData;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -469,33 +438,33 @@ public class DataFactory extends NameIdFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		DataType use_map = (DataType)map;
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldMimeType(use_map.getMimeType()));
-		fields.add(QueryFields.getFieldKeyId(use_map.getKeyId()));
-		fields.add(QueryFields.getFieldVaultId(use_map.getVaultId()));
-		fields.add(QueryFields.getFieldVaulted(use_map.getVaulted()));
-		fields.add(QueryFields.getFieldEnciphered(use_map.getEnciphered()));
-		fields.add(QueryFields.getFieldPasswordProtected(use_map.getPasswordProtected()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldCompressed(use_map.getCompressed()));
-		fields.add(QueryFields.getFieldDimensions(use_map.getDimensions()));
-		fields.add(QueryFields.getFieldSize(use_map.getSize()));
-		fields.add(QueryFields.getFieldRating(use_map.getRating()));
-		fields.add(QueryFields.getFieldPointer(use_map.getPointer()));
-		fields.add(QueryFields.getFieldDataHash(use_map.getDataHash()));
-		fields.add(QueryFields.getFieldCreatedDate(use_map.getCreatedDate()));
-		fields.add(QueryFields.getFieldModifiedDate(use_map.getModifiedDate()));
-		fields.add(QueryFields.getFieldExpirationDate(use_map.getExpiryDate()));
-		fields.add(QueryFields.getFieldBlob(use_map.getBlob()));
+		DataType useMap = (DataType)map;
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldMimeType(useMap.getMimeType()));
+		fields.add(QueryFields.getFieldKeyId(useMap.getKeyId()));
+		fields.add(QueryFields.getFieldVaultId(useMap.getVaultId()));
+		fields.add(QueryFields.getFieldVaulted(useMap.getVaulted()));
+		fields.add(QueryFields.getFieldEnciphered(useMap.getEnciphered()));
+		fields.add(QueryFields.getFieldPasswordProtected(useMap.getPasswordProtected()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldCompressed(useMap.getCompressed()));
+		fields.add(QueryFields.getFieldDimensions(useMap.getDimensions()));
+		fields.add(QueryFields.getFieldSize(useMap.getSize()));
+		fields.add(QueryFields.getFieldRating(useMap.getRating()));
+		fields.add(QueryFields.getFieldPointer(useMap.getPointer()));
+		fields.add(QueryFields.getFieldDataHash(useMap.getDataHash()));
+		fields.add(QueryFields.getFieldCreatedDate(useMap.getCreatedDate()));
+		fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
+		fields.add(QueryFields.getFieldExpirationDate(useMap.getExpiryDate()));
+		fields.add(QueryFields.getFieldBlob(useMap.getBlob()));
 		if(instruction == null || instruction.getAlternateQuery() == false){
-			if(use_map.getBlob()){
-				fields.add(QueryFields.getFieldDataBlob(use_map.getDataBytesStore()));
+			if(useMap.getBlob()){
+				fields.add(QueryFields.getFieldDataBlob(useMap.getDataBytesStore()));
 				fields.add(QueryFields.getFieldDataString(null));
 			}
 			else{
 				fields.add(QueryFields.getFieldDataBlob(null));
-				fields.add(QueryFields.getFieldDataString(use_map.getShortData()));
+				fields.add(QueryFields.getFieldDataString(useMap.getShortData()));
 			}
 		}
 	}

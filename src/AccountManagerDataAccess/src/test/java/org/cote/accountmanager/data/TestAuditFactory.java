@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -78,7 +79,7 @@ public class TestAuditFactory{
 			audits = Factories.getAuditFactory().getAuditBySource(AuditEnumType.GROUP, id);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Failed to lookup audit", audits.length > 0);
 	}
@@ -99,7 +100,7 @@ public class TestAuditFactory{
 			Factories.getAuditFactory().flushSpool();
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		remainingRows = Factories.getAuditFactory().getDataTable("audit").getRows().size();
 		assertTrue("Audit was not added",success);
@@ -113,7 +114,7 @@ public class TestAuditFactory{
 			audits = Factories.getAuditFactory().getAuditBySource(AuditEnumType.INFO, "123");
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		logger.info("Retrieved " + audits.length + " audits");
 		assertTrue("Expected at least one audit type", audits.length > 0);

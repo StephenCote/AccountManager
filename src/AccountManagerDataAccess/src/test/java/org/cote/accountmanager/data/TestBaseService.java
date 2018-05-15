@@ -31,6 +31,7 @@ import java.util.UUID;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserPermissionType;
@@ -70,10 +71,10 @@ public class TestBaseService extends BaseDataAccessTest{
 			homeDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(testUser);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Home directory is null",homeDir);
 		DirectoryGroupType dir = BaseService.readById(AuditEnumType.GROUP, homeDir.getId(), request);
@@ -116,15 +117,9 @@ public class TestBaseService extends BaseDataAccessTest{
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).denormalize(role);
 			assertNotNull("Path is null",role.getParentPath());
 			logger.info("Role parent path = '" + role.getParentPath() + "'");
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
-		} catch (DataAccessException e) {
-			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	
@@ -140,13 +135,13 @@ public class TestBaseService extends BaseDataAccessTest{
 			logger.info("Permission parent path = '" + permission.getParentPath() + "'");
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	

@@ -46,6 +46,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.services.ICommunityProvider;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.UserType;
@@ -82,7 +83,7 @@ public class CommunityService {
 			provider.setRandomizeSeedPopulation(false);
 			provider.setOrganizePersonManagement(true);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			logger.error("Trace", e);
+			logger.error(FactoryException.TRACE_EXCEPTION, e);
 		}
 		
 		return provider;

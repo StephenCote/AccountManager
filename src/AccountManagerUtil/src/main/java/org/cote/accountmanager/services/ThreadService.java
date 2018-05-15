@@ -25,6 +25,7 @@ package org.cote.accountmanager.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 
 public abstract class ThreadService implements Runnable {
 	public static final Logger logger = LogManager.getLogger(ThreadService.class);
@@ -76,7 +77,7 @@ public abstract class ThreadService implements Runnable {
 			}
 			catch(Exception e){
 				logger.error(e.getMessage());
-				logger.error("Trace",e);
+				logger.error(FactoryException.TRACE_EXCEPTION,e);
 			}
 		}
 	}

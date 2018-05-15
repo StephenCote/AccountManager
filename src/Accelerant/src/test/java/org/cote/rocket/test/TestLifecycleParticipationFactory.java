@@ -30,7 +30,7 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.propellant.objects.BudgetParticipantType;
 import org.cote.propellant.objects.BudgetType;
@@ -144,13 +144,13 @@ public class TestLifecycleParticipationFactory extends BaseAccelerantTest{
 		
 		assertTrue("Parts not added",added);
 		assertTrue("Lifecycle schedules not populated",lifecycle1.getSchedules().size() > 0);
-		assertTrue("Lifecycle parts should not be populated",lifecycle2.getSchedules().size() == 0);
+		assertTrue("Lifecycle parts should not be populated",lifecycle2.getSchedules().isEmpty());
 		assertTrue("Lifecycle budgets not populated",lifecycle1.getBudgets().size() > 0);
-		assertTrue("Lifecycle parts should not be populated",lifecycle2.getBudgets().size() == 0);
+		assertTrue("Lifecycle parts should not be populated",lifecycle2.getBudgets().isEmpty());
 		assertTrue("Lifecycle goals not populated",lifecycle1.getGoals().size() > 0);
-		assertTrue("Lifecycle parts should not be populated",lifecycle2.getGoals().size() == 0);
+		assertTrue("Lifecycle parts should not be populated",lifecycle2.getGoals().isEmpty());
 		assertTrue("Lifecycle projects not populated",lifecycle1.getProjects().size() > 0);
-		assertTrue("Lifecycle parts should not be populated",lifecycle2.getProjects().size() == 0);
+		assertTrue("Lifecycle parts should not be populated",lifecycle2.getProjects().isEmpty());
 
 		
 	}

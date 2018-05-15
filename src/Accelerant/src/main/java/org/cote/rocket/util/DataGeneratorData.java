@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.factory.AddressFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -83,7 +84,7 @@ public class DataGeneratorData {
 	public static String[] QUADRANT_DIRECTION = new String[]{"NW","NE","SW","SE",""};
 	public static String[] STREET_TYPE_BASE = new String[]{"","","","Avenue","Street","Drive","Circle","Court","Place","Terrace","Highway","Pike","Boulevard","Alley","Bend","Gardens","Gate","Grove","Heights","Lane","Trail","Vale","Way","Cove","Park","Plaza","Ridge","Hill","Canyon","Loop","Circle","Road","View"};
 
-	protected static AddressType randomAddress(DataGeneratorUtil dutil, LocationType location, DirectoryGroupType addrDir) throws ArgumentException{
+	protected static AddressType randomAddress(DataGeneratorUtil dutil, LocationType location, DirectoryGroupType addrDir) throws ArgumentException, FactoryException{
 		AddressType addr = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).newAddress(dutil.getUser(), addrDir.getId());
 		Factories.getAttributeFactory().populateAttributes(location);
 		addr.setPostalCode(Factories.getAttributeFactory().getAttributeValueByName(location, "post"));

@@ -38,10 +38,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.BulkFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.util.UrnUtil;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
@@ -91,10 +91,10 @@ public class ProjectImportUtil {
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(owner);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return importProject(owner,null,projectFileName,sprintEmulator);
 	}
@@ -112,7 +112,7 @@ public class ProjectImportUtil {
 		}
 		catch(FileNotFoundException fne){
 			logger.error(fne.getMessage());
-			logger.error("Error",fne);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fne);
 		}
 		return out_bool;
 
@@ -450,19 +450,19 @@ public class ProjectImportUtil {
 		}catch (MPXJException e) {
 			logger.error(e.getMessage());
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			logger.error(e.getMessage());
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			logger.error(e.getMessage());
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			logger.error(e.getMessage());
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		return out_bool;
 	}
@@ -507,11 +507,11 @@ public class ProjectImportUtil {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			logger.error(e.getMessage());
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return rlist;
 	}

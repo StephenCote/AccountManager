@@ -33,9 +33,9 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountTagType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseTagType;
@@ -272,7 +272,7 @@ public class TagFactory extends NameIdGroupFactory {
 		instruction.setStartIndex(startRecord);
 		instruction.setRecordCount(recordCount);
 		List<DataParticipantType> parts = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).getTagParticipations(tags, instruction,ParticipantEnumType.DATA);
-		if(parts.size() == 0) return new ArrayList<DataType>();
+		if(parts.isEmpty()) return new ArrayList<DataType>();
 		/// Don't apply pagination to the secondary query because it's already been paginated from the parts list
 		///
 		return ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).getDataListFromParticipations(parts.toArray(new DataParticipantType[0]), true, 0, 0, organizationId);

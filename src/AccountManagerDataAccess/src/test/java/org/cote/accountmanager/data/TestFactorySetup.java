@@ -48,6 +48,7 @@ import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
@@ -94,7 +95,7 @@ public class TestFactorySetup {
 		catch(SQLException sqe){
 			error = true;
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		assertFalse("Error occurred",error);
 		
@@ -110,7 +111,7 @@ public class TestFactorySetup {
 			setup = FactoryDefaults.setupAccountManager("password1");
 		} catch (NullPointerException | ArgumentException | DataAccessException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error = true;
 		}
 		assertFalse("Error occurred", error);
@@ -151,7 +152,7 @@ public class TestFactorySetup {
 		
 	} catch (NullPointerException | ArgumentException | FactoryException e) {
 		
-		logger.error("Error",e);
+		logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 	}
 
 		

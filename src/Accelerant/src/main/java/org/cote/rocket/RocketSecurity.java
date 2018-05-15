@@ -28,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataTable;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
@@ -37,6 +36,7 @@ import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -83,12 +83,11 @@ public class RocketSecurity {
 		for(int i = 0; i < containerRoles.length; i++){
 			UserRoleType rt = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).newUserRole(adminUser, containerRoles[i], parentRole);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId,FactoryEnumType.ROLE, rt);
-			//((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateUserRole(adminUser, containerRoles[i], parentRole);
 		}
 
 		
 	}	
-	protected static void setupBulkContainerPermissions(String sessionId, UserType adminUser, BasePermissionType parentPermission) throws ArgumentException{
+	protected static void setupBulkContainerPermissions(String sessionId, UserType adminUser, BasePermissionType parentPermission) throws ArgumentException, FactoryException{
 		for(int i = 0; i < containerPermissions.length; i++){
 			BasePermissionType rt = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).newPermission(adminUser, containerPermissions[i], PermissionEnumType.USER,parentPermission,parentPermission.getOrganizationId());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId,FactoryEnumType.PERMISSION, rt);
@@ -98,8 +97,6 @@ public class RocketSecurity {
 		for(int i = 0; i < containerRoles.length; i++){
 			UserRoleType rt = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).newUserRole(adminUser, containerRoles[i], parentRole);
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).add(rt);
-
-			//((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateUserRole(adminUser, containerRoles[i], parentRole);
 		}
 	}
 	protected static void setupContainerPermissions(UserType adminUser, BasePermissionType parentPermission) throws DataAccessException, FactoryException, ArgumentException{
@@ -113,18 +110,12 @@ public class RocketSecurity {
 	protected static <T> void setupRolesToReadContainer(UserType adminUser, UserRoleType parentRole, String[] roles, T bucket) throws FactoryException, DataAccessException, ArgumentException{
 		BasePermissionType[] bpt = new BasePermissionType[]{
 				AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP,parentRole.getOrganizationId()),
-				/*
-				AuthorizationService.getEditGroupPermission(parentRole.getOrganizationId()),
-				AuthorizationService.getDeleteGroupPermission(parentRole.getOrganizationId()),
-				AuthorizationService.getCreateGroupPermission(parentRole.getOrganizationId())
-				*/
 				
 		};
 		for(int i = 0; i < roles.length;i++){
 			BaseRoleType role = getRole(roles[i], parentRole, parentRole.getOrganizationId());
 			if(role == null) throw new FactoryException("Role '" + roles[i] + "' in parentRole '" + parentRole.getName() + " #(" + parentRole.getId() + ") is null");
 			EffectiveAuthorizationService.pendRoleUpdate((UserRoleType)role);
-			//AuthorizationService.authorizeRoleType(adminUser, role, bucket, true, false, false, false);
 			for(int p = 0; p < bpt.length; p++){
 				BaseParticipantType bp = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newRoleGroupParticipation((BaseGroupType)bucket, role, bpt[p], AffectEnumType.GRANT_PERMISSION);
 				((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(bp);
@@ -142,7 +133,6 @@ public class RocketSecurity {
 		for(int i = 0; i < roles.length;i++){
 			BaseRoleType role = getRole(roles[i], parentRole, parentRole.getOrganizationId());
 			EffectiveAuthorizationService.pendRoleUpdate((UserRoleType)role);
-			//AuthorizationService.authorizeRoleType(adminUser, role, bucket, true, true, true, true);
 			for(int p = 0; p < bpt.length; p++){
 				BaseParticipantType bp = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newRoleGroupParticipation((BaseGroupType)bucket, role, bpt[p], AffectEnumType.GRANT_PERMISSION);
 				((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(bp);
@@ -170,12 +160,9 @@ public class RocketSecurity {
 		DirectoryGroupType dir = null;
 		try {
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(name, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(),lc.getOrganizationId()), lc.getOrganizationId());
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return null;
 	}
@@ -184,20 +171,20 @@ public class RocketSecurity {
 		try {
 			
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(name, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(),proj.getOrganizationId()), proj.getOrganizationId());
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return dir;
 	}
 
 	public static boolean setupBulkProjectStructure(String sessionId, LifecycleType lc, ProjectType proj, UserType adminUser){
 		boolean out_bool = false;
+		if(adminUser == null){
+			logger.error("Null user");
+			return out_bool;
+		}
 		/*
 		 * Project Structure:
 		 * Directory Base: [org]/[lc-name]/Projects/[proj-name]
@@ -211,8 +198,7 @@ public class RocketSecurity {
 						UserRoleType bRole = getProjectRoleBucket(proj);
 						UserRoleType lRole = getLifecycleRoleBucket(lc);
 						UserRoleType rRole = getRocketRoles(lc.getOrganizationId());
-						//UserRoleType lcRole = getLifecycle();
-						
+
 						setupRolesToReadContainer(adminUser,rRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
 						setupRolesToEditContainer(adminUser,rRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
 						
@@ -228,30 +214,16 @@ public class RocketSecurity {
 						EffectiveAuthorizationService.pendGroupUpdate(dir);
 						
 						for(int i = 0; i < directoryGroups.length; i++){
-								//dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, directoryGroups[i], pjDir, proj.getOrganizationId());
 								dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(adminUser, directoryGroups[i], pjDir, proj.getOrganizationId());
 								BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, dir);
 								applyRolesToProjectDirectory(adminUser,rRole, lRole, bRole,dir);
-/*
-								setupRolesToReadContainer(adminUser,rRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-								setupRolesToEditContainer(adminUser,rRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-								setupRolesToReadContainer(adminUser,bRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-								setupRolesToEditContainer(adminUser,bRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-								setupRolesToReadContainer(adminUser,lRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-								setupRolesToEditContainer(adminUser,lRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-*/
-								
+							
 						}
 					} // end if
 				} // end try
-				catch(ArgumentException ae){
-					logger.error("Error",ae);
-				} catch (DataAccessException e) {
+				catch(ArgumentException | DataAccessException | FactoryException e) {
 					
-					logger.error("Error",e);
-				} catch (FactoryException e) {
-					
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 
 				
@@ -333,13 +305,14 @@ public class RocketSecurity {
 		 * Lifecycle Structure:
 		 * Directory Base: [org]/lc-name/
 		 */
-		synchronized(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION))){
-			synchronized(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION))){
-				DataTable dt1 = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getDataTables().get(0);
-				DataTable dt2 = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getDataTables().get(0);
-				dt1.setBulkInsert(true);
-				dt2.setBulkInsert(true);
-				try{
+		try{
+			synchronized(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION))){
+				synchronized(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION))){
+					DataTable dt1 = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getDataTables().get(0);
+					DataTable dt2 = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getDataTables().get(0);
+					dt1.setBulkInsert(true);
+					dt2.setBulkInsert(true);
+					
 					if(setupLifecycleRoles(lc, adminUser) == true){
 						DirectoryGroupType lcDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(),lc.getOrganizationId());
 						DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Projects", lcDir, lc.getOrganizationId());
@@ -358,23 +331,19 @@ public class RocketSecurity {
 								setupRolesToEditContainer(adminUser,bRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
 						}
 					} /// end if roles setup
-				}
-				catch(ArgumentException ae){
-					logger.error("Error",ae);
-				} catch (DataAccessException e) {
-					
-					logger.error("Error",e);
-				} catch (FactoryException e) {
-					
-					logger.error("Error",e);
-				}
-				((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).writeSpool(dt1.getName());
-				((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).writeSpool(dt2.getName());
-				dt1.setBulkInsert(false);
-				dt2.setBulkInsert(false);
-				out_bool = true;
+				
+					((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).writeSpool(dt1.getName());
+					((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).writeSpool(dt2.getName());
+					dt1.setBulkInsert(false);
+					dt2.setBulkInsert(false);
+					out_bool = true;
+				} /// end sync
 			} /// end sync
-		} /// end sync
+		}
+		catch(ArgumentException | DataAccessException | FactoryException e) {
+			
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
 		return out_bool;
 	}
 	private static boolean setupBulkProjectRoles(String sessionId,ProjectType proj, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
@@ -584,13 +553,13 @@ public class RocketSecurity {
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).findRole(RoleEnumType.USER,  parent.getPath() + (name != null ? "/" + name : ""), organizationId);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return role;
 	}
@@ -601,10 +570,10 @@ public class RocketSecurity {
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(name,parent,RoleEnumType.USER,  organizationId);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return role;
 	}
@@ -618,13 +587,13 @@ public class RocketSecurity {
 			//permission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName(name, PermissionEnumType.USER,parent,organizationId);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return permission;
 	}
@@ -635,10 +604,10 @@ public class RocketSecurity {
 			permission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName(name,PermissionEnumType.USER, parent, organizationId);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return permission;
 	}
@@ -648,10 +617,10 @@ public class RocketSecurity {
 			out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}	
@@ -661,10 +630,10 @@ public class RocketSecurity {
 			out_bool = AuthorizationService.canChange(user,Rocket.getLifecycleGroup(user.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -674,10 +643,10 @@ public class RocketSecurity {
 			out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -687,10 +656,10 @@ public class RocketSecurity {
 			out_bool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -700,10 +669,10 @@ public class RocketSecurity {
 			out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(), proj.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -713,10 +682,10 @@ public class RocketSecurity {
 			out_bool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(),proj.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}

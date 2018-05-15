@@ -30,7 +30,6 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.AddressFactory;
 import org.cote.accountmanager.data.factory.ContactFactory;
@@ -50,6 +49,7 @@ import org.cote.accountmanager.data.factory.RuleFactory;
 import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BaseGroupType;
@@ -138,7 +138,7 @@ public class TypeSanitizer implements ITypeSanitizer{
 					outObj = (T)d;
 				} catch (DataException e) {
 					
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 				
 			}
@@ -146,29 +146,29 @@ public class TypeSanitizer implements ITypeSanitizer{
 		return outObj;
 	}
 	public <T> boolean delete(AuditEnumType type, T object) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
-		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
+		boolean outBool = false;
 		if(type.equals(AuditEnumType.GROUP)){
 			BaseGroupType group = (BaseGroupType)object;
 			if(group.getGroupType().equals(GroupEnumType.DATA)){
-				out_bool = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteDirectoryGroup((DirectoryGroupType)group);
+				outBool = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteDirectoryGroup((DirectoryGroupType)group);
 
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	public <T> boolean add(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		logger.info("Processing alternate add for type " + type.toString());
 		INameIdFactory iFact = Factories.getNameIdFactory(FactoryEnumType.valueOf(type.toString()));
 		if(type.equals(AuditEnumType.USER)){
-			out_bool = ((UserFactory)iFact).add(object, true);
+			outBool = ((UserFactory)iFact).add(object, true);
 		}
 		else if(type.equals(AuditEnumType.ACCOUNT)){
-			out_bool = ((AccountFactory)iFact).add(object, true);
+			outBool = ((AccountFactory)iFact).add(object, true);
 		}
-		return out_bool;
+		return outBool;
 	}
+	@SuppressWarnings("unchecked")
 	public <T> T sanitizeNewObject(AuditEnumType type, UserType user, T in_obj) throws ArgumentException, FactoryException, DataException{
 		T out_obj = null;
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
@@ -283,13 +283,12 @@ public class TypeSanitizer implements ITypeSanitizer{
 				MapUtil.shallowCloneNameIdDirectoryType(v11bean, new_per);
 				new_per.setAlias(v11bean.getAlias());
 				if(v11bean.getBirthDate() != null) new_per.setBirthDate(v11bean.getBirthDate());
-				//new_per.setContact(v11bean.getContact());
+
 				new_per.setDescription(v11bean.getDescription());
 				new_per.setFirstName(v11bean.getFirstName());
 				new_per.setGender(v11bean.getGender());
 				new_per.setLastName(v11bean.getLastName());
 				new_per.setMiddleName(v11bean.getMiddleName());
-				//new_per.setParentId(v11bean.getParentId());
 				new_per.setPrefix(v11bean.getPrefix());
 				new_per.setSuffix(v11bean.getSuffix());
 				new_per.setTitle(v11bean.getTitle());

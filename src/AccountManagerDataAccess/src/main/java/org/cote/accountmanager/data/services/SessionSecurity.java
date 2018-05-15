@@ -31,13 +31,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.StatisticsFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.UserPrincipal;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -78,7 +78,6 @@ public class SessionSecurity {
 	public static UserType getUserBySession(String session_id, long organizationId) throws FactoryException, ArgumentException{
 		UserType user = null;
 		UserSessionType session = getUserSession(session_id, organizationId);
-		if(session == null) return null;
 		verifySessionAuthentication(session);
 		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED)){
 			user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).getUserBySession(session);
@@ -258,7 +257,7 @@ public class SessionSecurity {
 				}
 			} catch (FactoryException | ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return user;

@@ -41,6 +41,7 @@ import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
@@ -103,9 +104,7 @@ public class RestServiceConfig extends ResourceConfig{
 
 		private void initializeAccountManager(){
 			logger.info("Initializing Account Manager");
-			//System.out.println("******");
 			String dsName = context.getInitParameter("database.dsname");
-			//logger.debug("DS Name: " + dsName);
 			ConnectionFactory cf = ConnectionFactory.getInstance();
 			cf.setConnectionType(CONNECTION_TYPE.DS);
 			cf.setJndiDataSource(dsName);
@@ -124,7 +123,7 @@ public class RestServiceConfig extends ResourceConfig{
 			}
 			catch(SQLException sqe){
 				logger.error(sqe.getMessage());
-				logger.error("Error",sqe);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			}
 			
 			logger.info("Priming Additional Factories");
@@ -137,24 +136,26 @@ public class RestServiceConfig extends ResourceConfig{
 						Class cls = Class.forName(facts[i]);
 						Factories f = (Factories)cls.newInstance();
 						logger.warn("Refactor to an interface - this is only preparing the base service");
-						//f.prepare();
+
 						if(facts[i].equals("org.cote.rocket.Factories")) org.cote.rocket.Factories.prepare();
 					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						logger.error("Trace", e);
+						logger.error(FactoryException.TRACE_EXCEPTION, e);
 					}
 					
 				}
 			}
-
-			Object obj = Factories.getBulkFactory(FactoryEnumType.LIFECYCLE);
-			if(obj == null){
-				logger.error("Failed to load bulk factory from extension library");
+			try {
+				Object obj = Factories.getBulkFactory(FactoryEnumType.LIFECYCLE);
+				if(obj == null){
+					logger.error("Failed to load bulk factory from extension library");
+				}
+				
+				/// invoke clear caches to queue up the table schemas
+				///
+				Factories.warmUp();
+			} catch (FactoryException e1) {
+				logger.error(e1);
 			}
-			/// invoke clear caches to queue up the table schemas
-			///
-			//Factories.clearCaches();
-			Factories.warmUp();
 			
 			logger.info("Starting Maintenance Threads");
 			String addJob = context.getInitParameter("maintenance.jobs");
@@ -168,7 +169,7 @@ public class RestServiceConfig extends ResourceConfig{
 						maintenanceThreads.add(f);
 					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 						// TODO Auto-generated catch block
-						logger.error("Trace", e);
+						logger.error(FactoryException.TRACE_EXCEPTION, e);
 					}
 					
 				}
@@ -199,7 +200,7 @@ public class RestServiceConfig extends ResourceConfig{
 				roleMap = JSONUtil.getMap(StreamUtil.getStreamBytes(resourceContent), String.class, String.class);
 			} catch (IOException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 			finally{
 				if(resourceContent != null)
@@ -207,7 +208,7 @@ public class RestServiceConfig extends ResourceConfig{
 						resourceContent.close();
 					} catch (IOException e) {
 						
-						logger.error("Error",e);
+						logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 					}
 			}
 			AM5LoginModule.setRoleMap(roleMap);

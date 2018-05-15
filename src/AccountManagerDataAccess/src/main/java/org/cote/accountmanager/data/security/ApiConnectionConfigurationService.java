@@ -32,13 +32,13 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.PersonService;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ApiServiceEnumType;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.AuditType;
@@ -94,7 +94,7 @@ public class ApiConnectionConfigurationService {
 		return apiUser;
 	}
 	
-	public static byte[] getApiClientCredential(ApiClientConfigurationBean apiConfig, CredentialEnumType credType){
+	public static byte[] getApiClientCredential(ApiClientConfigurationBean apiConfig, CredentialEnumType credType) throws FactoryException{
 		byte[] outBytes = new byte[0];
 		DataType data = null;
 		data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(apiConfig.getDataUrn());
@@ -120,10 +120,10 @@ public class ApiConnectionConfigurationService {
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(dir);
 		} catch (FactoryException e) {
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return dir;
@@ -149,16 +149,16 @@ public class ApiConnectionConfigurationService {
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outConfig;
 	}
@@ -215,17 +215,17 @@ public class ApiConnectionConfigurationService {
 		} catch (FactoryException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outConfig;
 	}

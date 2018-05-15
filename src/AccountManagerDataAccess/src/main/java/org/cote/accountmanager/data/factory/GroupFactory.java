@@ -36,11 +36,11 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BucketGroupType;
@@ -56,9 +56,8 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class GroupFactory  extends NameIdFactory {
 	
-	static{
-		//registerProvider();
-	}
+	public static final String[] DEFAULT_DIRECTORY_NAMES = new String[]{"Roles","Data","Contacts","Addresses","Persons","Accounts"};
+	
 	@Override
 	public void registerProvider(){
 		AuthorizationService.registerAuthorizationProviders(
@@ -67,13 +66,14 @@ public class GroupFactory  extends NameIdFactory {
 				FactoryEnumType.GROUPPARTICIPATION
 			);
 	}
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.GROUP, GroupFactory.class); }
+
 	public GroupFactory(){
 		super();
 		this.scopeToOrganization = true;
 		this.hasUrn = true;
 		this.hasObjectId = true;
-		this.tableNames.add("groups");
+		this.primaryTableName = "groups";
+		this.tableNames.add(primaryTableName);
 		this.clusterByParent = true;
 		factoryType = FactoryEnumType.GROUP;
 		systemRoleNameAdministrator = RoleService.ROLE_DATA_ADMINISTRATOR;
@@ -81,9 +81,10 @@ public class GroupFactory  extends NameIdFactory {
 
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("groups")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			
 		}
 	}
 	
@@ -92,25 +93,15 @@ public class GroupFactory  extends NameIdFactory {
 		BaseGroupType t = (BaseGroupType)obj;
 		return t.getName() + "-" + t.getGroupType().toString() + "-" + t.getParentId() + "-" + t.getOrganizationId();
 	}
-	/*
-	protected String getSelectTemplate(DataTable table, ProcessingInstructionType instruction){
-		return table.getSelectFullTemplate();
-	}
-	*/
-	public void initialize(Connection connection) throws FactoryException{
-		super.initialize(connection);
-		
-	}
-	
+
 	protected void addDefaultGroups(long organizationId)  throws FactoryException, ArgumentException
 	{
 		addDefaultDirectoryGroups(organizationId);
 	}
 	protected void addDefaultUserGroups(UserType user, DirectoryGroupType hDir, boolean isBulk, String sessionId) throws FactoryException, ArgumentException{
 
-		String[] dirNames = new String[]{"Roles","Data","Contacts","Addresses","Persons","Accounts"};
-		for(int i = 0; i < dirNames.length;i++){
-			DirectoryGroupType ddir = newDirectoryGroup(user,dirNames[i],hDir,user.getOrganizationId());
+		for(int i = 0; i < DEFAULT_DIRECTORY_NAMES.length;i++){
+			DirectoryGroupType ddir = newDirectoryGroup(user,DEFAULT_DIRECTORY_NAMES[i], hDir, user.getOrganizationId());
 			if(isBulk) BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, ddir);
 			else add(ddir);
 		}
@@ -120,98 +111,96 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		logger.info("Adding default groups to organization " + organizationId);
 		if(organizationId == 0L) throw new FactoryException("Invalid organization");
-		DirectoryGroupType root_dir = newDirectoryGroup("Root", null, organizationId);
+		DirectoryGroupType rootDir = newDirectoryGroup("Root", null, organizationId);
 		
-		add(root_dir);
-		root_dir = getDirectoryByName("Root", organizationId);
+		add(rootDir);
+		rootDir = getDirectoryByName("Root", organizationId);
 
-		DirectoryGroupType home_dir = newDirectoryGroup("Home", root_dir, organizationId);
-		add(home_dir);
-		DirectoryGroupType persons_dir = newDirectoryGroup("Persons", root_dir, organizationId);
-		add(persons_dir);
+		DirectoryGroupType homeDir = newDirectoryGroup("Home", rootDir, organizationId);
+		add(homeDir);
+		DirectoryGroupType personsDir = newDirectoryGroup("Persons", rootDir, organizationId);
+		add(personsDir);
 
 	}
-	public UserGroupType newUserGroup(String group_name, BaseGroupType parent, long organizationId) throws ArgumentException
+	public UserGroupType newUserGroup(String groupName, BaseGroupType parent, long organizationId)
 	{
-		return newUserGroup(null, group_name, parent, organizationId);
+		return newUserGroup(null, groupName, parent, organizationId);
 	}
-	public UserGroupType newUserGroup(UserType owner, String group_name, BaseGroupType parent, long organizationId) throws ArgumentException
+	public UserGroupType newUserGroup(UserType owner, String groupName, BaseGroupType parent, long organizationId)
 	{
 		if (parent != null) clearGroupCache(parent, false);
-		return (UserGroupType)newGroup(owner, group_name, GroupEnumType.USER, parent, organizationId);
+		return (UserGroupType)newGroup(owner, groupName, GroupEnumType.USER, parent, organizationId);
 	}
-	public PersonGroupType newPersonGroup(UserType owner, String group_name, BaseGroupType parent, long organizationId) throws ArgumentException
+	public PersonGroupType newPersonGroup(UserType owner, String groupName, BaseGroupType parent, long organizationId) 
 	{
 		if (parent != null) clearGroupCache(parent, false);
-		return (PersonGroupType)newGroup(owner, group_name, GroupEnumType.PERSON, parent, organizationId);
+		return (PersonGroupType)newGroup(owner, groupName, GroupEnumType.PERSON, parent, organizationId);
 	}
-	public AccountGroupType newAccountGroup(UserType owner, String group_name, BaseGroupType parent, long organizationId) throws ArgumentException
+	public AccountGroupType newAccountGroup(UserType owner, String groupName, BaseGroupType parent, long organizationId)
 	{
 		if (parent != null) clearGroupCache(parent, false);
-		return (AccountGroupType)newGroup(owner, group_name, GroupEnumType.ACCOUNT, parent, organizationId);
+		return (AccountGroupType)newGroup(owner, groupName, GroupEnumType.ACCOUNT, parent, organizationId);
 	}	
-	public DirectoryGroupType newDirectoryGroup(String group_name, BaseGroupType parent, long organizationId) throws ArgumentException
+	public DirectoryGroupType newDirectoryGroup(String groupName, BaseGroupType parent, long organizationId)
 	{
-		return newDirectoryGroup(null, group_name, parent, organizationId);
+		return newDirectoryGroup(null, groupName, parent, organizationId);
 	}
-	public DirectoryGroupType newDirectoryGroup(UserType owner, String group_name, BaseGroupType parent, long organizationId) throws ArgumentException
+	public DirectoryGroupType newDirectoryGroup(UserType owner, String groupName, BaseGroupType parent, long organizationId) 
 	{
 		if (parent != null) clearGroupCache(parent, false);
-		return (DirectoryGroupType)newGroup(owner, group_name, GroupEnumType.DATA, parent, organizationId);
+		return (DirectoryGroupType)newGroup(owner, groupName, GroupEnumType.DATA, parent, organizationId);
 	}
 	
-	public BaseGroupType newGroup(String group_name, long organizationId)
+	public BaseGroupType newGroup(String groupName, long organizationId)
 	{
-		return newGroup(null,group_name, GroupEnumType.UNKNOWN, null, organizationId);
+		return newGroup(null,groupName, GroupEnumType.UNKNOWN, null, organizationId);
 	}
 
 
-	public BaseGroupType newGroup(String group_name, GroupEnumType Type, long organizationId)
+	public BaseGroupType newGroup(String groupName, GroupEnumType groupType, long organizationId)
 	{
-		return newGroup(null, group_name, Type, null, organizationId);
+		return newGroup(null, groupName, groupType, null, organizationId);
 	}
-	public BaseGroupType newGroup(UserType owner, String group_name, GroupEnumType Type, long organizationId)
+	public BaseGroupType newGroup(UserType owner, String groupName, GroupEnumType groupType, long organizationId)
 	{
-		return newGroup(owner, group_name, Type, null, organizationId);
+		return newGroup(owner, groupName, groupType, null, organizationId);
 	}
-	public BaseGroupType newGroup(UserType owner, String group_name, GroupEnumType Type, BaseGroupType parent, long organizationId)
+	public BaseGroupType newGroup(UserType owner, String groupName, GroupEnumType groupType, BaseGroupType parent, long organizationId)
 	{
-		///System.out.println("New Group Owner: " + (owner == null ? "Null": owner.getName() ));
-		BaseGroupType new_group = newGroup(Type);
-		if(owner != null) new_group.setOwnerId(owner.getId());
-		//new_group.setOrganization(organizationId);
-		new_group.setOrganizationId(organizationId);
-		new_group.setName(group_name);
-		if (parent != null) new_group.setParentId(parent.getId());
-		return new_group;
+		BaseGroupType newGroup = newGroup(groupType);
+		if(owner != null) newGroup.setOwnerId(owner.getId());
+		newGroup.setOrganizationId(organizationId);
+		newGroup.setName(groupName);
+		if (parent != null) newGroup.setParentId(parent.getId());
+		return newGroup;
 	}
-	protected BaseGroupType newGroup(GroupEnumType Type)
+	protected BaseGroupType newGroup(GroupEnumType groupType)
 	{
-		BaseGroupType new_group = null;
-		switch (Type)
+		BaseGroupType newGroup = null;
+		switch (groupType)
 		{
 			case BUCKET:
-				new_group = new BucketGroupType();
+				newGroup = new BucketGroupType();
 				break;
 			case DATA:
-				new_group = new DirectoryGroupType();
+				newGroup = new DirectoryGroupType();
 				break;
 			case ACCOUNT:
-				new_group = new AccountGroupType();
+				newGroup = new AccountGroupType();
 				break;
 			case USER:
-				new_group = new UserGroupType();
+				newGroup = new UserGroupType();
 				break;
 			case PERSON:
-				new_group = new PersonGroupType();
+				newGroup = new PersonGroupType();
 				break;
 			default:
-				new_group = new BaseGroupType();
+				newGroup = new BaseGroupType();
 				break;
 		}
-		new_group.setGroupType(Type);
-		new_group.setNameType(NameEnumType.GROUP);
-		return new_group;
+		newGroup.setGroupType(groupType);
+		newGroup.setNameType(NameEnumType.GROUP);
+		return newGroup;
 	}
 	
 	@Override
@@ -239,23 +228,17 @@ public class GroupFactory  extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		BaseGroupType new_group = newGroup(GroupEnumType.valueOf(rset.getString("grouptype")));
-		new_group.setReferenceId(rset.getLong("referenceid"));
-		return super.read(rset, new_group);
+		BaseGroupType newGroup = newGroup(GroupEnumType.valueOf(rset.getString("grouptype")));
+		newGroup.setReferenceId(rset.getLong("referenceid"));
+		return super.read(rset, newGroup);
 	}
 	
 	public boolean deleteDirectoryGroup(DirectoryGroupType directory) throws FactoryException, ArgumentException
 	{
 		if (directory == null) return true;
-			//throw new ArgumentException("Null directory reference");
-		
-
-		
-		//logger.info("Deleting " + directory.getName());
 		populate(directory);
-		//populateSubDirectories(directory);
-		DirectoryGroupType[] sub_dirs = getDirectoryGroups(directory).toArray(new DirectoryGroupType[0]);
-		for (int i = sub_dirs.length - 1; i >= 0; i--) deleteDirectoryGroup(sub_dirs[i]);
+		DirectoryGroupType[] subDirs = getDirectoryGroups(directory).toArray(new DirectoryGroupType[0]);
+		for (int i = subDirs.length - 1; i >= 0; i--) deleteDirectoryGroup(subDirs[i]);
 		DataFactory dFact = Factories.getFactory(FactoryEnumType.DATA);
 		dFact.deleteDataInGroup(directory);
 		return delete(directory);
@@ -264,21 +247,20 @@ public class GroupFactory  extends NameIdFactory {
 	public <T> boolean delete(T object) throws FactoryException
 	{
 		BaseGroupType group = (BaseGroupType)object;
-		List<BaseGroupType> sub_groups = new ArrayList<>();
+		List<BaseGroupType> subGroups = new ArrayList<>();
 		try {
-			sub_groups = this.getListByParent(GroupEnumType.UNKNOWN, group, 0L, 0, group.getOrganizationId());
+			subGroups = this.getListByParent(GroupEnumType.UNKNOWN, group, 0L, 0, group.getOrganizationId());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		for(BaseGroupType sub_group : sub_groups) delete(sub_group); 
+		for(BaseGroupType sub_group : subGroups) delete(sub_group); 
 		int deleted = deleteById(group.getId(), group.getOrganizationId());
 		clearGroupCache(group, true);
 		return (deleted > 0);
 	}
 	public int deleteGroupsByUser(UserType map) throws FactoryException
 	{
-		/// , QueryFields.getFieldGroupType(GroupEnumType.valueOf(map.getNameType().toString())) 
 		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldOwner(map.getId())}, map.getOrganizationId());
 		return deleteGroupsByIds(ids, map.getOrganizationId());
 	}
@@ -324,48 +306,44 @@ public class GroupFactory  extends NameIdFactory {
 		return (AccountGroupType)getGroupByName(name, GroupEnumType.ACCOUNT, parent, organizationId);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getByNameInParent(String name, String type, long parent_id, long organization_id) throws FactoryException, ArgumentException
+	public <T> T getByNameInParent(String name, String type, long parentId, long organizationId) throws FactoryException, ArgumentException
 	{
-		String key_name = name + "-" + type + "-" + parent_id + "-" + organization_id;
-		GroupEnumType group_type = GroupEnumType.valueOf(type);
-		NameIdType out_group = readCache(key_name);
-		if (out_group != null) return (T)out_group;
-		QueryFields x = null;
-		List<QueryField> fields = new ArrayList<QueryField>();
+		String keyName = name + "-" + type + "-" + parentId + "-" + organizationId;
+		GroupEnumType groupType = GroupEnumType.valueOf(type);
+		NameIdType outGroup = readCache(keyName);
+		if (outGroup != null) return (T)outGroup;
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldName(name));
-		fields.add(QueryFields.getFieldParent(parent_id));
-		if(group_type != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(group_type));
+		fields.add(QueryFields.getFieldParent(parentId));
+		if(groupType != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(groupType));
 		
-		List<NameIdType> groups = getByField(fields.toArray(new QueryField[0]), organization_id);
+		List<NameIdType> groups = getByField(fields.toArray(new QueryField[0]), organizationId);
 
-		if (groups.size() > 0)
+		if (!groups.isEmpty())
 		{
-			addToCache(groups.get(0),key_name);
+			addToCache(groups.get(0),keyName);
 			return (T)groups.get(0);
 		}
 		return null;
 	}
-	public BaseGroupType getGroupByName(String name, GroupEnumType group_type, BaseGroupType parent, long organizationId) throws FactoryException, ArgumentException
+	public BaseGroupType getGroupByName(String name, GroupEnumType groupType, BaseGroupType parent, long organizationId) throws FactoryException, ArgumentException
 	{
-		String key_name = name + "-" + group_type + "-" + (parent == null ? 0 : parent.getId()) + "-" + organizationId;
+		String keyName = name + "-" + groupType + "-" + (parent == null ? 0 : parent.getId()) + "-" + organizationId;
 	
-		//logger.info("Getting " + key_name);
-		
-		NameIdType out_group = readCache(key_name);
-		if (out_group != null) return (BaseGroupType)out_group;
-		//System.out.println("Fetching " + key_name);
-		QueryFields x = null;
-		List<QueryField> fields = new ArrayList<QueryField>();
+		NameIdType outGroup = readCache(keyName);
+		if (outGroup != null) return (BaseGroupType)outGroup;
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldName(name));
 		fields.add(QueryFields.getFieldParent(( parent != null ? parent.getId() : 0)));
-		if(group_type != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(group_type));
+		if(groupType != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(groupType));
 		
 		List<NameIdType> groups = getByField(fields.toArray(new QueryField[0]), organizationId);
 
-		if (groups.size() > 0)
+		if (!groups.isEmpty())
 		{
-			addToCache(groups.get(0),key_name);
+			addToCache(groups.get(0),keyName);
 			return (BaseGroupType)groups.get(0);
 		}
 		return null;
@@ -373,15 +351,15 @@ public class GroupFactory  extends NameIdFactory {
 
 	public List<UserGroupType> getUserGroups(UserGroupType parent) throws FactoryException, ArgumentException
 	{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		fields.add(QueryFields.getFieldGroupType(GroupEnumType.USER.toString()));
 		return getUserGroups(fields, parent.getOrganizationId());
 	}
 	public List<UserGroupType> getUserGroups(List<QueryField> fields, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> in_list = getByField(fields.toArray(new QueryField[0]), organizationId);
-		return convertList(in_list);
+		List<NameIdType> inList = getByField(fields.toArray(new QueryField[0]), organizationId);
+		return convertList(inList);
 
 	}
 
@@ -393,15 +371,15 @@ public class GroupFactory  extends NameIdFactory {
 	
 	public List<DirectoryGroupType> getDirectoryGroups(DirectoryGroupType parent) throws FactoryException, ArgumentException
 	{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		fields.add(QueryFields.getFieldGroupType(GroupEnumType.DATA.toString()));
 		return getDirectoryGroups(fields, parent.getOrganizationId());
 	}
 	public List<DirectoryGroupType> getDirectoryGroups(List<QueryField> fields, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> in_list = getByField(fields.toArray(new QueryField[0]), organizationId);
-		return convertList(in_list);
+		List<NameIdType> inList = getByField(fields.toArray(new QueryField[0]), organizationId);
+		return convertList(inList);
 
 	}
 	
@@ -414,15 +392,15 @@ public class GroupFactory  extends NameIdFactory {
 	
 	public List<PersonGroupType> getPersonGroups(PersonGroupType parent) throws FactoryException, ArgumentException
 	{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		fields.add(QueryFields.getFieldGroupType(GroupEnumType.PERSON.toString()));
 		return getPersonGroups(fields, parent.getOrganizationId());
 	}
 	public List<PersonGroupType> getPersonGroups(List<QueryField> fields, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> in_list = getByField(fields.toArray(new QueryField[0]), organizationId);
-		return convertList(in_list);
+		List<NameIdType> inList = getByField(fields.toArray(new QueryField[0]), organizationId);
+		return convertList(inList);
 
 	}
 	
@@ -435,15 +413,15 @@ public class GroupFactory  extends NameIdFactory {
 	
 	public List<AccountGroupType> getAccountGroups(AccountGroupType parent) throws FactoryException, ArgumentException
 	{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		fields.add(QueryFields.getFieldGroupType(GroupEnumType.ACCOUNT.toString()));
 		return getAccountGroups(fields, parent.getOrganizationId());
 	}
 	public List<AccountGroupType> getAccountGroups(List<QueryField> fields, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> in_list = getByField(fields.toArray(new QueryField[0]), organizationId);
-		return convertList(in_list);
+		List<NameIdType> inList = getByField(fields.toArray(new QueryField[0]), organizationId);
+		return convertList(inList);
 
 	}
 	
@@ -457,25 +435,25 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		return getGroupById(id, GroupEnumType.UNKNOWN, organizationId);
 	}
-	public BaseGroupType getGroupById(long id, GroupEnumType group_type, long organizationId) throws ArgumentException{
+	public BaseGroupType getGroupById(long id, GroupEnumType groupType, long organizationId) throws ArgumentException{
 
-		NameIdType out_group = readCache(id);
-		if (out_group != null) return (BaseGroupType)out_group;
-		List<QueryField> fields = new ArrayList<QueryField>();
+		NameIdType outGroup = readCache(id);
+		if (outGroup != null) return (BaseGroupType)outGroup;
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldId(id));
-		if(group_type != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(group_type));
+		if(groupType != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(groupType));
 		List<NameIdType> groups = null;
 		try {
 			groups = getByField(fields.toArray(new QueryField[0]), organizationId);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		if (groups != null && groups.size() > 0)
+		if (groups != null && !groups.isEmpty())
 		{
 			BaseGroupType group = (BaseGroupType)groups.get(0);
-			String key_name = group.getName() + "-" + group.getGroupType().toString() + "-" + group.getParentId() + "-" + organizationId;
-			addToCache(group,key_name);
+			String keyName = group.getName() + "-" + group.getGroupType().toString() + "-" + group.getParentId() + "-" + organizationId;
+			addToCache(group,keyName);
 			return (BaseGroupType)groups.get(0);
 		}
 		return null;
@@ -489,38 +467,20 @@ public class GroupFactory  extends NameIdFactory {
 			clearGroupCache(getGroupById(group.getParentId(), group.getOrganizationId()), false);
 		}
 	}
-	protected void clearGroupCache(BaseGroupType group, boolean clear_parent) {
+	protected void clearGroupCache(BaseGroupType group, boolean clearParent) {
 		if (group == null) return;
-		if (clear_parent)
+		if (clearParent)
 			try {
 				clearGroupParentCache(group);
 			} catch (ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
-		String key_name = group.getName() + "-" + group.getGroupType().toString() + "-" + group.getParentId() + "-" + group.getOrganizationId();
-		/*
-		switch (group.getGroupType())
-		{
-			case DATA:
-				DirectoryGroupType dgroup = (DirectoryGroupType)group;
-				clearDirectoryGroupCache(dgroup);
-				break;
-			default:
-				System.out.println("Group type " + group.getGroupType() + " is not supported for caching.");
-				break;
-		}
-		*/
-		removeFromCache(group, key_name);
+		String keyName = group.getName() + "-" + group.getGroupType().toString() + "-" + group.getParentId() + "-" + group.getOrganizationId();
+		
+		removeFromCache(group, keyName);
 	}
-	/*
-	protected void clearDirectoryGroupCache(DirectoryGroupType group){
-		group.getSubDirectories().clear();
-		group.setPopulated(false);
-		group.getData().clear();
-		group.setReadData(false);
-	}
-	*/
+
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
@@ -529,16 +489,16 @@ public class GroupFactory  extends NameIdFactory {
 			clearGroupParentCache(group);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return super.update(group);
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		BaseGroupType use_group = (BaseGroupType)map;
-		fields.add(QueryFields.getFieldGroupType(use_group.getGroupType().toString()));
-		fields.add(QueryFields.getFieldReferenceId(use_group.getReferenceId()));
+		BaseGroupType useGroup = (BaseGroupType)map;
+		fields.add(QueryFields.getFieldGroupType(useGroup.getGroupType().toString()));
+		fields.add(QueryFields.getFieldReferenceId(useGroup.getReferenceId()));
 	}
 	
 	@Override
@@ -560,43 +520,10 @@ public class GroupFactory  extends NameIdFactory {
 		BaseGroupType group = (BaseGroupType)obj;
 		boolean valid = isValid(group);
 		if (group.getPopulated()) return;
-		/*
-        if (valid && group.getGroupType() == GroupEnumType.DATA)
-        {
-            DirectoryGroupType dirGroup = (DirectoryGroupType)group;
-            populateSubDirectories(dirGroup);
-            / *
-            if (dirGroup.getParentId() > 0)
-            {
-            	BaseGroupType pgroup = getById(group.getParentId(), group.getOrganizationId());
-                dirGroup.setParentGroup((pgroup.getGroupType() == GroupEnumType.DATA ? (DirectoryGroupType)pgroup:null));
-            }
-            * /
-        }
-		*/
-        //group.setPath(getPath(group,false));
+	
         group.setPopulated(true);
         if(valid) updateToCache(group);
 	}
-/*
-	private void populateSubDirectories(DirectoryGroupType group) throws FactoryException, ArgumentException
-	{
-		if (group == null) throw new FactoryException("Null group reference");
-		//if (group.ReadSubdirectories) return;
-		group.getSubDirectories().clear();
-		group.getSubDirectories().addAll(getDirectoryGroups(group));
-		//group.SubDirectories.Sort(new DirectoryComparer());
-	}
-	*/
-	/*
-	protected void populateDirectoryData(DirectoryGroupType group) throws FactoryException, ArgumentException
-	{
-		if (group.getPopulated()) return;
-		group.getData().clear();
-		group.getData().addAll(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(group,true, 0, 0, group.getOrganizationId()));
-		//group.Data.Sort(new DataComparer());
-	}
-	*/
 
 	public DirectoryGroupType getRootDirectory(long organizationId) throws FactoryException, ArgumentException
 	{
@@ -617,34 +544,34 @@ public class GroupFactory  extends NameIdFactory {
 
 		return getDirectoryByName(user.getName(), getHomeDirectory(user.getOrganizationId()),user.getOrganizationId());
 	}
-	public DirectoryGroupType getCreateUserDirectory(UserType user, String directory_name) throws FactoryException, ArgumentException
+	public DirectoryGroupType getCreateUserDirectory(UserType user, String directoryName) throws FactoryException, ArgumentException
 	{
-		return getCreateDirectory(user, directory_name, getUserDirectory(user), user.getOrganizationId());
+		return getCreateDirectory(user, directoryName, getUserDirectory(user), user.getOrganizationId());
 	}
-	public DirectoryGroupType getCreateDirectory(UserType owner, String directory_name, DirectoryGroupType parent, long organizationId) throws FactoryException, ArgumentException
+	public DirectoryGroupType getCreateDirectory(UserType owner, String directoryName, DirectoryGroupType parent, long organizationId) throws FactoryException, ArgumentException
 	{
 
-		DirectoryGroupType vdir = getDirectoryByName(directory_name, parent, organizationId);
+		DirectoryGroupType vdir = getDirectoryByName(directoryName, parent, organizationId);
 		if (vdir == null)
 		{
-			vdir = newDirectoryGroup(owner, directory_name, parent, organizationId);
+			vdir = newDirectoryGroup(owner, directoryName, parent, organizationId);
 			if (add(vdir))
 			{
-				vdir = getDirectoryByName(directory_name, parent, organizationId);
+				vdir = getDirectoryByName(directoryName, parent, organizationId);
 			}
 			else vdir = null;
 		}
 		return vdir;
 	}
-	public UserGroupType getCreateUserGroup(UserType owner, String directory_name, BaseGroupType parent, long organizationId) throws FactoryException, ArgumentException
+	public UserGroupType getCreateUserGroup(UserType owner, String directoryName, BaseGroupType parent, long organizationId) throws FactoryException, ArgumentException
 	{
-		UserGroupType vdir = getUserGroupByName(directory_name, parent, organizationId);
+		UserGroupType vdir = getUserGroupByName(directoryName, parent, organizationId);
 		if (vdir == null)
 		{
-			vdir = newUserGroup(owner, directory_name, parent, organizationId);
+			vdir = newUserGroup(owner, directoryName, parent, organizationId);
 			if (add(vdir))
 			{
-				vdir = getUserGroupByName(directory_name, parent, organizationId);
+				vdir = getUserGroupByName(directoryName, parent, organizationId);
 			}
 			else vdir = null;
 		}
@@ -659,6 +586,8 @@ public class GroupFactory  extends NameIdFactory {
 		}
 		return dir;
 	}
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException
 	{
@@ -668,75 +597,56 @@ public class GroupFactory  extends NameIdFactory {
 	public BaseGroupType findGroup(UserType user, GroupEnumType groupType, String path, long organizationId) throws FactoryException, ArgumentException
 	{
 		
-		BaseGroupType out_dir = null;
+		BaseGroupType outDir = null;
 		if (path == null || path.length() == 0) throw new FactoryException("Invalid path");
 
 		String[] paths = path.split("/");
 
-		BaseGroupType nested_group = null;
+		BaseGroupType nestedGroup = null;
 
 		String name = null;
-		/// groupType == GroupEnumType.DATA && (
+
 		if (paths.length == 0 || path.equals("/"))
 		{
 			return getRootDirectory(organizationId);
 		}
 		if(paths.length == 0) throw new FactoryException("Invalid path list from '" + path + "'");
 
-		for (int i = 0; i < paths.length; i++)
+		for(int i = 0; i < paths.length; i++)
 		{
 			name = paths[i];
 			
 			if (name.length() == 0 && i == 0)
 			{
-				nested_group = getRootDirectory(organizationId);
+				nestedGroup = getRootDirectory(organizationId);
 				if (paths.length == 1)
 				{
 					break;
 				}
-				name = paths[++i];
+				// name = paths[++i];
+				i++;
 			}
 			else if (name.equals("~") && user != null)
 			{
 				Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
-				//System.out.println("GF User pop = " + user.getPopulated());
-				//System.out.println("GF User Home Dir = " + (user.getHomeDirectory() != null));
-				//System.out.println("Found Home Marker and paths length = " + paths.length);
 				if(user.getHomeDirectory() == null) throw new FactoryException("User home directory not populated");
-				nested_group = user.getHomeDirectory();
+				nestedGroup = user.getHomeDirectory();
 				if (paths.length == 1) break;
-				name = paths[++i];
+				// name = paths[++i];
+				i++;
 			}
-			/*
-			if (paths[i].indexOf('*') > -1)
-			{
-				DirectoryGroupType match = null;
-				populate(nested_group);
-				Pattern p = Pattern.compile("^" + paths[i].replace("*",".*"));
-				for(int d= 0; d < nested_group.getSubDirectories().size(); d++){
-					DirectoryGroupType dir = nested_group.getSubDirectories().get(d);
-					Matcher m = p.matcher(dir.getName());
-					
-					if(m.matches()){
-						match = dir;
-						break;
-					}
-				}
-				nested_group = match;
-			}
-			else
-			*/
-			nested_group = getGroupByName(paths[i], groupType,nested_group, organizationId);
-
+			nestedGroup = getGroupByName(paths[i], groupType,nestedGroup, organizationId);
 		}
-		out_dir = nested_group;
+		outDir = nestedGroup;
 
-		return out_dir;
+		return outDir;
 	}
+	
 	@Override
 	public <T> T makePath(String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		return makePath(null,type,pathBase,organizationId);
 	}
+	
 	@Override
 	public <T> T makePath(UserType user, String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		if(makePath(user,GroupEnumType.valueOf(type), pathBase, organizationId)){
@@ -752,73 +662,65 @@ public class GroupFactory  extends NameIdFactory {
 
 		// Check if the path exists
 		//
-		DirectoryGroupType check_group = (DirectoryGroupType)findGroup(user, groupType, path, organizationId);
-		if (check_group != null) return false;
+		DirectoryGroupType checkGroup = (DirectoryGroupType)findGroup(user, groupType, path, organizationId);
+		if (checkGroup != null) return false;
 
 		String[] paths = path.split("/");
 		if (paths.length == 0 || path.equals("/"))
 		{
 			return false;
 		}
-		DirectoryGroupType nested_group = null;
-		DirectoryGroupType ref_group = null;
+		DirectoryGroupType nestedGroup = null;
+		DirectoryGroupType refGroup = null;
 		String name =  null;
 		for (int i = 0; i < paths.length; i++)
 		{
 			name = paths[i];
 			if (name.length() == 0 && i == 0)
 			{
-				ref_group = getRootDirectory(organizationId);
+				refGroup = getRootDirectory(organizationId);
 				if (paths.length == 1)
 				{
 					throw new FactoryException("Invalid group name in makepath");
-					//ret = false;
-					//break;
 				}
 				name = paths[++i];
 			}
 			else if (name.equals("~") && user != null)
 			{
 				Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
-				ref_group = user.getHomeDirectory();
+				refGroup = user.getHomeDirectory();
 				if (paths.length == 1)
 				{
 					throw new FactoryException("MakeDirectoryPath: Cannot create user home directory.  This can only be created through setAccountDefaults");
-					//ret = false;
-					//break;
 				}
 				name = paths[++i];
 			}
 
-			if (ref_group == null)
+			if (refGroup == null)
 			{
 				logger.error("Invalid reference group for path section: '" + name + "' at index " + i);
 				throw new FactoryException("MakeDirectoryPath: Invalid directory reference id");
-				//ret = false;
-				//break;
 			}
 
-			nested_group = getDirectoryByName(name, ref_group, organizationId);
-			logger.debug("Pathing " + name + " - " + (nested_group == null ? "NEW" : nested_group.getId()));
-			if (nested_group == null)
+			nestedGroup = getDirectoryByName(name, refGroup, organizationId);
+			logger.debug("Pathing " + name + " - " + (nestedGroup == null ? "NEW" : nestedGroup.getId()));
+			if (nestedGroup == null)
 			{
-				nested_group = newDirectoryGroup(user, name, ref_group, organizationId);
-				if (add(nested_group))
+				nestedGroup = newDirectoryGroup(user, name, refGroup, organizationId);
+				if (add(nestedGroup))
 				{
-					nested_group = getDirectoryByName(name, ref_group, organizationId);
-					ref_group = nested_group;
+					nestedGroup = getDirectoryByName(name, refGroup, organizationId);
+					refGroup = nestedGroup;
 					ret = true;
 				}
 				else
 				{
 					throw new FactoryException("MakeDirectoryPath: Unable to create directory: '" + name + "'");
-					//ret = false;
-					//break;
 				}
 			}
 			else
 			{
-				ref_group = nested_group;
+				refGroup = nestedGroup;
 				ret = true;
 			}
 
@@ -826,38 +728,38 @@ public class GroupFactory  extends NameIdFactory {
 
 		return ret;
 	}
-	public String getPath(long leaf_group_id, long organizationId) throws FactoryException, ArgumentException
+	public String getPath(long leafGroupId, long organizationId) throws FactoryException, ArgumentException
 	{
-		return getPath(leaf_group_id, organizationId,true);
+		return getPath(leafGroupId, organizationId,true);
 	}
-	public String getPath(long leaf_group_id, long organizationId,boolean populate) throws FactoryException, ArgumentException
+	public String getPath(long leafGroupId, long organizationId,boolean populate) throws FactoryException, ArgumentException
 	{
 
-		BaseGroupType group = getGroupById(leaf_group_id,organizationId);
+		BaseGroupType group = getGroupById(leafGroupId,organizationId);
 		return getPath(group, populate);
 	}
-	public String getPath(BaseGroupType leaf_group) throws FactoryException, ArgumentException
+	public String getPath(BaseGroupType leafGroup) throws FactoryException, ArgumentException
 	{
-		return getPath(leaf_group, true);
+		return getPath(leafGroup, true);
 	}
-	protected String getPath(BaseGroupType leaf_group, boolean populate) throws FactoryException, ArgumentException
+	protected String getPath(BaseGroupType leafGroup, boolean populate) throws FactoryException, ArgumentException
 	{
-		if(leaf_group == null) return null;
-		List<BaseGroupType> group_list = new ArrayList<BaseGroupType>();
-		group_list.add(leaf_group);
-		if(populate) populate(leaf_group);
-		while (leaf_group.getParentId() != null && leaf_group.getParentId() > 0L)
+		if(leafGroup == null) return null;
+		List<BaseGroupType> groupList = new ArrayList<>();
+		groupList.add(leafGroup);
+		if(populate) populate(leafGroup);
+		while (leafGroup.getParentId() != null && leafGroup.getParentId() > 0L)
 		{
-			BaseGroupType parentGroup = getById(leaf_group.getParentId(),leaf_group.getOrganizationId());
-			group_list.add(parentGroup);
-			leaf_group = parentGroup;
-			populate(leaf_group);
+			BaseGroupType parentGroup = getById(leafGroup.getParentId(),leafGroup.getOrganizationId());
+			groupList.add(parentGroup);
+			leafGroup = parentGroup;
+			populate(leafGroup);
 		}
-		Collections.reverse(group_list);
+		Collections.reverse(groupList);
 		StringBuilder buff = new StringBuilder();
-		for (int i = 0; i < group_list.size(); i++)
+		for (int i = 0; i < groupList.size(); i++)
 		{
-			BaseGroupType group = group_list.get(i);
+			BaseGroupType group = groupList.get(i);
 			if (group.getName().equals("Root") && group.getParentId() == 0) continue;
 			buff.append("/" + group.getName());
 		}
@@ -865,65 +767,12 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	public int getCount(BaseGroupType group) throws FactoryException
 	{
-		/// ,QueryFields.getFieldGroupType(GroupEnumType.DATA)
 		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId())}, group.getOrganizationId());
 	}
-/*
 	
-	public int getCount(UserGroupType group) throws FactoryException
-	{
-		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.USER)}, group.getOrganizationId());
-	}
-	public int getCount(PersonGroupType group) throws FactoryException
-	{
-		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.PERSON)}, group.getOrganizationId());
-	}
-
-	public int getCount(AccountGroupType group) throws FactoryException
-	{
-		return getCountByField(this.getDataTables().get(0), new QueryField[]{QueryFields.getFieldParent(group.getId()),QueryFields.getFieldGroupType(GroupEnumType.ACCOUNT)}, group.getOrganizationId());
-	}
-*/
-	/*
-	public List<UserGroupType>  getUserGroupListByParent(BaseGroupType parent, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
-	{
-		return getUserGroupList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(GroupEnumType.USER) }, startRecord, recordCount, organizationId);
-	}
-	
-	public List<UserGroupType>  getUserGroupListByParent(BaseGroupType parent, ProcessingInstructionType instruction, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
-	{
-		return getUserGroupList(new QueryField[] { QueryFields.getFieldParent(parent.getId()),QueryFields.getFieldGroupType(GroupEnumType.USER) }, instruction, startRecord, recordCount,organizationId);
-	}
-	public List<UserGroupType>  getUserGroupList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
-	{
-		ProcessingInstructionType instruction = new ProcessingInstructionType();
-		instruction.setOrderClause("name ASC");
-		return getUserGroupList(fields, instruction, startRecord,recordCount,organizationId);
-	}
-	public List<UserGroupType>  getUserGroupList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
-	{
-		/// If pagination not 
-		///
-		if (instruction != null && startRecord >= 0 && recordCount > 0 && instruction.getPaginate() == false)
-		{
-			instruction.setPaginate(true);
-			instruction.setStartIndex(startRecord);
-			instruction.setRecordCount(recordCount);
-		}
-		return getUserGroupList(fields, instruction, organizationId);
-	}
-	public List<UserGroupType> getUserGroupList(QueryField[] fields, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException
-	{
-
-		if(instruction == null) instruction = new ProcessingInstructionType();
-
-		List<NameIdType> dataList = getByField(fields, instruction, organizationId);
-		return convertList(dataList);
-	}
-	*/
-	
+	@Override
 	public <T> List<T> listInParent(String type, long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parentId));
 		GroupEnumType groupType = GroupEnumType.valueOf(type);
 		if(groupType != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(groupType));
@@ -933,7 +782,7 @@ public class GroupFactory  extends NameIdFactory {
 
 	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		if(groupType != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(groupType));
 		return getList(fields.toArray(new QueryField[0]), startRecord, recordCount, organizationId);
@@ -941,7 +790,7 @@ public class GroupFactory  extends NameIdFactory {
 	
 	public <T> List<T>  getListByParent(GroupEnumType groupType, BaseGroupType parent, ProcessingInstructionType instruction, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		if(groupType != GroupEnumType.UNKNOWN) fields.add(QueryFields.getFieldGroupType(groupType));
 		return getList(fields.toArray(new QueryField[0]), instruction, startRecord, recordCount,organizationId);
@@ -956,7 +805,7 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		/// If pagination not 
 		///
-		if (instruction != null && startRecord >= 0 && recordCount > 0 && instruction.getPaginate() == false)
+		if (instruction != null && startRecord >= 0 && recordCount > 0 && !instruction.getPaginate())
 		{
 			instruction.setPaginate(true);
 			instruction.setStartIndex(startRecord);

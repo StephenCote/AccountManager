@@ -53,7 +53,7 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>true</skipTests>
+  					<skipTests>false</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine>  
 
   					<includes>
@@ -64,25 +64,30 @@
 											
 								
 						<!-- 
-					<exclude>**/TestKnowledgeBasedVerification.java</exclude>
-					
+							<exclude>**/TestBulkUser.java</exclude>
+							<exclude>**/TestBulkDelete.java</exclude>	
+							<exclude>**/TestBulkUpdate.java</exclude>
+							<exclude>**/TestBulkPerson.java</exclude>
 						-->
-						<exclude>**/TestVaultService.java</exclude>
-							<exclude>**/TestFunctionFactPolicy.java</exclude>
-						<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
-						<exclude>**/TestControlFactory.java</exclude>
-						<exclude>**/TestSoD.java</exclude>
-						<exclude>**/TestFunctionFactory.java</exclude>	
+							
 
-						<exclude>**/TestBulkUpdate.java</exclude>
+							
+						<exclude>**/TestSoD.java</exclude>	
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
+						<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
+						<exclude>**/TestOrganizationFactory.java</exclude>
+						<exclude>**/TestKnowledgeBasedVerification.java</exclude>
+						<exclude>**/TestVaultService.java</exclude>
+						<exclude>**/TestFunctionFactPolicy.java</exclude>
+						<exclude>**/TestControlFactory.java</exclude>
 						
+						<exclude>**/TestFunctionFactory.java</exclude>	
 						<exclude>**/TestFactoryInterfaces.java</exclude>												
 						<exclude>**/TestDataFactory.java</exclude>
 						<exclude>**/TestGroupAuthorization.java</exclude>
 						<exclude>**/TestDataAuthorization.java</exclude>	
 						
-						<exclude>**/TestBulkDelete.java</exclude>					
+										
 						<exclude>**/TestPermissions.java</exclude>							
 											
 						
@@ -92,13 +97,12 @@
 						<exclude>**/TestCredentialFactory.java</exclude>
 
 						<exclude>**/TestFactoryCache.java</exclude>
-						<exclude>**/TestOrganizationFactory.java</exclude>
+						
 						<exclude>**/TestBaseService.java</exclude>
 						
 
 
-						<exclude>**/TestBulkPerson.java</exclude>
-						<exclude>**/TestBulkUser.java</exclude>
+
 						
 						<exclude>**/TestDataTags.java</exclude>		
 						<exclude>**/TestCachePerformance.java</exclude>		

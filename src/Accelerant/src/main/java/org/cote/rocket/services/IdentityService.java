@@ -41,7 +41,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.AddressFactory;
 import org.cote.accountmanager.data.factory.ContactFactory;
@@ -62,6 +61,7 @@ import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountType;
@@ -117,13 +117,13 @@ public class IdentityService {
 	private static String lifecycleAdmin = "identityadmin";
 	private static CredentialType lifecycleAdminCredential = null;
 	public static final int MAX_ATTRIBUTES = 10;
-	public static final String [] HEADER_ACCOUNT = {"uid","owner","accountType","email","attribute1","attribute2","attribute3","attribute4","attribute5","attribute6","attribute7","attribute8","attribute9","attribute10"};
-	public static final String [] HEADER_PERSON = {"uid","firstName","middleName","lastName","gender","birthdate","personType","email","manager","homeAddress","homeCity","homeRegion","homeState","homePostalCode","homeCountry","workAddress","workCity","workRegion","workState","workPostalCode","workCountry","attribute1","attribute2","attribute3","attribute4","attribute5","attribute6","attribute7","attribute8","attribute9","attribute10"};
-	public static final String [] HEADER_PERMISSION = {"uid","description","type"};
-	public static final String [] HEADER_MAP = {"pid","aid"};
-	public static final String [] HEADER_ENTITLEMENTMAP = {"pid","gid"};
-	public static final String [] HEADER_GROUP = {"gid","type"};
-	public static final String [] HEADER_GROUPMAP = {"gid","aid"};
+	protected static final String [] HEADER_ACCOUNT = {"uid","owner","accountType","email","attribute1","attribute2","attribute3","attribute4","attribute5","attribute6","attribute7","attribute8","attribute9","attribute10"};
+	protected static final String [] HEADER_PERSON = {"uid","firstName","middleName","lastName","gender","birthdate","personType","email","manager","homeAddress","homeCity","homeRegion","homeState","homePostalCode","homeCountry","workAddress","workCity","workRegion","workState","workPostalCode","workCountry","attribute1","attribute2","attribute3","attribute4","attribute5","attribute6","attribute7","attribute8","attribute9","attribute10"};
+	protected static final String [] HEADER_PERMISSION = {"uid","description","type"};
+	protected static final String [] HEADER_MAP = {"pid","aid"};
+	protected static final String [] HEADER_ENTITLEMENTMAP = {"pid","gid"};
+	protected static final String [] HEADER_GROUP = {"gid","type"};
+	protected static final String [] HEADER_GROUPMAP = {"gid","aid"};
 
 
 	private UserType adminUser = null;
@@ -167,7 +167,7 @@ public class IdentityService {
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(getAdminUser(), "Config",((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(),proj.getOrganizationId()), productOrganization.getId());
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return dir;
 	}
@@ -178,10 +178,10 @@ public class IdentityService {
 			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, getConfigDirectory(proj));
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return data;
 	}
@@ -197,7 +197,7 @@ public class IdentityService {
 			conn = JAXBUtil.importObject(IdentityConnectionType.class, DataUtil.getValueString(data));
 		}
 		catch(DataException e){
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return conn;
 	}
@@ -300,7 +300,7 @@ public class IdentityService {
 		try {
 			out_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(name, getApplicationsRoot(project), project.getOrganizationId());
 		} catch (FactoryException | ArgumentException e) {
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_dir;
 	}
@@ -447,7 +447,7 @@ public class IdentityService {
 			if(currentList.size() > 0) throw new FactoryException("Attempted to import roles on a non-empty structure");
 
 			logger.info("Importing " + roles.size() + " roles");
-			if(roles.size() == 0) return 0;
+			if(roles.isEmpty()) return 0;
 			
 			for(int i = 0; i < roles.size();i++){
 				roles.get(i).getAttributes().add(Factories.getAttributeFactory().newAttribute(roles.get(i),"projectid",Long.toString(project.getId())));
@@ -457,10 +457,10 @@ public class IdentityService {
 
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		
 		return out_rec;
@@ -483,7 +483,7 @@ public class IdentityService {
 				}
 			}
 			logger.info("Importing " + importSet.size() + " permissions out of available " + permissions.size() + " permissions");
-			if(importSet.size() == 0){
+			if(importSet.isEmpty()){
 				return 0;
 			}
 			Factories.getAttributeFactory().populateAttributes(grp);
@@ -514,14 +514,14 @@ public class IdentityService {
 				}
 			}
 			logger.info("Importing " + importSet.size() + " of " + groups.size());
-			if(importSet.size() == 0) return 0;
+			if(importSet.isEmpty()) return 0;
 			
 			for(int i = 0; i < importSet.size();i++){
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, importSet.get(i));
 			}
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		
 		return out_rec;
@@ -561,7 +561,7 @@ public class IdentityService {
 
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return out_rec;
@@ -619,7 +619,7 @@ public class IdentityService {
 			}
 
 		} catch (FactoryException | ArgumentException e) {
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return out_rec;
@@ -644,7 +644,7 @@ public class IdentityService {
 				}
 			}
 			logger.info("Importing " + importSet.size() + " accounts out of available " + accounts.size() + " accounts");
-			if(importSet.size() == 0){
+			if(importSet.isEmpty()){
 				return 0;
 			}
 			
@@ -694,7 +694,7 @@ public class IdentityService {
 				}
 			}
 			logger.info("Importing " + importSet.size() + " groups out of available " + recs.size() + " groups");
-			if(importSet.size() == 0) return 0;
+			if(importSet.isEmpty()) return 0;
 			
 			for(int i = 0; i < importSet.size();i++){
 				AccountGroupType new_group = importSet.get(i);
@@ -728,7 +728,7 @@ public class IdentityService {
 				}
 			}
 			logger.info("Importing " + importSet.size() + " persons out of available " + recs.size() + " persons");
-			if(importSet.size() == 0) return 0;
+			if(importSet.isEmpty()) return 0;
 			
 			for(int i = 0; i < importSet.size();i++){
 				PersonType new_person = importSet.get(i);
@@ -894,13 +894,13 @@ public class IdentityService {
 			out_bool = true;
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return out_bool;
@@ -914,7 +914,7 @@ public class IdentityService {
 			outPer = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getCreatePermission(adminUser, svc.getName(),PermissionEnumType.APPLICATION,appBase, productOrganization.getId());
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outPer;
 	}
@@ -944,7 +944,7 @@ public class IdentityService {
 
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return permission;
 	}
@@ -955,7 +955,7 @@ public class IdentityService {
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getPersonRoleByName(name, parent,productOrganization.getId());
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return role;
 	}
@@ -964,9 +964,9 @@ public class IdentityService {
 		if(parent == null) parent = getProjectRoleBucket(project);
 		try {
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreatePersonRole(adminUser, name, parent);
-		} catch (FactoryException | DataAccessException | ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return role;
 	}
@@ -974,9 +974,9 @@ public class IdentityService {
 		PersonRoleType role = null;
 		try {
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreatePersonRole(adminUser, getLifecycleRoleBucketName(), null);
-		} catch (FactoryException | DataAccessException | ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return role;
 	}
@@ -984,9 +984,9 @@ public class IdentityService {
 		PersonRoleType role = null;
 		try {
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreatePersonRole(adminUser, getProjectRoleBucketName(project), getLifecycleRoleBucket());
-		} catch (FactoryException | DataAccessException | ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return role;
 	}
@@ -1045,27 +1045,32 @@ public class IdentityService {
 		long start_process = System.currentTimeMillis();
 		int maxRecordCount = 50000;
 		int bufferSize = 0;
-		boolean currentAccountAggression = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).isAggressiveKeyFlush();
-		boolean currentAccountSafety = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).isUseThreadSafeCollections();
-		boolean currentPersonAggression = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).isAggressiveKeyFlush();
-		boolean currentPersonSafety = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).isUseThreadSafeCollections();
 
-		boolean currentGroupPartAggression = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).isAggressiveKeyFlush();
-		boolean currentGroupPartSafety = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).isUseThreadSafeCollections();
-	
-		((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).setAggressiveKeyFlush(false);
-		((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).setUseThreadSafeCollections(false);
-		((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).setAggressiveKeyFlush(false);
-		((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).setUseThreadSafeCollections(false);
-		((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).setAggressiveKeyFlush(false);
-		((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).setUseThreadSafeCollections(false);
-
-		DirectoryGroupType personDir = RocketSecurity.getProjectDirectory(user,pj, "Persons");
-		DirectoryGroupType contactDir = RocketSecurity.getProjectDirectory(user,pj, "Contacts");
-		DirectoryGroupType addressDir = RocketSecurity.getProjectDirectory(user,pj, "Addresses");
-		
-
+		boolean currentAccountAggression = true;
+		boolean currentAccountSafety = true;
+		boolean currentPersonAggression = true;
+		boolean currentPersonSafety = true;
+		boolean currentGroupPartAggression = true;
+		boolean currentGroupPartSafety = true;
 		try {
+			currentAccountAggression = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).isAggressiveKeyFlush();
+			currentAccountSafety = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).isUseThreadSafeCollections();
+			currentPersonAggression = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).isAggressiveKeyFlush();
+			currentPersonSafety = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).isUseThreadSafeCollections();
+			currentGroupPartAggression = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).isAggressiveKeyFlush();
+			currentGroupPartSafety = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).isUseThreadSafeCollections();
+		
+			((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).setAggressiveKeyFlush(false);
+			((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).setUseThreadSafeCollections(false);
+			((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).setAggressiveKeyFlush(false);
+			((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).setUseThreadSafeCollections(false);
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).setAggressiveKeyFlush(false);
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).setUseThreadSafeCollections(false);
+
+			DirectoryGroupType personDir = RocketSecurity.getProjectDirectory(user,pj, "Persons");
+			DirectoryGroupType contactDir = RocketSecurity.getProjectDirectory(user,pj, "Contacts");
+			DirectoryGroupType addressDir = RocketSecurity.getProjectDirectory(user,pj, "Addresses");
+			
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(application);
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(application);
 			BasePermissionType permissionParent = getApplicationPermissionBase(pj, application);
@@ -1079,10 +1084,10 @@ public class IdentityService {
 			List<Long> replacePerms = new ArrayList<Long>();
 			List<Long> replaceGroups = new ArrayList<Long>();
 			for(int d = 0; d < imports.length; d++){
-				if(imports[d].getHeader().size() == 0){
+				if(imports[d].getHeader().isEmpty()){
 					setIdentityDataImportHeader(imports[d]);
 				}
-				if(imports[d].getHeader().size() == 0){
+				if(imports[d].getHeader().isEmpty()){
 					logger.error("Data import does not define an header.");
 					continue;
 				}
@@ -1407,15 +1412,20 @@ public class IdentityService {
 		}
 		catch(FactoryException | ArgumentException | IOException | DataException | DataAccessException e) {
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{
-			((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).setAggressiveKeyFlush(currentGroupPartAggression);
-			((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).setUseThreadSafeCollections(currentGroupPartSafety);
-			((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).setAggressiveKeyFlush(currentAccountAggression);
-			((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).setUseThreadSafeCollections(currentAccountSafety);
-			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).setAggressiveKeyFlush(currentPersonAggression);
-			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).setUseThreadSafeCollections(currentPersonSafety);
+			try{
+				((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).setAggressiveKeyFlush(currentGroupPartAggression);
+				((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).setUseThreadSafeCollections(currentGroupPartSafety);
+				((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).setAggressiveKeyFlush(currentAccountAggression);
+				((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).setUseThreadSafeCollections(currentAccountSafety);
+				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).setAggressiveKeyFlush(currentPersonAggression);
+				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).setUseThreadSafeCollections(currentPersonSafety);
+			}
+			catch(FactoryException f){
+				logger.error(f);
+			}
 		}
 		logger.info("Processed data in " + (System.currentTimeMillis() - start_process) + "ms");
 	}

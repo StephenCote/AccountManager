@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +44,7 @@ public class JSONUtil {
 			map = mapper.readValue(data, t.constructMapType(Map.class, keyClass, mapClass));
 		} catch (IOException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return map;
 		
@@ -59,7 +60,7 @@ public class JSONUtil {
 			outObj = mapper.readValue(s, cls);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return outObj;
 		
@@ -72,7 +73,7 @@ public class JSONUtil {
 			outStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
 		return outStr;
 	}

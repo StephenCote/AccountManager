@@ -30,8 +30,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.SecurityTokenFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuthorizationType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.SecuritySpoolType;
@@ -63,7 +63,7 @@ public class TokenService {
 		}
 		catch(FactoryException | ArgumentException e){
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return tokenType;
 	}
@@ -103,7 +103,7 @@ public class TokenService {
 		}
 		catch(FactoryException | UnsupportedEncodingException | ArgumentException e){
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return tokenType;
 	}

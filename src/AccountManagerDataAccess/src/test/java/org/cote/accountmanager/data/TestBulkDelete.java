@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -59,8 +60,9 @@ public class TestBulkDelete extends BaseDataAccessTest {
 			assertNull("Person should be null",((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getByNameInGroup(uid, pDir));
 			
 		}
-		catch(FactoryException | ArgumentException | DataAccessException  e){
-			logger.error(e);
+		catch(NullPointerException | FactoryException | ArgumentException | DataAccessException  e){
+			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }

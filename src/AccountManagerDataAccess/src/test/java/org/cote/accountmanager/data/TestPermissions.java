@@ -33,6 +33,7 @@ import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
@@ -72,7 +73,7 @@ public class TestPermissions extends BaseDataAccessTest{
 				((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(per4);
 			} catch (FactoryException | ArgumentException e1) {
 				
-				logger.error("Error",e1);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 			}
 			Factories.cleanupOrphans();
 			app1 = getApplication("Application 1");
@@ -111,7 +112,7 @@ public class TestPermissions extends BaseDataAccessTest{
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 
 		PersonType acct1 = getApplicationPerson("Person #1", app1);
@@ -128,11 +129,11 @@ public class TestPermissions extends BaseDataAccessTest{
 		try {
 			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(acct4);
 			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(acct5);
-			if(acct4.getAccounts().size() == 0){
+			if(acct4.getAccounts().isEmpty()){
 				acct4.getAccounts().add(pacct4);
 				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(acct4);
 			}
-			if(acct5.getAccounts().size() == 0){
+			if(acct5.getAccounts().isEmpty()){
 				acct5.getAccounts().add(pacct5);
 				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(acct5);
 			}
@@ -178,13 +179,13 @@ public class TestPermissions extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 
@@ -220,13 +221,13 @@ public class TestPermissions extends BaseDataAccessTest{
 			assertTrue("Account #3 should have the permission", havePerm);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 
@@ -253,13 +254,13 @@ public class TestPermissions extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	*/
@@ -285,10 +286,10 @@ public class TestPermissions extends BaseDataAccessTest{
 			per2 = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionList(rootPer, PermissionEnumType.OBJECT, 0, 10, testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		/// Just check greater than zero off the root since there are default permissions there
 		///

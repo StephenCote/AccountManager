@@ -33,6 +33,7 @@ import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.junit.After;
 import org.junit.Test;
@@ -87,7 +88,7 @@ public class TestDataAccess{
 			ps.close();
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			error = true;
 			logger.error(sqe.getMessage());
 		}
@@ -146,7 +147,7 @@ public class TestDataAccess{
 			ps.close();
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			error = true;
 			logger.error(sqe.getMessage());
 		}

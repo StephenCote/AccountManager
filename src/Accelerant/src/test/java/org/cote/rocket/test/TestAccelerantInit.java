@@ -49,7 +49,7 @@ public class TestAccelerantInit extends BaseAccelerantTest{
 			adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", FactoryDefaults.getAccelerantOrganization());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Admin user is null",adminUser);
 		logger.info("Retrieved admin user " + adminUser.getName() + " #" + adminUser.getId());

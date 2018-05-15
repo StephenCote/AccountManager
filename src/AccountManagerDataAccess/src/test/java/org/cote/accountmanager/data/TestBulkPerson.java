@@ -35,6 +35,7 @@ import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
@@ -75,13 +76,13 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			success = true;
 		}
 		catch(FactoryException fe){
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		}  catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Success bit is false",success);
 	}
@@ -92,6 +93,7 @@ public class TestBulkPerson extends BaseDataAccessTest{
 		boolean success = false;
 		DirectoryGroupType pDir = null;
 		try{
+			((UserFactory)Factories.getFactory(FactoryEnumType.USER)).populate(testUser);
 			pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			String guid = UUID.randomUUID().toString();
@@ -159,17 +161,17 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			success = true;
 		}
 		catch(FactoryException fe){
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		}  catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		catch(Exception e){
 			logger.error("Unknown Exception: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Success bit is false",success);
 	}
@@ -205,10 +207,10 @@ public class TestBulkPerson extends BaseDataAccessTest{
 		}
 		catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 */

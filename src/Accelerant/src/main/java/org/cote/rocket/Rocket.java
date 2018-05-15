@@ -32,7 +32,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
@@ -42,6 +41,7 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.CredentialEnumType;
@@ -145,10 +145,10 @@ public class Rocket {
 			group = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA,getBasePath() + getLifecyclePath(), organizationId);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return group;
 	}
@@ -159,10 +159,10 @@ public class Rocket {
 			group = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA, getBasePath() + getLifecyclePath() + "/" + lc.getName() + getProjectPath(), lc.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return group;
 	}
@@ -183,15 +183,15 @@ public class Rocket {
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit,"Error: " + e.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit,"Error: " + e.getMessage());
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit,"Error: " + e.getMessage());
 		}
 		return out_bool;
@@ -214,15 +214,15 @@ public class Rocket {
 			out_bool = true;
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit,"Error: " + e.getMessage());
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit,"Error: " + e.getMessage());
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit,"Error: " + e.getMessage());
 		}
 		
@@ -235,11 +235,11 @@ public class Rocket {
 			out_lc = Rocket.getLifecycle(lifecycleName, user.getOrganizationId());
 		} catch (FactoryException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 			return false;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return enrollInCommunityLifecycle(user, out_lc,RocketSecurity.getLifecycleUserRole(out_lc),permission);
 		
@@ -255,10 +255,10 @@ public class Rocket {
 			adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", user.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(adminUser == null){
 			return false;
@@ -279,7 +279,7 @@ public class Rocket {
 			}
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		return out_bool;
@@ -293,7 +293,7 @@ public class Rocket {
 			if(out_lc != null) out_proj = Rocket.getProject(projectName, out_lc, user.getOrganizationId());
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(out_lc == null){
 			return false;
@@ -311,7 +311,7 @@ public class Rocket {
 			adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", user.getOrganizationId());
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(adminUser == null){
 			return false;
@@ -323,7 +323,7 @@ public class Rocket {
 			}
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 
@@ -344,10 +344,10 @@ public class Rocket {
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -365,10 +365,10 @@ public class Rocket {
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -552,10 +552,10 @@ public class Rocket {
 			rocketDir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA,basePath, organizationId);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return rocketDir;
 	}
@@ -568,12 +568,12 @@ public class Rocket {
 			rocketOrganization = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).addOrganization("Rocket", OrganizationEnumType.PUBLIC, FactoryDefaults.getAccelerantOrganization());
 		}
 		catch(FactoryException fe){
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 			System.out.println(fe.getMessage());
 			rocketOrganization = null;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return rocketOrganization;
 	}
@@ -591,10 +591,10 @@ public class Rocket {
 			subs = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryGroups(parent);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return subs;
 	}

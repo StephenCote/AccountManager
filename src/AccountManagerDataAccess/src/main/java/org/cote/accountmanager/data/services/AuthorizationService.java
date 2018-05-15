@@ -31,11 +31,11 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.IParticipationFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -71,10 +71,15 @@ public class AuthorizationService {
 	}
 	
 	public static IParticipationFactory getRegisteredProvider(FactoryEnumType fType){
+		IParticipationFactory pfact = null;
 		if(partFactories.containsKey(fType)){
-			return Factories.getFactory(partFactories.get(fType));
+			try {
+				pfact = Factories.getFactory(partFactories.get(fType));
+			} catch (FactoryException e) {
+				logger.error(e);
+			}
 		}
-		return null;
+		return pfact;
 	}
 	
 	public static void registerAuthorizationProviders(FactoryEnumType factType,NameEnumType objectType, FactoryEnumType pfact){
@@ -518,6 +523,9 @@ public class AuthorizationService {
 			throw new ArgumentException(String.format(FactoryException.PARTICIPATION_FACTORY_REGISTRATION_EXCEPTION,factType.toString()));
 		}
 		IParticipationFactory pfact = getRegisteredProvider(factType);
+		if(pfact == null){
+			return null;
+		}
 		String permissionName = pfact.getPermissionPrefix() + permissionBase;
 
 		BasePermissionType permission = getRootPermission(permissionName, pfact.getDefaultPermissionType(), organizationId);
@@ -581,6 +589,9 @@ public class AuthorizationService {
 			return false;
 		}
 		IParticipationFactory pfact = getRegisteredProvider(factoryProviders.get(object.getNameType()));
+		if(pfact == null){
+			return false;
+		}
 		ParticipantEnumType part_type = ParticipantEnumType.valueOf(actor.getNameType().toString());
 		DataParticipantType bp = pfact.getParticipant(object, actor, part_type,null,null);
 		boolean outBoolean = false;

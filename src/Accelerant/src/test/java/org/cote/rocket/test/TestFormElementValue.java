@@ -26,8 +26,8 @@ package org.cote.rocket.test;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.propellant.objects.FormElementType;
@@ -103,7 +103,7 @@ public class TestFormElementValue extends BaseAccelerantTest{
 			logger.error(fe.getMessage());
 		}  catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			logger.error(e.getMessage());
 		}
 	}
@@ -119,7 +119,7 @@ public class TestFormElementValue extends BaseAccelerantTest{
 			DirectoryGroupType groupV = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/ValidationRules", testUser.getOrganizationId());
 			FormType formTemplate = getCreateForm(testUser, groupF,"Form Template");
 
-			if(formTemplate.getElements().size() == 0){
+			if(formTemplate.getElements().isEmpty()){
 				
 				ValidationRuleType rule1 = getCreateRule(testUser, groupV, "Not Empty", null);
 
@@ -216,7 +216,7 @@ public class TestFormElementValue extends BaseAccelerantTest{
 			assertNotNull("Form is null",compType);
 			FormService.updateFormValues(testUser, compType,false);
 			compType = ((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).getByNameInGroup("Form #1", groupF);
-			assertTrue("Unpopulated form should contain no elements",compType.getElements().size() == 0);
+			assertTrue("Unpopulated form should contain no elements",compType.getElements().isEmpty());
 			((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).populate(compType);
 			assertTrue("Populated form should contain elements",compType.getElements().size() > 0);
 			assertTrue("Populated form element should contain a value", compType.getElements().get(0).getElementValues().size() > 0);
@@ -230,16 +230,16 @@ public class TestFormElementValue extends BaseAccelerantTest{
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Failed",check);
 	}

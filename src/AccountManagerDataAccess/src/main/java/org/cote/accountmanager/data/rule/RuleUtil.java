@@ -42,7 +42,7 @@ public class RuleUtil {
 		return p;
 	}
 	public static boolean compareValue(String chkData, ComparatorEnumType comparator, String compData){
-		boolean out_bool = false;
+		boolean outBool = false;
 		
 		if(chkData != null && compData != null && intPattern.matcher(chkData).matches() && intPattern.matcher(compData).matches()){
 			long lChk = Long.parseLong(chkData);
@@ -50,55 +50,57 @@ public class RuleUtil {
 			switch(comparator){
 
 				case EQUALS:
-					out_bool = (lChk == lComp);
+					outBool = (lChk == lComp);
 					break;
 				case GREATER_THAN:
-					out_bool = (lChk > lComp);
+					outBool = (lChk > lComp);
 					break;
 				case GREATER_THAN_OR_EQUALS:
-					out_bool = (lChk >= lComp);
+					outBool = (lChk >= lComp);
 					break;
 				case LESS_THAN:
-					out_bool = (lChk < lComp);
+					outBool = (lChk < lComp);
 					break;
 				case LESS_THAN_OR_EQUALS:
-					out_bool = (lChk <= lComp);
+					outBool = (lChk <= lComp);
 					break;
 				case NOT_EQUALS:
-					out_bool = (lChk != lComp);
+					outBool = (lChk != lComp);
 					break;
 				default:
 					logger.error("Unhandled comparator: " + comparator);
 					break;
 
 			}
-			logger.info("Comparing as long " + chkData + " is " + comparator + " " + compData + " == " + out_bool);
+			logger.info("Comparing as long " + chkData + " is " + comparator + " " + compData + " == " + outBool);
 		}
 		else{
 
 			switch(comparator){
 				case LIKE:
-					String likePat = "^" + compData.replaceAll("%", ".*") + "$";
-					Pattern pat = getPattern(likePat);
-					out_bool = pat.matcher(chkData).find();
+					if(compData != null){
+						String likePat = "^" + compData.replaceAll("%", ".*") + "$";
+						Pattern pat = getPattern(likePat);
+						outBool = pat.matcher(chkData).find();
+					}
 					break;
 				case EQUALS:
-					if(chkData != null && compData != null) out_bool = chkData.equals(compData);
+					if(chkData != null && compData != null) outBool = chkData.equals(compData);
 					else if(chkData == null && compData == null){
 						logger.info("Both values are null with an equals comparator.  Returning true");
-						out_bool = true;
+						outBool = true;
 					}
 					break;
 				case IS_NULL:
-					out_bool = (chkData == null);
+					outBool = (chkData == null);
 					break;
 				default:
 					logger.error("Unhandled comparator: " + comparator);
 					break;
 
 			}
-			logger.info("Comparing as string " + chkData + " is " + comparator + " " + compData + " == " + out_bool);
+			logger.info("Comparing as string " + chkData + " is " + comparator + " " + compData + " == " + outBool);
 		}
-		return out_bool;
+		return outBool;
 	}
 }

@@ -27,8 +27,8 @@ import java.util.List;
 
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
@@ -50,7 +50,7 @@ public interface INameIdFactory {
 	public boolean isClusterByParent();
 	public boolean isParticipation();
 	public FactoryEnumType getFactoryType();
-	
+	public String getCacheReport();
 	public void writeSpool();
 	public <T> void normalize(T object) throws ArgumentException, FactoryException;
 	public <T> void denormalize(T object) throws ArgumentException, FactoryException;

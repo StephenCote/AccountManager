@@ -38,10 +38,10 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.security.KeyService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
@@ -67,7 +67,7 @@ public class OrganizationFactory extends NameIdFactory {
 	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase("organizations")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+
 		}
 	}
 	
@@ -103,27 +103,34 @@ public class OrganizationFactory extends NameIdFactory {
 			String limit2 = (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT " + delLimit + " " : "");
 			try {
 
-				// String buildDeleteQuery = "SELECT '" + (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT " + 1000 + " " : "") + "DELETE FROM ' || tablename || ' WHERE organizationid = ?" + (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT " + delLimit + " " : "") + ";' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations' AND NOT tablename = 'objectreference' AND NOT tablename = 'objectscore' AND NOT tablename = 'objectdescription' AND NOT tablename = 'objectlocation' AND NOT tablename = 'objectdate'  AND NOT tablename = 'objectorderscore' AND NOT tablename = 'vaultkey';";
 				String buildDeleteQuery = String.format("SELECT '%s DELETE FROM ' || tablename || ' WHERE organizationid = ?%s;' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations' AND NOT tablename = 'objectreference' AND NOT tablename = 'objectscore' AND NOT tablename = 'objectdescription' AND NOT tablename = 'objectlocation' AND NOT tablename = 'objectdate'  AND NOT tablename = 'objectorderscore' AND NOT tablename = 'vaultkey';",limit1,limit2);
 				logger.debug(buildDeleteQuery);
 				stat = conn.createStatement();
 				rset = stat.executeQuery(buildDeleteQuery);
 				while(rset.next()){
-					String delQuery = rset.getString(1);
-					delQuery.replaceAll("\"","");
-					PreparedStatement pstat = conn.prepareStatement(delQuery);
-					logger.debug(delQuery);
-					pstat.setLong(1, organization.getId());
-					int del = pstat.executeUpdate();
-					while(del >= delLimit){
-						del = pstat.executeUpdate();
+					String delQuery = rset.getString(1).replaceAll("\"","");
+					PreparedStatement pstat = null;
+					try{
+						pstat = conn.prepareStatement(delQuery);
+						
+						logger.debug(delQuery);
+						pstat.setLong(1, organization.getId());
+						int del = pstat.executeUpdate();
+						while(del >= delLimit){
+							del = pstat.executeUpdate();
+						}
 					}
-					pstat.close();
+					catch(SQLException e){
+						logger.error(e);
+					}
+					finally{
+						if(pstat != null) pstat.close();
+					}
 				}
 
 			} catch (SQLException e) {
 				
-				logger.error("Trace",e);
+				logger.error(FactoryException.TRACE_EXCEPTION,e);
 			}
 			finally{
 				try {
@@ -133,7 +140,7 @@ public class OrganizationFactory extends NameIdFactory {
 					conn.close();
 				} catch (SQLException e) {
 					
-					logger.error("Trace",e);
+					logger.error(FactoryException.TRACE_EXCEPTION,e);
 				}
 			}
 			
@@ -222,7 +229,7 @@ public class OrganizationFactory extends NameIdFactory {
 			}
 		}
 		catch(DataAccessException e){
-			logger.error("Trace",e);
+			logger.error(FactoryException.TRACE_EXCEPTION,e);
 			throw new FactoryException(e.getMessage());
 		}
 		

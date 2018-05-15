@@ -29,8 +29,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.ContactInformationFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.types.ContactEnumType;
@@ -49,20 +49,18 @@ public static final Logger logger = LogManager.getLogger(ContactService.class);
 		return getPreferredContact(cinfo,ContactEnumType.PHONE,LocationEnumType.UNKNOWN);
 	}
 	public static ContactType getPreferredContact(ContactInformationType cinfo,ContactEnumType preferredType,LocationEnumType preferredLocation){
+		if(cinfo == null) return null;
 		if(cinfo.getPopulated() == false){
 			try {
 				((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).populate(cinfo);
-			} catch (FactoryException e) {
+			} catch (FactoryException | ArgumentException e) {
 				
-				logger.error("Error",e);
-			} catch (ArgumentException e) {
-				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		ContactType contact = null;
 		ContactType check = null;
-		if(cinfo == null) return contact;
+
 		List<ContactType> contacts = cinfo.getContacts();
 		for(int i = 0; i < contacts.size();i++){
 			check = contacts.get(i);

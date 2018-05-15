@@ -38,9 +38,9 @@ import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -54,7 +54,6 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class CredentialFactory extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.CREDENTIAL, CredentialFactory.class); }
 	public CredentialFactory(){
 		super();
 		this.hasOwnerId = true;
@@ -65,8 +64,8 @@ public class CredentialFactory extends NameIdFactory {
 		this.aggressiveKeyFlush = false;
 		this.useThreadSafeCollections = false;
 		this.scopeToOrganization = true;
-
-		this.tableNames.add("credential");
+		this.primaryTableName = "credential";
+		this.tableNames.add(primaryTableName);
 
 		factoryType = FactoryEnumType.CREDENTIAL;
 		
@@ -74,7 +73,7 @@ public class CredentialFactory extends NameIdFactory {
 			dtFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	
@@ -82,10 +81,9 @@ public class CredentialFactory extends NameIdFactory {
 	public void mapBulkIds(NameIdType map){
 		super.mapBulkIds(map);
 		CredentialType cit = (CredentialType)map;
-		Long tmpId = 0L;
 		if(cit.getReferenceId().compareTo(0L) < 0){
-			tmpId = BulkFactories.getBulkFactory().getMappedId(cit.getReferenceId());
-			if(tmpId.compareTo(0L) > 0) cit.setReferenceId(tmpId.longValue());
+			Long tmpId = BulkFactories.getBulkFactory().getMappedId(cit.getReferenceId());
+			if(tmpId.compareTo(0L) > 0) cit.setReferenceId(tmpId);
 		}
 	}
 	
@@ -95,8 +93,8 @@ public class CredentialFactory extends NameIdFactory {
 		return t.getCredentialType().toString() + "-" + t.getReferenceType().toString() + "-" + t.getReferenceId();
 	}
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("credential")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			;
 		}
 	}
 	
@@ -123,7 +121,6 @@ public class CredentialFactory extends NameIdFactory {
 		cred.setOrganizationId(targetObject.getOrganizationId());
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(new Date());
-	    //cal.add(GregorianCalendar.YEAR, 1);
 	    
 		cred.setCreatedDate(dtFactory.newXMLGregorianCalendar(cal));
 		cred.setModifiedDate(dtFactory.newXMLGregorianCalendar(cal));

@@ -44,9 +44,9 @@ import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.io.BulkInsertUtil;
 import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataColumnType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
@@ -218,9 +218,7 @@ public abstract class FactoryBase {
 				logger.error(dae.getMessage());
 				error = true;
 			}
-			finally{
-				if(error) break;
-			}
+			if(error) break;
 
 			String alias = tableName.substring(0, 1);
 
@@ -652,10 +650,8 @@ public abstract class FactoryBase {
 			while(rset.next()){
 				ids.add(rset.getLong(1));
 			}
-			rset.close();
-			statement.close();
+
 		} catch (SQLException e) {
-			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		finally{

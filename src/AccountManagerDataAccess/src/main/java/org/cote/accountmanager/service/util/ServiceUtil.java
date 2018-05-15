@@ -36,10 +36,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
@@ -54,12 +54,15 @@ public class ServiceUtil {
 	private static boolean useAccountManagerSession = true;
 	private static String am5CookieName = "am5";
 	private static int am5CookieExpiry = 7200;
-	
+	private static boolean useSecureCookie = false;
 	public static void setUseAccountManagerSession(boolean b){
 		useAccountManagerSession = b;
 	}
 	public static void setCookieExpiration(int ms){
 		am5CookieExpiry = ms;
+	}
+	public static void setUseSecureCookie(boolean b){
+		useSecureCookie = b;
 	}
 	
 	private static Pattern jerseyCookie = Pattern.compile(",\\$Version");
@@ -107,15 +110,15 @@ public class ServiceUtil {
 			catch(NumberFormatException nfe){
 				
 				logger.error(nfe.getMessage());
-				logger.error("Error",nfe);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,nfe);
 			} catch (FactoryException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (ArgumentException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 			
 		}
@@ -136,8 +139,6 @@ public class ServiceUtil {
 		Cookie[] cookies = request.getCookies();
 		for(int i = 0; cookies != null && i < cookies.length;i++){
 			if(cookies[i] != null && cookies[i].getName().equals(name)){
-				//out_val = cookies[i].getValue();
-				
 				out_val = jerseyCookie.matcher(cookies[i].getValue()).replaceAll("");
 				break;
 			}
@@ -147,14 +148,16 @@ public class ServiceUtil {
 	public static void addCookie(HttpServletResponse response, String name, String value){
 		Cookie c = new Cookie(name, value);
 		c.setPath("/");
+		c.setSecure(useSecureCookie);
 		c.setVersion(1);
 		c.setMaxAge(am5CookieExpiry);
 		response.addCookie(c);
 		logger.info("Creating cookie: " + name + "=" + value);
 	}
 	public static void clearCookie(HttpServletResponse response, String name){
-		Cookie c = new Cookie(name, "");
+		Cookie c = new Cookie(name, "v");
 		c.setPath("/");
+		c.setSecure(useSecureCookie);
 		c.setMaxAge(0);
 		response.addCookie(c);
 		logger.info("Clearing cookie: " + name);
@@ -162,9 +165,8 @@ public class ServiceUtil {
 	public static UserType getUserFromSession(AuditType audit, HttpServletRequest request){
 
 		UserType user = getUserFromSession(request);
-		if(SessionSecurity.isAuthenticated(user) == false){
+		if(user == null || SessionSecurity.isAuthenticated(user) == false){
 			AuditService.denyResult(audit,  "Invalid user. " + (user == null ? "Null user" : "Status is " + (user.getSession() != null ? user.getSession().getSessionStatus() : " Unknown")));
-			//System.out.println("User is null or not authenticated");
 			return null;
 		}
 
@@ -173,7 +175,6 @@ public class ServiceUtil {
 	}
 	public static UserType getUserFromSession(HttpServletRequest request){
 		String sessionId = getSessionId(request);
-		//System.out.println("Session Id=" + sessionId);
 		return getUserFromSession(request, sessionId);
 	}
 	public static UserType getUserFromSession(HttpServletRequest request,String sessionId){
@@ -196,12 +197,12 @@ public class ServiceUtil {
 	
 			} catch (FactoryException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				logger.error(e.getMessage());
 			} catch (ArgumentException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return user;

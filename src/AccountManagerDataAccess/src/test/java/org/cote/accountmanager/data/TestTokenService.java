@@ -28,6 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.security.TokenService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.junit.Test;
@@ -48,7 +49,7 @@ public class TestTokenService extends BaseDataAccessTest {
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(testUser);
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		String materialToken = null; //TokenService.newMaterializedToken(testUser, testUser.getHomeDirectory());
 		assertNotNull("Token is null", materialToken);

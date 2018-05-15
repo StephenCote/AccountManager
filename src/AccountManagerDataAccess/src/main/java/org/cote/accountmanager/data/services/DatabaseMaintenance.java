@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.services.ThreadService;
 
 public class DatabaseMaintenance extends ThreadService {
@@ -44,28 +45,30 @@ public class DatabaseMaintenance extends ThreadService {
 	}
 	public void execute(){
 		Connection connection = ConnectionFactory.getInstance().getConnection();
-		long start_cleanup = System.currentTimeMillis();
+		long startCleanup = System.currentTimeMillis();
+		PreparedStatement statement = null;
+		ResultSet rset = null;
 		try{
 			
 			String sql = "SELECT * FROM cleanup_orphans();";
-			PreparedStatement statement = connection.prepareStatement(sql);
-			ResultSet rset = statement.executeQuery();
-			rset.close();
-			statement.close();
+			statement = connection.prepareStatement(sql);
+			rset = statement.executeQuery();
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
 			try {
+				if(rset != null) rset.close();
+				if(statement != null) statement.close();
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		logger.info("Cleaned up orphan data in " + (System.currentTimeMillis() - start_cleanup));
+		logger.info("Cleaned up orphan data in " + (System.currentTimeMillis() - startCleanup));
 	}
 	
 }

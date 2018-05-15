@@ -47,6 +47,7 @@ import org.cote.accountmanager.data.policy.PolicyEvaluator;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
@@ -83,6 +84,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 	
 	@Test
 	public void TestFactoriesReady(){
+		try{
 		Factories.getFactory(FactoryEnumType.FACT);
 		Factories.getFactory(FactoryEnumType.FUNCTIONFACT);
 		Factories.getFactory(FactoryEnumType.FUNCTION);
@@ -91,6 +93,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 		Factories.getFactory(FactoryEnumType.PATTERN);
 		Factories.getFactory(FactoryEnumType.POLICY);
 		Factories.getFactory(FactoryEnumType.RULE);
+		}
+		catch(FactoryException f){
+			logger.error(f);
+		}
 	}
 
 
@@ -141,13 +147,13 @@ public class TestPolicyService extends BaseDataAccessTest{
 			wrote = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Failed to write bulk session",wrote);
 		logger.info("Wrote bulk session");
@@ -198,10 +204,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			}
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return ffact;
 	}
@@ -227,10 +233,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return func;
 	}
@@ -254,10 +260,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return policy;
 	}
@@ -282,10 +288,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return pattern;
 	}
@@ -308,10 +314,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return rule;
 	}
@@ -423,13 +429,13 @@ public class TestPolicyService extends BaseDataAccessTest{
 			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(rule);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return rule;
@@ -574,10 +580,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(rule);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return rule;
@@ -768,10 +774,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(rule);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		return rule;
@@ -839,7 +845,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 			Factories.getAttributeFactory().updateAttributes(new NameIdType[]{person, account});
 			
 			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(person);
-			if(person.getAccounts().size() == 0){
+			if(person.getAccounts().isEmpty()){
 				person.getAccounts().add(account);
 				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(person);
 			}
@@ -866,13 +872,13 @@ public class TestPolicyService extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	
@@ -919,10 +925,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	*/
@@ -930,12 +936,9 @@ public class TestPolicyService extends BaseDataAccessTest{
 		boolean out_bool = false;
 		try {
 			((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).populate(pattern);
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		FactType fact = pattern.getFact();
 		FactType mfact = pattern.getMatch();
@@ -958,13 +961,18 @@ public class TestPolicyService extends BaseDataAccessTest{
 				logger.error("Parameter value not specified for urn " + fact.getUrn());
 				return out_bool;
 			}
-			FactoryBase factory = Factories.getFactory(mfact.getFactoryType());
-			if(factory == null){
-				logger.error("Invalid factory for type " + mfact.getFactoryType());
+			try{
+				FactoryBase factory = Factories.getFactory(mfact.getFactoryType());
+				if(factory == null){
+					logger.error("Invalid factory for type " + mfact.getFactoryType());
+				}
+				NameIdType obj = null;
+				if(mfact.getFactoryType() == FactoryEnumType.USER){
+					//obj = ((UserFactory)factory);
+				}
 			}
-			NameIdType obj = null;
-			if(mfact.getFactoryType() == FactoryEnumType.USER){
-				//obj = ((UserFactory)factory);
+			catch(FactoryException f){
+				logger.error(f);
 			}
 		}
 		
@@ -1025,10 +1033,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 				
 			} catch (FactoryException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 			//assertNotNull("Policy is null", pol);
 			//assertTrue("Policy is not populated",pol.getRules().size() > 0);		
@@ -1081,10 +1089,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 				
 			} catch (FactoryException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 			//assertNotNull("Policy is null", pol);
 			//assertTrue("Policy is not populated",pol.getRules().size() > 0);		
@@ -1137,10 +1145,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 				
 			} catch (FactoryException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 			//assertNotNull("Policy is null", pol);
 			//assertTrue("Policy is not populated",pol.getRules().size() > 0);		
@@ -1157,10 +1165,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Rules", testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		String name = UUID.randomUUID().toString();
 		RuleType pol = getCreateRule(testUser,name,name,dir);
@@ -1179,10 +1187,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			pdir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreatePath(testUser, "~/Patterns", testUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		String name = UUID.randomUUID().toString();
 		String rname = UUID.randomUUID().toString();
@@ -1206,10 +1214,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			up = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).updatePolicy(pol);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Policy not updated",up);
 	}
@@ -1249,10 +1257,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			}
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Function is null",func);
 		logger.info("Created and retrieved function " + name);
@@ -1260,10 +1268,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 			((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).populate(func);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Failed to populated expected facts.  Found " + func.getFacts().size(),func.getFacts().size() == 2);
 		logger.info("Populated " + func.getFacts().size() + " facts");
@@ -1292,13 +1300,13 @@ public class TestPolicyService extends BaseDataAccessTest{
 			wrote = true;
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Failed to write bulk session",wrote);
 		logger.info("Wrote bulk session");

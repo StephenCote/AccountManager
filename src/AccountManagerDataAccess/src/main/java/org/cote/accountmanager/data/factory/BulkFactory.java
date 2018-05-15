@@ -40,7 +40,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BulkEntryType;
 import org.cote.accountmanager.objects.BulkSessionType;
@@ -54,39 +54,34 @@ import org.cote.accountmanager.util.CalendarUtil;
 public class BulkFactory {
 	public static final Logger logger = LogManager.getLogger(BulkFactory.class);
 
-	protected static Map<String,BulkSessionType> sessions = null;
-	protected static Map<Long,String> sessionIdMap = null;
-	protected static Map<Long,Long> idMap = null;
+	private static final String BULK_SESSIONID_NULL = "Session id is null";
+	private static final String INVALID_SESSIONID = "Invalid session id: %s";
+	
+	protected static Map<String,BulkSessionType> sessions = new HashMap<>();
+	protected static Map<Long,String> sessionIdMap = new HashMap<>();
+	protected static Map<Long,Long> idMap = new HashMap<>();
 	/// Dirty write should be moved to the session object
 	///
-	protected static Set<FactoryEnumType> dirtyWrite = null;
+	protected static Set<FactoryEnumType> dirtyWrite = new HashSet<>();
 	protected static int maximumWritePasses = 3;
 	
 	/// globalSessionId is used to track ad-hoc writes that, for whatever reason, could not trace back to a particular session
 	/// EG: Bulk adds routed through update requests where no bulk id is available to retrieve the sessionId
 	///
 	protected static String globalSessionId = null;
-	protected static Object globalLock = null;
+	protected static Object globalLock = new Object();
 	/// Note - update cache being stored against the session opposed to the data level as an initial proof
 	/// eventually ,this should be migrated to the data level
 	///
-	protected static Map<String,Map<FactoryEnumType,List<NameIdType>>> updateCache = null;
-	protected static Map<String,Map<FactoryEnumType,List<NameIdType>>> deleteCache = null;
-	protected static Map<String,Map<FactoryEnumType,Set<String>>> updateSet = null;
-	protected static Map<String,Map<FactoryEnumType,Set<String>>> deleteSet = null;
+	protected static Map<String,Map<FactoryEnumType,List<NameIdType>>> updateCache = new HashMap<>();
+	protected static Map<String,Map<FactoryEnumType,List<NameIdType>>> deleteCache = new HashMap<>();
+	protected static Map<String,Map<FactoryEnumType,Set<String>>> updateSet = new HashMap<>();
+	protected static Map<String,Map<FactoryEnumType,Set<String>>> deleteSet = new HashMap<>();
 
 	private Random rand = null;
 	public BulkFactory(){
 		rand = new Random();
-		if(dirtyWrite == null) dirtyWrite = new HashSet<>();
-		if(sessions == null) sessions = new HashMap<>();
-		if(sessionIdMap == null) sessionIdMap = new HashMap<>();
-		if(idMap == null) idMap = new HashMap<>();
-		if(updateCache == null) updateCache = new HashMap<>();
-		if(updateSet == null) updateSet = new HashMap<>();
-		if(deleteSet == null) deleteSet = new HashMap<>();
-		if(deleteCache == null) deleteCache = new HashMap<>();
-		if(globalLock == null) globalLock = new Object();
+
 	}
 
 	public String getGlobalSessionId(){
@@ -96,20 +91,20 @@ public class BulkFactory {
 		dirtyWrite.add(factoryType);
 	}
 	public String getSessionForBulkId(long id){
-		String out_sess = null;
-		if(sessionIdMap.containsKey(id)) out_sess = sessionIdMap.get(id);
-		return out_sess;
+		String outSess = null;
+		if(sessionIdMap.containsKey(id)) outSess = sessionIdMap.get(id);
+		return outSess;
 	}
 	public void close(String sessionId) throws ArgumentException{
 		logger.debug("Closing bulk session " + sessionId);
 		if(sessionId == null || sessionId.length() == 0){
-			logger.error("Session id is null");
-			throw new ArgumentException("Session id is null");
+			logger.error(BULK_SESSIONID_NULL);
+			throw new ArgumentException(BULK_SESSIONID_NULL);
 		}
 		BulkSessionType session = sessions.get(sessionId);
 		if(session == null){
-			logger.error("Invalid session id '" + sessionId + "'");
-			throw new ArgumentException("Invalid session id '" + sessionId + "'");
+			logger.error(String.format(INVALID_SESSIONID, sessionId));
+			throw new ArgumentException(String.format(INVALID_SESSIONID, sessionId));
 		}
 		sessions.remove(sessionId);
 		updateCache.remove(sessionId);
@@ -134,26 +129,26 @@ public class BulkFactory {
 	protected void write(String sessionId, int pass, int offset) throws ArgumentException, FactoryException, DataAccessException{
 		long start = System.currentTimeMillis();
 		if(sessionId == null || sessionId.length() == 0){
-			logger.error("Session id is null");
-			throw new ArgumentException("Session id is null");
+			logger.error(BULK_SESSIONID_NULL);
+			throw new ArgumentException(BULK_SESSIONID_NULL);
 		}
 		BulkSessionType session = sessions.get(sessionId);
 		if(session == null){
-			logger.error("Invalid session id '" + sessionId + "'");
-			throw new ArgumentException("Invalid session id '" + sessionId + "'");
+			logger.error(String.format(INVALID_SESSIONID, "null"));
+			throw new ArgumentException(String.format(INVALID_SESSIONID, "null"));
 		}
 		if(session.getPersisted() == true){
 			logger.error("Session id '" + sessionId + "' is already persisted");
 			throw new ArgumentException("Session id '" + sessionId + "' is already persisted");			
 		}
 		
-		Map<FactoryEnumType,List<Long>> factoryIds = new HashMap<FactoryEnumType,List<Long>>();
+		Map<FactoryEnumType,List<Long>> factoryIds = new HashMap<>();
 		int eLen = 0;
 
 		synchronized(session){
 			eLen = session.getBulkEntries().size();
 			logger.debug("Writing Bulk Session " + sessionId + " with " + (eLen - offset) + " objects");
-			long startPass = System.currentTimeMillis();
+			
 			for(int i = offset; i < eLen; i++){
 				BulkEntryType entry = session.getBulkEntries().get(i);
 				if(entry.getPersisted()){
@@ -183,8 +178,7 @@ public class BulkFactory {
 				entry.getObject().setId(entry.getPersistentId());
 				idMap.put(entry.getTemporaryId(), entry.getPersistentId());
 			}
-			logger.debug("Pass #1 in " + (System.currentTimeMillis() - startPass) + "ms");
-			startPass = System.currentTimeMillis();
+
 			/// 2013/06/26 - Second pass, map ids
 			///
 			for(int i = offset; i < eLen;i++){
@@ -233,7 +227,7 @@ public class BulkFactory {
 				/// A dirty write is when a factory adds an object to be bulk written
 				/// But that object was not created as a bulk entry.  Participations are examples of dirty writes.
 				///
-				if(dirtyWrite.size() > 0){
+				if(!dirtyWrite.isEmpty()){
 					FactoryEnumType[] fTypes = dirtyWrite.toArray(new FactoryEnumType[0]);
 					for(int i = 0; i < fTypes.length;i++){
 						logger.debug("Writing dirty bulk spool for " + fTypes[i]);
@@ -364,17 +358,17 @@ public class BulkFactory {
 	}
 	
 	protected void writeSpool(FactoryEnumType factoryType) throws FactoryException{
-		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(factoryType);
+		INameIdFactory iFact = Factories.getBulkFactory(factoryType);
 		iFact.writeSpool();
 		
 	}
 	protected void writeObject(BulkSessionType session, BulkEntryType entry) throws FactoryException, DataAccessException, ArgumentException{
 		writePreparedObject(session,entry);
 	}
-	protected void mapObjectIds(BulkEntryType entry){
+	protected void mapObjectIds(BulkEntryType entry) throws FactoryException{
 		/// Note: Not all types are supported, and operations should gracefully fall through 
 		///
-		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(entry.getFactoryType());
+		INameIdFactory iFact = Factories.getBulkFactory(entry.getFactoryType());
 		iFact.mapBulkIds(entry.getObject());
 		
 	}
@@ -426,7 +420,7 @@ public class BulkFactory {
 		}
 	}
 	protected List<Long> getFactoryIds(String sessionId, FactoryEnumType factoryType) throws ArgumentException, FactoryException{
-		List<Long> ids = new ArrayList<Long>();
+
 		NameIdFactory factory = getBulkFactory(factoryType);
 		if(factory == null){
 			logger.error("Invalid factory type " + factoryType);
@@ -439,45 +433,45 @@ public class BulkFactory {
 		}
 		List<Long> tmpIds = factory.getBulkMap().get(sessionId);
 		factory.getBulkMap().remove(sessionId);
-		ids = factory.getNextIds(tmpIds.size());
+		List<Long> ids = factory.getNextIds(tmpIds.size());
 		return ids;
 	}
-	protected NameIdFactory getBulkFactory(FactoryEnumType factoryType){
+	protected NameIdFactory getBulkFactory(FactoryEnumType factoryType) throws FactoryException{
 		return Factories.getBulkFactory(factoryType);
 	}
-	protected NameIdFactory getFactory(FactoryEnumType factoryType){
+	protected NameIdFactory getFactory(FactoryEnumType factoryType) throws FactoryException{
 		return Factories.getFactory(factoryType);
 	}
-	public void deleteBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException{
+	public void deleteBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException, FactoryException{
 		if(object == null){
 			logger.error("Object is null");
 			throw new ArgumentException("Object is null");
 		}
 		if(object.getNameType() == NameEnumType.UNKNOWN){
-			logger.error("Object cannot be of an unknown type");
-			throw new ArgumentException("Object cannot be of an unknown type");
+			logger.error(FactoryException.OBJECT_UNKNOWN_TYPE);
+			throw new ArgumentException(FactoryException.OBJECT_UNKNOWN_TYPE);
 		}
 
 		if(object.getId() <= 0L) throw new ArgumentException("Object " + factoryType.toString() + " " + object.getName() + " #" + object.getId() + " does not have a valid id for a delete operation");
 
-		if(deleteCache.containsKey(sessionId) == false) deleteCache.put(sessionId, new HashMap<FactoryEnumType,List<NameIdType>>());
-		if(deleteCache.get(sessionId).containsKey(factoryType) == false) deleteCache.get(sessionId).put(factoryType, new ArrayList<>());
-		if(deleteSet.containsKey(sessionId) == false) deleteSet.put(sessionId, new HashMap<FactoryEnumType,Set<String>>());
-		if(deleteSet.get(sessionId).containsKey(factoryType) == false) deleteSet.get(sessionId).put(factoryType, new HashSet<>());
+		if(!deleteCache.containsKey(sessionId)) deleteCache.put(sessionId, new HashMap<>());
+		if(!deleteCache.get(sessionId).containsKey(factoryType)) deleteCache.get(sessionId).put(factoryType, new ArrayList<>());
+		if(!deleteSet.containsKey(sessionId)) deleteSet.put(sessionId, new HashMap<>());
+		if(!deleteSet.get(sessionId).containsKey(factoryType)) deleteSet.get(sessionId).put(factoryType, new HashSet<>());
 		
 		
 		NameIdFactory factory = getFactory(factoryType);
 		NameIdFactory bulkFactory = getBulkFactory(factoryType);
 		
 		if(factory == null || bulkFactory == null){
-			logger.error("Factory or BulkFactory is null for type " + factoryType);
-			throw new ArgumentException("Factory or BulkFactory is null for type " + factoryType);
+			logger.error(String.format(FactoryException.OBJECT_NULL_TYPE, factoryType));
+			throw new ArgumentException(String.format(FactoryException.OBJECT_NULL_TYPE, factoryType));
 		}
 		
 		BulkSessionType session = sessions.get(sessionId);
 		if(session == null){
-			logger.error("Invalid session id '" + sessionId + "'");
-			throw new ArgumentException("Invalid session id '" + sessionId + "'");
+			logger.error(String.format(INVALID_SESSIONID, sessionId));
+			throw new ArgumentException(String.format(INVALID_SESSIONID, sessionId));
 		}
 		
 		/// drop from factory cache
@@ -491,22 +485,22 @@ public class BulkFactory {
 		deleteCache.get(sessionId).get(factoryType).add(object);
 		deleteSet.get(sessionId).get(factoryType).add(key);
 	}
-	public void modifyBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException{
+	public void modifyBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException, FactoryException{
 		if(object == null){
 			logger.error("Object is null");
 			throw new ArgumentException("Object is null");
 		}
 		if(object.getNameType() == NameEnumType.UNKNOWN){
-			logger.error("Object cannot be of an unknown type");
-			throw new ArgumentException("Object cannot be of an unknown type");
+			logger.error(FactoryException.OBJECT_UNKNOWN_TYPE);
+			throw new ArgumentException(FactoryException.OBJECT_UNKNOWN_TYPE);
 		}
 
 		if(object.getId() <= 0L) throw new ArgumentException("Object " + factoryType.toString() + " " + object.getName() + " #" + object.getId() + " does not have a valid id for an update operation");
 
-		if(updateCache.containsKey(sessionId) == false) updateCache.put(sessionId, new HashMap<FactoryEnumType,List<NameIdType>>());
-		if(updateSet.containsKey(sessionId)==false) updateSet.put(sessionId, new HashMap<FactoryEnumType,Set<String>>());
-		if(updateCache.get(sessionId).containsKey(factoryType) == false) updateCache.get(sessionId).put(factoryType, new ArrayList<NameIdType>());
-		if(updateSet.get(sessionId).containsKey(factoryType) == false) updateSet.get(sessionId).put(factoryType, new HashSet<String>());
+		if(!updateCache.containsKey(sessionId)) updateCache.put(sessionId, new HashMap<>());
+		if(!updateSet.containsKey(sessionId)) updateSet.put(sessionId, new HashMap<>());
+		if(!updateCache.get(sessionId).containsKey(factoryType)) updateCache.get(sessionId).put(factoryType, new ArrayList<>());
+		if(!updateSet.get(sessionId).containsKey(factoryType)) updateSet.get(sessionId).put(factoryType, new HashSet<>());
 		
 		
 		NameIdFactory factory = getFactory(factoryType);
@@ -519,14 +513,14 @@ public class BulkFactory {
 		
 		BulkSessionType session = sessions.get(sessionId);
 		if(session == null){
-			logger.error("Invalid session id '" + sessionId + "'");
-			throw new ArgumentException("Invalid session id '" + sessionId + "'");
+			logger.error(String.format(INVALID_SESSIONID, sessionId));
+			throw new ArgumentException(String.format(INVALID_SESSIONID, sessionId));
 		}
 		
 		/// rewrite factory cache in case the name was changed on the update
 		///
 		String key = factory.getCacheKeyName(object);
-		if(factory.updateToCache(object,key)==false){
+		if(!factory.updateToCache(object,key)){
 			logger.warn("Failed to add object '" + object.getName() + "' to factory cache with key name " + factory.getCacheKeyName(object));
 		}
 		
@@ -538,8 +532,9 @@ public class BulkFactory {
 		updateCache.get(sessionId).get(factoryType).add(object);
 		updateSet.get(sessionId).get(factoryType).add(key);
 	}
-	public void createBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException{
+	public void createBulkEntry(String inSessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException, FactoryException{
 		long bulkId = (long)(rand.nextDouble()*1000000000L) * -1;
+		String sessionId = inSessionId;
 		
 		if(sessionId == null){
 			synchronized(globalLock){
@@ -555,7 +550,7 @@ public class BulkFactory {
 		}
 		
 		/// With large datasets, the random quickly starts to repeat.  Very bad Java.  Very bad.
-		while(sessionIdMap.containsKey(bulkId) == true){
+		while(sessionIdMap.containsKey(bulkId)){
 			bulkId = (long)(rand.nextDouble()*1000000000L) * -1;
 		}
 		
@@ -575,8 +570,8 @@ public class BulkFactory {
 			throw new ArgumentException("Object id is already set");
 		}
 		if(object.getNameType() == NameEnumType.UNKNOWN){
-			logger.error("Object cannot be of an unknown type");
-			throw new ArgumentException("Object cannot be of an unknown type");
+			logger.error(FactoryException.OBJECT_UNKNOWN_TYPE);
+			throw new ArgumentException(FactoryException.OBJECT_UNKNOWN_TYPE);
 		}
 		
 		NameIdFactory factory = getFactory(factoryType);
@@ -614,7 +609,7 @@ public class BulkFactory {
 		
 		/// 2016/07/22 - Some objects do not have a name, such as participations
 		///
-		if(object.getName() != null && factory.updateToCache(object,factory.getCacheKeyName(object))==false){
+		if(object.getName() != null && !factory.updateToCache(object,factory.getCacheKeyName(object))){
 			logger.warn("Failed to add object '" + object.getName() + "' to factory cache with key name " + factory.getCacheKeyName(object));
 		}
 	}

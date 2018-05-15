@@ -81,6 +81,7 @@ import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.TypeSanitizer;
 import org.cote.accountmanager.data.services.VaultService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.BaseGroupType;
@@ -117,9 +118,9 @@ public class Factories {
 	public static final Logger logger = LogManager.getLogger(Factories.class);
 	
 	private static Map<String,ITypeSanitizer> nameTypeSanitizerInstances = new HashMap<>();
-	private static Map<NameEnumType,Class> nameTypeSanitizerClasses = new HashMap<>();
-	private static Map<FactoryEnumType, Class> factoryTypeClasses = new HashMap<>();
-	private static Map<FactoryEnumType, Class> factoryClasses = new HashMap<>();
+	private static Map<NameEnumType,Class<?>> nameTypeSanitizerClasses = new HashMap<>();
+	private static Map<FactoryEnumType, Class<?>> factoryTypeClasses = new HashMap<>();
+	private static Map<FactoryEnumType, Class<?>> factoryClasses = new HashMap<>();
 	private static Map<FactoryEnumType, Object> factoryInstances = new HashMap<>();
 	static {
 	    Factories.registerClass(FactoryEnumType.ACCOUNT, AccountFactory.class); 
@@ -235,9 +236,9 @@ public class Factories {
 	private static SessionFactory sessionFactory = null;
 	private static SessionDataFactory sessionDataFactory = null;
 
-	protected static boolean registerNameTypeSanitizer(NameEnumType ntype, Class fClass){
+	protected static boolean registerNameTypeSanitizer(NameEnumType ntype, Class<?> fClass){
 		if(nameTypeSanitizerClasses.containsKey(ntype)){
-			logger.error("Type " + ntype.toString() + " already registered");
+			logger.error(String.format(FactoryException.TYPE_ALREADY_REGISTERED, ntype.toString()));
 			return false;
 		}
 		nameTypeSanitizerClasses.put(ntype, fClass);
@@ -248,11 +249,11 @@ public class Factories {
 	}
 	protected static ITypeSanitizer getSanitizerInstance(NameEnumType ntype){
 		ITypeSanitizer sanObj = null;
-		if(nameTypeSanitizerClasses.containsKey(ntype) == false){
-			logger.error("Name type " + ntype.toString() + " not registered");
+		if(!nameTypeSanitizerClasses.containsKey(ntype)){
+			logger.error(String.format(FactoryException.TYPE_NOT_REGISTERED, ntype.toString()));
 			return sanObj;
 		}
-		Class cls = nameTypeSanitizerClasses.get(ntype);
+		Class<?> cls = nameTypeSanitizerClasses.get(ntype);
 		String name = cls.getName();
 		if(nameTypeSanitizerInstances.containsKey(name) == true) return nameTypeSanitizerInstances.get(name);
 
@@ -263,13 +264,13 @@ public class Factories {
 				nameTypeSanitizerInstances.put(name, sanObj);
 			}
 		} catch (InstantiationException | IllegalAccessException e) {
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			sanObj = null;
 		}
 		return sanObj;
 	}
 	
-	protected static boolean registerClass(FactoryEnumType ftype, Class fClass){
+	protected static boolean registerClass(FactoryEnumType ftype, Class<?> fClass){
 		if(factoryClasses.containsKey(ftype)){
 			logger.error("Factory " + ftype.toString() + " already registered");
 			return false;
@@ -277,7 +278,7 @@ public class Factories {
 		factoryClasses.put(ftype, fClass);
 		return true;
 	}
-	protected static boolean registerTypeClass(FactoryEnumType ftype, Class fClass){
+	protected static boolean registerTypeClass(FactoryEnumType ftype, Class<?> fClass){
 		if(factoryTypeClasses.containsKey(ftype)){
 			logger.error("Factory type for " + ftype.toString() + " already registered");
 			return false;
@@ -285,10 +286,10 @@ public class Factories {
 		factoryTypeClasses.put(ftype, fClass);
 		return true;
 	}
-	public static Map<FactoryEnumType, Class> getFactoryTypeClasses() {
+	public static Map<FactoryEnumType, Class<?>> getFactoryTypeClasses() {
 		return factoryTypeClasses;
 	}
-	public static Map<FactoryEnumType, Class> getFactoryClasses() {
+	public static Map<FactoryEnumType, Class<?>> getFactoryClasses() {
 		return factoryClasses;
 	}
 
@@ -296,13 +297,13 @@ public class Factories {
 		return factoryInstances;
 	}
 
-	protected static <T> T getInstance(FactoryEnumType ftype){
+	@SuppressWarnings("unchecked")
+	protected static <T> T getInstance(FactoryEnumType ftype) throws FactoryException{
 		T newObj = null;
-		if(factoryClasses.containsKey(ftype) == false){
-			logger.error("Factory type " + ftype.toString() + " not registered");
-			return newObj;
+		if(!factoryClasses.containsKey(ftype)){
+			throw new FactoryException(String.format(FactoryException.TYPE_NOT_REGISTERED, ftype.toString()));
 		}
-		if(factoryInstances.containsKey(ftype) == true) return (T)factoryInstances.get(ftype);
+		if(factoryInstances.containsKey(ftype)) return (T)factoryInstances.get(ftype);
 		try {
 			newObj = (T)factoryClasses.get(ftype).newInstance();
 			if(newObj != null){
@@ -310,9 +311,10 @@ public class Factories {
 				factoryInstances.put(ftype, newObj);
 			}
 		} catch (InstantiationException | IllegalAccessException e) {
-			logger.error("Error",e);
-			newObj = null;
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+			throw new FactoryException(e.getMessage());
 		}
+		if(newObj == null) throw new FactoryException(String.format(FactoryException.TYPE_NOT_REGISTERED, ftype.toString()));
 		return newObj;
 	}
 	
@@ -406,7 +408,7 @@ public class Factories {
 	/// Recycle factories for development and new setups
 	/// When the schema is nuked during setup, cached values may be null or invalid
 	///
-	public static void recycleFactories(){
+	public static void recycleFactories() throws FactoryException{
 		coolDown();
 		recycleOrganizationFactory();
 		warmUp();
@@ -522,19 +524,19 @@ public class Factories {
 		
 		return true;
 	}
-	public static <T> T getBulkFactory(FactoryEnumType factoryType){
+	public static <T> T getBulkFactory(FactoryEnumType factoryType) throws FactoryException{
 		return BulkFactories.getInstance(factoryType);
 	}	
-	public static <T> T getFactory(FactoryEnumType factoryType){
+	public static <T> T getFactory(FactoryEnumType factoryType) throws FactoryException{
 		return getInstance(factoryType);
 	}
-	public static INameIdFactory getNameIdFactory(FactoryEnumType factoryType){
+	public static INameIdFactory getNameIdFactory(FactoryEnumType factoryType) throws FactoryException{
 		return getInstance(factoryType);
 	}
-	public static INameIdGroupFactory getNameIdGroupFactory(FactoryEnumType factoryType){
+	public static INameIdGroupFactory getNameIdGroupFactory(FactoryEnumType factoryType) throws FactoryException{
 		return getInstance(factoryType);
 	}
-	public static IParticipationFactory getParticipationFactory(FactoryEnumType factoryType){
+	public static IParticipationFactory getParticipationFactory(FactoryEnumType factoryType) throws FactoryException{
 		return getInstance(factoryType);
 	}
 	
@@ -574,7 +576,7 @@ public class Factories {
     	logger.info("Touch Account Manager to initialize static registration");
     	BulkFactories.prepare();
     }
-	public static void warmUp(){
+	public static void warmUp() throws FactoryException{
 		logger.debug("Warming up factory " + factoryClasses.size() + " factory instances");
 		prepare();
 		long startWarmUp = System.currentTimeMillis();

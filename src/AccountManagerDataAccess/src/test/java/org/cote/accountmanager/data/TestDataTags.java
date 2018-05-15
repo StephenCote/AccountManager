@@ -42,6 +42,7 @@ import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.ServiceUtil;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
@@ -106,15 +107,14 @@ public class TestDataTags extends BaseDataAccessTest {
 	
 	public void testTagETL2(){
 		Map<String,Map<String,List<String>>> tagMap = new HashMap<String,Map<String,List<String>>>();
-		((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.TAGPARTICIPATION)).setBatchSize(1000);
-		
-		//((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setUseThreadSafeCollections(false);
-		((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setAggressiveKeyFlush(false);
-		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).setUseThreadSafeCollections(false);
-		((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).setUseThreadSafeCollections(false);
-		((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).setUseThreadSafeCollections(false);
 		
 		try{
+			((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.TAGPARTICIPATION)).setBatchSize(1000);
+			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setAggressiveKeyFlush(false);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).setUseThreadSafeCollections(false);
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).setUseThreadSafeCollections(false);
+			((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).setUseThreadSafeCollections(false);
+
 			Pattern limitNames = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s])",Pattern.MULTILINE);
 			Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/\\~])",Pattern.MULTILINE);
 			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization("/Accelerant/Rocket");
@@ -190,7 +190,7 @@ public class TestDataTags extends BaseDataAccessTest {
 					List<DataType> data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataList(fields.toArray(new QueryField[0]), null,true,dir.getOrganizationId());
 					//logger.info("Data Lookup: " + (System.currentTimeMillis() - startLookup));
 					
-					if(data.size() == 0){
+					if(data.isEmpty()){
 						logger.warn("Empty data size for: " + names.toString() + " in group id " + dir.getId());
 					}
 					startLookup = System.currentTimeMillis();
@@ -337,13 +337,13 @@ public class TestDataTags extends BaseDataAccessTest {
 			//((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).GetDataFromParticipations(list, detailsOnly, startRecord, recordCount, organization)
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 	}

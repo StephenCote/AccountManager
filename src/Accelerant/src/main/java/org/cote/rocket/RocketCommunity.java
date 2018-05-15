@@ -52,7 +52,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
@@ -73,6 +72,7 @@ import org.cote.accountmanager.data.services.ICommunityProvider;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.ScriptService;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
@@ -201,7 +201,7 @@ public class RocketCommunity implements ICommunityProvider {
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			// TODO Auto-generated catch block
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
 		
@@ -284,7 +284,7 @@ public class RocketCommunity implements ICommunityProvider {
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			// TODO Auto-generated catch block
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
 		
@@ -368,7 +368,7 @@ public class RocketCommunity implements ICommunityProvider {
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			// TODO Auto-generated catch block
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
 		
@@ -476,7 +476,7 @@ public class RocketCommunity implements ICommunityProvider {
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			// TODO Auto-generated catch block
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
 		
@@ -605,7 +605,7 @@ public class RocketCommunity implements ICommunityProvider {
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			// TODO Auto-generated catch block
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
 		
@@ -658,7 +658,7 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 		} catch (ArgumentException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		
 		}
 
@@ -692,7 +692,7 @@ public class RocketCommunity implements ICommunityProvider {
 			
 		} catch (FactoryException | ArgumentException e) {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outRole;
 	}
@@ -726,7 +726,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException e) {
 
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outPermission;
 	}
@@ -766,7 +766,7 @@ public class RocketCommunity implements ICommunityProvider {
 			lc = Rocket.getLifecycle(communityName, user.getOrganizationId());
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(lc == null){
 			AuditService.denyResult(audit,"Lifecycle " + communityName + " doesn't exist.");
@@ -786,7 +786,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException e) {
 			
 			AuditService.denyResult(audit, "Error: "  + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		return (T) proj;
 
@@ -819,7 +819,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return roles;
 	}
@@ -850,7 +850,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return roles;
 	}
@@ -870,7 +870,7 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 		} catch (FactoryException | ArgumentException e) {		
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return roles;
 	}
@@ -979,7 +979,7 @@ public class RocketCommunity implements ICommunityProvider {
 			permission = AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP, adminUser.getOrganizationId());
 		} catch (FactoryException | ArgumentException e) {
 
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(permission == null) return false;
 		return enrollInCommunityProject(audit, adminUser, user, permission, communityId, projectId,false);
@@ -1000,10 +1000,10 @@ public class RocketCommunity implements ICommunityProvider {
 			permission = AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP,adminUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(permission == null) return false;
 		return enrollInCommunityLifecycle(audit, adminUser, user, permission, communityId, false);
@@ -1024,10 +1024,10 @@ public class RocketCommunity implements ICommunityProvider {
 			permission = AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP,adminUser.getOrganizationId());
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(permission == null) return false;
 		return enrollInCommunityLifecycle(audit, adminUser, user, permission, communityId,true);
@@ -1125,7 +1125,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(out_proj == null){
 			AuditService.denyResult(audit,"Project doesn't exist");
@@ -1154,7 +1154,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(lc == null){
 			AuditService.denyResult(audit,"Project doesn't exist");
@@ -1236,7 +1236,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -1266,7 +1266,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -1279,7 +1279,7 @@ public class RocketCommunity implements ICommunityProvider {
 			outPer = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getCreatePermission(user, svc.getName(),PermissionEnumType.APPLICATION,appBase, project.getOrganizationId());
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outPer;
 	}
@@ -1407,7 +1407,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (ArgumentException | FactoryException | DataAccessException  e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -1453,7 +1453,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException | DataAccessException  e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -1499,7 +1499,7 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException | DataAccessException  e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -1568,7 +1568,7 @@ public class RocketCommunity implements ICommunityProvider {
 		catch (FactoryException | ArgumentException e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return buff.toString();
 	}
@@ -1597,7 +1597,7 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 		} catch (FactoryException | ArgumentException | DataException e) {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return out_bool;
 	}
@@ -1706,7 +1706,7 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 		} catch (FactoryException | ArgumentException | DataException e) {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			data = null;
 		}
 		return data;
@@ -1766,7 +1766,7 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		catch(FactoryException | ArgumentException e){
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return lc;
 	}
@@ -1792,7 +1792,7 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		catch(FactoryException | ArgumentException e){
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return proj;
 	}
@@ -1819,7 +1819,7 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		catch(ArgumentException | FactoryException e){
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			dutil = null;
 		}
 		return dutil;

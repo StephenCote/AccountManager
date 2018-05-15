@@ -29,10 +29,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.UUID;
 
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.INameIdGroupFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -52,9 +52,14 @@ public class TestCapabilities extends BaseAccelerantTest {
 	
 	@Test
 	public void TestInterfaceCast(){
-		LifecycleFactory lf = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE));
-		INameIdFactory ilf = (INameIdFactory)lf;
-		INameIdGroupFactory iglf = (INameIdGroupFactory)lf;
+		try{
+			LifecycleFactory lf = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE));
+			INameIdFactory ilf = (INameIdFactory)lf;
+			INameIdGroupFactory iglf = (INameIdGroupFactory)lf;
+		}
+		catch(FactoryException f){
+			logger.error(f);
+		}
 	}
 	
 	@Test
@@ -72,7 +77,7 @@ public class TestCapabilities extends BaseAccelerantTest {
 		
 		} catch (FactoryException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Failed to add elements", add);
 	}
@@ -84,7 +89,7 @@ public class TestCapabilities extends BaseAccelerantTest {
 		group = org.cote.accountmanager.service.rest.BaseService.findGroup(GroupEnumType.DATA, "~/", getRequestMock(testUser));
 		}
 		catch(Exception e){
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertNotNull("Group is null",group);
 	}

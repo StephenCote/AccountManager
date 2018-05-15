@@ -34,6 +34,7 @@ import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.GroupService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -53,25 +54,29 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 	
 	@Test
 	public void TestAccountDataAuthorization(){
-		
-		Factories.coolDown();
-		Factories.warmUp();
-		
-		Map<FactoryEnumType, FactoryEnumType> factories = AuthorizationService.getAuthorizationFactories();
-		assertTrue("Unexpected number of registered authorization providers: " + factories.size(), factories.size() >= 5);
-		
-		DirectoryGroupType app1 = getApplication("AuthZ Application #1");
-		AccountGroupType acctGrp1 = getGroup(testUser,"Account Group 1",GroupEnumType.ACCOUNT,app1);
+		AccountGroupType acctGrp1 = null;
 		AccountRoleType acctRole1 = null;
 		PersonRoleType perRole1 = null;
-		try {
-			BaseRoleType baseRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(testUser,RoleEnumType.USER,testUser.getOrganizationId());
+		DirectoryGroupType app1 = null;
+		BaseRoleType baseRole = null;
+		try{
+			Factories.coolDown();
+			Factories.warmUp();
+			
+			Map<FactoryEnumType, FactoryEnumType> factories = AuthorizationService.getAuthorizationFactories();
+			assertTrue("Unexpected number of registered authorization providers: " + factories.size(), factories.size() >= 5);
+			
+			app1 = getApplication("AuthZ Application #1");
+			acctGrp1 = getGroup(testUser,"Account Group 1",GroupEnumType.ACCOUNT,app1);
+			
+		
+			baseRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(testUser,RoleEnumType.USER,testUser.getOrganizationId());
 			assertNotNull("Base role is null", baseRole);
 			acctRole1 = getRole(testUser,"Account Role 1",RoleEnumType.ACCOUNT,baseRole);
 			perRole1 = getRole(testUser,"Person Role 1",RoleEnumType.PERSON,baseRole);
-		} catch (FactoryException | ArgumentException | DataAccessException e2) {
+		} catch (FactoryException | ArgumentException e2) {
 			
-			logger.error("Error",e2);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e2);
 		}
 		
 		assertNotNull("Group is null", acctGrp1);
@@ -85,22 +90,22 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 		AccountType account3 = getApplicationAccount("Account #3",app1);
 		AccountType account4 = getApplicationAccount("Account #4",app1);
 		
-		if(person1.getAccounts().size() == 0){
+		if(person1.getAccounts().isEmpty()){
 			person1.getAccounts().add(account1);
 			try {
 				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(person1);
 			} catch (FactoryException  e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		if(person2.getAccounts().size() == 0){
+		if(person2.getAccounts().isEmpty()){
 			person2.getAccounts().add(account2);
 			try {
 				((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).update(person2);
 			} catch (FactoryException  e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		DataType data = newTextData("Data 1","This is the text data",testUser,app1);
@@ -125,7 +130,7 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 			testGenericAuthorization(testUser,data2,acctGrp1,account4,AuthorizationService.getViewPermissionForMapType(data2.getNameType(), data2.getOrganizationId()));
 		} catch (FactoryException | ArgumentException | DataAccessException e1) {
 			
-			logger.error("Error",e1);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 		}
 
 		
@@ -151,7 +156,7 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 			notAuthZ = AuthorizationService.isAuthorized(checkMember,object, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
 		} catch (NullPointerException | FactoryException | DataAccessException | ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		assertTrue("Failed to set: " + authZStr,setAuthZ);

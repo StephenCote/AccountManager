@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 ;
 
 public class OperationUtil {
@@ -51,10 +52,10 @@ public class OperationUtil {
 
 		} catch (InstantiationException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (IllegalAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return oper;
 	}
@@ -66,7 +67,7 @@ public class OperationUtil {
 			operations.put(className, cls);
 		} catch (ClassNotFoundException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return cls;
 	}

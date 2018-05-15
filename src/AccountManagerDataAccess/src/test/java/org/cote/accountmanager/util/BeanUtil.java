@@ -32,6 +32,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 
 
 
@@ -50,7 +51,7 @@ public class BeanUtil {
 	        bean = jaxbElementB.getValue();
 		}
 		catch(JAXBException je){
-			logger.error("Error",je);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,je);
 			System.out.println(je.getMessage());
 		}
 		return bean;

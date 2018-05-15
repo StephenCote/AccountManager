@@ -58,9 +58,10 @@
 					</includes>
 					<excludes>
 						<!-- 
-<exclude>**/TestIdentityService.java</exclude>
-						-->
 <exclude>**/TestAuthorization.java</exclude>
+						-->
+						<exclude>**/TestIdentityService.java</exclude>
+
 							<exclude>**/TestRocket.java</exclude>
 						<exclude>**/TestBulkFactory.java</exclude>
 						<exclude>**/TestCapabilities.java</exclude>

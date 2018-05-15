@@ -40,12 +40,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.BaseGroupType;
@@ -174,7 +174,7 @@ public class CredentialService {
 					org.cote.accountmanager.data.security.CredentialService.newCredential(authReq.getCredentialType(), null, owner, targetObject, credByte, true, true, false);
 		}
 		catch(FactoryException | ArgumentException | UnsupportedEncodingException e) {
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		if(newCred != null){
 			AuditService.permitResult(audit, "Created a new primary credential");

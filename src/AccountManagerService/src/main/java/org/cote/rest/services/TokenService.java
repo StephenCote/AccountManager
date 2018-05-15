@@ -48,7 +48,6 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
@@ -56,6 +55,7 @@ import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.AuthenticationResponseEnumType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
@@ -197,8 +197,9 @@ public class TokenService {
 		String outToken = null;		
 		if(authnRequest != null && authnRequest.getCredentialType().equals(CredentialEnumType.TOKEN) || authnRequest.getCredentialType().equals(CredentialEnumType.HASHED_PASSWORD)){
 			if(authnRequest.getOrganizationPath() == null) authnRequest.setOrganizationPath("/Public");
-			OrganizationFactory oFact = Factories.getFactory(FactoryEnumType.ORGANIZATION);
 			try {
+				OrganizationFactory oFact = Factories.getFactory(FactoryEnumType.ORGANIZATION);
+
 				OrganizationType org = oFact.find(authnRequest.getOrganizationPath());
 				if(org != null){
 					byte[] creds = authnRequest.getCredential();

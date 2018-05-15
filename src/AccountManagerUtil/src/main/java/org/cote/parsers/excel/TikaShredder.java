@@ -39,6 +39,7 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.microsoft.OfficeParser;
 import org.apache.tika.parser.microsoft.ooxml.OOXMLParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -63,7 +64,7 @@ public class TikaShredder {
 	        } catch (IOException e) {
 				
 	        	logger.error(e.getMessage());
-				logger.error("Trace",e);
+				logger.error(FactoryException.TRACE_EXCEPTION,e);
 			} finally {
 	            if(input != null){
 					try {
@@ -71,7 +72,7 @@ public class TikaShredder {
 					} catch (IOException e) {
 						
 						logger.error(e.getMessage());
-						logger.error("Trace",e);
+						logger.error(FactoryException.TRACE_EXCEPTION,e);
 					}
 	            }
 	        }
@@ -102,15 +103,15 @@ public class TikaShredder {
 	        } catch (IOException e) {
 				
 	        	logger.error(e.getMessage());
-				logger.error("Trace",e);
+				logger.error(FactoryException.TRACE_EXCEPTION,e);
 			} catch (SAXException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Trace",e);
+				logger.error(FactoryException.TRACE_EXCEPTION,e);
 			} catch (TikaException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Trace",e);
+				logger.error(FactoryException.TRACE_EXCEPTION,e);
 			} finally {
 	            if(input != null){
 					try {
@@ -118,7 +119,7 @@ public class TikaShredder {
 					} catch (IOException e) {
 						
 						logger.error(e.getMessage());
-						logger.error("Trace",e);
+						logger.error(FactoryException.TRACE_EXCEPTION,e);
 					}
 	            }
 	        }

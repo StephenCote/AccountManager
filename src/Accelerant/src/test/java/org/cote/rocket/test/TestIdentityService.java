@@ -38,7 +38,6 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.factory.GroupFactory;
@@ -50,6 +49,7 @@ import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.ICommunityProvider;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
@@ -99,7 +99,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 				FactoryDefaults.setupOrganization(newOrg, SecurityUtil.getSaltedDigest("password"));
 			} catch (FactoryException | ArgumentException | DataAccessException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return newOrg;
@@ -117,7 +117,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 			provider.setOrganizePersonManagement(true);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			logger.error("Trace", e);
+			logger.error(FactoryException.TRACE_EXCEPTION, e);
 		}
 		
 		return provider;
@@ -364,7 +364,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 			//EffectiveAuthorizationService.rebuildEntitlementsCache();
 		} catch (ArgumentException | FactoryException | DataAccessException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 	}

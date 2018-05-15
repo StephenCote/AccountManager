@@ -38,12 +38,12 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.AuditDataMaintenance;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
@@ -82,7 +82,7 @@ public class ConsoleMain {
 			fis.close();
 		} catch (IOException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			return;
 		}
 		
@@ -334,10 +334,10 @@ public class ConsoleMain {
 					}
 				}
 				catch(FactoryException fe){
-					logger.error("Error",fe);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 				} catch (ArgumentException e) {
 					
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 				
 			}
@@ -349,9 +349,9 @@ public class ConsoleMain {
 				logger.info("Setup: -setup -rootPassword password -schema ../AM4_PG9_Schema.txt");
 				
 			}
-		} catch (ParseException e) {
+		} catch (ParseException | FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(auditThread != null){
 			auditThread.requestStop();
@@ -374,7 +374,7 @@ public class ConsoleMain {
 					((TaskFactory)Factories.getFactory(FactoryEnumType.TASK)).addTask(t);
 				} catch (ArgumentException e) {
 					
-					logger.error("Error",e);
+					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
 				
 			}
@@ -383,10 +383,10 @@ public class ConsoleMain {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}
 	*/
@@ -454,7 +454,7 @@ public class ConsoleMain {
 			logProps.load(ClassLoader.getSystemResourceAsStream("logging.properties"));
 		} catch (IOException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return logProps;
 	}

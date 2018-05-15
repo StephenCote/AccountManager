@@ -34,6 +34,7 @@ import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -84,7 +85,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			success = true;
 		} catch (FactoryException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Bit not set", success);
 	}
@@ -95,26 +96,21 @@ public class TestFactoryCache extends BaseDataAccessTest{
 		sessionUser = testUser;
 		DataType data = getTestData("Test data",sessionUser.getHomeDirectory());
 
-		logger.info("Data Cache Key Name #1 = " + ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getCacheKeyName(data));
-		logger.info("Group Cache Key Name #1 = " + ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCacheKeyName(sessionUser.getHomeDirectory()));
 		List<DataType> datas = new ArrayList<DataType>();
 		try {
+			logger.info("Data Cache Key Name #1 = " + ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getCacheKeyName(data));
+			logger.info("Group Cache Key Name #1 = " + ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCacheKeyName(sessionUser.getHomeDirectory()));
+
 			DataUtil.setValueString(data, UUID.randomUUID().toString());
 			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(data);
 			datas = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(sessionUser.getHomeDirectory(), true, 0, 10, sessionUser.getOrganizationId());
-		} catch (DataException e) {
+			data = getTestData("Test data",sessionUser.getHomeDirectory());
 			
-			logger.error("Error",e);
-		} catch (FactoryException e) {
-			
-			logger.error("Error",e);
-		} catch (ArgumentException e) {
-			
-			logger.error("Error",e);
+			logger.info("Data Cache Key Name #2 = " + ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getCacheKeyName(datas.get(0)));
+
+		} catch (DataException | FactoryException | ArgumentException e) {
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		data = getTestData("Test data",sessionUser.getHomeDirectory());
-		
-		logger.info("Data Cache Key Name #2 = " + ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getCacheKeyName(datas.get(0)));
 	}
 	
 	private DataType getTestData(String name, DirectoryGroupType dir){
@@ -132,13 +128,13 @@ public class TestFactoryCache extends BaseDataAccessTest{
 			}
 		}
 		catch(FactoryException fe){
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} catch (DataException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return data;
 	}
@@ -160,10 +156,10 @@ public class TestFactoryCache extends BaseDataAccessTest{
 		}
 		 catch (FactoryException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} catch (ArgumentException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertTrue("Bit not set", success);
 	}

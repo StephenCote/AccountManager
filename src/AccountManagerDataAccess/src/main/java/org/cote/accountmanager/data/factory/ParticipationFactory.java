@@ -36,10 +36,10 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AddressParticipantType;
 import org.cote.accountmanager.objects.BaseParticipantType;
@@ -256,7 +256,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, factoryType, participant);
 			} catch (ArgumentException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 			return true;
 		}
@@ -278,7 +278,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 			} catch (ArgumentException e) {
 				
 				logger.error(e.getMessage());
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			} 
 			return false;
 		}
@@ -413,7 +413,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		if (out_participant == null)
 		{
 			List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(participant), QueryFields.getFieldParticipantType(type), QueryFields.getFieldParticipationId(participation)}, participation.getOrganizationId());
-			if (list.size() == 0) return null;
+			if (list.isEmpty()) return null;
 			out_participant = (T)list.get(0);
 			add_to_cache = true;
 		}
@@ -451,7 +451,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		if (out_participant == null && participation.getId() > 0 && participant.getId() > 0)
 		{
 			List<NameIdType> list = getParticipants(participation, participant, participant_type, permission, affect_type);
-			if (list.size() == 0) return null;
+			if (list.isEmpty()) return null;
 			out_participant = (T)list.get(0);
 			add_to_cache = true;
 		}

@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
@@ -95,10 +96,15 @@ public class GenericCacheService {
 		logger.info("Request to clear cache on: " + type);
 		boolean out_bool = false;
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
-		INameIdFactory factory = BaseService.getFactory(auditType);
-		if(factory != null){
-			factory.clearCache();
-			out_bool = true;
+		try{
+			INameIdFactory factory = BaseService.getFactory(auditType);
+			if(factory != null){
+				factory.clearCache();
+				out_bool = true;
+			}
+		}
+		catch(FactoryException f){
+			logger.error(f);
 		}
 		return Response.status(200).entity(out_bool).build();
 	}

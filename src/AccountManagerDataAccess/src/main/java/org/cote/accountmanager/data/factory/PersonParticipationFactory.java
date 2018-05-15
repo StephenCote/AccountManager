@@ -28,10 +28,10 @@ import java.util.List;
 
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -314,7 +314,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		}
 		return items;
 	}
@@ -328,7 +328,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		}
 		return items;
 	}
@@ -342,7 +342,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		}
 		return items;
 	}
@@ -356,7 +356,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		}
 		return items;
 	}
@@ -370,7 +370,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
-			logger.error("Error",fe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		}
 		return items;
 	}

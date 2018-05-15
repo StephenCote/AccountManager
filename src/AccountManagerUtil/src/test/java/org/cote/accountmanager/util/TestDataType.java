@@ -38,6 +38,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
 import org.junit.After;
@@ -103,7 +104,7 @@ public class TestDataType {
        	}
        	catch(Exception e){
 			logger.error(e.getMessage());
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			error= true;
        	}
        	assertFalse("There as an error", error);

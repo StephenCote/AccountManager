@@ -35,9 +35,9 @@ import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountTagType;
 import org.cote.accountmanager.objects.AccountType;
@@ -237,11 +237,12 @@ public class TagParticipationFactory extends ParticipationFactory {
 	/// Therefore, this is done inline for AM, but if the QueryBuilder API is used (which brings with it a more complex/noisy construction)
 	/// Then this can be replaced.
 	///
+	@SuppressWarnings("unchecked")
 	public <T> List<T> getTagParticipations(BaseTagType[] tags, ProcessingInstructionType instruction,ParticipantEnumType type) throws FactoryException, ArgumentException
 	{
 		
-		List<T> out_list = new ArrayList<T>();
-		if(tags.length == 0) return out_list;
+		List<T> outList = new ArrayList<T>();
+		if(tags.length == 0) return outList;
 		if(instruction == null) instruction = new ProcessingInstructionType();
 		long org = tags[0].getOrganizationId();
 		
@@ -280,11 +281,11 @@ public class TagParticipationFactory extends ParticipationFactory {
 				BaseParticipantType bpt = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).newParticipant(type);
 				bpt.setOrganizationId(org);
 				bpt.setParticipantId(rset.getLong(1));
-				out_list.add((T)bpt);
+				outList.add((T)bpt);
 			}
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			throw new FactoryException(sqe.getMessage());
 		}
 		finally{
@@ -294,14 +295,14 @@ public class TagParticipationFactory extends ParticipationFactory {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 
-		return out_list;
+		return outList;
 
 	}
-	public int countTagParticipations(BaseTagType[] tags, ParticipantEnumType type) throws FactoryException, ArgumentException
+	public int countTagParticipations(BaseTagType[] tags, ParticipantEnumType type) throws FactoryException
 	{
 		int count = 0;
 		if(tags.length == 0) return count;
@@ -334,11 +335,10 @@ public class TagParticipationFactory extends ParticipationFactory {
 			{
 				count = rset.getInt(1);
 			}
-			rset.close();
 			
 		}
 		catch(SQLException sqe){
-			logger.error("Error",sqe);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 			throw new FactoryException(sqe.getMessage());
 		}
 		finally{
@@ -348,7 +348,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 				connection.close();
 			} catch (SQLException e) {
 				
-				logger.error("Error",e);
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
 		return count;

@@ -47,6 +47,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
@@ -130,25 +131,29 @@ public class GenericResourceService {
 	public Response getObjectByNameInParent(@PathParam("type") String type, @PathParam("parentId") String parentId,@PathParam("name") String name,@Context HttpServletRequest request){
 		Object obj = null;
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
-		INameIdFactory iFact = BaseService.getFactory(auditType);
-		if(iFact.isClusterByParent() && !iFact.isClusterByGroup()){
-			logger.info("Request to get " + type + " object by parent in " + type + " " + parentId);
-			NameIdType parentObj = (NameIdType)getObject(type,parentId,request).getEntity();
-			if(parentObj != null){
-				obj = BaseService.readByNameInParent(auditType, parentObj, name, "UNKNOWN", request);
+		try{
+			INameIdFactory iFact = BaseService.getFactory(auditType);
+			if(iFact.isClusterByParent() && !iFact.isClusterByGroup()){
+				logger.info("Request to get " + type + " object by parent in " + type + " " + parentId);
+				NameIdType parentObj = (NameIdType)getObject(type,parentId,request).getEntity();
+				if(parentObj != null){
+					obj = BaseService.readByNameInParent(auditType, parentObj, name, "UNKNOWN", request);
+				}
+			}
+			else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup()){
+				logger.info("Request to get " + type + " object by name in GROUP " + parentId);
+				DirectoryGroupType dir = (DirectoryGroupType)getObject("GROUP",parentId,request).getEntity();
+				if(dir != null) obj = BaseService.readByName(auditType, dir, name, request);
+			}
+			else{
+				logger.info("Request to get " + type + " object by name in organization");
+				UserType user = ServiceUtil.getUserFromSession(request);
+				obj = BaseService.readByNameInOrganization(auditType, user.getOrganizationId(), name, request);
 			}
 		}
-		else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup()){
-			logger.info("Request to get " + type + " object by name in GROUP " + parentId);
-			DirectoryGroupType dir = (DirectoryGroupType)getObject("GROUP",parentId,request).getEntity();
-			if(dir != null) obj = BaseService.readByName(auditType, dir, name, request);
+		catch(FactoryException f){
+			logger.error(f);
 		}
-		else{
-			logger.info("Request to get " + type + " object by name in organization");
-			UserType user = ServiceUtil.getUserFromSession(request);
-			obj = BaseService.readByNameInOrganization(auditType, user.getOrganizationId(), name, request);
-		}
-		
 		return Response.status(200).entity(obj).build();
 	}
 	
@@ -162,18 +167,23 @@ public class GenericResourceService {
 	public Response getGroupedObjectByNameInParent(@PathParam("type") String type, @PathParam("parentId") String parentId,@PathParam("name") String name,@Context HttpServletRequest request){
 		Object obj = null;
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
-		INameIdFactory iFact = BaseService.getFactory(auditType);
-		if(!iFact.isClusterByParent() || !iFact.isClusterByGroup()){
-			logger.warn("Service intended for factories that are both clustered by group and parent");
-			//return Response.status(200).entity(obj).build();
+		try{
+			INameIdFactory iFact = BaseService.getFactory(auditType);
+			if(!iFact.isClusterByParent() || !iFact.isClusterByGroup()){
+				logger.warn("Service intended for factories that are both clustered by group and parent");
+				//return Response.status(200).entity(obj).build();
+			}
+			NameIdType parentObj = (NameIdType)getObject(type,parentId,request).getEntity();
+			if(parentObj == null){
+				logger.error("Parent Object " + type + " " + parentId + " is null or not accessible");
+				return Response.status(200).entity(obj).build();
+			}
+			obj = BaseService.readByNameInParent(auditType, parentObj, name, "UNKNOWN", request);
 		}
-		NameIdType parentObj = (NameIdType)getObject(type,parentId,request).getEntity();
-		if(parentObj == null){
-			logger.error("Parent Object " + type + " " + parentId + " is null or not accessible");
-			return Response.status(200).entity(obj).build();
+	
+		catch(FactoryException f){
+			logger.error(f);
 		}
-		obj = BaseService.readByNameInParent(auditType, parentObj, name, "UNKNOWN", request);
-
 		return Response.status(200).entity(obj).build();
 	}
 

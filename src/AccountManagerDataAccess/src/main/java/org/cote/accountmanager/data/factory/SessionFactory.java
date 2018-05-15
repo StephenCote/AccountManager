@@ -45,9 +45,9 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserSessionDataType;
 import org.cote.accountmanager.objects.UserSessionType;
@@ -362,7 +362,7 @@ public class SessionFactory extends FactoryBase {
 	{
 		List<UserSessionDataType> changes = map.getChangeSessionData();
 		List<UserSessionDataType> filtered = new ArrayList<>();
-		if(changes.size() == 0) return true;
+		if(changes.isEmpty()) return true;
 		
 		DataTable table = getDataTable(secondaryTableName);
 		boolean outBool = false;

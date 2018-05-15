@@ -39,7 +39,6 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.TagFactory;
@@ -49,6 +48,7 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
@@ -84,7 +84,7 @@ public class DataAction {
 			processDirectory(user, dir);
 		} catch (ArgumentException | FactoryException | DataAccessException | DataException | IOException e) {
 			// TODO Auto-generated catch block
-			logger.error("Trace", e);
+			logger.error(FactoryException.TRACE_EXCEPTION, e);
 		}
 	}
 	private static void processDirectory(UserType user, DirectoryGroupType dir) throws ArgumentException, FactoryException, DataAccessException, DataException, IOException{
@@ -154,7 +154,7 @@ public class DataAction {
 				thumbBytes = GraphicsUtil.createThumbnail(imageBytes, thumbWidth, thumbHeight);
 			}
 			catch(Exception e){
-				logger.error("Trace", e);
+				logger.error(FactoryException.TRACE_EXCEPTION, e);
 			}
 			if(thumbBytes.length == 0){
 				logger.warn("Thumbnail data not generated for " + chkData.getUrn());
@@ -187,11 +187,11 @@ public class DataAction {
 	/// This is an old migration/throw-away method from two versions back
 	/// 
 	public static void tagData(UserType user, String tagFile){
-		Map<String,Map<String,List<String>>> tagMap = new HashMap<String,Map<String,List<String>>>();
-		((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setBatchSize(1000);
-		((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setAggressiveKeyFlush(false);
+		Map<String,Map<String,List<String>>> tagMap = new HashMap<>();
 
 		try{
+			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setBatchSize(1000);
+			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).setAggressiveKeyFlush(false);
 
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
 			DirectoryGroupType tagDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Tags", user.getHomeDirectory(), user.getOrganizationId());
@@ -262,7 +262,7 @@ public class DataAction {
 					List<DataType> data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataList(fields.toArray(new QueryField[0]), null,true,dir.getOrganizationId());
 					//logger.info("Data Lookup: " + (System.currentTimeMillis() - startLookup));
 					
-					if(data.size() == 0){
+					if(data.isEmpty()){
 						logger.warn("Empty data size for: " + names.toString() + " in group id " + dir.getId());
 					}
 					startLookup = System.currentTimeMillis();
@@ -322,7 +322,7 @@ public class DataAction {
 		}
 		catch(FactoryException | ArgumentException | DataException | DataAccessException | UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 	}

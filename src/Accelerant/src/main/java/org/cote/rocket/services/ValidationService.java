@@ -31,11 +31,11 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.FactoryException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -61,7 +61,7 @@ public class ValidationService {
 	}
 	public static boolean validateForm(UserType user, FormType form) throws FactoryException, ArgumentException{
 		boolean out_bool = false;
-		if(form.getElements().size() == 0){
+		if(form.getElements().isEmpty()){
 			logger.warn("Form contains no elements.  Populated = " + form.getPopulated() + ". Returning true for validation");
 			return true;
 		}
@@ -88,7 +88,7 @@ public class ValidationService {
 	}
 	public static boolean validateFormElement(UserType user, FormElementType formElement) throws FactoryException, ArgumentException{
 		boolean out_bool = false;
-		if(formElement.getElementValues().size() == 0){
+		if(formElement.getElementValues().isEmpty()){
 			if(formElement.getValidationRule() != null && formElement.getValidationRule().getAllowNull() == false){
 				logger.warn("Form Element contains no values, and the validation rule prohibits null values.");
 				return false;
