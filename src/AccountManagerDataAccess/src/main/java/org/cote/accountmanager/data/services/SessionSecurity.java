@@ -97,19 +97,19 @@ public class SessionSecurity {
 		return session;
 	}
 	protected static boolean verifySessionAuthentication(UserSessionType session) throws FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(session == null){
 			logger.error("Null session object");
-			return out_bool;
+			return outBool;
 		}
 		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED) && Factories.getSessionFactory().isValid(session) == false){
 			session.setSessionStatus(SessionStatusEnumType.NOT_AUTHENTICATED);
-			out_bool = updateSession(session);
+			outBool = updateSession(session);
 		}
 		else{
-			out_bool = true;
+			outBool = true;
 		}
-		return out_bool;
+		return outBool;
 	}
 	protected static void updateSessionExpiry(UserSessionType session){
 		Calendar cal = Calendar.getInstance();
@@ -131,17 +131,17 @@ public class SessionSecurity {
 	}
 	
 	public static boolean updateSession(UserSessionType session) throws FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		updateSessionExpiry(session);
-		out_bool = Factories.getSessionFactory().update(session);
+		outBool = Factories.getSessionFactory().update(session);
 		if(session.getChangeSessionData().size() > 0){
-			out_bool = Factories.getSessionFactory().updateData(session);
+			outBool = Factories.getSessionFactory().updateData(session);
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	public static boolean isUserAuthenticated(UserType user) throws FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		UserSessionType session = user.getSession();
 		if(session == null){
 			session = Factories.getSessionFactory().getCreateSession(null, user.getOrganizationId());
@@ -149,10 +149,10 @@ public class SessionSecurity {
 			user.setSession(session);
 		}
 		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED) && Factories.getSessionFactory().isValid(session) == true){
-			out_bool = true;
+			outBool = true;
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	/*
 	public static UserType legacyLogin(String user_name, String password_hash, long organizationId) throws FactoryException, ArgumentException

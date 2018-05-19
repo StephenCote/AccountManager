@@ -1179,30 +1179,30 @@ public class EffectiveAuthorizationService {
 	{
 		return getIsPersonInEffectiveRole(role, person, null, AffectEnumType.UNKNOWN);
 	}	
-	public static boolean getIsPersonInEffectiveRole(BaseRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsPersonInEffectiveRole(BaseRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 	{
-		return getIsActorInEffectiveRole(role, person, permission, affect_type);
+		return getIsActorInEffectiveRole(role, person, permission, affectType);
 	}
 	public static boolean getIsAccountInEffectiveRole(BaseRoleType role, AccountType account) throws ArgumentException, FactoryException
 	{
 		return getIsAccountInEffectiveRole(role, account, null, AffectEnumType.UNKNOWN);
 	}	
-	public static boolean getIsAccountInEffectiveRole(BaseRoleType role, AccountType account, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsAccountInEffectiveRole(BaseRoleType role, AccountType account, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 	{
-		return getIsActorInEffectiveRole(role, account, permission, affect_type);
+		return getIsActorInEffectiveRole(role, account, permission, affectType);
 	}
 	
 	public static boolean getIsUserInEffectiveRole(BaseRoleType role, UserType user) throws ArgumentException, FactoryException
 	{
 		return getIsUserInEffectiveRole(role, user, null, AffectEnumType.UNKNOWN);
 	}	
-	public static boolean getIsUserInEffectiveRole(BaseRoleType role, UserType user, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsUserInEffectiveRole(BaseRoleType role, UserType user, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 	{
-		return getIsActorInEffectiveRole(role, user, permission, affect_type);
+		return getIsActorInEffectiveRole(role, user, permission, affectType);
 	}
-	private static boolean getIsActorInEffectiveRole(BaseRoleType role, NameIdType actor, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	private static boolean getIsActorInEffectiveRole(BaseRoleType role, NameIdType actor, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 		{
-		if(affect_type != AffectEnumType.UNKNOWN) throw new ArgumentException("AffectType is not supported for checking role participation (at the moment)");
+		if(affectType != AffectEnumType.UNKNOWN) throw new ArgumentException("AffectType is not supported for checking role participation (at the moment)");
 		//logger.debug(getEffectiveMemberEntitlements(role, actor, new BasePermissionType[]{permission}, true));
 		if(hasCache(actor,role)){
 			//logger.debug("Cached match " + actor.getNameType() + " " + actor.getId() + " checking role " + role.getId() + " in org " + role.getOrganizationId());

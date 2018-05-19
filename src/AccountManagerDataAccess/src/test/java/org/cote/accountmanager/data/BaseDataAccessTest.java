@@ -116,6 +116,8 @@ public class BaseDataAccessTest{
 	@Before
 	public void setUp() throws Exception {
 
+		org.cote.accountmanager.service.util.ServiceUtil.setUseAccountManagerSession(false);
+		
 		File cacheDir = new File("./cache");
 		if(cacheDir.exists() == false) cacheDir.mkdirs();
 		FactoryBase.setEnableSchemaCache(false);

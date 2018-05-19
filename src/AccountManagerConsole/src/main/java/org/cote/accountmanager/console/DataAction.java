@@ -252,7 +252,7 @@ public class DataAction {
 						if(n > 0) names.append(",");
 						names.append("'" + dNames.get(n) + "'");
 					}
-					List<QueryField> fields = new ArrayList<QueryField>();
+					List<QueryField> fields = new ArrayList<>();
 					QueryField nameField = new QueryField(SqlDataEnumType.VARCHAR,"name",names.toString());
 					nameField.setComparator(ComparatorEnumType.IN);
 					fields.add(nameField);

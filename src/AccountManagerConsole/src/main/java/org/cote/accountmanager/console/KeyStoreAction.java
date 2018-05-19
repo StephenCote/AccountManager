@@ -57,7 +57,7 @@ public class KeyStoreAction {
 	}
 
 	public boolean importCertificate(String storeName, char[] storePassword, boolean isTrust, String alias){
-		boolean out_bool = false;
+		boolean outBool = false;
 		KeyStore store = getCreateStore(storeName, storePassword, isTrust);
 		String certPath = basePath + "certificates/signed/" + alias + ".cert";
 		String useStorePath = storePath + (isTrust ? "trust" : "key") + "/" + storeName + ".jks";
@@ -66,16 +66,16 @@ public class KeyStoreAction {
 			logger.error("Failed to open file: " + certPath);
 			return false;
 		}
-		out_bool = KeyStoreUtil.importCertificate(store, certFile, alias);
-		if(out_bool && KeyStoreUtil.saveKeyStore(store, useStorePath, storePassword)){
+		outBool = KeyStoreUtil.importCertificate(store, certFile, alias);
+		if(outBool && KeyStoreUtil.saveKeyStore(store, useStorePath, storePassword)){
 			logger.info("Imported certificate " + alias);
 		}
  
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean importPKCS12(String storeName, char[] storePassword, boolean isTrust, String alias, char[] password, boolean isPrivate){
-		boolean out_bool = false;
+		boolean outBool = false;
 		KeyStore store = getCreateStore(storeName, storePassword, isTrust);
 		String certPath = basePath + "certificates/" + (isPrivate ? "private" : "signed") + "/" + alias + ".p12";
 		String useStorePath = storePath + (isTrust ? "trust" : "key") + "/" + storeName + ".jks";
@@ -84,12 +84,12 @@ public class KeyStoreAction {
 			logger.error("Failed to open file: " + certPath);
 			return false;
 		}
-		out_bool = KeyStoreUtil.importPKCS12(store, p12file, alias, password);
-		if(out_bool && KeyStoreUtil.saveKeyStore(store, useStorePath, storePassword)){
+		outBool = KeyStoreUtil.importPKCS12(store, p12file, alias, password);
+		if(outBool && KeyStoreUtil.saveKeyStore(store, useStorePath, storePassword)){
 			logger.info("Imported P12 " + alias);
 		}
  
-		return out_bool;
+		return outBool;
 	}
 	
 	

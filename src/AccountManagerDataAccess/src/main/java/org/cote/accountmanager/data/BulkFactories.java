@@ -64,7 +64,6 @@ import org.cote.accountmanager.data.factory.bulk.BulkSymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkTagFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkTagParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkUserFactory;
-import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 
@@ -72,6 +71,7 @@ public class BulkFactories{
 	
 	public static final Logger logger = LogManager.getLogger(BulkFactories.class);
 	
+	@SuppressWarnings("rawtypes")
 	private static Map<FactoryEnumType, Class> factoryClasses = new HashMap<>();
 	private static Map<FactoryEnumType, Object> factoryInstances = new HashMap<>();
 
@@ -117,6 +117,7 @@ public class BulkFactories{
 	private static BulkFactory bulkFactory = null;
 	
 	
+	@SuppressWarnings("rawtypes")
 	public static boolean registerClass(FactoryEnumType ftype, Class fClass){
 		if(factoryClasses.containsKey(ftype)){
 			logger.error("Factory " + ftype.toString() + " already registered");
@@ -126,6 +127,7 @@ public class BulkFactories{
 		return true;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public static Map<FactoryEnumType, Class> getFactoryClasses() {
 		return factoryClasses;
 	}
@@ -137,7 +139,7 @@ public class BulkFactories{
 	@SuppressWarnings("unchecked")
 	public static <T> T getInstance(FactoryEnumType ftype) throws FactoryException{
 		T newObj = null;
-		if(factoryClasses.containsKey(ftype) == false){
+		if(!factoryClasses.containsKey(ftype)){
 			throw new FactoryException(String.format(FactoryException.TYPE_NOT_REGISTERED, ftype.toString()));
 		}
 		if(factoryInstances.containsKey(ftype)) return (T)factoryInstances.get(ftype);

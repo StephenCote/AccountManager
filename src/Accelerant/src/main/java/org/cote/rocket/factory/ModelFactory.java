@@ -88,7 +88,7 @@ public class ModelFactory extends NameIdGroupFactory {
 	
 	public ModelType newModel(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		ModelType obj = new ModelType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -158,25 +158,25 @@ public class ModelFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		ModelType new_obj = new ModelType();
-		new_obj.setNameType(NameEnumType.MODEL);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setModelType(ModelEnumType.valueOf(rset.getString("modeltype")));
-		new_obj.setDescription(rset.getString("description"));
-		return new_obj;
+		ModelType newObj = new ModelType();
+		newObj.setNameType(NameEnumType.MODEL);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setModelType(ModelEnumType.valueOf(rset.getString("modeltype")));
+		newObj.setDescription(rset.getString("description"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		ModelType data = (ModelType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		if(update(data, null)){
 			try{
 				/// Cases
 				///
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).getCaseParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -260,22 +260,22 @@ public class ModelFactory extends NameIdGroupFactory {
 //				System.out.println("Net delete Model parts: " + set.size());
 				((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
-				out_bool = true;
+				outBool = true;
 				
 			}
 			catch(ArgumentException e){
 				throw new FactoryException(e.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ModelType use_map = (ModelType)map;
-		fields.add(QueryFields.getFieldModelType(use_map.getModelType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		ModelType useMap = (ModelType)map;
+		fields.add(QueryFields.getFieldModelType(useMap.getModelType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteModelsByUser(UserType user) throws FactoryException
 	{

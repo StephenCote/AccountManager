@@ -83,7 +83,7 @@ public class ResourceFactory extends NameIdGroupFactory {
 	}
 	public ResourceType newResource(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		ResourceType obj = new ResourceType();
 		obj.setName(user.getName());
 		obj.setOrganizationId(user.getOrganizationId());
@@ -124,20 +124,20 @@ public class ResourceFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		ResourceType new_obj = new ResourceType();
+		ResourceType newObj = new ResourceType();
 
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setNameType(NameEnumType.RESOURCE);
-		new_obj.setResourceDataId(rset.getLong("resourceid"));
-		new_obj.setUtilization(rset.getDouble("utilization"));
-		new_obj.setResourceType(ResourceEnumType.valueOf(rset.getString("ResourceType")));
-		new_obj.setDescription(rset.getString("description"));
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setNameType(NameEnumType.RESOURCE);
+		newObj.setResourceDataId(rset.getLong("resourceid"));
+		newObj.setUtilization(rset.getDouble("utilization"));
+		newObj.setResourceType(ResourceEnumType.valueOf(rset.getString("ResourceType")));
+		newObj.setDescription(rset.getString("description"));
 		long estimate_id = rset.getLong("estimateid");
-		if(estimate_id > 0L) new_obj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(estimate_id, new_obj.getOrganizationId()));
+		if(estimate_id > 0L) newObj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(estimate_id, newObj.getOrganizationId()));
 		long schedule_id = rset.getLong("scheduleid");
-		if(schedule_id > 0L) new_obj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(schedule_id, new_obj.getOrganizationId()));
-		return new_obj;
+		if(schedule_id > 0L) newObj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(schedule_id, newObj.getOrganizationId()));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -149,14 +149,14 @@ public class ResourceFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ResourceType use_map = (ResourceType)map;
-		fields.add(QueryFields.getFieldResourceId(use_map.getResourceDataId()));
-		fields.add(QueryFields.getFieldResourceType(use_map.getResourceType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldUtilization(use_map.getUtilization()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldEstimateId((use_map.getEstimate() != null ? use_map.getEstimate().getId() : 0L)));
-		fields.add(QueryFields.getFieldScheduleId((use_map.getSchedule() != null ? use_map.getSchedule().getId() : 0L)));
+		ResourceType useMap = (ResourceType)map;
+		fields.add(QueryFields.getFieldResourceId(useMap.getResourceDataId()));
+		fields.add(QueryFields.getFieldResourceType(useMap.getResourceType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldUtilization(useMap.getUtilization()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldEstimateId((useMap.getEstimate() != null ? useMap.getEstimate().getId() : 0L)));
+		fields.add(QueryFields.getFieldScheduleId((useMap.getSchedule() != null ? useMap.getSchedule().getId() : 0L)));
 	}
 	public int deleteResourcesByUser(UserType user) throws FactoryException
 	{

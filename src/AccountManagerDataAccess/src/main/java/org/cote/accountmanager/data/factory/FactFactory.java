@@ -54,25 +54,21 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class FactFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.FACT, FactFactory.class); }
 	public FactFactory(){
 		super();
-		this.tableNames.add("fact");
+		this.primaryTableName = "fact";
+		this.tableNames.add(primaryTableName);
 		this.hasObjectId = true;
 		this.hasUrn = true;
 		factoryType = FactoryEnumType.FACT;
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("fact")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
@@ -85,7 +81,7 @@ public class FactFactory extends NameIdGroupFactory {
 	
 	public FactType newFact(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		FactType obj = new FactType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -110,7 +106,6 @@ public class FactFactory extends NameIdGroupFactory {
 			row.setCellValue("groupid", obj.getGroupId());
 			row.setCellValue("factdata", obj.getFactData());
 			row.setCellValue("description", obj.getDescription());
-			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("score", obj.getScore());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("sourceurn", obj.getSourceUrn());
@@ -132,22 +127,21 @@ public class FactFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		FactType new_obj = new FactType();
-		new_obj.setNameType(NameEnumType.FACT);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setFactType(FactEnumType.valueOf(rset.getString("facttype")));
-		new_obj.setFactoryType(FactoryEnumType.valueOf(rset.getString("factorytype")));
-		//new_obj.setUrn(rset.getString("urn"));
-		new_obj.setScore(rset.getInt("score"));
-		new_obj.setFactData(rset.getString("factdata"));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setSourceUrn(rset.getString("sourceurn"));
-		new_obj.setSourceUrl(rset.getString("sourceurl"));
-		new_obj.setSourceType(rset.getString("sourcetype"));
-		new_obj.setSourceDataType(SqlDataEnumType.valueOf(rset.getString("sourcedatatype")));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		return new_obj;
+		FactType newObj = new FactType();
+		newObj.setNameType(NameEnumType.FACT);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setFactType(FactEnumType.valueOf(rset.getString("facttype")));
+		newObj.setFactoryType(FactoryEnumType.valueOf(rset.getString("factorytype")));
+		newObj.setScore(rset.getInt("score"));
+		newObj.setFactData(rset.getString("factdata"));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setSourceUrn(rset.getString("sourceurn"));
+		newObj.setSourceUrl(rset.getString("sourceurl"));
+		newObj.setSourceType(rset.getString("sourcetype"));
+		newObj.setSourceDataType(SqlDataEnumType.valueOf(rset.getString("sourcedatatype")));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -160,19 +154,18 @@ public class FactFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		FactType use_map = (FactType)map;
-		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
-		fields.add(QueryFields.getFieldScore(use_map.getScore()));
-		fields.add(QueryFields.getFieldFactData(use_map.getFactData()));
-		fields.add(QueryFields.getFieldSourceUrn(use_map.getSourceUrn()));
-		fields.add(QueryFields.getFieldSourceUrl(use_map.getSourceUrl()));
-		fields.add(QueryFields.getFieldSourceType(use_map.getSourceType()));
-		fields.add(QueryFields.getFieldSourceDataType(use_map.getSourceDataType()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldFactType(use_map.getFactType()));
-		fields.add(QueryFields.getFieldFactoryType(use_map.getFactoryType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		FactType useMap = (FactType)map;
+		fields.add(QueryFields.getFieldScore(useMap.getScore()));
+		fields.add(QueryFields.getFieldFactData(useMap.getFactData()));
+		fields.add(QueryFields.getFieldSourceUrn(useMap.getSourceUrn()));
+		fields.add(QueryFields.getFieldSourceUrl(useMap.getSourceUrl()));
+		fields.add(QueryFields.getFieldSourceType(useMap.getSourceType()));
+		fields.add(QueryFields.getFieldSourceDataType(useMap.getSourceDataType()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldFactType(useMap.getFactType()));
+		fields.add(QueryFields.getFieldFactoryType(useMap.getFactoryType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteFactsByUser(UserType user) throws FactoryException
 	{
@@ -191,16 +184,7 @@ public class FactFactory extends NameIdGroupFactory {
 	}
 	public int deleteFactsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factories.getFactParticipationFactory().deleteParticipations(ids, organization);
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteFactsInGroup(DirectoryGroupType group)  throws FactoryException
 	{
@@ -208,8 +192,6 @@ public class FactFactory extends NameIdGroupFactory {
 		// Need to get ids so as to delete participations as well
 		//
 		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
-		/// TODO: Delete participations
-		///
 		return deleteFactsByIds(ids, group.getOrganizationId());
 	}
 

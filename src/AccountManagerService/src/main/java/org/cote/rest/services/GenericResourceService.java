@@ -107,11 +107,11 @@ public class GenericResourceService {
 	public Response deleteObject(@PathParam("type") String type, @PathParam("objectId") String objectId,@Context HttpServletRequest request){
 		logger.info("Request for object: " + type + " " + objectId);
 		Object obj = BaseService.readByObjectId(AuditEnumType.valueOf(type), objectId, request);
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(obj != null){
-			out_bool = BaseService.delete(AuditEnumType.valueOf(type), obj, request);
+			outBool = BaseService.delete(AuditEnumType.valueOf(type), obj, request);
 		}
-		return Response.status(200).entity(out_bool).build();
+		return Response.status(200).entity(outBool).build();
 	}
 	
 	@RolesAllowed({"user"})

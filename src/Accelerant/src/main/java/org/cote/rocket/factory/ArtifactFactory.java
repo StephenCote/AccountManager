@@ -97,7 +97,7 @@ public class ArtifactFactory extends NameIdGroupFactory {
 	
 	public ArtifactType newArtifact(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		ArtifactType obj = new ArtifactType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -152,17 +152,17 @@ public class ArtifactFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		ArtifactType new_obj = new ArtifactType();
-		new_obj.setNameType(NameEnumType.ARTIFACT);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setArtifactDataId(rset.getLong("artifactdataid"));
-		new_obj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		new_obj.setArtifactType(ArtifactEnumType.valueOf(rset.getString("artifacttype")));
-		new_obj.setNextTransitionId(rset.getLong("nexttransitionid"));
-		new_obj.setPreviousTransitionId(rset.getLong("previoustransitionid"));
-		new_obj.setDescription(rset.getString("description"));
-		return new_obj;
+		ArtifactType newObj = new ArtifactType();
+		newObj.setNameType(NameEnumType.ARTIFACT);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setArtifactDataId(rset.getLong("artifactdataid"));
+		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		newObj.setArtifactType(ArtifactEnumType.valueOf(rset.getString("artifacttype")));
+		newObj.setNextTransitionId(rset.getLong("nexttransitionid"));
+		newObj.setPreviousTransitionId(rset.getLong("previoustransitionid"));
+		newObj.setDescription(rset.getString("description"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -174,14 +174,14 @@ public class ArtifactFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ArtifactType use_map = (ArtifactType)map;
-		fields.add(QueryFields.getFieldArtifactDataId(use_map.getArtifactDataId()));
-		fields.add(QueryFields.getFieldArtifactType(use_map.getArtifactType()));
-		fields.add(QueryFields.getFieldCreatedDate(use_map.getCreatedDate()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldPreviousTransitionId(use_map.getPreviousTransitionId()));
-		fields.add(QueryFields.getFieldNextTransitionId(use_map.getNextTransitionId()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		ArtifactType useMap = (ArtifactType)map;
+		fields.add(QueryFields.getFieldArtifactDataId(useMap.getArtifactDataId()));
+		fields.add(QueryFields.getFieldArtifactType(useMap.getArtifactType()));
+		fields.add(QueryFields.getFieldCreatedDate(useMap.getCreatedDate()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldPreviousTransitionId(useMap.getPreviousTransitionId()));
+		fields.add(QueryFields.getFieldNextTransitionId(useMap.getNextTransitionId()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteArtifactsByUser(UserType user) throws FactoryException
 	{

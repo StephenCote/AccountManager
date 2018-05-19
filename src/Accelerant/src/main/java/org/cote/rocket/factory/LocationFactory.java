@@ -107,7 +107,7 @@ public class LocationFactory extends NameIdGroupFactory {
 	}
 	public LocationType newLocation(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		LocationType obj = new LocationType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -174,26 +174,26 @@ public class LocationFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		LocationType new_obj = new LocationType();
-		new_obj.setNameType(NameEnumType.LOCATION);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setClassification(rset.getString("classification"));
-		new_obj.setGeographyType(GeographyEnumType.valueOf(rset.getString("geographytype")));
-		new_obj.setDescription(rset.getString("description"));
-		return new_obj;
+		LocationType newObj = new LocationType();
+		newObj.setNameType(NameEnumType.LOCATION);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setClassification(rset.getString("classification"));
+		newObj.setGeographyType(GeographyEnumType.valueOf(rset.getString("geographytype")));
+		newObj.setDescription(rset.getString("description"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		LocationType data = (LocationType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		if(update(data, null)){
 			/// Locations
 			///
 			try{
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).getBorderParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -208,7 +208,7 @@ public class LocationFactory extends NameIdGroupFactory {
 //				System.out.println("Net delete Location parts: " + set.size());
 				((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
-				set = new HashSet<Long>();
+				set = new HashSet<>();
 				maps = ((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).getBoundaryParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -223,22 +223,22 @@ public class LocationFactory extends NameIdGroupFactory {
 //				System.out.println("Net delete Location parts: " + set.size());
 				((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 	
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException e){
 				throw new FactoryException(e.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		LocationType use_map = (LocationType)map;
-		fields.add(QueryFields.getFieldGeographyType(use_map.getGeographyType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldClassification(use_map.getClassification()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		LocationType useMap = (LocationType)map;
+		fields.add(QueryFields.getFieldGeographyType(useMap.getGeographyType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldClassification(useMap.getClassification()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteLocationsByUser(UserType user) throws FactoryException
 	{
@@ -279,7 +279,7 @@ public class LocationFactory extends NameIdGroupFactory {
 	}
 	public List<LocationType> getChildLocationList(LocationType parent) throws FactoryException,ArgumentException{
 
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		return getLocationList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());
 	}

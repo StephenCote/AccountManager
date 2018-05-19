@@ -83,7 +83,7 @@ public class FormElementValueFactory extends NameIdFactory {
 
 	public FormElementValueType newFormElementValue(UserType user, FormType form, FormElementType formElement) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		if (form == null || form.getId().compareTo(0L)==0 || formElement == null || formElement.getId() <= 0) throw new ArgumentException("Cannot add new FormElementValue without a valid FormElement");
 		FormElementValueType obj = new FormElementValueType();
 		obj.setFormElementId(formElement.getId());
@@ -122,15 +122,15 @@ public class FormElementValueFactory extends NameIdFactory {
 	
 	public <T> T getByNameInGroup(String name, FormType form, FormElementType formElement) throws FactoryException,ArgumentException{
 
-		String key_name = name + "-" + formElement.getId() + "-" + formElement.getOrganizationId();
-		T out_data = readCache(key_name);
+		String keyName = name + "-" + formElement.getId() + "-" + formElement.getOrganizationId();
+		T out_data = readCache(keyName);
 		if (out_data != null) return out_data;
 
 		List<NameIdType> obj_list = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldFormElementId(formElement.getId()) }, formElement.getOrganizationId());
 
 		if (obj_list.size() > 0)
 		{
-			addToCache(obj_list.get(0),key_name);
+			addToCache(obj_list.get(0),keyName);
 			out_data = (T)obj_list.get(0);
 		}
 		else{
@@ -153,18 +153,18 @@ public class FormElementValueFactory extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		FormElementValueType new_obj = new FormElementValueType();
-		new_obj.setNameType(NameEnumType.FORMELEMENTVALUE);
-		super.read(rset, new_obj);
+		FormElementValueType newObj = new FormElementValueType();
+		newObj.setNameType(NameEnumType.FORMELEMENTVALUE);
+		super.read(rset, newObj);
 
-		new_obj.setIsBinary(rset.getBoolean("isbinary"));
-		if(new_obj.getIsBinary() == false) new_obj.setTextValue(rset.getString("textvalue"));
+		newObj.setIsBinary(rset.getBoolean("isbinary"));
+		if(newObj.getIsBinary() == false) newObj.setTextValue(rset.getString("textvalue"));
 		else{
-			new_obj.setBinaryId(rset.getLong("binaryvalueid"));
+			newObj.setBinaryId(rset.getLong("binaryvalueid"));
 		}
-		new_obj.setFormElementId(rset.getLong("formelementid"));
-		new_obj.setFormId(rset.getLong("formid"));
-		return new_obj;
+		newObj.setFormElementId(rset.getLong("formelementid"));
+		newObj.setFormId(rset.getLong("formid"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -176,13 +176,13 @@ public class FormElementValueFactory extends NameIdFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		FormElementValueType use_map = (FormElementValueType)map;
+		FormElementValueType useMap = (FormElementValueType)map;
 		
 		/// Form values cannot be changed to different elements
 		///
-		fields.add(QueryFields.getFieldTextValue(use_map.getTextValue()));
-		fields.add(QueryFields.getFieldBinaryValueId((use_map.getIsBinary() ? use_map.getBinaryId() : 0)));
-		fields.add(QueryFields.getFieldIsBinary(use_map.getIsBinary()));
+		fields.add(QueryFields.getFieldTextValue(useMap.getTextValue()));
+		fields.add(QueryFields.getFieldBinaryValueId((useMap.getIsBinary() ? useMap.getBinaryId() : 0)));
+		fields.add(QueryFields.getFieldIsBinary(useMap.getIsBinary()));
 	}
 	public int deleteFormElementValuesByUser(UserType user) throws FactoryException
 	{

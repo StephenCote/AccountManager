@@ -543,9 +543,9 @@ public class QueryFields {
 	{
 		return getStringField("affecttype", participant.getAffectType().toString());
 	}
-	public static QueryField getFieldAffectType(AffectEnumType affect_type)
+	public static QueryField getFieldAffectType(AffectEnumType affectType)
 	{
-		return getStringField("affecttype", affect_type.toString());
+		return getStringField("affecttype", affectType.toString());
 	}
 	public static QueryField getFieldParticipantId(NameIdType map)
 	{
@@ -564,9 +564,9 @@ public class QueryFields {
 	{
 		return getBigIntField("participationid", participant.getParticipationId());
 	}
-	public static QueryField getFieldParticipantType(ParticipantEnumType participant_type)
+	public static QueryField getFieldParticipantType(ParticipantEnumType participantType)
 	{
-		return getStringField("participanttype", participant_type.toString());
+		return getStringField("participanttype", participantType.toString());
 	}
 
 	public static QueryField getFieldRoleType(RoleEnumType type){
@@ -769,26 +769,26 @@ public class QueryFields {
 	}
 
 	public static QueryField[] getFieldParticipantMatch(NameIdType map, ParticipantEnumType type){
-		List<QueryField> matches = new ArrayList<QueryField>();
+		List<QueryField> matches = new ArrayList<>();
 		matches.add(getFieldParticipantType(type));
 		matches.add(getFieldParticipantId(map));
 		return matches.toArray(new QueryField[0]);
 	}
 	public static QueryField[] getFieldParticipationMatch(NameIdType map, ParticipantEnumType type){
-		List<QueryField> matches = new ArrayList<QueryField>();
+		List<QueryField> matches = new ArrayList<>();
 		matches.add(getFieldParticipantType(type));
 		matches.add(getFieldParticipationId(map));
 		return matches.toArray(new QueryField[0]);
 	}
-	public static QueryField[] getFieldParticipantsMatch(NameIdType participation, NameIdType participant, ParticipantEnumType participant_type, BasePermissionType permission, AffectEnumType affect_type){
-		List<QueryField> fields = new ArrayList<QueryField>();
+	public static QueryField[] getFieldParticipantsMatch(NameIdType participation, NameIdType participant, ParticipantEnumType participantType, BasePermissionType permission, AffectEnumType affectType){
+		List<QueryField> fields = new ArrayList<>();
 
 		fields.add(QueryFields.getFieldParticipantId(participant));
-		fields.add(QueryFields.getFieldParticipantType(participant_type));
+		fields.add(QueryFields.getFieldParticipantType(participantType));
 		fields.add(QueryFields.getFieldParticipationId(participation));
 		if (permission != null)
 		{
-			fields.add(QueryFields.getFieldAffectType(affect_type));
+			fields.add(QueryFields.getFieldAffectType(affectType));
 			fields.add(QueryFields.getFieldAffectId(permission));
 		}
 		return fields.toArray(new QueryField[0]);
@@ -796,7 +796,7 @@ public class QueryFields {
 	public static <T> QueryField getFieldParticipantIds(T[] list)
 	{
 		if (list.length == 0) return null;
-		List<Long> ints = new ArrayList<Long>();
+		List<Long> ints = new ArrayList<>();
 		for (int i = 0; i < list.length; i++)
 		{
 			ints.add(((BaseParticipantType)list[i]).getParticipantId());
@@ -809,7 +809,7 @@ public class QueryFields {
 	public static <T> QueryField getFieldParticipationIds(T[] list)
 	{
 		if (list.length == 0) return null;
-		List<Long> ints = new ArrayList<Long>();
+		List<Long> ints = new ArrayList<>();
 		for (int i = 0; i < list.length; i++)
 		{
 			ints.add(((BaseParticipantType)list[i]).getParticipationId());

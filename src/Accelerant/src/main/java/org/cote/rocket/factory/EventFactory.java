@@ -129,7 +129,7 @@ public class EventFactory extends NameIdGroupFactory {
 	}
 	public EventType newEvent(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		EventType obj = new EventType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -235,30 +235,30 @@ public class EventFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		EventType new_obj = new EventType();
-		new_obj.setNameType(NameEnumType.EVENT);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
+		EventType newObj = new EventType();
+		newObj.setNameType(NameEnumType.EVENT);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
 
 		// TODO: set time, cost
-		new_obj.setStartDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("startdate")));
-		new_obj.setEndDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("enddate")));
-		new_obj.setDescription(rset.getString("description"));
+		newObj.setStartDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("startdate")));
+		newObj.setEndDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("enddate")));
+		newObj.setDescription(rset.getString("description"));
 		long locId = rset.getLong("locationid");
-		if(locId > 0L) new_obj.setLocation(((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).getById(locId, new_obj.getOrganizationId()));
-		new_obj.setEventType(EventEnumType.valueOf(rset.getString("eventtype")));
+		if(locId > 0L) newObj.setLocation(((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).getById(locId, newObj.getOrganizationId()));
+		newObj.setEventType(EventEnumType.valueOf(rset.getString("eventtype")));
 
-		return new_obj;
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		EventType data = (EventType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		if(update(data, null)){
 			try{
-			Set<Long> set = new HashSet<Long>();
+			Set<Long> set = new HashSet<>();
 			BaseParticipantType[] maps = ((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getActorParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -272,7 +272,7 @@ public class EventFactory extends NameIdGroupFactory {
 			}
 			((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
-			set = new HashSet<Long>();
+			set = new HashSet<>();
 			maps = ((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getObserverParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -286,7 +286,7 @@ public class EventFactory extends NameIdGroupFactory {
 			}
 			((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
-			set = new HashSet<Long>();
+			set = new HashSet<>();
 			maps = ((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getInfluencerParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -300,7 +300,7 @@ public class EventFactory extends NameIdGroupFactory {
 			}
 			((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
-			set = new HashSet<Long>();
+			set = new HashSet<>();
 			maps = ((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getOrchestratorParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -315,7 +315,7 @@ public class EventFactory extends NameIdGroupFactory {
 			((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 			
-			set = new HashSet<Long>();
+			set = new HashSet<>();
 			maps = ((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getThingParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -330,7 +330,7 @@ public class EventFactory extends NameIdGroupFactory {
 			((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 			
-			set = new HashSet<Long>();
+			set = new HashSet<>();
 			maps = ((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getEntryTraitParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -345,7 +345,7 @@ public class EventFactory extends NameIdGroupFactory {
 			((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 			
-			set = new HashSet<Long>();
+			set = new HashSet<>();
 			maps = ((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getExitTraitParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -359,7 +359,7 @@ public class EventFactory extends NameIdGroupFactory {
 			}
 			((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
-			set = new HashSet<Long>();
+			set = new HashSet<>();
 			maps = ((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getGroupParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -374,22 +374,22 @@ public class EventFactory extends NameIdGroupFactory {
 			((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 			
-			out_bool = true;
+			outBool = true;
 			}
 			catch(ArgumentException e){
 				logger.error(e.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		EventType use_map = (EventType)map;
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldEventType(use_map.getEventType()));
-		fields.add(QueryFields.getFieldLocationId((use_map.getLocation() != null ? use_map.getLocation().getId() : 0L)));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		EventType useMap = (EventType)map;
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldEventType(useMap.getEventType()));
+		fields.add(QueryFields.getFieldLocationId((useMap.getLocation() != null ? useMap.getLocation().getId() : 0L)));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteEventsByUser(UserType user) throws FactoryException
 	{
@@ -431,7 +431,7 @@ public class EventFactory extends NameIdGroupFactory {
 	
 	public List<EventType> getChildEventList(EventType parent) throws FactoryException,ArgumentException{
 
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		return getEventList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());
 	}

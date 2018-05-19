@@ -115,11 +115,11 @@ public class KeyService {
 		;
 	}
 	public static boolean deleteKeys(long organizationId){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
 			((SymmetricKeyFactory)Factories.getFactory(FactoryEnumType.SYMMETRICKEY)).deleteByOrganization(organizationId);
 			((AsymmetricKeyFactory)Factories.getFactory(FactoryEnumType.ASYMMETRICKEY)).deleteByOrganization(organizationId);
-			out_bool = true;
+			outBool = true;
 		} catch (FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -128,7 +128,7 @@ public class KeyService {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	public static SecurityBean getSymmetricKeyById(long id,long organizationId){
 		SecurityBean bean = null;

@@ -60,7 +60,7 @@ public class ValidationService {
 		return pattern;
 	}
 	public static boolean validateForm(UserType user, FormType form) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(form.getElements().isEmpty()){
 			logger.warn("Form contains no elements.  Populated = " + form.getPopulated() + ". Returning true for validation");
 			return true;
@@ -75,19 +75,19 @@ public class ValidationService {
 			FormElementType templateElement = FormService.getFormElementByName(form.getTemplate(), el.getName());
 			if(templateElement == null || templateElement.getId().equals(el.getId()) == false){
 				logger.error("Element mismatch.  Form Element " + el.getName() + " is not a template element.");
-				out_bool = false;
+				outBool = false;
 				break;
 			}
-			out_bool = validateFormElement(user, form.getElements().get(i));
-			if(out_bool == false){
+			outBool = validateFormElement(user, form.getElements().get(i));
+			if(outBool == false){
 				logger.warn("Element " + form.getElements().get(i).getName() + " failed validation");
 				break;
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean validateFormElement(UserType user, FormElementType formElement) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(formElement.getElementValues().isEmpty()){
 			if(formElement.getValidationRule() != null && formElement.getValidationRule().getAllowNull() == false){
 				logger.warn("Form Element contains no values, and the validation rule prohibits null values.");
@@ -99,16 +99,16 @@ public class ValidationService {
 			}
 		}
 		for(int i = 0; i < formElement.getElementValues().size();i++){
-			out_bool = validateFormElementValue(user, formElement, formElement.getElementValues().get(i));
-			if(out_bool == false){
+			outBool = validateFormElementValue(user, formElement, formElement.getElementValues().get(i));
+			if(outBool == false){
 				logger.warn("Form element " + formElement.getName() + " value #" + i + " failed validation");
 				break;
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean isSupportedBinaryType(ElementEnumType elementType){
-		boolean out_bool = false;
+		boolean outBool = false;
 		switch(elementType){
 			case RESOURCE:
 			case SCHEDULE:
@@ -127,15 +127,15 @@ public class ValidationService {
 			case GOAL:
 			case BUDGET:
 			case COST:
-				out_bool = true;
+				outBool = true;
 				break;
 			default:
 				break;
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean validateFormElementValue(UserType user, FormElementType formElement, FormElementValueType formElementValue) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(isSupportedBinaryType(formElement.getElementType())
 		){
 			if(formElementValue.getBinaryId().equals(0L)){
@@ -182,11 +182,11 @@ public class ValidationService {
 			return true;
 		}
 		ValidationRuleType rule = formElement.getValidationRule();
-		out_bool = validateFormElementValueWithRule(user, formElement, formElementValue, rule);
-		return out_bool;
+		outBool = validateFormElementValueWithRule(user, formElement, formElementValue, rule);
+		return outBool;
 	}
 	public static boolean validateFormElementValueWithRule(UserType user, FormElementType formElement, FormElementValueType formElementValue, ValidationRuleType rule) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		boolean out_return_bool = true;
 		boolean child_return = false;
 		((ValidationRuleFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULE)).populate(rule);
@@ -211,7 +211,7 @@ public class ValidationService {
 			Matcher m = exp.matcher(val);
 			switch(ruleType){
 				case REPLACEMENT:
-					out_bool = true;
+					outBool = true;
 					if(rule.getReplacementValue() != null && m.matches()){
 						val = m.replaceAll(rule.getReplacementValue());
 						logger.debug("Rule " + rule.getName() + " replaced value with '" + val + "'");
@@ -228,7 +228,7 @@ public class ValidationService {
 						(m.matches() == compare)
 					){
 						logger.debug("Rule " + rule.getName() + " matched value '" + val + "'");
-						out_bool = true;
+						outBool = true;
 					}
 					else{
 						logger.warn("Validation of " + formElement.getName() + " failed pattern " + rule.getExpression() + " because " + m.matches() + " was false or " + allowNull + " is true and " +(val == null || val.length() == 0));
@@ -241,13 +241,13 @@ public class ValidationService {
 		}
 		else if(ruleType == ValidationEnumType.NONE){
 			logger.debug("Rule " + rule.getName() + " does not contain an expression and is set to validation type " + ruleType + ".  Marking validation as true.");
-			out_bool = true;
+			outBool = true;
 		}
 		else{
 			logger.debug("Rule " + rule.getName() + " does not define a pattern.  Marking validation as true.");
-			out_bool = true;
+			outBool = true;
 		}
-		logger.debug("Rule " + rule.getName() + " returns " + (out_bool && out_return_bool));
-		return (out_bool && out_return_bool);
+		logger.debug("Rule " + rule.getName() + " returns " + (outBool && out_return_bool));
+		return (outBool && out_return_bool);
 	}
 }

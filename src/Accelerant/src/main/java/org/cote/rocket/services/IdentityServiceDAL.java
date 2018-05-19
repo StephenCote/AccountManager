@@ -64,14 +64,14 @@ public class IdentityServiceDAL {
 	}
 
 	public List<List<BaseRoleType>> getRoleHierarchy(long baseId){
-		List<List<BaseRoleType>> out_list = new ArrayList<List<BaseRoleType>>();
+		List<List<BaseRoleType>> outList = new ArrayList<List<BaseRoleType>>();
 		
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(connectionType);
 		Map<Long,Integer> levels = new HashMap<Long,Integer>();
 		long organizationId = 0L;
-		List<Long> ids = new ArrayList<Long>();
+		List<Long> ids = new ArrayList<>();
 		try {
 			PreparedStatement stat = connection.prepareStatement("SELECT level, leafid, roleid, parentid, organizationid FROM leveled_roles_from_leaf(" + token + ") ORDER BY level,parentid;");
 			stat.setLong(1, baseId);
@@ -81,8 +81,8 @@ public class IdentityServiceDAL {
 				levels.put(rset.getLong("roleid"), level - 1);
 				if(organizationId <= 0L) organizationId = rset.getLong("organizationid");
 				ids.add(rset.getLong("roleid"));
-				if(out_list.size() <= level){
-					out_list.add(new ArrayList<BaseRoleType>());
+				if(outList.size() <= level){
+					outList.add(new ArrayList<BaseRoleType>());
 				}
 			}
 			rset.close();
@@ -93,7 +93,7 @@ public class IdentityServiceDAL {
 				Factories.getAttributeFactory().populateAttributes(role);
 				int level = levels.get(role.getId());
 
-				out_list.get(level).add(role);
+				outList.get(level).add(role);
 			}
 			
 		} catch (SQLException e) {
@@ -116,7 +116,7 @@ public class IdentityServiceDAL {
 		}
 		
 		
-		return out_list;
+		return outList;
 	}
 	public PersonRoleType getRoleByNameInHierarchy(String name,long baseId){
 		
@@ -184,7 +184,7 @@ public class IdentityServiceDAL {
 			PreparedStatement stat = connection.prepareStatement(sql);
 			DBFactory.setStatementParameters(qFields, stat);
 			ResultSet rset = stat.executeQuery();
-			List<Long> matchIds = new ArrayList<Long>();
+			List<Long> matchIds = new ArrayList<>();
 			if(rset.next()){
 				count = rset.getInt(1);
 			}
@@ -283,7 +283,7 @@ public class IdentityServiceDAL {
 			PreparedStatement stat = connection.prepareStatement(sql);
 			DBFactory.setStatementParameters(qFields, stat);
 			ResultSet rset = stat.executeQuery();
-			List<Long> matchIds = new ArrayList<Long>();
+			List<Long> matchIds = new ArrayList<>();
 			while(rset.next()){
 				matchIds.add(rset.getLong("servicegroupid"));
 			}
@@ -339,7 +339,7 @@ public class IdentityServiceDAL {
 			PreparedStatement stat = connection.prepareStatement(sql);
 			DBFactory.setStatementParameters(qFields, stat);
 			ResultSet rset = stat.executeQuery();
-			List<Long> matchIds = new ArrayList<Long>();
+			List<Long> matchIds = new ArrayList<>();
 			while(rset.next()){
 				matchIds.add(rset.getLong("servicegroupid"));
 			}
@@ -371,7 +371,7 @@ public class IdentityServiceDAL {
 		return res;
 	}
 	private QueryField[] getSearchFields(ProjectType project, long serviceId, String permissionName, String permissionDn){
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		QueryField q = new QueryField(SqlDataEnumType.BIGINT,"projectid",project.getId());
 		q.setComparator(ComparatorEnumType.EQUALS);
 		fields.add(q);

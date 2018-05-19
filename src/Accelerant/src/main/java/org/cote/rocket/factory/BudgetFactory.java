@@ -78,7 +78,7 @@ public class BudgetFactory extends NameIdGroupFactory {
 	
 	public BudgetType newBudget(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		BudgetType obj = new BudgetType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -115,19 +115,19 @@ public class BudgetFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		BudgetType new_obj = new BudgetType();
-		new_obj.setNameType(NameEnumType.BUDGET);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setBudgetType(BudgetEnumType.valueOf(rset.getString("budgettype")));
-		new_obj.setDescription(rset.getString("description"));
+		BudgetType newObj = new BudgetType();
+		newObj.setNameType(NameEnumType.BUDGET);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setBudgetType(BudgetEnumType.valueOf(rset.getString("budgettype")));
+		newObj.setDescription(rset.getString("description"));
 		
 		long time_id = rset.getLong("timeid");
 		long cost_id = rset.getLong("costid");
 		
-		if(time_id > 0L) new_obj.setTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, new_obj.getOrganizationId()));
-		if(cost_id > 0L) new_obj.setCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, new_obj.getOrganizationId()));
-		return new_obj;
+		if(time_id > 0L) newObj.setTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, newObj.getOrganizationId()));
+		if(cost_id > 0L) newObj.setCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, newObj.getOrganizationId()));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -139,12 +139,12 @@ public class BudgetFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		BudgetType use_map = (BudgetType)map;
-		fields.add(QueryFields.getFieldBudgetType(use_map.getBudgetType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldCost(use_map.getCost()));
-		fields.add(QueryFields.getFieldTime(use_map.getTime()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		BudgetType useMap = (BudgetType)map;
+		fields.add(QueryFields.getFieldBudgetType(useMap.getBudgetType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldCost(useMap.getCost()));
+		fields.add(QueryFields.getFieldTime(useMap.getTime()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteBudgetsByUser(UserType user) throws FactoryException
 	{

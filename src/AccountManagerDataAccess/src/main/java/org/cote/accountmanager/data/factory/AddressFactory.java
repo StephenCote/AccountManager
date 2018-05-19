@@ -56,7 +56,8 @@ public class AddressFactory extends NameIdGroupFactory {
 		this.hasParentId=false;
 		this.hasUrn = true;
 		this.hasObjectId = true;
-		this.tableNames.add("addresses");
+		this.primaryTableName = "addresses";
+		this.tableNames.add(this.primaryTableName);
 		factoryType = FactoryEnumType.ADDRESS;
 	}
 	
@@ -67,8 +68,8 @@ public class AddressFactory extends NameIdGroupFactory {
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("addresses")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(this.primaryTableName)){
+
 		}
 	}
 	@Override
@@ -82,15 +83,13 @@ public class AddressFactory extends NameIdGroupFactory {
 	}
 	public AddressType newAddress(UserType user, AddressType parentAddress) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		
-		AddressType obj = newAddress(user,parentAddress.getGroupId());
-		
-		return obj;
+		return newAddress(user,parentAddress.getGroupId());
 	}
 	public AddressType newAddress(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		AddressType obj = new AddressType();
 		obj.setLocationType(LocationEnumType.UNKNOWN);
 		obj.setOrganizationId(user.getOrganizationId());
@@ -136,21 +135,21 @@ public class AddressFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		AddressType new_obj = new AddressType();
-		new_obj.setNameType(NameEnumType.ADDRESS);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setPreferred(rset.getBoolean("preferred"));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setAddressLine1(rset.getString("addressline1"));
-		new_obj.setAddressLine2(rset.getString("addressline2"));
-		new_obj.setCity(rset.getString("city"));
-		new_obj.setCountry(rset.getString("country"));
-		new_obj.setPostalCode(rset.getString("postalcode"));
-		new_obj.setState(rset.getString("state"));
-		new_obj.setRegion(rset.getString("region"));
-		new_obj.setLocationType(LocationEnumType.valueOf(rset.getString("locationtype")));
-		return new_obj;
+		AddressType newObj = new AddressType();
+		newObj.setNameType(NameEnumType.ADDRESS);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setPreferred(rset.getBoolean("preferred"));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setAddressLine1(rset.getString("addressline1"));
+		newObj.setAddressLine2(rset.getString("addressline2"));
+		newObj.setCity(rset.getString("city"));
+		newObj.setCountry(rset.getString("country"));
+		newObj.setPostalCode(rset.getString("postalcode"));
+		newObj.setState(rset.getString("state"));
+		newObj.setRegion(rset.getString("region"));
+		newObj.setLocationType(LocationEnumType.valueOf(rset.getString("locationtype")));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -162,18 +161,18 @@ public class AddressFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		AddressType use_map = (AddressType)map;
-		fields.add(QueryFields.getFieldPreferred(use_map.getPreferred()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldAddressLine1(use_map.getAddressLine1()));
-		fields.add(QueryFields.getFieldAddressLine2(use_map.getAddressLine2()));
-		fields.add(QueryFields.getFieldCity(use_map.getCity()));
-		fields.add(QueryFields.getFieldState(use_map.getState()));
-		fields.add(QueryFields.getFieldRegion(use_map.getRegion()));
-		fields.add(QueryFields.getFieldLocationType(use_map.getLocationType()));
-		fields.add(QueryFields.getFieldCountry(use_map.getCountry()));
-		fields.add(QueryFields.getFieldPostalCode(use_map.getPostalCode()));
+		AddressType useMap = (AddressType)map;
+		fields.add(QueryFields.getFieldPreferred(useMap.getPreferred()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldAddressLine1(useMap.getAddressLine1()));
+		fields.add(QueryFields.getFieldAddressLine2(useMap.getAddressLine2()));
+		fields.add(QueryFields.getFieldCity(useMap.getCity()));
+		fields.add(QueryFields.getFieldState(useMap.getState()));
+		fields.add(QueryFields.getFieldRegion(useMap.getRegion()));
+		fields.add(QueryFields.getFieldLocationType(useMap.getLocationType()));
+		fields.add(QueryFields.getFieldCountry(useMap.getCountry()));
+		fields.add(QueryFields.getFieldPostalCode(useMap.getPostalCode()));
 	}
 	public int deleteAddresssByUser(UserType user) throws FactoryException
 	{
@@ -191,18 +190,8 @@ public class AddressFactory extends NameIdGroupFactory {
 	}
 	public int deleteAddresssByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).deleteContactInformationByReferenceIds(ids,organization.getId());
-			Factories.getAddressParticipationFactory().deleteParticipations(ids, organizationId);
+		return deleteById(ids, organizationId);
 
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
 	}
 	public int deleteAddresssInGroup(DirectoryGroupType group)  throws FactoryException
 	{
@@ -210,20 +199,9 @@ public class AddressFactory extends NameIdGroupFactory {
 		// Need to get ids so as to delete participations as well
 		//
 		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
-		/// TODO: Delete participations
-		///
 		return deleteAddresssByIds(ids, group.getOrganizationId());
 	}
-/*	
-	public List<AddressType> getChildAddressList(AddressType parent) throws FactoryException,ArgumentException{
 
-		List<QueryField> fields = new ArrayList<QueryField>();
-		fields.add(QueryFields.getFieldParent(parent.getId()));
-		fields.add(QueryFields.getFieldGroup(parent.getGroupId()));
-		return getAddressList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());
-
-	}
-*/
 	public List<AddressType>  getAddressList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
 		return paginateList(fields, startRecord, recordCount, organizationId);
@@ -254,22 +232,21 @@ public class AddressFactory extends NameIdGroupFactory {
 	/// Address search uses a different query to join in contact information
 	/// Otherwise, this could be the paginateList method
 	///
-	/// public List<AddressType> search(QueryField[] filters, long organizationId){
 	@Override
 	public List<QueryField> buildSearchQuery(String searchValue, long organizationId) throws FactoryException{
 		
 		searchValue = searchValue.replaceAll("\\*","%");
 		
-		List<QueryField> filters = new ArrayList<QueryField>();
-		QueryField search_filters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
-		search_filters.setComparator(ComparatorEnumType.GROUP_OR);
-		QueryField name_filter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
-		name_filter.setComparator(ComparatorEnumType.LIKE);
-		search_filters.getFields().add(name_filter);
-		QueryField first_name_filter = new QueryField(SqlDataEnumType.VARCHAR,"firstname",searchValue);
-		first_name_filter.setComparator(ComparatorEnumType.LIKE);
-		search_filters.getFields().add(first_name_filter);
-		filters.add(search_filters);
+		List<QueryField> filters = new ArrayList<>();
+		QueryField searchFilters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
+		searchFilters.setComparator(ComparatorEnumType.GROUP_OR);
+		QueryField nameFilter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
+		nameFilter.setComparator(ComparatorEnumType.LIKE);
+		searchFilters.getFields().add(nameFilter);
+		QueryField firstNameFilter = new QueryField(SqlDataEnumType.VARCHAR,"firstname",searchValue);
+		firstNameFilter.setComparator(ComparatorEnumType.LIKE);
+		searchFilters.getFields().add(firstNameFilter);
+		filters.add(searchFilters);
 		return filters;
 	}
 	
@@ -277,56 +254,6 @@ public class AddressFactory extends NameIdGroupFactory {
 	public <T> List<T> search(QueryField[] filters, ProcessingInstructionType instruction, long organizationId){
 		return searchByIdInView("personContact", filters,instruction,organizationId);
 
-/*
-		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
-		String sqlQuery = assembleQueryString("SELECT id FROM personContact", filters, connectionType, instruction, organization.getId());
-		logger.info("Query=" + sqlQuery);
-		List<Long> ids = new ArrayList<Long>();
-		List<T> persons = new ArrayList<T>();
-		
-		try{
-			PreparedStatement statement = connection.prepareStatement(sqlQuery);
-			DBFactory.setStatementParameters(filters, statement);
-			ResultSet rset = statement.executeQuery();
-			while(rset.next()){
-				ids.add(rset.getLong("id"));
-			}
-			rset.close();
-			
-			/// don't paginate the subsequent search for ids because it was already filtered.
-			/// Create a new instruction and just copy the order clause
-			///
-			ProcessingInstructionType pi2 = new ProcessingInstructionType();
-			pi2.setOrderClause(instruction.getOrderClause());
-			persons = listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organizationId);
-			logger.info("Retrieved " + persons.size() + " from " + ids.size() + " ids");
-		}
-		catch(SQLException sqe){
-			logger.error(sqe.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
-		} catch (FactoryException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		finally{
-			
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-				
-				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			}
-		}
-		//return search(fields, instruction, organizationId);
-		return persons;
-*/
 	}
 
 

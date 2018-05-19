@@ -27,192 +27,170 @@ import java.sql.Types;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class SqlTypeUtil {
 	public static final Logger logger = LogManager.getLogger(SqlTypeUtil.class);
 	public static SqlDataEnumType translateSqlType(DBFactory.CONNECTION_TYPE connectionType, String dataType){
 		
-		SqlDataEnumType out_type = SqlDataEnumType.NULL;
+		SqlDataEnumType outType = SqlDataEnumType.NULL;
 		switch(connectionType){
 			case POSTGRES:
 				if(dataType.equals("int8") || dataType.equals("long") || dataType.equals("bigserial")){
-					out_type = SqlDataEnumType.BIGINT;
+					outType = SqlDataEnumType.BIGINT;
 				}				
 				else if(dataType.startsWith("int") || dataType.equals("serial")){
-					out_type = SqlDataEnumType.INTEGER;
+					outType = SqlDataEnumType.INTEGER;
 				}
 				else if(dataType.equals("bool")){
-					out_type = SqlDataEnumType.BOOLEAN;
+					outType = SqlDataEnumType.BOOLEAN;
 				}
 				else if(dataType.equals("bytea")){
-					out_type = SqlDataEnumType.BLOB;
+					outType = SqlDataEnumType.BLOB;
 				}
 				else if(dataType.equals("float8")){
-					out_type = SqlDataEnumType.DOUBLE;
-				}
-
-				else{
-					//System.out.println("Unhandled data type: '" + dataType + "'");
-					//logger.error("Unhandled data type: '" + dataType + "'");
+					outType = SqlDataEnumType.DOUBLE;
 				}
 
 				break;
 			default:
-				System.out.println("Unhandled Type: " + connectionType);
+				logger.error("Unhandled Type: " + connectionType);
 				break;
 		}
-		if(out_type == SqlDataEnumType.NULL){
+		if(outType == SqlDataEnumType.NULL){
 			try{
-				out_type = SqlDataEnumType.valueOf(dataType.toUpperCase());
+				outType = SqlDataEnumType.valueOf(dataType.toUpperCase());
 			}
 			catch(Exception e){
-				System.out.println(e.getMessage());
+				logger.error(e.getMessage());
 			}
 		}
-		return out_type;
+		return outType;
 	}
 	public static <T> SqlDataEnumType getType(T obj){
-		SqlDataEnumType out_type = SqlDataEnumType.NULL;
+		SqlDataEnumType outType = SqlDataEnumType.NULL;
 		if(obj instanceof String){
-			out_type = SqlDataEnumType.VARCHAR;
+			outType = SqlDataEnumType.VARCHAR;
 		}
 		else if(obj instanceof Integer){
-			out_type = SqlDataEnumType.INTEGER;
+			outType = SqlDataEnumType.INTEGER;
 		}
 		else if(obj instanceof Long){
-			out_type = SqlDataEnumType.BIGINT;
+			outType = SqlDataEnumType.BIGINT;
 		}
-		return out_type;
+		return outType;
 	}
-	/*
-	public static Class Type(SqlDataEnumType dataType){
-		Class out_type = Object.class;
-		switch(dataType){
-			case BINARY:
-				out_type = byte[].class;
-				break;
-			case VARCHAR:
-				out_type = String.class;
-				break;
-			case INTEGER:
-				out_type = int.class;
-				break;
-			case DATE:
-			case TIMESTAMP:
-			case TIME:
-				out_type = Date.class;
-				break;
-		}
-		return out_type;
-	}
-	*/
+
 	public static int getSqlType(StatementParameter param){
-		int out_type = Types.NULL;
-		if(param == null || param.getParameterType() == null) return out_type;
+		int outType = Types.NULL;
+		if(param == null || param.getParameterType() == null) return outType;
 		switch(param.getParameterType()){
 			case ARRAY:
-				out_type = 2003;
+				outType = 2003;
 				break;
 			case BIGINT:
-				out_type = -5;
+				outType = -5;
 				break;
 
 			case BINARY:
-				out_type = -2;
+				outType = -2;
 				break;
 			case BIT:
-				out_type = -7;
+				outType = -7;
 				break;
 			case BLOB:
-				out_type = 2004;
+				outType = 2004;
 				break;
 
 			case BOOLEAN:
-				out_type = 16;
+				outType = 16;
 				break;
 			case CHAR:
-				out_type = 1;
+				outType = 1;
 				break;
 			case CLOB:
-				out_type = 2005;
+				outType = 2005;
 				break;
 
 			case DATALINK:
-				out_type = 70;
+				outType = 70;
 				break;
 			case DATE:
-				out_type = 91;
+				outType = 91;
 				break;
 			case DECIMAL:
-				out_type = 3;
+				outType = 3;
 				break;
 
 			case DISTINCT:
-				out_type = 2001;
+				outType = 2001;
 				break;
 			case DOUBLE:
-				out_type = 8;
+				outType = 8;
 				break;
 			case FLOAT:
-				out_type = 6;
+				outType = 6;
 				break;
 
 			case INTEGER:
-				out_type = 4;
+				outType = 4;
 				break;
 				
 			case JAVA_OBJECT:
-				out_type = 2004;
+				outType = 2004;
 				break;
 			case LONGVARBINARY:
-				out_type = -4;
+				outType = -4;
 				break;
 
 			case LONGVARCHAR:
-				out_type = -1;
+				outType = -1;
 				break;
 			case NULL:
-				out_type = 0;
+				outType = 0;
 				break;
 			case NUMERIC:
-				out_type = 2;
+				outType = 2;
 				break;
 
 			case OTHER:
-				out_type = 1111;
+				outType = 1111;
 				break;
 			case REAL:
-				out_type = 7;
+				outType = 7;
 				break;
 			case REF:
-				out_type = 2006;
+				outType = 2006;
 				break;
 
 			case SMALLINT:
-				out_type = 5;
+				outType = 5;
 				break;
 			case STRUCT:
-				out_type = 2002;
+				outType = 2002;
 				break;
 			case TIME:
-				out_type = 92;
+				outType = 92;
 				break;
 
 			case TIMESTAMP:
-				out_type = 93;
+				outType = 93;
 				break;
 			case TINYINT:
-				out_type = -6;
+				outType = -6;
 				break;
 			case VARBINARY:
-				out_type = -3;
+				outType = -3;
 				break;
 
 			case VARCHAR:
-				out_type = 12;
-				break;				
+				outType = 12;
+				break;		
+			default:
+				logger.warn(String.format(FactoryException.UNHANDLED_TYPE,param.getParameterType().toString()));
+				break;
 		}
-		return out_type;
+		return outType;
 	}
 }

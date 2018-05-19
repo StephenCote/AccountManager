@@ -49,7 +49,7 @@ import org.cote.accountmanager.util.KeyStoreUtil;
 public class OrganizationCommand {
 	public static final Logger logger = LogManager.getLogger(OrganizationCommand.class);
 	public static boolean setOrganizationCertificate(String organizationPath, String sslPath, String alias, char[] password, String adminPassword){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try{
 			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(organizationPath);
 			if(org == null){
@@ -69,20 +69,20 @@ public class OrganizationCommand {
 			CredentialType pubCred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, org, pubCertificate, true, false, false);
 			if(pubCred == null){
 				logger.error("Failed to create public certificate credential");
-				return out_bool;
+				return outBool;
 			}
 			
 			byte[] privCertificate = sslAction.getCertificate(alias, true);
 			CredentialType cred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, pubCred, privCertificate, true, false, false);
 			if(cred == null){
 				logger.error("Failed to create certificate credential");
-				return out_bool;
+				return outBool;
 			}
 
 			CredentialType cred2 = CredentialService.newCredential(CredentialEnumType.ENCRYPTED_PASSWORD, null, adminUser, cred, (new String(password)).getBytes(), true, true, false);
 			if(cred2 == null){
 				logger.error("Failed to create encrypted credential for certificate password");
-				return out_bool;
+				return outBool;
 			}
 			Factories.getAttributeFactory().populateAttributes(org);
 			AttributeType aliasAttr = Factories.getAttributeFactory().getAttributeByName(org, "certificate.alias");
@@ -90,16 +90,16 @@ public class OrganizationCommand {
 			org.getAttributes().add(Factories.getAttributeFactory().newAttribute(org, "certificate.alias", alias));
 			Factories.getAttributeFactory().updateAttributes(org);
 			logger.info("Configured certificate '" + alias + "' for '" + organizationPath + "'");
-			out_bool = true;
+			outBool = true;
 			
 		}
 		catch(FactoryException | ArgumentException e){
 			logger.error(e.getMessage());
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean testOrganizationCertificate(String organizationPath, String sslPath, String adminPassword){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try{
 			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(organizationPath);
 			if(org == null){
@@ -147,16 +147,16 @@ public class OrganizationCommand {
 				return false;
 			}
 			logger.info("Retrieved private and public keys");
-			out_bool = true;
+			outBool = true;
 			
 		}
 		catch(FactoryException | ArgumentException e){
 			logger.error(e.getMessage());
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean deleteOrganization(String parentPath, String name, String adminPassword, boolean allowNoAuth){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try{
 			String orgPath = parentPath + (parentPath.endsWith("/") ? "" : "/") + name;
 			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
@@ -184,10 +184,10 @@ public class OrganizationCommand {
 			logger.error(e.getMessage());
 		}
 	
-		return out_bool;
+		return outBool;
 	}
 	public static boolean addOrganization(String parentPath, String name, String parentAdminPassword, String newPassword,boolean allowNoAuth){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try{
 		OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(parentPath);
 		if(org != null){
@@ -202,7 +202,7 @@ public class OrganizationCommand {
 					if(adminUser2 != null){
 						logger.info("Verified new administrator user");
 						SessionSecurity.logout(adminUser2);
-						out_bool = true;
+						outBool = true;
 					}
 					else{
 						logger.error("Unable to verify new administrator user");
@@ -228,7 +228,7 @@ public class OrganizationCommand {
 			logger.error(e.getMessage());
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	
 }

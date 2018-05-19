@@ -63,9 +63,9 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	{
 		return deletePartnerPersonParticipant(person, account, null, AffectEnumType.UNKNOWN);
 	}
-	public boolean deletePartnerPersonParticipant(PersonType person, PersonType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deletePartnerPersonParticipant(PersonType person, PersonType account, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		PersonParticipantType dp = getPartnerPersonParticipant(person, account, permission, affect_type);
+		PersonParticipantType dp = getPartnerPersonParticipant(person, account, permission, affectType);
 		if (dp == null) return true;
 
 		removeFromCache(dp);
@@ -83,9 +83,9 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	{
 		return deleteDependentPersonParticipant(person, account, null, AffectEnumType.UNKNOWN);
 	}
-	public boolean deleteDependentPersonParticipant(PersonType person, PersonType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deleteDependentPersonParticipant(PersonType person, PersonType account, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		PersonParticipantType dp = getDependentPersonParticipant(person, account, permission, affect_type);
+		PersonParticipantType dp = getDependentPersonParticipant(person, account, permission, affectType);
 		if (dp == null) return true;
 
 		removeFromCache(dp);
@@ -103,9 +103,9 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	{
 		return deleteDataPersonParticipant(person, account, null, AffectEnumType.UNKNOWN);
 	}
-	public boolean deleteDataPersonParticipant(PersonType person, DataType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deleteDataPersonParticipant(PersonType person, DataType account, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		DataParticipantType dp = getDataPersonParticipant(person, account, permission, affect_type);
+		DataParticipantType dp = getDataPersonParticipant(person, account, permission, affectType);
 		if (dp == null) return true;
 
 		removeFromCache(dp);
@@ -123,9 +123,9 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	{
 		return deleteAccountPersonParticipant(person, account, null, AffectEnumType.UNKNOWN);
 	}
-	public boolean deleteAccountPersonParticipant(PersonType person, AccountType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deleteAccountPersonParticipant(PersonType person, AccountType account, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		AccountParticipantType dp = getAccountPersonParticipant(person, account, permission, affect_type);
+		AccountParticipantType dp = getAccountPersonParticipant(person, account, permission, affectType);
 		if (dp == null) return true;
 
 		removeFromCache(dp);
@@ -143,9 +143,9 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	{
 		return deleteUserPersonParticipant(person, user, null, AffectEnumType.UNKNOWN);
 	}
-	public boolean deleteUserPersonParticipant(PersonType person, UserType user, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deleteUserPersonParticipant(PersonType person, UserType user, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		UserParticipantType dp = getUserPersonParticipant(person, user, permission, affect_type);
+		UserParticipantType dp = getUserPersonParticipant(person, user, permission, affectType);
 		if (dp == null) return true;
 
 		removeFromCache(dp);
@@ -166,11 +166,11 @@ public class PersonParticipationFactory extends ParticipationFactory {
 			PersonType person,
 			PersonType account,
 			BasePermissionType permission,
-			AffectEnumType affect_type
+			AffectEnumType affectType
 
 		) throws ArgumentException
 		{
-			return newPersonParticipation(person, account, permission, affect_type, ParticipantEnumType.PERSON);
+			return newPersonParticipation(person, account, permission, affectType, ParticipantEnumType.PERSON);
 		}
 	public PersonParticipantType newDependentPersonParticipation(PersonType person, PersonType dependent) throws ArgumentException, FactoryException{
 		return newDependentPersonParticipation(person,dependent,AuthorizationService.getViewObjectPermission(person.getOrganizationId()),AffectEnumType.GRANT_PERMISSION);
@@ -179,11 +179,11 @@ public class PersonParticipationFactory extends ParticipationFactory {
 			PersonType person,
 			PersonType account,
 			BasePermissionType permission,
-			AffectEnumType affect_type
+			AffectEnumType affectType
 
 		) throws ArgumentException
 		{
-			return newPersonParticipation(person, account, permission, affect_type, ParticipantEnumType.DEPENDENTPERSON);
+			return newPersonParticipation(person, account, permission, affectType, ParticipantEnumType.DEPENDENTPERSON);
 		}
 	public DataParticipantType newDataPersonParticipation(PersonType person, DataType data) throws ArgumentException, FactoryException{
 		return newDataPersonParticipation(person,data,AuthorizationService.getViewObjectPermission(person.getOrganizationId()),AffectEnumType.GRANT_PERMISSION);
@@ -192,11 +192,11 @@ public class PersonParticipationFactory extends ParticipationFactory {
 			PersonType person,
 			DataType account,
 			BasePermissionType permission,
-			AffectEnumType affect_type
+			AffectEnumType affectType
 
 		) throws ArgumentException
 		{
-			return newPersonParticipation(person, account, permission, affect_type, ParticipantEnumType.DATA);
+			return newPersonParticipation(person, account, permission, affectType, ParticipantEnumType.DATA);
 		}
 	public AccountParticipantType newAccountPersonParticipation(PersonType person, AccountType data) throws ArgumentException, FactoryException{
 		return newAccountPersonParticipation(person,data,AuthorizationService.getViewObjectPermission(person.getOrganizationId()),AffectEnumType.GRANT_PERMISSION);
@@ -206,11 +206,11 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		PersonType person,
 		AccountType account,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 
 	) throws ArgumentException
 	{
-		return newPersonParticipation(person, account, permission, affect_type, ParticipantEnumType.ACCOUNT);
+		return newPersonParticipation(person, account, permission, affectType, ParticipantEnumType.ACCOUNT);
 	}
 	public UserParticipantType newUserPersonParticipation(PersonType person, UserType data) throws ArgumentException, FactoryException{
 		return newUserPersonParticipation(person,data,AuthorizationService.getViewObjectPermission(person.getOrganizationId()),AffectEnumType.GRANT_PERMISSION);
@@ -220,21 +220,21 @@ public class PersonParticipationFactory extends ParticipationFactory {
 			PersonType person,
 			UserType role,
 			BasePermissionType permission,
-			AffectEnumType affect_type
+			AffectEnumType affectType
 
 		) throws ArgumentException
 		{
-			return newPersonParticipation(person, role, permission, affect_type, ParticipantEnumType.USER);
+			return newPersonParticipation(person, role, permission, affectType, ParticipantEnumType.USER);
 		}
 	public <T> T newPersonParticipation(
 		PersonType person, 
 		NameIdType map,
 		BasePermissionType permission,
-		AffectEnumType affect_type,
-		ParticipantEnumType participant_type
+		AffectEnumType affectType,
+		ParticipantEnumType participantType
 	) throws ArgumentException
 	{
-		return (T)newParticipant(person, map, participant_type, permission, affect_type);
+		return (T)newParticipant(person, map, participantType, permission, affectType);
 
 	}
 
@@ -333,7 +333,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		return items;
 	}
 	public List<DataType> getDatasFromParticipation(PersonType participation) throws ArgumentException{
-		List<DataType> items = new ArrayList<DataType>();
+		List<DataType> items = new ArrayList<>();
 		try{
 			DataParticipantType[] parts = getDataParticipations(participation).toArray(new DataParticipantType[0]);
 			if(parts.length > 0){
@@ -395,19 +395,19 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataList(new QueryField[]{ field }, true,startRecord, recordCount, organizationId);
 	}	
-	public List<NameIdType> getPersonParticipations(PersonType[] person, ParticipantEnumType participant_type) throws FactoryException, ArgumentException
+	public List<NameIdType> getPersonParticipations(PersonType[] person, ParticipantEnumType participantType) throws FactoryException, ArgumentException
 	{
 		/*
 		if (person.length == 0) return new ArrayList<NameIdType>();
 		OrganizationType org = person[0].getOrganizationId();
 
-		List<QueryField> matches = new ArrayList<QueryField>();
-		matches.add(QueryFields.getFieldParticipantType(participant_type));
+		List<QueryField> matches = new ArrayList<>();
+		matches.add(QueryFields.getFieldParticipantType(participantType));
 
 		matches.add(QueryFields.getFieldParticipationIds(person));
 		return getByField(matches.toArray(new QueryField[0]), org.getId());
 		*/
-		return getParticipations(person,participant_type);
+		return getParticipations(person,participantType);
 	}
 
 	
@@ -422,10 +422,10 @@ public class PersonParticipationFactory extends ParticipationFactory {
 			PersonType person,
 			PersonType account,
 			BasePermissionType permission,
-			AffectEnumType affect_type
+			AffectEnumType affectType
 		) throws FactoryException, ArgumentException
 		{
-			return convertList(getParticipants(person, account, ParticipantEnumType.PERSON, permission, affect_type));
+			return convertList(getParticipants(person, account, ParticipantEnumType.PERSON, permission, affectType));
 		}
 		
 		public PersonParticipantType getPartnerPersonParticipant(PersonType person, PersonType account) throws ArgumentException, FactoryException
@@ -436,10 +436,10 @@ public class PersonParticipationFactory extends ParticipationFactory {
 			PersonType person,
 			PersonType account,
 			BasePermissionType permission,
-			AffectEnumType affect_type
+			AffectEnumType affectType
 		) throws ArgumentException, FactoryException
 		{
-			return getParticipant(person, account, ParticipantEnumType.PERSON, permission, affect_type);
+			return getParticipant(person, account, ParticipantEnumType.PERSON, permission, affectType);
 
 		}
 	
@@ -454,10 +454,10 @@ public class PersonParticipationFactory extends ParticipationFactory {
 				PersonType person,
 				PersonType account,
 				BasePermissionType permission,
-				AffectEnumType affect_type
+				AffectEnumType affectType
 			) throws FactoryException, ArgumentException
 			{
-				return convertList(getParticipants(person, account, ParticipantEnumType.DEPENDENTPERSON, permission, affect_type));
+				return convertList(getParticipants(person, account, ParticipantEnumType.DEPENDENTPERSON, permission, affectType));
 			}
 			
 			public PersonParticipantType getDependentPersonParticipant(PersonType person, PersonType account) throws ArgumentException, FactoryException
@@ -468,10 +468,10 @@ public class PersonParticipationFactory extends ParticipationFactory {
 				PersonType person,
 				PersonType account,
 				BasePermissionType permission,
-				AffectEnumType affect_type
+				AffectEnumType affectType
 			) throws ArgumentException, FactoryException
 			{
-				return getParticipant(person, account, ParticipantEnumType.DEPENDENTPERSON, permission, affect_type);
+				return getParticipant(person, account, ParticipantEnumType.DEPENDENTPERSON, permission, affectType);
 
 			}
 			
@@ -486,10 +486,10 @@ public class PersonParticipationFactory extends ParticipationFactory {
 					PersonType person,
 					DataType account,
 					BasePermissionType permission,
-					AffectEnumType affect_type
+					AffectEnumType affectType
 				) throws FactoryException, ArgumentException
 				{
-					return convertList(getParticipants(person, account, ParticipantEnumType.DATA, permission, affect_type));
+					return convertList(getParticipants(person, account, ParticipantEnumType.DATA, permission, affectType));
 				}
 				
 				public DataParticipantType getDataPersonParticipant(PersonType person, DataType account) throws ArgumentException, FactoryException
@@ -500,10 +500,10 @@ public class PersonParticipationFactory extends ParticipationFactory {
 					PersonType person,
 					DataType account,
 					BasePermissionType permission,
-					AffectEnumType affect_type
+					AffectEnumType affectType
 				) throws ArgumentException, FactoryException
 				{
-					return getParticipant(person, account, ParticipantEnumType.DATA, permission, affect_type);
+					return getParticipant(person, account, ParticipantEnumType.DATA, permission, affectType);
 
 				}
 
@@ -518,10 +518,10 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		PersonType person,
 		AccountType account,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	) throws FactoryException, ArgumentException
 	{
-		return convertList(getParticipants(person, account, ParticipantEnumType.ACCOUNT, permission, affect_type));
+		return convertList(getParticipants(person, account, ParticipantEnumType.ACCOUNT, permission, affectType));
 	}
 	
 	public AccountParticipantType getAccountPersonParticipant(PersonType person, AccountType account) throws ArgumentException, FactoryException
@@ -532,10 +532,10 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		PersonType person,
 		AccountType account,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	) throws ArgumentException, FactoryException
 	{
-		return getParticipant(person, account, ParticipantEnumType.ACCOUNT, permission, affect_type);
+		return getParticipant(person, account, ParticipantEnumType.ACCOUNT, permission, affectType);
 
 	}
 	
@@ -550,10 +550,10 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		PersonType person,
 		UserType user,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	) throws FactoryException, ArgumentException
 	{
-		return convertList(getParticipants(person, user, ParticipantEnumType.USER, permission,affect_type));
+		return convertList(getParticipants(person, user, ParticipantEnumType.USER, permission,affectType));
 	}
 	public UserParticipantType getUserPersonParticipant(PersonType person, UserType user) throws ArgumentException, FactoryException
 	{
@@ -563,9 +563,9 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		PersonType person,
 		UserType user,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	) throws ArgumentException, FactoryException
 	{
-		return getParticipant(person, user, ParticipantEnumType.USER, permission, affect_type);
+		return getParticipant(person, user, ParticipantEnumType.USER, permission, affectType);
 	}
 }

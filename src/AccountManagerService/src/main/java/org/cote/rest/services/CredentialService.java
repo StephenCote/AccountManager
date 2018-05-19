@@ -84,8 +84,8 @@ public class CredentialService {
 		AuditEnumType type = AuditEnumType.valueOf(objectType);
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
 		UserType owner = null;
-		boolean out_bool = false;
-		if(user == null) return out_bool;
+		boolean outBool = false;
+		if(user == null) return outBool;
 		CredentialType newCred = null;
 		try{
 			NameIdType targetObject = null;
@@ -103,30 +103,30 @@ public class CredentialService {
 				//UserType updateUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(authReq.getSubject(), user.getOrganizationId());
 				if(updateUser == null){
 					AuditService.denyResult(audit, "Target user " + authReq.getSubject() + " does not exist");
-					return out_bool;
+					return outBool;
 				}
 				AuditService.targetAudit(audit, AuditEnumType.USER, updateUser.getName() + " (#" + updateUser.getId() + ")");
 				/// If not account admin, then validate the current password
 				if(accountAdmin == false){
 					if(authReq.getCheckCredential() == null || authReq.getCheckCredential().length == 0){
 						AuditService.denyResult(audit, "The current credential is required to create a new one.");
-						return out_bool;
+						return outBool;
 					}
 					if(org.cote.accountmanager.data.services.AuthorizationService.isMapOwner(user, updateUser) == false){
 						logger.warn("User ownership mapping error: " + user.getUrn() + " (" + user.getId() + ") :: " + updateUser.getUrn() + " (" + updateUser.getId() + ")");
 						AuditService.denyResult(audit, "Non account administrators are not premitted to change user passowrds that are not their own.");
-						return out_bool;
+						return outBool;
 					}
 					
 					CredentialType currentCred = org.cote.accountmanager.data.security.CredentialService.getPrimaryCredential(updateUser);
 					if(currentCred == null){
 						logger.warn("Current credential is null for " + updateUser.getUrn());
-						return out_bool;
+						return outBool;
 					}
 
 					if(org.cote.accountmanager.data.security.CredentialService.validatePasswordCredential(updateUser, currentCred, new String(authReq.getCheckCredential(),"UTF-8").trim())==false){
 						AuditService.denyResult(audit, "Failed to validate current credential");
-						return out_bool;
+						return outBool;
 					}
 					
 				}
@@ -143,7 +143,7 @@ public class CredentialService {
 				BaseGroupType updateGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getByUrn(authReq.getSubject());
 				if(updateGroup == null){
 					AuditService.denyResult(audit, "Target group " + authReq.getSubject() + " does not exist");
-					return out_bool;
+					return outBool;
 				}
 				AuditService.targetAudit(audit, AuditEnumType.GROUP, updateGroup.getName() + " (#" + updateGroup.getId() + ")");
 				/// If not account admin, then validate the current password
@@ -152,11 +152,11 @@ public class CredentialService {
 					CredentialType currentCred = org.cote.accountmanager.data.security.CredentialService.getPrimaryCredential(updateGroup);
 					if(authReq.getCheckCredential() == null || authReq.getCheckCredential().length == 0){
 						AuditService.denyResult(audit, "The current credential is required to create a new one.");
-						return out_bool;
+						return outBool;
 					}
 					if(org.cote.accountmanager.data.security.CredentialService.validatePasswordCredential(updateGroup, currentCred, new String(authReq.getCheckCredential(),"UTF-8").trim())==false){
 						AuditService.denyResult(audit, "Failed to validate current credential");
-						return out_bool;
+						return outBool;
 					}
 				}
 				targetObject = updateGroup;
@@ -164,7 +164,7 @@ public class CredentialService {
 			}
 			else{
 				AuditService.denyResult(audit, "Subject type " + authReq.getSubjectType().toString() + " is unsupported");;
-				return out_bool;
+				return outBool;
 			}
 			/// Create a new primary credential for target user
 			byte[] credByte = (new String(authReq.getCredential())).trim().getBytes("UTF-8");
@@ -178,12 +178,12 @@ public class CredentialService {
 		} 
 		if(newCred != null){
 			AuditService.permitResult(audit, "Created a new primary credential");
-			out_bool = true;
+			outBool = true;
 		}
 		else{
 			AuditService.denyResult(audit, "Failed to create new primary credential");
 		}
-		return out_bool;
+		return outBool;
 
 	}
 

@@ -87,7 +87,7 @@ public class ScheduleFactory extends NameIdGroupFactory {
 	
 	public ScheduleType newSchedule(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		ScheduleType obj = new ScheduleType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -148,20 +148,20 @@ public class ScheduleFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		ScheduleType new_obj = new ScheduleType();
-		new_obj.setNameType(NameEnumType.SCHEDULE);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setStartTime(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("starttime")));
-		new_obj.setEndTime(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("endtime")));
-		return new_obj;
+		ScheduleType newObj = new ScheduleType();
+		newObj.setNameType(NameEnumType.SCHEDULE);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setStartTime(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("starttime")));
+		newObj.setEndTime(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("endtime")));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		ScheduleType data = (ScheduleType)object;
 		
-		boolean out_bool = false;
+		boolean outBool = false;
 		
 		removeFromCache(data);
 		if(update(data, null)){
@@ -169,7 +169,7 @@ public class ScheduleFactory extends NameIdGroupFactory {
 				
 				/// Budgets
 				///
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).getBudgetParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -201,21 +201,21 @@ public class ScheduleFactory extends NameIdGroupFactory {
 				((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ScheduleType use_map = (ScheduleType)map;
-		fields.add(QueryFields.getFieldStartTime(use_map.getStartTime()));
-		fields.add(QueryFields.getFieldEndTime(use_map.getEndTime()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		ScheduleType useMap = (ScheduleType)map;
+		fields.add(QueryFields.getFieldStartTime(useMap.getStartTime()));
+		fields.add(QueryFields.getFieldEndTime(useMap.getEndTime()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteSchedulesByUser(UserType user) throws FactoryException
 	{

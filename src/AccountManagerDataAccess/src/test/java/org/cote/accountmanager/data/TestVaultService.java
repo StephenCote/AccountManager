@@ -37,6 +37,8 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -48,8 +50,11 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.VaultType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
+import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.JSONUtil;
+import org.cote.accountmanager.util.ZipUtil;
 import org.junit.Test;
 public class TestVaultService extends BaseDataAccessTest{
 	public static final Logger logger = LogManager.getLogger(TestVaultService.class);
@@ -245,7 +250,8 @@ public class TestVaultService extends BaseDataAccessTest{
 	}
 */
 	/*
-	 * TODO: Refactor. 2017/09/16 - once the authZ checks were added in, this test is failing because the test user is trying to read a vault it's not authorized to accesss
+	 * Refactor. 2017/09/16 - once the authZ checks were added in, this test is failing because the test user is trying to read a vault it's not authorized to accesss
+	 * Refactored 2018/05/18 to add authZ to test user 2 to read test user 1 vault, and to tweak the behavior on newVaultData method to work with BaseService.add (for authZ check)
 	 */
 	@Test
 	public void TestVault2Data(){
@@ -256,14 +262,24 @@ public class TestVaultService extends BaseDataAccessTest{
 		/// Note about names and vaults - if you run a unit test with a static name and then clean out that temporary directory
 		/// then it will break parity with the database and the vault and everything it is meant to protect will be trashed
 		/// 
-		String testVaultName = "Vault QA Data Test 1";
-		String credPath = "c:\\projects\\vault\\credentials\\development.test1.credential.json";
-
-		VaultBean vault = getCreateVault(vaultUser, "c:\\projects\\vault",testVaultName, getLooseCredential("password"),credPath);
-
+		String testVaultName = "Vault 6 QA Data Test 1";
+		String credPath = "c:\\projects\\vault\\credentials\\development.testqa3.credential.json";
+		CredentialType cred = getProtectedCredential(vaultUser2, credPath, "password");
+		VaultBean vault = getCreateVault(vaultUser, "c:\\projects\\vault",testVaultName, cred,credPath);
+		
+		try {
+			DirectoryGroupType dir = service.getVaultGroup(vault);
+			//logger.info(JSONUtil.exportObject(dir));
+			assertTrue("Failed to authorize Vault 2 user",AuthorizationService.authorize(vaultUser, vaultUser2, dir, AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP, testUser.getOrganizationId()), true));
+			EffectiveAuthorizationService.rebuildPendingRoleCache();
+			assertTrue("Vault User 2 should be able to view Vault User 1's vault group",AuthorizationService.canView(vaultUser2, dir));
+		} catch (FactoryException | DataAccessException | ArgumentException e1) {
+			logger.error(e1);
+		}
 		String dataName = "Vault Data - " + UUID.randomUUID().toString();
 		StringBuilder buff = new StringBuilder();
 		for(int i = 0; i < 250; i++) buff.append("This is the test data.  This is some of the data.  This is more of the data.  ");
+		
 		DirectoryGroupType dataDir = null;
 		try {
 			dataDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vaultUser2, "Data", vaultUser2.getHomeDirectory(), vaultUser2.getOrganizationId());
@@ -279,8 +295,13 @@ public class TestVaultService extends BaseDataAccessTest{
 			//DataType chkData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, dataDir);
 			DataType chkData = BaseService.readByName(AuditEnumType.DATA, dataDir, dataName, vaultUser2);
 			assertNotNull("Data is null",chkData);
-			byte[] data = service.extractVaultData(vault, chkData);
-			assertTrue("Expected data", data != null && data.length == buffBytes.length);
+			//VaultBean vaultBean = service.getVaultByUrn(vaultUser2, chkData.getVaultId());
+			
+			/// Base service extracts bytes from vault in the postFetch, so it's not necessary to manually extract
+			//byte[] data = service.extractVaultData(vault, chkData);
+			//logger.info("Data: " + JSONUtil.exportObject(chkData));
+			byte[] data = DataUtil.getValue(chkData);
+			assertTrue("Expected data with " + buffBytes.length + " and received " + (data == null ? "null data" : data.length + " bytes"), data != null && data.length == buffBytes.length);
 			logger.info("Retrieved " + data.length);
 			
 			buff = new StringBuilder();

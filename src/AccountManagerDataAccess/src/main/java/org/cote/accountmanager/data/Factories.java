@@ -255,7 +255,7 @@ public class Factories {
 		}
 		Class<?> cls = nameTypeSanitizerClasses.get(ntype);
 		String name = cls.getName();
-		if(nameTypeSanitizerInstances.containsKey(name) == true) return nameTypeSanitizerInstances.get(name);
+		if(nameTypeSanitizerInstances.containsKey(name)) return nameTypeSanitizerInstances.get(name);
 
 
 		try {
@@ -425,7 +425,7 @@ public class Factories {
 	}
 
 	private static boolean populate(OrganizationFactory orgFactory){
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(orgFactory.isInitialized()){
 			try{
 				rootOrganization = orgFactory.addOrganization("Global", OrganizationEnumType.ROOT, null);
@@ -436,7 +436,7 @@ public class Factories {
 				orgFactory.denormalize(systemOrganization);
 				orgFactory.denormalize(developmentOrganization);
 				orgFactory.denormalize(publicOrganization);
-				out_bool = true;
+				outBool = true;
 				
 			}
 			catch(FactoryException | ArgumentException e) {
@@ -448,7 +448,7 @@ public class Factories {
 				developmentOrganization = null;
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean initializeFactory(FactoryBase factory){
 		boolean init = false;
@@ -472,13 +472,13 @@ public class Factories {
 	}
 	
 	public static boolean isSetup(long organizationId){
-		boolean out_bool = false;
+		boolean outBool = false;
 
 		if(organizationId > 0L){
 			try{
 				UserType adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
 				if(adminUser != null){
-					out_bool = true;
+					outBool = true;
 				}
 				else{
 					logger.info("Organization not configured.  Could not find 'Admin' user in org " + organizationId);
@@ -492,7 +492,7 @@ public class Factories {
 		else{
 			logger.error("Organization is null");
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static String reportCaches(){
 		StringBuilder buff = new StringBuilder();
@@ -581,7 +581,7 @@ public class Factories {
 		prepare();
 		long startWarmUp = System.currentTimeMillis();
 		
-		if(factoryInstances.containsKey(FactoryEnumType.ORGANIZATION) == false){
+		if(!factoryInstances.containsKey(FactoryEnumType.ORGANIZATION)){
 			populate(getFactory(FactoryEnumType.ORGANIZATION));
 		}
 		
@@ -594,14 +594,14 @@ public class Factories {
 		logger.info("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
 	}
 	public static boolean cleanupOrphans(){
-		boolean out_bool = false;
+		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		logger.debug("Cleanup Orphans");
 		Statement stat = null;
 		try {
 			stat = connection.createStatement();
 			stat.execute("SELECT * FROM cleanup_orphans();");
-			out_bool = true;
+			outBool = true;
 		} catch (SQLException e) {
 
 			logger.error(e);
@@ -616,7 +616,7 @@ public class Factories {
 			}
 		}
 		clearCaches();
-		return out_bool;
+		return outBool;
 	}
 	
 }

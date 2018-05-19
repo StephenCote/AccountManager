@@ -50,26 +50,26 @@ public interface IParticipationFactory extends INameIdFactory {
 	public List<NameIdType> getParticipants(
 		NameIdType participation,
 		NameIdType participant,
-		ParticipantEnumType participant_type,
+		ParticipantEnumType participantType,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	) throws FactoryException, ArgumentException;
-	public List<NameIdType> getParticipations(NameIdType[] maps, ParticipantEnumType participant_type)  throws FactoryException, ArgumentException;
+	public List<NameIdType> getParticipations(NameIdType[] maps, ParticipantEnumType participantType)  throws FactoryException, ArgumentException;
 	public <T> T getParticipant(NameIdType participation, NameIdType participant, ParticipantEnumType type) throws FactoryException, ArgumentException;
 	public <T> T getParticipant(
 		NameIdType participation,
 		NameIdType participant,
-		ParticipantEnumType participant_type,
+		ParticipantEnumType participantType,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	)  throws FactoryException, ArgumentException;
 
 	public BaseParticipantType newParticipant(
 		NameIdType participation,
 		NameIdType participant,
-		ParticipantEnumType participant_type,
+		ParticipantEnumType participantType,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	) throws ArgumentException;
 	
 	

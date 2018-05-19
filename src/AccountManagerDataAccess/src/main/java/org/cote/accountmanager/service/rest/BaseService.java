@@ -372,7 +372,11 @@ public class BaseService {
 			outBool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
 		}
 		else{
-			outBool = AuthorizationService.canView(user, obj);
+			if(type.equals(AuditEnumType.DATA)){
+				outBool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
+			}
+			if(outBool == false) outBool = AuthorizationService.canView(user, obj);
+			
 		}
 
 		return outBool;

@@ -120,7 +120,6 @@ public class TypeSanitizer implements ITypeSanitizer{
 				try {
 					byte[] data = new byte[0];
 					if( d.getVaulted()){
-						
 						try {
 							VaultBean vaultBean = vaultService.getVaultByUrn(user, d.getVaultId());
 							data = vaultService.extractVaultData(vaultBean, d);
@@ -358,6 +357,7 @@ public class TypeSanitizer implements ITypeSanitizer{
 				MapUtil.shallowCloneNameIdDirectoryType(rbean, new_rec);
 				new_rec.setDescription(rbean.getDescription());
 				new_rec.setDimensions(rbean.getDimensions());
+				
 				if(rbean.getExpiryDate() != null) new_rec.setExpiryDate(rbean.getExpiryDate());
 				if(rbean.getMimeType() == null){
 					logger.warn("MimeType not specified.  Attempting to resolve using the name '" + rbean.getName() + "'");

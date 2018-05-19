@@ -108,7 +108,7 @@ public class FormElementFactory extends NameIdGroupFactory {
 	}
 	public FormElementType newFormElement(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		//if(form == null || form.getId() <= 0) throw new ArgumentException("Invalid form");
 		FormElementType obj = new FormElementType();
 		obj.setOrganizationId(user.getOrganizationId());
@@ -147,7 +147,7 @@ public class FormElementFactory extends NameIdGroupFactory {
 		int add_count =0;
 		int rem_count = 0;
 		/// Create a map of existing values
-		Set<Long> valSet = new HashSet<Long>();
+		Set<Long> valSet = new HashSet<>();
 		Map<Long,FormElementValueType> valMap = new HashMap<Long,FormElementValueType>();
 		if(formElement.getId() > 0){
 			List<FormElementValueType> values = ((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).getByFormElement(form, formElement);
@@ -265,27 +265,27 @@ public class FormElementFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		FormElementType new_obj = new FormElementType();
-		new_obj.setNameType(NameEnumType.FORMELEMENT);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setElementLabel(rset.getString("elementlabel"));
-		new_obj.setElementName(rset.getString("elementname"));
+		FormElementType newObj = new FormElementType();
+		newObj.setNameType(NameEnumType.FORMELEMENT);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setElementLabel(rset.getString("elementlabel"));
+		newObj.setElementName(rset.getString("elementname"));
 		long view_id = rset.getLong("elementtemplateid");
-		if(view_id > 0) new_obj.setElementTemplate((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(view_id, new_obj.getOrganizationId()));
+		if(view_id > 0) newObj.setElementTemplate((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(view_id, newObj.getOrganizationId()));
 
-		//new_obj.setForm((FormType)((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).getById(rset.getInt("formid"),new_obj.getOrganizationId()));
+		//newObj.setForm((FormType)((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).getById(rset.getInt("formid"),newObj.getOrganizationId()));
 		long rule_id = rset.getLong("validationruleid");
-		if(rule_id > 0) new_obj.setValidationRule((ValidationRuleType)((ValidationRuleFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULE)).getById(rule_id,new_obj.getOrganizationId()));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setElementType(ElementEnumType.valueOf(rset.getString("elementtype")));
-		return new_obj;
+		if(rule_id > 0) newObj.setValidationRule((ValidationRuleType)((ValidationRuleFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULE)).getById(rule_id,newObj.getOrganizationId()));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setElementType(ElementEnumType.valueOf(rset.getString("elementtype")));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		FormElementType data = (FormElementType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 
 		if(update(data, null)){
@@ -296,7 +296,7 @@ public class FormElementFactory extends NameIdGroupFactory {
 				updateDefaultFormElementValues(data);
 				
 				/// Values
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((FormElementParticipationFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTPARTICIPATION)).getFormElementValueParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -312,26 +312,26 @@ public class FormElementFactory extends NameIdGroupFactory {
 				((FormElementParticipationFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 			
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException | DataAccessException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	/* 
 	public <T> T getByNameInGroup(String name, FormType form) throws FactoryException{
 
-		String key_name = name + "-" + form.getGroupId();
-		T out_data = readCache(key_name);
+		String keyName = name + "-" + form.getGroupId();
+		T out_data = readCache(keyName);
 		if (out_data != null) return out_data;
 
 		List<NameIdType> obj_list = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldGroup(form.getGroupId()),QueryFields.getFieldFormId(form.getId()) }, form.getOrganizationId());
 
 		if (obj_list.size() > 0)
 		{
-			addToCache(obj_list.get(0),key_name);
+			addToCache(obj_list.get(0),keyName);
 			out_data = (T)obj_list.get(0);
 		}
 		else{
@@ -343,15 +343,15 @@ public class FormElementFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		FormElementType use_map = (FormElementType)map;
-		fields.add(QueryFields.getFieldValidationRuleId((use_map.getValidationRule() != null ? use_map.getValidationRule().getId() : 0)));
-		fields.add(QueryFields.getFieldElementName(use_map.getElementName()));
-		fields.add(QueryFields.getFieldElementLabel(use_map.getElementLabel()));
-		fields.add(QueryFields.getFieldElementType(use_map.getElementType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldElementTemplateId((use_map.getElementTemplate() != null ? use_map.getElementTemplate().getId() : 0)));
-		//fields.add(QueryFields.getFieldFormId(use_map.getForm().getId()));
+		FormElementType useMap = (FormElementType)map;
+		fields.add(QueryFields.getFieldValidationRuleId((useMap.getValidationRule() != null ? useMap.getValidationRule().getId() : 0)));
+		fields.add(QueryFields.getFieldElementName(useMap.getElementName()));
+		fields.add(QueryFields.getFieldElementLabel(useMap.getElementLabel()));
+		fields.add(QueryFields.getFieldElementType(useMap.getElementType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldElementTemplateId((useMap.getElementTemplate() != null ? useMap.getElementTemplate().getId() : 0)));
+		//fields.add(QueryFields.getFieldFormId(useMap.getForm().getId()));
 	}
 	public int deleteFormElementsByUser(UserType user) throws FactoryException
 	{

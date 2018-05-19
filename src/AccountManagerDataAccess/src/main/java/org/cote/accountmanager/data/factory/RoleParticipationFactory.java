@@ -107,7 +107,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	}
 	public List<RoleParticipantType> getRoleRoleParticipants(BaseRoleType child_role)  throws FactoryException, ArgumentException
 	{
-		List<QueryField> matches = new ArrayList<QueryField>();
+		List<QueryField> matches = new ArrayList<>();
 		matches.add(QueryFields.getFieldParticipantType(ParticipantEnumType.ROLE));
 		matches.add(QueryFields.getFieldParticipantId(child_role));
 		List<NameIdType> dtlist = getByField(matches.toArray(new QueryField[0]), child_role.getOrganizationId());
@@ -115,7 +115,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	}
 	public List<RoleParticipantType> getRoleRoleParticipations(BaseRoleType role)  throws FactoryException, ArgumentException
 	{
-		List<QueryField> matches = new ArrayList<QueryField>();
+		List<QueryField> matches = new ArrayList<>();
 		matches.add(QueryFields.getFieldParticipantType(ParticipantEnumType.ROLE));
 		matches.add(QueryFields.getFieldParticipationId(role));
 		List<NameIdType> list = getByField(matches.toArray(new QueryField[0]), role.getOrganizationId());
@@ -141,9 +141,9 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		return deleteUserRoleParticipant(role, account, null,AffectEnumType.UNKNOWN);
 	}
-	public boolean deleteUserRoleParticipant(UserRoleType role, UserType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deleteUserRoleParticipant(UserRoleType role, UserType account, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		UserParticipantType dp = getUserRoleParticipant(role, account, permission, affect_type);
+		UserParticipantType dp = getUserRoleParticipant(role, account, permission, affectType);
 		if (dp == null) return true;
 
 		removeParticipantFromCache(dp);
@@ -167,9 +167,9 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		return newUserRoleParticipation(role, account, null, AffectEnumType.UNKNOWN);
 	}
-	public UserParticipantType newUserRoleParticipation(BaseRoleType role, UserType account,BasePermissionType permission,AffectEnumType affect_type) throws ArgumentException
+	public UserParticipantType newUserRoleParticipation(BaseRoleType role, UserType account,BasePermissionType permission,AffectEnumType affectType) throws ArgumentException
 	{
-		return (UserParticipantType)newParticipant(role, account, ParticipantEnumType.USER, permission, affect_type);
+		return (UserParticipantType)newParticipant(role, account, ParticipantEnumType.USER, permission, affectType);
 	}
 
 
@@ -207,10 +207,10 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		BaseRoleType role,
 		UserType account,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> list = getParticipants(role, account, ParticipantEnumType.USER, permission, affect_type);
+		List<NameIdType> list = getParticipants(role, account, ParticipantEnumType.USER, permission, affectType);
 		return convertList(list);
 
 	}
@@ -222,18 +222,18 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		BaseRoleType role,
 		UserType account,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	)  throws ArgumentException, FactoryException
 	{
-		return getParticipant(role, account, ParticipantEnumType.USER, permission, affect_type);
+		return getParticipant(role, account, ParticipantEnumType.USER, permission, affectType);
 	}
 	public boolean getIsUserInRole(BaseRoleType role, UserType account)  throws ArgumentException, FactoryException
 	{
 		return (getUserRoleParticipant(role, account) != null);
 	}
-	public boolean getIsUserInRole(BaseRoleType role, UserType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean getIsUserInRole(BaseRoleType role, UserType account, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		return (getUserRoleParticipant(role, account,permission, affect_type) != null);
+		return (getUserRoleParticipant(role, account,permission, affectType) != null);
 	}
 	
 	// Person
@@ -243,9 +243,9 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		return deletePersonRoleParticipant(role, person, null,AffectEnumType.UNKNOWN);
 	}
-	public boolean deletePersonRoleParticipant(PersonRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deletePersonRoleParticipant(PersonRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		PersonParticipantType dp = getPersonRoleParticipant(role, person, permission, affect_type);
+		PersonParticipantType dp = getPersonRoleParticipant(role, person, permission, affectType);
 		if (dp == null) return true;
 
 		removeParticipantFromCache(dp);
@@ -269,9 +269,9 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		return newPersonRoleParticipation(role, person, null, AffectEnumType.UNKNOWN);
 	}
-	public PersonParticipantType newPersonRoleParticipation(BaseRoleType role, PersonType person,BasePermissionType permission,AffectEnumType affect_type) throws ArgumentException
+	public PersonParticipantType newPersonRoleParticipation(BaseRoleType role, PersonType person,BasePermissionType permission,AffectEnumType affectType) throws ArgumentException
 	{
-		return (PersonParticipantType)newParticipant(role, person, ParticipantEnumType.PERSON, permission, affect_type);
+		return (PersonParticipantType)newParticipant(role, person, ParticipantEnumType.PERSON, permission, affectType);
 	}
 
 
@@ -308,10 +308,10 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		BaseRoleType role,
 		PersonType person,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> list = getParticipants(role, person, ParticipantEnumType.PERSON, permission, affect_type);
+		List<NameIdType> list = getParticipants(role, person, ParticipantEnumType.PERSON, permission, affectType);
 		return convertList(list);
 
 	}
@@ -323,18 +323,18 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		BaseRoleType role,
 		PersonType person,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	)  throws ArgumentException, FactoryException
 	{
-		return getParticipant(role, person, ParticipantEnumType.PERSON, permission, affect_type);
+		return getParticipant(role, person, ParticipantEnumType.PERSON, permission, affectType);
 	}
 	public boolean getIsPersonInRole(BaseRoleType role, PersonType person)  throws ArgumentException, FactoryException
 	{
 		return (getPersonRoleParticipant(role, person) != null);
 	}
-	public boolean getIsPersonInRole(BaseRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean getIsPersonInRole(BaseRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		return (getPersonRoleParticipant(role, person,permission, affect_type) != null);
+		return (getPersonRoleParticipant(role, person,permission, affectType) != null);
 	}
 	
 	// Account
@@ -344,9 +344,9 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		return deleteAccountRoleParticipant(role, account, null,AffectEnumType.UNKNOWN);
 	}
-	public boolean deleteAccountRoleParticipant(AccountRoleType role, AccountType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deleteAccountRoleParticipant(AccountRoleType role, AccountType account, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		AccountParticipantType dp = getAccountRoleParticipant(role, account, permission, affect_type);
+		AccountParticipantType dp = getAccountRoleParticipant(role, account, permission, affectType);
 		if (dp == null) return true;
 
 		removeParticipantFromCache(dp);
@@ -370,9 +370,9 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		return newAccountRoleParticipation(role, account, null, AffectEnumType.UNKNOWN);
 	}
-	public AccountParticipantType newAccountRoleParticipation(BaseRoleType role, AccountType account,BasePermissionType permission,AffectEnumType affect_type) throws ArgumentException
+	public AccountParticipantType newAccountRoleParticipation(BaseRoleType role, AccountType account,BasePermissionType permission,AffectEnumType affectType) throws ArgumentException
 	{
-		return (AccountParticipantType)newParticipant(role, account, ParticipantEnumType.ACCOUNT, permission, affect_type);
+		return (AccountParticipantType)newParticipant(role, account, ParticipantEnumType.ACCOUNT, permission, affectType);
 	}
 
 
@@ -409,10 +409,10 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		BaseRoleType role,
 		AccountType account,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> list = getParticipants(role, account, ParticipantEnumType.ACCOUNT, permission, affect_type);
+		List<NameIdType> list = getParticipants(role, account, ParticipantEnumType.ACCOUNT, permission, affectType);
 		return convertList(list);
 
 	}
@@ -424,18 +424,18 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		BaseRoleType role,
 		AccountType account,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	)  throws ArgumentException, FactoryException
 	{
-		return getParticipant(role, account, ParticipantEnumType.ACCOUNT, permission, affect_type);
+		return getParticipant(role, account, ParticipantEnumType.ACCOUNT, permission, affectType);
 	}
 	public boolean getIsAccountInRole(BaseRoleType role, AccountType account)  throws ArgumentException, FactoryException
 	{
 		return (getAccountRoleParticipant(role, account) != null);
 	}
-	public boolean getIsAccountInRole(BaseRoleType role, AccountType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean getIsAccountInRole(BaseRoleType role, AccountType account, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		return (getAccountRoleParticipant(role, account,permission, affect_type) != null);
+		return (getAccountRoleParticipant(role, account,permission, affectType) != null);
 	}
 	
 	/// Group
@@ -443,9 +443,9 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		return deleteGroupRoleParticipant(role, group, null,AffectEnumType.UNKNOWN);
 	}
-	public boolean deleteGroupRoleParticipant(BaseRoleType role, BaseGroupType group, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deleteGroupRoleParticipant(BaseRoleType role, BaseGroupType group, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		GroupParticipantType dp = getGroupRoleParticipant(role, group, permission, affect_type);
+		GroupParticipantType dp = getGroupRoleParticipant(role, group, permission, affectType);
 		if (dp == null) return true;
 
 		removeParticipantFromCache(dp);
@@ -469,9 +469,9 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	{
 		return newGroupRoleParticipation(role, group, null, AffectEnumType.UNKNOWN);
 	}
-	public GroupParticipantType newGroupRoleParticipation(BaseRoleType role, BaseGroupType group,BasePermissionType permission,AffectEnumType affect_type) throws ArgumentException
+	public GroupParticipantType newGroupRoleParticipation(BaseRoleType role, BaseGroupType group,BasePermissionType permission,AffectEnumType affectType) throws ArgumentException
 	{
-		return (GroupParticipantType)newParticipant(role, group, ParticipantEnumType.GROUP, permission, affect_type);
+		return (GroupParticipantType)newParticipant(role, group, ParticipantEnumType.GROUP, permission, affectType);
 	}
 
 
@@ -502,10 +502,10 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		BaseRoleType role,
 		BaseGroupType account,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	)  throws FactoryException, ArgumentException
 	{
-		List<NameIdType> list = getParticipants(role, account, ParticipantEnumType.GROUP, permission, affect_type);
+		List<NameIdType> list = getParticipants(role, account, ParticipantEnumType.GROUP, permission, affectType);
 		return convertList(list);
 
 	}
@@ -517,18 +517,18 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		BaseRoleType role,
 		BaseGroupType account,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	)  throws ArgumentException, FactoryException
 	{
-		return getParticipant(role, account, ParticipantEnumType.GROUP, permission, affect_type);
+		return getParticipant(role, account, ParticipantEnumType.GROUP, permission, affectType);
 	}
 	public boolean getIsGroupInRole(BaseRoleType role, BaseGroupType account)  throws ArgumentException, FactoryException
 	{
 		return (getGroupRoleParticipant(role, account) != null);
 	}
-	public boolean getIsGroupInRole(BaseRoleType role, BaseGroupType account, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean getIsGroupInRole(BaseRoleType role, BaseGroupType account, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		return (getGroupRoleParticipant(role, account,permission, affect_type) != null);
+		return (getGroupRoleParticipant(role, account,permission, affectType) != null);
 	}
 
 }

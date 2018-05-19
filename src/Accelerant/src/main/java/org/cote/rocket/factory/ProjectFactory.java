@@ -106,7 +106,7 @@ public class ProjectFactory extends NameIdGroupFactory {
 	
 	public ProjectType newProject(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		ProjectType obj = new ProjectType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -185,25 +185,25 @@ public class ProjectFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		ProjectType new_obj = new ProjectType();
-		new_obj.setNameType(NameEnumType.PROJECT);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setDescription(rset.getString("description"));
+		ProjectType newObj = new ProjectType();
+		newObj.setNameType(NameEnumType.PROJECT);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setDescription(rset.getString("description"));
 		long schedule_id = rset.getLong("scheduleid");
 		///logger.info("TEST: " + schedule_id);
-		if(schedule_id > 0L) new_obj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(schedule_id, new_obj.getOrganizationId()));
-		return new_obj;
+		if(schedule_id > 0L) newObj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(schedule_id, newObj.getOrganizationId()));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		ProjectType data = (ProjectType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		if(update(data, null)){
 			try{
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).getModuleParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -304,17 +304,17 @@ public class ProjectFactory extends NameIdGroupFactory {
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
-			out_bool = true;
+			outBool = true;
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ProjectType use_map = (ProjectType)map;
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldScheduleId(use_map.getSchedule() != null ? use_map.getSchedule().getId() : 0L));
+		ProjectType useMap = (ProjectType)map;
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldScheduleId(useMap.getSchedule() != null ? useMap.getSchedule().getId() : 0L));
 	}
 	public int deleteProjectsByUser(UserType user) throws FactoryException
 	{

@@ -90,7 +90,7 @@ public class NoteFactory extends NameIdGroupFactory {
 	}
 	public NoteType newNote(UserType user, NoteType parentNote) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		
 		NoteType obj = newNote(user,parentNote.getGroupId());
 		obj.setParentId(parentNote.getId());
@@ -98,7 +98,7 @@ public class NoteFactory extends NameIdGroupFactory {
 	}
 	public NoteType newNote(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		NoteType obj = new NoteType();
 
 		obj.setOrganizationId(user.getOrganizationId());
@@ -142,19 +142,19 @@ public class NoteFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		NoteType new_obj = new NoteType();
-		new_obj.setNameType(NameEnumType.NOTE);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
+		NoteType newObj = new NoteType();
+		newObj.setNameType(NameEnumType.NOTE);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
 		try {
-			new_obj.setText(new String(rset.getBytes("text"),"UTF-8"));
+			newObj.setText(new String(rset.getBytes("text"),"UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			
 			throw new FactoryException(e.getMessage());
 		}
-		new_obj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		new_obj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		return new_obj;
+		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -166,11 +166,11 @@ public class NoteFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		NoteType use_map = (NoteType)map;
-		fields.add(QueryFields.getFieldText(use_map.getText()));
-		fields.add(QueryFields.getFieldCreatedDate(use_map.getCreatedDate()));
-		fields.add(QueryFields.getFieldModifiedDate(use_map.getModifiedDate()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		NoteType useMap = (NoteType)map;
+		fields.add(QueryFields.getFieldText(useMap.getText()));
+		fields.add(QueryFields.getFieldCreatedDate(useMap.getCreatedDate()));
+		fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteNotesByUser(UserType user) throws FactoryException
 	{
@@ -211,7 +211,7 @@ public class NoteFactory extends NameIdGroupFactory {
 	
 	public List<NoteType> getChildNoteList(NoteType parent) throws FactoryException,ArgumentException{
 
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		fields.add(QueryFields.getFieldGroup(parent.getGroupId()));
 		return getNoteList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());

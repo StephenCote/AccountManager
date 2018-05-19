@@ -101,7 +101,7 @@ public class TicketFactory extends NameIdGroupFactory {
 	
 	public TicketType newTicket(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		TicketType obj = new TicketType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -199,40 +199,40 @@ public class TicketFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		TicketType new_obj = new TicketType();
-		new_obj.setNameType(NameEnumType.TICKET);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setSeverity(SeverityEnumType.valueOf(rset.getString("severity")));
-		new_obj.setPriority(PriorityEnumType.valueOf(rset.getString("priority")));
-		new_obj.setTicketStatus(TicketStatusEnumType.valueOf(rset.getString("ticketstatus")));
-		new_obj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		new_obj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		new_obj.setDueDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("duedate")));
-		new_obj.setClosedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("closeddate")));
-		new_obj.setReopenedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("reopeneddate")));
-		new_obj.setDescription(rset.getString("description"));
-		//new_obj.setWasReopened(rset.getBoolean("wasreopened"));
+		TicketType newObj = new TicketType();
+		newObj.setNameType(NameEnumType.TICKET);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setSeverity(SeverityEnumType.valueOf(rset.getString("severity")));
+		newObj.setPriority(PriorityEnumType.valueOf(rset.getString("priority")));
+		newObj.setTicketStatus(TicketStatusEnumType.valueOf(rset.getString("ticketstatus")));
+		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
+		newObj.setDueDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("duedate")));
+		newObj.setClosedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("closeddate")));
+		newObj.setReopenedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("reopeneddate")));
+		newObj.setDescription(rset.getString("description"));
+		//newObj.setWasReopened(rset.getBoolean("wasreopened"));
 		
 		long assign_id = rset.getLong("assignedresourceid");
-		if(assign_id > 0) new_obj.setAssignedResource((ResourceType)((ResourceFactory)Factories.getFactory(FactoryEnumType.RESOURCE)).getById(assign_id, new_obj.getOrganizationId()));
+		if(assign_id > 0) newObj.setAssignedResource((ResourceType)((ResourceFactory)Factories.getFactory(FactoryEnumType.RESOURCE)).getById(assign_id, newObj.getOrganizationId()));
 		
 		long est_id = rset.getLong("estimateid");
-		if(est_id > 0) new_obj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(est_id, new_obj.getOrganizationId()));
+		if(est_id > 0) newObj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(est_id, newObj.getOrganizationId()));
 		
 		long cost_id = rset.getLong("actualcostid");
-		if(cost_id > 0) new_obj.setActualCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, new_obj.getOrganizationId()));
+		if(cost_id > 0) newObj.setActualCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, newObj.getOrganizationId()));
 		
 		long time_id = rset.getLong("actualtimeid");
-		if(time_id > 0) new_obj.setActualTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, new_obj.getOrganizationId()));
+		if(time_id > 0) newObj.setActualTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, newObj.getOrganizationId()));
 		
-		return new_obj;
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		TicketType data = (TicketType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		Calendar now = Calendar.getInstance();
 
@@ -241,7 +241,7 @@ public class TicketFactory extends NameIdGroupFactory {
 		if(update(data, null)){
 			try{
 			/// Goals
-			Set<Long> set = new HashSet<Long>();
+			Set<Long> set = new HashSet<>();
 			BaseParticipantType[] maps = ((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).getNoteParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -324,33 +324,33 @@ public class TicketFactory extends NameIdGroupFactory {
 			
 			
 			
-			out_bool = true;
+			outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		TicketType use_map = (TicketType)map;
-		fields.add(QueryFields.getFieldPriority(use_map.getPriority()));
-		fields.add(QueryFields.getFieldSeverity(use_map.getSeverity()));
-		fields.add(QueryFields.getFieldTicketStatus(use_map.getTicketStatus()));
-		fields.add(QueryFields.getFieldDueDate(use_map.getDueDate()));
-		fields.add(QueryFields.getFieldCreatedDate(use_map.getCreatedDate()));
-		fields.add(QueryFields.getFieldModifiedDate(use_map.getModifiedDate()));
-		fields.add(QueryFields.getFieldClosedDate(use_map.getClosedDate()));
-		fields.add(QueryFields.getFieldReopenedDate(use_map.getReopenedDate()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldAssignedResourceId(use_map.getAssignedResource() != null ? use_map.getAssignedResource().getId() : 0L));
-		fields.add(QueryFields.getFieldEstimateId(use_map.getEstimate() != null ? use_map.getEstimate().getId() : 0L));
-		fields.add(QueryFields.getFieldActualCostId(use_map.getActualCost() != null ? use_map.getActualCost().getId() : 0L));
-		fields.add(QueryFields.getFieldActualTimeId(use_map.getActualTime() != null ? use_map.getActualTime().getId() : 0L));
+		TicketType useMap = (TicketType)map;
+		fields.add(QueryFields.getFieldPriority(useMap.getPriority()));
+		fields.add(QueryFields.getFieldSeverity(useMap.getSeverity()));
+		fields.add(QueryFields.getFieldTicketStatus(useMap.getTicketStatus()));
+		fields.add(QueryFields.getFieldDueDate(useMap.getDueDate()));
+		fields.add(QueryFields.getFieldCreatedDate(useMap.getCreatedDate()));
+		fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
+		fields.add(QueryFields.getFieldClosedDate(useMap.getClosedDate()));
+		fields.add(QueryFields.getFieldReopenedDate(useMap.getReopenedDate()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldAssignedResourceId(useMap.getAssignedResource() != null ? useMap.getAssignedResource().getId() : 0L));
+		fields.add(QueryFields.getFieldEstimateId(useMap.getEstimate() != null ? useMap.getEstimate().getId() : 0L));
+		fields.add(QueryFields.getFieldActualCostId(useMap.getActualCost() != null ? useMap.getActualCost().getId() : 0L));
+		fields.add(QueryFields.getFieldActualTimeId(useMap.getActualTime() != null ? useMap.getActualTime().getId() : 0L));
 		
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteTicketsByUser(UserType user) throws FactoryException
 	{

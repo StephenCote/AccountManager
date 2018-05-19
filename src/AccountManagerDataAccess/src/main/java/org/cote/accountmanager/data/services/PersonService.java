@@ -63,7 +63,7 @@ public class PersonService {
 		return createUserAsPerson(audit, userName, password,email,UserEnumType.NORMAL,UserStatusEnumType.REGISTERED,organizationId);
 	}
 	public static boolean createUserAsPerson(AuditType audit, String userName, String password, String email,UserEnumType userType,UserStatusEnumType userStatus,long organizationId){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try{
 			if(((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).getUserNameExists(userName, organizationId)){
 				logger.error("User name '" + userName + "' is already used in organization " + organizationId);
@@ -123,7 +123,7 @@ public class PersonService {
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
 			
-			out_bool = true;
+			outBool = true;
 			AuditService.permitResult(audit, "Created user '" + userName + "' (#" + newUser.getId() + ")");
 		}
 		catch(ArgumentException | FactoryException | DataAccessException e) {
@@ -137,7 +137,7 @@ public class PersonService {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 }

@@ -104,34 +104,34 @@ public class RoleService {
 
 	
 	public static boolean getIsMemberInEffectiveRole(NameIdType member,BaseRoleType role) throws ArgumentException, FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		switch(member.getNameType()){
 			case ACCOUNT:
-				out_bool = getIsAccountInEffectiveRole(role, (AccountType)member);
+				outBool = getIsAccountInEffectiveRole(role, (AccountType)member);
 				break;
 			case USER:
-				out_bool = getIsUserInEffectiveRole(role, (UserType)member);
+				outBool = getIsUserInEffectiveRole(role, (UserType)member);
 				break;
 			case PERSON:
-				out_bool = getIsPersonInEffectiveRole(role, (PersonType)member);
+				outBool = getIsPersonInEffectiveRole(role, (PersonType)member);
 				break;
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean getIsMemberInRole(NameIdType member,BaseRoleType role) throws ArgumentException, FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		switch(member.getNameType()){
 			case ACCOUNT:
-				out_bool = getIsAccountInRole(role, (AccountType)member);
+				outBool = getIsAccountInRole(role, (AccountType)member);
 				break;
 			case USER:
-				out_bool = getIsUserInRole(role, (UserType)member);
+				outBool = getIsUserInRole(role, (UserType)member);
 				break;
 			case PERSON:
-				out_bool = getIsPersonInRole(role, (PersonType)member);
+				outBool = getIsPersonInRole(role, (PersonType)member);
 				break;
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	public static BaseRoleType getDataSystemRoleForMemberType(NameEnumType memberType, long organizationId) throws FactoryException, ArgumentException{
@@ -187,17 +187,17 @@ public class RoleService {
 	}
 	
 	public static boolean isMemberActor(NameIdType member){
-		boolean out_bool = false;
-		if(member == null) return out_bool;
+		boolean outBool = false;
+		if(member == null) return outBool;
 		if(
 				member.getNameType() == NameEnumType.PERSON
 				|| member.getNameType() == NameEnumType.ACCOUNT
 				|| member.getNameType() == NameEnumType.USER
 				// || member.getNameType() == NameEnumType.ROLE
 		){
-			out_bool = true;
+			outBool = true;
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	public static BaseRoleType getSystemRoleForMemberByMapType(NameIdType object,NameIdType member) throws FactoryException, ArgumentException{
@@ -231,7 +231,7 @@ public class RoleService {
 		if(role.getId() < 0L ) return true;
 		return getIsGroupInRole(role, group, null, AffectEnumType.UNKNOWN);
 	}
-	public static boolean getIsGroupInRole(BaseRoleType role, BaseGroupType group, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsGroupInRole(BaseRoleType role, BaseGroupType group, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 	{
 		if(role == null){
 			logger.error("Role is null");
@@ -241,14 +241,14 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id
 		///
 		if(role.getId() < 0L ) return true;
-		return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsGroupInRole(role, group,permission,affect_type);
+		return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsGroupInRole(role, group,permission,affectType);
 	}
 	public static boolean addGroupToRole(BaseGroupType group, BaseRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
 		return addGroupToRole(group, role, null, AffectEnumType.UNKNOWN);
 	}
 
-	public static boolean addGroupToRole(BaseGroupType account, BaseRoleType role, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean addGroupToRole(BaseGroupType account, BaseRoleType role, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, DataAccessException, FactoryException
 	{
 		/// accommodate bulk inserts with a negative id - skip the check for the getGroupInRole, which will return true for bulk jobs
 		///
@@ -286,7 +286,7 @@ public class RoleService {
 		if(role.getId() < 0L ) return true;
 		return getIsUserInEffectiveRole(role, user, null, AffectEnumType.UNKNOWN);
 	}
-	public static boolean getIsUserInEffectiveRole(BaseRoleType role, UserType user, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsUserInEffectiveRole(BaseRoleType role, UserType user, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 	{
 		if(role == null){
 			logger.error("Role is null");
@@ -296,7 +296,7 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id
 		///
 		if(role.getId() < 0L ) return true;
-		return EffectiveAuthorizationService.getIsUserInEffectiveRole(role, user, permission, affect_type);
+		return EffectiveAuthorizationService.getIsUserInEffectiveRole(role, user, permission, affectType);
 	}
 	
 	public static boolean getIsUserInRole(BaseRoleType role, UserType user) throws ArgumentException, FactoryException{
@@ -310,7 +310,7 @@ public class RoleService {
 		if(role.getId() < 0L ) return true;
 		return getIsUserInRole(role, user, null, AffectEnumType.UNKNOWN);
 	}
-	public static boolean getIsUserInRole(BaseRoleType role, UserType user, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsUserInRole(BaseRoleType role, UserType user, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 	{
 		if(role == null){
 			logger.error("Role is null");
@@ -320,15 +320,15 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id
 		///
 		if(role.getId() < 0L ) return true;
-		return EffectiveAuthorizationService.getIsUserInEffectiveRole(role, user,permission,affect_type);
-		//return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsUserInRole(role, user,permission,affect_type);
+		return EffectiveAuthorizationService.getIsUserInEffectiveRole(role, user,permission,affectType);
+		//return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsUserInRole(role, user,permission,affectType);
 	}
 	public static boolean addUserToRole(UserType user, UserRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
 		return addUserToRole(user, role, null, AffectEnumType.UNKNOWN);
 	}
 
-	public static boolean addUserToRole(UserType account, UserRoleType role, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean addUserToRole(UserType account, UserRoleType role, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, DataAccessException, FactoryException
 	{
 		/// accommodate bulk inserts with a negative id - skip the check for the getUserInRole, which will return true for bulk jobs
 		///
@@ -383,7 +383,7 @@ public class RoleService {
 		if(role.getId() < 0L ) return true;
 		return getIsPersonInEffectiveRole(role, user, null, AffectEnumType.UNKNOWN);
 	}
-	public static boolean getIsPersonInEffectiveRole(BaseRoleType role, PersonType user, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsPersonInEffectiveRole(BaseRoleType role, PersonType user, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 	{
 		if(role == null){
 			logger.error("Role is null");
@@ -393,14 +393,14 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id
 		///
 		if(role.getId() < 0L ) return true;
-		return EffectiveAuthorizationService.getIsPersonInEffectiveRole(role, user, permission, affect_type);
+		return EffectiveAuthorizationService.getIsPersonInEffectiveRole(role, user, permission, affectType);
 	}
 	public static boolean getIsPersonInRole(BaseRoleType role, PersonType person) throws ArgumentException, FactoryException{
 		return getIsPersonInRole(role, person, null, AffectEnumType.UNKNOWN);
 	}
-	public static boolean getIsPersonInRole(BaseRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsPersonInRole(BaseRoleType role, PersonType person, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 	{
-		return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsPersonInRole(role, person,permission,affect_type);
+		return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsPersonInRole(role, person,permission,affectType);
 	}
 	public static boolean addPersonToRole(PersonType person, PersonRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
@@ -436,7 +436,7 @@ public class RoleService {
 		if(role.getId() < 0L ) return true;
 		return getIsAccountInEffectiveRole(role, user, null, AffectEnumType.UNKNOWN);
 	}
-	public static boolean getIsAccountInEffectiveRole(BaseRoleType role, AccountType user, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsAccountInEffectiveRole(BaseRoleType role, AccountType user, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 	{
 		if(role == null){
 			logger.error("Role is null");
@@ -446,14 +446,14 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id
 		///
 		if(role.getId() < 0L ) return true;
-		return EffectiveAuthorizationService.getIsAccountInEffectiveRole(role, user, permission, affect_type);
+		return EffectiveAuthorizationService.getIsAccountInEffectiveRole(role, user, permission, affectType);
 	}
 	public static boolean getIsAccountInRole(BaseRoleType role, AccountType account) throws ArgumentException, FactoryException{
 		return getIsAccountInRole(role, account, null, AffectEnumType.UNKNOWN);
 	}
-	public static boolean getIsAccountInRole(BaseRoleType role, AccountType account, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, FactoryException
+	public static boolean getIsAccountInRole(BaseRoleType role, AccountType account, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
 	{
-		return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsAccountInRole(role, account,permission,affect_type);
+		return ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getIsAccountInRole(role, account,permission,affectType);
 	}
 	public static boolean addAccountToRole(AccountType account, AccountRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
@@ -479,9 +479,9 @@ public class RoleService {
 	/// <param name="account"></param>
 	/// <param name="role"></param>
 	/// <param name="permission"></param>
-	/// <param name="affect_type"></param>
+	/// <param name="affectType"></param>
 	/// <returns></returns>
-	public static boolean addAccountToRole(AccountType account, AccountRoleType role, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean addAccountToRole(AccountType account, AccountRoleType role, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, DataAccessException, FactoryException
 	{
 		if (getIsAccountInRole(role, account) == false)
 		{
@@ -505,7 +505,7 @@ public class RoleService {
 		return false;
 	}
 	
-	public static boolean addPersonToRole(PersonType person, PersonRoleType role, BasePermissionType permission, AffectEnumType affect_type) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean addPersonToRole(PersonType person, PersonRoleType role, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, DataAccessException, FactoryException
 	{
 		if (getIsPersonInRole(role, person) == false)
 		{
@@ -780,31 +780,31 @@ public class RoleService {
 		}
 		
 		public static boolean switchActorInRole(NameIdType actor, BaseRoleType role, boolean add) throws ArgumentException, DataAccessException, FactoryException{
-			boolean out_bool = false;
+			boolean outBool = false;
 			if(actor.getNameType() != NameEnumType.GROUP && RoleEnumType.fromValue(actor.getNameType().toString()) != role.getRoleType()){
 				return false;
 			}
 			switch(actor.getNameType()){
 				case PERSON:
-					if(add) out_bool = RoleService.addPersonToRole((PersonType)actor, (PersonRoleType)role);
-					else out_bool = RoleService.removePersonFromRole((PersonRoleType)role,(PersonType)actor);
+					if(add) outBool = RoleService.addPersonToRole((PersonType)actor, (PersonRoleType)role);
+					else outBool = RoleService.removePersonFromRole((PersonRoleType)role,(PersonType)actor);
 					break;
 				case ACCOUNT:
-					if(add) out_bool = RoleService.addAccountToRole((AccountType)actor, (AccountRoleType)role);
-					else out_bool = RoleService.removeAccountFromRole((AccountRoleType)role,(AccountType)actor);
+					if(add) outBool = RoleService.addAccountToRole((AccountType)actor, (AccountRoleType)role);
+					else outBool = RoleService.removeAccountFromRole((AccountRoleType)role,(AccountType)actor);
 					break;
 				case USER:
-					if(add) out_bool = RoleService.addUserToRole((UserType)actor, (UserRoleType)role);
-					else out_bool = RoleService.removeUserFromRole((UserRoleType)role,(UserType)actor);
+					if(add) outBool = RoleService.addUserToRole((UserType)actor, (UserRoleType)role);
+					else outBool = RoleService.removeUserFromRole((UserRoleType)role,(UserType)actor);
 					break;
 				case GROUP:
 					//logger.warn("Group to role implementation needs to be expanded to include groups of accounts and groups of persons.");
-					if(add) out_bool = RoleService.addGroupToRole((BaseGroupType)actor, role);
-					else out_bool = RoleService.removeGroupFromRole(role,(BaseGroupType)actor);
+					if(add) outBool = RoleService.addGroupToRole((BaseGroupType)actor, role);
+					else outBool = RoleService.removeGroupFromRole(role,(BaseGroupType)actor);
 					break;
 				}
 
-			return out_bool;
+			return outBool;
 		}
 
 		

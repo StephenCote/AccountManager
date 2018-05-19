@@ -103,7 +103,7 @@ public class WorkFactory extends NameIdGroupFactory {
 	
 	public WorkType newWork(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		WorkType obj = new WorkType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -171,25 +171,25 @@ public class WorkFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		WorkType new_obj = new WorkType();
-		new_obj.setNameType(NameEnumType.WORK);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		return new_obj;
+		WorkType newObj = new WorkType();
+		newObj.setNameType(NameEnumType.WORK);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setDescription(rset.getString("description"));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		WorkType data = (WorkType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		if(update(data, null)){
 			try{
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType part = null;
-				List<Long> delIds = new ArrayList<Long>();
+				List<Long> delIds = new ArrayList<>();
 				BaseParticipantType[] maps = ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).getResourceParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -264,25 +264,25 @@ public class WorkFactory extends NameIdGroupFactory {
 
 				//if(set.size() > 0) ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-				if(delIds.size() > 0) ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), data, data.getOrganizationId());
+				if(!delIds.isEmpty()) ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		WorkType use_map = (WorkType)map;
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		WorkType useMap = (WorkType)map;
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteWorksByUser(UserType user) throws FactoryException
 	{

@@ -78,7 +78,7 @@ public class EstimateFactory extends NameIdGroupFactory {
 	
 	public EstimateType newEstimate(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		EstimateType obj = new EstimateType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -116,18 +116,18 @@ public class EstimateFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		EstimateType new_obj = new EstimateType();
-		new_obj.setNameType(NameEnumType.ESTIMATE);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
+		EstimateType newObj = new EstimateType();
+		newObj.setNameType(NameEnumType.ESTIMATE);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
 		
-		new_obj.setEstimateType(EstimateEnumType.valueOf(rset.getString("estimatetype")));
-		new_obj.setDescription(rset.getString("description"));
+		newObj.setEstimateType(EstimateEnumType.valueOf(rset.getString("estimatetype")));
+		newObj.setDescription(rset.getString("description"));
 		long time_id = rset.getLong("timeid");
 		long cost_id = rset.getLong("costid");
-		if(time_id > 0L) new_obj.setTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, new_obj.getOrganizationId()));
-		if(cost_id > 0L) new_obj.setCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, new_obj.getOrganizationId()));
-		return new_obj;
+		if(time_id > 0L) newObj.setTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, newObj.getOrganizationId()));
+		if(cost_id > 0L) newObj.setCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, newObj.getOrganizationId()));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -139,14 +139,14 @@ public class EstimateFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		EstimateType use_map = (EstimateType)map;
-		fields.add(QueryFields.getFieldEstimateType(use_map.getEstimateType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		//if(use_map.getCost() != null)
-		fields.add(QueryFields.getFieldCost(use_map.getCost()));
-		//if(use_map.getTime() != null)
-		fields.add(QueryFields.getFieldTime(use_map.getTime()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		EstimateType useMap = (EstimateType)map;
+		fields.add(QueryFields.getFieldEstimateType(useMap.getEstimateType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		//if(useMap.getCost() != null)
+		fields.add(QueryFields.getFieldCost(useMap.getCost()));
+		//if(useMap.getTime() != null)
+		fields.add(QueryFields.getFieldTime(useMap.getTime()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteEstimatesByUser(UserType user) throws FactoryException
 	{

@@ -396,15 +396,15 @@ public class BaseAccelerantTest{
 	}
 	
 	public boolean updateTicket(TicketType ticket){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
-			out_bool = ((TicketFactory)Factories.getFactory(FactoryEnumType.TICKET)).update(ticket);
+			outBool = ((TicketFactory)Factories.getFactory(FactoryEnumType.TICKET)).update(ticket);
 		} catch (FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	public boolean newFormParticipant(FormType form, FormElementType formElement){
 		FormElementParticipantType fep;

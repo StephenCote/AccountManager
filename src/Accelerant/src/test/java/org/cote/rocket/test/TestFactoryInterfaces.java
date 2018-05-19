@@ -138,22 +138,22 @@ public class TestFactoryInterfaces {
 	}
 	
 	public static boolean setupRocket(String adminPassword, String schemaFile){
-		boolean out_bool = false;
+		boolean outBool = false;
 		boolean error = false;
 		
 		if(adminPassword == null || adminPassword.length() == 0){
 			logger.error("Invalid admin password");
-			return out_bool;
+			return outBool;
 		}
 		if(schemaFile == null || schemaFile.length() == 0){
 			logger.error("Invalid schema file");
-			return out_bool;
+			return outBool;
 		}
 
 		String sql = new String(StreamUtil.fileToBytes(schemaFile));
 		if(sql == null || sql.length() == 0){
 			logger.error("Invalid schema file: " + schemaFile);
-			return out_bool;
+			return outBool;
 		}
 		Connection connection = null;
 		try{
@@ -178,7 +178,7 @@ public class TestFactoryInterfaces {
 			}
 		}
 
-		if(error == true) return out_bool;
+		if(error == true) return outBool;
 		
 		
 		/// Find and delete the Accelerant and Rocket organizations if they exist
@@ -218,7 +218,7 @@ public class TestFactoryInterfaces {
 		logger.info("Configuring " + aOrg.getId() + ":" + aOrg.getUrn());
 		try {
 
-			out_bool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(FactoryDefaults.getAccelerantOrganization(), adminPassword);
+			outBool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(FactoryDefaults.getAccelerantOrganization(), adminPassword);
 		} catch (ArgumentException | DataAccessException | FactoryException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -228,10 +228,10 @@ public class TestFactoryInterfaces {
 			logger.error("Internal rocket state is not correctly cleaned up");
 			return false;
 		}
-		if(out_bool && Rocket.getIsSetup() == false){
+		if(outBool && Rocket.getIsSetup() == false){
 			
 			try {
-				out_bool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(Rocket.getRocketOrganization(),adminPassword);
+				outBool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(Rocket.getRocketOrganization(),adminPassword);
 			} catch (ArgumentException e) {
 				
 				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -260,7 +260,7 @@ public class TestFactoryInterfaces {
 				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 }

@@ -79,7 +79,7 @@ public class LifecycleFactory extends NameIdGroupFactory {
 
 	public LifecycleType newLifecycle(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		LifecycleType obj = new LifecycleType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -171,19 +171,19 @@ public class LifecycleFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		LifecycleType new_obj = new LifecycleType();
-		new_obj.setNameType(NameEnumType.LIFECYCLE);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setDescription(rset.getString("description"));
-		return new_obj;
+		LifecycleType newObj = new LifecycleType();
+		newObj.setNameType(NameEnumType.LIFECYCLE);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setDescription(rset.getString("description"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		LifecycleType data = (LifecycleType)object;
 
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(data.getPopulated() == false){
 			logger.warn("Updating unpopulated lifecycle '" + data.getName() + "' may result in unexpected data loss");
 		}
@@ -193,7 +193,7 @@ public class LifecycleFactory extends NameIdGroupFactory {
 				
 				/// Budgets
 				///
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).getBudgetParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -256,20 +256,20 @@ public class LifecycleFactory extends NameIdGroupFactory {
 //				System.out.println("Net delete Project parts: " + set.size());
 				((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		LifecycleType use_map = (LifecycleType)map;
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		LifecycleType useMap = (LifecycleType)map;
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteLifecyclesByUser(UserType user) throws FactoryException
 	{

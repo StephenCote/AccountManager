@@ -81,7 +81,7 @@ public class RequirementFactory extends NameIdGroupFactory {
 	
 	public RequirementType newRequirement(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		RequirementType obj = new RequirementType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -126,21 +126,21 @@ public class RequirementFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		RequirementType new_obj = new RequirementType();
-		new_obj.setNameType(NameEnumType.REQUIREMENT);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setRequirementType(RequirementEnumType.valueOf(rset.getString("requirementtype")));
-		new_obj.setRequirementStatus(RequirementStatusEnumType.valueOf(rset.getString("requirementstatus")));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setPriority(PriorityEnumType.valueOf(rset.getString("priority")));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		new_obj.setRequirementId(rset.getString("requirementid"));
+		RequirementType newObj = new RequirementType();
+		newObj.setNameType(NameEnumType.REQUIREMENT);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setRequirementType(RequirementEnumType.valueOf(rset.getString("requirementtype")));
+		newObj.setRequirementStatus(RequirementStatusEnumType.valueOf(rset.getString("requirementstatus")));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setPriority(PriorityEnumType.valueOf(rset.getString("priority")));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setRequirementId(rset.getString("requirementid"));
 		long noteId = rset.getLong("noteid");
-		if(noteId > 0) new_obj.setNote((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(noteId,  new_obj.getOrganizationId()));
+		if(noteId > 0) newObj.setNote((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(noteId,  newObj.getOrganizationId()));
 		long formId = rset.getLong("formid");
-		if(formId > 0) new_obj.setForm((FormType)((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).getById(formId, new_obj.getOrganizationId()));
-		return new_obj;
+		if(formId > 0) newObj.setForm((FormType)((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).getById(formId, newObj.getOrganizationId()));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -152,16 +152,16 @@ public class RequirementFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		RequirementType use_map = (RequirementType)map;
-		fields.add(QueryFields.getFieldRequirementType(use_map.getRequirementType()));
-		fields.add(QueryFields.getFieldRequirementStatusType(use_map.getRequirementStatus()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldPriority(use_map.getPriority()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldRequirementId(use_map.getRequirementId()));
-		fields.add(QueryFields.getBigIntField("noteid", (use_map.getNote() != null ? use_map.getNote().getId() : 0)));
-		fields.add(QueryFields.getBigIntField("formid", (use_map.getForm() != null ? use_map.getForm().getId() : 0)));
+		RequirementType useMap = (RequirementType)map;
+		fields.add(QueryFields.getFieldRequirementType(useMap.getRequirementType()));
+		fields.add(QueryFields.getFieldRequirementStatusType(useMap.getRequirementStatus()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldPriority(useMap.getPriority()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldRequirementId(useMap.getRequirementId()));
+		fields.add(QueryFields.getBigIntField("noteid", (useMap.getNote() != null ? useMap.getNote().getId() : 0)));
+		fields.add(QueryFields.getBigIntField("formid", (useMap.getForm() != null ? useMap.getForm().getId() : 0)));
 	}
 	public int deleteRequirementsByUser(UserType user) throws FactoryException
 	{

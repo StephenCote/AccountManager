@@ -39,7 +39,7 @@ public class FactoryService {
 		return isDirectoryType(NameEnumType.valueOf(type.toString()));
 	}
 	public static boolean isDirectoryType(NameEnumType type){
-		boolean out_bool = false;
+		boolean outBool = false;
 		switch(type){
 			case TAG:
 			case ACCOUNT:
@@ -54,10 +54,10 @@ public class FactoryService {
 			case POLICY:
 			case RULE:
 			case DATA:
-				out_bool = true;
+				outBool = true;
 				break;
 		}
-		return out_bool;
+		return outBool;
 		
 	}
 }

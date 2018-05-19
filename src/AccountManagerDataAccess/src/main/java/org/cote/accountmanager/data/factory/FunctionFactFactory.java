@@ -53,25 +53,22 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class FunctionFactFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.FUNCTIONFACT, FunctionFactFactory.class); }
 	public FunctionFactFactory(){
 		super();
-		this.tableNames.add("functionfact");
+		this.primaryTableName = "functionfact";
+		this.tableNames.add(primaryTableName);
 		this.hasObjectId = true;
 		this.hasUrn = false;
 		factoryType = FactoryEnumType.FUNCTIONFACT;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("functionfact")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
@@ -84,7 +81,7 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 	
 	public FunctionFactType newFunctionFact(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		FunctionFactType obj = new FunctionFactType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -104,7 +101,6 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 
 			row.setCellValue("groupid", obj.getGroupId());
 			row.setCellValue("description", obj.getDescription());
-			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("functionurn", obj.getFunctionUrn());
 			row.setCellValue("facturn", obj.getFactUrn());
@@ -123,17 +119,16 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		FunctionFactType new_obj = new FunctionFactType();
-		new_obj.setNameType(NameEnumType.FUNCTIONFACT);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
+		FunctionFactType newObj = new FunctionFactType();
+		newObj.setNameType(NameEnumType.FUNCTIONFACT);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
 
-		//new_obj.setUrn(rset.getString("urn"));
-		new_obj.setFunctionUrn(rset.getString("functionurn"));
-		new_obj.setFactUrn(rset.getString("facturn"));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		return new_obj;
+		newObj.setFunctionUrn(rset.getString("functionurn"));
+		newObj.setFactUrn(rset.getString("facturn"));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -145,13 +140,12 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		FunctionFactType use_map = (FunctionFactType)map;
-		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
-		fields.add(QueryFields.getFieldFunctionUrn(use_map.getFunctionUrn()));
-		fields.add(QueryFields.getFieldFactUrn(use_map.getFactUrn()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		FunctionFactType useMap = (FunctionFactType)map;
+		fields.add(QueryFields.getFieldFunctionUrn(useMap.getFunctionUrn()));
+		fields.add(QueryFields.getFieldFactUrn(useMap.getFactUrn()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteFunctionFactsByUser(UserType user) throws FactoryException
 	{
@@ -169,16 +163,7 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 	}
 	public int deleteFunctionFactsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factories.getFunctionFactParticipationFactory().deleteParticipations(ids, organization);
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteFunctionFactsInGroup(DirectoryGroupType group)  throws FactoryException
 	{
@@ -186,16 +171,12 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 		// Need to get ids so as to delete participations as well
 		//
 		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
-		/// TODO: Delete participations
-		///
 		return deleteFunctionFactsByIds(ids, group.getOrganizationId());
 	}
 	
 	public List<FactType> getFunctionFacts(QueryField[] matches, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> lst = getByField(matches, organizationId);
-		return convertList(lst);
-
+		return convertList(getByField(matches, organizationId));
 	}
 	public List<FunctionFactType>  getFunctionFactList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{

@@ -58,7 +58,7 @@ public class TestBaseService extends BaseDataAccessTest{
 	public void TestServiceAccess(){
 		ServletRequestMock request = getRequest(sessionId,testUser.getOrganizationId());
 		UserType user = ServiceUtil.getUserFromSession(request);
-		assertNotNull("Failed to get user from session",user);
+		assertNotNull("Failed to get user from session " + sessionId + ". User has session " + testUser.getSession().getSessionId(),user);
 		logger.info("Obtained user " + user.getName() + " from session " + ServiceUtil.getSessionId(request));
 		//BaseGroupType group = BaseService.readByName(type, name, request)
 	}

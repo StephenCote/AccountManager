@@ -105,7 +105,7 @@ public class TagFactory extends NameIdGroupFactory {
 	public int deleteTagsByUser(UserType map) throws FactoryException, ArgumentException
 	{
 		List<NameIdType> tags = getByField(new QueryField[] { QueryFields.getFieldOwner(map.getId()) }, map.getOrganizationId());
-		List<Long> tag_ids = new ArrayList<Long>();
+		List<Long> tag_ids = new ArrayList<>();
 		for (int i = 0; i < tags.size(); i++)
 		{
 			tag_ids.add(tags.get(i).getId());
@@ -162,14 +162,14 @@ public class TagFactory extends NameIdGroupFactory {
 	}
 	public <T> T getTagByName(String name, TagEnumType type, DirectoryGroupType group) throws FactoryException, ArgumentException
 	{
-		String key_name = name + "-" + type + "-" + group.getId();
-		T out_tag = readCache(key_name);
+		String keyName = name + "-" + type + "-" + group.getId();
+		T out_tag = readCache(keyName);
 		if (out_tag != null) return out_tag;
 
 		List<NameIdType> tags = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldGroup(group.getId()),QueryFields.getFieldTagType(type)}, group.getOrganizationId());
 		if (tags.size() > 0)
 		{
-			addToCache(tags.get(0),key_name);
+			addToCache(tags.get(0),keyName);
 			return (T)tags.get(0);
 		}
 		return null;
@@ -180,7 +180,7 @@ public class TagFactory extends NameIdGroupFactory {
 		return listInGroup(group, TagEnumType.UNKNOWN, null,startRecord, recordCount,organizationId);
 	}
 	public <T> List<T> listInGroup(BaseGroupType group, TagEnumType type, QueryField match, long startRecord, int recordCount,long organizationId) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		if(group != null) fields.add(QueryFields.getFieldGroup(group.getId()));
 		if(type != TagEnumType.UNKNOWN) fields.add(QueryFields.getFieldTagType(type));
 		if(match != null) fields.add(match);
@@ -189,9 +189,9 @@ public class TagFactory extends NameIdGroupFactory {
 
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		BaseTagType use_map = (BaseTagType)map;
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldTagType(use_map.getTagType()));
+		BaseTagType useMap = (BaseTagType)map;
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldTagType(useMap.getTagType()));
 	}
 	public DataTagType newDataTag(UserType owner,String tag_name, long groupId) throws ArgumentException{
 		return newTag(owner,tag_name, TagEnumType.DATA, groupId);
@@ -272,7 +272,7 @@ public class TagFactory extends NameIdGroupFactory {
 		instruction.setStartIndex(startRecord);
 		instruction.setRecordCount(recordCount);
 		List<DataParticipantType> parts = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).getTagParticipations(tags, instruction,ParticipantEnumType.DATA);
-		if(parts.isEmpty()) return new ArrayList<DataType>();
+		if(parts.isEmpty()) return new ArrayList<>();
 		/// Don't apply pagination to the secondary query because it's already been paginated from the parts list
 		///
 		return ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).getDataListFromParticipations(parts.toArray(new DataParticipantType[0]), true, 0, 0, organizationId);

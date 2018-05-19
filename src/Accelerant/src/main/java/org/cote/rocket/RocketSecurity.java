@@ -180,10 +180,10 @@ public class RocketSecurity {
 	}
 
 	public static boolean setupBulkProjectStructure(String sessionId, LifecycleType lc, ProjectType proj, UserType adminUser){
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(adminUser == null){
 			logger.error("Null user");
-			return out_bool;
+			return outBool;
 		}
 		/*
 		 * Project Structure:
@@ -227,9 +227,9 @@ public class RocketSecurity {
 				}
 
 				
-				out_bool = true;
+				outBool = true;
 
-		return out_bool;
+		return outBool;
 	}
 	public static void configureProjectDirectory(UserType adminUser, LifecycleType lc, ProjectType proj, BaseGroupType dir) throws FactoryException, DataAccessException, ArgumentException{
 		UserRoleType bRole = RocketSecurity.getProjectRoleBucket(proj);
@@ -249,7 +249,7 @@ public class RocketSecurity {
 	}
 	
 	public static boolean setupBulkLifecycleStructure(String sessionId, LifecycleType lc, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		/*
 		 * Lifecycle Structure:
 		 * Directory Base: [org]/lc-name/
@@ -295,12 +295,12 @@ public class RocketSecurity {
 					}
 				} /// end if roles setup
 
-				out_bool = true;
+				outBool = true;
 
-		return out_bool;
+		return outBool;
 	}
 	public static boolean setupLifecycleStructure(LifecycleType lc, UserType adminUser){
-		boolean out_bool = false;
+		boolean outBool = false;
 		/*
 		 * Lifecycle Structure:
 		 * Directory Base: [org]/lc-name/
@@ -336,7 +336,7 @@ public class RocketSecurity {
 					((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).writeSpool(dt2.getName());
 					dt1.setBulkInsert(false);
 					dt2.setBulkInsert(false);
-					out_bool = true;
+					outBool = true;
 				} /// end sync
 			} /// end sync
 		}
@@ -344,10 +344,10 @@ public class RocketSecurity {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	private static boolean setupBulkProjectRoles(String sessionId,ProjectType proj, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(proj == null) throw new ArgumentException("Invalid project");
 		//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(proj.getGroupId());
 		((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).denormalize(proj);
@@ -363,12 +363,12 @@ public class RocketSecurity {
 		if(RoleService.addUserToRole(adminUser, getProjectAdminRole(proj)) == false){
 			throw new FactoryException("Failed to assign admin user '" + adminUser.getName() + "' to Project Admin Role");
 		}
-		out_bool = true;
-		return out_bool;
+		outBool = true;
+		return outBool;
 	}
 
 	private static boolean setupProjectRoles(ProjectType proj, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(proj == null || proj.getId().compareTo(0L)==0) throw new ArgumentException("Invalid project");
 		//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(proj.getGroupId());
 		((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).denormalize(proj);
@@ -379,11 +379,11 @@ public class RocketSecurity {
 		setupContainerPermissions(adminUser,projectBucketPermission);
 		setupContainerRoles(adminUser, projectBucketRole);
 		RoleService.addUserToRole(adminUser, getProjectAdminRole(proj));
-		out_bool = true;
-		return out_bool;
+		outBool = true;
+		return outBool;
 	}
 	private static boolean setupBulkLifecycleRoles(String sessionId, LifecycleType lc, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(adminUser == null || adminUser.getId().compareTo(0L)==0) throw new ArgumentException("Invalid admin user");
 		if(lc == null || lc.getGroupId().compareTo(0L) == 0 || lc.getOrganizationId().compareTo(0L) == 0) throw new ArgumentException("Invalid lifecycle");
 		
@@ -408,11 +408,11 @@ public class RocketSecurity {
 		if(RoleService.addUserToRole(adminUser, adminRole) == false){
 			throw new FactoryException("Failed to assign admin user '" + adminUser.getName() + "' to Lifecycle Admin Role");
 		}
-		out_bool = true;
-		return out_bool;
+		outBool = true;
+		return outBool;
 	}	
 	private static boolean setupLifecycleRoles(LifecycleType lc, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(adminUser == null || adminUser.getId().compareTo(0L)==0) throw new ArgumentException("Invalid admin user");
 		if(lc == null || lc.getId().compareTo(0L)==0 || lc.getGroupId() == null || lc.getOrganizationId().compareTo(0L) == 0) throw new ArgumentException("Invalid lifecycle");
 		((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).denormalize(lc);
@@ -427,8 +427,8 @@ public class RocketSecurity {
 		UserRoleType adminRole = getLifecycleAdminRole(lc);
 		if(adminRole == null) throw new ArgumentException("Admin role is null for Lifecycle " + lc.getName() + " (#" + lc.getId() + ") in organization " + lc.getOrganizationId());
 		RoleService.addUserToRole(adminUser, adminRole);
-		out_bool = true;
-		return out_bool;
+		outBool = true;
+		return outBool;
 	}
 	public static UserRoleType getProjectAdminRole(ProjectType lc){
 		return getProjectRoleByName(lc,"AdminRole");
@@ -612,9 +612,9 @@ public class RocketSecurity {
 		return permission;
 	}
 	public static boolean canCreateProject(UserType user,LifecycleType lc){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
-			out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
+			outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -622,12 +622,12 @@ public class RocketSecurity {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}	
 	public static boolean canCreateLifecycle(UserType user){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
-			out_bool = AuthorizationService.canChange(user,Rocket.getLifecycleGroup(user.getOrganizationId()));
+			outBool = AuthorizationService.canChange(user,Rocket.getLifecycleGroup(user.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -635,12 +635,12 @@ public class RocketSecurity {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean canChangeLifecycle(UserType user,LifecycleType lc){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
-			out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
+			outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -648,12 +648,12 @@ public class RocketSecurity {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean canReadLifecycle(UserType user,LifecycleType lc){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
-			out_bool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
+			outBool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -661,12 +661,12 @@ public class RocketSecurity {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean canChangeProject(UserType user, ProjectType proj){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
-			out_bool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(), proj.getOrganizationId()));
+			outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(), proj.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -674,12 +674,12 @@ public class RocketSecurity {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean canReadProject(UserType user, ProjectType proj){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
-			out_bool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(),proj.getOrganizationId()));
+			outBool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(),proj.getOrganizationId()));
 		} catch (ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -687,7 +687,7 @@ public class RocketSecurity {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 
 }

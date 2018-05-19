@@ -75,7 +75,7 @@ public class TimeFactory extends NameIdGroupFactory {
 	}
 	public TimeType newTime(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		TimeType obj = new TimeType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -111,15 +111,15 @@ public class TimeFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		TimeType new_obj = new TimeType();
-		new_obj.setNameType(NameEnumType.TIME);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
+		TimeType newObj = new TimeType();
+		newObj.setNameType(NameEnumType.TIME);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
 		// TODO: set time, Time
 		
-		new_obj.setBasisType(TimeEnumType.valueOf(rset.getString("basistype")));
-		new_obj.setValue(rset.getDouble("value"));
-		return new_obj;
+		newObj.setBasisType(TimeEnumType.valueOf(rset.getString("basistype")));
+		newObj.setValue(rset.getDouble("value"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -131,10 +131,10 @@ public class TimeFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		TimeType use_map = (TimeType)map;
-		fields.add(QueryFields.getFieldBasisType(use_map.getBasisType()));
-		fields.add(QueryFields.getFieldValue(use_map.getValue()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		TimeType useMap = (TimeType)map;
+		fields.add(QueryFields.getFieldBasisType(useMap.getBasisType()));
+		fields.add(QueryFields.getFieldValue(useMap.getValue()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteTimesByUser(UserType user) throws FactoryException
 	{

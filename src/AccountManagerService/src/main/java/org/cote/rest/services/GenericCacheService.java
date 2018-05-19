@@ -94,19 +94,19 @@ public class GenericCacheService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response clearFactoryCache(@PathParam("type") String type, @PathParam("objectType") String objectType, @PathParam("path") String path, @Context HttpServletRequest request){
 		logger.info("Request to clear cache on: " + type);
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
 		try{
 			INameIdFactory factory = BaseService.getFactory(auditType);
 			if(factory != null){
 				factory.clearCache();
-				out_bool = true;
+				outBool = true;
 			}
 		}
 		catch(FactoryException f){
 			logger.error(f);
 		}
-		return Response.status(200).entity(out_bool).build();
+		return Response.status(200).entity(outBool).build();
 	}
 
 

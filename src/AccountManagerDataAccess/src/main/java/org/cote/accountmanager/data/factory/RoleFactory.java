@@ -208,7 +208,7 @@ public class RoleFactory extends NameIdFactory {
 	public int deleteRolesByUser(NameIdType map) throws FactoryException, ArgumentException
 	{
 		List<BaseRoleType> roles = getRoles(new QueryField[]{QueryFields.getFieldOwner(map)}, map.getOrganizationId());
-		List<Long> roleIds = new ArrayList<Long>();
+		List<Long> roleIds = new ArrayList<>();
 		for (int i = 0; i < roles.size(); i++)
 		{
 			roleIds.add(roles.get(i).getId());

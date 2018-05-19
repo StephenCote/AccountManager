@@ -51,9 +51,9 @@ public class TestTokenService extends BaseDataAccessTest {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		String materialToken = null; //TokenService.newMaterializedToken(testUser, testUser.getHomeDirectory());
+		SecuritySpoolType materialToken = TokenService.newAuthorizationToken(testUser, testUser.getHomeDirectory(), 120);
 		assertNotNull("Token is null", materialToken);
-		logger.info("Material Token: " + materialToken);
+		//logger.info("Material Token: " + materialToken.get);
 	}
 	
 }

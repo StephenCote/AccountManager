@@ -137,7 +137,7 @@ public class GenericSearchService {
 		UserType user = ServiceUtil.getUserFromSession(request);
 		logger.warn("AuthZ Not Implemented Yet For listByTags");
 		logger.info("Searching for " + searchRequest.getRecordCount() + " data items starting at " + searchRequest.getStartRecord() + " having " + searchRequest.getTags().size() + " tags");
-		List<DataType> list = new ArrayList<DataType>();
+		List<DataType> list = new ArrayList<>();
 		try {
 			list = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).getDataForTags(searchRequest.getTags().toArray(new BaseTagType[0]), searchRequest.getStartRecord(), searchRequest.getRecordCount(), user.getOrganizationId());
 			if(searchRequest.getPopulateGroup()){

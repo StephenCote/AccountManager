@@ -46,7 +46,6 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 	
 	
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ASYMMETRICKEY, AsymmetricKeyFactory.class); }
 	public AsymmetricKeyFactory(){
 		super();
 		this.hasOwnerId = true;
@@ -57,8 +56,8 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 		this.aggressiveKeyFlush = false;
 		this.useThreadSafeCollections = false;
 		this.scopeToOrganization = true;
-
-		this.tableNames.add("asymmetrickeys");
+		this.primaryTableName = "asymmetrickeys";
+		this.tableNames.add(primaryTableName);
 
 		factoryType = FactoryEnumType.ASYMMETRICKEY;
 	}
@@ -129,31 +128,31 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		SecurityType new_cred = new SecurityType();
-		new_cred.setNameType(NameEnumType.SECURITY);
-		super.read(rset, new_cred);
-		new_cred.setGlobalKey(rset.getBoolean("globalkey"));
-		new_cred.setOrganizationKey(rset.getBoolean("organizationkey"));
-		new_cred.setPrimaryKey(rset.getBoolean("primarykey"));
-		new_cred.setHashProvider(rset.getString("hashprovider"));
-		new_cred.setRandomSeedLength(rset.getLong("seedlength"));
-		new_cred.setPreviousKeyId(rset.getLong("previouskeyid"));
-		new_cred.setSymmetricKeyId(rset.getLong("symmetrickeyid"));
-		new_cred.setCipherProvider(rset.getString("cipherprovider"));
-		new_cred.setCipherKeySpec(rset.getString("cipherkeyspec"));
-		new_cred.setAsymmetricCipherKeySpec(rset.getString("asymmetriccipherkeyspec"));
-		new_cred.setPublicKeyBytes(rset.getBytes("publickey"));
-		new_cred.setPrivateKeyBytes(rset.getBytes("privatekey"));
-		return new_cred;
+		SecurityType newCred = new SecurityType();
+		newCred.setNameType(NameEnumType.SECURITY);
+		super.read(rset, newCred);
+		newCred.setGlobalKey(rset.getBoolean("globalkey"));
+		newCred.setOrganizationKey(rset.getBoolean("organizationkey"));
+		newCred.setPrimaryKey(rset.getBoolean("primarykey"));
+		newCred.setHashProvider(rset.getString("hashprovider"));
+		newCred.setRandomSeedLength(rset.getLong("seedlength"));
+		newCred.setPreviousKeyId(rset.getLong("previouskeyid"));
+		newCred.setSymmetricKeyId(rset.getLong("symmetrickeyid"));
+		newCred.setCipherProvider(rset.getString("cipherprovider"));
+		newCred.setCipherKeySpec(rset.getString("cipherkeyspec"));
+		newCred.setAsymmetricCipherKeySpec(rset.getString("asymmetriccipherkeyspec"));
+		newCred.setPublicKeyBytes(rset.getBytes("publickey"));
+		newCred.setPrivateKeyBytes(rset.getBytes("privatekey"));
+		return newCred;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		SecurityType use_map = (SecurityType)map;
+		SecurityType useMap = (SecurityType)map;
 
-		fields.add(QueryFields.getFieldPrimaryKey(use_map.getPrimaryKey()));
-		fields.add(QueryFields.getFieldSymmetricKeyId(use_map.getSymmetricKeyId()));
-		fields.add(QueryFields.getFieldPreviousKeyId(use_map.getPreviousKeyId()));
+		fields.add(QueryFields.getFieldPrimaryKey(useMap.getPrimaryKey()));
+		fields.add(QueryFields.getFieldSymmetricKeyId(useMap.getSymmetricKeyId()));
+		fields.add(QueryFields.getFieldPreviousKeyId(useMap.getPreviousKeyId()));
 	}
 	
 	@Override
@@ -165,46 +164,27 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 	}
 
 	public SecurityType getPrimaryPersonalKey(UserType user) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldOrganizationKey(false));
 		fields.add(QueryFields.getFieldGlobalKey(false));
 		fields.add(QueryFields.getFieldOwner(user.getId()));
 		fields.add(QueryFields.getFieldPrimaryKey(true));
 		SecurityType outsec = null;
 		List<NameIdType> recs = this.getByField(fields.toArray(new QueryField[0]), user.getOrganizationId());
-		if(recs.size() > 0) outsec = (SecurityType)recs.get(0);
+		if(!recs.isEmpty()) outsec = (SecurityType)recs.get(0);
 		return outsec;
 	}
 	public SecurityType getPrimaryOrganizationKey(long organizationId) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldOrganizationKey(true));
 		fields.add(QueryFields.getFieldPrimaryKey(true));
 		SecurityType outsec = null;
 		List<NameIdType> recs = this.getByField(fields.toArray(new QueryField[0]), organizationId);
-		if(recs.size() > 0) outsec = (SecurityType)recs.get(0);
+		if(!recs.isEmpty()) outsec = (SecurityType)recs.get(0);
 		return outsec;
 	}
 	public List<SecurityType> listOrganizationKeys(long organizationId) throws FactoryException, ArgumentException{
 		return list(new QueryField[]{QueryFields.getFieldOrganizationKey(true)}, organizationId);
 	}
-	/*
-	public List<SecurityType> listByOwner(UserType user) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
-		fields.add(QueryFields.getFieldOwner(user.getId()));
-		return listKeys(fields,0L,0,user.getOrganizationId());
-	}
 
-	private List<SecurityType> listKeys(List<QueryField> fields, long start_record, int record_count, long organizationId) throws FactoryException, ArgumentException{
-		ProcessingInstructionType pi = new ProcessingInstructionType();
-		pi.setPaginate(true);
-		pi.setStartIndex(start_record);
-		pi.setRecordCount(record_count);
-		
-		return getList(fields.toArray(new QueryField[0]), pi, organizationId);
-	}
-	public boolean deleteKeys(long organizationId) throws FactoryException, ArgumentException{
-		int del = this.deleteByField(new QueryField[0], organizationId);
-		return true;
-	}
-	*/
 }

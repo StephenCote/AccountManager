@@ -526,7 +526,7 @@ public abstract class FactoryBase {
 			
 			String fieldName = fields[i].getName();
 			ComparatorEnumType fieldComp = fields[i].getComparator();
-			if(haveAlias && fieldName.indexOf(".") == -1){
+			if(haveAlias && fieldName.indexOf('.') == -1){
 				fieldName = alias + fieldName;
 			}
 			if (i > 0) matchBuff.append(" " + joinType + " ");

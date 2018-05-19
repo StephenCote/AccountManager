@@ -51,13 +51,13 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class ContactFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.CONTACT, ContactFactory.class); }
 	public ContactFactory(){
 		super();
 		this.hasParentId=false;
 		this.hasUrn = true;
 		this.hasObjectId = true;
-		this.tableNames.add("contacts");
+		this.primaryTableName = "contacts";
+		this.tableNames.add(primaryTableName);
 		
 		factoryType = FactoryEnumType.CONTACT;
 	}
@@ -68,9 +68,10 @@ public class ContactFactory extends NameIdGroupFactory {
 		return t.getName() + "-" + t.getGroupId();
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("contacts")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+
 		}
 	}
 	@Override
@@ -85,11 +86,10 @@ public class ContactFactory extends NameIdGroupFactory {
 	}
 	public ContactType newContact(UserType user, ContactType parentContact) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		
-		ContactType obj = newContact(user,parentContact.getGroupId());
-		
-		return obj;
+		return newContact(user,parentContact.getGroupId());
+
 	}
 	public ContactType newContact(UserType user, long groupId) throws ArgumentException
 	{
@@ -136,17 +136,17 @@ public class ContactFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		ContactType new_obj = new ContactType();
-		new_obj.setNameType(NameEnumType.CONTACT);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setPreferred(rset.getBoolean("preferred"));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setLocationType(LocationEnumType.valueOf(rset.getString("locationtype")));
-		new_obj.setContactType(ContactEnumType.valueOf(rset.getString("contacttype")));
-		new_obj.setContactValue(rset.getString("contactvalue"));
+		ContactType newObj = new ContactType();
+		newObj.setNameType(NameEnumType.CONTACT);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setPreferred(rset.getBoolean("preferred"));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setLocationType(LocationEnumType.valueOf(rset.getString("locationtype")));
+		newObj.setContactType(ContactEnumType.valueOf(rset.getString("contacttype")));
+		newObj.setContactValue(rset.getString("contactvalue"));
 		
-		return new_obj;
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -158,13 +158,13 @@ public class ContactFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ContactType use_map = (ContactType)map;
-		fields.add(QueryFields.getFieldPreferred(use_map.getPreferred()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldLocationType(use_map.getLocationType()));
-		fields.add(QueryFields.getFieldContactType(use_map.getContactType()));
-		fields.add(QueryFields.getFieldContactValue(use_map.getContactValue()));
+		ContactType useMap = (ContactType)map;
+		fields.add(QueryFields.getFieldPreferred(useMap.getPreferred()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldLocationType(useMap.getLocationType()));
+		fields.add(QueryFields.getFieldContactType(useMap.getContactType()));
+		fields.add(QueryFields.getFieldContactValue(useMap.getContactValue()));
 	}
 	public int deleteContactsByUser(UserType user) throws FactoryException
 	{
@@ -182,18 +182,7 @@ public class ContactFactory extends NameIdGroupFactory {
 	}
 	public int deleteContactsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).deleteContactInformationByReferenceIds(ids,organization.getId());
-			Factories.getContactParticipationFactory().deleteParticipations(ids, organization);
-
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteContactsInGroup(DirectoryGroupType group)  throws FactoryException
 	{
@@ -201,20 +190,9 @@ public class ContactFactory extends NameIdGroupFactory {
 		// Need to get ids so as to delete participations as well
 		//
 		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
-		/// TODO: Delete participations
-		///
 		return deleteContactsByIds(ids, group.getOrganizationId());
 	}
-/*	
-	public List<ContactType> getChildContactList(ContactType parent) throws FactoryException,ArgumentException{
 
-		List<QueryField> fields = new ArrayList<QueryField>();
-		fields.add(QueryFields.getFieldParent(parent.getId()));
-		fields.add(QueryFields.getFieldGroup(parent.getGroup().getId()));
-		return getContactList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());
-
-	}
-*/
 	public List<ContactType>  getContactList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException
 	{
 		return paginateList(fields, startRecord, recordCount, organizationId);
@@ -245,79 +223,27 @@ public class ContactFactory extends NameIdGroupFactory {
 	/// Contact search uses a different query to join in contact information
 	/// Otherwise, this could be the paginateList method
 	///
-	/// public List<ContactType> search(QueryField[] filters, long organizationId){
 	@Override
 	public List<QueryField> buildSearchQuery(String searchValue, long organizationId) throws FactoryException{
 		
 		searchValue = searchValue.replaceAll("\\*","%");
 		
-		List<QueryField> filters = new ArrayList<QueryField>();
-		QueryField search_filters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
-		search_filters.setComparator(ComparatorEnumType.GROUP_OR);
-		QueryField name_filter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
-		name_filter.setComparator(ComparatorEnumType.LIKE);
-		search_filters.getFields().add(name_filter);
-		QueryField first_name_filter = new QueryField(SqlDataEnumType.VARCHAR,"firstname",searchValue);
-		first_name_filter.setComparator(ComparatorEnumType.LIKE);
-		search_filters.getFields().add(first_name_filter);
-		filters.add(search_filters);
+		List<QueryField> filters = new ArrayList<>();
+		QueryField searchFilters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
+		searchFilters.setComparator(ComparatorEnumType.GROUP_OR);
+		QueryField nameFilter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
+		nameFilter.setComparator(ComparatorEnumType.LIKE);
+		searchFilters.getFields().add(nameFilter);
+		QueryField firstNameFilter = new QueryField(SqlDataEnumType.VARCHAR,"firstname",searchValue);
+		firstNameFilter.setComparator(ComparatorEnumType.LIKE);
+		searchFilters.getFields().add(firstNameFilter);
+		filters.add(searchFilters);
 		return filters;
 	}
 	
 	@Override
 	public <T> List<T> search(QueryField[] filters, ProcessingInstructionType instruction, long organizationId){
 		return searchByIdInView("personContact", filters,instruction,organizationId);
-
-/*
-		Connection connection = ConnectionFactory.getInstance().getConnection();
-		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
-		String sqlQuery = assembleQueryString("SELECT id FROM personContact", filters, connectionType, instruction, organization.getId());
-		logger.info("Query=" + sqlQuery);
-		List<Long> ids = new ArrayList<Long>();
-		List<T> persons = new ArrayList<T>();
-		
-		try{
-			PreparedStatement statement = connection.prepareStatement(sqlQuery);
-			DBFactory.setStatementParameters(filters, statement);
-			ResultSet rset = statement.executeQuery();
-			while(rset.next()){
-				ids.add(rset.getLong("id"));
-			}
-			rset.close();
-			
-			/// don't paginate the subsequent search for ids because it was already filtered.
-			/// Create a new instruction and just copy the order clause
-			///
-			ProcessingInstructionType pi2 = new ProcessingInstructionType();
-			pi2.setOrderClause(instruction.getOrderClause());
-			persons = listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organization);
-			logger.info("Retrieved " + persons.size() + " from " + ids.size() + " ids");
-		}
-		catch(SQLException sqe){
-			logger.error(sqe.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
-		} catch (FactoryException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		finally{
-			
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-				
-				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			}
-		}
-		//return search(fields, instruction, organization);
-		return persons;
-*/
 	}
 
 

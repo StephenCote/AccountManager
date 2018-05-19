@@ -84,7 +84,7 @@ public class OperationFactory extends NameIdGroupFactory {
 	
 	public OperationType newOperation(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		OperationType obj = new OperationType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -124,17 +124,17 @@ public class OperationFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		OperationType new_obj = new OperationType();
-		new_obj.setNameType(NameEnumType.OPERATION);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setOperationType(OperationEnumType.valueOf(rset.getString("operationtype")));
-		//new_obj.setUrn(rset.getString("urn"));
-		new_obj.setScore(rset.getInt("score"));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setOperation(rset.getString("operation"));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		return new_obj;
+		OperationType newObj = new OperationType();
+		newObj.setNameType(NameEnumType.OPERATION);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setOperationType(OperationEnumType.valueOf(rset.getString("operationtype")));
+		//newObj.setUrn(rset.getString("urn"));
+		newObj.setScore(rset.getInt("score"));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setOperation(rset.getString("operation"));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -147,14 +147,14 @@ public class OperationFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		OperationType use_map = (OperationType)map;
-		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
-		fields.add(QueryFields.getFieldScore(use_map.getScore()));
-		fields.add(QueryFields.getFieldOperation(use_map.getOperation()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldOperationType(use_map.getOperationType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		OperationType useMap = (OperationType)map;
+		//fields.add(QueryFields.getFieldUrn(useMap.getUrn()));
+		fields.add(QueryFields.getFieldScore(useMap.getScore()));
+		fields.add(QueryFields.getFieldOperation(useMap.getOperation()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldOperationType(useMap.getOperationType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteOperationsByUser(UserType user) throws FactoryException
 	{

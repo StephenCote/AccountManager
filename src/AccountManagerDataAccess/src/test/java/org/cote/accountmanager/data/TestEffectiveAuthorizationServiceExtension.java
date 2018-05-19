@@ -419,7 +419,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		AccountType account2 = getApplicationAccount("Account #2",app1);
 		AccountType account3 = getApplicationAccount("Account #3",app1);
 		AccountType account4 = getApplicationAccount("Account #4",app1);
-		
+		boolean error = false;
 		if(person1.getAccounts().isEmpty()){
 			person1.getAccounts().add(account1);
 			try {
@@ -427,8 +427,10 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			} catch (FactoryException  e) {
 				
 				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+				error = true;
 			}
 		}
+		assertFalse("An error occurred",error);
 		if(person2.getAccounts().isEmpty()){
 			person2.getAccounts().add(account2);
 			try {
@@ -436,8 +438,10 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			} catch (FactoryException  e) {
 				
 				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+				error = true;
 			}
 		}
+		assertFalse("An error occurred",error);
 		
 
 		
@@ -479,7 +483,10 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		} catch (NullPointerException | ArgumentException | FactoryException | DataAccessException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+			error = true;
+			
 		}
+		assertFalse("An error occurred",error);
 	}
 	
 	private void testGenericAuthorization(UserType admin, NameIdType object, NameIdType setMember, NameIdType checkMember, BasePermissionType permission){

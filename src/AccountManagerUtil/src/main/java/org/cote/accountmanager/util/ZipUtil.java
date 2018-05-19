@@ -30,7 +30,11 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ZipUtil {
+	public static final Logger logger = LogManager.getLogger(ZipUtil.class);
 	public static byte[] gzipStream(InputStream in){
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
 		try{
@@ -39,7 +43,7 @@ public class ZipUtil {
 			gzout.close();
 		}
 		catch(IOException e){
-			System.out.println(e);
+			logger.error(e);
 		}
 		return baos.toByteArray();
 	}
@@ -54,7 +58,7 @@ public class ZipUtil {
 
 		}
 		catch(IOException e){
-			System.out.println("ZipUtil:: gzipBytes: " + e);
+			logger.error("ZipUtil:: gzipBytes: " + e);
 		}
 		return baos.toByteArray();
 
@@ -63,14 +67,13 @@ public class ZipUtil {
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
 		try{
 			ByteArrayInputStream bais=new ByteArrayInputStream(inBytes);
-//			System.out.println("GUNZIP: " + bais.available());
 			GZIPInputStream gzin = new GZIPInputStream(bais);
 			StreamUtil.copyStream(gzin, baos);
 			gzin.close();
 			bais.close();
 		}
 		catch(IOException e){
-			System.out.println("ZipUtil:: gunzipBytes: " + e);
+			logger.error("ZipUtil:: gunzipBytes: " + e);
 		}
 		return baos.toByteArray();
 

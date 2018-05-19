@@ -51,16 +51,16 @@ public class LogoutService {
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response logout(@Context HttpServletRequest request){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try{
 			request.logout();
 			request.getSession().invalidate();
-			out_bool = true;
+			outBool = true;
 		}
 		catch(Exception e){
 			
 		}
-		return Response.status(200).entity(out_bool).build();
+		return Response.status(200).entity(outBool).build();
 	}
 	
 }

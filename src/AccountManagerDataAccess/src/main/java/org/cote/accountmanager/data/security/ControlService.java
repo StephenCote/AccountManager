@@ -85,7 +85,7 @@ public class ControlService {
 		T contextObject
 	) {
 
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(action == ControlActionEnumType.UNKNOWN || action == ControlActionEnumType.ANY){
 			logger.error(action.toString() + " is unsupported as a validation action");
 		}
@@ -109,7 +109,7 @@ public class ControlService {
 					//prt.getFacts().get(0).setFactData("badpassword");
 					PolicyResponseType prr = PolicyEvaluator.evaluatePolicyRequest(prt);
 					if(prr.getResponse() == PolicyResponseEnumType.PERMIT){
-						out_bool = true;
+						outBool = true;
 					}
 				}
 			}
@@ -129,7 +129,7 @@ public class ControlService {
 			logger.error("Control does not define a valid type or reference");
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	
 }

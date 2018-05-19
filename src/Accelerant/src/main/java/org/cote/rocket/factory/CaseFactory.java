@@ -88,7 +88,7 @@ public class CaseFactory extends NameIdGroupFactory {
 	
 	public CaseType newCase(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		CaseType obj = new CaseType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -152,25 +152,25 @@ public class CaseFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		CaseType new_obj = new CaseType();
-		new_obj.setNameType(NameEnumType.CASE);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setCaseType(CaseEnumType.valueOf(rset.getString("casetype")));
-		new_obj.setDescription(rset.getString("description"));
-		return new_obj;
+		CaseType newObj = new CaseType();
+		newObj.setNameType(NameEnumType.CASE);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setCaseType(CaseEnumType.valueOf(rset.getString("casetype")));
+		newObj.setDescription(rset.getString("description"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		CaseType data = (CaseType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		if(update(data, null)){
 			/// Cases
 			///
 			try{
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).getResourceParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -185,7 +185,7 @@ public class CaseFactory extends NameIdGroupFactory {
 //				System.out.println("Net delete Case parts: " + set.size());
 				((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
-				set = new HashSet<Long>();
+				set = new HashSet<>();
 				maps = ((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).getArtifactParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -200,7 +200,7 @@ public class CaseFactory extends NameIdGroupFactory {
 //				System.out.println("Net delete Case parts: " + set.size());
 				((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
-				set = new HashSet<Long>();
+				set = new HashSet<>();
 				maps = ((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).getTaskParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -215,7 +215,7 @@ public class CaseFactory extends NameIdGroupFactory {
 				System.out.println("Net delete Case parts: " + set.size());
 				((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
-				set = new HashSet<Long>();
+				set = new HashSet<>();
 				maps = ((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).getDataParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -231,21 +231,21 @@ public class CaseFactory extends NameIdGroupFactory {
 				((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException e){
 				throw new FactoryException(e.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		CaseType use_map = (CaseType)map;
-		fields.add(QueryFields.getFieldCaseType(use_map.getCaseType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		CaseType useMap = (CaseType)map;
+		fields.add(QueryFields.getFieldCaseType(useMap.getCaseType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteCasesByUser(UserType user) throws FactoryException
 	{

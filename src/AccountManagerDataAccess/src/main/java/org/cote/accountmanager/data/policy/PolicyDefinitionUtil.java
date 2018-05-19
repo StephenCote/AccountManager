@@ -136,14 +136,14 @@ public class PolicyDefinitionUtil {
 
 	}
 	private static boolean haveParameter(PolicyDefinitionType pdt, FactType fact){
-		boolean out_bool = false;
+		boolean outBool = false;
 		for(int i = 0; i < pdt.getParameters().size();i++){
 			if(pdt.getParameters().get(i).getUrn().equals(fact.getUrn())){
-				out_bool = true;
+				outBool = true;
 				break;
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 
 	private static void copyParameters(PolicyDefinitionType pdt, PatternType pattern) throws FactoryException, ArgumentException{

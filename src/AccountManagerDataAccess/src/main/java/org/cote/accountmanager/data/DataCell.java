@@ -49,17 +49,16 @@ public class DataCell extends DataCellType {
 	}
 	
 	
-	public <T> T getValue() throws DataAccessException{
-		T out_val = (T)cellData;
-		return out_val;
+	@SuppressWarnings("unchecked")
+	public <T> T getValue(){
+		return (T)cellData;
 	}
-	public <T> void setValue(T value) throws DataAccessException{
-		this.setCellData(value);
-		//System.out.println(this.dataType + ":" + value);
 
+	public <T> void setValue(T value){
+		this.setCellData(value);
 		if(this.dataType != SqlDataEnumType.NULL){
-			SqlDataEnumType new_type = SqlTypeUtil.getType(value);
-			if(new_type != SqlDataEnumType.NULL) this.setDataType(new_type);
+			SqlDataEnumType newType = SqlTypeUtil.getType(value);
+			if(newType != SqlDataEnumType.NULL) this.setDataType(newType);
 		}
 
 	}

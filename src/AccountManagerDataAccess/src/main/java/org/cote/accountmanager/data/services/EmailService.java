@@ -61,7 +61,7 @@ public class EmailService {
 		return validEmailPattern.matcher(val).find();
 	}
 	public static boolean sendEmail(ApiClientConfigurationBean apiConfig,ContactType fromContact, ContactType[] contacts, String title, String content){
-		boolean out_bool = false;
+		boolean outBool = false;
 		Properties props = new Properties();
 		
 		for(int i = 0; i < apiConfig.getAttributes().size();i++){
@@ -90,7 +90,7 @@ public class EmailService {
 	/// TODO: Add a velocity check to make sure email doesn't get spammed out from other services
 	///
 	protected static boolean sendEmail(Properties emailServerProperties, ContactType fromContact,ContactType[] contacts, String server, String identity, String credential, String title, String content){
-		boolean out_bool = false;
+		boolean outBool = false;
 		StringBuilder addrBuff = new StringBuilder();
 		int iter = 0;
 		for(int i = 0; i < contacts.length; i++){
@@ -113,7 +113,7 @@ public class EmailService {
 		}
 		if(addrBuff.length() == 0){
 			logger.warn("Empty address list.");
-			return out_bool;
+			return outBool;
 		}
 		logger.warn("Title: " + title);
 		logger.warn("To: " + addrBuff.toString());
@@ -138,7 +138,7 @@ public class EmailService {
 	        t.sendMessage(msg, msg.getAllRecipients());
 	        logger.warn("Response: " + t.getLastServerResponse());
 	        t.close();
-	        out_bool = true;
+	        outBool = true;
 		}
 		catch (AddressException e) {
 			
@@ -149,6 +149,6 @@ public class EmailService {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 }

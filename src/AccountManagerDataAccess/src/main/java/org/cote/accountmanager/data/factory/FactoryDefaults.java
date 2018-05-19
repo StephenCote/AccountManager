@@ -63,6 +63,8 @@ public class FactoryDefaults {
 	
 	public static final Logger logger = LogManager.getLogger(FactoryDefaults.class);
 	
+	
+	
 	protected static final String[] DEFAULT_APPLICATION_PERMISSIONS = new String[]{
 		"ApplicationView",
 		"ApplicationEdit",
@@ -82,8 +84,12 @@ public class FactoryDefaults {
 		"AccountCreate"
 	};
 	
+	private FactoryDefaults(){
+		
+	}
+	
 	/// Changing this to be a random string
-	public static boolean setupAccountManager(String root_password) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean setupAccountManager(String rootPassword) throws ArgumentException, DataAccessException, FactoryException
 	{
 		// 2016/07/27 - Bug: Because the factory starts automatically, it will throw an error
 		// it also means it has to be reset again before running setup or it will fail again because all the data was just nuked by reloading the database schema
@@ -115,12 +121,12 @@ public class FactoryDefaults {
 			/// 2015/06/23 - New Credential System
 			/// I intentionally left the credential operation decoupled from object creation
 			///
-			CredentialType cred = CredentialService.newHashedPasswordCredential(rootUser, rootUser, root_password, true,false);
+			CredentialType cred = CredentialService.newHashedPasswordCredential(rootUser, rootUser, rootPassword, true,false);
 			if(cred == null) throw new FactoryException("Failed to persist root credential");
 		}
-		setupOrganization(Factories.getDevelopmentOrganization(), root_password);
-		setupOrganization(Factories.getSystemOrganization(), root_password);
-		setupOrganization(Factories.getPublicOrganization(), root_password);
+		setupOrganization(Factories.getDevelopmentOrganization(), rootPassword);
+		setupOrganization(Factories.getSystemOrganization(), rootPassword);
+		setupOrganization(Factories.getPublicOrganization(), rootPassword);
 		
 		logger.info("End Setup Account Manager");
 		
@@ -161,18 +167,17 @@ public class FactoryDefaults {
 
 		// Create the document control user
 		//
-		UserType dc_user = uFact.newUserForAccount(DOCUMENT_CONTROL_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
-		if (uFact.add(dc_user) == false) return false;
-		dc_user = uFact.getByName(DOCUMENT_CONTROL_USER_NAME, organization.getId());
+		UserType dcUser = uFact.newUserForAccount(DOCUMENT_CONTROL_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		if (!uFact.add(dcUser)) return false;
+		dcUser = uFact.getByName(DOCUMENT_CONTROL_USER_NAME, organization.getId());
 
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
-		/// TODO: Verify this user actually needs a credential
 		///
-		cred = CredentialService.newHashedPasswordCredential(dc_user, dc_user, UUID.randomUUID().toString(), true, false);
+		cred = CredentialService.newHashedPasswordCredential(dcUser, dcUser, UUID.randomUUID().toString(), true, false);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
 		
-		if(dc_user.getId() <= 0 || adminUser.getId() <= 0){
+		if(dcUser.getId() <= 0 || adminUser.getId() <= 0){
 			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
 			return false;
 		}
@@ -181,24 +186,24 @@ public class FactoryDefaults {
 		
 		/// Feedback user
 		///
-		UserType fb_user = uFact.newUserForAccount(FEEDBACK_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
-		if (uFact.add(fb_user) == false) return false;
-		fb_user = uFact.getByName(FEEDBACK_USER_NAME, organization.getId());
-		cred = CredentialService.newHashedPasswordCredential(fb_user, fb_user, UUID.randomUUID().toString(), true, false);
+		UserType fbUser = uFact.newUserForAccount(FEEDBACK_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		if (!uFact.add(fbUser)) return false;
+		fbUser = uFact.getByName(FEEDBACK_USER_NAME, organization.getId());
+		cred = CredentialService.newHashedPasswordCredential(fbUser, fbUser, UUID.randomUUID().toString(), true, false);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
-		if(fb_user.getId() <= 0 || adminUser.getId() <= 0){
+		if(fbUser.getId() <= 0 || adminUser.getId() <= 0){
 			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
 			return false;
 		}
 		
 		/// Vault user
 		///
-		UserType vl_user = uFact.newUserForAccount(VAULT_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
-		if (uFact.add(vl_user) == false) return false;
-		vl_user = uFact.getByName(VAULT_USER_NAME, organization.getId());
-		cred = CredentialService.newHashedPasswordCredential(vl_user, vl_user, UUID.randomUUID().toString(), true, false);
+		UserType vlUser = uFact.newUserForAccount(VAULT_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
+		if (!uFact.add(vlUser)) return false;
+		vlUser = uFact.getByName(VAULT_USER_NAME, organization.getId());
+		cred = CredentialService.newHashedPasswordCredential(vlUser, vlUser, UUID.randomUUID().toString(), true, false);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
-		if(vl_user.getId() <= 0 || adminUser.getId() <= 0){
+		if(vlUser.getId() <= 0 || adminUser.getId() <= 0){
 			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
 			return false;
 		}
@@ -226,7 +231,7 @@ public class FactoryDefaults {
 			);
 		}
 		/// 2016/05/18 - Moved default permission construction into the Participation Factories
-		/// TODO: Account is left out at the moment
+		/// Account is left out at the moment
 		///
 		createPermissionsForAuthorizationFactories(organization.getId());
 
@@ -323,7 +328,7 @@ public class FactoryDefaults {
 			{
 				try{
 					pfact.add(
-							pfact.newPermission(permissionNames[i], fact.getDefaultPermissionType(), organizationId)
+						pfact.newPermission(permissionNames[i], fact.getDefaultPermissionType(), organizationId)
 				);
 				logger.info("Added permission " + permissionNames[i] + " to organization #" + organizationId);
 				}

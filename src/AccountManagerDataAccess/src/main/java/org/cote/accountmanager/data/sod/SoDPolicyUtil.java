@@ -58,7 +58,7 @@ public class SoDPolicyUtil {
 			try{
 				DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getByUrn(activityUrn);
 				List<EntitlementType> ents = EffectiveAuthorizationService.getEffectiveMemberEntitlements(dir, null, new BasePermissionType[0],false);
-				Set<Long> perSet = new HashSet<Long>();
+				Set<Long> perSet = new HashSet<>();
 				for(int i = 0; i < ents.size(); i++){
 					EntitlementType ent = ents.get(i);
 					BasePermissionType per = Factories.getNameIdFactory(FactoryEnumType.PERMISSION).getById(ent.getEntitlementId(), ent.getOrganizationId());
@@ -80,7 +80,7 @@ public class SoDPolicyUtil {
 	/// XXX - making this all XXX  At the moment, it's just ANY - but for all, the returned permission size must be greater than (but should be equal to) the activity permission size
 	///
 	public static List<Long> getActivityPermissionsForType(String activityUrn, NameIdType reference){
-		List<Long> perms = new ArrayList<Long>();
+		List<Long> perms = new ArrayList<>();
 		List<Long> actPerms = getActivityPermissions(activityUrn);
 		if(actPerms.isEmpty()){
 			logger.warn("Zero permissions found for " + activityUrn);
@@ -89,7 +89,7 @@ public class SoDPolicyUtil {
 		try{
 			NameIdType object = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getByUrn(activityUrn);
 			List<EntitlementType> ents = EffectiveAuthorizationService.getEffectiveMemberEntitlements(object,reference , actPerms.toArray(new Long[0]),true);
-			Set<Long> perSet = new HashSet<Long>();
+			Set<Long> perSet = new HashSet<>();
 			for(int i = 0; i < ents.size(); i++){
 				EntitlementType ent = ents.get(i);
 				BasePermissionType per = Factories.getNameIdFactory(FactoryEnumType.PERMISSION).getById(ent.getEntitlementId(), ent.getOrganizationId());

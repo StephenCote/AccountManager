@@ -92,9 +92,10 @@ public class CredentialFactory extends NameIdFactory {
 		CredentialType t = (CredentialType)obj;
 		return t.getCredentialType().toString() + "-" + t.getReferenceType().toString() + "-" + t.getReferenceId();
 	}
+	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(primaryTableName)){
-			;
+			
 		}
 	}
 	
@@ -168,58 +169,51 @@ public class CredentialFactory extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		CredentialType new_cred = new CredentialType();
-		new_cred.setNameType(NameEnumType.CREDENTIAL);
-		super.read(rset, new_cred);
+		CredentialType newCred = new CredentialType();
+		newCred.setNameType(NameEnumType.CREDENTIAL);
+		super.read(rset, newCred);
 		
-		new_cred.setHashProvider(rset.getString("hashprovider"));
-		new_cred.setNextCredentialId(rset.getLong("nextcredentialid"));
-		new_cred.setPreviousCredentialId(rset.getLong("previouscredentialid"));
-		new_cred.setReferenceId(rset.getLong("referenceid"));
-		new_cred.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
-		new_cred.setCredentialType(CredentialEnumType.fromValue(rset.getString("credentialtype")));
-		new_cred.setVaultId(rset.getString("vaultid"));
-		new_cred.setKeyId(rset.getString("keyid"));
-		new_cred.setVaulted(rset.getBoolean("isvaulted"));
-		new_cred.setEnciphered(rset.getBoolean("isenciphered"));
-		new_cred.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		new_cred.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		new_cred.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
-		new_cred.setSalt(rset.getBytes("salt"));
-		new_cred.setCredential(rset.getBytes("credential"));
+		newCred.setHashProvider(rset.getString("hashprovider"));
+		newCred.setNextCredentialId(rset.getLong("nextcredentialid"));
+		newCred.setPreviousCredentialId(rset.getLong("previouscredentialid"));
+		newCred.setReferenceId(rset.getLong("referenceid"));
+		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
+		newCred.setCredentialType(CredentialEnumType.fromValue(rset.getString("credentialtype")));
+		newCred.setVaultId(rset.getString("vaultid"));
+		newCred.setKeyId(rset.getString("keyid"));
+		newCred.setVaulted(rset.getBoolean("isvaulted"));
+		newCred.setEnciphered(rset.getBoolean("isenciphered"));
+		newCred.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		newCred.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
+		newCred.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		newCred.setSalt(rset.getBytes("salt"));
+		newCred.setCredential(rset.getBytes("credential"));
 		
-		return new_cred;
+		return newCred;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		CredentialType use_map = (CredentialType)map;
-		fields.add(QueryFields.getFieldHashProvider(use_map.getHashProvider()));
-		fields.add(QueryFields.getFieldPrimaryCredential(use_map.getPrimary()));
-		fields.add(QueryFields.getFieldModifiedDate(use_map.getModifiedDate()));
-		fields.add(QueryFields.getFieldExpirationDate(use_map.getExpiryDate()));
-		fields.add(QueryFields.getFieldCreatedDate(use_map.getCreatedDate()));
-		fields.add(QueryFields.getFieldPreviousCredentialId(use_map.getPreviousCredentialId()));
-		fields.add(QueryFields.getFieldNextCredentialId(use_map.getNextCredentialId()));
-		fields.add(QueryFields.getFieldReferenceId(use_map.getReferenceId()));
-		fields.add(QueryFields.getFieldReferenceType(use_map.getReferenceType()));
-		fields.add(QueryFields.getFieldCredentialType(use_map.getCredentialType()));
-		fields.add(QueryFields.getFieldKeyId(use_map.getKeyId()));
-		fields.add(QueryFields.getFieldVaultId(use_map.getVaultId()));
-		fields.add(QueryFields.getFieldVaulted(use_map.getVaulted()));
-		fields.add(QueryFields.getFieldEnciphered(use_map.getEnciphered()));
+		CredentialType useMap = (CredentialType)map;
+		fields.add(QueryFields.getFieldHashProvider(useMap.getHashProvider()));
+		fields.add(QueryFields.getFieldPrimaryCredential(useMap.getPrimary()));
+		fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
+		fields.add(QueryFields.getFieldExpirationDate(useMap.getExpiryDate()));
+		fields.add(QueryFields.getFieldCreatedDate(useMap.getCreatedDate()));
+		fields.add(QueryFields.getFieldPreviousCredentialId(useMap.getPreviousCredentialId()));
+		fields.add(QueryFields.getFieldNextCredentialId(useMap.getNextCredentialId()));
+		fields.add(QueryFields.getFieldReferenceId(useMap.getReferenceId()));
+		fields.add(QueryFields.getFieldReferenceType(useMap.getReferenceType()));
+		fields.add(QueryFields.getFieldCredentialType(useMap.getCredentialType()));
+		fields.add(QueryFields.getFieldKeyId(useMap.getKeyId()));
+		fields.add(QueryFields.getFieldVaultId(useMap.getVaultId()));
+		fields.add(QueryFields.getFieldVaulted(useMap.getVaulted()));
+		fields.add(QueryFields.getFieldEnciphered(useMap.getEnciphered()));
 
-		fields.add(QueryFields.getFieldSalt(use_map.getSalt()));
-		fields.add(QueryFields.getFieldCredential(use_map.getCredential()));
+		fields.add(QueryFields.getFieldSalt(useMap.getSalt()));
+		fields.add(QueryFields.getFieldCredential(useMap.getCredential()));
 	}
-	/*
-	public CredentialType getCredentialByObjectId(String id, long organizationId) throws FactoryException, ArgumentException{
-		
-		List<NameIdType> sec = getByObjectId(id, organizationId);
-		if(sec.size() > 0) return (CredentialType)sec.get(0);
-		return null;
-	}
-	*/
+
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
@@ -229,7 +223,7 @@ public class CredentialFactory extends NameIdFactory {
 	}
 	
 	public List<CredentialType> getCredentialsForType(NameIdType obj) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getId().compareTo(0L) == 0) throw new ArgumentException("Invalid object reference");
 		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));
 		fields.add(QueryFields.getFieldReferenceId(obj.getId()));
@@ -246,7 +240,7 @@ public class CredentialFactory extends NameIdFactory {
 	}
 	
 	public CredentialType getPrimaryCredential(NameIdType obj,CredentialEnumType credType,boolean requireActive) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));
 		fields.add(QueryFields.getFieldReferenceId(obj.getId()));
 		fields.add(QueryFields.getFieldPrimaryCredential(true));
@@ -264,7 +258,7 @@ public class CredentialFactory extends NameIdFactory {
 		if(credType != CredentialEnumType.UNKNOWN) fields.add(QueryFields.getFieldCredentialType(credType));
 		CredentialType outsec = null;
 		List<NameIdType> recs = this.getByField(fields.toArray(new QueryField[0]), obj.getOrganizationId());
-		if(recs.size() > 0) outsec = (CredentialType)recs.get(0);
+		if(!recs.isEmpty()) outsec = (CredentialType)recs.get(0);
 		return outsec;
 	}
 	

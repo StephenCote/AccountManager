@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -148,7 +147,7 @@ public class SessionFactory extends FactoryBase {
 	}
 	private boolean clearSessionData(Connection connection, String sessionId) throws SQLException, FactoryException{
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		if(sessionId != null) fields.add(QueryFields.getFieldSessionId(sessionId));
 		String limit1 = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "");
@@ -171,7 +170,7 @@ public class SessionFactory extends FactoryBase {
 
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		if(sessionId != null) fields.add(QueryFields.getFieldSessionId(sessionId));
 		String limit1 = (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT 200 " : "");
 		String limit2 = ((connectionType == CONNECTION_TYPE.MYSQL) ? " LIMIT 200 OFFSET 0" : "");

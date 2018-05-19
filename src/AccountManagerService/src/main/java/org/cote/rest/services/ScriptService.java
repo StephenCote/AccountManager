@@ -121,9 +121,9 @@ public class ScriptService {
 	public Response updateCommunityProjectScript(@PathParam("communityId") String communityId, @PathParam("projectId") String projectId, @PathParam("name") String name, String dataStr,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		ICommunityProvider cp = getProvider();
-		boolean out_bool = false;
-		if(cp != null) out_bool = cp.updateCommunityProjectScript(user, communityId, projectId, name, dataStr);
-		return Response.status(200).entity(out_bool).build();
+		boolean outBool = false;
+		if(cp != null) outBool = cp.updateCommunityProjectScript(user, communityId, projectId, name, dataStr);
+		return Response.status(200).entity(outBool).build();
 	}
 
 }

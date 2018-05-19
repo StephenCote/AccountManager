@@ -204,7 +204,7 @@ public class IdentityService {
 	public boolean setConnectionConfig(ProjectType proj, IdentityConnectionType cfg){
 
 		DataType data = getConfigData(proj,"identity.connection.config");
-		boolean out_bool = false;
+		boolean outBool = false;
 		boolean add = false;
 		cfg.setProjectId(proj.getId());
 		try {
@@ -218,13 +218,13 @@ public class IdentityService {
 			DataUtil.setCipher(data, KeyService.getPrimarySymmetricKey(productOrganization.getId()));
 			DataUtil.setValueString(data, JAXBUtil.exportObject(IdentityConnectionType.class,cfg));
 			if(add){
-				out_bool = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data);
+				outBool = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data);
 			}
-			else out_bool = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(data);
+			else outBool = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(data);
 		} catch (ArgumentException | DataException | FactoryException e) {
 			logger.error(e);
 		} 
-		return out_bool;
+		return outBool;
 	}
 	
 
@@ -232,7 +232,7 @@ public class IdentityService {
 	public boolean deleteProjectContents(ProjectType project, boolean deleteEntireProject, boolean deleteConfiguration){
 		logger.info("Deleting project contents. Note: This does not delete the project structure itself, only the IdentityService specific project contents.");
 		DirectoryGroupType svcDir = getApplicationsRoot(project);
-		boolean out_bool = false;
+		boolean outBool = false;
 
 			
 			logger.info("Deleting IdentityService Project " + project.getName() + " Data");
@@ -278,12 +278,12 @@ public class IdentityService {
 				logger.info("Cleaning up orphaned data references");
 				Factories.cleanupOrphans();
 				
-				out_bool = true;
+				outBool = true;
 			} catch (FactoryException | ArgumentException | DataAccessException e) {
 				logger.error(e);
 			}
 		
-		return out_bool;
+		return outBool;
 	}
 	public DirectoryGroupType getPersonsRoot(ProjectType project){
 		
@@ -334,7 +334,7 @@ public class IdentityService {
 	}
 
 	public boolean initialize(){
-		boolean out_bool = false;
+		boolean outBool = false;
 		initialized = false;
 		if(Rocket.getIsSetup() == false){
 			logger.error("Base product is not configured correctly.");
@@ -371,13 +371,13 @@ public class IdentityService {
 			lifecycle = chkLife;
 			
 			initialized = true;
-			out_bool = true;
+			outBool = true;
 		}
 		catch (FactoryException | ArgumentException | DataAccessException e) {
 			logger.error(e.getMessage());
 		} 
 
-		return out_bool;
+		return outBool;
 	}
 	
 	public int importApplications(String sessionId, ProjectType proj, List<DirectoryGroupType> groups){
@@ -817,7 +817,7 @@ public class IdentityService {
 	/*
 	 * EXAMPLE Synchronize
 	public boolean synchronizeRoles(ProjectType project){
-		boolean out_bool = false;
+		boolean outBool = false;
 		logger.warn("TODO: Implement synchronize roles");
 		if(true) return false;
 		PersonRoleType roleBase = getProjectRoleBucket(project);
@@ -891,7 +891,7 @@ public class IdentityService {
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
 			EffectiveAuthorizationService.rebuildRoleRoleCache(roles,project.getOrganizationId());
-			out_bool = true;
+			outBool = true;
 		} catch (FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -903,7 +903,7 @@ public class IdentityService {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	*/
 	public BasePermissionType getApplicationPermissionBase(ProjectType project, DirectoryGroupType svc){
@@ -1081,8 +1081,8 @@ public class IdentityService {
 			List<AccountType> mapAccounts = new ArrayList<AccountType>();
 			List<AccountGroupType> mapGroups = new ArrayList<AccountGroupType>();
 			List<BasePermissionType> permissions = new ArrayList<BasePermissionType>();
-			List<Long> replacePerms = new ArrayList<Long>();
-			List<Long> replaceGroups = new ArrayList<Long>();
+			List<Long> replacePerms = new ArrayList<>();
+			List<Long> replaceGroups = new ArrayList<>();
 			for(int d = 0; d < imports.length; d++){
 				if(imports[d].getHeader().isEmpty()){
 					setIdentityDataImportHeader(imports[d]);
@@ -1131,7 +1131,7 @@ public class IdentityService {
 								 if(a > 0) nameBuff.append(",");
 								 nameBuff.append("'" + aAcctNames[a]+ "'");
 							 }
-							 List<QueryField> fields = new ArrayList<QueryField>();
+							 List<QueryField> fields = new ArrayList<>();
 							 fields.add(QueryFields.getFieldGroup(application.getId()));
 							 QueryField match = new QueryField(SqlDataEnumType.VARCHAR,"name",nameBuff.toString());
 							 match.setComparator(ComparatorEnumType.IN);
@@ -1190,7 +1190,7 @@ public class IdentityService {
 								 if(a > 0) nameBuff.append(",");
 								 nameBuff.append("'" + aAcctNames[a]+ "'");
 							 }
-							 List<QueryField> fields = new ArrayList<QueryField>();
+							 List<QueryField> fields = new ArrayList<>();
 							 fields.add(QueryFields.getFieldGroup(application.getId()));
 							 QueryField match = new QueryField(SqlDataEnumType.VARCHAR,"name",nameBuff.toString());
 							 match.setComparator(ComparatorEnumType.IN);
@@ -1252,7 +1252,7 @@ public class IdentityService {
 								 if(a > 0) nameBuff.append(",");
 								 nameBuff.append("'" + aGrpNames[a]+ "'");
 							 }
-							 List<QueryField> fields = new ArrayList<QueryField>();
+							 List<QueryField> fields = new ArrayList<>();
 							 //fields.add(QueryFields.getFieldGroup(application.getId()));
 							 fields.add(QueryFields.getFieldParent(application.getId()));
 							 QueryField match = new QueryField(SqlDataEnumType.VARCHAR,"name",nameBuff.toString());

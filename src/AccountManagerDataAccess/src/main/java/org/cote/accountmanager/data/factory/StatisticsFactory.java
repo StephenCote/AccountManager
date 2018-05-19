@@ -130,13 +130,13 @@ public class StatisticsFactory extends NameIdFactory {
 
 	
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		StatisticsType use_map = (StatisticsType)map;
-		fields.add(QueryFields.getFieldAccessedDate(use_map.getAccessedDate()));
-		fields.add(QueryFields.getFieldCreatedDate(use_map.getCreatedDate()));
-		fields.add(QueryFields.getFieldModifiedDate(use_map.getModifiedDate()));
-		fields.add(QueryFields.getFieldExpirationDate(use_map.getExpirationDate()));
-		fields.add(QueryFields.getFieldReferenceId(use_map.getReferenceId()));
-		fields.add(QueryFields.getFieldStatisticsType(use_map.getStatisticsType()));
+		StatisticsType useMap = (StatisticsType)map;
+		fields.add(QueryFields.getFieldAccessedDate(useMap.getAccessedDate()));
+		fields.add(QueryFields.getFieldCreatedDate(useMap.getCreatedDate()));
+		fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
+		fields.add(QueryFields.getFieldExpirationDate(useMap.getExpirationDate()));
+		fields.add(QueryFields.getFieldReferenceId(useMap.getReferenceId()));
+		fields.add(QueryFields.getFieldStatisticsType(useMap.getStatisticsType()));
 		
 	}
 	public StatisticsType newStatistics(AccountType map)

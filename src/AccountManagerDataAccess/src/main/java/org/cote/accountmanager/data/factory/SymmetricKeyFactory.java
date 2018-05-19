@@ -130,40 +130,40 @@ public class SymmetricKeyFactory extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		SecurityType new_cred = new SecurityType();
-		new_cred.setNameType(NameEnumType.SECURITY);
-		super.read(rset, new_cred);
+		SecurityType newCred = new SecurityType();
+		newCred.setNameType(NameEnumType.SECURITY);
+		super.read(rset, newCred);
 		
-		new_cred.setGlobalKey(rset.getBoolean("globalkey"));
-		new_cred.setEncryptCipherKey(rset.getBoolean("encryptedkey"));
-		new_cred.setOrganizationKey(rset.getBoolean("organizationkey"));
-		new_cred.setPrimaryKey(rset.getBoolean("primarykey"));
-		new_cred.setHashProvider(rset.getString("hashprovider"));
-		new_cred.setRandomSeedLength(rset.getLong("seedlength"));
-		new_cred.setPreviousKeyId(rset.getLong("previouskeyid"));
-		new_cred.setAsymmetricKeyId(rset.getLong("asymmetrickeyid"));
-		new_cred.setCipherProvider(rset.getString("cipherprovider"));
-		new_cred.setCipherKeySpec(rset.getString("cipherkeyspec"));
-		new_cred.setSymmetricCipherKeySpec(rset.getString("symmetriccipherkeyspec"));
-		if(new_cred.getEncryptCipherKey()){
-			new_cred.setEncryptedCipherIV(rset.getBytes("cipheriv"));
-			new_cred.setEncryptedCipherKey(rset.getBytes("cipherkey"));
+		newCred.setGlobalKey(rset.getBoolean("globalkey"));
+		newCred.setEncryptCipherKey(rset.getBoolean("encryptedkey"));
+		newCred.setOrganizationKey(rset.getBoolean("organizationkey"));
+		newCred.setPrimaryKey(rset.getBoolean("primarykey"));
+		newCred.setHashProvider(rset.getString("hashprovider"));
+		newCred.setRandomSeedLength(rset.getLong("seedlength"));
+		newCred.setPreviousKeyId(rset.getLong("previouskeyid"));
+		newCred.setAsymmetricKeyId(rset.getLong("asymmetrickeyid"));
+		newCred.setCipherProvider(rset.getString("cipherprovider"));
+		newCred.setCipherKeySpec(rset.getString("cipherkeyspec"));
+		newCred.setSymmetricCipherKeySpec(rset.getString("symmetriccipherkeyspec"));
+		if(newCred.getEncryptCipherKey()){
+			newCred.setEncryptedCipherIV(rset.getBytes("cipheriv"));
+			newCred.setEncryptedCipherKey(rset.getBytes("cipherkey"));
 		}
 		else{
-			new_cred.setCipherKey(rset.getBytes("cipherkey"));
-			new_cred.setCipherIV(rset.getBytes("cipheriv"));
+			newCred.setCipherKey(rset.getBytes("cipherkey"));
+			newCred.setCipherIV(rset.getBytes("cipheriv"));
 		}
-		//logger.info("Symmetric Key Read: " + JSONUtil.exportObject(new_cred));
-		return new_cred;
+		//logger.info("Symmetric Key Read: " + JSONUtil.exportObject(newCred));
+		return newCred;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		SecurityType use_map = (SecurityType)map;
+		SecurityType useMap = (SecurityType)map;
 
-		fields.add(QueryFields.getFieldPrimaryKey(use_map.getPrimaryKey()));
-		fields.add(QueryFields.getFieldAsymmetricKeyId(use_map.getAsymmetricKeyId()));
-		fields.add(QueryFields.getFieldPreviousKeyId(use_map.getPreviousKeyId()));
+		fields.add(QueryFields.getFieldPrimaryKey(useMap.getPrimaryKey()));
+		fields.add(QueryFields.getFieldAsymmetricKeyId(useMap.getAsymmetricKeyId()));
+		fields.add(QueryFields.getFieldPreviousKeyId(useMap.getPreviousKeyId()));
 	}
 	
 	@Override
@@ -175,7 +175,7 @@ public class SymmetricKeyFactory extends NameIdFactory {
 	}
 
 	public SecurityType getPrimaryPersonalKey(UserType user) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldOrganizationKey(false));
 		fields.add(QueryFields.getFieldGlobalKey(false));
 		fields.add(QueryFields.getFieldOwner(user.getId()));
@@ -186,7 +186,7 @@ public class SymmetricKeyFactory extends NameIdFactory {
 		return outsec;
 	}
 	public SecurityType getPrimaryOrganizationKey(long org) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldOrganizationKey(true));
 		fields.add(QueryFields.getFieldPrimaryKey(true));
 		SecurityType outsec = null;

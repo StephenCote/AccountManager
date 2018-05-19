@@ -107,7 +107,7 @@ public class PrincipalService {
 		else{
 			logger.info("Don't know what: " + (principal == null ? "Null" : "Uknown") + " principal");
 		}
-		boolean out_bool = false;
+		boolean outBool = false;
 
 		return Response.status(200).entity(outUser).build();
 	}

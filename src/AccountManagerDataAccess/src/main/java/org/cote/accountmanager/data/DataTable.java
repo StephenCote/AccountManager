@@ -32,30 +32,28 @@ import org.cote.accountmanager.objects.DataTableType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class DataTable extends DataTableType {
-	private Map<String,Integer> columnMap = Collections.synchronizedMap(new HashMap<String,Integer>());
-	private static Map<String,Boolean> restrictSelectMap = new HashMap<String, Boolean>();
-	private static Map<String, Boolean> restrictUpdateMap = new HashMap<String, Boolean>();
+	private Map<String,Integer> columnMap = Collections.synchronizedMap(new HashMap<>());
+	private static Map<String,Boolean> restrictSelectMap = new HashMap<>();
+	private static Map<String, Boolean> restrictUpdateMap = new HashMap<>();
 
-	public void setRestrictUpdateColumn(String column_name, boolean restricted){
-		restrictUpdateMap.put(column_name,  restricted);
+	public void setRestrictUpdateColumn(String columnName, boolean restricted){
+		restrictUpdateMap.put(columnName,  restricted);
 	}
-	public void setRestrictSelectColumn(String column_name, boolean restricted){
-		restrictSelectMap.put(column_name,  restricted);
+	public void setRestrictSelectColumn(String columnName, boolean restricted){
+		restrictSelectMap.put(columnName,  restricted);
 	}
-	public boolean getCanSelectColumn(String column_name)
+	public boolean getCanSelectColumn(String columnName)
 	{
-		if(restrictSelectMap.containsKey(column_name) && restrictSelectMap.get(column_name).booleanValue() == true) return false;
-		return true;
+		return (!(restrictSelectMap.containsKey(columnName) && restrictSelectMap.get(columnName).booleanValue()));
 	}
 	
-	public boolean getCanUpdateColumn(String column_name)
+	public boolean getCanUpdateColumn(String columnName)
 	{
-		if(restrictUpdateMap.containsKey(column_name) && restrictUpdateMap.get(column_name).booleanValue() == true) return false;
-		return true;
+		return (!(restrictUpdateMap.containsKey(columnName) && restrictUpdateMap.get(columnName).booleanValue()));
 	}
 	
 	public int getColumnIndex(String columnName) throws DataAccessException{
-		if(columnMap.containsKey(columnName) == false) throw new DataAccessException("Invalid column '" + columnName + "'");
+		if(!columnMap.containsKey(columnName)) throw new DataAccessException("Invalid column '" + columnName + "'");
 		return getColumnMap().get(columnName).intValue();
 	}
 	public Map<String, Integer> getColumnMap() {
@@ -89,7 +87,6 @@ public class DataTable extends DataTableType {
 			cell.setDataType(col.getDataType());
 			row.getCells().add(cell);
 		}
-		//this.getRows().add(row);
 		return row;
 	}
 }

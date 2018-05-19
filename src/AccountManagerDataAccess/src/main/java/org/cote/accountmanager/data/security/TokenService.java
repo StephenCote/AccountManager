@@ -99,7 +99,7 @@ public class TokenService {
 		SecuritySpoolType tokenType = null;
 		try{
 			byte[] authZExp = JSONUtil.exportObject(authZ).getBytes("UTF-8");
-			newToken(owner, SpoolNameEnumType.AUTHORIZATION, object.getUrn() + " Authorization Claim",authZExp, expirySeconds);
+			tokenType = newToken(owner, SpoolNameEnumType.AUTHORIZATION, object.getUrn() + " Authorization Claim",authZExp, expirySeconds);
 		}
 		catch(FactoryException | UnsupportedEncodingException | ArgumentException e){
 			logger.error(e.getMessage());

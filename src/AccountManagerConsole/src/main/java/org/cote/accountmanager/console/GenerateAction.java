@@ -51,14 +51,14 @@ public class GenerateAction {
 		*/
 		
 		Connection connection = null;
-		boolean out_bool = false;
+		boolean outBool = false;
 		try{
 			connection = ConnectionFactory.getInstance().getConnection();
 			Statement statement = connection.createStatement();
 			statement.executeUpdate(sql);
 			connection.close();
 			logger.info("Executed Update");
-			out_bool = true;
+			outBool = true;
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());

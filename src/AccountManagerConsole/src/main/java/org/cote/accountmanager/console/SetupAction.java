@@ -40,16 +40,16 @@ import org.cote.accountmanager.util.StreamUtil;
 public class SetupAction {
 	public static final Logger logger = LogManager.getLogger(SetupAction.class);
 	public static boolean setupAccountManager(String rootPassword, String schemaFile){
-		boolean out_bool = false;
+		boolean outBool = false;
 		boolean error = false;
 		
 		if(rootPassword == null || rootPassword.length() == 0){
 			logger.error("Invalid root password");
-			return out_bool;
+			return outBool;
 		}
 		if(schemaFile == null || schemaFile.length() == 0){
 			logger.error("Invalid schema file");
-			return out_bool;
+			return outBool;
 		}
 		
 		/*
@@ -57,13 +57,13 @@ public class SetupAction {
 		
 		if(pubOrg != null && Factories.isSetup(pubOrg)){
 			logger.error("Account Manager is at least partially configured.  Drop the user table to force a reset.");
-			return out_bool;
+			return outBool;
 		}
 		*/
 		String sql = new String(StreamUtil.fileToBytes(schemaFile));
 		if(sql == null || sql.length() == 0){
 			logger.error("Invalid schema file: " + schemaFile);
-			return out_bool;
+			return outBool;
 		}
 		Connection connection = null;
 		try{
@@ -88,7 +88,7 @@ public class SetupAction {
 			}
 		}
 
-		if(error == true) return out_bool;
+		if(error == true) return outBool;
 
 
 		
@@ -96,14 +96,14 @@ public class SetupAction {
 			Factories.coolDown();
 			Factories.warmUp();
 			if(FactoryDefaults.setupAccountManager(rootPassword)){
-				out_bool = true;
+				outBool = true;
 			}
 		} catch (ArgumentException | DataAccessException | FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	
 }

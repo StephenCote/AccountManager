@@ -180,19 +180,19 @@ public class PermissionFactory extends NameIdFactory {
 	@Override
 	public <T> T getByNameInParent(String name, String type, long parent_id, long organizationId) throws FactoryException, ArgumentException
 	{
-		String key_name = name + "-" + type + "-" + parent_id + "-" + organizationId;
+		String keyName = name + "-" + type + "-" + parent_id + "-" + organizationId;
 		PermissionEnumType perType = PermissionEnumType.valueOf(type);
-		T out_perm = readCache(key_name);
+		T out_perm = readCache(keyName);
 		if (out_perm != null) return out_perm;
 
-		List<QueryField> Fields = new ArrayList<QueryField>();
+		List<QueryField> Fields = new ArrayList<>();
 		Fields.add(QueryFields.getFieldName(name));
 		Fields.add(QueryFields.getFieldParent(parent_id));
 		if (perType != PermissionEnumType.UNKNOWN) Fields.add(QueryFields.getFieldPermissionType(perType));
 		List<NameIdType> perms = getByField(Fields.toArray(new QueryField[0]),organizationId);
 		if (perms.size() > 0)
 		{
-			addToCache(perms.get(0),key_name);
+			addToCache(perms.get(0),keyName);
 			return (T)perms.get(0);
 		}
 		return null;
@@ -202,28 +202,28 @@ public class PermissionFactory extends NameIdFactory {
 		long parent_id = 0;
 		if (parent != null) parent_id = parent.getId();
 
-		String key_name = name + "-" + type.toString() + "-" + parent_id + "-" + organizationId;
-		T out_perm = readCache(key_name);
+		String keyName = name + "-" + type.toString() + "-" + parent_id + "-" + organizationId;
+		T out_perm = readCache(keyName);
 		if (out_perm != null) return out_perm;
 
 		//List<NameIdType> perms = getByNameInGroup(name,organizationId);
-		List<QueryField> Fields = new ArrayList<QueryField>();
+		List<QueryField> Fields = new ArrayList<>();
 		Fields.add(QueryFields.getFieldName(name));
 		Fields.add(QueryFields.getFieldParent(parent_id));
 		if (type != PermissionEnumType.UNKNOWN) Fields.add(QueryFields.getFieldPermissionType(type));
 		List<NameIdType> perms = getByField(Fields.toArray(new QueryField[0]),organizationId);
 		if (perms.size() > 0)
 		{
-			addToCache(perms.get(0),key_name);
+			addToCache(perms.get(0),keyName);
 			return (T)perms.get(0);
 		}
 		return null;
 	}
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		BasePermissionType use_map = (BasePermissionType)map;
-		fields.add(QueryFields.getFieldPermissionType(use_map.getPermissionType()));
-		fields.add(QueryFields.getFieldReferenceId(use_map.getReferenceId()));
+		BasePermissionType useMap = (BasePermissionType)map;
+		fields.add(QueryFields.getFieldPermissionType(useMap.getPermissionType()));
+		fields.add(QueryFields.getFieldReferenceId(useMap.getReferenceId()));
 
 	}
 	
@@ -380,7 +380,7 @@ public class PermissionFactory extends NameIdFactory {
 
 	
 	public <T> List<T> listInParent(String type, long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		PermissionEnumType perType = PermissionEnumType.valueOf(type);
 		if(perType.equals(PermissionEnumType.UNKNOWN) == false) fields.add(QueryFields.getFieldPermissionType(perType));
 		fields.add(QueryFields.getFieldParent(parentId));
@@ -396,7 +396,7 @@ public class PermissionFactory extends NameIdFactory {
 	}	
 	public <T> List<T>  getPermissionList(BasePermissionType parent, PermissionEnumType type, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		if(type != PermissionEnumType.UNKNOWN) fields.add(QueryFields.getFieldPermissionType(type));
 		fields.add(QueryFields.getFieldParent((parent != null ? parent.getId() : 0L)));
 		ProcessingInstructionType instruction = new ProcessingInstructionType();

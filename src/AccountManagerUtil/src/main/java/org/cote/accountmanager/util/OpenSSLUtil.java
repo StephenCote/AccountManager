@@ -91,9 +91,9 @@ public class OpenSSLUtil {
 	}
 	
 	public boolean generateCertificate(String alias, String dn, char[] password, String signerAlias, char[] signerPassword ){
-		boolean out_bool = false;
+		boolean outBool = false;
 		
-		return out_bool;
+		return outBool;
 	}
 	public boolean exportPrivateKey(String alias, char[] password){
 		String checkFilePath = sslPath + KEY_PRIVATE_PATH + "/" + alias + ".pem";
@@ -313,14 +313,14 @@ public class OpenSSLUtil {
 			"-out",CERTIFICATE_ROOT_PATH + "/" + alias + ".cert"
 		};
 		
-		boolean out_bool = false;
+		boolean outBool = false;
 		ProcessUtil.runProcess(sslPath,commands);
 		checkFilePath = sslPath + CERTIFICATE_ROOT_PATH + "/" + alias + ".cert";
 		checkFile = new File(checkFilePath);
 		if(checkFile.exists()){
 			try {
 				Files.copy(checkFile, new File(sslPath + CERTIFICATE_SIGNED_PATH + "/" + alias + ".cert"));
-				out_bool = true;
+				outBool = true;
 			} catch (IOException e) {
 				logger.error(e.getMessage());
 				logger.error(FactoryException.TRACE_EXCEPTION,e);
@@ -328,7 +328,7 @@ public class OpenSSLUtil {
 		}
 
 		
-		return out_bool;
+		return outBool;
 	}
 	public boolean generateKeyPair(String alias, char[] password){
 

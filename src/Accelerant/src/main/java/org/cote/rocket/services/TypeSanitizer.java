@@ -114,45 +114,45 @@ public class TypeSanitizer implements ITypeSanitizer{
 		return object;
 	}
 	public <T> boolean delete(AuditEnumType type, T object) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		//INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 
-		return out_bool;
+		return outBool;
 	}
 	public <T> boolean update(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 		if(type.equals(AuditEnumType.FORM)){
-			out_bool = ValidationService.validateForm(owner,(FormType)object);
-			if(out_bool == false){
+			outBool = ValidationService.validateForm(owner,(FormType)object);
+			if(outBool == false){
 				logger.warn("Failed to validate form");
 				return false;
 			}
-			out_bool = iFact.update((FormType)object);
-			if(out_bool == false){
+			outBool = iFact.update((FormType)object);
+			if(outBool == false){
 				logger.warn("Failed to update form");
 				return false;
 			}
-			out_bool = FormService.updateFormValues(owner,(FormType)object,false);
-			if(out_bool == false) logger.warn("Failed to update form values");
+			outBool = FormService.updateFormValues(owner,(FormType)object,false);
+			if(outBool == false) logger.warn("Failed to update form values");
 		}
-		return out_bool;
+		return outBool;
 	}
 	public <T> boolean add(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		logger.info("Processing alternate add for type " + type.toString());
 		INameIdFactory iFact = Factories.getNameIdFactory(FactoryEnumType.valueOf(type.toString()));
 		if(type.equals(AuditEnumType.FORM)){
 			INameIdGroupFactory iGFact = (INameIdGroupFactory)iFact;
 			FormType form = (FormType)object;
-			out_bool = ValidationService.validateForm(owner,form);
-			if(out_bool) out_bool = iFact.add(form);
-			if(out_bool){
+			outBool = ValidationService.validateForm(owner,form);
+			if(outBool) outBool = iFact.add(form);
+			if(outBool){
 				FormType new_form = iGFact.getByNameInGroup(form.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(form.getGroupId(),form.getOrganizationId()));
-				out_bool = FormService.updateFormValues(owner, new_form,false);
+				outBool = FormService.updateFormValues(owner, new_form,false);
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	@SuppressWarnings("unchecked")
 	public <T> T sanitizeNewObject(AuditEnumType type, UserType owner, T in_obj) throws ArgumentException, FactoryException{
@@ -493,14 +493,14 @@ public class TypeSanitizer implements ITypeSanitizer{
 				break;
 			case LIFECYCLE:
 				LifecycleType lbean = (LifecycleType)in_obj;
-				LifecycleType new_obj = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).newLifecycle(owner, lbean.getGroupId());
-				MapUtil.shallowCloneNameIdDirectoryType(lbean, new_obj);
-				new_obj.setDescription(lbean.getDescription());
-				new_obj.getSchedules().addAll(lbean.getSchedules());
-				new_obj.getBudgets().addAll(lbean.getBudgets());
-				new_obj.getGoals().addAll(lbean.getGoals());
-				new_obj.getProjects().addAll(lbean.getProjects());
-				out_obj = (T)new_obj;
+				LifecycleType newObj = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).newLifecycle(owner, lbean.getGroupId());
+				MapUtil.shallowCloneNameIdDirectoryType(lbean, newObj);
+				newObj.setDescription(lbean.getDescription());
+				newObj.getSchedules().addAll(lbean.getSchedules());
+				newObj.getBudgets().addAll(lbean.getBudgets());
+				newObj.getGoals().addAll(lbean.getGoals());
+				newObj.getProjects().addAll(lbean.getProjects());
+				out_obj = (T)newObj;
 				break;
 			case NOTE:
 				NoteType nbean = (NoteType)in_obj;

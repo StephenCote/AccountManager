@@ -117,7 +117,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	}
 	public PersonType newPerson(UserType user, PersonType parentPerson) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		
 		PersonType obj = newPerson(user,parentPerson.getGroupId());
 		obj.setParentId(parentPerson.getId());
@@ -250,23 +250,23 @@ public class PersonFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		PersonType new_obj = new PersonType();
-		new_obj.setNameType(NameEnumType.PERSON);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
+		PersonType newObj = new PersonType();
+		newObj.setNameType(NameEnumType.PERSON);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
 	
-		new_obj.setBirthDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("birthdate")));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setFirstName(rset.getString("firstname"));
-		new_obj.setGender(rset.getString("gender"));
-		new_obj.setMiddleName(rset.getString("middlename"));
-		new_obj.setAlias(rset.getString("alias"));
-		new_obj.setPrefix(rset.getString("prefix"));
-		new_obj.setSuffix(rset.getString("suffix"));
-		new_obj.setLastName(rset.getString("lastname"));
-		new_obj.setTitle(rset.getString("title"));
+		newObj.setBirthDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("birthdate")));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setFirstName(rset.getString("firstname"));
+		newObj.setGender(rset.getString("gender"));
+		newObj.setMiddleName(rset.getString("middlename"));
+		newObj.setAlias(rset.getString("alias"));
+		newObj.setPrefix(rset.getString("prefix"));
+		newObj.setSuffix(rset.getString("suffix"));
+		newObj.setLastName(rset.getString("lastname"));
+		newObj.setTitle(rset.getString("title"));
 		
-		return new_obj;
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -282,7 +282,7 @@ public class PersonFactory extends NameIdGroupFactory {
 				BaseParticipantType part = null;
 				List<Long> delIds = new ArrayList<>();
 				if(bulkMode) BulkFactories.getBulkFactory().setDirty(FactoryEnumType.PERSONPARTICIPATION);
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ppFact.getPartnerParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -439,7 +439,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	
 	public List<PersonType> getChildPersonList(PersonType parent) throws FactoryException,ArgumentException{
 
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		fields.add(QueryFields.getFieldGroup(parent.getGroupId()));
 		return getPersonList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());
@@ -460,7 +460,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	public PersonType getPersonByUserId(long userId, long organizationId) throws FactoryException, ArgumentException{
 		PersonType person = null;
 		DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getPersonsDirectory(organizationId);
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldGroup(dir.getId()));
 		fields.add(QueryFields.getFieldUserId(userId));
 		List<PersonType> persons = searchByIdInView("personusers", fields.toArray(new QueryField[0]),null,organizationId);
@@ -481,16 +481,16 @@ public class PersonFactory extends NameIdGroupFactory {
 		
 		searchValue = searchValue.replaceAll("\\*","%");
 		
-		List<QueryField> filters = new ArrayList<QueryField>();
-		QueryField search_filters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
-		search_filters.setComparator(ComparatorEnumType.GROUP_OR);
-		QueryField name_filter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
-		name_filter.setComparator(ComparatorEnumType.LIKE);
-		search_filters.getFields().add(name_filter);
-		QueryField first_name_filter = new QueryField(SqlDataEnumType.VARCHAR,"firstname",searchValue);
-		first_name_filter.setComparator(ComparatorEnumType.LIKE);
-		search_filters.getFields().add(first_name_filter);
-		filters.add(search_filters);
+		List<QueryField> filters = new ArrayList<>();
+		QueryField searchFilters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
+		searchFilters.setComparator(ComparatorEnumType.GROUP_OR);
+		QueryField nameFilter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
+		nameFilter.setComparator(ComparatorEnumType.LIKE);
+		searchFilters.getFields().add(nameFilter);
+		QueryField firstNameFilter = new QueryField(SqlDataEnumType.VARCHAR,"firstname",searchValue);
+		firstNameFilter.setComparator(ComparatorEnumType.LIKE);
+		searchFilters.getFields().add(firstNameFilter);
+		filters.add(searchFilters);
 		return filters;
 	}
 	

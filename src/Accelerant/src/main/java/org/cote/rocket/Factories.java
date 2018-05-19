@@ -255,13 +255,13 @@ public class Factories extends org.cote.accountmanager.data.Factories {
 
 	public static boolean cleanupOrphans(){
 		
-		boolean out_bool = false;
+		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		Statement stat = null;
 		try {
 			stat = connection.createStatement();
 			stat.executeQuery("SELECT * FROM cleanup_rocket_orphans();");
-			out_bool = true;
+			outBool = true;
 		} catch (SQLException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);

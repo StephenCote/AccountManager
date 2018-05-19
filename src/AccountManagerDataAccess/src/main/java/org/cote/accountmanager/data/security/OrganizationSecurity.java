@@ -138,7 +138,7 @@ public class OrganizationSecurity {
 
 	private static List<Long> getKeyIdsForOrganization(Connection connection, OrganizationType organization, String tableName){
 		
-		List<Long> keys = new ArrayList<Long>();
+		List<Long> keys = new ArrayList<>();
 
 		String nolock_hint = DBFactory.getNoLockHint(DBFactory.getConnectionType(connection));
 

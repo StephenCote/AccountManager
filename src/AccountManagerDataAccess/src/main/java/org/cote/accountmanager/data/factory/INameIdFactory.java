@@ -102,12 +102,12 @@ public interface INameIdFactory {
 	
 	public void removeBranchFromCache(NameIdType obj);
 	public void removeFromCache(NameIdType obj);
-	public void removeFromCache(NameIdType obj, String key_name);
+	public void removeFromCache(NameIdType obj, String keyName);
 	public <T> T readCache(String name);
 	public <T> T readCache(long id);
 	public boolean updateToCache(NameIdType obj) throws ArgumentException;
-	public boolean updateToCache(NameIdType obj,String key_name) throws ArgumentException;
+	public boolean updateToCache(NameIdType obj,String keyName) throws ArgumentException;
 	public boolean addToCache(NameIdType map) throws ArgumentException;
-	public boolean addToCache(NameIdType map, String key_name) throws ArgumentException;
+	public boolean addToCache(NameIdType map, String keyName) throws ArgumentException;
 	
 }

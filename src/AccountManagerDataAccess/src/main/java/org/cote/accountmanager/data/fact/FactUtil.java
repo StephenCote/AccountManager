@@ -156,10 +156,6 @@ public class FactUtil {
 	public static <T> T factoryRead(FactType sourceFact,final FactType referenceFact){
 		T outObj = null;
 		
-		/*
-		boolean lookupRef = false;
-		FactType useRef = (lookupRef ? referenceFact : sourceFact);
-		*/
 		FactType useRef = sourceFact;
 		
 		if(sourceFact.getFactoryType() == FactoryEnumType.UNKNOWN || referenceFact.getFactoryType() == FactoryEnumType.UNKNOWN){
@@ -254,6 +250,7 @@ public class FactUtil {
 		}
 		return outObj;
 	}
+	@SuppressWarnings("unchecked")
 	public static <T> T evaluateFunctionFact(PolicyRequestType prt,PolicyResponseType prr, FactType fact, FactType matchFact){
 		if(matchFact.getFactType() != FactEnumType.FUNCTION){
 			logger.error("Match fact must be a function fact");

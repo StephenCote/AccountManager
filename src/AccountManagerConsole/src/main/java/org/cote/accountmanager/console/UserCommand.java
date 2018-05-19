@@ -45,7 +45,7 @@ public class UserCommand {
 public static final Logger logger = LogManager.getLogger(UserCommand.class);
 	
 	public static boolean addUser(String orgPath, String name, String adminPassword, String newPassword, String email){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try{
 		OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(orgPath);
 		if(org != null){
@@ -53,7 +53,7 @@ public static final Logger logger = LogManager.getLogger(UserCommand.class);
 			if(adminUser != null){
 				AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, UserCommand.class.getName(), AuditEnumType.USER, "Admin");
 				AuditService.targetAudit(audit, AuditEnumType.USER, name);
-				out_bool = PersonService.createUserAsPerson(audit, name, newPassword, email, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org.getId());
+				outBool = PersonService.createUserAsPerson(audit, name, newPassword, email, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org.getId());
 				SessionSecurity.logout(adminUser);
 			}
 			else{
@@ -71,7 +71,7 @@ public static final Logger logger = LogManager.getLogger(UserCommand.class);
 			logger.error(e.getMessage());
 		} 
 
-		return out_bool;
+		return outBool;
 	}
 	
 }

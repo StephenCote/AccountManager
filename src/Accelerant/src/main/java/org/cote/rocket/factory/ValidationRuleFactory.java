@@ -84,7 +84,7 @@ public class ValidationRuleFactory extends NameIdGroupFactory {
 	
 	public ValidationRuleType newValidationRule(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		ValidationRuleType obj = new ValidationRuleType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -146,32 +146,32 @@ public class ValidationRuleFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		ValidationRuleType new_obj = new ValidationRuleType();
-		new_obj.setNameType(NameEnumType.VALIDATIONRULE);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setAllowNull(rset.getBoolean("allownull"));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setValidationType(ValidationEnumType.valueOf(rset.getString("validationtype")));
-		new_obj.setExpression(rset.getString("expression"));
-		new_obj.setIsRuleSet(rset.getBoolean("isruleset"));
-		new_obj.setIsReplacementRule(rset.getBoolean("isreplacementrule"));
-		new_obj.setReplacementValue(rset.getString("replacementvalue"));
-		new_obj.setComparison(rset.getBoolean("comparison"));
-		new_obj.setErrorMessage(rset.getString("errormessage"));
-		return new_obj;
+		ValidationRuleType newObj = new ValidationRuleType();
+		newObj.setNameType(NameEnumType.VALIDATIONRULE);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setAllowNull(rset.getBoolean("allownull"));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setValidationType(ValidationEnumType.valueOf(rset.getString("validationtype")));
+		newObj.setExpression(rset.getString("expression"));
+		newObj.setIsRuleSet(rset.getBoolean("isruleset"));
+		newObj.setIsReplacementRule(rset.getBoolean("isreplacementrule"));
+		newObj.setReplacementValue(rset.getString("replacementvalue"));
+		newObj.setComparison(rset.getBoolean("comparison"));
+		newObj.setErrorMessage(rset.getString("errormessage"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		ValidationRuleType data = (ValidationRuleType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		
 		if(update(data, null)){
 			try{
 			/// Rules
-			Set<Long> set = new HashSet<Long>();
+			Set<Long> set = new HashSet<>();
 			BaseParticipantType[] maps = ((ValidationRuleParticipationFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULEPARTICIPATION)).getValidationRuleParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -189,28 +189,28 @@ public class ValidationRuleFactory extends NameIdGroupFactory {
 			((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).clearCache();
 			((FormElementFactory)Factories.getFactory(FactoryEnumType.FORMELEMENT)).clearCache();
 			
-			out_bool = true;
+			outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ValidationRuleType use_map = (ValidationRuleType)map;
-		fields.add(QueryFields.getFieldAllowNull(use_map.getAllowNull()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldValidationType(use_map.getValidationType()));
-		fields.add(QueryFields.getFieldExpression(use_map.getExpression()));
-		fields.add(QueryFields.getFieldIsRuleSet(use_map.getIsRuleSet()));
-		fields.add(QueryFields.getFieldIsReplacementRule(use_map.getIsReplacementRule()));
-		fields.add(QueryFields.getFieldReplacementValue(use_map.getReplacementValue()));
-		fields.add(QueryFields.getFieldComparison(use_map.getComparison()));
-		fields.add(QueryFields.getFieldErrorMessage(use_map.getErrorMessage()));
+		ValidationRuleType useMap = (ValidationRuleType)map;
+		fields.add(QueryFields.getFieldAllowNull(useMap.getAllowNull()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldValidationType(useMap.getValidationType()));
+		fields.add(QueryFields.getFieldExpression(useMap.getExpression()));
+		fields.add(QueryFields.getFieldIsRuleSet(useMap.getIsRuleSet()));
+		fields.add(QueryFields.getFieldIsReplacementRule(useMap.getIsReplacementRule()));
+		fields.add(QueryFields.getFieldReplacementValue(useMap.getReplacementValue()));
+		fields.add(QueryFields.getFieldComparison(useMap.getComparison()));
+		fields.add(QueryFields.getFieldErrorMessage(useMap.getErrorMessage()));
 	}
 	public int deleteValidationRulesByUser(UserType user) throws FactoryException
 	{

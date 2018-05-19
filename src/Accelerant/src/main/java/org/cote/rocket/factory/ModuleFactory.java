@@ -86,7 +86,7 @@ public class ModuleFactory extends NameIdGroupFactory {
 	
 	public ModuleType newModule(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		ModuleType obj = new ModuleType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -145,27 +145,27 @@ public class ModuleFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		ModuleType new_obj = new ModuleType();
-		new_obj.setNameType(NameEnumType.MODULE);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setModuleType(ModuleEnumType.valueOf(rset.getString("moduletype")));
-		new_obj.setDescription(rset.getString("description"));
+		ModuleType newObj = new ModuleType();
+		newObj.setNameType(NameEnumType.MODULE);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setModuleType(ModuleEnumType.valueOf(rset.getString("moduletype")));
+		newObj.setDescription(rset.getString("description"));
 		long time_id = rset.getLong("timeid");
 		long cost_id = rset.getLong("costid");
-		if(time_id > 0) new_obj.setActualTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, new_obj.getOrganizationId()));
-		if(cost_id > 0) new_obj.setActualCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, new_obj.getOrganizationId()));
-		return new_obj;
+		if(time_id > 0) newObj.setActualTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, newObj.getOrganizationId()));
+		if(cost_id > 0) newObj.setActualCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, newObj.getOrganizationId()));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		ModuleType data = (ModuleType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		if(update(data, null)){
 			try{
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((ModuleParticipationFactory)Factories.getFactory(FactoryEnumType.MODULEPARTICIPATION)).getWorkParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -201,19 +201,19 @@ public class ModuleFactory extends NameIdGroupFactory {
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
-			out_bool = true;
+			outBool = true;
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ModuleType use_map = (ModuleType)map;
-		fields.add(QueryFields.getFieldModuleType(use_map.getModuleType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldCost(use_map.getActualCost()));
-		fields.add(QueryFields.getFieldTime(use_map.getActualTime()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		ModuleType useMap = (ModuleType)map;
+		fields.add(QueryFields.getFieldModuleType(useMap.getModuleType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldCost(useMap.getActualCost()));
+		fields.add(QueryFields.getFieldTime(useMap.getActualTime()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteModulesByUser(UserType user) throws FactoryException
 	{

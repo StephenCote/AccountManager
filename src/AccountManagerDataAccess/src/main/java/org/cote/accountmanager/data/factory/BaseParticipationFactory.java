@@ -59,15 +59,17 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 	public BaseParticipationFactory(ParticipationEnumType type, String tableName){
 		super(type, tableName);
 	}
+	
+	@SuppressWarnings("unchecked")
 	public <T> T newParticipation(
 			NameIdType cycle, 
 			NameIdType map,
 			BasePermissionType permission,
-			AffectEnumType affect_type,
-			ParticipantEnumType participant_type
+			AffectEnumType affectType,
+			ParticipantEnumType participantType
 		) throws ArgumentException
 	{
-		return (T)newParticipant(cycle, map, participant_type, permission, affect_type);
+		return (T)newParticipant(cycle, map, participantType, permission, affectType);
 	}
 	
 	@Override
@@ -88,7 +90,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataList(new QueryField[]{ field }, true, startRecord, recordCount, organizationId);
 	}
 	public List<DataType> getDataFromParticipation(NameIdType participation) throws ArgumentException{
-		List<DataType> items = new ArrayList<DataType>();
+		List<DataType> items = new ArrayList<>();
 		try{
 			DataParticipantType[] parts = getDataParticipations(participation).toArray(new DataParticipantType[0]);
 			if(parts.length > 0){
@@ -134,9 +136,9 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 	{
 		return deleteContactPersonParticipant(obj, map, null, AffectEnumType.UNKNOWN);
 	}
-	public boolean deleteContactPersonParticipant(NameIdType obj, ContactType map, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+	public boolean deleteContactPersonParticipant(NameIdType obj, ContactType map, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 	{
-		ContactParticipantType dp = getContactParticipant(obj, map, permission, affect_type);
+		ContactParticipantType dp = getContactParticipant(obj, map, permission, affectType);
 		if (dp == null) return true;
 
 		removeFromCache(dp);
@@ -157,11 +159,11 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 		NameIdType obj,
 		ContactType map,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 
 	) throws ArgumentException
 	{
-		return newParticipation(obj, map, permission, affect_type, ParticipantEnumType.CONTACT);
+		return newParticipation(obj, map, permission, affectType, ParticipantEnumType.CONTACT);
 	}
 	public List<ContactParticipantType> getContactParticipants(ContactType map) throws FactoryException, ArgumentException
 	{
@@ -177,7 +179,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 	}
 
 	public List<ContactType> getContactsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ContactType> items = new ArrayList<ContactType>();
+		List<ContactType> items = new ArrayList<>();
 		try{
 			ContactParticipantType[] parts = getContactParticipations(participation).toArray(new ContactParticipantType[0]);
 			if(parts.length > 0){
@@ -206,10 +208,10 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 			NameIdType obj,
 			ContactType map,
 			BasePermissionType permission,
-			AffectEnumType affect_type
+			AffectEnumType affectType
 		) throws FactoryException, ArgumentException
 		{
-			return convertList(getParticipants(obj, map, ParticipantEnumType.CONTACT, permission, affect_type));
+			return convertList(getParticipants(obj, map, ParticipantEnumType.CONTACT, permission, affectType));
 		}
 		
 		public ContactParticipantType getContactParticipant(NameIdType obj, ContactType map) throws ArgumentException, FactoryException
@@ -220,10 +222,10 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 			NameIdType obj,
 			ContactType map,
 			BasePermissionType permission,
-			AffectEnumType affect_type
+			AffectEnumType affectType
 		) throws ArgumentException, FactoryException
 		{
-			return getParticipant(obj, map, ParticipantEnumType.CONTACT, permission, affect_type);
+			return getParticipant(obj, map, ParticipantEnumType.CONTACT, permission, affectType);
 
 		}
 
@@ -232,9 +234,9 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 		{
 			return deleteAddressPersonParticipant(obj, map, null, AffectEnumType.UNKNOWN);
 		}
-		public boolean deleteAddressPersonParticipant(NameIdType obj, AddressType map, BasePermissionType permission, AffectEnumType affect_type)  throws ArgumentException, FactoryException
+		public boolean deleteAddressPersonParticipant(NameIdType obj, AddressType map, BasePermissionType permission, AffectEnumType affectType)  throws ArgumentException, FactoryException
 		{
-			AddressParticipantType dp = getAddressParticipant(obj, map, permission, affect_type);
+			AddressParticipantType dp = getAddressParticipant(obj, map, permission, affectType);
 			if (dp == null) return true;
 
 			removeFromCache(dp);
@@ -255,11 +257,11 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 			NameIdType obj,
 			AddressType map,
 			BasePermissionType permission,
-			AffectEnumType affect_type
+			AffectEnumType affectType
 
 		) throws ArgumentException
 		{
-			return newParticipation(obj, map, permission, affect_type, ParticipantEnumType.ADDRESS);
+			return newParticipation(obj, map, permission, affectType, ParticipantEnumType.ADDRESS);
 		}
 		public List<AddressParticipantType> getAddressParticipants(AddressType map) throws FactoryException, ArgumentException
 		{
@@ -304,10 +306,10 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 				NameIdType obj,
 				AddressType map,
 				BasePermissionType permission,
-				AffectEnumType affect_type
+				AffectEnumType affectType
 			) throws FactoryException, ArgumentException
 			{
-				return convertList(getParticipants(obj, map, ParticipantEnumType.ADDRESS, permission, affect_type));
+				return convertList(getParticipants(obj, map, ParticipantEnumType.ADDRESS, permission, affectType));
 			}
 			
 			public AddressParticipantType getAddressParticipant(NameIdType obj, AddressType map) throws ArgumentException, FactoryException
@@ -318,10 +320,10 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 				NameIdType obj,
 				AddressType map,
 				BasePermissionType permission,
-				AffectEnumType affect_type
+				AffectEnumType affectType
 			) throws ArgumentException, FactoryException
 			{
-				return getParticipant(obj, map, ParticipantEnumType.ADDRESS, permission, affect_type);
+				return getParticipant(obj, map, ParticipantEnumType.ADDRESS, permission, affectType);
 
 			}
 

@@ -63,54 +63,36 @@
 											
 											
 								
-						<!-- 
+						<exclude>**/TestVaultService.java</exclude>
 							<exclude>**/TestBulkUser.java</exclude>
 							<exclude>**/TestBulkDelete.java</exclude>	
 							<exclude>**/TestBulkUpdate.java</exclude>
 							<exclude>**/TestBulkPerson.java</exclude>
-						-->
-							
-
-							
 						<exclude>**/TestSoD.java</exclude>	
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
 						<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 						<exclude>**/TestOrganizationFactory.java</exclude>
 						<exclude>**/TestKnowledgeBasedVerification.java</exclude>
-						<exclude>**/TestVaultService.java</exclude>
-						<exclude>**/TestFunctionFactPolicy.java</exclude>
-						<exclude>**/TestControlFactory.java</exclude>
-						
+												<exclude>**/TestFunctionFactPolicy.java</exclude>
+						<exclude>**/TestControlFactory.java</exclude>		
 						<exclude>**/TestFunctionFactory.java</exclude>	
 						<exclude>**/TestFactoryInterfaces.java</exclude>												
 						<exclude>**/TestDataFactory.java</exclude>
 						<exclude>**/TestGroupAuthorization.java</exclude>
 						<exclude>**/TestDataAuthorization.java</exclude>	
-						
-										
 						<exclude>**/TestPermissions.java</exclude>							
-											
 						
-						<exclude>**/TestTokenService.java</exclude>
-						
-
 						<exclude>**/TestCredentialFactory.java</exclude>
-
 						<exclude>**/TestFactoryCache.java</exclude>
-						
-						<exclude>**/TestBaseService.java</exclude>
-						
-
-
-
-						
 						<exclude>**/TestDataTags.java</exclude>		
 						<exclude>**/TestCachePerformance.java</exclude>		
-								
-						<exclude>**/TestContactInformationFactory.java</exclude>
+						<exclude>**/TestBaseService.java</exclude>
+						<exclude>**/TestTokenService.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>
 						<exclude>**/TestPolicyService.java</exclude>
-						
+						<!-- 
+<exclude>**/TestContactInformationFactory.java</exclude>						
+						-->
 						<exclude>**/TestRoleService.java</exclude>
 						
 						

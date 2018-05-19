@@ -320,7 +320,7 @@ public class TestDataFactory extends BaseDataAccessTest {
 		boolean error = false;
 		DirectoryGroupType dir = null;
 		DirectoryGroupType rootDir = null;
-		List<DataType> data = new ArrayList<DataType>();
+		List<DataType> data = new ArrayList<>();
 		boolean updated = false;
 		try {
 			rootDir = gf.getDirectoryByName("Root", Factories.getDevelopmentOrganization().getId());

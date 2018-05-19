@@ -178,7 +178,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 			if ((i > 0 || ids.length == 1) && ((i % 250 == 0) || i == ids.length - 1))
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, field_name, buff.toString());
-				List<QueryField> matches = new ArrayList<QueryField>();
+				List<QueryField> matches = new ArrayList<>();
 				match.setComparator(ComparatorEnumType.IN);
 				matches.add(match);
 				if(query != null) matches.add(query);
@@ -192,7 +192,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 	public boolean deleteParticipants(BaseParticipantType[] list, long organizationId)  throws FactoryException
 	{
 
-		List<Long> ids = new ArrayList<Long>();
+		List<Long> ids = new ArrayList<>();
 		for (int i = 0; i < list.length; i++)
 		{
 			ids.add(list[i].getId());
@@ -217,19 +217,19 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		return super.update(participant);
 	}
 	protected void updateParticipantToCache(BaseParticipantType participant) throws ArgumentException{
-		//String key_name = participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganizationId();
-		String key_name = getCacheKeyName(participant);
-		logger.debug("Update participant to cache: " + key_name);
+		//String keyName = participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganizationId();
+		String keyName = getCacheKeyName(participant);
+		logger.debug("Update participant to cache: " + keyName);
 		if(this.haveCacheId(participant.getId())) removeFromCache(participant);
-		addToCache(participant, key_name);
+		addToCache(participant, keyName);
 	}
 
 	protected void removeParticipantFromCache(BaseParticipantType participant){
-		//String key_name = participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganizationId();
-		String key_name = getCacheKeyName(participant);
-		logger.debug("Remove participant from cache: " + key_name);
+		//String keyName = participant.getParticipationId() + "-" + this.participationType + "-" + participant.getParticipantId() + "-" + participant.getParticipantType() + "-" + participant.getAffectId() + "-" + participant.getAffectType() + "-" + participant.getOrganizationId();
+		String keyName = getCacheKeyName(participant);
+		logger.debug("Remove participant from cache: " + keyName);
 		
-		removeFromCache(participant, key_name);
+		removeFromCache(participant, keyName);
 	}
 	@Override
 	public <T> boolean add(T object) throws ArgumentException,FactoryException
@@ -365,32 +365,32 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		/*
 		return Factory.DataFactoryInstance.GetDataList(new QueryField[] { match }, DetailsOnly, StartRecord, RecordCount, organizationId);
 		*/
-		//return new ArrayList<DataType>();
+		//return new ArrayList<>();
 	}
 	public List<NameIdType> getParticipants(
 		NameIdType participation,
 		NameIdType participant,
-		ParticipantEnumType participant_type,
+		ParticipantEnumType participantType,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	) throws FactoryException, ArgumentException
 	{
-		QueryField[] fields = QueryFields.getFieldParticipantsMatch(participation, participant, participant_type, permission, affect_type);
+		QueryField[] fields = QueryFields.getFieldParticipantsMatch(participation, participant, participantType, permission, affectType);
 		
 		return getByField(fields, participation.getOrganizationId());
 
 
 	}
-	public List<NameIdType> getParticipations(NameIdType[] maps, ParticipantEnumType participant_type)  throws FactoryException, ArgumentException
+	public List<NameIdType> getParticipations(NameIdType[] maps, ParticipantEnumType participantType)  throws FactoryException, ArgumentException
 	{
 
 		if (maps.length == 0) return new ArrayList<NameIdType>();
 		long org = maps[0].getOrganizationId();
 
-		List<QueryField> matches = new ArrayList<QueryField>();
-		matches.add(QueryFields.getFieldParticipantType(participant_type));
+		List<QueryField> matches = new ArrayList<>();
+		matches.add(QueryFields.getFieldParticipantType(participantType));
 		//StringBuilder buff = new StringBuilder();
-		List<Long> ids = new ArrayList<Long>();
+		List<Long> ids = new ArrayList<>();
 		for (int i = 0; i < maps.length; i++)
 		{
 			ids.add(maps[i].getId());
@@ -407,8 +407,8 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		T out_participant = null;
 		if (participation == null || participant == null || participation.getId() <= 0 || participant.getId() <= 0 || type == ParticipantEnumType.UNKNOWN) throw new ArgumentException("getParticipant: Invalid parameters");
 
-		String key_name = participation.getId() + "-" + this.participationType + "-" + participant.getId() + "-" + type + "-" + participation.getOrganizationId();
-		out_participant = (T)readCache(key_name);
+		String keyName = participation.getId() + "-" + this.participationType + "-" + participant.getId() + "-" + type + "-" + participation.getOrganizationId();
+		out_participant = (T)readCache(keyName);
 		boolean add_to_cache = false;
 		if (out_participant == null)
 		{
@@ -419,8 +419,8 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		}
 		
 		if (add_to_cache){
-			/// logger.info("Add to cache: " + key_name);
-			addToCache((NameIdType)out_participant, key_name);
+			/// logger.info("Add to cache: " + keyName);
+			addToCache((NameIdType)out_participant, keyName);
 		}
 		return out_participant;
 
@@ -428,50 +428,50 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 	public <T> T getParticipant(
 		NameIdType participation,
 		NameIdType participant,
-		ParticipantEnumType participant_type,
+		ParticipantEnumType participantType,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	)  throws FactoryException, ArgumentException
 	{
 		T out_participant = null;
-		if (participation == null || participant == null || participation.getId().compareTo(0L)==0 || participant.getId().compareTo(0L)==0 || participant_type == ParticipantEnumType.UNKNOWN){
+		if (participation == null || participant == null || participation.getId().compareTo(0L)==0 || participant.getId().compareTo(0L)==0 || participantType == ParticipantEnumType.UNKNOWN){
 				throw new ArgumentException("getParticipant: Invalid parameters.  "
-					+ (participation == null ? " Null Participation." : "") + (participant == null ? " Null participant." : "") + (participant_type == ParticipantEnumType.UNKNOWN ? " UNKNOWN Participant Type":"")
+					+ (participation == null ? " Null Participation." : "") + (participant == null ? " Null participant." : "") + (participantType == ParticipantEnumType.UNKNOWN ? " UNKNOWN Participant Type":"")
 					+ (participation != null && participation.getId().compareTo(0L)==0 ? " Participation id is 0." : "")
 					+ (participant != null && participant.getId().compareTo(0L)==0 ? " Participant id is 0." : "")
 				);
 		}
 
-		String key_name = participation.getId() + "-" + this.participationType + "-" + participant.getId() + "-" + participant_type + "-" + (permission != null ? permission.getId() : "0") + "-" + affect_type + "-" + participation.getOrganizationId();
-		out_participant = (T)readCache(key_name);
+		String keyName = participation.getId() + "-" + this.participationType + "-" + participant.getId() + "-" + participantType + "-" + (permission != null ? permission.getId() : "0") + "-" + affectType + "-" + participation.getOrganizationId();
+		out_participant = (T)readCache(keyName);
 		boolean add_to_cache = false;
 		
 		/// Moving the negative part id check down is to support bulk operations
 		///
 		if (out_participant == null && participation.getId() > 0 && participant.getId() > 0)
 		{
-			List<NameIdType> list = getParticipants(participation, participant, participant_type, permission, affect_type);
+			List<NameIdType> list = getParticipants(participation, participant, participantType, permission, affectType);
 			if (list.isEmpty()) return null;
 			out_participant = (T)list.get(0);
 			add_to_cache = true;
 		}
 		
 		if (add_to_cache){
-			/// logger.info("Add to cache: " + key_name);
-			addToCache((NameIdType)out_participant, key_name);
+			/// logger.info("Add to cache: " + keyName);
+			addToCache((NameIdType)out_participant, keyName);
 		}
 		return out_participant;
 	}
 
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		BaseParticipantType use_map = (BaseParticipantType)map;
-		fields.add(QueryFields.getFieldParticipantId(use_map));
-		fields.add(QueryFields.getFieldParticipantType(use_map.getParticipantType()));
-		fields.add(QueryFields.getFieldParticipationId(use_map));
+		BaseParticipantType useMap = (BaseParticipantType)map;
+		fields.add(QueryFields.getFieldParticipantId(useMap));
+		fields.add(QueryFields.getFieldParticipantType(useMap.getParticipantType()));
+		fields.add(QueryFields.getFieldParticipationId(useMap));
 		if(haveAffect){
-			fields.add(QueryFields.getFieldAffectId(use_map));
-			fields.add(QueryFields.getFieldAffectType(use_map));
+			fields.add(QueryFields.getFieldAffectId(useMap));
+			fields.add(QueryFields.getFieldAffectType(useMap));
 		}
 	}
 
@@ -559,25 +559,25 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		NameIdType participation,
 		//ParticipationType participation_type,
 		NameIdType participant,
-		ParticipantEnumType participant_type,
+		ParticipantEnumType participantType,
 		BasePermissionType permission,
-		AffectEnumType affect_type
+		AffectEnumType affectType
 	) throws ArgumentException
 	{
 		
-		if (participation == null || participant == null || participation.getId().compareTo(0L)==0 || participant.getId().compareTo(0L)==0 || participant_type == ParticipantEnumType.UNKNOWN){
+		if (participation == null || participant == null || participation.getId().compareTo(0L)==0 || participant.getId().compareTo(0L)==0 || participantType == ParticipantEnumType.UNKNOWN){
 			logger.warn("Invalid " + participationType + " Participant Parameters");
 			if(participation == null) logger.warn("\tNull participation");
 			else if(participant == null) logger.warn("\tNull participant");
 			else{
 
-				logger.warn("participantType=" + participant_type);
+				logger.warn("participantType=" + participantType);
 				logger.warn("participantId=" + participant.getId());
 				logger.warn("participationId=" + participation.getId());
 			}
 			throw new ArgumentException("Invalid parameters");
 		}
-		BaseParticipantType out_participant = newParticipant(participant_type);
+		BaseParticipantType out_participant = newParticipant(participantType);
 		out_participant.setNameType(NameEnumType.PARTICIPANT);
 		out_participant.setParticipationType(this.participationType);
 		out_participant.setParticipationId(participation.getId());
@@ -586,7 +586,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		//out_participant.setOrganization(participation.getOrganization());
 		out_participant.setOrganizationId(participation.getOrganizationId());
 		if (permission != null) out_participant.setAffectId(permission.getId());
-		out_participant.setAffectType(affect_type);
+		out_participant.setAffectType(affectType);
 
 		return out_participant;
 	}

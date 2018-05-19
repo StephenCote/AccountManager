@@ -149,14 +149,11 @@ public class DBFactory {
 	}
 	public static void setPreparedStatementValue(PreparedStatement ps, DataCell cell, int index) throws FactoryException{
 
-		try {
-			if(cell.getValue() == null && cell.getDataType().equals(SqlDataEnumType.INTEGER)){
-				logger.warn("Null integer value detected for cell " + cell.getColumnName());
-			}
-			setStatementParameter(ps, cell.getDataType(), cell.getValue(), index);
-		} catch (DataAccessException e) {
-			logger.error(e);
+
+		if(cell.getValue() == null && cell.getDataType().equals(SqlDataEnumType.INTEGER)){
+			logger.warn("Null integer value detected for cell " + cell.getColumnName());
 		}
+		setStatementParameter(ps, cell.getDataType(), cell.getValue(), index);
 
 	}
 	

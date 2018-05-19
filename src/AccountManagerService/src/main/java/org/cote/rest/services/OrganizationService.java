@@ -84,7 +84,7 @@ public class OrganizationService {
 	@Path("/{parentId:[0-9A-Za-z\\-]+}/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public static Response addOrganization(@PathParam("parentId") String parentId,@PathParam("name") String name,AuthenticationRequestType adminCredential, @Context HttpServletRequest request){
-		boolean out_bool = false;
+		boolean outBool = false;
 		String adminPassword = null;
 		if(adminCredential == null || adminCredential.getCredentialType().equals(CredentialEnumType.HASHED_PASSWORD)==false){
 			logger.error("Invalid admin credential");
@@ -108,7 +108,7 @@ public class OrganizationService {
 						if(adminUser2 != null){
 							logger.info("Verified new administrator user");
 							SessionSecurity.logout(adminUser2);
-							out_bool = true;
+							outBool = true;
 						}
 						else{
 							logger.error("Unable to verify new administrator user");
@@ -128,7 +128,7 @@ public class OrganizationService {
 			logger.error("Exception",e);
 		}
 
-		return Response.status(200).entity(out_bool).build();
+		return Response.status(200).entity(outBool).build();
 	}
 	
 	@RolesAllowed({"user"})
@@ -136,7 +136,7 @@ public class OrganizationService {
 	@Path("/{objectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public static Response deleteOrganization(@PathParam("objectId") String parentId, @Context HttpServletRequest request){
-		boolean out_bool = false;
+		boolean outBool = false;
 		String adminPassword = null;
 		try{
 			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByObjectId(parentId, 0L);
@@ -147,8 +147,8 @@ public class OrganizationService {
 				boolean sysAdmin = RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(uOrg.getId()), user);
 
 				if(sysAdmin == true){
-					out_bool = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).delete(uOrg);
-					if(out_bool = true){
+					outBool = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).delete(uOrg);
+					if(outBool = true){
 						Factories.cleanupOrphans();
 					}
 					else{
@@ -168,7 +168,7 @@ public class OrganizationService {
 			logger.error(e.getMessage());
 		}
 
-		return Response.status(200).entity(out_bool).build();
+		return Response.status(200).entity(outBool).build();
 	}
 
 }

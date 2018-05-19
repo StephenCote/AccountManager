@@ -55,7 +55,6 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 public class ContactInformationFactory extends NameIdFactory {
 	
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.CONTACTINFORMATION, ContactInformationFactory.class); }
 	public ContactInformationFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -63,15 +62,19 @@ public class ContactInformationFactory extends NameIdFactory {
 		this.hasName = false;
 		this.hasUrn = false;
 		this.hasObjectId = true;
-		this.tableNames.add("contactinformation");
+		this.primaryTableName = "contactinformation";
+		this.tableNames.add(primaryTableName);
 		this.factoryType = FactoryEnumType.CONTACTINFORMATION;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("groups")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+
 		}
 	}
+	
+	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ContactInformationType cinfo = (ContactInformationType)obj;
@@ -82,6 +85,7 @@ public class ContactInformationFactory extends NameIdFactory {
 		
 		updateToCache(cinfo);
 	}
+	
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		ContactInformationType t = (ContactInformationType)obj;
@@ -97,6 +101,7 @@ public class ContactInformationFactory extends NameIdFactory {
 		int deleted = deleteByBigIntField("referenceid",ids,organizationId);
 		return (deleted > 0);
 	}
+	
 	@Override
 	public <T> boolean delete(T object) throws FactoryException, ArgumentException
 	{
@@ -111,19 +116,18 @@ public class ContactInformationFactory extends NameIdFactory {
 	public <T> boolean update(T object) throws FactoryException
 	{	
 		ContactInformationType cinfo = (ContactInformationType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(cinfo);
 		if(super.update(cinfo)){
 			try{
 				/// Contacts
 				///
 				BaseParticipantType part = null;
-				List<Long> delIds = new ArrayList<Long>();
+				List<Long> delIds = new ArrayList<>();
 				if(bulkMode) BulkFactories.getBulkFactory().setDirty(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION);
 
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).getContactParticipations(cinfo).toArray(new BaseParticipantType[0]);
-				//logger.info("Updating " + maps.length + " Contact References");
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < cinfo.getContacts().size();i++){
@@ -136,11 +140,9 @@ public class ContactInformationFactory extends NameIdFactory {
 						set.remove(cinfo.getContacts().get(i).getId());
 					}
 				}
-				//((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				set.clear();
 				maps = ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).getAddressParticipations(cinfo).toArray(new BaseParticipantType[0]);
-				//logger.info("Updating " + maps.length + " Address References");
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < cinfo.getAddresses().size();i++){
@@ -153,17 +155,16 @@ public class ContactInformationFactory extends NameIdFactory {
 						set.remove(cinfo.getAddresses().get(i).getId());
 					}
 				}
-				//((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-				if(delIds.size() > 0) ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
-				out_bool = true;
+				if(!delIds.isEmpty()) ((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), cinfo, cinfo.getOrganizationId());
+				outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
@@ -234,16 +235,16 @@ public class ContactInformationFactory extends NameIdFactory {
 	public ContactInformationType getContactInformationByReferenceId(long reference_id, ContactInformationEnumType type, long organizationId) throws FactoryException, ArgumentException
 	{
 		List<NameIdType> cinfo = getByField(new QueryField[]{QueryFields.getFieldReferenceId(reference_id),QueryFields.getFieldContactInformationType(type)},organizationId);
-		if (cinfo.size() > 0) return (ContactInformationType)cinfo.get(0);
+		if (!cinfo.isEmpty()) return (ContactInformationType)cinfo.get(0);
 		return null;
 	}
 
-	
+	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ContactInformationType use_map = (ContactInformationType)map;
-		fields.add(QueryFields.getFieldReferenceId(use_map.getReferenceId()));
-		fields.add(QueryFields.getFieldContactInformationType(use_map.getContactInformationType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
+		ContactInformationType useMap = (ContactInformationType)map;
+		fields.add(QueryFields.getFieldReferenceId(useMap.getReferenceId()));
+		fields.add(QueryFields.getFieldContactInformationType(useMap.getContactInformationType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
 	}
 	public ContactInformationType newContactInformation(PersonType map)
 	{
@@ -272,6 +273,8 @@ public class ContactInformationFactory extends NameIdFactory {
 		cinfo.setNameType(NameEnumType.CONTACTINFORMATION);
 		return cinfo;
 	}
+	
+	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
 		ContactInformationType cinfo = new ContactInformationType();

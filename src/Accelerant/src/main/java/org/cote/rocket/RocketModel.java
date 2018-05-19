@@ -99,7 +99,7 @@ public class RocketModel {
 		
 		MethodologyType method = ((MethodologyFactory)Factories.getFactory(FactoryEnumType.METHODOLOGY)).getByNameInGroup("Agile - Sprint Only", methDir);
 		
-		boolean out_bool = false;
+		boolean outBool = false;
 		int blocks = (int)Math.ceil((double)numberOfWeeks / (double)sprintLength);
 		//Date start = startTime;
 		Calendar startCal = Calendar.getInstance();
@@ -159,7 +159,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		BulkFactories.getBulkFactory().write(sessionId);
 		BulkFactories.getBulkFactory().close(sessionId);
 		if(project != null) ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).update(project);
-		return out_bool;
+		return outBool;
 		
 	}
 	
@@ -170,7 +170,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		return addAgileArtifacts(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(project.getGroupId(), user.getOrganizationId()));
 	}
 	private static boolean addAgileArtifacts(UserType user, DirectoryGroupType lcGroup) throws FactoryException, ArgumentException, DataAccessException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		
 		DirectoryGroupType psDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("ProcessSteps", lcGroup, lcGroup.getOrganizationId());
 		DirectoryGroupType pcDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Processes", lcGroup, lcGroup.getOrganizationId());
@@ -214,8 +214,8 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		
 		BulkFactories.getBulkFactory().write(sessionId);
 		BulkFactories.getBulkFactory().close(sessionId);
-		out_bool = true;
-		return out_bool;
+		outBool = true;
+		return outBool;
 	}
 	
 	public static boolean addWaterfallArtifacts(UserType user, LifecycleType lifecycle) throws FactoryException, ArgumentException, DataAccessException{
@@ -225,7 +225,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		return addWaterfallArtifacts(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(project.getGroupId(), user.getOrganizationId()));
 	}
 	private static boolean addWaterfallArtifacts(UserType user, DirectoryGroupType lcGroup) throws FactoryException, ArgumentException, DataAccessException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		
 		DirectoryGroupType psDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("ProcessSteps", lcGroup, lcGroup.getOrganizationId());
 		DirectoryGroupType pcDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Processes", lcGroup, lcGroup.getOrganizationId());
@@ -245,12 +245,12 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		BulkFactories.getBulkFactory().write(sessionId);
 		BulkFactories.getBulkFactory().close(sessionId);
 		
-		out_bool = true;
-		return out_bool;
+		outBool = true;
+		return outBool;
 	}
 	
 	public static boolean addDefaults(UserType user, long groupId) throws FactoryException, ArgumentException, DataAccessException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		logger.info("****** Adding process model default values under parent group #" + groupId);
 		DirectoryGroupType costDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Costs", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(groupId, user.getOrganizationId()), user.getOrganizationId());
 		DirectoryGroupType timeDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Times", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(groupId, user.getOrganizationId()), user.getOrganizationId());
@@ -262,7 +262,7 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 		addDefaultEstimates(user, sessionId, timeDir, costDir, estDir.getId());
 		BulkFactories.getBulkFactory().write(sessionId);
 		BulkFactories.getBulkFactory().close(sessionId);
-		return out_bool;
+		return outBool;
 	}
 	
 	private static void addDefaultEstimates(UserType user, String sessionId, DirectoryGroupType timeGroup, DirectoryGroupType costGroup, long groupId) throws ArgumentException, FactoryException{

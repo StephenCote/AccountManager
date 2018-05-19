@@ -77,7 +77,7 @@ public class TraitFactory extends NameIdGroupFactory {
 	
 	public TraitType newTrait(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		TraitType obj = new TraitType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -118,15 +118,15 @@ public class TraitFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		TraitType new_obj = new TraitType();
-		new_obj.setNameType(NameEnumType.TRAIT);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setTraitType(TraitEnumType.valueOf(rset.getString("traittype")));
-		new_obj.setAlignmentType(AlignmentEnumType.valueOf(rset.getString("alignment")));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setScore(rset.getInt("score"));
-		return new_obj;
+		TraitType newObj = new TraitType();
+		newObj.setNameType(NameEnumType.TRAIT);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setTraitType(TraitEnumType.valueOf(rset.getString("traittype")));
+		newObj.setAlignmentType(AlignmentEnumType.valueOf(rset.getString("alignment")));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setScore(rset.getInt("score"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -138,12 +138,12 @@ public class TraitFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		TraitType use_map = (TraitType)map;
-		fields.add(QueryFields.getFieldTraitType(use_map.getTraitType()));
-		fields.add(QueryFields.getFieldAlignmentType(use_map.getAlignmentType()));
-		fields.add(QueryFields.getFieldScore(use_map.getScore()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		TraitType useMap = (TraitType)map;
+		fields.add(QueryFields.getFieldTraitType(useMap.getTraitType()));
+		fields.add(QueryFields.getFieldAlignmentType(useMap.getAlignmentType()));
+		fields.add(QueryFields.getFieldScore(useMap.getScore()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteTraitsByUser(UserType user) throws FactoryException
 	{

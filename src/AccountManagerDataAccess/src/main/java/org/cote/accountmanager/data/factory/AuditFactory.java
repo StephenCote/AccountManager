@@ -59,12 +59,16 @@ public class AuditFactory extends FactoryBase {
 		this.scopeToOrganization = false;
 		this.tableNames.add("audit");
 	}
+	
+	@Override
 	public void initialize(Connection connection) throws FactoryException{
 		super.initialize(connection);
 		DataTable table = this.getDataTable("audit");
 		table.setBulkInsert(true);
 		
 	}
+	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase("audit")){
 			table.setRestrictUpdateColumn("id", true);
@@ -152,30 +156,40 @@ public class AuditFactory extends FactoryBase {
 		return getByField(new QueryField[]{QueryFields.getFieldAuditTargetType(targetType),QueryFields.getFieldAuditTargetData(targetData)}, instruction).toArray(new AuditType[0]);
 	}
 	protected List<AuditType> getByField(QueryField[] fields, ProcessingInstructionType instruction) throws FactoryException{
-		List<AuditType> out_list = new ArrayList<AuditType>();
+		List<AuditType> outList = new ArrayList<AuditType>();
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
-		//if(this.dataTables.size() > 1) throw new FactoryException("Multiple table select statements not yet supported");
 		DataTable table = getDataTable("audit");
 		String selectString = getSelectTemplate(table, instruction);
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, 0);
-		System.out.println(sqlQuery);
+		PreparedStatement statement = null;
+		ResultSet rset = null;
 		try {
-			PreparedStatement statement = connection.prepareStatement(sqlQuery);
+			statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
-			ResultSet rset = statement.executeQuery();
+			rset = statement.executeQuery();
 			while(rset.next()){
 				AuditType obj = this.read(rset, instruction);
-				out_list.add(obj);
+				outList.add(obj);
 			}
-			rset.close();
-			connection.close();
+
 		} catch (SQLException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			throw new FactoryException(e.getMessage());
 		}
-		return out_list;
+		finally{
+			try{
+				if(rset != null) rset.close();
+				if(statement != null) statement.close();
+				connection.close();
+			}
+			catch(SQLException e){
+				logger.error(e);
+			}
+		}
+		
+		return outList;
 	}
 	
 	public ProcessingInstructionType getPagingInstruction(long startIndex)
@@ -199,11 +213,10 @@ public class AuditFactory extends FactoryBase {
 	
 	protected AuditType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException
 	{
-			/// throw new FactoryException("This is an artifact from java<->c#<->java conversions - should be an abstract class + interface, not an override");
 			AuditType audit = new AuditType();
 			return read(rset, audit);
 	}
-	protected AuditType read(ResultSet rset, AuditType obj) throws SQLException, FactoryException
+	protected AuditType read(ResultSet rset, AuditType obj) throws SQLException
 	{
 		obj.setId(rset.getLong("id"));
 		obj.setAuditLevelType(LevelEnumType.valueOf(rset.getString("auditleveltype")));

@@ -52,6 +52,14 @@ public class ConnectionFactory {
 	private static ConnectionFactory Singleton = null;
 	
 	private static DataSource ds = null;
+	
+	private static Map<String,Boolean> driverCheck = Collections.synchronizedMap(new HashMap<String,Boolean>());
+	public enum CONNECTION_TYPE{
+		UNKNOWN,
+		DS,
+		SINGLE
+	};
+	
 	public static ConnectionFactory getInstance(){
 		if(Singleton == null){ 
 			Singleton = new ConnectionFactory();
@@ -70,13 +78,13 @@ public class ConnectionFactory {
 		    {
 		        Class.forName("org.postgresql.Driver");
 		    }
-		    catch(Throwable e)
+		    catch(Exception e)
 		    {
 		        logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		    }
 	}
 	
-	public ConnectionFactory(){
+	private ConnectionFactory(){
 		
 	}
 	
@@ -89,7 +97,6 @@ public class ConnectionFactory {
 	}
 
 	public Connection getConnection(){
-		//System.out.println("Get Connection: " + connectionType);
 		if(connectionType == CONNECTION_TYPE.SINGLE) return getConnection(url, userName, userPassword, driverClassName);
 		else if(connectionType == CONNECTION_TYPE.DS) return getDSConnection(jndiDataSource, driverClassName);
 		return null;
@@ -143,72 +150,46 @@ public class ConnectionFactory {
 		this.connectionType = connectionType;
 	}
 
-	private static Map<String,Boolean> driverCheck = Collections.synchronizedMap(new HashMap<String,Boolean>());
-	public static enum CONNECTION_TYPE{
-		UNKNOWN,
-		DS,
-		SINGLE
-	};
-	/*
-	public static Connection getPostGres91Connection(String url, String userName, String password){
-		return getConnection(url, userName, password, "org.postgresql.Driver");
-	}
-	public static Connection getPostGres91DSConnection(String jndiDS){
-		return getDSConnection(jndiDS,"org.postgresql.Driver");
-	}
-	*/
-	/*
-	private static Connection getConnection(String url, String userName, String password, String driverClassName){
-		return getSingleConnection(url, userName, password, "org.postgresql.Driver");
-	}
-	*/
+
 	private static boolean tryDriver(String driverClassName){
-		boolean out_bool = false;
+		boolean outBool = false;
 		
-		if(ConnectionFactory.getInstance().isCheckDriver() == false || (driverCheck.containsKey(driverClassName) && driverCheck.get(driverClassName).booleanValue() == true)){
+		if(!ConnectionFactory.getInstance().isCheckDriver()  || (driverCheck.containsKey(driverClassName) && driverCheck.get(driverClassName).booleanValue())){
 			return true;
 		}
 	    try {
 			Class.forName(driverClassName);
-			out_bool = true;
+			outBool = true;
 		} catch (ClassNotFoundException e) {
 			
-			System.out.println("Class Not Found for '" + driverClassName + '"');
-			/// logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+			logger.error("Class Not Found for '" + driverClassName + '"');
+
 		}
-	    driverCheck.put(driverClassName, out_bool);
-		return out_bool;
+	    driverCheck.put(driverClassName, outBool);
+		return outBool;
 	}
 	public static Connection getConnection(String url, String userName, String password, String driverClassName)  {   
 		  
-		if(tryDriver(driverClassName) == false){
+		if(!tryDriver(driverClassName)){
 			return null;
 		}
 		Connection connection = null;
 		try {
-			/*
-			Properties properties = new Properties();
-			properties.put("user",     "devuser");
-			properties.put("password", "password");
-			properties.put("ssl",      "true");
-			properties.put("sslfactory","org.postgresql.ssl.NonValidatingFactory");
-			*/
-		
 			connection = DriverManager.getConnection(
 					url,
-					//properties);
-					userName, password);
+					userName, password
+			);
 		}
 		catch (SQLException e) {
- 			System.out.println("Connection Failed! Check output console");
+ 			logger.error("Connection Failed! Check output console");
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return connection;
 	}
 	public static Connection getDSConnection(String jndiDS, String driverClassName)  {   
-		Connection out_connection = null;
+		Connection outConnection = null;
 		if(ds == null){
-			if(tryDriver(driverClassName) == false){
+			if(!tryDriver(driverClassName)){
 				return null;
 			}
 		    String dsFile = "java:/" + jndiDS;   
@@ -227,7 +208,7 @@ public class ConnectionFactory {
 			return null;
 		}
 		try{
-			out_connection = ds.getConnection();
+			outConnection = ds.getConnection();
 
 		}
 		catch(SQLException sqe){
@@ -235,7 +216,7 @@ public class ConnectionFactory {
 		}
  
   
-	    return out_connection;  
+	    return outConnection;  
 	}  
 	
 	

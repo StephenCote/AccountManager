@@ -180,14 +180,14 @@ class ScriptServiceFilter implements ClassFilter {
 
 	@Override
     public boolean exposeToScripts(String s) {
-	  boolean out_bool = true;
+	  boolean outBool = true;
       //if (am5Factory.matcher(s).find()) return false;
 	  for(int i = 0; i < restrictedClasses.length; i++){
 		  if(restrictedClasses[i].matcher(s).find()){
-			  out_bool = false;
+			  outBool = false;
 			  break;
 		  }
 	  }
-      return out_bool;
+      return outBool;
     }
   }

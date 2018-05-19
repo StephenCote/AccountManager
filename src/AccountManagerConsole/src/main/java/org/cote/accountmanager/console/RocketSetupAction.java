@@ -45,22 +45,22 @@ import org.cote.rocket.factory.FactoryDefaults;
 public class RocketSetupAction {
 	public static final Logger logger = LogManager.getLogger(SetupAction.class);
 	public static boolean setupRocket(String adminPassword, String schemaFile) throws FactoryException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		boolean error = false;
 		logger.info("Setting up Rocket");
 		if(adminPassword == null || adminPassword.length() == 0){
 			logger.error("Invalid admin password");
-			return out_bool;
+			return outBool;
 		}
 		if(schemaFile == null || schemaFile.length() == 0){
 			logger.error("Invalid schema file");
-			return out_bool;
+			return outBool;
 		}
 
 		String sql = new String(StreamUtil.fileToBytes(schemaFile));
 		if(sql == null || sql.length() == 0){
 			logger.error("Invalid schema file: " + schemaFile);
-			return out_bool;
+			return outBool;
 		}
 		Connection connection = null;
 		try{
@@ -85,7 +85,7 @@ public class RocketSetupAction {
 			}
 		}
 
-		if(error == true) return out_bool;
+		if(error == true) return outBool;
 		//Factories.coolDown();
 		//Factories.warmUp();
 		/// Find and delete the Accelerant and Rocket organizations if they exist
@@ -137,7 +137,7 @@ public class RocketSetupAction {
 		GroupFactory oFact1 = org.cote.accountmanager.data.Factories.getFactory(FactoryEnumType.GROUP);
 		if(oFact1.getBulkMode()){
 			logger.error("Factory is incorrectly reported as being in bulk mode");
-			return out_bool;
+			return outBool;
 		}
 
 		
@@ -149,7 +149,7 @@ public class RocketSetupAction {
 		logger.info("Configuring " + aOrg.getId() + ":" + aOrg.getUrn());
 		try {
 
-			out_bool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(FactoryDefaults.getAccelerantOrganization(), adminPassword);
+			outBool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(FactoryDefaults.getAccelerantOrganization(), adminPassword);
 		} catch (ArgumentException | DataAccessException | FactoryException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -159,10 +159,10 @@ public class RocketSetupAction {
 			logger.error("Internal rocket state is not correctly cleaned up");
 			return false;
 		}
-		if(out_bool && Rocket.getIsSetup() == false){
+		if(outBool && Rocket.getIsSetup() == false){
 			
 			try {
-				out_bool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(Rocket.getRocketOrganization(),adminPassword);
+				outBool = org.cote.accountmanager.data.factory.FactoryDefaults.setupOrganization(Rocket.getRocketOrganization(),adminPassword);
 			} catch (ArgumentException e) {
 				
 				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -191,6 +191,6 @@ public class RocketSetupAction {
 				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 }

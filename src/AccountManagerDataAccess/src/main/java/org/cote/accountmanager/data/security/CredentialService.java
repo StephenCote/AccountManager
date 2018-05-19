@@ -78,29 +78,29 @@ public class CredentialService {
 	public static boolean validatePasswordCredential(NameIdType object, CredentialType credential, String password){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHENTICATE, "Validate hashed password", AuditEnumType.valueOf(object.getNameType().toString()), object.getName() + " (#" + object.getId() + ")");
 		AuditService.targetAudit(audit, AuditEnumType.CREDENTIAL, credential.getCredentialType().toString() + "(# " + credential.getId() + ")");
-		boolean out_bool = false;
+		boolean outBool = false;
 		/// If the credential reference type and id don't match the object, error out
 		///
 		if(object.getId().compareTo(credential.getReferenceId()) != 0 || FactoryEnumType.valueOf(object.getNameType().toString()) != credential.getReferenceType()){
 			AuditService.denyResult(audit, "Specified credential does not match the specified object");
-			return out_bool;
+			return outBool;
 		}
 		switch(credential.getCredentialType()){
 			case TOKEN:
 			case HASHED_PASSWORD:
 			case ENCRYPTED_PASSWORD:
-				out_bool = comparePasswordCredential(credential, password);
+				outBool = comparePasswordCredential(credential, password);
 				break;
 			case LEGACY_PASSWORD:
-				out_bool = compareLegacyPasswordCredential(credential, password);
+				outBool = compareLegacyPasswordCredential(credential, password);
 				break;
 			default:
 				logger.error("Not implemented");
 				break;
 		}
-		if(out_bool) AuditService.validateResult(audit, "Validated");
+		if(outBool) AuditService.validateResult(audit, "Validated");
 		else AuditService.invalidateResult(audit, "Not validated");
-		return out_bool;
+		return outBool;
 		
 	}
 	
@@ -127,17 +127,17 @@ public class CredentialService {
 	/// This is throw-away to migrate off the legacy system - just take the hashed password in, lookup the user, and call it good
 	///
 	public static boolean compareLegacyPasswordCredential(CredentialType credential, String password){
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(credential.getReferenceType() != FactoryEnumType.USER){
 			logger.error("Unsupported legacy type");
-			return out_bool;
+			return outBool;
 		}
 		String passwordHash = new String(credential.getCredential());
 		logger.info("Hash = " + passwordHash);
 		try {
 			List<NameIdType> users = Factories.getNameIdFactory(FactoryEnumType.USER).list(new QueryField[]{QueryFields.getFieldId(credential.getReferenceId()), QueryFields.getFieldPassword(passwordHash)}, credential.getOrganizationId());
 			if (users.size() == 1){
-				out_bool = true;
+				outBool = true;
 			}
 		} catch (FactoryException e) {
 			
@@ -147,7 +147,7 @@ public class CredentialService {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	public static byte[] decryptCredential(CredentialType credential){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.OPEN, "Decrypted credential", AuditEnumType.CREDENTIAL, credential.getObjectId());
@@ -199,32 +199,32 @@ public class CredentialService {
 	}
 	
 	public static boolean comparePasswordCredential(CredentialType credential, String password){
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(credential.getCredentialType() != CredentialEnumType.HASHED_PASSWORD && credential.getCredentialType() != CredentialEnumType.ENCRYPTED_PASSWORD && credential.getCredentialType() != CredentialEnumType.TOKEN){
 			logger.error("Invalid credential type for a the specified validation");
-			return out_bool;
+			return outBool;
 		}
 		byte[] cred = extractCredential(credential);
 
 		if(cred.length == 0){
 			logger.error("Credential is invalid");
-			return out_bool;
+			return outBool;
 		}
 
 		try {
 			byte[] pwdBytes = password.getBytes("UTF-8");
 			if(credential.getCredentialType() == CredentialEnumType.HASHED_PASSWORD){
 				byte[] matchHash = SecurityUtil.getDigest(pwdBytes, credential.getSalt());
-				out_bool = Arrays.areEqual(cred, matchHash);
+				outBool = Arrays.areEqual(cred, matchHash);
 			}
 			else if(credential.getCredentialType() == CredentialEnumType.ENCRYPTED_PASSWORD || credential.getCredentialType() == CredentialEnumType.TOKEN){
-				out_bool = Arrays.areEqual(cred, pwdBytes);
+				outBool = Arrays.areEqual(cred, pwdBytes);
 			}
 		} catch (UnsupportedEncodingException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static CredentialType newHashedPasswordCredential(UserType owner, NameIdType targetObject, String password, boolean primary, boolean vaulted){
 		return newHashedPasswordCredential(null,owner,targetObject,password,primary, vaulted);

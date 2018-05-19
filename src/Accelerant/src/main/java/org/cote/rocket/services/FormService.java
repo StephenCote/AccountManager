@@ -61,12 +61,12 @@ public class FormService {
 	}
 
 	protected static <T> boolean setFormElementValue(FormType form, String elementName, boolean isBinary, T[] elementValues) throws ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		FormElementType fet = getFormElementByName(form, elementName);
 
 		if(fet == null){
 			logger.warn("Element " + elementName + " does not exist.  Form is populated = " + form.getPopulated());
-			return out_bool;
+			return outBool;
 		}
 		fet.getElementValues().clear();
 		for(int i = 0; i < elementValues.length;i++){
@@ -103,17 +103,17 @@ public class FormService {
 		return fet;
 	}
 	public static boolean updateFormValues(UserType user, FormType form, boolean validate) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(form.getPopulated() == false){
 			logger.info("Not updating fields for an unpopulated form");
 			return true;
 		}
-		if(validate && (out_bool = ValidationService.validateForm(user,form)) == false){
+		if(validate && (outBool = ValidationService.validateForm(user,form)) == false){
 			logger.warn("Form " + form.getName() + " failed validation");
-			return out_bool;
+			return outBool;
 		}
 		List<FormElementValueType> vals = ((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).getByForm(form);
-		Set<Long> set = new HashSet<Long>();
+		Set<Long> set = new HashSet<>();
 		HashMap<String,FormElementValueType> map = new HashMap<String,FormElementValueType>();
 		for(int i = 0; i < vals.size();i++){
 			map.put(vals.get(i).getName(), vals.get(i));

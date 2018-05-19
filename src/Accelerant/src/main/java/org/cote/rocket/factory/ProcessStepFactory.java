@@ -86,7 +86,7 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 	
 	public ProcessStepType newProcessStep(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		ProcessStepType obj = new ProcessStepType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -146,19 +146,19 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		ProcessStepType new_obj = new ProcessStepType();
-		new_obj.setNameType(NameEnumType.PROCESSSTEP);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		return new_obj;
+		ProcessStepType newObj = new ProcessStepType();
+		newObj.setNameType(NameEnumType.PROCESSSTEP);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setDescription(rset.getString("description"));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		ProcessStepType data = (ProcessStepType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		
 		removeFromCache(data);
 		if(update(data, null)){
@@ -166,7 +166,7 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 				
 				/// Budgets
 				///
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).getBudgetParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -214,21 +214,21 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 				((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ProcessStepType use_map = (ProcessStepType)map;
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		ProcessStepType useMap = (ProcessStepType)map;
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteProcessStepsByUser(UserType user) throws FactoryException
 	{

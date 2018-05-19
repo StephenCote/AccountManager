@@ -118,7 +118,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 	
 	public PolicyType newPolicy(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		PolicyType obj = new PolicyType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -185,21 +185,21 @@ public class PolicyFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		PolicyType new_obj = new PolicyType();
-		new_obj.setNameType(NameEnumType.POLICY);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		//new_obj.setUrn(rset.getString("urn"));
-		new_obj.setScore(rset.getInt("score"));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		new_obj.setEnabled(rset.getBoolean("enabled"));
-		new_obj.setDecisionAge(rset.getLong("decisionage"));
-		new_obj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		new_obj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		new_obj.setExpiresDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
-		new_obj.setCondition(ConditionEnumType.fromValue(rset.getString("condition")));
-		return new_obj;
+		PolicyType newObj = new PolicyType();
+		newObj.setNameType(NameEnumType.POLICY);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		//newObj.setUrn(rset.getString("urn"));
+		newObj.setScore(rset.getInt("score"));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setEnabled(rset.getBoolean("enabled"));
+		newObj.setDecisionAge(rset.getLong("decisionage"));
+		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
+		newObj.setExpiresDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		newObj.setCondition(ConditionEnumType.fromValue(rset.getString("condition")));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -208,11 +208,11 @@ public class PolicyFactory extends NameIdGroupFactory {
 		removeFromCache(data);
 		removeFromCache(data,getUrnCacheKey(data));
 		data.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(new Date()));
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(super.update(data, null)){
 			try{
 				PolicyParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.POLICYPARTICIPATION);
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ppFact.getRuleParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -225,29 +225,29 @@ public class PolicyFactory extends NameIdGroupFactory {
 					}
 				}
 				ppFact.deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		PolicyType use_map = (PolicyType)map;
-		fields.add(QueryFields.getFieldCondition(use_map.getCondition()));
-		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
-		fields.add(QueryFields.getFieldScore(use_map.getScore()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldEnabled(use_map.getEnabled()));
-		//fields.add(QueryFields.getFieldCreatedDate(use_map.getCreated()));
-		fields.add(QueryFields.getFieldModifiedDate(use_map.getModifiedDate()));
-		fields.add(QueryFields.getFieldExpirationDate(use_map.getExpiresDate()));
-		fields.add(QueryFields.getFieldDecisionAge(use_map.getDecisionAge()));
+		PolicyType useMap = (PolicyType)map;
+		fields.add(QueryFields.getFieldCondition(useMap.getCondition()));
+		//fields.add(QueryFields.getFieldUrn(useMap.getUrn()));
+		fields.add(QueryFields.getFieldScore(useMap.getScore()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldEnabled(useMap.getEnabled()));
+		//fields.add(QueryFields.getFieldCreatedDate(useMap.getCreated()));
+		fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
+		fields.add(QueryFields.getFieldExpirationDate(useMap.getExpiresDate()));
+		fields.add(QueryFields.getFieldDecisionAge(useMap.getDecisionAge()));
 
 	}
 	public int deletePoliciesByUser(UserType user) throws FactoryException

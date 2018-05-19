@@ -49,11 +49,11 @@ public class DirectoryUtil{
 	
 	}
 
-	public DirectoryUtil(String path){
-		init(path);
+	public DirectoryUtil(String inPath){
+		init(inPath);
 	}
-	public void init(String path){
-		this.path=path;
+	public void init(String inPath){
+		this.path=inPath;
 		directory=new File(path);
 		if(!directory.isDirectory()){
 			logger.info("DirUtil:: init: '" + path + "' is not a directory");
@@ -119,7 +119,7 @@ public class DirectoryUtil{
 		_getrecursive(f, dirs, null, filter, recurse);
 	}
 	private void _getrecursive(File f,List<File> dirs, List<File> dirlist, String filter,boolean recurse){
-		long size=0;
+
 		long mark=new Date().getTime();
 		if((mark - now) > 1000){
 			now=mark;

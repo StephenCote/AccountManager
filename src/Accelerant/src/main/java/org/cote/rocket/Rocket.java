@@ -167,7 +167,7 @@ public class Rocket {
 		return group;
 	}
 	public static boolean enrollReaderInCommunity(AuditType audit, UserType user){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
 			UserRoleType rocketUserRole = RocketSecurity.getUserRole(user.getOrganizationId());
 			UserRoleType userReaderRole = RoleService.getAccountUsersReaderUserRole(user.getOrganizationId());
@@ -179,7 +179,7 @@ public class Rocket {
 			RoleService.addUserToRole(user, permissionReaderRole);
 			AuditService.targetAudit(audit,AuditEnumType.ROLE,"Roles: " + rocketUserRole.getName() + ", " + userReaderRole.getName() + ", " + roleReaderRole.getName());
 			AuditService.permitResult(audit, "Add user to roles");
-			out_bool = true;
+			outBool = true;
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
 		} catch (FactoryException e) {
 			
@@ -194,11 +194,11 @@ public class Rocket {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit,"Error: " + e.getMessage());
 		}
-		return out_bool;
+		return outBool;
 		
 	}	
 	public static boolean enrollAdminInCommunity(AuditType audit, UserType user){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
 			UserRoleType rocketAdminRole = RocketSecurity.getAdminRole(user.getOrganizationId());
 			UserRoleType userReaderRole = RoleService.getAccountUsersReaderUserRole(user.getOrganizationId());
@@ -211,7 +211,7 @@ public class Rocket {
 			AuditService.targetAudit(audit,AuditEnumType.ROLE,"Roles: " + rocketAdminRole.getName() + ", " + userReaderRole.getName() + ", " + roleReaderRole.getName());
 			AuditService.permitResult(audit, "Add user to roles");
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
-			out_bool = true;
+			outBool = true;
 		} catch (FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -226,7 +226,7 @@ public class Rocket {
 			AuditService.denyResult(audit,"Error: " + e.getMessage());
 		}
 		
-		return out_bool;
+		return outBool;
 		
 	}
 	public static boolean enrollInCommunityLifecycle(UserType user, String lifecycleName, BasePermissionType permission){
@@ -245,7 +245,7 @@ public class Rocket {
 		
 	}
 	public static boolean enrollInCommunityLifecycle(UserType user, LifecycleType lifecycle, UserRoleType role, BasePermissionType permission){
-		boolean out_bool = false;
+		boolean outBool = false;
 		
 		if(lifecycle == null){
 			return false;
@@ -264,9 +264,9 @@ public class Rocket {
 			return false;
 		}
 		try {
-			out_bool = AuthorizationService.authorize(adminUser, user, role, permission, true);
+			outBool = AuthorizationService.authorize(adminUser, user, role, permission, true);
 
-			if(out_bool){
+			if(outBool){
 				DirectoryGroupType recDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Resources", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lifecycle.getGroupId(), lifecycle.getOrganizationId()),lifecycle.getOrganizationId());
 				ResourceType rec = ((ResourceFactory)Factories.getFactory(FactoryEnumType.RESOURCE)).getByNameInGroup(user.getName(), recDir);
 				if(rec == null){
@@ -282,7 +282,7 @@ public class Rocket {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
-		return out_bool;
+		return outBool;
 	}
 	public static boolean enrollInCommunityProject(UserType user, String lifecycleName, String projectName, BasePermissionType permission){
 		LifecycleType out_lc = null;
@@ -304,7 +304,7 @@ public class Rocket {
 		return enrollInCommunityProject(user, out_lc, out_proj, RocketSecurity.getProjectUserRole(out_proj), permission);
 	}
 	public static boolean enrollInCommunityProject(UserType user, LifecycleType lifecycle, ProjectType project, UserRoleType role, BasePermissionType permission){
-		boolean out_bool = false;
+		boolean outBool = false;
 
 		UserType adminUser = null;
 		try {
@@ -317,20 +317,20 @@ public class Rocket {
 			return false;
 		}
 		try {
-			out_bool = AuthorizationService.authorize(adminUser, user, role, permission, true);
-			if(out_bool){
+			outBool = AuthorizationService.authorize(adminUser, user, role, permission, true);
+			if(outBool){
 				EffectiveAuthorizationService.rebuildPendingRoleCache();
 			}
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 
 	}
 	
 	public static boolean deleteProject(ProjectType proj){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
 			((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(RocketSecurity.getProjectPermissionBucket(proj));
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).delete(RocketSecurity.getProjectRoleBucket(proj));
@@ -340,7 +340,7 @@ public class Rocket {
 			Factories.cleanupOrphans();
 			/// Need to clean up remaining artifacts
 			///
-			out_bool = true;
+			outBool = true;
 			
 		} catch (FactoryException e) {
 			
@@ -349,10 +349,10 @@ public class Rocket {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static boolean deleteLifecycle(LifecycleType lc){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).delete(RocketSecurity.getLifecycleRoleBucket(lc));
 			((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).delete(lc);
@@ -361,7 +361,7 @@ public class Rocket {
 			Factories.cleanupOrphans();
 			/// Need to clean up remaining artifacts
 			///
-			out_bool = true;
+			outBool = true;
 			
 		} catch (FactoryException e) {
 			
@@ -370,7 +370,7 @@ public class Rocket {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	public static ProjectType getProject(String projectName, LifecycleType lc, long organizationId) throws FactoryException, ArgumentException{
 		DirectoryGroupType dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA, basePath + "/Lifecycles/" + lc.getName() + "/Projects/" + projectName, organizationId);
@@ -473,9 +473,9 @@ public class Rocket {
 		return out_type;
 	}
 	public static boolean isApplicationEnvironmentConfigured(long organizationId){
-		boolean out_bool = false;
-		if(getRocketApplicationGroup(organizationId) != null) out_bool = true;
-		return out_bool;
+		boolean outBool = false;
+		if(getRocketApplicationGroup(organizationId) != null) outBool = true;
+		return outBool;
 	}
 	public static boolean configureApplicationEnvironment(String adminPassword) throws FactoryException,DataAccessException, ArgumentException{
 		OrganizationType org = getRocketOrganization();

@@ -58,33 +58,33 @@ public class OpenSSLAction {
 	}
 	public boolean signCertificate(String alias, String signerAlias, int expiryDays){
 		logger.info("Signing " + alias + " with " + signerAlias + " ...");
-		boolean out_bool = (
+		boolean outBool = (
 				sslUtil.signCertificate(alias, signerAlias, expiryDays)
 				&&
 				sslUtil.amendCertificateChain(alias, signerAlias)
 			);
-		if(out_bool) logger.info("Completed signing");
-		return out_bool;
+		if(outBool) logger.info("Completed signing");
+		return outBool;
 		
 
 	}
 	public boolean exportPKCS12Certificate(String alias, char[] password, String signer){
 		logger.info("Exporting PKCS12 Certificate " + alias + " ...");
-		boolean out_bool = false;
+		boolean outBool = false;
 		boolean exportP12Private = sslUtil.exportPKCS12PrivateCertificate(alias, password,signer);
 		if(!exportP12Private){
 			logger.error("Failed to export private key");
-			return out_bool;
+			return outBool;
 		}
 
 		boolean exportP12Public = sslUtil.exportPKCS12PublicCertificate(alias, password);
 		if(!exportP12Public){
 			logger.error("Failed to export public key");
-			return out_bool;
+			return outBool;
 		}
-		out_bool = true;
+		outBool = true;
 		logger.info("Exported PKCS12 Certificates");
-		return out_bool;
+		return outBool;
 	}
 	public boolean generateCertificateRequest(String alias, String dn, char[] password, int expiryDays){
 		logger.info("Generating request " + alias + " ...");
@@ -96,31 +96,31 @@ public class OpenSSLAction {
 		
 	};
 	public boolean generateRootCertificate(String alias, String dn, char[] password, int expiryDays){
-		boolean out_bool = false;
+		boolean outBool = false;
 		logger.info("Generating " + alias + " ...");
 		boolean genRootCert = sslUtil.generateRootCertificate(alias, password, (dn == null ? sslUtil.getDefaultDN(alias) : dn), expiryDays);
 		if(!genRootCert){
 			logger.error("Failed to generate root certificate");
-			return out_bool;
+			return outBool;
 		}
-		out_bool = exportPKCS12Certificate(alias, password, null);
+		outBool = exportPKCS12Certificate(alias, password, null);
 		/*
 		 * logger.info("Exporting Keys " + alias + " ...");
 		boolean exportP12Private = sslUtil.exportPKCS12PrivateCertificate(alias, password,null);
 		if(!exportP12Private){
 			logger.error("Failed to export private key");
-			return out_bool;
+			return outBool;
 		}
 
 		boolean exportP12Public = sslUtil.exportPKCS12PublicCertificate(alias, password);
 		if(!exportP12Public){
 			logger.error("Failed to export public key");
-			return out_bool;
+			return outBool;
 		}
 		*/
-		out_bool = true;
+		outBool = true;
 		logger.info("Finished generating certificate");
-		return out_bool;
+		return outBool;
 	}
 	
 	

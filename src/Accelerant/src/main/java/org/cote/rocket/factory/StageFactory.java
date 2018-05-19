@@ -91,7 +91,7 @@ public class StageFactory extends NameIdGroupFactory {
 	
 	public StageType newStage(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		StageType obj = new StageType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -129,22 +129,22 @@ public class StageFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		StageType new_obj = new StageType();
-		new_obj.setNameType(NameEnumType.STAGE);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
+		StageType newObj = new StageType();
+		newObj.setNameType(NameEnumType.STAGE);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
 		long work_id = rset.getLong("workid");
 		long budget_id = rset.getLong("budgetid");
 		long methodology_id = rset.getLong("methodologyid");
 		long schedule_id = rset.getLong("scheduleid");
-		if(schedule_id > 0) new_obj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(schedule_id, new_obj.getOrganizationId()));
-		if(work_id > 0) new_obj.setWork((WorkType)((WorkFactory)Factories.getFactory(FactoryEnumType.WORK)).getById(work_id, new_obj.getOrganizationId()));
-		if(budget_id > 0) new_obj.setBudget((BudgetType)((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).getById(budget_id, new_obj.getOrganizationId()));
-		if(methodology_id > 0) new_obj.setMethodology((MethodologyType)((MethodologyFactory)Factories.getFactory(FactoryEnumType.METHODOLOGY)).getById(methodology_id, new_obj.getOrganizationId()));
+		if(schedule_id > 0) newObj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(schedule_id, newObj.getOrganizationId()));
+		if(work_id > 0) newObj.setWork((WorkType)((WorkFactory)Factories.getFactory(FactoryEnumType.WORK)).getById(work_id, newObj.getOrganizationId()));
+		if(budget_id > 0) newObj.setBudget((BudgetType)((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).getById(budget_id, newObj.getOrganizationId()));
+		if(methodology_id > 0) newObj.setMethodology((MethodologyType)((MethodologyFactory)Factories.getFactory(FactoryEnumType.METHODOLOGY)).getById(methodology_id, newObj.getOrganizationId()));
 		
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		return new_obj;
+		newObj.setDescription(rset.getString("description"));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -156,14 +156,14 @@ public class StageFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		StageType use_map = (StageType)map;
-		fields.add(QueryFields.getFieldBudgetId((use_map.getBudget() != null ? use_map.getBudget().getId() : 0)));
-		fields.add(QueryFields.getFieldMethodologyId((use_map.getMethodology() != null ? use_map.getMethodology().getId() : 0)));
-		fields.add(QueryFields.getFieldWorkId((use_map.getWork() != null ? use_map.getWork().getId() : 0)));
-		fields.add(QueryFields.getFieldScheduleId((use_map.getSchedule() != null ? use_map.getSchedule().getId() : 0)));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		StageType useMap = (StageType)map;
+		fields.add(QueryFields.getFieldBudgetId((useMap.getBudget() != null ? useMap.getBudget().getId() : 0)));
+		fields.add(QueryFields.getFieldMethodologyId((useMap.getMethodology() != null ? useMap.getMethodology().getId() : 0)));
+		fields.add(QueryFields.getFieldWorkId((useMap.getWork() != null ? useMap.getWork().getId() : 0)));
+		fields.add(QueryFields.getFieldScheduleId((useMap.getSchedule() != null ? useMap.getSchedule().getId() : 0)));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteStagesByUser(UserType user) throws FactoryException
 	{

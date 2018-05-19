@@ -61,25 +61,22 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class FunctionFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.FUNCTION, FunctionFactory.class); }
 	public FunctionFactory(){
 		super();
-		this.tableNames.add("function");
+		this.primaryTableName = "function";
+		this.tableNames.add(primaryTableName);
 		this.hasObjectId = true;
 		this.hasUrn = true;
 		factoryType = FactoryEnumType.FUNCTION;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("function")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
@@ -94,7 +91,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 	
 	public FunctionType newFunction(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		FunctionType obj = new FunctionType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -116,11 +113,9 @@ public class FunctionFactory extends NameIdGroupFactory {
 			row.setCellValue("groupid", obj.getGroupId());
 			row.setCellValue("description", obj.getDescription());
 			row.setCellValue("score", obj.getScore());
-			//row.setCellValue("urn", obj.getUrn());
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			if(obj.getFunctionData() != null){
 				row.setCellValue("sourceurn", obj.getFunctionData().getUrn());
-				//row.setCellValue("sourceurl", obj.getSourceUrl());				
 			}
 			else{
 				row.setCellValue("sourceurn", obj.getSourceUrn());
@@ -155,29 +150,28 @@ public class FunctionFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		FunctionType new_obj = new FunctionType();
-		new_obj.setNameType(NameEnumType.FUNCTION);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setFunctionType(FunctionEnumType.valueOf(rset.getString("functiontype")));
-		//new_obj.setUrn(rset.getString("urn"));
-		new_obj.setScore(rset.getInt("score"));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setSourceUrn(rset.getString("sourceurn"));
-		new_obj.setSourceUrl(rset.getString("sourceurl"));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		return new_obj;
+		FunctionType newObj = new FunctionType();
+		newObj.setNameType(NameEnumType.FUNCTION);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setFunctionType(FunctionEnumType.valueOf(rset.getString("functiontype")));
+		newObj.setScore(rset.getInt("score"));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setSourceUrn(rset.getString("sourceurn"));
+		newObj.setSourceUrl(rset.getString("sourceurl"));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		FunctionType data = (FunctionType)object;
 		removeFromCache(data);
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(super.update(data, null)){
 			try{
 				
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).getFunctionFactParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -190,26 +184,25 @@ public class FunctionFactory extends NameIdGroupFactory {
 					}
 				}
 				((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		FunctionType use_map = (FunctionType)map;
-		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
-		fields.add(QueryFields.getFieldScore(use_map.getScore()));
-		fields.add(QueryFields.getFieldSourceUrn(use_map.getSourceUrn()));
-		fields.add(QueryFields.getFieldSourceUrl(use_map.getSourceUrl()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldFunctionType(use_map.getFunctionType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		FunctionType useMap = (FunctionType)map;
+		fields.add(QueryFields.getFieldScore(useMap.getScore()));
+		fields.add(QueryFields.getFieldSourceUrn(useMap.getSourceUrn()));
+		fields.add(QueryFields.getFieldSourceUrl(useMap.getSourceUrl()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldFunctionType(useMap.getFunctionType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteFunctionsByUser(UserType user) throws FactoryException
 	{
@@ -222,7 +215,6 @@ public class FunctionFactory extends NameIdGroupFactory {
 	{
 		FunctionType obj = (FunctionType)object;
 		removeFromCache(obj);
-		//int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		int deleted = deleteFunctionsByIds(new long[]{obj.getId()},obj.getOrganizationId());
 		return (deleted > 0);
 	}
@@ -232,11 +224,6 @@ public class FunctionFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).deleteParticipations(ids, organizationId);
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

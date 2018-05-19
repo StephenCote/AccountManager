@@ -57,7 +57,7 @@ public class ServiceSchemaBuilder {
 
 					if(an != null && an.value() != null){
 						altName = an.value().replaceAll("/","");
-						if(altName.indexOf("{") > -1) altName = altName.substring(0,altName.indexOf("{"));
+						if(altName.indexOf('{') > -1) altName = altName.substring(0,altName.indexOf('{'));
 					}
 				}
 				else{
@@ -95,12 +95,12 @@ public class ServiceSchemaBuilder {
 		return meth;
 	}
 	public static boolean isAnnotated(Method m, Class c){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try{
 			Annotation[] an = m.getDeclaredAnnotations();
 			for(int i = 0; i < an.length;i++){
 				if(an[i].annotationType().getName().equals(c.getName())){
-					out_bool = true;
+					outBool = true;
 					break;
 				}
 			}
@@ -108,7 +108,7 @@ public class ServiceSchemaBuilder {
 		catch(Exception e){
 			/// sink error
 		}
-		return out_bool;
+		return outBool;
 			
 	}
 	public static ServiceSchemaMethod[] getMethods(Class c, Document d){

@@ -152,7 +152,7 @@ public class RocketCommunity implements ICommunityProvider {
 		locByCode.clear();
 	}
 	public boolean importLocationTraits(UserType user, AuditEnumType auditType, String objectId, String locationPath, String featuresFileName){
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, auditType, objectId);
 		NameIdDirectoryGroupType obj = null;
@@ -160,19 +160,19 @@ public class RocketCommunity implements ICommunityProvider {
 			obj = ((INameIdFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
 				AuditService.denyResult(audit, "Null community object");
-				return out_bool;
+				return outBool;
 			}
 			BaseService.normalize(user, obj);
 			if(AuthorizationService.canChange(user, obj)==false){
 				AuditService.denyResult(audit, "User is not authorized to change lifecycle");
-				return out_bool;
+				return outBool;
 			}
 			DirectoryGroupType lcGroup = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, obj.getGroupPath(), user.getOrganizationId());
 			DirectoryGroupType locDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Traits", lcGroup, user.getOrganizationId());
 
 			if(AuthorizationService.canChange(user, locDir) == false){
 				AuditService.denyResult(audit, "User is not authorized to change the directory");
-				return out_bool;
+				return outBool;
 			}
 			
 			
@@ -197,7 +197,7 @@ public class RocketCommunity implements ICommunityProvider {
 			BulkFactories.getBulkFactory().close(sessionId);
 			
 			AuditService.permitResult(audit, "Loaded traits");
-			out_bool = true;
+			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			// TODO Auto-generated catch block
@@ -220,11 +220,11 @@ public class RocketCommunity implements ICommunityProvider {
 				return;
 			}
 		 */
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean importLocationCountryInfo(UserType user, AuditEnumType auditType, String objectId, String locationPath, String featuresFileName){
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
@@ -232,19 +232,19 @@ public class RocketCommunity implements ICommunityProvider {
 			obj = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
 				AuditService.denyResult(audit, "Null community object");
-				return out_bool;
+				return outBool;
 			}
 			BaseService.normalize(user, obj);
 			if(AuthorizationService.canChange(user, obj)==false){
 				AuditService.denyResult(audit, "User is not authorized to change lifecycle");
-				return out_bool;
+				return outBool;
 			}
 			DirectoryGroupType lcGroup = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, obj.getGroupPath(), user.getOrganizationId());
 			DirectoryGroupType locDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Locations", lcGroup, user.getOrganizationId());
 
 			if(AuthorizationService.canChange(user, locDir) == false){
 				AuditService.denyResult(audit, "User is not authorized to change the directory");
-				return out_bool;
+				return outBool;
 			}
 			
 			
@@ -280,7 +280,7 @@ public class RocketCommunity implements ICommunityProvider {
 			BulkFactories.getBulkFactory().close(sessionId);
 			
 			AuditService.permitResult(audit, "Loaded country info");
-			out_bool = true;
+			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			// TODO Auto-generated catch block
@@ -288,11 +288,11 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean importLocationAdmin1Codes(UserType user, AuditEnumType auditType, String objectId, String locationPath, String featuresFileName){
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
@@ -300,19 +300,19 @@ public class RocketCommunity implements ICommunityProvider {
 			obj = ((NameIdGroupFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
 				AuditService.denyResult(audit, "Null community object");
-				return out_bool;
+				return outBool;
 			}
 			BaseService.normalize(user, obj);
 			if(AuthorizationService.canChange(user, obj)==false){
 				AuditService.denyResult(audit, "User is not authorized to change lifecycle");
-				return out_bool;
+				return outBool;
 			}
 			DirectoryGroupType lcGroup = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, obj.getGroupPath(), user.getOrganizationId());
 			DirectoryGroupType locDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Locations", lcGroup, user.getOrganizationId());
 
 			if(AuthorizationService.canChange(user, locDir) == false){
 				AuditService.denyResult(audit, "User is not authorized to change the directory");
-				return out_bool;
+				return outBool;
 			}
 			
 			
@@ -364,7 +364,7 @@ public class RocketCommunity implements ICommunityProvider {
 			BulkFactories.getBulkFactory().close(sessionId);
 			
 			AuditService.permitResult(audit, "Loaded admin 1 codes");
-			out_bool = true;
+			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			// TODO Auto-generated catch block
@@ -372,11 +372,11 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean importLocationAdmin2Codes(UserType user, AuditEnumType auditType, String objectId, String locationPath, String featuresFileName){
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
@@ -384,19 +384,19 @@ public class RocketCommunity implements ICommunityProvider {
 			obj = ((NameIdGroupFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
 				AuditService.denyResult(audit, "Null community object");
-				return out_bool;
+				return outBool;
 			}
 			BaseService.normalize(user, obj);
 			if(AuthorizationService.canChange(user, obj)==false){
 				AuditService.denyResult(audit, "User is not authorized to change lifecycle");
-				return out_bool;
+				return outBool;
 			}
 			DirectoryGroupType lcGroup = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, obj.getGroupPath(), user.getOrganizationId());
 			DirectoryGroupType locDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Locations", lcGroup, user.getOrganizationId());
 
 			if(AuthorizationService.canChange(user, locDir) == false){
 				AuditService.denyResult(audit, "User is not authorized to change the directory");
-				return out_bool;
+				return outBool;
 			}
 			
 			
@@ -472,7 +472,7 @@ public class RocketCommunity implements ICommunityProvider {
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
 			AuditService.permitResult(audit, "Loaded admin 2 codes");
-			out_bool = true;
+			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			// TODO Auto-generated catch block
@@ -480,11 +480,11 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean importLocationCountryData(UserType user, AuditEnumType auditType, String objectId, String locationPath, String codes, String alternate){
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
@@ -492,19 +492,19 @@ public class RocketCommunity implements ICommunityProvider {
 			obj = ((NameIdGroupFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
 				AuditService.denyResult(audit, "Null community object");
-				return out_bool;
+				return outBool;
 			}
 			BaseService.normalize(user, obj);
 			if(AuthorizationService.canChange(user, obj)==false){
 				AuditService.denyResult(audit, "User is not authorized to change lifecycle");
-				return out_bool;
+				return outBool;
 			}
 			DirectoryGroupType lcGroup = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, obj.getGroupPath(), user.getOrganizationId());
 			DirectoryGroupType locDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Locations", lcGroup, user.getOrganizationId());
 
 			if(AuthorizationService.canChange(user, locDir) == false){
 				AuditService.denyResult(audit, "User is not authorized to change the directory");
-				return out_bool;
+				return outBool;
 			}
 			
 			
@@ -601,7 +601,7 @@ public class RocketCommunity implements ICommunityProvider {
 			
 			
 			AuditService.permitResult(audit, "Loaded country data");
-			out_bool = true;
+			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			// TODO Auto-generated catch block
@@ -609,7 +609,7 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	
 	private static void bufferPostalCodes(CSVFormat csvFileFormat, String path) throws IOException{
@@ -876,7 +876,7 @@ public class RocketCommunity implements ICommunityProvider {
 	}
 	
 	public boolean configureCommunity(UserType adminUser){
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Configure community in organization #" + adminUser.getOrganizationId(), AuditEnumType.USER,adminUser.getUrn());
 
 		try {
@@ -884,21 +884,21 @@ public class RocketCommunity implements ICommunityProvider {
 			if(isSysAdmin == false){
 			//if(RoleService.getIsUserInEffectiveRole(RocketSecurity.getAdminRole(adminUser.getOrganizationId()),adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
 				AuditService.denyResult(audit, "User is not an administrator");
-				return out_bool;
+				return outBool;
 			}
-			out_bool = Rocket.configureApplicationEnvironment(adminUser);
+			outBool = Rocket.configureApplicationEnvironment(adminUser);
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
-		if(out_bool = true){
+		if(outBool = true){
 			AuditService.permitResult(audit, "Configured community");
 		}
-		return out_bool;
+		return outBool;
 	}
 	public boolean enrollAdminInCommunities(UserType adminUser, String userId){
-		boolean out_bool = false;
+		boolean outBool = false;
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Enroll in community roles",AuditEnumType.USER, adminUser.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "Admin roles");
@@ -911,11 +911,11 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 			if(RoleService.getIsUserInEffectiveRole(RocketSecurity.getAdminRole(adminUser.getOrganizationId()),adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
 				AuditService.denyResult(audit, "Admin user is not an administrator");
-				return out_bool;
+				return outBool;
 			}
 			
-			out_bool = Rocket.enrollAdminInCommunity(audit, user);
-			if(out_bool == true){
+			outBool = Rocket.enrollAdminInCommunity(audit, user);
+			if(outBool == true){
 				AuditService.permitResult(audit, "Configured " + user.getUrn() + " as a community administrator");
 			}
 		}
@@ -927,11 +927,11 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		
 
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean enrollReaderInCommunities(UserType adminUser, String userId){
-		boolean out_bool = false;
+		boolean outBool = false;
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Enroll in community roles",AuditEnumType.USER, adminUser.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "Reader roles");
@@ -944,11 +944,11 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 			if(RoleService.getIsUserInEffectiveRole(RocketSecurity.getAdminRole(adminUser.getOrganizationId()),adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
 				AuditService.denyResult(audit, "Admin user is not an administrator");
-				return out_bool;
+				return outBool;
 			}
 			
-			out_bool = Rocket.enrollReaderInCommunity(audit, user);
-			if(out_bool == true){
+			outBool = Rocket.enrollReaderInCommunity(audit, user);
+			if(outBool == true){
 				AuditService.permitResult(audit, "Configured " + user.getUrn() + " as a community reader");
 			}
 		}
@@ -960,11 +960,11 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		
 
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean enrollReaderInCommunityProject(UserType adminUser, String userId, String communityId, String projectId){
-		boolean out_bool = false;
+		boolean outBool = false;
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Enroll in community project reader roles",AuditEnumType.USER, adminUser.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "Reader roles");
@@ -1035,13 +1035,13 @@ public class RocketCommunity implements ICommunityProvider {
 	
 	
 	private boolean enrollInCommunityLifecycle(AuditType audit, UserType adminUser, UserType user, BasePermissionType permission, String communityId, boolean isAdmin){
-		boolean out_bool = false;
+		boolean outBool = false;
 
 
 		try{
 			if(RoleService.getIsUserInEffectiveRole(RocketSecurity.getAdminRole(adminUser.getOrganizationId()),adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
 				AuditService.denyResult(audit, "User is not an administrator");
-				return out_bool;
+				return outBool;
 			}
 			
 			LifecycleType lc = ((NameIdGroupFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getByObjectId(communityId, adminUser.getOrganizationId());
@@ -1053,7 +1053,7 @@ public class RocketCommunity implements ICommunityProvider {
 			UserRoleType role = (isAdmin ? RocketSecurity.getLifecycleAdminRole(lc) : RocketSecurity.getLifecycleUserRole(lc));
 			
 			if(Rocket.enrollInCommunityLifecycle(user, lc,role,permission)){
-				out_bool = true;
+				outBool = true;
 				AuditService.permitResult(audit, "Enrolled " + user.getUrn() + " in Lifecycle " + lc.getUrn());
 
 			}
@@ -1066,13 +1066,13 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 
 
-		return out_bool;
+		return outBool;
 	
 
 	}
 	
 	private boolean enrollInCommunityProject(AuditType audit, UserType adminUser, UserType user, BasePermissionType permission, String communityId, String projectId, boolean isAdmin){
-		boolean out_bool = false;
+		boolean outBool = false;
 
 		try{
 			
@@ -1090,12 +1090,12 @@ public class RocketCommunity implements ICommunityProvider {
 			
 			if(RoleService.getIsUserInEffectiveRole(RocketSecurity.getAdminRole(adminUser.getOrganizationId()),adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
 				AuditService.denyResult(audit, "User is not an administrator");
-				return out_bool;
+				return outBool;
 			}
 			UserRoleType role = (isAdmin ? RocketSecurity.getProjectAdminRole(proj) : RocketSecurity.getProjectUserRole(proj));
 			
 			if(Rocket.enrollInCommunityProject(user, lc, proj, role,permission)){
-				out_bool = true;
+				outBool = true;
 				AuditService.permitResult(audit, "Enrolled " + user.getUrn() + " in Lifecycle " + lc.getUrn() + " Project " + proj.getUrn());
 			}
 			else{
@@ -1110,12 +1110,12 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 
 		
-		return out_bool;
+		return outBool;
 
 	}
 	
 	public boolean deleteCommunityProject(UserType adminUser, String projectId){
-		boolean out_bool = false;
+		boolean outBool = false;
 
 		ProjectType out_proj = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.DELETE, "deleteProject",AuditEnumType.USER, adminUser.getUrn());
@@ -1136,14 +1136,14 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.denyResult(audit, "Permission denied");
 			return false;
 		}
-		out_bool = Rocket.deleteProject(out_proj);
-		if(out_bool) AuditService.permitResult(audit, "Deleted project: " + out_proj.getUrn());
+		outBool = Rocket.deleteProject(out_proj);
+		if(outBool) AuditService.permitResult(audit, "Deleted project: " + out_proj.getUrn());
 		else AuditService.denyResult(audit, "Failed to delete project: " + out_proj.getUrn());
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean deleteCommunity(UserType adminUser, String communityId){
-		boolean out_bool = false;
+		boolean outBool = false;
 
 		LifecycleType lc = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.DELETE, "deleteLifecycle",AuditEnumType.USER, adminUser.getUrn());
@@ -1165,14 +1165,14 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.denyResult(audit, "Permission denied");
 			return false;
 		}
-		out_bool = Rocket.deleteLifecycle(lc);
-		if(out_bool) AuditService.permitResult(audit, "Deleted lifecycle: " + lc.getUrn());
+		outBool = Rocket.deleteLifecycle(lc);
+		if(outBool) AuditService.permitResult(audit, "Deleted lifecycle: " + lc.getUrn());
 		else AuditService.denyResult(audit, "Failed to delete lifecycle: " + lc.getUrn());
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean configureEntitlements(UserType adminUser,String communityId, String projectId, String groupId){
-		boolean out_bool = false;
+		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Configure community in organization #" + adminUser.getOrganizationId(), AuditEnumType.USER,adminUser.getUrn());
 
 		try {
@@ -1204,7 +1204,7 @@ public class RocketCommunity implements ICommunityProvider {
 
 				RocketSecurity.applyRolesToProjectDirectory(null, rRole, lRole, bRole, adir);
 				EffectiveAuthorizationService.rebuildPendingRoleCache();
-				out_bool = true;
+				outBool = true;
 				AuditService.permitResult(audit, "Configured community group entitlements");
 			}
 			else{
@@ -1214,11 +1214,11 @@ public class RocketCommunity implements ICommunityProvider {
 			logger.error(e);
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean createCommunity(UserType adminUser, String communityName){
-		boolean out_bool = false;
+		boolean outBool = false;
 		LifecycleType out_lc = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "createLifecycle",AuditEnumType.USER, adminUser.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LIFECYCLE, Rocket.getBasePath() + "/Lifecycles");
@@ -1230,7 +1230,7 @@ public class RocketCommunity implements ICommunityProvider {
 			out_lc = Rocket.createLifecycle(adminUser, communityName);
 			if(out_lc != null){
 				AuditService.permitResult(audit, "Created lifecycle: " + communityName);
-				out_bool = true;
+				outBool = true;
 			}
 			else AuditService.denyResult(audit, "Failed to create lifecycle");
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
@@ -1238,11 +1238,11 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean createCommunityProject(UserType adminUser, String communityId, String projectName){
-		boolean out_bool = false;
+		boolean outBool = false;
 		ProjectType out_proj = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "createProject",AuditEnumType.USER, adminUser.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LIFECYCLE, Rocket.getBasePath() + "/Lifecycles");
@@ -1259,7 +1259,7 @@ public class RocketCommunity implements ICommunityProvider {
 				RocketModel.addDefaults(adminUser, out_proj.getGroupId());
 				//logger.warn("Community defaults (Waterfall/Agile models) due to open issue with RocketModel and bulk sessions");
 				AuditService.permitResult(audit, "Created project: " + projectName);
-				out_bool = true;
+				outBool = true;
 				
 			}
 			else AuditService.denyResult(audit, "Failed to create project: " + projectName);
@@ -1268,7 +1268,7 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	private BasePermissionType getApplicationPermissionBase(UserType user, ProjectType project, DirectoryGroupType svc){
@@ -1285,7 +1285,7 @@ public class RocketCommunity implements ICommunityProvider {
 	}
 	
 	public boolean generateCommunityProjectApplication(UserType user, String communityId, String projectId, String appName, boolean usePermissions, boolean useGroups, int seed, int max, double distribution, String dictionaryPath, String namesPath){
-		boolean out_bool = false;
+		boolean outBool = false;
 		Random r = new Random();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Generate Application",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.PROJECT, projectId);
@@ -1401,7 +1401,7 @@ public class RocketCommunity implements ICommunityProvider {
 			BulkFactories.getBulkFactory().close(sessionId);
 			
 				
-			out_bool = true;
+			outBool = true;
 
 			
 		} catch (ArgumentException | FactoryException | DataAccessException  e) {
@@ -1409,11 +1409,11 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean generateCommunityProjectRegion(UserType user, String communityId, String projectId, int locationSize, int seedSize, String dictionaryPath, String namesPath){
-		boolean out_bool = false;
+		boolean outBool = false;
 		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Generate Region",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.PROJECT, projectId);
@@ -1432,7 +1432,7 @@ public class RocketCommunity implements ICommunityProvider {
 			boolean initSetup = (eventCount == 0);
 			if(initSetup == false){
 				AuditService.denyResult(audit, "One or more events already exists");
-				return out_bool;
+				return outBool;
 			}
 			if(initSetup){
 				logger.info("START Populating " + dutil.getProject().getName() + " data ...");
@@ -1446,7 +1446,7 @@ public class RocketCommunity implements ICommunityProvider {
 				List<EventType> events = regionCreation.getChildEvents();
 				logger.info("Created " + events.size() + " events");
 				logger.info("END Populating");
-				out_bool = true;
+				outBool = true;
 			}
 
 			
@@ -1455,11 +1455,11 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	public boolean evolveCommunityProjectRegion(UserType user, String communityId, String projectId, int epochSize, int epochEvolutions, String dictionaryPath, String namesPath){
-		boolean out_bool = false;
+		boolean outBool = false;
 		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Generate Region",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.PROJECT, projectId);
@@ -1477,7 +1477,7 @@ public class RocketCommunity implements ICommunityProvider {
 			boolean initSetup = (eventCount == 0);
 			if(initSetup == true){
 				AuditService.denyResult(audit, "Origination event does not exist");
-				return out_bool;
+				return outBool;
 			}
 			
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -1494,14 +1494,14 @@ public class RocketCommunity implements ICommunityProvider {
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
 
-			out_bool = true;
+			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException  e) {
 			
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	
@@ -1575,7 +1575,7 @@ public class RocketCommunity implements ICommunityProvider {
 	
 	
 	public boolean updateCommunityProjectScript(UserType user, String communityId, String projectId, String name, String dataStr){
-		boolean out_bool = false;
+		boolean outBool = false;
 		DataType data = getCommunityProjectScriptData(user, communityId, projectId, name);
 		if(data == null) return false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Community Project Script: " + data.getUrn(),AuditEnumType.USER, user.getUrn());
@@ -1593,13 +1593,13 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 			else{
 				AuditService.permitResult(audit, "Updated data");
-				out_bool = true;
+				outBool = true;
 			}
 		} catch (FactoryException | ArgumentException | DataException e) {
 			AuditService.denyResult(audit, "Error: " + e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return out_bool;
+		return outBool;
 	}
 	private String processTokens(AuditType audit, UserType user, String communityId, String projectId, DataType data, Map<String,Object> params) throws DataException, FactoryException, ArgumentException{
 

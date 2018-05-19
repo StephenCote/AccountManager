@@ -96,7 +96,7 @@ public class TestFactoryCache extends BaseDataAccessTest{
 		sessionUser = testUser;
 		DataType data = getTestData("Test data",sessionUser.getHomeDirectory());
 
-		List<DataType> datas = new ArrayList<DataType>();
+		List<DataType> datas = new ArrayList<>();
 		try {
 			logger.info("Data Cache Key Name #1 = " + ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getCacheKeyName(data));
 			logger.info("Group Cache Key Name #1 = " + ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCacheKeyName(sessionUser.getHomeDirectory()));

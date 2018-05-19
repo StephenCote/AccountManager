@@ -94,7 +94,7 @@ public class PatternFactory extends NameIdGroupFactory {
 	
 	public PatternType newPattern(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		PatternType obj = new PatternType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -138,20 +138,20 @@ public class PatternFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		PatternType new_obj = new PatternType();
-		new_obj.setNameType(NameEnumType.PATTERN);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setPatternType(PatternEnumType.valueOf(rset.getString("patterntype")));
-		//new_obj.setUrn(rset.getString("urn"));
-		new_obj.setScore(rset.getInt("score"));
-		new_obj.setFactUrn(rset.getString("facturn"));
-		new_obj.setOperationUrn(rset.getString("operationurn"));
-		new_obj.setMatchUrn(rset.getString("matchurn"));
-		new_obj.setComparator(ComparatorEnumType.valueOf(rset.getString("comparator")));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		return new_obj;
+		PatternType newObj = new PatternType();
+		newObj.setNameType(NameEnumType.PATTERN);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setPatternType(PatternEnumType.valueOf(rset.getString("patterntype")));
+		//newObj.setUrn(rset.getString("urn"));
+		newObj.setScore(rset.getInt("score"));
+		newObj.setFactUrn(rset.getString("facturn"));
+		newObj.setOperationUrn(rset.getString("operationurn"));
+		newObj.setMatchUrn(rset.getString("matchurn"));
+		newObj.setComparator(ComparatorEnumType.valueOf(rset.getString("comparator")));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -163,17 +163,17 @@ public class PatternFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		PatternType use_map = (PatternType)map;
-		//fields.add(QueryFields.getFieldUrn(use_map.getUrn()));
-		fields.add(QueryFields.getFieldScore(use_map.getScore()));
-		fields.add(QueryFields.getFieldFactUrn(use_map.getFactUrn()));
-		fields.add(QueryFields.getFieldMatchUrn(use_map.getMatchUrn()));
-		fields.add(QueryFields.getFieldOperationUrn(use_map.getOperationUrn()));
-		fields.add(QueryFields.getFieldComparatorType(use_map.getComparator()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldPatternType(use_map.getPatternType()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		PatternType useMap = (PatternType)map;
+		//fields.add(QueryFields.getFieldUrn(useMap.getUrn()));
+		fields.add(QueryFields.getFieldScore(useMap.getScore()));
+		fields.add(QueryFields.getFieldFactUrn(useMap.getFactUrn()));
+		fields.add(QueryFields.getFieldMatchUrn(useMap.getMatchUrn()));
+		fields.add(QueryFields.getFieldOperationUrn(useMap.getOperationUrn()));
+		fields.add(QueryFields.getFieldComparatorType(useMap.getComparator()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldPatternType(useMap.getPatternType()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deletePatternsByUser(UserType user) throws FactoryException
 	{

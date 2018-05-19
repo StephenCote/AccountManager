@@ -128,15 +128,13 @@ public class TaskFactory extends NameIdGroupFactory {
 	}
 	public TaskType newTask(UserType user, TaskType parentTask) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
-		
 		TaskType obj = newTask(user,parentTask.getGroupId());
 		obj.setParentId(parentTask.getId());
 		return obj;
 	}
 	public TaskType newTask(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		TaskType obj = new TaskType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -256,37 +254,37 @@ public class TaskFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		TaskType new_obj = new TaskType();
-		new_obj.setNameType(NameEnumType.TASK);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
+		TaskType newObj = new TaskType();
+		newObj.setNameType(NameEnumType.TASK);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
 		long estimate_id = rset.getLong("estimateid");
-		if(estimate_id > 0) new_obj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(estimate_id, new_obj.getOrganizationId()));
-		new_obj.setTaskStatus(TaskStatusEnumType.valueOf(rset.getString("TaskStatus")));
-		new_obj.setDescription(rset.getString("description"));
-		new_obj.setLogicalOrder(rset.getInt("logicalorder"));
-		new_obj.setStartDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("startdate")));
-		new_obj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		new_obj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		new_obj.setCompletedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("completeddate")));
-		new_obj.setDueDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("duedate")));
+		if(estimate_id > 0) newObj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(estimate_id, newObj.getOrganizationId()));
+		newObj.setTaskStatus(TaskStatusEnumType.valueOf(rset.getString("TaskStatus")));
+		newObj.setDescription(rset.getString("description"));
+		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setStartDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("startdate")));
+		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
+		newObj.setCompletedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("completeddate")));
+		newObj.setDueDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("duedate")));
 
 		
-		return new_obj;
+		return newObj;
 	}
 
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		TaskType data = (TaskType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeBranchFromCache(data);
 		//logger.info("Updating Task: " + data.getName());
 		if(update(data, null)){
 			try{
 			/// Goals
-			Set<Long> set = new HashSet<Long>();
-			List<Long> delIds = new ArrayList<Long>();
+			Set<Long> set = new HashSet<>();
+			List<Long> delIds = new ArrayList<>();
 			
 			BaseParticipantType part = null;
 			if(bulkMode) BulkFactories.getBulkFactory().setDirty(FactoryEnumType.TASKPARTICIPATION);
@@ -440,34 +438,34 @@ public class TaskFactory extends NameIdGroupFactory {
 			}
 			delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 			//if(set.size() > 0) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-			if(delIds.size() > 0) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), data, data.getOrganizationId());
+			if(!delIds.isEmpty()) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), data, data.getOrganizationId());
 			
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		TaskType use_map = (TaskType)map;
-		fields.add(QueryFields.getFieldCreatedDate(use_map.getCreatedDate()));
-		fields.add(QueryFields.getFieldStartDate(use_map.getStartDate()));
-		//fields.add(QueryFields.getFieldModifiedDate(use_map.getModifiedDate()));
+		TaskType useMap = (TaskType)map;
+		fields.add(QueryFields.getFieldCreatedDate(useMap.getCreatedDate()));
+		fields.add(QueryFields.getFieldStartDate(useMap.getStartDate()));
+		//fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
 		Calendar now = Calendar.getInstance();
 		fields.add(QueryFields.getFieldModifiedDate(CalendarUtil.getXmlGregorianCalendar(now.getTime())));
 
-		fields.add(QueryFields.getFieldCompletedDate(use_map.getCompletedDate()));
-		fields.add(QueryFields.getFieldDueDate(use_map.getDueDate()));
+		fields.add(QueryFields.getFieldCompletedDate(useMap.getCompletedDate()));
+		fields.add(QueryFields.getFieldDueDate(useMap.getDueDate()));
 
-		fields.add(QueryFields.getFieldEstimateId((use_map.getEstimate() != null ? use_map.getEstimate().getId() : 0)));
-		fields.add(QueryFields.getFieldTaskStatus(use_map.getTaskStatus()));
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldLogicalOrder(use_map.getLogicalOrder()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		fields.add(QueryFields.getFieldEstimateId((useMap.getEstimate() != null ? useMap.getEstimate().getId() : 0)));
+		fields.add(QueryFields.getFieldTaskStatus(useMap.getTaskStatus()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteTasksByUser(UserType user) throws FactoryException
 	{
@@ -512,7 +510,7 @@ public class TaskFactory extends NameIdGroupFactory {
 	}
 	public List<TaskType> getChildTaskList(TaskType parent) throws FactoryException,ArgumentException{
 
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
 		//fields.add(QueryFields.getFieldGroup(parent.getGroupId()));
 		return getTaskList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());

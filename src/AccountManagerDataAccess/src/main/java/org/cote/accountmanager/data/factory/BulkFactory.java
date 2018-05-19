@@ -195,11 +195,11 @@ public class BulkFactory {
 
 			/// 2013/06/26 - Third pass, write objects into the bulk table queues
 			/// 2014/08/15 - Add attribute dump
-			List<NameIdType> attrDump = new ArrayList<NameIdType>();
+			List<NameIdType> attrDump = new ArrayList<>();
 			long totalAttrs = 0;
 			for(int i = offset; i < eLen; i++){
 				BulkEntryType entry = session.getBulkEntries().get(i);
-				if(entry.getObject().getAttributes().size() > 0){
+				if(!entry.getObject().getAttributes().isEmpty()){
 					totalAttrs += entry.getObject().getAttributes().size();
 					attrDump.add(entry.getObject());
 				}
@@ -325,13 +325,13 @@ public class BulkFactory {
 	
 	
 	
-	protected void deleteSpool(FactoryEnumType factoryType,List<NameIdType> objects) throws FactoryException, DataAccessException, ArgumentException{
+	protected void deleteSpool(FactoryEnumType factoryType,List<NameIdType> objects) throws FactoryException, ArgumentException{
 		/// The initial bulk update logic, until this is refactored into a pure data update (which is more work than doing it this initial way) is:
 		/// 1) Invoke the updateType for each object in the list
 		///		This will address any factory specific tweaks that are needed, and queue up dependencies
 		/// 2) Pass the entire list to the factory's updateBulk.
 
-		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(factoryType);
+		INameIdFactory iFact = Factories.getBulkFactory(factoryType);
 		for(int i = 0; i < objects.size();i++){
 			
 			NameIdType object = objects.get(i);
@@ -341,13 +341,13 @@ public class BulkFactory {
 	}
 	
 	
-	protected void updateSpool(FactoryEnumType factoryType,List<NameIdType> objects) throws FactoryException, DataAccessException, ArgumentException{
+	protected void updateSpool(FactoryEnumType factoryType,List<NameIdType> objects) throws FactoryException {
 		/// The initial bulk update logic, until this is refactored into a pure data update (which is more work than doing it this initial way) is:
 		/// 1) Invoke the updateType for each object in the list
 		///		This will address any factory specific tweaks that are needed, and queue up dependencies
 		/// 2) Pass the entire list to the factory's updateBulk.
 		
-		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(factoryType);
+		INameIdFactory iFact = Factories.getBulkFactory(factoryType);
 
 		for(int i = 0; i < objects.size();i++){
 			NameIdType object = objects.get(i);
@@ -372,9 +372,9 @@ public class BulkFactory {
 		iFact.mapBulkIds(entry.getObject());
 		
 	}
-	protected void writePreparedObject(BulkSessionType session,BulkEntryType entry) throws FactoryException, ArgumentException, DataAccessException{
+	protected void writePreparedObject(BulkSessionType session,BulkEntryType entry) throws FactoryException, ArgumentException {
 
-		INameIdFactory iFact = (INameIdFactory)Factories.getBulkFactory(entry.getFactoryType());
+		INameIdFactory iFact = Factories.getBulkFactory(entry.getFactoryType());
 		if(iFact.isParticipation()){
 			updateParticipantIds((BaseParticipantType)entry.getObject());
 		}
@@ -389,9 +389,9 @@ public class BulkFactory {
 		
 	}
 	public long getMappedId(long temporaryId){
-		long out_id = 0;
-		if(idMap.containsKey(temporaryId)) out_id = idMap.get(temporaryId);
-		return out_id;
+		long outId = 0;
+		if(idMap.containsKey(temporaryId)) outId = idMap.get(temporaryId);
+		return outId;
 	}
 	protected void updateParticipantIds(BaseParticipantType part) throws ArgumentException{
 		if(part.getParticipantId() < 0L){
@@ -426,15 +426,15 @@ public class BulkFactory {
 			logger.error("Invalid factory type " + factoryType);
 			throw new ArgumentException("Invalid factory type " + factoryType);
 		}
-		if(factory.getBulkMap().containsKey(sessionId) == false){
+		if(!factory.getBulkMap().containsKey(sessionId)){
 			logger.error("Bulk ID Map is out of sync for type " + factoryType);
 			throw new ArgumentException("Bulk ID Map is out of sync for type " + factoryType);
 			
 		}
 		List<Long> tmpIds = factory.getBulkMap().get(sessionId);
 		factory.getBulkMap().remove(sessionId);
-		List<Long> ids = factory.getNextIds(tmpIds.size());
-		return ids;
+		return factory.getNextIds(tmpIds.size());
+
 	}
 	protected NameIdFactory getBulkFactory(FactoryEnumType factoryType) throws FactoryException{
 		return Factories.getBulkFactory(factoryType);
@@ -444,8 +444,8 @@ public class BulkFactory {
 	}
 	public void deleteBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException, FactoryException{
 		if(object == null){
-			logger.error("Object is null");
-			throw new ArgumentException("Object is null");
+			logger.error(String.format(FactoryException.OBJECT_NULL_TYPE, factoryType.toString()));
+			throw new ArgumentException(String.format(FactoryException.OBJECT_NULL_TYPE, factoryType.toString()));
 		}
 		if(object.getNameType() == NameEnumType.UNKNOWN){
 			logger.error(FactoryException.OBJECT_UNKNOWN_TYPE);
@@ -487,8 +487,8 @@ public class BulkFactory {
 	}
 	public void modifyBulkEntry(String sessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException, FactoryException{
 		if(object == null){
-			logger.error("Object is null");
-			throw new ArgumentException("Object is null");
+			logger.error(String.format(FactoryException.OBJECT_NULL_TYPE, factoryType.toString()));
+			throw new ArgumentException(String.format(FactoryException.OBJECT_NULL_TYPE, factoryType.toString()));
 		}
 		if(object.getNameType() == NameEnumType.UNKNOWN){
 			logger.error(FactoryException.OBJECT_UNKNOWN_TYPE);
@@ -555,8 +555,8 @@ public class BulkFactory {
 		}
 		
 		if(object == null){
-			logger.error("Object is null");
-			throw new ArgumentException("Object is null");
+			logger.error(String.format(FactoryException.OBJECT_NULL_TYPE, factoryType.toString()));
+			throw new ArgumentException(String.format(FactoryException.OBJECT_NULL_TYPE, factoryType.toString()));
 		}
 
 		

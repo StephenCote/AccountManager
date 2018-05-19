@@ -874,7 +874,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 	}
 
 	public List<DataType> getThingsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<DataType> items = new ArrayList<DataType>();
+		List<DataType> items = new ArrayList<>();
 		try{
 			ThingParticipantType[] parts = getThingParticipations(participation).toArray(new ThingParticipantType[0]);
 			if(parts.length > 0){

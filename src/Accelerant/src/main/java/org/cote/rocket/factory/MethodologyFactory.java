@@ -87,7 +87,7 @@ public class MethodologyFactory extends NameIdGroupFactory {
 	
 	public MethodologyType newMethodology(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		MethodologyType obj = new MethodologyType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -142,25 +142,25 @@ public class MethodologyFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		MethodologyType new_obj = new MethodologyType();
-		new_obj.setNameType(NameEnumType.METHODOLOGY);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setDescription(rset.getString("description"));
-		return new_obj;
+		MethodologyType newObj = new MethodologyType();
+		newObj.setNameType(NameEnumType.METHODOLOGY);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setDescription(rset.getString("description"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		MethodologyType data = (MethodologyType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		if(update(data, null)){
 			try{
 				
 				/// Budgets
 				///
-				Set<Long> set = new HashSet<Long>();
+				Set<Long> set = new HashSet<>();
 				BaseParticipantType[] maps = ((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).getBudgetParticipations(data).toArray(new BaseParticipantType[0]);
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
@@ -192,21 +192,21 @@ public class MethodologyFactory extends NameIdGroupFactory {
 				((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				
-				out_bool = true;
+				outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		MethodologyType use_map = (MethodologyType)map;
+		MethodologyType useMap = (MethodologyType)map;
 
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteMethodologysByUser(UserType user) throws FactoryException
 	{

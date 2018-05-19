@@ -79,6 +79,7 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
+import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 public class TestPolicyService extends BaseDataAccessTest{
 	
@@ -337,13 +338,13 @@ public class TestPolicyService extends BaseDataAccessTest{
 
 		try {
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
-			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(user.getHomeDirectory());
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(user.getHomeDirectory());
 			AccountRoleType demoRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).makePath(user, RoleEnumType.ACCOUNT, user.getHomeDirectory().getPath() + "/Roles/DemoRole",user.getOrganizationId());
 			ApplicationPermissionType perm = getCreatePermission(user,"Entitlement1",PermissionEnumType.APPLICATION,user.getHomeDirectory());
 			DirectoryGroupType demoGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "DemoGroup", user.getHomeDirectory(), user.getOrganizationId());
-			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(demoGroup);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(demoGroup);
 
-			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(demoGroup.getParentId(),demoGroup.getOrganizationId()));
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(demoGroup.getParentId(),demoGroup.getOrganizationId()));
 			rule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(rname, rdir);
 			
 			if(rule != null){
@@ -400,7 +401,10 @@ public class TestPolicyService extends BaseDataAccessTest{
 						mFact.setFactType(FactEnumType.ROLE);
 						mFact.setFactoryType(FactoryEnumType.ROLE);
 						mFact.setSourceUrn(demoRole.getName());
-						mFact.setSourceUrl((demoRole.getParentId() > 0L ? ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRolePath((BaseRoleType)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleById(demoRole.getParentId(), demoRole.getOrganizationId())) : null));
+						BaseRoleType brole = (BaseRoleType)((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleById(demoRole.getParentId(), demoRole.getOrganizationId());
+						logger.info(JSONUtil.exportObject(brole));
+						String rolePath = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRolePath(brole);
+						mFact.setSourceUrl((demoRole.getParentId() > 0L ? rolePath : null));
 						mFact.setSourceType(demoRole.getRoleType().toString());
 						/*
 						mFact.setFactType(FactEnumType.PERMISSION);
@@ -859,7 +863,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 			assertNotNull("Fact urn is null",prt.getFacts().get(0).getUrn());
 			logger.info("Parameter Count: " + prt.getFacts().size());
 			FactType userFact = prt.getFacts().get(0);
-			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(pdir);
+			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(pdir);
 			userFact.setSourceUrl(pdir.getPath());
 			userFact.setSourceUrn("Policy Test Person");
 			//prt.getFacts().add(userFact);
@@ -933,7 +937,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 	}
 	*/
 	private boolean evaluatePattern(PatternType pattern,List<FactType> facts){
-		boolean out_bool = false;
+		boolean outBool = false;
 		try {
 			((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).populate(pattern);
 		} catch (FactoryException | ArgumentException e) {
@@ -944,11 +948,11 @@ public class TestPolicyService extends BaseDataAccessTest{
 		FactType mfact = pattern.getMatch();
 		if(fact == null){
 			logger.error("Pattern fact definition is null");
-			return out_bool;
+			return outBool;
 		}
 		if(mfact == null){
 			logger.error("Pattern match fact definition is null");
-			return out_bool;
+			return outBool;
 		}
 		
 		FactType sfact = fact;
@@ -959,7 +963,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 			sfact = getFactParameter(fact,facts);
 			if(sfact == null){
 				logger.error("Parameter value not specified for urn " + fact.getUrn());
-				return out_bool;
+				return outBool;
 			}
 			try{
 				FactoryBase factory = Factories.getFactory(mfact.getFactoryType());
@@ -976,7 +980,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 			}
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	private FactType getFactParameter(FactType fact, List<FactType> facts){
 		FactType ofact = null;

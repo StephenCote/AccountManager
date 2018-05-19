@@ -101,24 +101,24 @@ public class ProjectImportUtil {
 	
 	public static boolean importProject(UserType owner, ProjectType proj, String projectFileName, boolean sprintEmulator){
 		File f = new File(projectFileName);
-		boolean out_bool = false;
+		boolean outBool = false;
 		if(f.exists() == false){
 			logger.error("File '" + projectFileName + "' does not exist");
 			return false;
 		}
 		
 		try{
-			out_bool = importProject(owner,proj,f.getName(),new FileInputStream(f),sprintEmulator);
+			outBool = importProject(owner,proj,f.getName(),new FileInputStream(f),sprintEmulator);
 		}
 		catch(FileNotFoundException fne){
 			logger.error(fne.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,fne);
 		}
-		return out_bool;
+		return outBool;
 
 	}
 	public static boolean importProject(UserType owner, ProjectType proj, String dataName,InputStream projectStream, boolean sprintEmulator){
-		boolean out_bool = false;
+		boolean outBool = false;
 		BulkFactory bulkFactory = BulkFactories.getBulkFactory();
 		String sessionId = bulkFactory.newBulkSession();
 		
@@ -445,7 +445,7 @@ public class ProjectImportUtil {
 			}
 			bulkFactory.write(sessionId);
 			bulkFactory.close(sessionId);
-			out_bool = ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).update(proj);
+			outBool = ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).update(proj);
 
 		}catch (MPXJException e) {
 			logger.error(e.getMessage());
@@ -464,7 +464,7 @@ public class ProjectImportUtil {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
-		return out_bool;
+		return outBool;
 	}
 	
 	

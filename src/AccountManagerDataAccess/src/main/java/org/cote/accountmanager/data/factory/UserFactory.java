@@ -35,8 +35,8 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -76,6 +76,7 @@ public class UserFactory extends NameIdFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		UserType user = (UserType)obj;
+		if(user.getPopulated() || !user.getDatabaseRecord()) return;
 		user.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForUser(user));
 		user.setHomeDirectory(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(user));
 		user.setStatistics(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(user));

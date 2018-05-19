@@ -590,22 +590,22 @@ public class VaultService
 				)
 			{
 				logger.info("Completed signing");
-				boolean out_bool = false;
+				boolean outBool = false;
 				logger.info("Exporting PKCS12 Certificate " + vault.getVaultAlias() + " ...");
 				boolean exportP12Private = sslUtil.exportPKCS12PrivateCertificate(vault.getVaultAlias(), password.toCharArray(),alias);
 				if(!exportP12Private){
 					logger.error("Failed to export private key");
-					return out_bool;
+					return outBool;
 				}
 
 				boolean exportP12Public = sslUtil.exportPKCS12PublicCertificate(alias, password.toCharArray());
 				if(!exportP12Public){
 					logger.error("Failed to export public key");
-					return out_bool;
+					return outBool;
 				}
-				out_bool = true;
+				outBool = true;
 				logger.info("Exported PKCS12 Certificates");
-				return out_bool;
+				return outBool;
 				
 				
 			}
@@ -922,10 +922,10 @@ public class VaultService
 	}
 	
 	
-	public void setVaultBytes(VaultBean vault, DataType data, byte[] in_data) throws DataException, FactoryException, UnsupportedEncodingException, ArgumentException
+	public void setVaultBytes(VaultBean vault, DataType data, byte[] inData) throws DataException, FactoryException, UnsupportedEncodingException, ArgumentException
 	{
 		if (vault.getActiveKey() == null || vault.getActiveKeyId() == null){
-			if(newActiveKey(vault) == false){
+			if(!newActiveKey(vault)){
 				throw new FactoryException("Failed to establish active key");
 			}
 			if (vault.getActiveKey() == null)
@@ -935,40 +935,40 @@ public class VaultService
 		}
 
 		data.setCompressed(false);
-		data.setDataHash(SecurityUtil.getDigestAsString(in_data,new byte[0]));
+		data.setDataHash(SecurityUtil.getDigestAsString(inData,new byte[0]));
 
-		if (in_data.length > 512 && DataUtil.tryCompress(data))
+		if (inData.length > 512 && DataUtil.tryCompress(data))
 		{
-			in_data = ZipUtil.gzipBytes(in_data);
+			inData = ZipUtil.gzipBytes(inData);
 			data.setCompressed(true);
 			data.setCompressionType(CompressionEnumType.GZIP);
 		}
 		data.setVaulted(true);
-		DataUtil.setValue(data,SecurityUtil.encipher(vault.getActiveKeyBean(), in_data));
+		DataUtil.setValue(data,SecurityUtil.encipher(vault.getActiveKeyBean(), inData));
 		data.setKeyId(vault.getActiveKeyId());
 		data.setVaultId(vault.getVaultDataUrn());
 
 	}
-	public byte[] extractVaultData(VaultBean vault, DataType in_data) throws FactoryException, ArgumentException, DataException
+	public byte[] extractVaultData(VaultBean vault, DataType inData) throws FactoryException, ArgumentException, DataException
 	{
 		byte[] outBytes = new byte[0];
 		if(vault == null){
 			logger.error("Vault reference is null");
 			return outBytes;
 		}
-		if (vault.getHaveVaultKey() == false || in_data.getVaulted() == false){
+		if (vault.getHaveVaultKey() == false || inData.getVaulted() == false){
 			logger.warn("Data is not vaulted or the vault key is not specified");
 			return outBytes;
 		}
 
 		// If the data vault id isn't the same as this vault name, then it can't be decrypted.
 		//
-		if (vault.getVaultDataUrn().equals(in_data.getVaultId()) == false){
-			logger.error("Data vault id '" + in_data.getVaultId() + "' does not match the specified vault name '" + vault.getVaultDataUrn() + "'.  This is a precautionary/secondary check, probably due to changing the persisted vault configuration name");
+		if (vault.getVaultDataUrn().equals(inData.getVaultId()) == false){
+			logger.error("Data vault id '" + inData.getVaultId() + "' does not match the specified vault name '" + vault.getVaultDataUrn() + "'.  This is a precautionary/secondary check, probably due to changing the persisted vault configuration name");
 			return outBytes;
 		}
 
-		return getVaultBytes(vault,in_data, getVaultCipher(vault,in_data.getKeyId()));
+		return getVaultBytes(vault,inData, getVaultCipher(vault,inData.getKeyId()));
 
 	}
 	public static byte[] getVaultBytes(VaultBean vault, DataType data, SecurityBean bean) throws DataException
@@ -989,23 +989,30 @@ public class VaultService
 		}
 		return ret;
 	}
-	public DataType newVaultData(VaultBean vault, UserType dataOwner, String name, DirectoryGroupType group, String mime_type, byte[] in_data, byte[] clientCipher) throws FactoryException, ArgumentException, DataException, UnsupportedEncodingException
+	/// Use this method with BaseService.add
+	/// The TypeSanitizer will take care of setVaultBytes
+	/// Otherwise, for direct factory adds (such as with bulk inserts), use setVaultBytes and invoke the add method directly on the factory
+	public DataType newVaultData(VaultBean vault, UserType dataOwner, String name, DirectoryGroupType group, String mimeType, byte[] inData, byte[] clientCipher) throws FactoryException, ArgumentException, DataException, UnsupportedEncodingException
 	{
+		
 		boolean encipher = (clientCipher != null && clientCipher.length > 0 ? true : false);
-		if (in_data == null || in_data.length == 0) return null;
+		if (inData == null || inData.length == 0) return null;
 
-		DataType out_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(dataOwner, group.getId());
-		out_data.setName(name);
-		out_data.setMimeType(mime_type);
-		out_data.setGroupPath(group.getPath());
+		DataType outData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(dataOwner, group.getId());
+		outData.setName(name);
+		outData.setMimeType(mimeType);
+		outData.setGroupPath(group.getPath());
 		if (encipher && clientCipher.length > 0)
 		{
-			out_data.setCipherKey(clientCipher);
-			out_data.setEncipher(true);
+			outData.setCipherKey(clientCipher);
+			outData.setEncipher(true);
 		}
-		setVaultBytes(vault, out_data, in_data);
-
-		return out_data;
+		
+		//setVaultBytes(vault, outData, inData);
+		DataUtil.setValue(outData, inData);
+		outData.setVaulted(true);
+		outData.setVaultId(vault.getVaultDataUrn());
+		return outData;
 	}
 	
 	/// return a list of the PUBLIC vault configurations
@@ -1115,10 +1122,10 @@ public class VaultService
 	
 	
 	/// TODO: Deprecate?
-	private boolean updateImprovedData(VaultBean vault, DataType in_data, byte[] in_bytes) throws FactoryException, ArgumentException, UnsupportedEncodingException, DataException, DataAccessException
+	private boolean updateImprovedData(VaultBean vault, DataType inData, byte[] in_bytes) throws FactoryException, ArgumentException, UnsupportedEncodingException, DataException, DataAccessException
 	{
 
-		if (in_data == null) return false;
+		if (inData == null) return false;
 
 		DirectoryGroupType loc_imp_dir = getVaultInstanceGroup(vault);
 
@@ -1131,14 +1138,14 @@ public class VaultService
 		//
 		if (vault.getActiveKey() == null)
 		{
-			if(in_data.getKeyId() != null) vault.setActiveKeyId(in_data.getKeyId());
+			if(inData.getKeyId() != null) vault.setActiveKeyId(inData.getKeyId());
 			else newActiveKey(vault);
 		}
 
 		if (vault.getActiveKey() == null || vault.getActiveKeyId() == null) return false;
-		setVaultBytes(vault, in_data, in_bytes);
+		setVaultBytes(vault, inData, in_bytes);
 
-		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(in_data);
+		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(inData);
 	}
 	public static String reportCacheSize(){
 		return "VaultService Cache Report\ncacheByUrn\t" + cacheByUrn.keySet().size() + "\n";

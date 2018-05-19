@@ -75,7 +75,7 @@ public class CostFactory extends NameIdGroupFactory {
 	
 	public CostType newCost(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		CostType obj = new CostType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -111,15 +111,15 @@ public class CostFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		CostType new_obj = new CostType();
-		new_obj.setNameType(NameEnumType.COST);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
+		CostType newObj = new CostType();
+		newObj.setNameType(NameEnumType.COST);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
 		// TODO: set time, cost
 		
-		new_obj.setCurrencyType(CurrencyEnumType.valueOf(rset.getString("currencytype")));
-		new_obj.setValue(rset.getDouble("value"));
-		return new_obj;
+		newObj.setCurrencyType(CurrencyEnumType.valueOf(rset.getString("currencytype")));
+		newObj.setValue(rset.getDouble("value"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
@@ -131,10 +131,10 @@ public class CostFactory extends NameIdGroupFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		CostType use_map = (CostType)map;
-		fields.add(QueryFields.getFieldCurrencyType(use_map.getCurrencyType()));
-		fields.add(QueryFields.getFieldValue(use_map.getValue()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
+		CostType useMap = (CostType)map;
+		fields.add(QueryFields.getFieldCurrencyType(useMap.getCurrencyType()));
+		fields.add(QueryFields.getFieldValue(useMap.getValue()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
 	public int deleteCostsByUser(UserType user) throws FactoryException
 	{

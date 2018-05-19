@@ -163,22 +163,22 @@ public class ControlFactory extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		ControlType new_cred = new ControlType();
-		new_cred.setNameType(NameEnumType.CREDENTIAL);
-		super.read(rset, new_cred);
+		ControlType newCred = new ControlType();
+		newCred.setNameType(NameEnumType.CREDENTIAL);
+		super.read(rset, newCred);
 		
-		new_cred.setReferenceId(rset.getLong("referenceid"));
-		new_cred.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
-		new_cred.setControlId(rset.getLong("controlid"));
-		new_cred.setControlType(ControlEnumType.fromValue(rset.getString("controltype")));
-		new_cred.setControlAction(ControlActionEnumType.fromValue(rset.getString("controlaction")));
+		newCred.setReferenceId(rset.getLong("referenceid"));
+		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
+		newCred.setControlId(rset.getLong("controlid"));
+		newCred.setControlType(ControlEnumType.fromValue(rset.getString("controltype")));
+		newCred.setControlAction(ControlActionEnumType.fromValue(rset.getString("controlaction")));
 
-		new_cred.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		new_cred.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		new_cred.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		newCred.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		newCred.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
+		newCred.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
 
 		
-		return new_cred;
+		return newCred;
 	}
 	
 	@Override
@@ -212,12 +212,12 @@ public class ControlFactory extends NameIdFactory {
 		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganizationId() == null) throw new ArgumentException("Invalid object reference");
 		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));
 		
-		QueryField reference_id_filters = new QueryField(SqlDataEnumType.NULL,"referenceid",null);
-		reference_id_filters.setComparator(ComparatorEnumType.GROUP_OR);
-		if(onlyGlobal == false) reference_id_filters.getFields().add(QueryFields.getFieldReferenceId(obj.getId()));
-		if(includeGlobal || onlyGlobal) reference_id_filters.getFields().add(QueryFields.getFieldReferenceId(0L));
+		QueryField referenceIdFilters = new QueryField(SqlDataEnumType.NULL,"referenceid",null);
+		referenceIdFilters.setComparator(ComparatorEnumType.GROUP_OR);
+		if(!onlyGlobal) referenceIdFilters.getFields().add(QueryFields.getFieldReferenceId(obj.getId()));
+		if(includeGlobal || onlyGlobal) referenceIdFilters.getFields().add(QueryFields.getFieldReferenceId(0L));
 		
-		fields.add(reference_id_filters);
+		fields.add(referenceIdFilters);
 		ProcessingInstructionType pi = new ProcessingInstructionType();
 		pi.setPaginate(true);
 		pi.setStartIndex(0L);
@@ -226,7 +226,7 @@ public class ControlFactory extends NameIdFactory {
 		return list(fields.toArray(new QueryField[0]), pi, obj.getOrganizationId());
 	}
 	public boolean deleteControlsForType(NameIdType obj) throws FactoryException, ArgumentException{
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		// allow id of 0 for global controls
 		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganizationId() == null) throw new ArgumentException("Invalid object reference");
 		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));

@@ -327,7 +327,7 @@ public class DataGeneratorUtil {
 		return getEvents(false);
 	}
 	public List<EventType> getEvents(boolean deepPopulate) throws FactoryException, ArgumentException{
-		Set<Long> deepSet = new HashSet<Long>();
+		Set<Long> deepSet = new HashSet<>();
 		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldGroup(eventsDir.getId()));
 		fields.add(QueryFields.getFieldParent(0L));
@@ -431,7 +431,7 @@ public class DataGeneratorUtil {
 		return word;
 	}
 	private List<QueryField> getRandomByGroup(DirectoryGroupType dir){
-		List<QueryField> fields = new ArrayList<QueryField>();
+		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldGroup(dir.getId()));
 		QueryField f = new QueryField(SqlDataEnumType.DOUBLE, "random()",new Double(0.1));
 		f.setComparator(ComparatorEnumType.LESS_THAN);
@@ -1138,27 +1138,27 @@ public class DataGeneratorUtil {
 	}
 
 	private boolean rulePersonBirth(AlignmentEnumType eventAlignmentType, PersonGroupType populationGroup, PersonType mother, int age) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
-		if("female".equalsIgnoreCase(mother.getGender()) == false || age < minMarryAge || age > maxFertilityAge) return out_bool;
+		boolean outBool = false;
+		if("female".equalsIgnoreCase(mother.getGender()) == false || age < minMarryAge || age > maxFertilityAge) return outBool;
 		double odds = 0.001 + (mother.getPartners().isEmpty() ? 0.001 : 0.025 - (mother.getDependents().size() * 0.001));
 		double rand = Math.random();
 		if(rand < odds){
-			out_bool = true;
+			outBool = true;
 		}
 		
-		return out_bool;
+		return outBool;
 	}
 	
 	
 	private boolean rulePersonDeath(AlignmentEnumType eventAlignmentType, PersonGroupType populationGroup, PersonType person, int age) throws FactoryException, ArgumentException{
-		boolean out_bool = false;
+		boolean outBool = false;
 		boolean personIsLeader = false;//isLeader(person, populationGroup);
 		double odds = 0.0001 + (age < maxChildAge ? 0.0025 : 0.0) + (age > avgDeathAge ? (age - avgDeathAge) * (personIsLeader ? 0.0001 : 0.0002) : 0.0) + (age >= maxAge ? 1.0 : 0.0);
 		double rand = Math.random();
 		if(rand < odds){
-			out_bool = true;
+			outBool = true;
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	private void evolvePopulation(String sessionId, EventType parentEvent, AlignmentEnumType eventAlignment, PersonGroupType population, int iterations){

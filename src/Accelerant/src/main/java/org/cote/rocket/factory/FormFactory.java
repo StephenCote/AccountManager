@@ -112,7 +112,7 @@ public class FormFactory extends NameIdGroupFactory {
 	}
 	public FormType newForm(UserType user, long groupId) throws ArgumentException
 	{
-		if (user == null || user.getDatabaseRecord() == false) throw new ArgumentException("Invalid owner");
+		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
 		FormType obj = new FormType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
@@ -177,29 +177,29 @@ public class FormFactory extends NameIdGroupFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException,ArgumentException
 	{
-		FormType new_obj = new FormType();
-		new_obj.setNameType(NameEnumType.FORM);
-		super.read(rset, new_obj);
-		readGroup(rset, new_obj);
-		new_obj.setDescription(rset.getString("description"));
+		FormType newObj = new FormType();
+		newObj.setNameType(NameEnumType.FORM);
+		super.read(rset, newObj);
+		readGroup(rset, newObj);
+		newObj.setDescription(rset.getString("description"));
 		long view_id = rset.getLong("viewtemplateid");
-		if(view_id > 0) new_obj.setViewTemplate((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(view_id, new_obj.getOrganizationId()));
+		if(view_id > 0) newObj.setViewTemplate((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(view_id, newObj.getOrganizationId()));
 		long form_id = rset.getLong("templateid");
-		if(form_id > 0) new_obj.setTemplate((FormType)getById(form_id,new_obj.getOrganizationId()));
-		new_obj.setIsTemplate(rset.getBoolean("istemplate"));
-		new_obj.setIsGrid(rset.getBoolean("isgrid"));
-		return new_obj;
+		if(form_id > 0) newObj.setTemplate((FormType)getById(form_id,newObj.getOrganizationId()));
+		newObj.setIsTemplate(rset.getBoolean("istemplate"));
+		newObj.setIsGrid(rset.getBoolean("isgrid"));
+		return newObj;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
 		FormType data = (FormType)object;
-		boolean out_bool = false;
+		boolean outBool = false;
 		removeFromCache(data);
 		if(update(data, null)){
 			try{
 			/// Elements
-			Set<Long> set = new HashSet<Long>();
+			Set<Long> set = new HashSet<>();
 			BaseParticipantType[] maps = ((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).getFormElementParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
@@ -232,29 +232,29 @@ public class FormFactory extends NameIdGroupFactory {
 			
 			
 		
-			out_bool = true;
+			outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
 			}
 		}
-		return out_bool;
+		return outBool;
 	}
 	
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		FormType use_map = (FormType)map;
-		fields.add(QueryFields.getFieldDescription(use_map.getDescription()));
-		fields.add(QueryFields.getFieldGroup(use_map.getGroupId()));
-		fields.add(QueryFields.getFieldIsTemplate(use_map.getIsTemplate()));
-		fields.add(QueryFields.getFieldIsGrid(use_map.getIsGrid()));
-		fields.add(QueryFields.getFieldTemplateId((use_map.getTemplate() != null ? use_map.getTemplate().getId() : 0)));
-		if(use_map.getTemplate() != null && use_map.getTemplate().getId().compareTo(use_map.getId())==0){
+		FormType useMap = (FormType)map;
+		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
+		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldIsTemplate(useMap.getIsTemplate()));
+		fields.add(QueryFields.getFieldIsGrid(useMap.getIsGrid()));
+		fields.add(QueryFields.getFieldTemplateId((useMap.getTemplate() != null ? useMap.getTemplate().getId() : 0)));
+		if(useMap.getTemplate() != null && useMap.getTemplate().getId().compareTo(useMap.getId())==0){
 			System.out.println("Form cannot point to itself as a template");
-			use_map.setTemplate(null);
+			useMap.setTemplate(null);
 		}
-		fields.add(QueryFields.getFieldViewTemplateId((use_map.getViewTemplate() != null ? use_map.getViewTemplate().getId() : 0)));
+		fields.add(QueryFields.getFieldViewTemplateId((useMap.getViewTemplate() != null ? useMap.getViewTemplate().getId() : 0)));
 	}
 	public int deleteFormsByUser(UserType user) throws FactoryException
 	{
