@@ -30,20 +30,14 @@
 package org.cote.rocket;
 
 import java.io.BufferedReader;
-import org.cote.accountmanager.data.factory.INameIdFactory;
-import org.cote.accountmanager.data.factory.INameIdGroupFactory;
-import org.cote.accountmanager.data.factory.IParticipationFactory;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -56,6 +50,8 @@ import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.factory.IParticipationFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
@@ -116,7 +112,7 @@ import org.cote.rocket.util.DataGeneratorUtil;
 
 /*
  * 2017/10/16 - AUTHORIZATION NOTE
- * TODO: Community authorization for lifecycles will get bridged to direct authorization checks due to the Policy Extension being applied on initial setup
+ * Community authorization for lifecycles will get bridged to direct authorization checks due to the Policy Extension being applied on initial setup
  * This means that authorization checks targeting the lifecycle itself versus its containment group will fail for anyone other than the owner because the authorization was not set
  */
 
@@ -124,12 +120,20 @@ public class RocketCommunity implements ICommunityProvider {
 	private static Map<String,String> geoIdToPost = new HashMap<>();
 	private static Map<String,LocationType> locByCode = new HashMap<>();
 	
+	protected static final String LOCATION_FEATURES = "Location Features";
+	protected static final String ERROR_PERMISSION_DENIED = "Permission denied";
+	protected static final String ERROR_NULL_COMMUNITY = "Null community object";
+	protected static final String ERROR_COMMUNITY_AUTHORIZATION = "User is not authorized to change lifecycle";
+	protected static final String ROLE_AUTHORIZATION = "Authorized to view roles";
+	protected static final String ERROR_ROLE_AUTHORIZATION = "Not authorized to view roles";
+	protected static final String ERROR_DIRECTORY_CHANGE_AUTHORIZATION = "User is not authorized to change the directory";
 	public static final Logger logger = LogManager.getLogger(RocketCommunity.class);
 	private static final  CSVFormat csvFileFormat = CSVFormat.DEFAULT.withDelimiter('\t').withAllowMissingColumnNames(true).withQuote(null);
 	private boolean randomizeSeedPopulation = false;
 	private boolean organizePersonManagement = false;
+	
 	public RocketCommunity(){
-		
+		/// Public init
 	}
 	
 	public boolean isOrganizePersonManagement() {
@@ -153,25 +157,25 @@ public class RocketCommunity implements ICommunityProvider {
 	}
 	public boolean importLocationTraits(UserType user, AuditEnumType auditType, String objectId, String locationPath, String featuresFileName){
 		boolean outBool = false;
-		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, LOCATION_FEATURES,AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, auditType, objectId);
 		NameIdDirectoryGroupType obj = null;
 		try {
 			obj = ((INameIdFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
-				AuditService.denyResult(audit, "Null community object");
+				AuditService.denyResult(audit, ERROR_NULL_COMMUNITY);
 				return outBool;
 			}
 			BaseService.normalize(user, obj);
-			if(AuthorizationService.canChange(user, obj)==false){
-				AuditService.denyResult(audit, "User is not authorized to change lifecycle");
+			if(!AuthorizationService.canChange(user, obj)){
+				AuditService.denyResult(audit, ERROR_COMMUNITY_AUTHORIZATION);
 				return outBool;
 			}
 			DirectoryGroupType lcGroup = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, obj.getGroupPath(), user.getOrganizationId());
 			DirectoryGroupType locDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Traits", lcGroup, user.getOrganizationId());
 
-			if(AuthorizationService.canChange(user, locDir) == false){
-				AuditService.denyResult(audit, "User is not authorized to change the directory");
+			if(!AuthorizationService.canChange(user, locDir)){
+				AuditService.denyResult(audit, ERROR_DIRECTORY_CHANGE_AUTHORIZATION);
 				return outBool;
 			}
 			
@@ -192,6 +196,7 @@ public class RocketCommunity implements ICommunityProvider {
 				trait.setTraitType(TraitEnumType.LOCATION);
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TRAIT, trait);
 			}
+			csvFileParser.close();
 			bir.close();
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
@@ -200,50 +205,35 @@ public class RocketCommunity implements ICommunityProvider {
 			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
-			// TODO Auto-generated catch block
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		
-		/*
-		 * 		dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(user,path.substring(path.lastIndexOf("/") + 1, path.length()), parentDir, user.getOrganizationId());
-				if(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).add(dir)){
-					dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, path, user.getOrganizationId());
-				}
-				else{
-					logger.error("Failed to add group");
-					return;
-				}
-			}
-			if(AuthorizationService.canChange(user, dir) == false){
-				logger.error("Cannot change specified path");
-				return;
-			}
-		 */
+
 		return outBool;
 	}
 	
 	public boolean importLocationCountryInfo(UserType user, AuditEnumType auditType, String objectId, String locationPath, String featuresFileName){
 		boolean outBool = false;
-		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, LOCATION_FEATURES,AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
 		try {
 			obj = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
-				AuditService.denyResult(audit, "Null community object");
+				AuditService.denyResult(audit, ERROR_NULL_COMMUNITY);
 				return outBool;
 			}
 			BaseService.normalize(user, obj);
 			if(AuthorizationService.canChange(user, obj)==false){
-				AuditService.denyResult(audit, "User is not authorized to change lifecycle");
+				AuditService.denyResult(audit, ERROR_COMMUNITY_AUTHORIZATION);
 				return outBool;
 			}
 			DirectoryGroupType lcGroup = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, obj.getGroupPath(), user.getOrganizationId());
 			DirectoryGroupType locDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Locations", lcGroup, user.getOrganizationId());
 
-			if(AuthorizationService.canChange(user, locDir) == false){
-				AuditService.denyResult(audit, "User is not authorized to change the directory");
+			if(!AuthorizationService.canChange(user, locDir)){
+				AuditService.denyResult(audit, ERROR_DIRECTORY_CHANGE_AUTHORIZATION);
 				return outBool;
 			}
 			
@@ -275,6 +265,7 @@ public class RocketCommunity implements ICommunityProvider {
 				location.setGeographyType(GeographyEnumType.PHYSICAL);
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.LOCATION, location);
 			}
+			csvFileParser.close();
 			bir.close();
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
@@ -283,9 +274,8 @@ public class RocketCommunity implements ICommunityProvider {
 			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
-			// TODO Auto-generated catch block
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		
 		return outBool;
@@ -293,25 +283,25 @@ public class RocketCommunity implements ICommunityProvider {
 	
 	public boolean importLocationAdmin1Codes(UserType user, AuditEnumType auditType, String objectId, String locationPath, String featuresFileName){
 		boolean outBool = false;
-		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, LOCATION_FEATURES,AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
 		try {
 			obj = ((NameIdGroupFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
-				AuditService.denyResult(audit, "Null community object");
+				AuditService.denyResult(audit, ERROR_NULL_COMMUNITY);
 				return outBool;
 			}
 			BaseService.normalize(user, obj);
 			if(AuthorizationService.canChange(user, obj)==false){
-				AuditService.denyResult(audit, "User is not authorized to change lifecycle");
+				AuditService.denyResult(audit, ERROR_COMMUNITY_AUTHORIZATION);
 				return outBool;
 			}
 			DirectoryGroupType lcGroup = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, obj.getGroupPath(), user.getOrganizationId());
 			DirectoryGroupType locDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Locations", lcGroup, user.getOrganizationId());
 
 			if(AuthorizationService.canChange(user, locDir) == false){
-				AuditService.denyResult(audit, "User is not authorized to change the directory");
+				AuditService.denyResult(audit, ERROR_DIRECTORY_CHANGE_AUTHORIZATION);
 				return outBool;
 			}
 			
@@ -323,10 +313,7 @@ public class RocketCommunity implements ICommunityProvider {
 			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
 			CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
-			//((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).clearCache();
-			
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
-			//Map <String, Integer> nameMap = new HashMap<>();
 			locByCode.clear();
 			for(CSVRecord record : csvFileParser){
 				String codePair = record.get(0);
@@ -340,7 +327,6 @@ public class RocketCommunity implements ICommunityProvider {
 					continue;
 				}
 				String countryIso = code[0];
-				String adminCode = code[1];
 				String name = record.get(3).trim();
 				LocationType countryLoc = findLocationByAdminCode(null, locDir, "iso", countryIso, user.getOrganizationId());
 				if(countryLoc == null){
@@ -359,6 +345,7 @@ public class RocketCommunity implements ICommunityProvider {
 
 				
 			}
+			csvFileParser.close();
 			bir.close();
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
@@ -367,9 +354,8 @@ public class RocketCommunity implements ICommunityProvider {
 			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
-			// TODO Auto-generated catch block
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		
 		return outBool;
@@ -377,25 +363,25 @@ public class RocketCommunity implements ICommunityProvider {
 	
 	public boolean importLocationAdmin2Codes(UserType user, AuditEnumType auditType, String objectId, String locationPath, String featuresFileName){
 		boolean outBool = false;
-		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, LOCATION_FEATURES,AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
 		try {
 			obj = ((NameIdGroupFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
-				AuditService.denyResult(audit, "Null community object");
+				AuditService.denyResult(audit, ERROR_NULL_COMMUNITY);
 				return outBool;
 			}
 			BaseService.normalize(user, obj);
 			if(AuthorizationService.canChange(user, obj)==false){
-				AuditService.denyResult(audit, "User is not authorized to change lifecycle");
+				AuditService.denyResult(audit, ERROR_COMMUNITY_AUTHORIZATION);
 				return outBool;
 			}
 			DirectoryGroupType lcGroup = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, obj.getGroupPath(), user.getOrganizationId());
 			DirectoryGroupType locDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Locations", lcGroup, user.getOrganizationId());
 
 			if(AuthorizationService.canChange(user, locDir) == false){
-				AuditService.denyResult(audit, "User is not authorized to change the directory");
+				AuditService.denyResult(audit, ERROR_DIRECTORY_CHANGE_AUTHORIZATION);
 				return outBool;
 			}
 			
@@ -411,7 +397,6 @@ public class RocketCommunity implements ICommunityProvider {
 
 			String lastAdminLoc = null;
 			LocationType lastLoc = null;
-			//Map <String, Integer> nameMap = new HashMap<>();
 			int counter = 0;
 			for(CSVRecord record : csvFileParser){
 				String codePair = record.get(0);
@@ -427,8 +412,6 @@ public class RocketCommunity implements ICommunityProvider {
 				
 				String countryIso = code[0];
 				String adminCode1 = code[1];
-				String adminCode2 = code[1];
-				//String name = record.get(2).trim();
 				String name = record.get(3).trim();
 				LocationType admin1Loc = null;
 				String adminCode = countryIso + "." + adminCode1;
@@ -468,6 +451,7 @@ public class RocketCommunity implements ICommunityProvider {
 				
 				
 			}
+			csvFileParser.close();
 			bir.close();
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
@@ -475,9 +459,8 @@ public class RocketCommunity implements ICommunityProvider {
 			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
-			// TODO Auto-generated catch block
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		
 		return outBool;
@@ -485,32 +468,28 @@ public class RocketCommunity implements ICommunityProvider {
 	
 	public boolean importLocationCountryData(UserType user, AuditEnumType auditType, String objectId, String locationPath, String codes, String alternate){
 		boolean outBool = false;
-		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Location Features",AuditEnumType.USER, user.getUrn());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, LOCATION_FEATURES,AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
 		try {
 			obj = ((NameIdGroupFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
-				AuditService.denyResult(audit, "Null community object");
+				AuditService.denyResult(audit, ERROR_NULL_COMMUNITY);
 				return outBool;
 			}
 			BaseService.normalize(user, obj);
-			if(AuthorizationService.canChange(user, obj)==false){
-				AuditService.denyResult(audit, "User is not authorized to change lifecycle");
+			if(!AuthorizationService.canChange(user, obj)){
+				AuditService.denyResult(audit, ERROR_COMMUNITY_AUTHORIZATION);
 				return outBool;
 			}
 			DirectoryGroupType lcGroup = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, obj.getGroupPath(), user.getOrganizationId());
 			DirectoryGroupType locDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Locations", lcGroup, user.getOrganizationId());
 
-			if(AuthorizationService.canChange(user, locDir) == false){
-				AuditService.denyResult(audit, "User is not authorized to change the directory");
+			if(!AuthorizationService.canChange(user, locDir)){
+				AuditService.denyResult(audit, ERROR_DIRECTORY_CHANGE_AUTHORIZATION);
 				return outBool;
 			}
 			
-			
-
-			//String path = locationPath + featuresFileName;
-			//logger.info("Loading country from " + path + " into " + locDir.getUrn());
 			if(alternate != null && alternate.length() > 0){
 				bufferPostalCodes(csvFileFormat, locationPath + alternate);
 			}
@@ -519,8 +498,6 @@ public class RocketCommunity implements ICommunityProvider {
 			
 			CSVParser  csvFileParser = null;
 			String sessionId = null;
-			//Map <String, Integer> nameMap = new HashMap<>();
-
 
 			String[] countryList = codes.split(",");
 			
@@ -538,9 +515,8 @@ public class RocketCommunity implements ICommunityProvider {
 	 
 				sessionId = BulkFactories.getBulkFactory().newBulkSession();
 				int counter = 0;
-				//nameMap.clear();
 				locByCode.clear();
-				Set<String> adminKey = new HashSet<>();
+
 				for(CSVRecord record : csvFileParser){
 					String geoid = record.get(0);
 					String name = geoid;
@@ -604,17 +580,15 @@ public class RocketCommunity implements ICommunityProvider {
 			outBool = true;
 			
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
-			// TODO Auto-generated catch block
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		
 		return outBool;
 	}
 	
 	private static void bufferPostalCodes(CSVFormat csvFileFormat, String path) throws IOException{
-		
-		if(geoIdToPost.size() > 0){
+		if(!geoIdToPost.isEmpty()){
 			logger.info("Postal codes already buffered");
 			return;
 		}
@@ -623,14 +597,13 @@ public class RocketCommunity implements ICommunityProvider {
 		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
-		int counter = 0;
-
 		for(CSVRecord record : csvFileParser){
 			if(record.get(2).equals("post") && record.get(3) != null && record.get(3).length() > 0){
 				geoIdToPost.put(record.get(1), record.get(3));
 			}
 		}
 		
+		csvFileParser.close();
 		bir.close();
 		logger.info("Mapped " + geoIdToPost.keySet().size() + " postal codes");
 	}
@@ -646,13 +619,12 @@ public class RocketCommunity implements ICommunityProvider {
 		fields.add(QueryFields.getFieldGroup(dir.getId()));
 		fields.add(QueryFields.getStringField("ATR.name", codeName));
 		fields.add(QueryFields.getStringField("ATR.value", code));
-		//fields.add(QueryFields.getBigIntField("ATR.organizationId", organizationId))
 		if(parent != null){
 			fields.add(QueryFields.getFieldParent(parent));
 		}
 		try{
 			List<LocationType> locations = ((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).list(fields.toArray(new QueryField[0]), instruction, organizationId);
-			if(locations.size() > 0){
+			if(!locations.isEmpty()){
 				location = locations.get(0);
 				locByCode.put(key, location);
 			}
@@ -684,14 +656,14 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.targetAudit(audit, AuditEnumType.ROLE,lcr.getName());
 			if(AuthorizationService.canView(user, lcr)){
 				outRole = lcr;
-				AuditService.permitResult(audit, "Authorized to view roles");
+				AuditService.permitResult(audit, ROLE_AUTHORIZATION);
 			}
 			else{
-				AuditService.denyResult(audit, "Not authorized to view roles");
+				AuditService.denyResult(audit, ERROR_ROLE_AUTHORIZATION);
 			}
 			
 		} catch (FactoryException | ArgumentException e) {
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outRole;
@@ -725,12 +697,13 @@ public class RocketCommunity implements ICommunityProvider {
 
 		} catch (FactoryException | ArgumentException e) {
 
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outPermission;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T getCommunity(UserType user, String name){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Get Community Roles",AuditEnumType.USER,user.getUrn());
 
@@ -749,12 +722,13 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 		} catch (FactoryException | ArgumentException e) {
 			
-			AuditService.denyResult(audit,"Error: " + e.getMessage());
+			AuditService.denyResult(audit,String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		
 		return (T)lc;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T getCommunityProject(UserType user, String communityName, String projectName){
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getCommunityProject",AuditEnumType.USER, user.getUrn());
@@ -779,7 +753,7 @@ public class RocketCommunity implements ICommunityProvider {
 				return null;
 			}
 			if(RocketSecurity.canReadProject(user,proj) == false){
-				AuditService.denyResult(audit, "Permission denied");
+				AuditService.denyResult(audit, ERROR_PERMISSION_DENIED);
 				return null;
 			}
 			AuditService.permitResult(audit, "Returning project " + projectName + " in lifecycle " + communityName);
@@ -793,7 +767,7 @@ public class RocketCommunity implements ICommunityProvider {
 	}
 	
 	public List<BaseRoleType> getCommunityProjectRoles(UserType user, String projectId){
-		List<BaseRoleType> roles = new ArrayList<BaseRoleType>();
+		List<BaseRoleType> roles = new ArrayList<>();
 		ProjectType proj = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Get Roles",AuditEnumType.USER, user.getUrn());
 		try {
@@ -810,31 +784,31 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.targetAudit(audit, AuditEnumType.ROLE,lcr.getName());
 			if(AuthorizationService.canView(user, lcr)){
 				roles = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleList(RoleEnumType.USER, lcr, 0,0,user.getOrganizationId());
-				AuditService.permitResult(audit, "Authorized to view roles");
+				AuditService.permitResult(audit, ROLE_AUTHORIZATION);
 			}
 			else{
-				AuditService.denyResult(audit, "Not authorized to view roles");
+				AuditService.denyResult(audit, ERROR_ROLE_AUTHORIZATION);
 			}
 			
 		} catch (FactoryException | ArgumentException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return roles;
 	}
 	public List<BaseRoleType> getCommunityRoles(UserType user, String communityId){
-		List<BaseRoleType> roles = new ArrayList<BaseRoleType>();
-		LifecycleType out_lc = null;
+		List<BaseRoleType> roles = new ArrayList<>();
+		LifecycleType outLc = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Get Roles",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LIFECYCLE, Rocket.getBasePath() + "/Lifecycles");
 		try {
-			out_lc = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getByObjectId(communityId, user.getOrganizationId());
-			if(out_lc == null){
+			outLc = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getByObjectId(communityId, user.getOrganizationId());
+			if(outLc == null){
 				AuditService.denyResult(audit, "Invalid lifecycle: " + communityId);
 				return roles;
 			}
-			UserRoleType lcr = RocketSecurity.getLifecycleRoleBucket(out_lc);
+			UserRoleType lcr = RocketSecurity.getLifecycleRoleBucket(outLc);
 			if(lcr == null){
 				AuditService.denyResult(audit, "Invalid lifecycle role bucket");
 				return roles;
@@ -842,20 +816,20 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.targetAudit(audit, AuditEnumType.ROLE,lcr.getName());
 			if(AuthorizationService.canView(user, lcr)){
 				roles = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleList(RoleEnumType.USER, lcr, 0,0,user.getOrganizationId());
-				AuditService.permitResult(audit, "Authorized to view roles");
+				AuditService.permitResult(audit, ROLE_AUTHORIZATION);
 			}
 			else{
-				AuditService.denyResult(audit, "Not authorized to view roles");
+				AuditService.denyResult(audit, ERROR_ROLE_AUTHORIZATION);
 			}
 		} catch (FactoryException | ArgumentException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return roles;
 	}
 	public List<BaseRoleType> getCommunitiesRoles(UserType user){
-		List<BaseRoleType> roles = new ArrayList<BaseRoleType>();
+		List<BaseRoleType> roles = new ArrayList<>();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Get Community Roles",AuditEnumType.USER,user.getUrn());
 
 		try {
@@ -863,13 +837,13 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.targetAudit(audit, AuditEnumType.ROLE,cr.getName());
 			if(AuthorizationService.canView(user, cr)){
 				roles = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleList(RoleEnumType.USER, cr, 0,0,user.getOrganizationId());
-				AuditService.permitResult(audit, "Authorized to view roles");
+				AuditService.permitResult(audit, ROLE_AUTHORIZATION);
 			}
 			else{
-				AuditService.denyResult(audit, "Not authorized to view roles");
+				AuditService.denyResult(audit, ERROR_ROLE_AUTHORIZATION);
 			}
 		} catch (FactoryException | ArgumentException e) {		
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return roles;
@@ -882,17 +856,14 @@ public class RocketCommunity implements ICommunityProvider {
 		try {
 			boolean isSysAdmin = RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(adminUser.getOrganizationId()), adminUser);
 			if(isSysAdmin == false){
-			//if(RoleService.getIsUserInEffectiveRole(RocketSecurity.getAdminRole(adminUser.getOrganizationId()),adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
 				AuditService.denyResult(audit, "User is not an administrator");
 				return outBool;
 			}
 			outBool = Rocket.configureApplicationEnvironment(adminUser);
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
-		if(outBool = true){
+		if(outBool){
 			AuditService.permitResult(audit, "Configured community");
 		}
 		return outBool;
@@ -915,15 +886,13 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 			
 			outBool = Rocket.enrollAdminInCommunity(audit, user);
-			if(outBool == true){
+			if(outBool){
 				AuditService.permitResult(audit, "Configured " + user.getUrn() + " as a community administrator");
 			}
 		}
-		catch(FactoryException e){
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		
 
@@ -942,21 +911,19 @@ public class RocketCommunity implements ICommunityProvider {
 				AuditService.denyResult(audit, "Invalid user id");
 				return false;
 			}
-			if(RoleService.getIsUserInEffectiveRole(RocketSecurity.getAdminRole(adminUser.getOrganizationId()),adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
+			if(!RoleService.getIsUserInEffectiveRole(RocketSecurity.getAdminRole(adminUser.getOrganizationId()),adminUser) && !RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)))){
 				AuditService.denyResult(audit, "Admin user is not an administrator");
 				return outBool;
 			}
 			
 			outBool = Rocket.enrollReaderInCommunity(audit, user);
-			if(outBool == true){
+			if(outBool){
 				AuditService.permitResult(audit, "Configured " + user.getUrn() + " as a community reader");
 			}
 		}
-		catch(FactoryException e){
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		
 
@@ -964,7 +931,6 @@ public class RocketCommunity implements ICommunityProvider {
 	}
 	
 	public boolean enrollReaderInCommunityProject(UserType adminUser, String userId, String communityId, String projectId){
-		boolean outBool = false;
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Enroll in community project reader roles",AuditEnumType.USER, adminUser.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "Reader roles");
@@ -1062,7 +1028,7 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 		}
 		catch(FactoryException | ArgumentException e) {
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 
 
@@ -1102,11 +1068,9 @@ public class RocketCommunity implements ICommunityProvider {
 				AuditService.denyResult(audit, "Failed to enroll " + user.getUrn() + " in Lifecycle " + lc.getUrn() + " Project " + proj.getUrn());
 			}
 		}
-		catch(FactoryException e){
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 
 		
@@ -1117,28 +1081,28 @@ public class RocketCommunity implements ICommunityProvider {
 	public boolean deleteCommunityProject(UserType adminUser, String projectId){
 		boolean outBool = false;
 
-		ProjectType out_proj = null;
+		ProjectType outProj = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.DELETE, "deleteProject",AuditEnumType.USER, adminUser.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.PROJECT, projectId);
 		try {
-			out_proj = ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).getByObjectId(projectId, adminUser.getOrganizationId());
+			outProj = ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).getByObjectId(projectId, adminUser.getOrganizationId());
 		} catch (FactoryException | ArgumentException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		if(out_proj == null){
+		if(outProj == null){
 			AuditService.denyResult(audit,"Project doesn't exist");
 			return false;
 		}
-		AuditService.targetAudit(audit, AuditEnumType.PROJECT, out_proj.getUrn());
-		if(RocketSecurity.canChangeProject(adminUser,out_proj) == false){
-			AuditService.denyResult(audit, "Permission denied");
+		AuditService.targetAudit(audit, AuditEnumType.PROJECT, outProj.getUrn());
+		if(RocketSecurity.canChangeProject(adminUser,outProj) == false){
+			AuditService.denyResult(audit, ERROR_PERMISSION_DENIED);
 			return false;
 		}
-		outBool = Rocket.deleteProject(out_proj);
-		if(outBool) AuditService.permitResult(audit, "Deleted project: " + out_proj.getUrn());
-		else AuditService.denyResult(audit, "Failed to delete project: " + out_proj.getUrn());
+		outBool = Rocket.deleteProject(outProj);
+		if(outBool) AuditService.permitResult(audit, "Deleted project: " + outProj.getUrn());
+		else AuditService.denyResult(audit, "Failed to delete project: " + outProj.getUrn());
 		return outBool;
 	}
 	
@@ -1153,7 +1117,7 @@ public class RocketCommunity implements ICommunityProvider {
 			lc = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getByObjectId(communityId, adminUser.getOrganizationId());
 		} catch (FactoryException | ArgumentException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		if(lc == null){
@@ -1162,7 +1126,7 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		AuditService.targetAudit(audit, AuditEnumType.LIFECYCLE, lc.getUrn());
 		if(RocketSecurity.canChangeLifecycle(adminUser,lc) == false){
-			AuditService.denyResult(audit, "Permission denied");
+			AuditService.denyResult(audit, ERROR_PERMISSION_DENIED);
 			return false;
 		}
 		outBool = Rocket.deleteLifecycle(lc);
@@ -1187,7 +1151,7 @@ public class RocketCommunity implements ICommunityProvider {
 				return false;
 			}
 			
-			if(RocketSecurity.canChangeProject(adminUser, proj) == false){
+			if(!RocketSecurity.canChangeProject(adminUser, proj)){
 				AuditService.denyResult(audit, "Not authorized to change project");
 				return false;
 			}
@@ -1212,30 +1176,30 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 		} catch (FactoryException | DataAccessException | ArgumentException e) {
 			logger.error(e);
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		return outBool;
 	}
 	
 	public boolean createCommunity(UserType adminUser, String communityName){
 		boolean outBool = false;
-		LifecycleType out_lc = null;
+		LifecycleType outLc = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "createLifecycle",AuditEnumType.USER, adminUser.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LIFECYCLE, Rocket.getBasePath() + "/Lifecycles");
-		if(RocketSecurity.canCreateLifecycle(adminUser) == false){
-			AuditService.denyResult(audit, "Permission denied");
+		if(!RocketSecurity.canCreateLifecycle(adminUser) ){
+			AuditService.denyResult(audit, ERROR_PERMISSION_DENIED);
 			return false;
 		}
 		try {
-			out_lc = Rocket.createLifecycle(adminUser, communityName);
-			if(out_lc != null){
+			outLc = Rocket.createLifecycle(adminUser, communityName);
+			if(outLc != null){
 				AuditService.permitResult(audit, "Created lifecycle: " + communityName);
 				outBool = true;
 			}
 			else AuditService.denyResult(audit, "Failed to create lifecycle");
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
@@ -1243,21 +1207,20 @@ public class RocketCommunity implements ICommunityProvider {
 	
 	public boolean createCommunityProject(UserType adminUser, String communityId, String projectName){
 		boolean outBool = false;
-		ProjectType out_proj = null;
+		ProjectType outProj = null;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "createProject",AuditEnumType.USER, adminUser.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LIFECYCLE, Rocket.getBasePath() + "/Lifecycles");
-		LifecycleType out_lc = getLifecycleToChange(audit, adminUser, communityId);
+		LifecycleType outLc = getLifecycleToChange(audit, adminUser, communityId);
 	
 
-		if(RocketSecurity.canCreateProject(adminUser, out_lc) == false){
-			AuditService.denyResult(audit, "Permission denied");
+		if(RocketSecurity.canCreateProject(adminUser, outLc) == false){
+			AuditService.denyResult(audit, ERROR_PERMISSION_DENIED);
 			return false;
 		}
 		try {
-			out_proj = Rocket.createProject(adminUser, out_lc, projectName);
-			if(out_proj != null){
-				RocketModel.addDefaults(adminUser, out_proj.getGroupId());
-				//logger.warn("Community defaults (Waterfall/Agile models) due to open issue with RocketModel and bulk sessions");
+			outProj = Rocket.createProject(adminUser, outLc, projectName);
+			if(outProj != null){
+				RocketModel.addDefaults(adminUser, outProj.getGroupId());
 				AuditService.permitResult(audit, "Created project: " + projectName);
 				outBool = true;
 				
@@ -1265,7 +1228,7 @@ public class RocketCommunity implements ICommunityProvider {
 			else AuditService.denyResult(audit, "Failed to create project: " + projectName);
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
@@ -1309,7 +1272,7 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 			
 			DirectoryGroupType newDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(appName, appDir, appDir.getOrganizationId());
-			if(BaseService.add(AuditEnumType.GROUP, newDir, user) == false){
+			if(!BaseService.add(AuditEnumType.GROUP, newDir, user)){
 				logger.error("Failed to create application group");
 				return false;
 			}
@@ -1320,7 +1283,7 @@ public class RocketCommunity implements ICommunityProvider {
 				return false;
 			}
 			
-			if(configureEntitlements(user, communityId, projectId, newDir.getObjectId()) ==  false){
+			if(!configureEntitlements(user, communityId, projectId, newDir.getObjectId())){
 				logger.error("Failed to configure application group");
 				return false;
 			}
@@ -1333,10 +1296,6 @@ public class RocketCommunity implements ICommunityProvider {
 			BaseGroupType[] groups = (useGroups ? DataGeneratorData.randomAccountGroups(seed, max) : new BaseGroupType[0]);
 			
 			List<PersonType> persons = BaseService.listByGroup(AuditEnumType.PERSON, "DATA", dutil.getPersonsDir().getObjectId(), 0L, 0, user);
-			//List<PersonType> persons = ((INameIdGroupFactory)Factories.getFactory(FactoryEnumType.PERSON)).listInGroup(dutil.getPersonsDir(), 0, 0, user.getOrganizationId());
-			//long[] personIds = ((INameIdGroupFactory)Factories.getFactory(FactoryEnumType.PERSON)).getIdsInGroup(dutil.getPersonsDir());
-			//String[] personNames = ((INameIdGroupFactory)Factories.getFactory(FactoryEnumType.PERSON)).getNamesInGroup(dutil.getPersonsDir());
-			//int count = BaseService.countByGroup(AuditEnumType.PERSON, dutil.getPersonsDir(), user);
 			int plen = persons.size();
 			logger.info("Working with " + plen + " people");
 			
@@ -1359,7 +1318,6 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 
 			for(int i = 0; i < groups.length; i++){
-				// if(distribution < 1.0 && r.nextDouble() > distribution) continue;
 				BaseGroupType g = groups[i];
 				g.setOwnerId(user.getId());
 				g.setParentId(newDir.getId());
@@ -1373,7 +1331,6 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 			
 			for(int i = 0; i < permissions.length; i++){
-				// if(distribution < 1.0 && r.nextDouble() > distribution) continue;
 				BasePermissionType p = permissions[i];
 				p.setOwnerId(user.getId());
 				p.setParentId(basePerm.getId());
@@ -1395,18 +1352,15 @@ public class RocketCommunity implements ICommunityProvider {
 				}
 			}
 			
-
-			
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
-			
 				
 			outBool = true;
 
 			
 		} catch (ArgumentException | FactoryException | DataAccessException  e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
@@ -1430,29 +1384,29 @@ public class RocketCommunity implements ICommunityProvider {
 			dutil.setOrganizePersonManagement(organizePersonManagement);
 			int eventCount = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).countInGroup(dutil.getEventsDir());
 			boolean initSetup = (eventCount == 0);
-			if(initSetup == false){
+			if(!initSetup){
 				AuditService.denyResult(audit, "One or more events already exists");
 				return outBool;
 			}
-			if(initSetup){
-				logger.info("START Populating " + dutil.getProject().getName() + " data ...");
-				String sessionId = BulkFactories.getBulkFactory().newBulkSession();
-				
-				EventType regionCreation = dutil.generateRegion(sessionId, locationSize, seedSize);
-				logger.info("Writing session");
-				BulkFactories.getBulkFactory().write(sessionId);
-				BulkFactories.getBulkFactory().close(sessionId);
-				((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).populate(regionCreation);
-				List<EventType> events = regionCreation.getChildEvents();
-				logger.info("Created " + events.size() + " events");
-				logger.info("END Populating");
-				outBool = true;
-			}
+
+			logger.info("START Populating " + dutil.getProject().getName() + " data ...");
+			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
+			
+			EventType regionCreation = dutil.generateRegion(sessionId, locationSize, seedSize);
+			logger.info("Writing session");
+			BulkFactories.getBulkFactory().write(sessionId);
+			BulkFactories.getBulkFactory().close(sessionId);
+			((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).populate(regionCreation);
+			List<EventType> events = regionCreation.getChildEvents();
+			logger.info("Created " + events.size() + " events");
+			logger.info("END Populating");
+			outBool = true;
+
 
 			
 		} catch (FactoryException | ArgumentException | DataAccessException  e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
@@ -1475,20 +1429,19 @@ public class RocketCommunity implements ICommunityProvider {
 			
 			int eventCount = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).countInGroup(dutil.getEventsDir());
 			boolean initSetup = (eventCount == 0);
-			if(initSetup == true){
+			if(initSetup){
 				AuditService.denyResult(audit, "Origination event does not exist");
 				return outBool;
 			}
 			
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 
-			EventType epoch = null;
 			for(int i = 0; i < epochSize; i++){
 				int count = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).countInGroup(dutil.getEventsDir());
 				boolean modeled = (count >= (2+i));
 				if(modeled) continue;
 				logger.info("MODEL Epoch " + (i + 1));
-				epoch = dutil.generateEpoch(sessionId, epochEvolutions,1);
+				dutil.generateEpoch(sessionId, epochEvolutions,1);
 			}
 			
 			BulkFactories.getBulkFactory().write(sessionId);
@@ -1498,7 +1451,7 @@ public class RocketCommunity implements ICommunityProvider {
 			
 		} catch (FactoryException | ArgumentException | DataAccessException  e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
@@ -1526,8 +1479,6 @@ public class RocketCommunity implements ICommunityProvider {
 			for(int i = 0; i < events.size(); i++){
 				EventType evt = events.get(i);
 				((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).populate(evt);
-				//LocationType location = evt.getLocation();
-				//buff.append("* " + location.getName() + " is " + Factories.getAttributeFactory().getAttributeValueByName(location, "alignment"));
 				buff.append("* " + evt.getName() + " - " + evt.getChildEvents().size() + " sub events\n");
 				
 				for(EventType cevt : evt.getChildEvents()){
@@ -1536,15 +1487,6 @@ public class RocketCommunity implements ICommunityProvider {
 					Factories.getAttributeFactory().populateAttributes(loc);
 					buff.append("\t* " + Factories.getAttributeFactory().getAttributeValueByName(loc,"name") + " - (" + loc.getName() + ")\n");
 					buff.append("\t" + cevt.getName() + " - " + cevt.getChildEvents().size() + " sub events\n");
-					//buff.append("\t" + cevt.getName() + "\n");
-					/*
-					if(cevt.getChildEvents().size() > 0){
-						for(EventType scevt : cevt.getChildEvents()){
-							((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).populate(scevt);
-							buff.append("\t\t* " + scevt.getName() + "\n");
-						}
-					}
-					*/
 					if(i == (events.size()-1)){
 						Map<String,List<PersonType>> demo = dutil.getDemographics(cevt);
 						buff.append("\t* Demographics\n");
@@ -1559,7 +1501,6 @@ public class RocketCommunity implements ICommunityProvider {
 							buff.append("\t" + person.getName() + " " + Factories.getAttributeFactory().getAttributeValueByName(person,"alignment") + "\n");
 						}
 					}
-					//buff.append(dutil.getDemographics(evt));
 					buff.append("\n");
 				}
 			}
@@ -1567,7 +1508,7 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		catch (FactoryException | ArgumentException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return buff.toString();
@@ -1580,7 +1521,6 @@ public class RocketCommunity implements ICommunityProvider {
 		if(data == null) return false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Community Project Script: " + data.getUrn(),AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.DATA, data.getUrn());
-		DirectoryGroupType dataDir = null;
 		try {
 			if(AuthorizationService.canChange(user, data)==false){
 				AuditService.denyResult(audit,"User not authorized to change " + data.getUrn());
@@ -1596,7 +1536,7 @@ public class RocketCommunity implements ICommunityProvider {
 				outBool = true;
 			}
 		} catch (FactoryException | ArgumentException | DataException e) {
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
@@ -1609,13 +1549,13 @@ public class RocketCommunity implements ICommunityProvider {
 		if(lc == null || proj == null) return null;
 		
 		DataGeneratorUtil dutil = getGenerator(audit, user, lc.getName(), proj.getName(), lc.getGroupPath() + "/Locations", lc.getGroupPath() + "/Traits", null, null);
+		if(dutil == null) return null;
 		List<EventType> evts = dutil.getEvents();
 		EventType lastEvent = null;
-		List<EventType> lastChildren = new ArrayList<>();
-		if(evts.size() > 0){
+		if(!evts.isEmpty()){
 			lastEvent = evts.get(evts.size()-1);
 			((NameIdFactory)Factories.getFactory(FactoryEnumType.EVENT)).populate(lastEvent);
-			lastChildren = lastEvent.getChildEvents();
+			List<EventType> lastChildren = lastEvent.getChildEvents();
 			for(EventType cevt : lastChildren){
 				((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).populate(cevt);
 				LocationType loc = cevt.getLocation();
@@ -1625,18 +1565,17 @@ public class RocketCommunity implements ICommunityProvider {
 		
 		params.put("lastEvent", lastEvent);
 		
-		String out_str = ScriptService.processTokens(user, DataUtil.getValueString(data))
+		return ScriptService.processTokens(user, DataUtil.getValueString(data))
 				.replaceAll("\\$\\{communityName\\}", lc.getName())
 				.replaceAll("\\$\\{projectName\\}", proj.getName())
 				.replaceAll("\\$\\{communityUrn\\}", lc.getUrn())
 				.replaceAll("\\$\\{projectUrn\\}", proj.getUrn())
 				.replaceAll("\\$\\{scriptName\\}", data.getName())
 				.replaceAll("\\$\\{scriptUrn\\}", data.getUrn())
-				.replaceAll("\\$\\{lastEventName\\}", lastEvent.getName())
-				.replaceAll("\\$\\{lastEventUrn\\}", lastEvent.getUrn())
+				.replaceAll("\\$\\{lastEventName\\}", (lastEvent != null ? lastEvent.getName() : null))
+				.replaceAll("\\$\\{lastEventUrn\\}",  (lastEvent != null ? lastEvent.getUrn() : null))
 		;
-		
-		return out_str;
+
 
 	}
 	public Object executeCommunityProjectScript(UserType user, String communityId, String projectId, String name){
@@ -1659,7 +1598,7 @@ public class RocketCommunity implements ICommunityProvider {
 			AuditService.permitResult(audit, "Executed script");
 		} catch (ArgumentException | DataException | FactoryException e) {
 			logger.error(e);
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		long stopTime = System.currentTimeMillis();
 		logger.info("Executed in " + (stopTime - startTime) + "ms");
@@ -1705,7 +1644,7 @@ public class RocketCommunity implements ICommunityProvider {
 				AuditService.permitResult(audit, "Retrieved community script");
 			}
 		} catch (FactoryException | ArgumentException | DataException e) {
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			data = null;
 		}
@@ -1735,8 +1674,7 @@ public class RocketCommunity implements ICommunityProvider {
 
 			
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 
 		return buff.toString();
@@ -1754,18 +1692,18 @@ public class RocketCommunity implements ICommunityProvider {
 		try{
 			lc = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getByObjectId(communityId, user.getOrganizationId());
 			if(lc == null){
-				AuditService.denyResult(audit, "Null community object");
+				AuditService.denyResult(audit, ERROR_NULL_COMMUNITY);
 				return null;
 			}
 			BaseService.normalize(user, lc);
-			if((toChange == true && RocketSecurity.canChangeLifecycle(user, lc)==false) || (toChange == false && RocketSecurity.canReadLifecycle(user, lc)==false)){
+			if((toChange && RocketSecurity.canChangeLifecycle(user, lc)==false) || (toChange == false && RocketSecurity.canReadLifecycle(user, lc)==false)){
 
 				AuditService.denyResult(audit, "User is not authorized to view lifecycle");
 				return null;
 			}
 		}
 		catch(FactoryException | ArgumentException e){
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return lc;
@@ -1781,17 +1719,17 @@ public class RocketCommunity implements ICommunityProvider {
 		try{
 			proj = ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).getByObjectId(communityId, user.getOrganizationId());
 			if(proj == null){
-				AuditService.denyResult(audit, "Null community object");
+				AuditService.denyResult(audit, ERROR_NULL_COMMUNITY);
 				return null;
 			}
 			BaseService.normalize(user, proj);
-			if((toChange == true && RocketSecurity.canChangeProject(user, proj)==false) || (toChange == false && RocketSecurity.canReadProject(user, proj)==false)){
+			if((toChange && RocketSecurity.canChangeProject(user, proj)==false) || (toChange == false && RocketSecurity.canReadProject(user, proj)==false)){
 				AuditService.denyResult(audit, "User is not authorized to view project");
 				return null;
 			}
 		}
 		catch(FactoryException | ArgumentException e){
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return proj;
@@ -1808,7 +1746,7 @@ public class RocketCommunity implements ICommunityProvider {
 				namesPath
 			);
 		try{
-			if(dutil.initialize() == false){
+			if(!dutil.initialize()){
 				AuditService.denyResult(audit, "Failed to initialize data generator");
 				return null;
 			}
@@ -1818,7 +1756,7 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 		}
 		catch(ArgumentException | FactoryException e){
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			dutil = null;
 		}

@@ -79,7 +79,7 @@ public class ContactFactory extends NameIdGroupFactory {
 	{
 		ContactType contact = (ContactType)obj;
 
-		if(contact.getPopulated() == true) return;
+		if(contact.getPopulated()) return;
 		contact.setPopulated(true);
 		updateToCache(contact);
 		

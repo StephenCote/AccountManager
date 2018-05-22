@@ -92,22 +92,16 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 	public String getPermissionPrefix(){
 		return permissionPrefix;
 	}
-	/*
-	public String getReadersRoleName(){
-		return (permissionPrefix + "Readers");
-	}
-	public String getAdministratorsRoleName(){
-		return (permissionPrefix + "Administrators");
-	}
-	*/
+
+
 	public String[] getDefaultPermissions(){
 		if(permissionPrefix == null){
 			logger.warn("Permission prefix for " + participationType.toString() + " is not defined");
 			return new String[0];
 		}
-		String[] names = new String[AuthorizationService.PERMISSION_BASE.length];
+		String[] names = new String[AuthorizationService.getDefaultPermissionBase().length];
 		for(int i = 0; i < names.length;i++){
-			names[i] = permissionPrefix + AuthorizationService.PERMISSION_BASE[i];
+			names[i] = permissionPrefix + AuthorizationService.getDefaultPermissionBase()[i];
 		}
 		return names;
 	}
@@ -401,6 +395,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		matches.add(match);
 		return getByField(matches.toArray(new QueryField[0]), org);
 	}
+	@SuppressWarnings("unchecked")
 	public <T> T getParticipant(NameIdType participation, NameIdType participant, ParticipantEnumType type) throws FactoryException, ArgumentException
 	{
 		
@@ -419,12 +414,12 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		}
 		
 		if (add_to_cache){
-			/// logger.info("Add to cache: " + keyName);
 			addToCache((NameIdType)out_participant, keyName);
 		}
 		return out_participant;
 
 	}
+	@SuppressWarnings("unchecked")
 	public <T> T getParticipant(
 		NameIdType participation,
 		NameIdType participant,
@@ -457,7 +452,6 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		}
 		
 		if (add_to_cache){
-			/// logger.info("Add to cache: " + keyName);
 			addToCache((NameIdType)out_participant, keyName);
 		}
 		return out_participant;

@@ -372,7 +372,7 @@ public class AM5LoginModule implements LoginModule {
         if (_succeeded == false) {
             cleanup();
             return false;
-        } else if (_succeeded == true && _commitSucceeded == false) {
+        } else if (_succeeded && _commitSucceeded == false) {
             // login succeeded but overall authentication failed
             _succeeded = false;
             cleanup();

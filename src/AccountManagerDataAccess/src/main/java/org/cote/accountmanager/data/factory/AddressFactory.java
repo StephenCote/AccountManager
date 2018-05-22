@@ -76,7 +76,7 @@ public class AddressFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		AddressType addr = (AddressType)obj;
-		if(addr.getPopulated() == true) return;
+		if(addr.getPopulated()) return;
 
 		addr.setPopulated(true);
 		updateToCache(addr);

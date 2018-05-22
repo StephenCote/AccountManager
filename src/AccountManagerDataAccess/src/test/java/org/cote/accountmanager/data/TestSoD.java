@@ -67,8 +67,6 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
-import org.cote.accountmanager.util.FileUtil;
-import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 public class TestSoD extends BaseDataAccessTest{
 	//

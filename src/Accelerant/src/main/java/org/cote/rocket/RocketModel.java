@@ -91,7 +91,7 @@ public class RocketModel {
 		DirectoryGroupType wrkDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Work", group, group.getOrganizationId());
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 		
-		List<ResourceType> recList = new ArrayList<ResourceType>();
+		List<ResourceType> recList = new ArrayList<>();
 		for(int i = 0; i < resources.length;i++){
 			recList.add(addResource(user, sessionId, resources[i],recDir.getId()));
 			
@@ -101,7 +101,6 @@ public class RocketModel {
 		
 		boolean outBool = false;
 		int blocks = (int)Math.ceil((double)numberOfWeeks / (double)sprintLength);
-		//Date start = startTime;
 		Calendar startCal = Calendar.getInstance();
 		Calendar endCal = Calendar.getInstance();
 		Date start = CalendarUtil.importDateFromString(startTime);
@@ -119,43 +118,8 @@ public class RocketModel {
 			startCal.add(Calendar.DATE, (sprintLength * 7));
 			endCal.add(Calendar.DATE, (sprintLength * 7));
 		}
-		//Date end = start.set
-		
-		/*
-		 * 
-		 * function emitSprint(sLabel,oSched,iOrder,aTeam){
-//function (sName, sDesc, iOrder,aDep, aArt, aTask, aRec, oGroup){
-rocket.addWork(sLabel,"",1,0,0,0,aTeam,oSprintWorkGroup);
-var oWork = rocket.getWork(sLabel,oSprintWorkGroup);
-/// function (sName, sDesc, iOrder, oMeth, oWork, oBud, oSch, oGroup){
-rocket.addStage(sLabel, "", iOrder,oMeth,oWork,0,oSched,oSprintStageGroup);
-}
 
-for(var i = 0; i < 26;i++){
-var oSched = rocket.getSchedule("Two Week Iteration " + (i + 1));
-emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
-}
-		 * 
-		 * 
-		 * 
-		function emitIterations(sLabel,iWeeks, iIterLen){
-			var iBlocks = iWeeks / iIterLen;
-			var iDays = iIterLen * 7;
-			var oStart = new Date(2012,10,05);
-			var oEnd = new Date(2012,10,05);
-			var oneDay = 1000 * 60 * 60 * 24;
-			oEnd.setTime(oStart.getTime() + (oneDay * (iDays - 3)));
 
-			for(var i = 0; i < iBlocks;i++){
-			rocket.addSchedule(sLabel + " " + (i + 1),oStart,oEnd);
-			oStart.setTime(oEnd.getTime() + (oneDay * 3));
-			oEnd.setTime(oStart.getTime() + (oneDay * (iDays - 3)));
-			}
-			}
-			//emitIterations("Four Week Iteration",52,4);
-			emitIterations("Two Week Iteration",52,2);
-			//emitIterations("One Week Iteration",52,1);
-		*/
 		BulkFactories.getBulkFactory().write(sessionId);
 		BulkFactories.getBulkFactory().close(sessionId);
 		if(project != null) ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).update(project);
@@ -379,24 +343,24 @@ emitSprint("Sprint " + (i + 1),oSched,(i + 1), aScrumTeam);
 	}
 
 	private static ProcessType addProcess(UserType user, String sessionId, String name, String desc, int order, boolean iterates, ProcessStepType[] steps, BudgetType[] budgets, long groupId) throws ArgumentException, FactoryException{
-		ProcessType out_step = ((ProcessFactory)Factories.getFactory(FactoryEnumType.PROCESS)).newProcess(user, groupId);
-		out_step.setName(name);
-		out_step.setDescription(desc);
-		out_step.setLogicalOrder(order);
-		out_step.setIterates(iterates);
-		out_step.getSteps().addAll(Arrays.asList(steps));
-		out_step.getBudgets().addAll(Arrays.asList(budgets));
-		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PROCESS, out_step);
-		return out_step;
+		ProcessType outStep = ((ProcessFactory)Factories.getFactory(FactoryEnumType.PROCESS)).newProcess(user, groupId);
+		outStep.setName(name);
+		outStep.setDescription(desc);
+		outStep.setLogicalOrder(order);
+		outStep.setIterates(iterates);
+		outStep.getSteps().addAll(Arrays.asList(steps));
+		outStep.getBudgets().addAll(Arrays.asList(budgets));
+		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PROCESS, outStep);
+		return outStep;
 	}
 	
 	private static ProcessStepType addProcessStep(UserType user, String sessionId, String name, String desc, int order, long groupId) throws ArgumentException, FactoryException{
-		ProcessStepType out_step = ((ProcessStepFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEP)).newProcessStep(user, groupId);
-		out_step.setName(name);
-		out_step.setDescription(desc);
-		out_step.setLogicalOrder(order);
-		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PROCESSSTEP, out_step);
-		return out_step;
+		ProcessStepType outStep = ((ProcessStepFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEP)).newProcessStep(user, groupId);
+		outStep.setName(name);
+		outStep.setDescription(desc);
+		outStep.setLogicalOrder(order);
+		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PROCESSSTEP, outStep);
+		return outStep;
 	}
 	private static MethodologyType addMethodology(UserType user, String sessionId, String name, String desc, ProcessType[] processes, BudgetType[] budgets, long groupId) throws ArgumentException, FactoryException{
 		MethodologyType method = ((MethodologyFactory)Factories.getFactory(FactoryEnumType.METHODOLOGY)).newMethodology(user, groupId);

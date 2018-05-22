@@ -50,7 +50,6 @@ import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 
 public class PersonParticipationFactory extends ParticipationFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PERSONPARTICIPATION, PersonParticipationFactory.class); }
 	public PersonParticipationFactory(){
 		super(ParticipationEnumType.PERSON, "personparticipation");
 		this.haveAffect = true;
@@ -226,6 +225,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		{
 			return newPersonParticipation(person, role, permission, affectType, ParticipantEnumType.USER);
 		}
+	@SuppressWarnings("unchecked")
 	public <T> T newPersonParticipation(
 		PersonType person, 
 		NameIdType map,

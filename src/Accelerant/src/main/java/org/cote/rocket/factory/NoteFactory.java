@@ -82,7 +82,7 @@ public class NoteFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		NoteType note = (NoteType)obj;
-		if(note.getPopulated() == true) return;
+		if(note.getPopulated()) return;
 		note.getChildNotes().addAll(getChildNoteList(note));
 		note.setPopulated(true);
 		

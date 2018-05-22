@@ -66,6 +66,7 @@ public class TestDataTags extends BaseDataAccessTest {
 			Pattern limitPath = Pattern.compile("([^A-Za-z0-9\\-_\\.\\s\\/\\~])",Pattern.MULTILINE);
 			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization("/Accelerant/Rocket");
 			assertNotNull("Org is null",org);
+			
 			UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("TestUser1", org.getId());
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
 			assertNotNull("User is null",user);

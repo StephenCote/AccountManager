@@ -134,7 +134,7 @@ public class DirectoryUtil{
 					_getrecursive(list[i],dirs,dirlist,filter,recurse);
 				}
 				else if(dirs != null){
-					if(filter == null || list[i].getName().matches(filter) == true){
+					if(filter == null || list[i].getName().matches(filter)){
 						fileCount++;
 						dirs.add(list[i]);
 					}

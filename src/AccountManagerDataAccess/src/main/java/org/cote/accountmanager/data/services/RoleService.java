@@ -65,7 +65,7 @@ public class RoleService {
 	public static final String ROLE_ROLE_READERS = "RoleReaders";
 	public static final String ROLE_GROUP_READERS = "GroupReaders";
 	
-	public static final String[] SYSTEM_ROLES = new String[]{
+	protected static final String[] SYSTEM_ROLES = new String[]{
 		ROLE_SYSTEM_ADMINISTRATOR, ROLE_DATA_ADMINISTRATOR, ROLE_DATA_READER,
 		ROLE_ACCOUNT_ADMINISTRATOR, ROLE_ACCOUNT_USERS, ROLE_API_USERS,
 		ROLE_PERMISSION_READERS, ROLE_ROLE_READERS, ROLE_GROUP_READERS

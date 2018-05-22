@@ -62,8 +62,12 @@ public class AuthorizationService {
 	public static final String PERMISSION_VIEW = "View";
 	public static final String PERMISSION_EDIT = "Edit";
 	public static final String PERMISSION_EXECUTE = "Execute";
-	public static final String[] PERMISSION_BASE = new String[]{PERMISSION_CREATE, PERMISSION_DELETE, PERMISSION_VIEW, PERMISSION_EDIT, PERMISSION_EXECUTE};
+	protected static final String[] PERMISSION_BASE = new String[]{PERMISSION_CREATE, PERMISSION_DELETE, PERMISSION_VIEW, PERMISSION_EDIT, PERMISSION_EXECUTE};
 
+	public static String[] getDefaultPermissionBase(){
+		return PERMISSION_BASE;
+	}
+	
 	public static void clearProviders(){
 		logger.warn("*** Clearing Authorization Providers");
 		partFactories.clear();

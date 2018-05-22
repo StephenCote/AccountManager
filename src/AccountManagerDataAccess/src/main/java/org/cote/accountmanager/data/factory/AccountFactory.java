@@ -80,7 +80,7 @@ public class AccountFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		AccountType account = (AccountType)obj;
-		if(account.getPopulated() == true || !account.getDatabaseRecord()) return;
+		if(account.getPopulated() || !account.getDatabaseRecord()) return;
 		account.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForAccount(account));
 		if(account.getContactInformation() != null) ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).populate(account.getContactInformation());
 		account.setStatistics(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(account));

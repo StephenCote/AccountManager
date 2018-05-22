@@ -137,7 +137,7 @@ public class BulkFactory {
 			logger.error(String.format(INVALID_SESSIONID, "null"));
 			throw new ArgumentException(String.format(INVALID_SESSIONID, "null"));
 		}
-		if(session.getPersisted() == true){
+		if(session.getPersisted()){
 			logger.error("Session id '" + sessionId + "' is already persisted");
 			throw new ArgumentException("Session id '" + sessionId + "' is already persisted");			
 		}

@@ -57,11 +57,11 @@
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-						<!--
+						<!-- NOTE: Most of these tests depend on external data that needs to be staged.  These need to be refactored -->
 						
 						<exclude>**/TestJSON.java</exclude>
 					
-						-->
+
 						<exclude>**/TestSecurityFactory.java</exclude>
 						<exclude>**/TestOpenSSLUtil.java</exclude>
 						<exclude>**/TestKeyStoreUtil.java</exclude>
@@ -77,6 +77,7 @@
 						<exclude>**/TestDataType.java</exclude>
 						
 						<exclude>**/TestGraphics.java</exclude>
+
 
 					</excludes>
 					<systemPropertyVariables>
@@ -101,7 +102,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

@@ -76,7 +76,7 @@ public class CaseFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		CaseType cobj = (CaseType)obj;
-		if(cobj.getPopulated() == true) return;
+		if(cobj.getPopulated()) return;
 
 		cobj.getActors().addAll(((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).getResourcesFromParticipation(cobj));
 		cobj.getPrerequisites().addAll(((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).getArtifactsFromParticipation(cobj));

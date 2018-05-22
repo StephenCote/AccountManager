@@ -114,7 +114,7 @@ public class RestServiceConfig extends ResourceConfig{
 			Connection c = cf.getConnection();
 	
 			try{
-				if(c == null || c.isClosed() == true){
+				if(c == null || c.isClosed()){
 					logger.error("Warning: Connection is null or closed");
 				}
 				else{

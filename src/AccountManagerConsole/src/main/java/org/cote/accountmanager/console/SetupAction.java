@@ -88,7 +88,7 @@ public class SetupAction {
 			}
 		}
 
-		if(error == true) return outBool;
+		if(error) return outBool;
 
 
 		

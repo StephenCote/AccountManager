@@ -27,8 +27,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -47,14 +45,11 @@ import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.VaultType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.DataUtil;
-import org.cote.accountmanager.util.JSONUtil;
-import org.cote.accountmanager.util.ZipUtil;
 import org.junit.Test;
 public class TestVaultService extends BaseDataAccessTest{
 	public static final Logger logger = LogManager.getLogger(TestVaultService.class);

@@ -55,7 +55,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class GroupFactory  extends NameIdFactory {
 	
-	public static final String[] DEFAULT_DIRECTORY_NAMES = new String[]{"Roles","Data","Contacts","Addresses","Persons","Accounts"};
+	protected static final String[] DEFAULT_DIRECTORY_NAMES = new String[]{"Roles","Data","Contacts","Addresses","Persons","Accounts"};
 	
 	@Override
 	public void registerProvider(){

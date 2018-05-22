@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,7 +62,7 @@ public class FileUtil {
 	public static byte[] getFile(File f){
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		if(f.exists() == false)
+		if(!f.exists())
 			return new byte[0];
 		
 		try{
@@ -76,8 +78,11 @@ public class FileUtil {
 	}
 	public static long copyStream(InputStream in, OutputStream out) throws IOException{
 		long copied=0;
-		synchronized(in){
-			synchronized(out){
+		Map<String, Object> locks = new HashMap<>();
+		locks.put("input", in);
+		locks.put("output", out);
+		synchronized(locks.get("input")){
+			synchronized(locks.get("output")){
 				byte[] buffer = new byte[8192];
 				int bytesRead=0;
 				while (bytesRead != -1) {
@@ -112,7 +117,7 @@ public class FileUtil {
 	public static boolean makePath(String path){
 		boolean outBool = false;
 		File f = new File(path);
-		if(f.exists() == false)
+		if(!f.exists())
 			outBool = f.mkdirs();
 		else outBool = true;
 		
@@ -122,10 +127,12 @@ public class FileUtil {
 		boolean outBool = false;
 		File f = new File(path);
 		File p = f.getParentFile();
-		if(p.exists() == false)
+		if(!p.exists())
 			p.mkdirs();
-		if(f.exists() == true)
-			f.delete();
+		if(!f.exists())
+			if(!f.delete()){
+				logger.error(String.format("Failed to delete %s",path));
+			}
 		FileOutputStream fos = null;
 		try{
 			fos = new FileOutputStream(f);

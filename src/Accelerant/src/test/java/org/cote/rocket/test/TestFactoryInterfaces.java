@@ -178,7 +178,7 @@ public class TestFactoryInterfaces {
 			}
 		}
 
-		if(error == true) return outBool;
+		if(error) return outBool;
 		
 		
 		/// Find and delete the Accelerant and Rocket organizations if they exist
@@ -199,7 +199,7 @@ public class TestFactoryInterfaces {
 		}
 		/// Invoking getIsSetup will create /Accelerant organization if it doesn't exist
 		///
-		if(FactoryDefaults.getIsSetup() == true){
+		if(FactoryDefaults.getIsSetup()){
 			logger.error("Internal state is not correctly cleaned up");
 			return false;
 		}
@@ -224,7 +224,7 @@ public class TestFactoryInterfaces {
 		}
 
 		
-		if(Rocket.getIsSetup() == true){
+		if(Rocket.getIsSetup()){
 			logger.error("Internal rocket state is not correctly cleaned up");
 			return false;
 		}

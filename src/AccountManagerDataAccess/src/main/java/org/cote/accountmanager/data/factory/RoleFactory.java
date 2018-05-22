@@ -706,6 +706,7 @@ public class RoleFactory extends NameIdFactory {
 		return makePath(user,RoleEnumType.valueOf(type), pathBase, organizationId);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T makePath(UserType user, RoleEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		String[] path = pathBase.split("/");
 		BaseRoleType parent = null;

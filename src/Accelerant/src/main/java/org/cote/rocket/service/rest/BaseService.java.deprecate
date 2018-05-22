@@ -67,8 +67,13 @@ import org.cote.rocket.services.FormService;
 import org.cote.rocket.services.ValidationService;
 public class BaseService  {
 	public static final Logger logger = LogManager.getLogger(BaseService.class);
-	public static boolean enableExtendedAttributes = false;
-	
+	private static boolean enableExtendedAttributes = false;
+	private BaseService(){
+		
+	}
+	public static void setEnableExtendedAttributes(boolean b){
+		enableExtendedAttributes = b;
+	}
 	public static String getDefaultGroupName(AuditEnumType type){
 		String outPath = "~";
 		logger.warn("TODO: Refactor this method out for type " + type.toString());
@@ -407,145 +412,7 @@ public class BaseService  {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
-		/*
-		try{
-		switch(type){
-			case EVENT:
-				((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).populate((EventType)object);
-				break;
-			case LOCATION:
-				((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).populate((LocationType)object);
-				break;
 
-			case TRAIT:
-				((TraitFactory)Factories.getFactory(FactoryEnumType.TRAIT)).populate((TraitType)object);
-				break;
-			case VALIDATIONRULE:
-				((ValidationRuleFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULE)).populate((ValidationRuleType)object);
-				break;
-			case FORM:
-				((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).populate((FormType)object);
-				break;
-			case FORMELEMENT:
-				((FormElementFactory)Factories.getFactory(FactoryEnumType.FORMELEMENT)).populate((FormElementType)object);
-				break;
-			case PROJECT:
-				((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).populate((ProjectType)object);
-				if(deep){
-					ProjectType p = (ProjectType)object;
-					populateList(AuditEnumType.ARTIFACT, p.getArtifacts(),deep);
-					populateList(AuditEnumType.MODEL,p.getBlueprints(), deep);
-					populateList(AuditEnumType.ARTIFACT,p.getDependencies(), deep);
-					populateList(AuditEnumType.MODULE,p.getModules(), deep);
-					populateList(AuditEnumType.REQUIREMENT,p.getRequirements(), deep);
-					populateList(AuditEnumType.STAGE,p.getStages(), deep);
-					populate(AuditEnumType.SCHEDULE,p.getSchedule(),true);
-				}
-				break;
-			case MODULE:
-				((ModuleFactory)Factories.getFactory(FactoryEnumType.MODULE)).populate((ModuleType)object);
-				break;
-			case STAGE:
-				((StageFactory)Factories.getFactory(FactoryEnumType.STAGE)).populate((StageType)object);
-				if(deep){
-					StageType s = (StageType)object;
-					populate(AuditEnumType.WORK, s.getWork(),deep);
-					populate(AuditEnumType.BUDGET,s.getBudget(),deep);
-					populate(AuditEnumType.METHODOLOGY,s.getMethodology(),deep);
-					populate(AuditEnumType.SCHEDULE,s.getSchedule(),true);
-				}
-				break;
-			case METHODOLOGY:
-				((MethodologyFactory)Factories.getFactory(FactoryEnumType.METHODOLOGY)).populate((MethodologyType)object);
-				break;
-			case PROCESS:
-				((ProcessFactory)Factories.getFactory(FactoryEnumType.PROCESS)).populate((ProcessType)object);
-				break;
-			case PROCESSSTEP:
-				((ProcessStepFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEP)).populate((ProcessStepType)object);
-				break;
-			case WORK:
-				
-				((WorkFactory)Factories.getFactory(FactoryEnumType.WORK)).populate((WorkType)object);
-				if(deep){
-					WorkType w = (WorkType)object;
-					populateList(AuditEnumType.ARTIFACT, w.getArtifacts(),deep);
-					populateList(AuditEnumType.ARTIFACT,w.getDependencies(), deep);
-					populateList(AuditEnumType.RESOURCE, w.getResources(),deep);
-					populateList(AuditEnumType.TASK,w.getTasks(),deep);
-				}
-				break;
-			case ESTIMATE:
-				((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).populate((EstimateType)object);
-				break;
-			case TASK:
-				((TaskFactory)Factories.getFactory(FactoryEnumType.TASK)).populate((TaskType)object);
-				if(deep){
-					TaskType t = (TaskType)object;
-					populateList(AuditEnumType.ARTIFACT, t.getArtifacts(),deep);
-					populateList(AuditEnumType.RESOURCE, t.getResources(),deep);
-					populateList(AuditEnumType.TASK,t.getChildTasks(),deep);
-					populateList(AuditEnumType.ARTIFACT,t.getDependencies(), deep);
-					populateList(AuditEnumType.NOTE,t.getNotes(),deep);
-					populateList(AuditEnumType.REQUIREMENT,t.getRequirements(),deep);
-					populateList(AuditEnumType.WORK, t.getWork(),deep);
-					populate(AuditEnumType.ESTIMATE,t.getEstimate(),deep);
-					
-				}
-				break;
-			case TICKET:
-				((TicketFactory)Factories.getFactory(FactoryEnumType.TICKET)).populate((TicketType)object);
-				break;
-			case MODEL:
-				((ModelFactory)Factories.getFactory(FactoryEnumType.MODEL)).populate((ModelType)object);
-				break;
-			case ARTIFACT:
-				((ArtifactFactory)Factories.getFactory(FactoryEnumType.ARTIFACT)).populate((ArtifactType)object);
-				break;
-			case CASE:
-				((CaseFactory)Factories.getFactory(FactoryEnumType.CASE)).populate((CaseType)object);	
-				break;
-			case REQUIREMENT:
-				((RequirementFactory)Factories.getFactory(FactoryEnumType.REQUIREMENT)).populate((RequirementType)object);	
-				break;
-			case LIFECYCLE:
-				((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).populate((LifecycleType)object);	
-				break;
-			case NOTE:
-				((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).populate((NoteType)object);
-				break;
-			case RESOURCE:
-				((ResourceFactory)Factories.getFactory(FactoryEnumType.RESOURCE)).populate((ResourceType)object);	
-				break;
-			case BUDGET:
-				((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).populate((BudgetType)object);
-				break;
-			case COST:
-				((CostFactory)Factories.getFactory(FactoryEnumType.COST)).populate((CostType)object);
-				break;
-			case TIME:
-				((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).populate((TimeType)object);
-				break;
-			case GOAL:
-				((GoalFactory)Factories.getFactory(FactoryEnumType.GOAL)).populate((GoalType)object);
-				break;
-			case SCHEDULE:
-				((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).populate((ScheduleType)object);
-				break;
-			}
-		}
-		catch(FactoryException fe){
-			
-		}
-		*/
-		/*
-		NameIdDirectoryGroupType nid = (NameIdDirectoryGroupType)object;
-		nid.setOrganizationId(nid.getOrganizationId().getId());
-		nid.setOrganization(null);
-		nid.setGroupId(nid.getGroupId());
-		nid.setGroup(null);
-		*/
-	
 	}
 	private static <T> List<T> getListByGroup(AuditEnumType type, DirectoryGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
 		NameIdGroupFactory factory = getFactory(type);
@@ -585,7 +452,7 @@ public class BaseService  {
 				AuditService.denyResult(audit,"User is not authorized to alter the source group for id " + dirBean.getId());
 				return false;
 			}
-			if(AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirBean.getGroupId(), dirBean.getOrganizationId())) == true || AuthorizationService.isMapOwner(user, dirBean)){
+			if(AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirBean.getGroupId(), dirBean.getOrganizationId())) || AuthorizationService.isMapOwner(user, dirBean)){
 
 				outBool = deleteObject(type, bean);
 				if(outBool) AuditService.permitResult(audit, "Deleted " + dirBean.getName());
@@ -626,7 +493,7 @@ public class BaseService  {
 				dirBean.setGroupId(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, getDefaultGroupName(addType)).getId());
 			}
 			normalize(user,dirBean);
-			if(AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirBean.getGroupId(), dirBean.getOrganizationId())) == true){
+			if(AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirBean.getGroupId(), dirBean.getOrganizationId()))){
 
 				outBool = sanitizeAddNewObject(addType, user, bean);
 				
@@ -691,7 +558,7 @@ public class BaseService  {
 				AuditService.denyResult(audit,"User is not authorized to alter the source group for id " + dirBean.getId());
 				return false;
 			}
-			if(AuthorizationService.isMapOwner(user, (NameIdType)dirBean) || AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirBean.getGroupId(),dirBean.getOrganizationId())) == true){
+			if(AuthorizationService.isMapOwner(user, (NameIdType)dirBean) || AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirBean.getGroupId(),dirBean.getOrganizationId()))){
 				outBool = updateObject(type, user, bean); 	
 				if(outBool) AuditService.permitResult(audit, "Updated " + dirBean.getName() + " (#" + dirBean.getId() + ")");
 				else AuditService.denyResult(audit, "Unable to update " + dirBean.getName() + " (#" + dirBean.getId() + ")");
@@ -730,7 +597,7 @@ public class BaseService  {
 				AuditService.denyResult(audit, "#" + id + " doesn't exist in organization " + user.getOrganizationId());
 				return null;
 			}			
-			if(AuthorizationService.isMapOwner(user, dirType) || AuthorizationService.canView(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirType.getGroupId(),dirType.getOrganizationId())) == true){
+			if(AuthorizationService.isMapOwner(user, dirType) || AuthorizationService.canView(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(dirType.getGroupId(),dirType.getOrganizationId()))){
 				out_obj = (T)dirType;
 				AuditService.permitResult(audit, "Read " + dirType.getName() + " (#" + dirType.getId() + ")");
 			}
@@ -802,7 +669,7 @@ public class BaseService  {
 		try {
 			//DirectoryGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, getDefaultGroupName(type));
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(dir);
-			if(AuthorizationService.canView(user, dir) == true){
+			if(AuthorizationService.canView(user, dir)){
 
 				out_obj = getByNameInGroup(type, name, dir);
 				if(out_obj == null){
@@ -891,7 +758,7 @@ public class BaseService  {
 	public static int count(AuditType audit,AuditEnumType type, UserType user, DirectoryGroupType dir, HttpServletRequest request){
 		int out_count = 0;
 		try {
-			if(AuthorizationService.canView(user, dir) == true){
+			if(AuthorizationService.canView(user, dir)){
 				out_count = count(type, dir);
 				AuditService.permitResult(audit, "Count " + out_count + " of " + type.toString() + " in '" + dir.getName() + "' #" + dir.getId());
 			}
@@ -925,7 +792,7 @@ public class BaseService  {
 				AuditService.denyResult(audit, "Invalid path: '" + path + "'");
 				return out_obj;
 			}
-			if(AuthorizationService.canView(user, dir) == true){
+			if(AuthorizationService.canView(user, dir)){
 				AuditService.permitResult(audit, "Access authorized to group " + dir.getName());
 				out_obj = getListByGroup(type,dir,startRecord,recordCount);
 			}

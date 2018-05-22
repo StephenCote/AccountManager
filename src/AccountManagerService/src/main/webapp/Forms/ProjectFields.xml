@@ -81,7 +81,7 @@
 				oP.modules = o.modules;
 				oP.stages = o.stages;
 				oP.schedule = o.schedule;
-				if(rocket.updateProject(oP)){
+				if(AM6Client.update("PROJECT",oP)){
 					//irocket.importEstimates("/AccountManagerService/Models/estimateModel.js");
 					//irocket.importEstimates("/AccountManagerService/Models/estimateModel.js");
 					Hemi.message.service.publish("oncommunitychange",this);

@@ -276,7 +276,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	
 	public <T> boolean update(T obj, ProcessingInstructionType instruction) throws FactoryException
 	{
-		if(this.bulkMode == true){
+		if(this.bulkMode){
 			return true;
 		}
 		NameIdType map = (NameIdType)obj;
@@ -686,6 +686,8 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 
 		return obj;
 	}
+	
+	@SuppressWarnings("unchecked")
 	public <T> T getByObjectId(String id, long organizationId) throws FactoryException, ArgumentException
 	{
 		if(!hasObjectId) throw new FactoryException("Factory does not support object id");
@@ -713,7 +715,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 
 		List<NameIdType> objList = getByField(new QueryField[] { QueryFields.getFieldId(id) }, organizationId);
 
-		if (objList.isEmpty() == false)
+		if (!objList.isEmpty())
 		{
 			
 			String keyName = getCacheKeyName(objList.get(0));
@@ -955,7 +957,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 			/// 2016/05/31 - The actual use of the keyName isn't specified after finding it, so this whole section, for aggressive as it is, is a waste
 			///	The original issue persists, but the cleanup operation isn't right.  Switching the default to 'false' until the reproduction is identified again
 			///
-			if(aggressiveKeyFlush == true){
+			if(aggressiveKeyFlush){
 				NameIdType objC = null;
 				for (Entry<String,Integer> entry : typeNameMap.entrySet()) {
 					String key = entry.getKey();

@@ -132,7 +132,6 @@ public class SessionFactory extends FactoryBase {
 		}
 		catch (Exception sqe)
 		{
-			System.out.println(sqe.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
 		}
 		finally{
@@ -292,7 +291,6 @@ public class SessionFactory extends FactoryBase {
 	public boolean update(UserSessionType map, ProcessingInstructionType instruction, boolean recover) throws FactoryException
 	{
 		DataTable table = getDataTable("session");
-		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		List<QueryField> queryFields = new ArrayList<>();

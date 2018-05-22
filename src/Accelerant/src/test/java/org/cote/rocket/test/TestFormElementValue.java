@@ -252,7 +252,7 @@ public class TestFormElementValue extends BaseAccelerantTest{
 			for(int v = 0; v < fet.getElementValues().size();v++){
 				if(v > 0) buff.append("\n\t\t");
 				FormElementValueType fev = fet.getElementValues().get(v);
-				if(fev.getFormId().equals(form.getId()) == false || form.getIsTemplate() == true) buff.append("(default) ");
+				if(fev.getFormId().equals(form.getId()) == false || form.getIsTemplate()) buff.append("(default) ");
 				buff.append(fev.getFormId() + " " + fev.getFormElementId() + " " + fev.getTextValue());
 			}
 			logger.info("\t" + fet.getName() + " =\n\t\t" + buff.toString());

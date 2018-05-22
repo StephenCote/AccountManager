@@ -43,23 +43,26 @@ import org.cote.accountmanager.objects.types.SpoolNameEnumType;
 import org.cote.accountmanager.objects.types.ValueEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.junit.Test;
+
+
+
 public class TestMessageSpool extends BaseDataAccessTest{
 	public static final Logger logger = LogManager.getLogger(TestMessageSpool.class);
 
 	@Test
 	public void testInsertMessage(){
+		logger.info("Test insert message");
 		assertNotNull("User is null", testUser);
 		MessageSpoolType message = null;
 		boolean add_message = false;
 		try{
+			logger.info("Bulk mode: " + ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getBulkMode());
+
 			message = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).newMessage(testUser);
 			message.setName("testInsertMessage");
 			add_message = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).addMessage(message);
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -68,14 +71,14 @@ public class TestMessageSpool extends BaseDataAccessTest{
 	
 	@Test
 	public void testGetMessages(){
+		testInsertMessage();
+		logger.info("Test get message");
 		assertNotNull("User is null", testUser);
-		List<MessageSpoolType> messages = new ArrayList<MessageSpoolType>();
+		List<MessageSpoolType> messages = new ArrayList<>();
 		try{
 			messages = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getMessagesFromUserGroup(SpoolNameEnumType.GENERAL, testUser);
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -84,6 +87,8 @@ public class TestMessageSpool extends BaseDataAccessTest{
 	
 	@Test
 	public void testGetMessagesAfterNow(){
+		testInsertMessage();
+		logger.info("Test get message after time");
 		Calendar now = Calendar.getInstance();
 		//now.add(Calendar.HOUR, 7);
 		assertNotNull("User is null", testUser);
@@ -102,10 +107,7 @@ public class TestMessageSpool extends BaseDataAccessTest{
 			messages = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getMessagesAfterDate(SpoolNameEnumType.GENERAL, xCal, 0, testUser.getOrganizationId());
 			
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -114,6 +116,8 @@ public class TestMessageSpool extends BaseDataAccessTest{
 	
 	@Test
 	public void testUpdateMessage(){
+		testInsertMessage();
+		logger.info("Test update message");
 		assertNotNull("User is null", testUser);
 		List<MessageSpoolType> messages = new ArrayList<MessageSpoolType>();
 		try{
@@ -137,10 +141,13 @@ public class TestMessageSpool extends BaseDataAccessTest{
 			logger.error(fe.getMessage());
 		}
 		assertTrue("Message was not updated", updated);
+
 	}
 	
 	@Test
 	public void testDeleteMessages(){
+		testInsertMessage();
+		logger.info("Test delete message");
 		assertNotNull("User is null", testUser);
 		boolean deleted = false;
 		try{

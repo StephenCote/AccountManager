@@ -78,7 +78,7 @@ public class ContactInformationFactory extends NameIdFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ContactInformationType cinfo = (ContactInformationType)obj;
-		if(cinfo.getPopulated() == true || cinfo.getId().equals(0L)) return;
+		if(cinfo.getPopulated() || cinfo.getId().equals(0L)) return;
 		cinfo.getContacts().addAll(((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).getContactsFromParticipation(cinfo));
 		cinfo.getAddresses().addAll(((ContactInformationParticipationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATIONPARTICIPATION)).getAddressesFromParticipation(cinfo));
 		cinfo.setPopulated(true);

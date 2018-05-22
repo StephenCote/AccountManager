@@ -166,7 +166,7 @@ public class DataUtil {
 			}
 		}
 
-		if (d.getEncipher() == true)
+		if (d.getEncipher())
 		{
 
 			if(d.getCipherKey() == null || d.getCipherKey().length == 0){
@@ -190,7 +190,7 @@ public class DataUtil {
 
 	public static byte[] getValue(DataType d) throws DataException
 	{
-		if(d.getDetailsOnly() == true){
+		if(d.getDetailsOnly()){
 			throw new DataException("Cannot access data with a meta data object.");
 		}
 		if (!d.getBlob())
@@ -272,7 +272,7 @@ public class DataUtil {
 				(
 					mimeType.startsWith("image/") == false
 					||
-					mimeType.equals("image/svg+xml") == true)
+					mimeType.equals("image/svg+xml"))
 				&&
 				mimeType.startsWith("application/") == false
 				&&

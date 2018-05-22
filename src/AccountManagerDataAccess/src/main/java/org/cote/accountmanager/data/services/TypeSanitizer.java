@@ -379,7 +379,7 @@ public class TypeSanitizer implements ITypeSanitizer{
 				else{
 					DataUtil.setValue(new_rec, DataUtil.getValue(rbean));
 				}
-				if(rbean.getPointer() == true){
+				if(rbean.getPointer()){
 					logger.error("Creating data pointers is forbidden for sanitized objects regardless of configuration");
 					return null;
 				}

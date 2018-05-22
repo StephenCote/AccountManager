@@ -325,7 +325,11 @@ public class TestPerson extends BaseDataAccessTest{
 	}
 	private void addContactValues(PersonType person, String name) throws ArgumentException{
 		boolean bUp = false;
+
 		try{
+			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(person);
+			assertNotNull("Person is null",person);
+			assertNotNull("Contact info is null",person.getContactInformation());
 			if(person.getContactInformation().getAddresses().isEmpty()){
 				AddressType homeAddr = getCreateAddress(name,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(person.getGroupId(),person.getOrganizationId()));
 				setDemoAddressValues(homeAddr);

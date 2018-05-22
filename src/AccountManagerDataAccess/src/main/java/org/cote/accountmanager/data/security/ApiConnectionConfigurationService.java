@@ -198,7 +198,7 @@ public class ApiConnectionConfigurationService {
 			byte[] conf = JAXBUtil.exportObject(ApiClientConfigurationBean.class, apiConfig).getBytes("UTF-8");
 			
 			DataUtil.setValue(newData, conf);
-			if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(newData) == true){
+			if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(newData)){
 				newData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, true, dir);
 				if(CredentialService.newCredential(CredentialEnumType.ENCRYPTED_IDENTITY, null, owner, newData, identity, true, true, false) != null
 					&&

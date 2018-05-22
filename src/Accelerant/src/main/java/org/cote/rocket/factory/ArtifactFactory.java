@@ -74,7 +74,7 @@ public class ArtifactFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ArtifactType artifact = (ArtifactType)obj;
-		if(artifact.getPopulated() == true) return;
+		if(artifact.getPopulated()) return;
 		List<NameIdType> arts = new ArrayList<NameIdType>();
 		if(artifact.getNextTransitionId() > 0L){
 			arts = ((ArtifactFactory)Factories.getFactory(FactoryEnumType.ARTIFACT)).getById(artifact.getNextTransitionId(), artifact.getOrganizationId());

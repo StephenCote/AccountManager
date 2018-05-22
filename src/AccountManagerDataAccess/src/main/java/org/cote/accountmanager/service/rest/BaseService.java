@@ -189,10 +189,21 @@ public class BaseService {
 		}
 		return outBool;
 	}
-	private static <T> boolean updateObject(AuditEnumType type, T inObj) throws FactoryException {
+	private static <T> boolean updateObject(AuditEnumType type, UserType user, T inObj) throws FactoryException, ArgumentException {
 		boolean outBool = false;
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
-		outBool = iFact.update(inObj);
+		ITypeSanitizer sanitizer = Factories.getSanitizer(NameEnumType.valueOf(type.toString()));
+		
+		if(sanitizer == null){
+			logger.error(String.format(FactoryException.TYPE_NOT_REGISTERED,"Sanitizer"));
+			return false;
+		}
+		if(sanitizer.useAlternateUpdate(type, inObj)){
+			outBool = sanitizer.update(type, user, inObj);
+		}
+		else{
+			outBool = iFact.update(inObj);
+		}
 		
 		if(outBool && enableExtendedAttributes){
 			outBool = Factories.getAttributeFactory().updateAttributes((NameIdType)inObj);
@@ -278,7 +289,7 @@ public class BaseService {
 			INameIdGroupFactory gfact = (INameIdGroupFactory)factory;
 			outObj = gfact.getByNameInParent(name, otype, (NameIdDirectoryGroupType)parent);
 		}
-		else if(factory.isClusterByParent() == true){
+		else if(factory.isClusterByParent()){
 			outObj = factory.getByNameInParent(name, otype, parent.getId(), parent.getOrganizationId());
 		}
 		if(outObj != null){
@@ -345,12 +356,10 @@ public class BaseService {
 		return outObj;		
 	}
 	
-	private static <T> void populate(AuditEnumType type,T object){
+	public static <T> void populate(AuditEnumType type,T object){
 		try {
 			Factories.populate(FactoryEnumType.valueOf(type.toString()), object);
 		} catch (FactoryException | ArgumentException e) {
-			
-			logger.error(e.getMessage());
 			logger.error(e);
 		}
 	
@@ -619,7 +628,7 @@ public class BaseService {
 			
 			normalize(user,bean);
 
-			if(canCreateType(addType, user, dirBean) == true){
+			if(canCreateType(addType, user, dirBean)){
 
 				outBool = sanitizeAddNewObject(addType, user, bean);
 
@@ -692,8 +701,8 @@ public class BaseService {
 				return false;
 			}
 
-			if(canChangeType(type, user, dirBean) == true){
-				outBool = updateObject(type, bean); 	
+			if(canChangeType(type, user, dirBean)){
+				outBool = updateObject(type, user, bean); 	
 				if(outBool) AuditService.permitResult(audit, "Updated " + dirBean.getName() + " (#" + dirBean.getId() + ")");
 				else AuditService.denyResult(audit, "Unable to update " + dirBean.getName() + " (#" + dirBean.getId() + ")");
 			}
@@ -730,7 +739,7 @@ public class BaseService {
 				return null;
 			}		
 			AuditService.targetAudit(audit, type, dirType.getUrn());
-			if(canViewType(type, user, dirType) == true){
+			if(canViewType(type, user, dirType)){
 				outObj = (T)dirType;
 				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)outObj).getPointer() && allowDataPointers == false){
 					AuditService.denyResult(audit, urn + " (" + type + ") is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
@@ -773,7 +782,7 @@ public class BaseService {
 				return null;
 			}		
 			AuditService.targetAudit(audit, type, dirType.getUrn());
-			if(canViewType(type, user, dirType) == true){
+			if(canViewType(type, user, dirType)){
 				outObj = (T)dirType;
 				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)outObj).getPointer() && allowDataPointers == false){
 					AuditService.denyResult(audit, "#" + id + " (" + type + ") is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
@@ -815,7 +824,7 @@ public class BaseService {
 				return null;
 			}		
 			AuditService.targetAudit(audit, type, dirType.getUrn());
-			if(canViewType(type, user, dirType) == true){
+			if(canViewType(type, user, dirType)){
 				outObj = (T)dirType;
 				if(dirType.getNameType().equals(NameEnumType.DATA) && ((DataType)outObj).getPointer() && allowDataPointers == false){
 					AuditService.denyResult(audit, "#" + id + " (" + type + ") is a data pointer, and reading data pointers from the Web FE is forbidden by configuration.");
@@ -1052,7 +1061,7 @@ public class BaseService {
 	public static int count(AuditType audit,AuditEnumType type, UserType user, BaseGroupType dir){
 		int outCount = 0;
 		try {
-			if(canViewType(AuditEnumType.GROUP, user, dir) == true){
+			if(canViewType(AuditEnumType.GROUP, user, dir)){
 				outCount = count(type, dir);
 				AuditService.permitResult(audit, "Count " + outCount + " of " + type.toString() + " in '" + dir.getName() + "' #" + dir.getId());
 			}
@@ -1132,7 +1141,7 @@ public class BaseService {
 	public static int countInParent(AuditType audit,AuditEnumType type, UserType user, NameIdType parent){
 		int outCount = 0;
 		try {
-			if(canViewType(type,user, parent) == true){
+			if(canViewType(type,user, parent)){
 				outCount = countInParent(type, parent);
 				AuditService.permitResult(audit, "Count " + outCount + " of " + type.toString());
 			}
@@ -1285,9 +1294,9 @@ public class BaseService {
 
 		try {
 			if(
-				RoleService.isFactoryAdministrator(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == true
+				RoleService.isFactoryAdministrator(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)))
 				||
-				RoleService.isFactoryReader(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == true
+				RoleService.isFactoryReader(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)))
 			){
 				AuditService.permitResult(audit, "Access authorized to list users");
 				outObj = getListByOrganization(type, startRecord,recordCount,user.getOrganizationId());
@@ -1326,7 +1335,7 @@ public class BaseService {
 		
 		AuditService.targetAudit(audit, type, parentObj.getUrn());
 		try{
-		if(AuthorizationService.canView(user, parentObj) == true){
+		if(AuthorizationService.canView(user, parentObj)){
 			AuditService.permitResult(audit, "Access authorized to group " + parentObj.getName());
 			outObj = getListByGroup(type,(BaseGroupType)parentObj,startRecord,recordCount);
 		}
@@ -1724,7 +1733,7 @@ public class BaseService {
 
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(e);
 		}
 		return outBool;

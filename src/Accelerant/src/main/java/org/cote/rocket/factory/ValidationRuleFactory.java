@@ -76,7 +76,7 @@ public class ValidationRuleFactory extends NameIdGroupFactory {
 	{
 
 		ValidationRuleType rule = (ValidationRuleType)obj;
-		if(rule.getPopulated() == true) return;
+		if(rule.getPopulated()) return;
 		rule.getRules().addAll(((ValidationRuleParticipationFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULEPARTICIPATION)).getValidationRulesFromParticipation(rule));
 		rule.setPopulated(true);
 		updateToCache(rule);

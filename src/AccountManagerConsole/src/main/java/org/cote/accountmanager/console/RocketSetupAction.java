@@ -85,7 +85,7 @@ public class RocketSetupAction {
 			}
 		}
 
-		if(error == true) return outBool;
+		if(error) return outBool;
 		//Factories.coolDown();
 		//Factories.warmUp();
 		/// Find and delete the Accelerant and Rocket organizations if they exist
@@ -126,7 +126,7 @@ public class RocketSetupAction {
 
 		/// Invoking getIsSetup will create /Accelerant organization if it doesn't exist
 		///
-		if(FactoryDefaults.getIsSetup() == true){
+		if(FactoryDefaults.getIsSetup()){
 			logger.error("Internal state is not correctly cleaned up");
 			return false;
 		}
@@ -155,7 +155,7 @@ public class RocketSetupAction {
 		}
 
 		
-		if(Rocket.getIsSetup() == true){
+		if(Rocket.getIsSetup()){
 			logger.error("Internal rocket state is not correctly cleaned up");
 			return false;
 		}

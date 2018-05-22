@@ -73,7 +73,7 @@ public class RequirementFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		RequirementType req = (RequirementType)obj;
-		if(req.getPopulated() == true) return;
+		if(req.getPopulated()) return;
 		
 		req.setPopulated(true);
 		updateToCache(req);

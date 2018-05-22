@@ -36,6 +36,7 @@ public class FactoryException extends Exception{
 	public static final String UNHANDLED_ACTOR_TYPE = "Unhandled actor type: %s";
 	public static final String UNHANDLED_TYPE = "Unhandled type: %s";
 	public static final String LOGICAL_EXCEPTION = "Logical Exception";
+	public static final String LOGICAL_EXCEPTION_MSG = "Logical Exception: %s";
 	public static final String PARTICIPATION_FACTORY_REGISTRATION_EXCEPTION = "Participation factory for %s is not registered for authorization";
 	public FactoryException(String msg){
 		super(msg);

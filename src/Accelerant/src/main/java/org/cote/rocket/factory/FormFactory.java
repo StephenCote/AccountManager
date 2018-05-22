@@ -80,7 +80,7 @@ public class FormFactory extends NameIdGroupFactory {
 			logger.error("Form reference is null. This is likely due to an invalid template or subform reference.");
 			return;
 		}
-		if(form.getPopulated() == true) return;
+		if(form.getPopulated()) return;
 
 		form.getChildForms().addAll(((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).getFormsFromParticipation(form));
 		try{

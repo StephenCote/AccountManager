@@ -53,15 +53,15 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>false</skipTests>
+  					<skipTests>true</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine>  
 
   					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-											
-											
+					<!--			
+									
 								
 						<exclude>**/TestVaultService.java</exclude>
 							<exclude>**/TestBulkUser.java</exclude>
@@ -82,50 +82,54 @@
 						<exclude>**/TestDataAuthorization.java</exclude>	
 						<exclude>**/TestPermissions.java</exclude>							
 						
-						<exclude>**/TestCredentialFactory.java</exclude>
+						
 						<exclude>**/TestFactoryCache.java</exclude>
-						<exclude>**/TestDataTags.java</exclude>		
+							
 						<exclude>**/TestCachePerformance.java</exclude>		
 						<exclude>**/TestBaseService.java</exclude>
 						<exclude>**/TestTokenService.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>
 						<exclude>**/TestPolicyService.java</exclude>
-						<!-- 
-<exclude>**/TestContactInformationFactory.java</exclude>						
-						-->
+						
 						<exclude>**/TestRoleService.java</exclude>
-						
-						
 						<exclude>**/TestBulkAccount.java</exclude>
-	
 						<exclude>**/TestAttributes.java</exclude>
-						<exclude>**/TestAuditFactory.java</exclude>
+						<exclude>**/TestAuditFactory.java</exclude>						
 						<exclude>**/TestUserRegistration.java</exclude>
 						<exclude>**/TestBulkSession.java</exclude>
-
-						<exclude>**/TestMessageSpool.java</exclude>
-						<exclude>**/TestUserSession.java</exclude>
+						
 						<exclude>**/TestSpoolFactory.java</exclude>
 						<exclude>**/TestFindOrganization.java</exclude>
 						<exclude>**/TestAggregateCount.java</exclude>
-						
+
+						<exclude>**/TestMessageSpool.java</exclude>
+						<exclude>**/TestCredentialFactory.java</exclude>
 						<exclude>**/TestPerson.java</exclude>
 						<exclude>**/TestSecuritySpool.java</exclude>
+						<exclude>**/TestDBStress.java</exclude>
+						<exclude>**/TestDataRow.java</exclude>	
+						
+						-->
+					
 
-						<!-- REFACTOR/RETEST BAR -->
-						<exclude>**/TestImportContacts.java</exclude>
-						<exclude>**/TestUserLogin.java</exclude>
+						
 						
 						<!--  RETEST BAR -->
-						
-						<exclude>**/TestDBStress.java</exclude>
-						<exclude>**/TestDataAccess.java</exclude>
+							
+						<!-- REFACTOR/RETEST BAR -->
+						<exclude>**/TestUserLogin.java</exclude>
+						<!--  NOTE: The following tests are circumstantial to various migration efforts and need to be refactored -->
+						<exclude>**/TestDataTags.java</exclude>	
+						<exclude>**/TestImportContacts.java</exclude>
+						<!--  NOTE: The following tests have contextual/ordering errors that need to be resolved -->
+						<exclude>**/TestUserSession.java</exclude>
 						<exclude>**/TestUserFactory.java</exclude>
 						<exclude>**/TestGroupFactory.java</exclude>
-						
-						<exclude>**/TestDataRow.java</exclude>
-						
+						<exclude>**/TestContactInformationFactory.java</exclude>
+						<!--  NOTE: The following tests are underlying infrastructure tests and include hard coded values -->
+						<exclude>**/TestDataAccess.java</exclude>
 						<!--  WARNING: TestFactorySetup WILL ERASE EVERYTHING IN THE DATABASE -->
+						
 						<exclude>**/TestFactorySetup.java</exclude>
 					</excludes>
 					<!--
@@ -168,7 +172,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

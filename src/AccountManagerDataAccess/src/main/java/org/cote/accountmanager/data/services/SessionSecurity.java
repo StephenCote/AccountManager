@@ -148,7 +148,7 @@ public class SessionSecurity {
 			if(session == null) throw new FactoryException("Session is null for user #" + user.getId());
 			user.setSession(session);
 		}
-		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED) && Factories.getSessionFactory().isValid(session) == true){
+		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED) && Factories.getSessionFactory().isValid(session)){
 			outBool = true;
 		}
 
@@ -212,8 +212,7 @@ public class SessionSecurity {
 			/// Only use the CredentialService validation method to verify it against the database record
 			///
 			if(enableLegacyPasswordAuthentication){
-				logger.warn("LEGACY CREDENTIAL SUPPORT BEING APPLIED FOR " + user.getName() + " (#" + user.getId() +")");
-				cred = CredentialService.newLegacyPasswordCredential(user, suppliedCredential,true);
+				logger.warn("LEGACY CREDENTIAL NOT SUPPORTED FOR " + user.getName() + " (#" + user.getId() +")");
 			}
 		}
 		if(cred == null){

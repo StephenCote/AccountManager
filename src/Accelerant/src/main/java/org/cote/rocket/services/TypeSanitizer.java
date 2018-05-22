@@ -114,17 +114,15 @@ public class TypeSanitizer implements ITypeSanitizer{
 		return object;
 	}
 	public <T> boolean delete(AuditEnumType type, T object) throws FactoryException, ArgumentException{
-		boolean outBool = false;
-		//INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
-
-		return outBool;
+		return false;
 	}
 	public <T> boolean update(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException{
 		boolean outBool = false;
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 		if(type.equals(AuditEnumType.FORM)){
+			
 			outBool = ValidationService.validateForm(owner,(FormType)object);
-			if(outBool == false){
+			if(!outBool){
 				logger.warn("Failed to validate form");
 				return false;
 			}

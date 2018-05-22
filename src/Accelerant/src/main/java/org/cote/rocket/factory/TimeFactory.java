@@ -68,7 +68,7 @@ public class TimeFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		TimeType time = (TimeType)obj;
-		if(time.getPopulated() == true) return;
+		if(time.getPopulated()) return;
 		
 		time.setPopulated(true);
 		updateToCache(time);

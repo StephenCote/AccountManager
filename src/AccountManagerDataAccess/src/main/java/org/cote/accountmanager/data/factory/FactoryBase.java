@@ -640,7 +640,7 @@ public abstract class FactoryBase {
 	protected List<Long> getNextIds(int count) throws FactoryException{
 		List<Long> ids = new ArrayList<>();
 		if(sequenceName == null || sequenceName.length() == 0) throw new FactoryException("Sequence name is null");
-		String query = "SELECT nextval('" + sequenceName + "') FROM generate_series(1," + count + ")";
+		String query = String.format("SELECT nextval('%s') FROM generate_series(1,%s)", sequenceName, count);
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		ResultSet rset = null;
 		Statement statement = null;

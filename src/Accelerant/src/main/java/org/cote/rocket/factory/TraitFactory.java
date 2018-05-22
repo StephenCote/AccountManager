@@ -69,7 +69,7 @@ public class TraitFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		TraitType cobj = (TraitType)obj;
-		if(cobj.getPopulated() == true) return;
+		if(cobj.getPopulated()) return;
 
 		cobj.setPopulated(true);
 		updateToCache(cobj);

@@ -24,8 +24,6 @@
 package org.cote.accountmanager.data.security;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.Arrays;
@@ -34,8 +32,6 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.CredentialFactory;
-import org.cote.accountmanager.data.query.QueryField;
-import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
@@ -46,11 +42,16 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.objects.types.NameEnumType;
+
 import org.cote.accountmanager.util.SecurityUtil;
 
 public class CredentialService {
 	public static final Logger logger = LogManager.getLogger(CredentialService.class);
+	
+	private CredentialService(){
+		
+	}
+	
 	public static CredentialType getPrimaryCredential(NameIdType obj) {
 		return getPrimaryCredential(obj,CredentialEnumType.UNKNOWN,false);
 	}
@@ -92,7 +93,7 @@ public class CredentialService {
 				outBool = comparePasswordCredential(credential, password);
 				break;
 			case LEGACY_PASSWORD:
-				outBool = compareLegacyPasswordCredential(credential, password);
+				AuditService.denyResult(audit, "Legacy password credential is no longer supported");
 				break;
 			default:
 				logger.error("Not implemented");
@@ -104,51 +105,6 @@ public class CredentialService {
 		
 	}
 	
-	/// throw-away for migration
-	///
-	public static CredentialType newLegacyPasswordCredential(UserType user, String password, boolean isPasswordHashed){
-		CredentialType cred = new CredentialType();
-		cred.setCredentialType(CredentialEnumType.LEGACY_PASSWORD);
-		cred.setNameType(NameEnumType.CREDENTIAL);
-		cred.setOrganizationId(user.getOrganizationId());
-		cred.setReferenceId(user.getId());
-		cred.setReferenceType(FactoryEnumType.USER);
-		cred.setVaulted(false);
-		try {
-			cred.setCredential((isPasswordHashed ? password.getBytes("UTF-8") : SecurityUtil.getSaltedDigest(password).getBytes("UTF-8")));
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		return cred;
-	}
-	/// Legacy password mechanism was to hash the password first, then lookup the user by the username and the hash
-	/// New system is to obtain the credential for the object, then run it through the validator
-	/// This is throw-away to migrate off the legacy system - just take the hashed password in, lookup the user, and call it good
-	///
-	public static boolean compareLegacyPasswordCredential(CredentialType credential, String password){
-		boolean outBool = false;
-		if(credential.getReferenceType() != FactoryEnumType.USER){
-			logger.error("Unsupported legacy type");
-			return outBool;
-		}
-		String passwordHash = new String(credential.getCredential());
-		logger.info("Hash = " + passwordHash);
-		try {
-			List<NameIdType> users = Factories.getNameIdFactory(FactoryEnumType.USER).list(new QueryField[]{QueryFields.getFieldId(credential.getReferenceId()), QueryFields.getFieldPassword(passwordHash)}, credential.getOrganizationId());
-			if (users.size() == 1){
-				outBool = true;
-			}
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-
-		return outBool;
-	}
 	public static byte[] decryptCredential(CredentialType credential){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.OPEN, "Decrypted credential", AuditEnumType.CREDENTIAL, credential.getObjectId());
 		AuditService.targetAudit(audit, AuditEnumType.CREDENTIAL, credential.getCredentialType().toString() + "(# " + credential.getId() + ")");

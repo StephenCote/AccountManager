@@ -400,7 +400,7 @@ public class MediaUtil {
 					return;
 				}
 			}
-			if(data != null && AuthorizationService.canView(user, data) == true){
+			if(data != null && AuthorizationService.canView(user, data)){
 				can_view = true;
 			}
 		}

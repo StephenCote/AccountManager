@@ -101,7 +101,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		PersonType person = (PersonType)obj;
-		if(person.getPopulated() == true) return;
+		if(person.getPopulated()) return;
 		PersonParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION);
 		person.getPartners().addAll(ppFact.getPartnersFromParticipation(person));
 

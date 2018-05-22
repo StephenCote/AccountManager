@@ -155,6 +155,7 @@ public class MessageFactory extends SpoolFactory {
 		if(name != null) fields.add(QueryFields.getFieldName(name));
 		if(status != SpoolStatusEnumType.UNKNOWN) fields.add(QueryFields.getFieldSpoolStatus(status));
 		if(parentMessage != null) fields.add(QueryFields.getFieldParentGuid(parentMessage.getGuid()));
+		
 		return getMessages(fields.toArray(new QueryField[0]), 0, user.getOrganizationId());
 	}
 	public List<MessageSpoolType> getMessages(QueryField[] fields, long startIndex, long organizationId) throws FactoryException, ArgumentException
@@ -174,8 +175,8 @@ public class MessageFactory extends SpoolFactory {
 
 	public boolean addMessage(MessageSpoolType newMessage) throws FactoryException
 	{
-		if(isValid(newMessage) == false) throw new FactoryException("Message does not contain valid data.");
-		return insertRow(prepareAdd(newMessage,"spool"));
+		if(!isValid(newMessage)) throw new FactoryException("Message does not contain valid data.");
+		return insertRow(prepareAdd(newMessage,this.primaryTableName));
 	}
 
 	public boolean isValid(BaseSpoolType message)

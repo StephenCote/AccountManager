@@ -208,7 +208,7 @@ public class EffectiveAuthorizationService {
 		if(objectMap.containsKey(objectType) == false){
 			objectMap.put(objectType, new HashMap<>());
 		}
-		if(objectMap.get(objectType).containsKey(actorType) == true){
+		if(objectMap.get(objectType).containsKey(actorType)){
 			logger.warn("Actor " + actorType + " already registered for " + objectType);
 			return false;
 		}

@@ -79,7 +79,7 @@ public class FormElementFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		FormElementType formElement = (FormElementType)obj;
-		if(formElement.getPopulated() == true) return;
+		if(formElement.getPopulated()) return;
 		formElement.getElementValues().clear();
 		formElement.getElementValues().addAll(((FormElementParticipationFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTPARTICIPATION)).getFormElementValuesFromParticipation(formElement));
 		formElement.setPopulated(true);

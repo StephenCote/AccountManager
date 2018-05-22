@@ -375,7 +375,7 @@ public class ProjectImportUtil {
 						if(pTask.getName().equals(task.getName())){
 							logger.warn("Dependency has the same name as the source task");
 						}
-						if(objMap.containsKey(pTask.getID()) == true){
+						if(objMap.containsKey(pTask.getID())){
 							NameIdDirectoryGroupType obj = objMap.get(pTask.getID());
 							ArtifactEnumType depType = ArtifactEnumType.UNKNOWN;
 							long depId = 0;

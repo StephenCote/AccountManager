@@ -1,0 +1,614 @@
+<html-fragment>
+	
+<embedded-script><![CDATA[
+
+	openItem : function(o,typeName,viewTypeName){
+		var _s = this.getProperties();
+		if(!typeName) typeName = _s.typeName;
+		if(!viewTypeName) viewTypeName = typeName;
+		if(!o.populated){
+			if(o.nameType && o.nameType.match(/^data$/gi) && o.detailsOnly && o.blob){
+				Hemi.log("Not pulling own blob data for " + o.name + " unless specifically requested.");
+			}
+			else if(this.provideItem){
+				o = this.provideItem(typeName, o);
+			}
+			else{
+				Hemi.log("Not populated.  Fetching a populated version.");
+				var oApi = window[uwm.getApi(typeName)];
+				if(o.id) o = oApi["get" + typeName + "ById"](o.id);
+				else o = oApi["get" + typeName](o.name,AM6Client.find("GROUP","DATA",o.groupPath));
+				if(!o.populated) alert("still not populated");
+			}
+		}
+		this.openWindow(viewTypeName, o);
+	},
+	openWindow : function(sType,oType){
+		var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:0};
+		var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
+           if (oW) {
+           	oW.resizeTo(475, 400);
+           	Hemi.app.getWindowManager().CenterWindow(oW);
+           	// Destroy the window when closed
+           	//
+           	oW.setHideOnClose(0);
+           }
+	},
+	 pad : function(i,l){
+	   var s = "" + i;
+	   var a = [];
+	   for(var i = s.length; i < l;i++) a.push("0");
+	   a.push(s);
+	   return a.join("");
+	},
+	clearType : function(sType, id){
+		var _o = this.getObjects(), i;
+		if( _o.entityMap[id] ){
+			Hemi.log("Clearing map for " + id);
+			delete _o.entityMap[id];
+			this.GetElementByRID(id).value = "";
+		}
+		else{
+			this.GetElementByRID(id).value = "[ error ]";
+		}
+		
+	},
+	openType : function(sType, id){
+		Hemi.log("Opening value for " + sType + " " + id);
+		if(!this.getObjects().entityMap[id]) return;
+		
+		this.openItem(window[uwm.getApi(sType)]["get" + sType + "ById"](this.getObjects().entityMap[id]),sType,sType);
+	},
+	chooseType : function(sType, id){
+		Hemi.log("Picking value for " + sType + " " + id);
+		this.openPicker({ctrlId:id}, sType, id,"pickType");
+	},
+	pickType : function(s, v, i){
+		Hemi.log("Setting value for " + i.ctrlId);
+		this.GetElementByRID(i.ctrlId).value = (v ? this.getEntityLabel(v) : "[ error ]");
+		this.getObjects().entityMap[i.ctrlId] = (v ? v.id + "" : "");
+	},
+	openPicker : function(vSrc, sType, sListId, sFN){
+		var oProps = {openerId:this.getObjectId(),sourceId:vSrc,listType:sType,picker:1,pickFunction:sFN};
+		var oW = Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, 0);
+          	if (oW) {
+          		oW.resizeTo(475, 300);
+          		
+          		if(vSrc.ctrlId){
+          			var o = this.GetElementByRID(vSrc.ctrlId);
+          			var l = Hemi.css.getAbsoluteLeft(o);
+				var t = Hemi.css.getAbsoluteTop(o) + o.offsetHeight;
+				Hemi.log("Move " + vSrc.ctrlId + " to " + l + ", " + t);
+				oW.moveTo(l + "px",t + "px");
+				
+          		}
+          		else{
+          		
+          			Hemi.app.getWindowManager().CenterWindow(oW);
+          		}
+          		// Destroy the window when closed
+          		//
+          		oW.setHideOnClose(0);
+          	}
+	},
+
+	getPatternType : function(oRule){
+		var s = "";
+		switch(oRule.validationType){
+			case "BOOLEAN":
+				s = "bool";
+				break;
+			case "REPLACEMENT":
+				s = "replace";
+				break;
+			case "NONE":
+				s = "none";
+				break;
+		}
+		return s;
+	},
+	
+	emitClientValidationPattern : function(oRule){
+		if(Hemi.data.validator.service.getPattern(oRule.id + "-" + oRule.name)) return;
+		if(!oRule.populated) oRule = AM6Client.get("VALIDATIONRULE",oRule.id);
+		var oDV = Hemi.data.validator.definitions.service;
+	
+		var aInc;
+		for(var i = 0; i < oRule.rules.length; i++){
+			if(!aInc) aInc = [];
+			var oCRule = AM6Client.get("VALIDATIONRULE",oRule.rules[i].id);
+			aInc.push(oCRule.id + "-" + oCRule.name);
+			this.emitClientValidationPattern(oCRule);
+		}
+		this.getObjects().dynPattern.push(oRule.id + "-" + oRule.name);
+		oDV.addNewPattern(oRule.id + "-" + oRule.name, this.getPatternType(oRule), (oRule.validationType == "BOOLEAN" ? (oRule.comparison ? "true" : "false") : 0), oRule.expression, (oRule.validationType == "REPLACEMENT" ? oRule.replacementValue : 0), oRule.allowNull, oRule.errorMessage, aInc);
+	},
+	getEntity : function(sType, i){
+		var e = this.getObjects().entities;
+		if(!e[sType]) e[sType]={};
+		if(typeof i == "number") i = i + "";
+		if(!e[sType][i]){
+			var o = window[uwm.getApi(sType)]["get" + sType + "ById"](i);
+			if(o){
+				e[sType][i] = o;
+				return o;
+			}
+		}
+		 return e[sType][i];
+	},
+	getEntityLabel : function(o){
+		if(o == null || !o) return "[ Invalid Object ]";
+		var s = "[ Unhandled ]";
+		switch(o.nameType){
+			case "RESOURCE":
+				s = o.name + " " + o.resourceType;
+				break;
+			default:
+				s = o.name;
+				break;
+		}
+		return s;
+	},
+	getElementTemplate : function(oFormTemplate, oElement){
+		if(oElement.elementTemplate){
+			Hemi.log("Returning " + oElement.name + " element template");
+			return oElement.elementTemplate.text;
+		}
+		else{
+			Hemi.log("Element " + oElement.name + " doesn't define a template");
+		}
+		var aBuff = [];
+		
+		if(oFormTemplate && oFormTemplate.isGrid){
+			aBuff.push("<div style = 'float:left;width:125px;'>");
+			aBuff.push("${element." + oElement.elementName + ".field}");
+			//aBuff.push(this.getElementField(oFormTemplate,oElement));
+			aBuff.push("</div>");
+		}
+		else{
+			aBuff.push("<div class = \"rocket-column-2\">\n");
+			aBuff.push("\t<p>${element." + oElement.elementName + ".label}</p>\n");
+			aBuff.push("\t<p>${element." + oElement.elementName + ".field}</p>\n");
+			//aBuff.push(this.getElementField(oFormTemplate,oElement));
+			aBuff.push("</div>\n");
+		}
+		return aBuff.join("");
+	},
+	getFormTemplate : function(oForm,bHideExample){
+		var aBuff = [];
+		
+		if(bHideExample){
+			aBuff.push("<Template>\n<import-xml src = \"Templates/TemplateTools.xml\" id = \"TemplateTools\" />\n\n");
+			aBuff.push("<import-xml src = \"/AccountManagerService/Forms/Fragments/FormViewTools.xml\" id = \"FormViewTools\" />\n");
+		}
+		//aBuff.push("<div class = \"rocket-column-2\"><p>Name</p><p>${dform.name}</p></div>\n");
+		for(var i = 0; i < oForm.elements.length; i++){
+			var oE = oForm.elements[i];
+			/// aBuff.push(this.getElementTemplate((oForm.isTemplate ? oForm : oForm.template),oE));
+			aBuff.push("${element." + oE.elementName + "}\n");
+		}
+		if(!bHideExample){
+			if( (oForm.isTemplate ? oForm : oForm.template).isGrid){ 
+				aBuff.push("<div rid = \"newRowCont\" class = \"rocket-column-2\">\n");
+				aBuff.push("<p>New Row</p>\n");
+				aBuff.push("<p><input type = \"button\"  onclick = \"${this}.addRow()\" value = \"Add\" class = \"rocket-button\" /></p>\n");
+				aBuff.push("</div>\n");
+			}
+			
+			aBuff.push("<div class = \"rocket-column-2\">\n");
+			aBuff.push("<p>Save</p>\n");
+			aBuff.push("<p><input type = \"button\"  onclick = \"${this}.saveForm()\" value = \"Save\" class = \"rocket-button\" /></p>\n");
+			aBuff.push("</div>");
+		}
+		else{
+			aBuff.push("<import-xml src = \"/AccountManagerService/Forms/DynamicFormSave.xml\" id = \"DynamicFormSave\" />");
+			aBuff.push("</Template>");
+		}
+		return aBuff.join("");
+	},
+	getElementMap : function(){
+		if(!this.getObjects().elementMap){
+			var oForm = this.getBean("formBean");
+			var e = {};
+			for(var i = 0; i < oForm.form.elements.length;i++){
+				e[oForm.form.elements[i].elementName] = oForm.form.elements[i];
+			}
+			this.getObjects().elementMap = e;
+		}
+		return this.getObjects().elementMap;
+	},
+
+	getElementField : function(oForm, oElement){
+		if(!oElement || oElement == null){
+			return "[ Null Element Reference ]";
+		}
+		var aBuff = [];
+	    ///aBuff.push("<div class = \"rocket-column-2\">\n");
+		///aBuff.push("\t<p>" + oElement.elementLabel + "</p>\n");
+		///aBuff.push("\t<p>");
+		var sPId = "";
+		if(oElement.validationRule){
+			sPId = " pattern-id = \"" + oElement.validationRule.id + "-" + oElement.validationRule.name + "\"";
+			this.emitClientValidationPattern(oElement.validationRule);
+		}
+		switch(oElement.elementType){
+			case "SELECT":
+			case "MULTIPLE_SELECT":
+				aBuff.push("<select " + sPId + " rid = \"" + oElement.elementName + "\" bind = \"${bean.formBean}\" " + (oElement.elementType.match(/multiple/gi) ? " multiple = \"true\"" : "") + ">");
+				for(var v = 0; v < oElement.elementValues.length;v++){
+					/// For select values, only use values supplied by the template
+					///
+					if(oElement.elementValues[v].formId != oForm.id) aBuff.push("<option>" + oElement.elementValues[v].textValue + "</option>");
+				}
+				aBuff.push("</select>");
+				break;
+			case "DATA":
+			case "SCHEDULE":
+			case "TIME":
+			case "NOTE":
+			case "ESTIMATE":
+			case "RESOURCE":
+				var sT = oElement.elementType.substring(0,1) + oElement.elementType.substring(1,oElement.elementType.length).toLowerCase();
+				aBuff.push(
+					"<input disabled = \"true\" bind = \"${bean.formBean}\" type=\"text\" rid=\"" + oElement.elementName + "\"" + (!oElement.elementTemplate ? " style=\"width: 100px !important;\" class=\"rocket-text\"" : "") + " />"
+					//+
+					//"<input type = \"button\" value = \"X\" />"
+					+ "<input type = \"button\" value = \"...\" class = \"rocket-button\" onclick=\"${this}.chooseType('" + sT + "','" + oElement.elementName + "')\" />"
+					+ "<input type = \"button\" value = \"X\" class = \"rocket-button\" onclick = \"${this}.clearType('" + sT + "','" + oElement.elementName + "')\" />"
+					+ "<input type = \"button\" class = \"rocket-button\" value = \">\" onclick = \"${this}.openType('" + sT + "','" + oElement.elementName + "')\" />"
+				);
+				break;
+			case "DATE":
+				aBuff.push("<input type = \"date\" " + sPId + " component = \"calendar\" rid = \"" + oElement.elementName + "\" bind = \"${bean.formBean}\"" + (!oElement.elementTemplate ? " class = \"rocket-text\"" : "") + " />");
+				break;
+			case "INT":
+			case "STRING":
+				aBuff.push("<input type = \"text\" " + sPId + " rid = \"" + oElement.elementName + "\" bind = \"${bean.formBean}\"" + (!oElement.elementTemplate ? " class = \"rocket-text\"" : "") + " />");
+				break;
+			case "STRING_MULTILINE":
+				aBuff.push("<textarea " + sPId + " rid = \"" + oElement.elementName + "\" bind = \"${bean.formBean}\"" + (!oElement.elementTemplate ? " class = \"rocket-text\"" : "") + "></textarea>");
+				break;
+			case "BOOLEAN":
+				aBuff.push("<input type = \"checkbox\" " + sPId + " rid = \"" + oElement.elementName + "\" bind = \"${bean.formBean}\"" + (!oElement.elementTemplate ? " class = \"rocket-text\"" : "") + " />");
+				break;
+		}
+		///aBuff.push("</p>\n");
+		///aBuff.push("</div>\n");
+		return aBuff.join("");
+	},
+	/// This returns the 'bean' value, which is a transitive value in the Hemi Framework
+	/// So, for example, a checkbox value is a boolean, 
+	getElementValue : function(oF,oE){
+		
+		var v;
+		var sFVal = (oE.elementValues.length ? oE.elementValues[0] : v);
+		switch(oE.elementType){
+			case "MULTIPLE_SELECT":
+			case "SELECT":
+				for(var i = 0; i < oE.elementValues.length; i++){
+					if(oF.id != oE.elementValues[i].formId) continue;
+					v = oE.elementValues[i].textValue;
+					break;
+				}
+				Hemi.log("Returning select value: " + v);
+				break;
+				/*
+			case "MULTIPLE_SELECT":
+				var a = [];
+				for(var i = 0; i < oE.elementValues.length; i++){
+					if(oF.id != oE.elementValues[i].formId) continue;
+					a.push(oE.elementValues[i].textValue);
+					break;
+				}
+				v = a;
+				Hemi.log("Returning select value: " + v);
+				break;
+			*/
+			case "DATA":
+			case "SCHEDULE":
+			case "TIME":
+			case "NOTE":
+			case "ESTIMATE":
+			case "RESOURCE":
+				if(sFVal && sFVal.binaryId > 0){
+					var sT = oE.elementType.substring(0,1) + oE.elementType.substring(1,oE.elementType.length).toLowerCase();
+					var oEE = this.getEntity(sT,sFVal.binaryId);
+					v = this.getEntityLabel(oEE);
+					this.getObjects().entityMap[oE.elementName] = sFVal.binaryId ;
+				}
+				else{
+					Hemi.log("Setting empty string for " + oE.elementName + " because binaryId = " + (sFVal ? sFVal.binaryId  + " (" + (typeof sFVal.binaryId) + ")" : "undefined"));
+					v = "";
+				}
+
+				break;
+			case "DATE":
+				v = (sFVal ? new Date(sFVal.textValue) : new Date());
+				break;
+			case "INT":
+			case "STRING_MULTILINE":
+			case "STRING":
+				v = (sFVal ? sFVal.textValue : "");
+				break;
+			case "BOOLEAN":
+				v = (sFVal && sFVal.textValue && sFVal.textValue.match(/^true$/gi) ?  true : false);
+				break;
+		}
+		return v;
+	},
+	/// Note: the local token handler is not used because some of the token swaps are for text to elements
+	/// while the local token handler is restricted to the node type scope
+	///
+	evaluateTokens : function(r){
+		var m,
+			e1 = /\$\{element\.(\S[^\.}]+)\.(\S+)\}/,
+			e2 = /\$\{element\.(\S[^\.}]+)\}/,
+			f1 = /\$\{dform\.(\S[^\.}]+)\}/
+		;
+		var o = this.getBean("formBean");
+		if(!o || !o.form){
+			Hemi.logError("Form bean is not defined");
+			return r;
+		}
+		var em = this.getElementMap();
+		while ((m = r.match(f1)) && m.length > 1) {
+			if(m[1].match(/^name$/)) r = r.replace(f1,o.form.name);
+			else if(m[1].match(/^id$/)) r = r.replace(f1,o.form.id);
+			else if(m[1].match(/^description$/)) r = r.replace(f1,o.form.description);
+			else r = r.replace(f1,"[No Match For '" + m[1] + "']");
+		}
+		while ((m = r.match(e2)) && m.length > 1) {
+			///Hemi.log("Element: " + m[0] + " === " + m[1]);
+			if(em[m[1]]){
+				//if(em[m[1]].elementTemplate){
+				//	r = r.replace(e2,em[m[1]].elementTemplate.text);
+				//}
+				//else{
+					r = r.replace(e2,this.getElementTemplate(o.template,em[m[1]]));
+				//}
+			}
+			else{
+				Hemi.logError("Element " + m[1] + " not found");
+				r = r.replace(e2,"[ Element " + m[1] + " not found ]");
+			}
+		}
+
+		while ((m = r.match(e1)) && m.length > 2) {
+			if(em[m[1]]){
+				if(m[2].match(/^name$/)) r = r.replace(e1,em[m[1]].elementName);
+				else if(m[2].match(/^label$/)) r = r.replace(e1,em[m[1]].elementLabel);
+				else if(m[2].match(/^field$/)) r = r.replace(e1,this.getElementField(o.form,em[m[1]]));
+				else r = r.replace(e1,"[ No Match For '" + m[2] + "']");
+			}
+			else{
+				Hemi.logError("Element " + m[1] + " not found");
+				r = r.replace(e1,"[ Element " + m[1] + " not found ]");
+			}
+		}
+		return r;
+	},
+	viewForm : function(oForm, oFormTemplate){
+		var xBean = {name: oForm.name,template:oFormTemplate,form:oForm};
+		if(!oFormTemplate){
+			this.setStatus("Cannot display form without a template reference");
+			return;
+		}
+		var sTemp = (oFormTemplate.viewTemplate ? oFormTemplate.viewTemplate.text : this.getFormTemplate(oForm,1));
+		if(!sTemp.match(/\<Template/)){
+		sTemp = "<Template>\n"
+			+ "<import-xml src = \"Templates/TemplateTools.xml\" id = \"TemplateTools\" />\n"
+			+ "<import-xml src = \"/AccountManagerService/Forms/Fragments/FormViewTools.xml\" id = \"FormViewTools\" />\n"
+			+ sTemp
+			+ "\n<import-xml src = \"/AccountManagerService/Forms/DynamicFormSave.xml\" id = \"DynamicFormSave\" /></Template>"
+		;
+		}
+		for(var i = 0; i < oForm.elements.length; i++){
+			var oE = oForm.elements[i];
+			xBean[oE.elementName] = this.getElementValue(oForm,oE);
+		}
+		
+		this.setBean(xBean, "formBean");
+		//alert("Before: " + sTemp);
+		//Hemi.log("Before: " + sTemp);
+		sTemp = this.evaluateTokens(sTemp);
+		var oX = Hemi.xml.parseXmlDocument(sTemp);
+		
+		this.cleanTemplate();
+		/// Note: even though embedded_init should be gone, calling into loadTemplate from here will cause it to fire
+		this.loadTemplateFromNode(oX);
+
+	},
+	getMaxElementValue : function(oForm,aVals){
+
+		return Math.max(aVals.length - this.getDefaultOffset(oForm,aVals),1);
+	},
+	getDefaultOffset : function(oForm, aVals){
+		i = 0,v = 0;
+		for(;i < aVals.length; i++){
+			if(aVals[i].formId != oForm.id) v++;
+		}
+		return v;
+	},
+	viewGridForm : function(oForm, oFormTemplate){
+
+		var xBean = {name: oForm.name,template:oFormTemplate,form:oForm};
+		var aBuff = [];
+		
+		aBuff.push("<Template>\n<import-xml src = \"Templates/TemplateTools.xml\" id = \"TemplateTools\" />\n\n");
+		aBuff.push("<import-xml src = \"/AccountManagerService/Forms/Fragments/FormViewTools.xml\" id = \"FormViewTools\" />\n");
+		aBuff.push("<div class = \"rocket-column-2\"><p>Name</p><p>${bean.formBean.name}</p></div>\n");
+		var aCollBuff = [];
+		var aValBuff = [];
+		aCollBuff.push("<div style = 'clear:both;'>")
+		
+		aValBuff.push("<div rid = \"${id}Row\" style = 'clear:both;'>");
+
+		for(var i = 0; i < oFormTemplate.elements.length; i++){
+			var oE = oFormTemplate.elements[i];
+			
+			var sPId = "";
+			if(oE.validationRule){
+				sPId = " pattern-id = \"" + oE.validationRule.id + "-" + oE.validationRule.name + "\"";
+				this.emitClientValidationPattern(oE.validationRule);
+			}
+			aCollBuff.push("<div style = 'float:left;width:125px;'>" + oE.elementLabel + "</div>");
+			aValBuff.push("<div style = 'float:left;width:125px;'>");
+			switch(oE.elementType){
+				case "SELECT":
+				case "MULTIPLE_SELECT":
+					aValBuff.push("<select " + sPId + " rid = \"${id}" + oE.elementName + "\" bind = \"${bean.formBean}\" " + (oE.elementType.match(/multiple/gi) ? " multiple = \"true\"" : "") + ">");
+					for(var v = 0; v < oE.elementValues.length;v++){
+						/// For select values, only use values supplied by the template
+						///
+						if(oE.elementValues[v].formId != oForm.id) aValBuff.push("<option>" + oE.elementValues[v].textValue + "</option>");
+					}
+					aValBuff.push("</select>");
+					break;
+				case "DATE":
+					//xBean[oE.elementName] = (oVal[oE.elementName] ? new Date(oVal[oE.elementName].textValue) : new Date());
+					aValBuff.push("<input " + sPId + " type = \"date\" component = \"calendar\" rid = \"${id}" + oE.elementName + "\" bind = \"${bean.formBean}\" class = \"rocket-text\" />");
+					break;
+				case "DATA":
+				case "SCHEDULE":
+				case "TIME":
+				case "NOTE":
+				case "ESTIMATE":
+				case "RESOURCE":
+					var sT = oE.elementType.substring(0,1) + oE.elementType.substring(1,oE.elementType.length).toLowerCase();
+					aValBuff.push(
+						"<input bind = \"${bean.formBean}\" onclick=\"${this}.chooseType('" + sT + "','${id}" + oE.elementName + "')\" type=\"text\" rid=\"${id}" + oE.elementName + "\" style=\"width: 75px !important;\" class=\"rocket-text\" />"
+						+
+						"<input type = \"button\" value = \"X\" onclick = \"${this}.clearType('" + sT + "','${id}" + oE.elementName + "')\" />"
+					);
+					break;
+				case "INT":
+				case "STRING":
+					//xBean[oE.elementName] = (oVal[oE.elementName] ? oVal[oE.elementName].textValue : "");
+					aValBuff.push("<input " + sPId + " type = \"text\" rid = \"${id}" + oE.elementName + "\" bind = \"${bean.formBean}\" class = \"rocket-text\" />");
+					break;
+				case "STRING_MULTILINE":
+					//xBean[oE.elementName] = (oVal[oE.elementName] ? oVal[oE.elementName].textValue : "");
+					aValBuff.push("<textarea " + sPId + " rid = \"${id}" + oE.elementName + "\" bind = \"${bean.formBean}\" class = \"rocket-text\"></textarea>");
+					break;
+				case "BOOLEAN":
+					//xBean[oE.elementName] = (oVal[oE.elementName] &&  oVal[oE.elementName].textValue.match(/^true$/gi) ?  true : false);
+					aValBuff.push("<input " + sPId + " type = \"checkbox\" rid = \"${id}" + oE.elementName + "\" bind = \"${bean.formBean}\" class = \"rocket-text\" />");
+					break;
+			}
+			aValBuff.push("</div>");
+		}
+		aCollBuff.push("<div style = 'float:left;width:50px;'>Delete</div>");
+		aCollBuff.push("</div>");
+		aValBuff.push("<div style = 'float:left;width:50px;'><input type = \"button\" value = \"X\" onclick = \"${this}.deleteRow('${id}')\" class = \"rocket-button\" /></div>");
+		aValBuff.push("</div>");
+		
+		aBuff.push("<div rid = 'rowCont' style = 'clear:both;'>");
+		var iRowCount = (oForm.elements.length && oForm.elements[0].elementValues.length ? this.getMaxElementValue(oForm,oForm.elements[0].elementValues) : 1);
+		aBuff.push(aCollBuff.join(""));
+		for(var i = 0; i < iRowCount;i++){
+		   var sId = "Row-" + this.pad((i+1),10) + "-";
+		   var sB = aValBuff.join("").replace(/\${id}/gi,sId);
+		   aBuff.push(sB);
+			var aE = oFormTemplate.elements;
+		   for(var v = 0; v < aE.length;v++){
+			var oE = aE[v];
+		      var aEV = (oForm.elements[v] ? oForm.elements[v].elementValues : []);
+		     // if(oE.elementValues[i]){
+				switch(oE.elementType){
+				case "DATE":
+					xBean[sId + oE.elementName] = (aEV[i] ? new Date(aEV[i].textValue) : new Date());
+					break;
+				case "MULTIPLESELECT":
+				case "SELECT":
+					if(aEV[i].formId != oForm.id) continue;
+					xBean[sId + oE.elementName] = aEV[i];
+
+					break;
+
+				case "INT":
+				case "STRING":
+				case "STRINGMULTILINE":
+					xBean[sId + oE.elementName] = (aEV[i] ? aEV[i].textValue : "");
+					break;
+				case "BOOLEAN":
+					if(aEV[i] && typeof aEV[i].textValue == "boolean") aEV[i].textValue = "" + aEV[i].textValue; 
+					xBean[sId + oE.elementName] = (aEV[i] && aEV[i].textValue && aEV[i].textValue.match(/^true$/gi) ?  true : false);
+					break;
+				case "DATA":
+				case "SCHEDULE":
+				case "TIME":
+				case "NOTE":
+				case "ESTIMATE":
+				case "RESOURCE":
+					var sT = oE.elementType.substring(0,1) + oE.elementType.substring(1,oE.elementType.length).toLowerCase();
+					if(aEV[i].isBinary && aEV[i].binaryId > 0){
+					///if(aEV[i] && aEV[i].textValue.match(/^\d+$/gi) > 0){
+						var oEE = this.getEntity(sT,aEV[i].binaryId)
+						xBean[sId + oE.elementName] = this.getEntityLabel(oEE);
+						this.getObjects().entityMap[sId + oE.elementName] = aEV[i].binaryId;
+					}
+					else{
+						xBean[sId + oE.elementName] = "";
+					}
+ 
+					break;
+					
+				}
+			//}
+		
+		   }
+		}
+		aBuff.push("</div>");
+		aBuff.push("<import-xml src = \"/AccountManagerService/Forms/DynamicFormSave.xml\" id = \"DynamicFormSave\" />");
+		aBuff.push("</Template>");
+		xBean.rowCount = iRowCount;
+		xBean.rowTemplate = aValBuff.join("");
+		
+		var oX = Hemi.xml.parseXmlDocument(aBuff.join(""));
+		
+		this.setBean(xBean, "formBean");
+		
+		this.cleanTemplate();
+		/// Note: even though embedded_init should be gone, calling into loadTemplate from here will cause it to fire
+		this.loadTemplateFromNode(oX);
+
+	},
+	getGridFormTemplate : function(oFormTemplate,bRowTemplate){
+
+		var aBuff = [];
+		aBuff.push("<Template>\n<import-xml src = \"Templates/TemplateTools.xml\" id = \"TemplateTools\" />\n\n");
+		aBuff.push("<import-xml src = \"/AccountManagerService/Forms/Fragments/FormViewTools.xml\" id = \"FormViewTools\" />\n");
+		aBuff.push("<div class = \"rocket-column-2\"><p>Name</p><p>${bean.formBean.name}</p></div>\n");
+		var aCollBuff = [];
+		var aValBuff = [];
+		aCollBuff.push("<div style = 'clear:both;'>")
+		aValBuff.push("<div rid = \"${id}Row\" style = 'clear:both;'>");
+		for(var i = 0; i < oFormTemplate.elements.length; i++){
+			var oE = oFormTemplate.elements[i];
+			var sPId = "";
+			if(oE.validationRule){
+				sPId = " pattern-id = \"" + oE.validationRule.id + "-" + oE.validationRule.name + "\"";
+			}
+			aCollBuff.push("<div style = 'float:left;width:125px;'>${element." + oE.elementName + ".label}</div>");
+			aValBuff.push("<div style = 'float:left;width:125px;'>");
+			aValBuff.push("${element." + oE.elementName + ".field}");
+			aValBuff.push("</div>");
+		}
+		aCollBuff.push("<div style = 'float:left;width:50px;'>Delete</div>");
+		aCollBuff.push("</div>");
+		aValBuff.push("${button.delete}");
+		aValBuff.push("</div>");
+		
+		aBuff.push("<div rid = 'rowCont' style = 'clear:both;'>");
+
+		aBuff.push(aCollBuff.join(""));
+		aBuff.push(aValBuff.join(""));
+		aBuff.push("</div>");
+		aBuff.push("${button.save}");
+		aBuff.push("</Template>");
+		
+		if(bRowTemplate) return aValBuff.join("");
+		return aBuff.join("");
+	}
+]]></embedded-script>
+</html-fragment>

@@ -129,7 +129,7 @@ public class MediaFormServlet extends HttpServlet {
 			}
 		}
 		catch(Exception e){
-			logger.error("Error: " + e.getMessage());
+			logger.error(String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 

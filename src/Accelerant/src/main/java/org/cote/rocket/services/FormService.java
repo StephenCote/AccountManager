@@ -104,17 +104,18 @@ public class FormService {
 	}
 	public static boolean updateFormValues(UserType user, FormType form, boolean validate) throws FactoryException, ArgumentException{
 		boolean outBool = false;
-		if(form.getPopulated() == false){
+		logger.info("Updating form values");
+		if(!form.getPopulated()){
 			logger.info("Not updating fields for an unpopulated form");
 			return true;
 		}
-		if(validate && (outBool = ValidationService.validateForm(user,form)) == false){
+		if(validate && !(outBool = ValidationService.validateForm(user,form))){
 			logger.warn("Form " + form.getName() + " failed validation");
 			return outBool;
 		}
 		List<FormElementValueType> vals = ((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).getByForm(form);
 		Set<Long> set = new HashSet<>();
-		HashMap<String,FormElementValueType> map = new HashMap<String,FormElementValueType>();
+		HashMap<String,FormElementValueType> map = new HashMap<>();
 		for(int i = 0; i < vals.size();i++){
 			map.put(vals.get(i).getName(), vals.get(i));
 			set.add(vals.get(i).getId());
@@ -123,15 +124,14 @@ public class FormService {
 			updateFormValues(user,form.getChildForms().get(f), validate);
 		}
 
-		for(int i = 0; form.getIsTemplate() == false && i < form.getElements().size();i++){
+		for(int i = 0; !form.getIsTemplate() && i < form.getElements().size();i++){
 			FormElementType fet = form.getElements().get(i);
 
-			if((fet.getElementValues().size() > 0)){
+			if(!fet.getElementValues().isEmpty()){
 				for(int v = 0; v < fet.getElementValues().size();v++){
 					try{
 						FormElementValueType fevt = fet.getElementValues().get(v);
 						FormElementValueType fcheck = null;
-						//logger.error("Check Val: " + fevt.getName() + ":" + map.containsKey(fevt.getName()));
 						if(map.containsKey(fevt.getName())){
 							fcheck = map.get(fevt.getName());
 							set.remove(fcheck.getId());
@@ -154,11 +154,7 @@ public class FormService {
 							}
 						}
 					}
-					catch(FactoryException fe){
-						logger.error(fe.getMessage());
-						logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-						
-					} catch (ArgumentException e) {
+					catch(FactoryException | ArgumentException e) {
 						
 						logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 					}
@@ -167,7 +163,7 @@ public class FormService {
 				
 			}
 		}
-		if(set.size() > 0){
+		if(!set.isEmpty()){
 			((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).deleteFormElementValuesByIds(ArrayUtils.toPrimitive(set.toArray(new Long[0])), form.getOrganizationId());
 		}
 		return true;

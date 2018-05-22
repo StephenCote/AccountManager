@@ -93,7 +93,7 @@ public class LocationFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		LocationType cobj = (LocationType)obj;
-		if(cobj.getPopulated() == true) return;
+		if(cobj.getPopulated()) return;
 		cobj.getChildLocations().addAll(getChildLocationList(cobj));
 		cobj.getBoundaries().addAll(((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).getBoundariesFromParticipation(cobj));
 		cobj.getBorders().addAll(((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).getBordersFromParticipation(cobj));

@@ -45,10 +45,12 @@ public class TestUserSession extends BaseDataAccessTest{
 	
 	@Test
 	public void TestClearSessions(){
+		logger.info("Clear all sessions");
 		Factories.getSessionFactory().clearSessions();
 	}
 	@Test
 	public void TestCreateSession(){
+		logger.info("Create new session");
 		assertNotNull(testUser);
 		UserSessionType session = Factories.getSessionFactory().newUserSession(testUser, sessionId);
 		UserSessionType session2 = Factories.getSessionFactory().newUserSession(testUser2, sessionId2);
@@ -67,6 +69,7 @@ public class TestUserSession extends BaseDataAccessTest{
 	}
 	@Test
 	public void TestGetSession(){
+		logger.info("Get session");
 		assertNotNull(testUser);
 		UserSessionType session = null;
 		try {
@@ -75,11 +78,12 @@ public class TestUserSession extends BaseDataAccessTest{
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		assertNotNull(session);
+		assertNotNull("Session object is null",session);
 	}
 	
 	@Test
 	public void TestUpdateSession(){
+		logger.info("Update session");
 		assertNotNull(testUser);
 		UserSessionType session = null;
 		boolean updated = false;
@@ -96,11 +100,14 @@ public class TestUserSession extends BaseDataAccessTest{
 	
 	@Test
 	public void TestAddSessionData(){
+		logger.info("Add session data");
 		UserSessionType session = null;
 		UserSessionType session2 = null;
 		try {
 			session = Factories.getSessionFactory().getSession(sessionId, testUser.getOrganizationId());
 			session2 = Factories.getSessionFactory().getSession(sessionId2, testUser2.getOrganizationId());
+			assertNotNull("Session object is null", session);
+			assertNotNull("Session object is null",session2);
 			String testName1 = "testdata";
 			String testName2 = "testdata2";
 			String testName3 = "testdata3";
@@ -138,6 +145,7 @@ public class TestUserSession extends BaseDataAccessTest{
 	
 	@Test
 	public void TestClearSessionData(){
+		logger.info("Clear session data");
 		UserSessionType session = null;
 		try{
 			Factories.getSessionFactory().clearSession(sessionId);

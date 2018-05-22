@@ -117,24 +117,6 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 		assertFalse("Credential should be invalid",CredentialService.comparePasswordCredential(cred, "BadPassword"));
 		assertTrue("Auditable Credential was invalid",CredentialService.validatePasswordCredential(qaUser, cred, "password1"));
 		
-		/// Test legacy system
-		///
-		CredentialType legCred = CredentialService.newLegacyPasswordCredential(qaUser, "password",false);
-		boolean legVal = CredentialService.validatePasswordCredential(qaUser, legCred, "password");
-		//CredentialType cred2 = CredentialService.newHashedPasswordCredential(qaUser, qaUser, "password1", false);
-		//assertNotNull("New credential is null",cred2);
-		/*
-		boolean del = false;
-		try {
-			del = Factories.getCredentialFactory().deleteCredential(cred2);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		*/
-		//assertTrue("Failed to delete credential",del);
-		
-
 	}
 	
 	private String getApiConfigString(){

@@ -332,7 +332,7 @@ public class BaseAccelerantTest{
 			}
 		}
 		catch(ArgumentException | FactoryException e){
-			AuditService.denyResult(audit, "Error: " + e.getMessage());
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			dutil = null;
 		}

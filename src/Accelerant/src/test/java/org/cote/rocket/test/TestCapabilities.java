@@ -38,12 +38,13 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.propellant.objects.FormElementType;
 import org.cote.propellant.objects.types.ElementEnumType;
 import org.cote.rocket.Factories;
 import org.cote.rocket.factory.FormElementFactory;
 import org.cote.rocket.factory.LifecycleFactory;
-import org.cote.rocket.service.rest.BaseService;
+
 import org.junit.Test;
 
 public class TestCapabilities extends BaseAccelerantTest {

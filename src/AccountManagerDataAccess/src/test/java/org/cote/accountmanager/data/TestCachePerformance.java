@@ -61,7 +61,7 @@ public class TestCachePerformance extends BaseDataAccessTest {
 			start = System.currentTimeMillis();
 			/// Next, pick 10 entries randomly from the list and pop them from the factory cache (added via the bulk create entry method)
 			///
-			if(((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).isAggressiveKeyFlush() == true) logger.warn("Aggressive Key Flush is enabled on the test factory.  This will iterate through the entire cache looking for all of the keys used to cache a particular object.");
+			if(((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).isAggressiveKeyFlush()) logger.warn("Aggressive Key Flush is enabled on the test factory.  This will iterate through the entire cache looking for all of the keys used to cache a particular object.");
 			for(int i = 0; i < 10; i++){
 				DataParticipantType dpt = dptList.get(random.nextInt(20000));
 				((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).removeFromCache(dpt);

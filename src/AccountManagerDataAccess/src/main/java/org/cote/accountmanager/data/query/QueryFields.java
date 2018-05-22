@@ -267,9 +267,7 @@ public class QueryFields {
 	{
 		return getBooleanField("ispasswordprotected", val);
 	}
-	public static QueryField getFieldPassword(String password){
-		return getStringField("password", password);
-	}
+
 	public static QueryField getFieldVaulted(boolean val)
 	{
 		return getBooleanField("isvaulted", val);

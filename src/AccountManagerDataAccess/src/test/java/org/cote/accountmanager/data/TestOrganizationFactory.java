@@ -30,7 +30,6 @@ import static org.junit.Assert.assertTrue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
-import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -39,7 +38,6 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 import org.cote.accountmanager.util.SecurityUtil;
-import org.junit.After;
 import org.junit.Test;
 public class TestOrganizationFactory extends BaseDataAccessTest{
 	private static String testOrgName = null;

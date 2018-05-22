@@ -70,7 +70,7 @@ public class BudgetFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		BudgetType budget = (BudgetType)obj;
-		if(budget.getPopulated() == true) return;
+		if(budget.getPopulated()) return;
 
 		budget.setPopulated(true);
 		updateToCache(budget);

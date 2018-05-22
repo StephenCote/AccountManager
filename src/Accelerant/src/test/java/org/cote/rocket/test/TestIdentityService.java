@@ -92,7 +92,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 	
 	private OrganizationType getOrganization(String newOrgName){
 		OrganizationType newOrg = testOrganization;
-		if(createNewOrganization == true){
+		if(createNewOrganization){
 			try {
 				
 				newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).addOrganization(newOrgName, OrganizationEnumType.DEVELOPMENT, testOrganization);

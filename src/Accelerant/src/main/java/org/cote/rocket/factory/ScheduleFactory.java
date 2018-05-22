@@ -78,7 +78,7 @@ public class ScheduleFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ScheduleType sched = (ScheduleType)obj;
-		if(sched.getPopulated() == true) return;
+		if(sched.getPopulated()) return;
 		sched.getBudgets().addAll(((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).getBudgetsFromParticipation(sched));
 		sched.getGoals().addAll(((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).getGoalsFromParticipation(sched));
 		sched.setPopulated(true);

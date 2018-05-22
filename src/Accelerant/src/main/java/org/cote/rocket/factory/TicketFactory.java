@@ -87,7 +87,7 @@ public class TicketFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		TicketType ticket = (TicketType)obj;
-		if(ticket.getPopulated() == true) return;
+		if(ticket.getPopulated()) return;
 
 		ticket.getDependencies().addAll(((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).getDependenciesFromParticipation(ticket));
 		ticket.getArtifacts().addAll(((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).getArtifactsFromParticipation(ticket));

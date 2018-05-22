@@ -90,12 +90,12 @@ public class KeyService {
 		if(bean.getPublicKeyBytes() != null && bean.getPublicKeyBytes().length > 0) sf.setPublicKey(bean, bean.getPublicKeyBytes());
 		
 		/// If the key is encrypted, the key isn't otherwise provided, and a key reference is included, then look up that key 
-		if(bean.getEncryptCipherKey() == true && bean.getPrivateKey() == null && bean.getAsymmetricKeyId().compareTo(0L) != 0){
+		if(bean.getEncryptCipherKey() && bean.getPrivateKey() == null && bean.getAsymmetricKeyId().compareTo(0L) != 0){
 			SecurityBean asymmKey = getAsymmetricKeyById(bean.getAsymmetricKeyId(),bean.getOrganizationId());
 			if(asymmKey != null) bean.setPrivateKey(asymmKey.getPrivateKey());
 		}
 		
-		if(bean.getEncryptCipherKey() == true && bean.getEncryptedCipherIV() != null && bean.getEncryptedCipherIV().length > 0 && bean.getEncryptedCipherKey() != null && bean.getEncryptedCipherKey().length > 0){
+		if(bean.getEncryptCipherKey() && bean.getEncryptedCipherIV() != null && bean.getEncryptedCipherIV().length > 0 && bean.getEncryptedCipherKey() != null && bean.getEncryptedCipherKey().length > 0){
 			if(bean.getPrivateKey() == null) throw new ArgumentException("Private key is needed to decrypt the cipher key");
 			sf.setSecretKey(bean, bean.getEncryptedCipherKey(), bean.getEncryptedCipherIV(), true);
 			/// clear out the private key after using it

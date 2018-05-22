@@ -77,12 +77,14 @@ public abstract class SpoolFactory extends FactoryBase {
 		typeMap = new ArrayList<>();
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(primaryTableName)){
 			table.setRestrictUpdateColumn("spoolguid", true);
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T newSpoolEntry(SpoolBucketEnumType type) throws ArgumentException{
 		BaseSpoolType spoolItem = null;
 		switch(type){
@@ -239,7 +241,6 @@ public abstract class SpoolFactory extends FactoryBase {
 	public boolean update(BaseSpoolType map, ProcessingInstructionType instruction) throws FactoryException
 	{
 		DataTable table = dataTables.get(0);
-		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		List<QueryField> queryFields = new ArrayList<>();
@@ -359,6 +360,7 @@ public abstract class SpoolFactory extends FactoryBase {
 			}
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public <T> T readCache(String name){
 		checkCacheExpires();
 		if(typeNameMap.containsKey(name)){
@@ -367,6 +369,7 @@ public abstract class SpoolFactory extends FactoryBase {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T readCache(int id){
 		checkCacheExpires();
 		if(typeIdMap.containsKey(id)){

@@ -81,7 +81,7 @@ public class GoalFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		GoalType goal = (GoalType)obj;
-		if(goal.getPopulated() == true) return;
+		if(goal.getPopulated()) return;
 		goal.getDependencies().addAll(((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).getDependenciesFromParticipation(goal));
 		goal.getRequirements().addAll(((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).getRequirementsFromParticipation(goal));
 		goal.getCases().addAll(((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).getCasesFromParticipation(goal));

@@ -32,7 +32,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.FactFactory;
-import org.cote.accountmanager.data.factory.FunctionFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OperationFactory;
 import org.cote.accountmanager.data.factory.PatternFactory;

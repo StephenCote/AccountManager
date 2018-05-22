@@ -91,7 +91,7 @@ public class ScriptService {
 			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(func.getSourceUrn());
 		}
 		if(data == null) throw new ArgumentException("Function '" + func.getName() + "' data is null");
-		else if(data.getDetailsOnly() == true) throw new ArgumentException("Function data is not properly loaded");
+		else if(data.getDetailsOnly()) throw new ArgumentException("Function data is not properly loaded");
 
 		return run(user,params,data);
 	}

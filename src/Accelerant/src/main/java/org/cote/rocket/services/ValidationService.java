@@ -65,7 +65,7 @@ public class ValidationService {
 			logger.warn("Form contains no elements.  Populated = " + form.getPopulated() + ". Returning true for validation");
 			return true;
 		}
-		if(form.getIsTemplate() == true){
+		if(form.getIsTemplate()){
 			logger.debug("Form templates are always valid. Note: This relies on the logic that no form template values are ever saved.");
 			return true;
 		}
@@ -139,7 +139,7 @@ public class ValidationService {
 		if(isSupportedBinaryType(formElement.getElementType())
 		){
 			if(formElementValue.getBinaryId().equals(0L)){
-				if(formElement.getValidationRule() != null && formElement.getValidationRule().getAllowNull() == true){
+				if(formElement.getValidationRule() != null && formElement.getValidationRule().getAllowNull()){
 					logger.warn("Binary " + formElement.getElementType().toString() + " reference id of 0 explicitly permitted with nullable rule.");
 					return true;
 				}

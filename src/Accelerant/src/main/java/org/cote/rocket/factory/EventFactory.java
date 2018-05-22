@@ -106,7 +106,7 @@ public class EventFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		EventType cobj = (EventType)obj;
-		if(cobj.getPopulated() == true) return;
+		if(cobj.getPopulated()) return;
 		cobj.getChildEvents().addAll(getChildEventList(cobj));
 		cobj.getActors().addAll(((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getActorsFromParticipation(cobj));
 		cobj.getObservers().addAll(((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getObserversFromParticipation(cobj));

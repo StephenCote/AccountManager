@@ -51,15 +51,17 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>false</skipTests>
+  					<skipTests>true</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine> 
   					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
 						<!-- 
-<exclude>**/TestAuthorization.java</exclude>
+<exclude>**/TestFormFactory.java</exclude>
+<exclude>**/TestFormElementValue.java</exclude>
 						-->
+						<exclude>**/TestAuthorization.java</exclude>
 						<exclude>**/TestIdentityService.java</exclude>
 
 							<exclude>**/TestRocket.java</exclude>
@@ -68,14 +70,14 @@
 						
 						<exclude>**/TestFactoryInterfaces.java</exclude>
 						
-						<exclude>**/TestFormFactory.java</exclude>
+						
 				
 						<exclude>**/TestTraitType.java</exclude>
 						<exclude>**/TestEventType.java</exclude>
 						
 						<!-- REGRESSED -->
 						<exclude>**/TestBulkUpdate.java</exclude>
-						<exclude>**/TestFormElementValue.java</exclude>
+						
 						
 						<!--  RETEST -->
 						
@@ -134,7 +136,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

@@ -100,7 +100,7 @@ public class OrganizationService {
 
 				if(uOrg.getName().equals("Global") && uOrg.getParentId().equals(0L)) uOrg = Factories.getSystemOrganization();
 				boolean sysAdmin = RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(uOrg.getId()), user);
-				if(sysAdmin == true){
+				if(sysAdmin){
 					OrganizationType newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).addOrganization(name,OrganizationEnumType.PUBLIC,org);
 					if(newOrg != null && FactoryDefaults.setupOrganization(newOrg, (new String(adminCredential.getCredential())).trim())){
 						logger.info("Created organization " + name + " in " + uOrg.getName());
@@ -146,7 +146,7 @@ public class OrganizationService {
 				if(uOrg.getName().equals("Global") && uOrg.getParentId().equals(0L)) uOrg = Factories.getSystemOrganization();
 				boolean sysAdmin = RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(uOrg.getId()), user);
 
-				if(sysAdmin == true){
+				if(sysAdmin){
 					outBool = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).delete(uOrg);
 					if(outBool = true){
 						Factories.cleanupOrphans();

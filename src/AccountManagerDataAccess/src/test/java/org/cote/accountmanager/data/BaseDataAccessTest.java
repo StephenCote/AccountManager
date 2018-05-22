@@ -113,6 +113,8 @@ public class BaseDataAccessTest{
 	protected static String sessionId2 = null;
 	protected static Properties testProperties = null;
 	
+	protected static String testUserPassword = "password";
+	
 	@Before
 	public void setUp() throws Exception {
 
@@ -147,7 +149,7 @@ public class BaseDataAccessTest{
 		BulkFactories.getInstance(FactoryEnumType.ACCOUNT);
 
 		try{
-			testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,"password", Factories.getDevelopmentOrganization().getId());
+			testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,testUserPassword, Factories.getDevelopmentOrganization().getId());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -159,14 +161,14 @@ public class BaseDataAccessTest{
 			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Test", AuditEnumType.USER, testUserName);
 			
 			UserType new_user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(testUserName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
-			if(PersonService.createUserAsPerson(audit, testUserName, "password", testUserName + "@example.com", UserEnumType.DEVELOPMENT,UserStatusEnumType.RESTRICTED , Factories.getDevelopmentOrganization().getId())){
+			if(PersonService.createUserAsPerson(audit, testUserName, testUserPassword, testUserName + "@example.com", UserEnumType.DEVELOPMENT,UserStatusEnumType.RESTRICTED , Factories.getDevelopmentOrganization().getId())){
 				new_user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(testUserName, Factories.getDevelopmentOrganization().getId());
-				testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,"password", Factories.getDevelopmentOrganization().getId());
+				testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,testUserPassword, Factories.getDevelopmentOrganization().getId());
 			}
 		}
 		
 		try{
-			testUser2 = SessionSecurity.login(sessionId2, testUserName2, CredentialEnumType.HASHED_PASSWORD,"password", Factories.getDevelopmentOrganization().getId());
+			testUser2 = SessionSecurity.login(sessionId2, testUserName2, CredentialEnumType.HASHED_PASSWORD,testUserPassword, Factories.getDevelopmentOrganization().getId());
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -178,9 +180,9 @@ public class BaseDataAccessTest{
 			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Test", AuditEnumType.USER, testUserName2);
 			
 			UserType new_user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
-			if(PersonService.createUserAsPerson(audit, testUserName2, "password", testUserName2 + "@example.com", UserEnumType.DEVELOPMENT,UserStatusEnumType.RESTRICTED , Factories.getDevelopmentOrganization().getId())){
+			if(PersonService.createUserAsPerson(audit, testUserName2, testUserPassword, testUserName2 + "@example.com", UserEnumType.DEVELOPMENT,UserStatusEnumType.RESTRICTED , Factories.getDevelopmentOrganization().getId())){
 				new_user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(testUserName2, Factories.getDevelopmentOrganization().getId());
-				testUser2 = SessionSecurity.login(sessionId2, testUserName2, CredentialEnumType.HASHED_PASSWORD,"password", Factories.getDevelopmentOrganization().getId());
+				testUser2 = SessionSecurity.login(sessionId2, testUserName2, CredentialEnumType.HASHED_PASSWORD,testUserPassword, Factories.getDevelopmentOrganization().getId());
 			}
 		
 		}

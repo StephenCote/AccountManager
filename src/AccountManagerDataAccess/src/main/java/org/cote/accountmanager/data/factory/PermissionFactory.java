@@ -159,6 +159,7 @@ public class PermissionFactory extends NameIdFactory {
 		return insertRow(row);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T getPermissionById(long id, long organizationId)  throws FactoryException, ArgumentException
 	{
 		T out_perm = readCache(id);
@@ -177,42 +178,43 @@ public class PermissionFactory extends NameIdFactory {
 	{
 		return getPermissionByName(name, type, null, organizationId);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getByNameInParent(String name, String type, long parent_id, long organizationId) throws FactoryException, ArgumentException
+	public <T> T getByNameInParent(String name, String type, long parentId, long organizationId) throws FactoryException, ArgumentException
 	{
-		String keyName = name + "-" + type + "-" + parent_id + "-" + organizationId;
+		String keyName = name + "-" + type + "-" + parentId + "-" + organizationId;
 		PermissionEnumType perType = PermissionEnumType.valueOf(type);
 		T out_perm = readCache(keyName);
 		if (out_perm != null) return out_perm;
 
 		List<QueryField> Fields = new ArrayList<>();
 		Fields.add(QueryFields.getFieldName(name));
-		Fields.add(QueryFields.getFieldParent(parent_id));
+		Fields.add(QueryFields.getFieldParent(parentId));
 		if (perType != PermissionEnumType.UNKNOWN) Fields.add(QueryFields.getFieldPermissionType(perType));
 		List<NameIdType> perms = getByField(Fields.toArray(new QueryField[0]),organizationId);
-		if (perms.size() > 0)
+		if (!perms.isEmpty())
 		{
 			addToCache(perms.get(0),keyName);
 			return (T)perms.get(0);
 		}
 		return null;
 	}
+	@SuppressWarnings("unchecked")
 	public <T> T getPermissionByName(String name, PermissionEnumType type, BasePermissionType parent, long organizationId) throws FactoryException, ArgumentException
 	{
-		long parent_id = 0;
-		if (parent != null) parent_id = parent.getId();
+		long parentId = 0;
+		if (parent != null) parentId = parent.getId();
 
-		String keyName = name + "-" + type.toString() + "-" + parent_id + "-" + organizationId;
+		String keyName = name + "-" + type.toString() + "-" + parentId + "-" + organizationId;
 		T out_perm = readCache(keyName);
 		if (out_perm != null) return out_perm;
 
-		//List<NameIdType> perms = getByNameInGroup(name,organizationId);
 		List<QueryField> Fields = new ArrayList<>();
 		Fields.add(QueryFields.getFieldName(name));
-		Fields.add(QueryFields.getFieldParent(parent_id));
+		Fields.add(QueryFields.getFieldParent(parentId));
 		if (type != PermissionEnumType.UNKNOWN) Fields.add(QueryFields.getFieldPermissionType(type));
 		List<NameIdType> perms = getByField(Fields.toArray(new QueryField[0]),organizationId);
-		if (perms.size() > 0)
+		if (!perms.isEmpty())
 		{
 			addToCache(perms.get(0),keyName);
 			return (T)perms.get(0);
@@ -230,13 +232,16 @@ public class PermissionFactory extends NameIdFactory {
 	public <T> T getRootPermission(PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		return getCreatePermission(null,"Root",type,null,organizationId);
 	}
+	@SuppressWarnings("unchecked")
 	public <T> T getHomePermission(PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		return getCreatePermission(null,"Home",type,(T)getRootPermission(type,organizationId),organizationId);
 	}
+	@SuppressWarnings("unchecked")
 	public <T> T getUserPermission(UserType user,PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		return getCreatePermission(user,user.getName(),type,(T)getHomePermission(type,organizationId),organizationId);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T getCreatePermission(UserType user, String name, PermissionEnumType type, T parent, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		T per = (T)getPermissionByName(name,type,(BasePermissionType)parent,organizationId);
 		if(per == null){
@@ -262,6 +267,8 @@ public class PermissionFactory extends NameIdFactory {
 		path = path + "/" + per.getName();
 		return path;
 	}
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException
 	{
@@ -287,6 +294,7 @@ public class PermissionFactory extends NameIdFactory {
 	public <T> T makePath(UserType user, String type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		return makePath(user,PermissionEnumType.valueOf(type), pathBase, organizationId);
 	}
+	@SuppressWarnings("unchecked")
 	public <T> T makePath(UserType user, PermissionEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		String[] path = pathBase.split("/");
 		BasePermissionType parent = null;

@@ -41,16 +41,18 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.UserPrincipal;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
-import org.cote.rocket.service.rest.BaseService;
+
 @DeclareRoles({"user"})
 @Path("/principal")
 public class PrincipalService {
@@ -71,12 +73,7 @@ public class PrincipalService {
 	public Response getDocumentControl(@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		UserType docUser = Factories.getDocumentControl(user.getOrganizationId());
-		try {
-			BaseService.populate(AuditEnumType.USER, docUser);
-		} catch (ArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		BaseService.populate(AuditEnumType.USER, docUser);
 		return Response.status(200).entity(docUser).build();
 	}
 	

@@ -72,14 +72,14 @@ public class Rocket {
 	
 	private static OrganizationType rocketOrganization = null;
 	private static DirectoryGroupType rocketDir = null;
-	private static boolean is_setup = false;
+	private static boolean isSetup = false;
 	private static String basePath = "/Rocket";
 	private static String lifecyclePath = "/Lifecycles";
 	private static String projectPath = "/Projects";
 
 	
 	
-	public static Map<String,FactoryEnumType> rocketGroupToTypeMap = new HashMap<String,FactoryEnumType>();
+	protected static final Map<String,FactoryEnumType> rocketGroupToTypeMap = new HashMap<>();
 	static{
 		rocketGroupToTypeMap.put("Stages", FactoryEnumType.STAGE);
 		rocketGroupToTypeMap.put("Schedules", FactoryEnumType.SCHEDULE);
@@ -123,12 +123,17 @@ public class Rocket {
 
 	}
 	
+	private Rocket(){
+		
+	}
 	
 	public static boolean getIsSetup(){
-		if(is_setup == true) return is_setup;
-		
-		is_setup = Factories.isSetup(getRocketOrganization().getId());
-		return is_setup;
+		if(isSetup) return isSetup;
+		OrganizationType org = getRocketOrganization();
+		if(org != null){
+			isSetup = Factories.isSetup(org.getId());
+		}
+		return isSetup;
 	}
 	public static String getBasePath(){
 		return basePath;
@@ -143,10 +148,7 @@ public class Rocket {
 		DirectoryGroupType group = null;
 		try {
 			group = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA,getBasePath() + getLifecyclePath(), organizationId);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -157,10 +159,7 @@ public class Rocket {
 		try {
 			
 			group = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA, getBasePath() + getLifecyclePath() + "/" + lc.getName() + getProjectPath(), lc.getOrganizationId());
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -181,18 +180,10 @@ public class Rocket {
 			AuditService.permitResult(audit, "Add user to roles");
 			outBool = true;
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit,"Error: " + e.getMessage());
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit,"Error: " + e.getMessage());
-		} catch (DataAccessException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit,"Error: " + e.getMessage());
+			AuditService.denyResult(audit,String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		return outBool;
 		
@@ -212,36 +203,24 @@ public class Rocket {
 			AuditService.permitResult(audit, "Add user to roles");
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
 			outBool = true;
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit,"Error: " + e.getMessage());
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit,"Error: " + e.getMessage());
-		} catch (DataAccessException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			AuditService.denyResult(audit,"Error: " + e.getMessage());
+			AuditService.denyResult(audit,String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
 		
 		return outBool;
 		
 	}
 	public static boolean enrollInCommunityLifecycle(UserType user, String lifecycleName, BasePermissionType permission){
-		LifecycleType out_lc = null;
+		LifecycleType outLc = null;
 		try {
-			out_lc = Rocket.getLifecycle(lifecycleName, user.getOrganizationId());
-		} catch (FactoryException e1) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
-			return false;
-		} catch (ArgumentException e) {
+			outLc = Rocket.getLifecycle(lifecycleName, user.getOrganizationId());
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return enrollInCommunityLifecycle(user, out_lc,RocketSecurity.getLifecycleUserRole(out_lc),permission);
+		return enrollInCommunityLifecycle(user, outLc,RocketSecurity.getLifecycleUserRole(outLc),permission);
 		
 	}
 	public static boolean enrollInCommunityLifecycle(UserType user, LifecycleType lifecycle, UserRoleType role, BasePermissionType permission){
@@ -253,10 +232,7 @@ public class Rocket {
 		UserType adminUser = null;
 		try {
 			adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", user.getOrganizationId());
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -285,23 +261,23 @@ public class Rocket {
 		return outBool;
 	}
 	public static boolean enrollInCommunityProject(UserType user, String lifecycleName, String projectName, BasePermissionType permission){
-		LifecycleType out_lc = null;
-		ProjectType out_proj = null;
+		LifecycleType outLc = null;
+		ProjectType outProj = null;
 		
 		try {
-			out_lc = Rocket.getLifecycle(lifecycleName, user.getOrganizationId());
-			if(out_lc != null) out_proj = Rocket.getProject(projectName, out_lc, user.getOrganizationId());
+			outLc = Rocket.getLifecycle(lifecycleName, user.getOrganizationId());
+			if(outLc != null) outProj = Rocket.getProject(projectName, outLc, user.getOrganizationId());
 		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		if(out_lc == null){
+		if(outLc == null){
 			return false;
 		}
-		if(out_proj == null){
+		if(outProj == null){
 			return false;
 		}
-		return enrollInCommunityProject(user, out_lc, out_proj, RocketSecurity.getProjectUserRole(out_proj), permission);
+		return enrollInCommunityProject(user, outLc, outProj, RocketSecurity.getProjectUserRole(outProj), permission);
 	}
 	public static boolean enrollInCommunityProject(UserType user, LifecycleType lifecycle, ProjectType project, UserRoleType role, BasePermissionType permission){
 		boolean outBool = false;
@@ -335,17 +311,13 @@ public class Rocket {
 			((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(RocketSecurity.getProjectPermissionBucket(proj));
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).delete(RocketSecurity.getProjectRoleBucket(proj));
 			((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).delete(proj);
-			//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteDirectoryGroup(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(), proj.getOrganizationId()));
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).delete(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(), proj.getOrganizationId()));
 			Factories.cleanupOrphans();
 			/// Need to clean up remaining artifacts
 			///
 			outBool = true;
 			
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -356,17 +328,13 @@ public class Rocket {
 		try {
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).delete(RocketSecurity.getLifecycleRoleBucket(lc));
 			((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).delete(lc);
-			//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteDirectoryGroup(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).delete(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
 			Factories.cleanupOrphans();
 			/// Need to clean up remaining artifacts
 			///
 			outBool = true;
 			
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -386,64 +354,51 @@ public class Rocket {
 		return ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getByNameInGroup(lifecycleName, dir);
 	}
 	public static LifecycleType createLifecycle(UserType owner, String lifecycleName) throws FactoryException, ArgumentException, DataAccessException{
-		LifecycleType out_type = null;
+		LifecycleType outType = null;
 		DirectoryGroupType lcDir = RocketSecurity.getCreateLifecycleDirectory(owner, lifecycleName);
-		if(lcDir == null) return out_type;
+		if(lcDir == null) return outType;
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 		
-		out_type = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).newLifecycle(owner, lcDir.getId());
-		out_type.setName(lifecycleName);
-		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.LIFECYCLE, out_type);
-		if(RocketSecurity.setupBulkLifecycleStructure(sessionId, out_type, owner)){
-			ScheduleType sched = ((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).newSchedule(owner, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Schedules", lcDir, out_type.getOrganizationId()).getId());
+		outType = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).newLifecycle(owner, lcDir.getId());
+		outType.setName(lifecycleName);
+		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.LIFECYCLE, outType);
+		if(RocketSecurity.setupBulkLifecycleStructure(sessionId, outType, owner)){
+			ScheduleType sched = ((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).newSchedule(owner, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Schedules", lcDir, outType.getOrganizationId()).getId());
 			sched.setName("Default " + lifecycleName + " Schedule");
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.SCHEDULE, sched);
-			out_type.getSchedules().add(sched);
+			outType.getSchedules().add(sched);
 
 			BulkFactories.getBulkFactory().write(sessionId);
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
-			//EffectiveAuthorizationService.rebuildGroupRoleCache(owner.getOrganizationId());
 		}
 		else{
 			logger.error("Failed to setup lifecycle '" + lifecycleName + "'");
-			out_type = null;
+			outType = null;
 		}
 		BulkFactories.getBulkFactory().close(sessionId);
-		/*
-		out_type = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).newLifecycle(owner, lcDir);
-		out_type.setName(lifecycleName);
-		if(((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).addLifecycle(out_type)==false){
-			return null;
-		}
-		out_type = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getByNameInGroup(lifecycleName, lcDir);
-		if(RocketSecurity.setupLifecycleStructure(out_type, owner)){
-			RoleService.addUserToRole(owner, RocketSecurity.getLifecycleAdminRole(out_type));
-		}
-		*/
-		return out_type;
+		return outType;
 	}
 	public static ProjectType createProject(UserType owner, LifecycleType lc, String projectName) throws FactoryException, ArgumentException, DataAccessException{
-		ProjectType out_type = null;
+		ProjectType outType = null;
 		DirectoryGroupType lcDir = RocketSecurity.getCreateProjectDirectory(owner, lc, projectName);
-		if(lcDir == null) return out_type;
+		if(lcDir == null) return outType;
 		
 		logger.info("Creating " + lc.getName() + " :: " + projectName + " project");
 		((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).repopulate(lc);
 		
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
-		out_type = ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).newProject(owner, lcDir.getId());
-		out_type.setName(projectName);
+		outType = ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).newProject(owner, lcDir.getId());
+		outType.setName(projectName);
 		
-		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PROJECT, out_type);
-		if(RocketSecurity.setupBulkProjectStructure(sessionId,lc, out_type, owner)){
-			//RoleService.addUserToRole(owner, RocketSecurity.getProjectAdminRole(out_type));
-			ScheduleType sched = ((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).newSchedule(owner, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Schedules", lcDir, out_type.getOrganizationId()).getId());
+		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PROJECT, outType);
+		if(RocketSecurity.setupBulkProjectStructure(sessionId,lc, outType, owner)){
+			ScheduleType sched = ((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).newSchedule(owner, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Schedules", lcDir, outType.getOrganizationId()).getId());
 			sched.setName("Default " + projectName + " Schedule");
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.SCHEDULE, sched);
-			out_type.setSchedule(sched);
+			outType.setSchedule(sched);
 			BulkFactories.getBulkFactory().write(sessionId);
-			if(out_type.getId() <= 0L) throw new FactoryException("Bulk Loaded Project not created correctly");
-			lc.getProjects().add(out_type);
+			if(outType.getId() <= 0L) throw new FactoryException("Bulk Loaded Project not created correctly");
+			lc.getProjects().add(outType);
 			/// BUG NOTE:
 			/// If a lifecycle is added, not populated, and cached
 			/// Then populating will duplicate values
@@ -451,26 +406,12 @@ public class Rocket {
 			/// 
 			((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).update(lc);
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
-			//EffectiveAuthorizationService.rebuildGroupRoleCache(lc.getOrganizationId());
 		}
 		else{
 			logger.error("Unexpected result setting up project structure.");
 		}
 		BulkFactories.getBulkFactory().close(sessionId);
-		/*
-		out_type = ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).newProject(owner, lcDir);
-		out_type.setName(projectName);
-		if(((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).addProject(out_type)==false){
-			return null;
-		}
-		out_type = ((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).getByNameInGroup(projectName, lcDir);
-		if(RocketSecurity.setupProjectStructure(lc, out_type, owner)){
-			RoleService.addUserToRole(owner, RocketSecurity.getProjectAdminRole(out_type));
-			lc.getProjects().add(out_type);
-			((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).updateLifecycle(lc);
-		}
-		*/
-		return out_type;
+		return outType;
 	}
 	public static boolean isApplicationEnvironmentConfigured(long organizationId){
 		boolean outBool = false;
@@ -484,9 +425,9 @@ public class Rocket {
 	}
 	
 	public static boolean configureApplicationEnvironment(UserType adminUser) throws FactoryException, DataAccessException, ArgumentException{
-		boolean is_configured = false;
+		boolean isConfigured = false;
 		long organizationId = adminUser.getOrganizationId();
-		if(RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(organizationId), adminUser) == false){
+		if(!RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(organizationId), adminUser)){
 			logger.error("Only a system administrator may configure an organization for Rocket communities.");
 			return false;
 		}
@@ -502,8 +443,15 @@ public class Rocket {
 		UserPermissionType rocketPermissions = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).makePath(adminUser, PermissionEnumType.USER, applicationDirectory.getPath(),organizationId);
 
 		UserRoleType lifecycleRoles = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).makePath(adminUser, RoleEnumType.USER,lDir.getPath(), organizationId);
+		if(lifecycleRoles == null){
+			logger.error("Lifecycle role root is null");
+			return false;
+		}
 		UserPermissionType lifecyclePermissions = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).makePath(adminUser, PermissionEnumType.USER, lDir.getPath(),organizationId);
-
+		if(lifecyclePermissions == null){
+			logger.error("Lifecycle permission root is null");
+			return false;
+		}
 		RocketSecurity.setupContainerPermissions(adminUser, rocketPermissions);
 		RocketSecurity.setupContainerRoles(adminUser, rocketRoles);
 		
@@ -515,45 +463,28 @@ public class Rocket {
 		RocketSecurity.setupRolesToEditContainer(adminUser,rocketRoles,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},lDir);
 		EffectiveAuthorizationService.pendGroupUpdate(lDir);
 		
-		/*
-		/// Give admin users rights to edit the entire application directory ("/Rocket")
-		AuthorizationService.authorizeRoleType(adminUser, adminRole, applicationDirectory, true, true, true, true);
-
-		/// Allow audit and user role users to view the application directory ("/Rocket")
-		AuthorizationService.authorizeRoleType(adminUser, auditRole, applicationDirectory, true, false, false, false);
-		AuthorizationService.authorizeRoleType(adminUser, userRole, applicationDirectory, true, false, false, false);
-		
-		/// authorize the admin role to read/write the parent lifecycle directory, which is needed to obtain the list of all lifecycles
-		AuthorizationService.authorizeRoleType(adminUser, adminRole, lDir, true, true, true, false);
-		/// authorize the reader role to read/write the parent lifecycle directory, which is needed to obtain the list of all lifecycles
-		AuthorizationService.authorizeRoleType(adminUser, auditRole, lDir, true, false, false, false);
-		AuthorizationService.authorizeRoleType(adminUser, userRole, lDir, true, false, false, false);
-		*/
-		return is_configured;
+		return isConfigured;
 	}
 	
 	public static boolean configureApplicationEnvironment(long organizationId, String adminPassword) throws FactoryException, DataAccessException, ArgumentException{
-		boolean is_configured = false;
+		boolean isConfigured = false;
 		UserType adminUser = SessionSecurity.login("Admin", CredentialEnumType.HASHED_PASSWORD,adminPassword, organizationId);
 		if(adminUser == null){
 			logger.error("Invalid administrator credential");
 			return false;
 		}
-		is_configured = configureApplicationEnvironment(adminUser);
+		isConfigured = configureApplicationEnvironment(adminUser);
 		SessionSecurity.logout(adminUser);
 		
 		EffectiveAuthorizationService.rebuildPendingRoleCache();
 		
-		return is_configured;
+		return isConfigured;
 	}
 	public static DirectoryGroupType getRocketApplicationGroup(long organizationId){
 		if(rocketDir != null) return rocketDir;
 		try {
 			rocketDir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA,basePath, organizationId);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -567,11 +498,7 @@ public class Rocket {
 		try{
 			rocketOrganization = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).addOrganization("Rocket", OrganizationEnumType.PUBLIC, FactoryDefaults.getAccelerantOrganization());
 		}
-		catch(FactoryException fe){
-			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-			System.out.println(fe.getMessage());
-			rocketOrganization = null;
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -585,14 +512,11 @@ public class Rocket {
 	}
 
 	private static List<DirectoryGroupType> getApplicationGroups(long parentId,long organizationId){
-		List<DirectoryGroupType> subs = new ArrayList<DirectoryGroupType>();
+		List<DirectoryGroupType> subs = new ArrayList<>();
 		try {
 			DirectoryGroupType parent = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(parentId, organizationId);
 			subs = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryGroups(parent);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}

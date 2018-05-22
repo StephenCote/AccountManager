@@ -71,7 +71,7 @@ public class ResourceFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ResourceType rec = (ResourceType)obj;
-		if(rec.getPopulated() == true) return;
+		if(rec.getPopulated()) return;
 		if(rec.getResourceDataId() > 0){
 			if(rec.getResourceType() == ResourceEnumType.USER){
 				rec.setResourceData((UserType)Factories.getNameIdFactory(FactoryEnumType.USER).getById(rec.getResourceDataId(), rec.getOrganizationId()));

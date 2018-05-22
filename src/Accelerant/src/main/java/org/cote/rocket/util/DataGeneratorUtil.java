@@ -46,7 +46,6 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.factory.AccountFactory;
-import org.cote.accountmanager.data.factory.AddressFactory;
 import org.cote.accountmanager.data.factory.ContactFactory;
 import org.cote.accountmanager.data.factory.ContactInformationFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
@@ -77,15 +76,14 @@ import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
-import org.cote.accountmanager.objects.types.ContactEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.LocationEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.JSONUtil;
-import org.cote.accountmanager.util.TextUtil;
 import org.cote.accountmanager.util.ObjectUtil;
+import org.cote.accountmanager.util.TextUtil;
 import org.cote.propellant.objects.EventType;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.LocationType;
@@ -446,37 +444,12 @@ public class DataGeneratorUtil {
 		pi.setRecordCount(count);
 		return pi;
 	}
-/*
-	private <T> Map<String,T> getMap(String path, Class mapClass){
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String,T> map = null;
-		try {
-			TypeFactory t = TypeFactory.defaultInstance();
-			byte[] data = FileUtil.getFile(path);
-			map = mapper.readValue(data, t.constructMapType(Map.class, String.class, mapClass));
-		} catch (IOException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		return map;
-	}
-	*/
+
 	public String getObjectLabel(NameIdType object, String attrName){
 		String val = (attrName != null ? Factories.getAttributeFactory().getAttributeValueByName(object, attrName) : null);
 		if(val == null || val.length() == 0) val = object.getName();
 		return val;
 	}
-	private String getPersonLabel(PersonType person){
-
-		long age = (System.currentTimeMillis() - CalendarUtil.getDate(person.getBirthDate()).getTime())/YEAR;
-		String trade = "";
-		AttributeType attr = Factories.getAttributeFactory().getAttributeByName(person, "trade");
-		trade = attr.getValues().get(0);
-		if(attr.getValues().size() > 1) trade += ", " + attr.getValues().get(1);
-		return person.getName() + " " + person.getGender() + " aged " + age + " is a " + trade;
-	}
-	
-
 
 	public AddressType randomAddress(LocationType location) throws ArgumentException, FactoryException{
 		return DataGeneratorData.randomAddress(this, location, addressesDir);
@@ -492,14 +465,10 @@ public class DataGeneratorUtil {
 		return id;
 	}
 
-
-	
-	
 	public AccountType randomAccount(UserType user, DirectoryGroupType dir) throws FactoryException{
 		Random r = new Random();
 		String sType = DataGeneratorData.ACCOUNT_TYPES[r.nextInt(DataGeneratorData.ACCOUNT_TYPES.length)];
-		AccountType acct = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(user, randomId(sType, 6), AccountEnumType.DEVELOPMENT, AccountStatusEnumType.REGISTERED, dir.getId());
-		return acct;
+		return ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(user, randomId(sType, 6), AccountEnumType.DEVELOPMENT, AccountStatusEnumType.REGISTERED, dir.getId());
 	}
 	
 	public PersonType randomPerson(UserType user, DirectoryGroupType dir) throws ArgumentException, FactoryException{
@@ -518,13 +487,12 @@ public class DataGeneratorUtil {
 		person.setBirthDate(CalendarUtil.getXmlGregorianCalendar(birthDate));
 		person.setGender(isMale ? "male":"female");
 		
-		boolean unique = false;
 		String[] firstNames = (isMale ? names.get("male") : names.get("female"));
 		String firstName = firstNames[r.nextInt(firstNames.length)];
 		String middleName = firstNames[r.nextInt(firstNames.length)];
 		String lastName = (preferredLastName != null ? preferredLastName : names.get("common")[r.nextInt(names.get("common").length)]);
 		String name = firstName + " " + middleName + " " + lastName;
-		while(nameHash.contains(name) == true){
+		while(nameHash.contains(name)){
 			firstName = firstNames[r.nextInt(firstNames.length)];
 			middleName = firstNames[r.nextInt(firstNames.length)];
 			lastName = (preferredLastName != null ? preferredLastName : names.get("common")[r.nextInt(names.get("common").length)]);
@@ -548,6 +516,7 @@ public class DataGeneratorUtil {
 		attr2.setName("alignment");
 		attr2.setDataType(SqlDataEnumType.VARCHAR);
 		AlignmentEnumType alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
+
 		/// People can't be neutral
 		while(alignment == AlignmentEnumType.NEUTRAL) alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
 		attr2.getValues().add(alignment.toString());
@@ -649,7 +618,6 @@ public class DataGeneratorUtil {
 			}
 			else{
 				long totalAge = 0;
-				int totalAlignment = 0;
 				int totalAbsoluteAlignment = 0;
 				logger.info("Populating '" + popCount + '"');
 				for(int i = 0; i < len; i++){
@@ -658,7 +626,6 @@ public class DataGeneratorUtil {
 					int alignment = DataGeneratorData.getAlignmentScore(person);
 					long years = Math.abs(CalendarUtil.getTimeSpanFromNow(person.getBirthDate())) / YEAR;
 					totalAge += years;
-					totalAlignment += alignment;
 					totalAbsoluteAlignment += (alignment + 4);
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, person);
 					event.getActors().add(person);
@@ -806,7 +773,7 @@ public class DataGeneratorUtil {
 			fields.add(QueryFields.getStringField("ATR.value", "true"));
 			fields.add(QueryFields.getFieldParent(0L));
 			List<LocationType> locations = ((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).list(fields.toArray(new QueryField[0]), instruction, targetLocationDir.getOrganizationId());
-			if(locations.size() > 0){
+			if(!locations.isEmpty()){
 				loc = locations.get(0);
 				((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).populate(loc);
 				Factories.getAttributeFactory().populateAttributes(loc);
@@ -835,8 +802,6 @@ public class DataGeneratorUtil {
 	/// Don't clear the nameHash when reloading because there will be names generated during evolution that won't be in the database yet
 	///
 	private void reloadNameHash(DirectoryGroupType dir){
-		//nameHash.clear();
-
 		String[] names = new String[0];
 		try {
 			names = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getNamesInGroup(dir);
@@ -928,7 +893,6 @@ public class DataGeneratorUtil {
 					popEvent.setParentId(root.getId());
 					events.add(popEvent);
 					loc.setParentId(rootLoc.getId());
-					//event = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).newEvent(user, eventsDir.getId());
 					event = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).newEvent(user, root);
 					
 					event.setName("Construct " + locName);
@@ -959,7 +923,6 @@ public class DataGeneratorUtil {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		// return events;
 		return root;
 	}
 	
@@ -1152,7 +1115,7 @@ public class DataGeneratorUtil {
 	
 	private boolean rulePersonDeath(AlignmentEnumType eventAlignmentType, PersonGroupType populationGroup, PersonType person, int age) throws FactoryException, ArgumentException{
 		boolean outBool = false;
-		boolean personIsLeader = false;//isLeader(person, populationGroup);
+		boolean personIsLeader = false;
 		double odds = 0.0001 + (age < maxChildAge ? 0.0025 : 0.0) + (age > avgDeathAge ? (age - avgDeathAge) * (personIsLeader ? 0.0001 : 0.0002) : 0.0) + (age >= maxAge ? 1.0 : 0.0);
 		double rand = Math.random();
 		if(rand < odds){
@@ -1181,17 +1144,6 @@ public class DataGeneratorUtil {
 		if(personPopulation.isEmpty()){
 			logger.warn("Population is decimated");
 			return;
-		}
-		try{
-			/*
-			for(PersonType person : personPopulation){
-				if(Factories.getAttributeFactory().getAttributeValueByName(person, "alignment") == null){
-					logger.error("Null alignment when retrieving person " + person.getUrn());
-				}
-			}
-			*/
-		} catch (Exception e) {
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		
 		for(int i = 0; i < iterations; i++){
@@ -1329,11 +1281,7 @@ public class DataGeneratorUtil {
 		if(immigration.isEmpty() == false){
 			
 			for(PersonType person : immigration){
-				/*
-				if(Factories.getAttributeFactory().getAttributeValueByName(person, "alignment") == null){
-					logger.error("Null alignment when creating immigrant " + person.getName());
-				}
-				*/
+
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, person);
 				BaseParticipantType bpt = ((GroupParticipationFactory)Factories.getBulkFactory(FactoryEnumType.GROUPPARTICIPATION)).newPersonGroupParticipation(population, person);
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, bpt);
@@ -1346,7 +1294,6 @@ public class DataGeneratorUtil {
 			immig.getActors().addAll(immigration);
 			immig.setLocation(parentEvent.getLocation());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.EVENT, immig);
-			//logger.info("Immigration of " + immigration.size() + " new people");
 		}
 
 	}
@@ -1362,8 +1309,6 @@ public class DataGeneratorUtil {
 					if(mal.getPartners().isEmpty() == false) continue;
 					double rand = Math.random();
 					if(rand < marriageRate){
-						//partnered = true;
-						//logger.info(fem.getName() + " got married to " + mal.getName() + "! because " + rand + " < " + marriageRate + " (" + mal.getPartners().size() + ":" + fem.getPartners().size() + ")");
 						fem.getPartners().add(mal);
 						mal.getPartners().add(fem);
 						EventType marriage = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).newEvent(user, parentEvent);
@@ -1378,13 +1323,10 @@ public class DataGeneratorUtil {
 				}
 			}
 		}
-		else{
-			// logger.debug("Population is currently unviable for new partners");
-		}
+
 		Set<PersonType> evaluated = new HashSet<PersonType>();
 		for(PersonType person : demographicMap.get("Coupled")){
 			if(person.getPartners().isEmpty()){
-				//logger.error("Person " + person.getName() + " is marked as being coupled, but has no partners");
 				continue;
 			}
 			PersonType partner = person.getPartners().get(0);
@@ -1393,7 +1335,6 @@ public class DataGeneratorUtil {
 			evaluated.add(partner);
 			double rand = Math.random();
 			if(rand < divorceRate){
-				//`logger.info(person.getName() + " got divorced from " + partner.getName() + "! because " + rand + " < " + divorceRate);
 				EventType divorce = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).newEvent(user, parentEvent);
 				divorce.setName("Divorce of " + person.getName() + " from " + partner.getName() + " (" + UUID.randomUUID().toString() + ")");
 				divorce.setEventType(EventEnumType.DESTABILIZE);
@@ -1422,11 +1363,7 @@ public class DataGeneratorUtil {
 				if(id.matches("^\\d{8}$")){
 					words.add(record.get(4));
 				}
-				else{
-					//logger.debug(id);
-				}
 			}
-			//logger.info("Imported: " + words.size() + " in " + (System.currentTimeMillis() - start) + "ms");
 		}
 		catch(IOException e){
 			logger.error(e.getMessage());

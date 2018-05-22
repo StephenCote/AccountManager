@@ -424,7 +424,7 @@ public class VaultService
 		setVaultKeyPath(vault);
 		String vaultKeyPath = getVaultKeyPath(vault);
 		File vaultFile = new File(vaultKeyPath);
-		if (vaultFile.exists() == true){
+		if (vaultFile.exists()){
 			logger.error("Vault Key Path already exists: " + vault.getVaultKeyPath());
 			return false;
 		}
@@ -900,7 +900,7 @@ public class VaultService
 	}
 	
 	private SecurityBean getVaultCipher(VaultBean vault, String keyId) throws FactoryException, ArgumentException, DataException{
-		if(vault.getSymmetricKeyMap().containsKey(keyId) == true){
+		if(vault.getSymmetricKeyMap().containsKey(keyId)){
 			return vault.getSymmetricKeyMap().get(keyId);
 		}
 

@@ -27,8 +27,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseParticipantType;
@@ -255,13 +253,11 @@ public class Factories extends org.cote.accountmanager.data.Factories {
 
 	public static boolean cleanupOrphans(){
 		
-		boolean outBool = false;
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		Statement stat = null;
 		try {
 			stat = connection.createStatement();
 			stat.executeQuery("SELECT * FROM cleanup_rocket_orphans();");
-			outBool = true;
 		} catch (SQLException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);

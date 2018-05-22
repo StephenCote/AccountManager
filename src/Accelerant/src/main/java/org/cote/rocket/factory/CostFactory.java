@@ -68,7 +68,7 @@ public class CostFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		CostType cost = (CostType)obj;
-		if(cost.getPopulated() == true) return;
+		if(cost.getPopulated()) return;
 		cost.setPopulated(true);
 		updateToCache(cost);
 	}

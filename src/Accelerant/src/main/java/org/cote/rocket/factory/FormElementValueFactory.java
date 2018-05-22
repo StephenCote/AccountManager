@@ -76,7 +76,7 @@ public class FormElementValueFactory extends NameIdFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		FormElementValueType formElementValue = (FormElementValueType)obj;
-		if(formElementValue.getPopulated() == true) return;
+		if(formElementValue.getPopulated()) return;
 		formElementValue.setPopulated(true);
 		updateToCache(formElementValue);
 	}
@@ -107,7 +107,7 @@ public class FormElementValueFactory extends NameIdFactory {
 			row.setCellValue("formelementid", obj.getFormElementId());
 			row.setCellValue("isbinary", obj.getIsBinary());
 			if(obj.getIsBinary() == false && obj.getTextValue() != null) row.setCellValue("textvalue", obj.getTextValue());
-			if(obj.getIsBinary() == true){
+			if(obj.getIsBinary()){
 				row.setCellValue("binaryvalueid", obj.getBinaryId());
 			}
 

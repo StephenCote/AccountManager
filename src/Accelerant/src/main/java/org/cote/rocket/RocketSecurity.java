@@ -58,14 +58,25 @@ import org.cote.rocket.factory.ProjectFactory;
 
 /*
  * 2017/10/16 - AUTHORIZATION NOTE
- * TODO: Community authorization for lifecycles will get bridged to direct authorization checks due to the Policy Extension being applied on initial setup
+ * Community authorization for lifecycles will get bridged to direct authorization checks due to the Policy Extension being applied on initial setup
  * This means that authorization checks targeting the lifecycle itself versus its containment group will fail for anyone other than the owner because the authorization was not set
  */
 
 public class RocketSecurity {
+	
+	public static final String ROLE_ADMIN = "AdminRole";
+	public static final String ROLE_USER = "UserRole";
+	public static final String ROLE_AUDIT = "AuditRole";
+	public static final String ROLE_MANAGER = "ManagerRole";
+	public static final String ROLE_ARCHITECT = "ArchitectRole";
+	public static final String ROLE_TESTER = "TesterRole";
+	public static final String ROLE_DEVELOPER = "DeveloperRole";
+	public static final String ROLE_AUTHOR = "AuthorRole";
+	public static final String ROLE_EDITOR = "EditorRole";
 	public static final Logger logger = LogManager.getLogger(RocketSecurity.class);
 	private static String[] containerPermissions = new String[]{};
-	private static String[] containerRoles = new String[]{"AdminRole","UserRole","AuditRole","ManagerRole","TesterRole","ArchitectRole","DeveloperRole","AuthorRole","EditorRole"};
+	private static String[] containerRoles = new String[]{ROLE_ADMIN,ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_ARCHITECT,ROLE_DEVELOPER,ROLE_AUTHOR,ROLE_EDITOR};
+
 	/// "Projects" is intentionally left out because this list appears at both the lifecycle and project level
 	///
 	private static String[] directoryGroups = new String[]{"Schedules","Goals","Budgets",
@@ -84,9 +95,8 @@ public class RocketSecurity {
 			UserRoleType rt = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).newUserRole(adminUser, containerRoles[i], parentRole);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId,FactoryEnumType.ROLE, rt);
 		}
-
-		
-	}	
+	}
+	
 	protected static void setupBulkContainerPermissions(String sessionId, UserType adminUser, BasePermissionType parentPermission) throws ArgumentException, FactoryException{
 		for(int i = 0; i < containerPermissions.length; i++){
 			BasePermissionType rt = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).newPermission(adminUser, containerPermissions[i], PermissionEnumType.USER,parentPermission,parentPermission.getOrganizationId());
@@ -109,9 +119,9 @@ public class RocketSecurity {
 
 	protected static <T> void setupRolesToReadContainer(UserType adminUser, UserRoleType parentRole, String[] roles, T bucket) throws FactoryException, DataAccessException, ArgumentException{
 		BasePermissionType[] bpt = new BasePermissionType[]{
-				AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP,parentRole.getOrganizationId()),
-				
+			AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP,parentRole.getOrganizationId()),
 		};
+
 		for(int i = 0; i < roles.length;i++){
 			BaseRoleType role = getRole(roles[i], parentRole, parentRole.getOrganizationId());
 			if(role == null) throw new FactoryException("Role '" + roles[i] + "' in parentRole '" + parentRole.getName() + " #(" + parentRole.getId() + ") is null");
@@ -122,8 +132,8 @@ public class RocketSecurity {
 			}
 		}
 	}
+	
 	protected static <T> void setupRolesToEditContainer(UserType adminUser, UserRoleType parentRole, String[] roles, T bucket) throws FactoryException, DataAccessException, ArgumentException{
-
 		BasePermissionType[] bpt = new BasePermissionType[]{
 				AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP, parentRole.getOrganizationId()),
 				AuthorizationService.getEditPermissionForMapType(NameEnumType.GROUP, parentRole.getOrganizationId()),
@@ -137,12 +147,11 @@ public class RocketSecurity {
 				BaseParticipantType bp = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newRoleGroupParticipation((BaseGroupType)bucket, role, bpt[p], AffectEnumType.GRANT_PERMISSION);
 				((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(bp);
 			}
-
 		}
 	}
+	
 	public static DirectoryGroupType getCreateProjectDirectory(UserType user, LifecycleType lc, String name) throws FactoryException,ArgumentException
 	{
-
 		DirectoryGroupType dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA,Rocket.getBasePath() + "/Lifecycles/" + lc.getName() + "/Projects", user.getOrganizationId());
 		if(dir == null) return null;
 		DirectoryGroupType pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, name, dir, user.getOrganizationId());
@@ -164,7 +173,7 @@ public class RocketSecurity {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return null;
+		return dir;
 	}
 	public static DirectoryGroupType getProjectDirectory(UserType user, ProjectType proj, String name){
 		DirectoryGroupType dir = null;
@@ -190,44 +199,39 @@ public class RocketSecurity {
 		 * Directory Base: [org]/[lc-name]/Projects/[proj-name]
 		 */
 	
-				try{
-					if(setupBulkProjectRoles(sessionId,proj, adminUser) == true){
-					
-						DirectoryGroupType pjDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(),proj.getOrganizationId());
-						DirectoryGroupType dir = pjDir;
-						UserRoleType bRole = getProjectRoleBucket(proj);
-						UserRoleType lRole = getLifecycleRoleBucket(lc);
-						UserRoleType rRole = getRocketRoles(lc.getOrganizationId());
+		try{
+			setupBulkProjectRoles(sessionId,proj, adminUser);
+			
+			DirectoryGroupType pjDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(),proj.getOrganizationId());
+			DirectoryGroupType dir = pjDir;
+			UserRoleType bRole = getProjectRoleBucket(proj);
+			UserRoleType lRole = getLifecycleRoleBucket(lc);
+			UserRoleType rRole = getRocketRoles(lc.getOrganizationId());
 
-						setupRolesToReadContainer(adminUser,rRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-						setupRolesToEditContainer(adminUser,rRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-						
-						setupRolesToReadContainer(adminUser,bRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-						setupRolesToEditContainer(adminUser,bRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-				
-						setupRolesToReadContainer(adminUser,lRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","ArchitectRole","DeveloperRole","AuthorRole","EditorRole"},dir);
-						setupRolesToEditContainer(adminUser,lRole,new String[]{"AdminRole"},dir);
-						
-						
-						/// Because the bulk operation in this implementation directly manipulates the participation table, it's necessary to tell the authorizaton service that it needs to update the related object
-						///
-						EffectiveAuthorizationService.pendGroupUpdate(dir);
-						
-						for(int i = 0; i < directoryGroups.length; i++){
-								dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(adminUser, directoryGroups[i], pjDir, proj.getOrganizationId());
-								BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, dir);
-								applyRolesToProjectDirectory(adminUser,rRole, lRole, bRole,dir);
-							
-						}
-					} // end if
-				} // end try
-				catch(ArgumentException | DataAccessException | FactoryException e) {
-					
-					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-				}
-
-				
-				outBool = true;
+			setupRolesToReadContainer(adminUser,rRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
+			setupRolesToEditContainer(adminUser,rRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+			
+			setupRolesToReadContainer(adminUser,bRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
+			setupRolesToEditContainer(adminUser,bRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+	
+			setupRolesToReadContainer(adminUser,lRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_ARCHITECT,ROLE_DEVELOPER,ROLE_AUTHOR,ROLE_EDITOR},dir);
+			setupRolesToEditContainer(adminUser,lRole,new String[]{ROLE_ADMIN},dir);
+			
+			
+			/// Because the bulk operation in this implementation directly manipulates the participation table, it's necessary to tell the authorizaton service that it needs to update the related object
+			///
+			EffectiveAuthorizationService.pendGroupUpdate(dir);
+			
+			for(int i = 0; i < directoryGroups.length; i++){
+					dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(adminUser, directoryGroups[i], pjDir, proj.getOrganizationId());
+					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, dir);
+					applyRolesToProjectDirectory(adminUser,rRole, lRole, bRole,dir);
+			}
+			outBool = true;
+		} // end try
+		catch(ArgumentException | DataAccessException | FactoryException e) {
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
 
 		return outBool;
 	}
@@ -239,250 +243,159 @@ public class RocketSecurity {
 		RocketSecurity.applyRolesToProjectDirectory(null, rRole, lRole, bRole, dir);
 	}
 	public static void applyRolesToProjectDirectory(UserType adminUser, UserRoleType rocketRole, UserRoleType lifecycleRole, UserRoleType projectRole, BaseGroupType dir) throws FactoryException, DataAccessException, ArgumentException{
-		setupRolesToReadContainer(adminUser,rocketRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-		setupRolesToEditContainer(adminUser,rocketRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-		setupRolesToReadContainer(adminUser,projectRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-		setupRolesToEditContainer(adminUser,projectRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-		setupRolesToReadContainer(adminUser,lifecycleRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-		setupRolesToEditContainer(adminUser,lifecycleRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
+		setupRolesToReadContainer(adminUser,rocketRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
+		setupRolesToEditContainer(adminUser,rocketRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+		setupRolesToReadContainer(adminUser,projectRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
+		setupRolesToEditContainer(adminUser,projectRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+		setupRolesToReadContainer(adminUser,lifecycleRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
+		setupRolesToEditContainer(adminUser,lifecycleRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
 		EffectiveAuthorizationService.pendGroupUpdate(dir);
 	}
 	
 	public static boolean setupBulkLifecycleStructure(String sessionId, LifecycleType lc, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
-		boolean outBool = false;
+
 		/*
 		 * Lifecycle Structure:
 		 * Directory Base: [org]/lc-name/
 		 */
-
-				if(setupBulkLifecycleRoles(sessionId, lc, adminUser) == true){
-					DirectoryGroupType lcDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(),lc.getOrganizationId());
-					DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(adminUser, "Projects", lcDir, lc.getOrganizationId());
-					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, dir);
-					UserRoleType rRole = getRocketRoles(lc.getOrganizationId());
-					UserRoleType bRole = getLifecycleRoleBucket(lc);
-
-					/// apply Rocket-level roles on lifecycle directory
-					setupRolesToReadContainer(adminUser,rRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},lcDir);
-					setupRolesToEditContainer(adminUser,rRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},lcDir);
-
-					/// apply Lifecycle-level roles on lifecycle directory
-					setupRolesToReadContainer(adminUser,bRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},lcDir);
-					setupRolesToEditContainer(adminUser,bRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},lcDir);
-
-					/// Because the bulk operation in this implementation directly manipulates the participation table, it's necessary to tell the authorizaton service that it needs to update the related object
-					///
-					EffectiveAuthorizationService.pendGroupUpdate(lcDir);
-					
-					/// apply rocket-level roles on project directory
-					setupRolesToReadContainer(adminUser,rRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-					setupRolesToEditContainer(adminUser,rRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-					
-					/// apply lifecycle-level roles on project directory
-					setupRolesToReadContainer(adminUser,bRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-					setupRolesToEditContainer(adminUser,bRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-
-					EffectiveAuthorizationService.pendGroupUpdate(dir);
-
-					for(int i = 0; i < directoryGroups.length; i++){
-							dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(adminUser, directoryGroups[i], lcDir, lc.getOrganizationId());
-							BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, dir);
-							setupRolesToReadContainer(adminUser,rRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-							setupRolesToEditContainer(adminUser,rRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-							setupRolesToReadContainer(adminUser,bRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-							setupRolesToEditContainer(adminUser,bRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-							EffectiveAuthorizationService.pendGroupUpdate(dir);
-					}
-				} /// end if roles setup
-
-				outBool = true;
-
-		return outBool;
-	}
-	public static boolean setupLifecycleStructure(LifecycleType lc, UserType adminUser){
-		boolean outBool = false;
-		/*
-		 * Lifecycle Structure:
-		 * Directory Base: [org]/lc-name/
-		 */
-		try{
-			synchronized(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION))){
-				synchronized(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION))){
-					DataTable dt1 = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getDataTables().get(0);
-					DataTable dt2 = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getDataTables().get(0);
-					dt1.setBulkInsert(true);
-					dt2.setBulkInsert(true);
-					
-					if(setupLifecycleRoles(lc, adminUser) == true){
-						DirectoryGroupType lcDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(),lc.getOrganizationId());
-						DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Projects", lcDir, lc.getOrganizationId());
-						UserRoleType bRole = getLifecycleRoleBucket(lc);
-						/// setup roles on lifecycle directory
-						setupRolesToReadContainer(adminUser,bRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},lcDir);
-						setupRolesToEditContainer(adminUser,bRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},lcDir);
-						/// setup roles on project directory
-						setupRolesToReadContainer(adminUser,bRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-						setupRolesToEditContainer(adminUser,bRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-
-
-						for(int i = 0; i < directoryGroups.length; i++){
-								dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, directoryGroups[i], lcDir, lc.getOrganizationId());
-								setupRolesToReadContainer(adminUser,bRole,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},dir);
-								setupRolesToEditContainer(adminUser,bRole,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},dir);
-						}
-					} /// end if roles setup
-				
-					((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).writeSpool(dt1.getName());
-					((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).writeSpool(dt2.getName());
-					dt1.setBulkInsert(false);
-					dt2.setBulkInsert(false);
-					outBool = true;
-				} /// end sync
-			} /// end sync
+		if(adminUser == null){
+			logger.error("Null admin user");
+			return false;
 		}
-		catch(ArgumentException | DataAccessException | FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		setupBulkLifecycleRoles(sessionId, lc, adminUser);
+		DirectoryGroupType lcDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(),lc.getOrganizationId());
+		DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(adminUser, "Projects", lcDir, lc.getOrganizationId());
+		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, dir);
+		UserRoleType rRole = getRocketRoles(lc.getOrganizationId());
+		UserRoleType bRole = getLifecycleRoleBucket(lc);
+
+		if(rRole == null){
+			logger.error("Null base role");
+			return false;
 		}
-		return outBool;
+		if(bRole == null){
+			logger.error("Null lifecycle role");
+			return false;
+		}
+		/// apply Rocket-level roles on lifecycle directory
+		setupRolesToReadContainer(adminUser,rRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},lcDir);
+		setupRolesToEditContainer(adminUser,rRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},lcDir);
+
+		/// apply Lifecycle-level roles on lifecycle directory
+		setupRolesToReadContainer(adminUser,bRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},lcDir);
+		setupRolesToEditContainer(adminUser,bRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},lcDir);
+
+		/// Because the bulk operation in this implementation directly manipulates the participation table, it's necessary to tell the authorizaton service that it needs to update the related object
+		///
+		EffectiveAuthorizationService.pendGroupUpdate(lcDir);
+		
+		/// apply rocket-level roles on project directory
+		setupRolesToReadContainer(adminUser,rRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
+		setupRolesToEditContainer(adminUser,rRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+		
+		/// apply lifecycle-level roles on project directory
+		setupRolesToReadContainer(adminUser,bRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
+		setupRolesToEditContainer(adminUser,bRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+
+		EffectiveAuthorizationService.pendGroupUpdate(dir);
+
+		for(int i = 0; i < directoryGroups.length; i++){
+				dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(adminUser, directoryGroups[i], lcDir, lc.getOrganizationId());
+				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, dir);
+				setupRolesToReadContainer(adminUser,rRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
+				setupRolesToEditContainer(adminUser,rRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+				setupRolesToReadContainer(adminUser,bRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
+				setupRolesToEditContainer(adminUser,bRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+				EffectiveAuthorizationService.pendGroupUpdate(dir);
+		}
+
+		return true;
 	}
-	private static boolean setupBulkProjectRoles(String sessionId,ProjectType proj, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
-		boolean outBool = false;
+	
+	private static void setupBulkProjectRoles(String sessionId,ProjectType proj, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
 		if(proj == null) throw new ArgumentException("Invalid project");
-		//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(proj.getGroupId());
 		((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).denormalize(proj);
 		BasePermissionType projectBucketPermission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).makePath(adminUser, PermissionEnumType.USER, proj.getGroupPath(),proj.getOrganizationId());
-				//((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).newPermission(adminUser, "ProjectPermissions-" + proj.getObjectId(), PermissionEnumType.USER,getProjectsPermissionBucket(proj.getOrganizationId()),proj.getOrganizationId());
-		//BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERMISSION, projectBucketPermission);
-
 		UserRoleType projectBucketRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).makePath(adminUser, RoleEnumType.USER, proj.getGroupPath(),proj.getOrganizationId());
-			//((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).newUserRole(adminUser, "ProjectRoles-" + proj.getObjectId(), getProjectsRoleBucket(proj.getOrganizationId()));
-		//BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ROLE, projectBucketRole);
 		setupBulkContainerPermissions(sessionId,adminUser,projectBucketPermission);
 		setupBulkContainerRoles(sessionId,adminUser, projectBucketRole);
 		if(RoleService.addUserToRole(adminUser, getProjectAdminRole(proj)) == false){
 			throw new FactoryException("Failed to assign admin user '" + adminUser.getName() + "' to Project Admin Role");
 		}
-		outBool = true;
-		return outBool;
 	}
 
-	private static boolean setupProjectRoles(ProjectType proj, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
-		boolean outBool = false;
-		if(proj == null || proj.getId().compareTo(0L)==0) throw new ArgumentException("Invalid project");
-		//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(proj.getGroupId());
-		((ProjectFactory)Factories.getFactory(FactoryEnumType.PROJECT)).denormalize(proj);
-		BasePermissionType projectBucketPermission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).makePath(adminUser, PermissionEnumType.USER, proj.getGroupPath(),proj.getOrganizationId());
-				//((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getCreatePermission(adminUser, "ProjectPermissions-" + proj.getObjectId(), PermissionEnumType.USER,getProjectsPermissionBucket(proj.getOrganizationId()),proj.getOrganizationId());
-		UserRoleType projectBucketRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).makePath(adminUser, RoleEnumType.USER, proj.getGroupPath(),proj.getOrganizationId());
-				//((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateUserRole(adminUser, "ProjectRoles-" + proj.getObjectId(), getProjectsRoleBucket(proj.getOrganizationId()));
-		setupContainerPermissions(adminUser,projectBucketPermission);
-		setupContainerRoles(adminUser, projectBucketRole);
-		RoleService.addUserToRole(adminUser, getProjectAdminRole(proj));
-		outBool = true;
-		return outBool;
-	}
-	private static boolean setupBulkLifecycleRoles(String sessionId, LifecycleType lc, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
-		boolean outBool = false;
+	private static void setupBulkLifecycleRoles(String sessionId, LifecycleType lc, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
+
 		if(adminUser == null || adminUser.getId().compareTo(0L)==0) throw new ArgumentException("Invalid admin user");
 		if(lc == null || lc.getGroupId().compareTo(0L) == 0 || lc.getOrganizationId().compareTo(0L) == 0) throw new ArgumentException("Invalid lifecycle");
 		
-		//((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(),lc.getOrganizationId()));
 		((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).denormalize(lc);
 		
 		BasePermissionType lifecycleBucketPermission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).makePath(adminUser, PermissionEnumType.USER, lc.getGroupPath(),lc.getOrganizationId()); 
-				//((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).newPermission(adminUser, "LifecyclePermissions-" + lc.getObjectId(), PermissionEnumType.USER,getLifecyclesPermissionBucket(lc.getOrganizationId()),lc.getOrganizationId());
-		//BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERMISSION, lifecycleBucketPermission);
-
 		UserRoleType lifecycleBucketRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).makePath(adminUser, RoleEnumType.USER, lc.getGroupPath(),lc.getOrganizationId());
-				//((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).newUserRole(adminUser, "LifecycleRoles-" + lc.getObjectId(), getLifecyclesRoleBucket(lc.getOrganizationId()));
-		//BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ROLE, lifecycleBucketRole);
 		setupBulkContainerPermissions(sessionId,adminUser,lifecycleBucketPermission);
 		setupBulkContainerRoles(sessionId, adminUser, lifecycleBucketRole);
 		
-		//UserRoleType bRole = getLifecycleRoleBucket(lc);
-		//if(bRole == null) throw new ArgumentException("Bucket role is null");
-		
 		UserRoleType adminRole = getLifecycleAdminRole(lc);
 		if(adminRole == null) throw new ArgumentException("Admin role is null for Lifecycle " + lc.getName() + " (#" + lc.getId() + ") in organization " + lc.getOrganizationId());
-		if(RoleService.addUserToRole(adminUser, adminRole) == false){
+		if(!RoleService.addUserToRole(adminUser, adminRole)){
 			throw new FactoryException("Failed to assign admin user '" + adminUser.getName() + "' to Lifecycle Admin Role");
 		}
-		outBool = true;
-		return outBool;
 	}	
-	private static boolean setupLifecycleRoles(LifecycleType lc, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
-		boolean outBool = false;
-		if(adminUser == null || adminUser.getId().compareTo(0L)==0) throw new ArgumentException("Invalid admin user");
-		if(lc == null || lc.getId().compareTo(0L)==0 || lc.getGroupId() == null || lc.getOrganizationId().compareTo(0L) == 0) throw new ArgumentException("Invalid lifecycle");
-		((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).denormalize(lc);
-		//BasePermissionType lifecycleBucketPermission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getCreatePermission(adminUser, "LifecyclePermissions-" + lc.getObjectId(), PermissionEnumType.USER,getLifecyclesPermissionBucket(lc.getOrganizationId()),lc.getOrganizationId());
-		//UserRoleType lifecycleBucketRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateUserRole(adminUser, "LifecycleRoles-" + lc.getObjectId(), getLifecyclesRoleBucket(lc.getOrganizationId()));
-		BasePermissionType lifecycleBucketPermission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).makePath(adminUser, PermissionEnumType.USER, lc.getGroupPath(),lc.getOrganizationId());
-		UserRoleType lifecycleBucketRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).makePath(adminUser, RoleEnumType.USER, lc.getGroupPath(),lc.getOrganizationId());
-		setupContainerPermissions(adminUser,lifecycleBucketPermission);
-		setupContainerRoles(adminUser, lifecycleBucketRole);
-		UserRoleType bRole = getLifecycleRoleBucket(lc);
-		if(bRole == null) throw new ArgumentException("Bucket role is null");
-		UserRoleType adminRole = getLifecycleAdminRole(lc);
-		if(adminRole == null) throw new ArgumentException("Admin role is null for Lifecycle " + lc.getName() + " (#" + lc.getId() + ") in organization " + lc.getOrganizationId());
-		RoleService.addUserToRole(adminUser, adminRole);
-		outBool = true;
-		return outBool;
-	}
+	
 	public static UserRoleType getProjectAdminRole(ProjectType lc){
-		return getProjectRoleByName(lc,"AdminRole");
+		return getProjectRoleByName(lc,ROLE_ADMIN);
 	}
 	public static UserRoleType getProjectUserRole(ProjectType lc){
-		return getProjectRoleByName(lc,"UserRole");
+		return getProjectRoleByName(lc,ROLE_USER);
 	}
 	public static UserRoleType getProjectAuditRole(ProjectType lc){
-		return getProjectRoleByName(lc,"AuditRole");
+		return getProjectRoleByName(lc,ROLE_AUDIT);
 	}
 	public static UserRoleType getProjectManagerRole(ProjectType lc){
-		return getProjectRoleByName(lc,"ManagerRole");
+		return getProjectRoleByName(lc,ROLE_MANAGER);
 	}
 	public static UserRoleType getProjectTesterRole(ProjectType lc){
-		return getProjectRoleByName(lc,"TesterRole");
+		return getProjectRoleByName(lc,ROLE_TESTER);
 	}
 	public static UserRoleType getProjectArchitectRole(ProjectType lc){
-		return getProjectRoleByName(lc,"ArchitectRole");
+		return getProjectRoleByName(lc,ROLE_ARCHITECT);
 	}
 	public static UserRoleType getProjectDeveloperRole(ProjectType lc){
-		return getProjectRoleByName(lc,"DeveloperRole");
+		return getProjectRoleByName(lc,ROLE_DEVELOPER);
 	}
 	public static UserRoleType getProjectAuthorRole(ProjectType lc){
-		return getProjectRoleByName(lc,"AuthorRole");
+		return getProjectRoleByName(lc,ROLE_AUTHOR);
 	}
 	public static UserRoleType getProjectEditorRole(ProjectType lc){
-		return getProjectRoleByName(lc,"EditorRole");
+		return getProjectRoleByName(lc,ROLE_EDITOR);
 	}
 	public static UserRoleType getLifecycleAdminRole(LifecycleType lc){
-		return getLifecycleRoleByName(lc,"AdminRole");
+		return getLifecycleRoleByName(lc,ROLE_ADMIN);
 	}
 	public static UserRoleType getLifecycleUserRole(LifecycleType lc){
-		return getLifecycleRoleByName(lc,"UserRole");
+		return getLifecycleRoleByName(lc,ROLE_USER);
 	}
 	public static UserRoleType getLifecycleAuditRole(LifecycleType lc){
-		return getLifecycleRoleByName(lc,"AuditRole");
+		return getLifecycleRoleByName(lc,ROLE_AUDIT);
 	}
 	public static UserRoleType getLifecycleManagerRole(LifecycleType lc){
-		return getLifecycleRoleByName(lc,"ManagerRole");
+		return getLifecycleRoleByName(lc,ROLE_MANAGER);
 	}
 	public static UserRoleType getLifecycleTesterRole(LifecycleType lc){
-		return getLifecycleRoleByName(lc,"TesterRole");
+		return getLifecycleRoleByName(lc,ROLE_TESTER);
 	}
 	public static UserRoleType getLifecycleArchitectRole(LifecycleType lc){
-		return getLifecycleRoleByName(lc,"ArchitectRole");
+		return getLifecycleRoleByName(lc,ROLE_ARCHITECT);
 	}
 	public static UserRoleType getLifecycleDeveloperRole(LifecycleType lc){
-		return getLifecycleRoleByName(lc,"DeveloperRole");
+		return getLifecycleRoleByName(lc,ROLE_DEVELOPER);
 	}
 	public static UserRoleType getLifecycleAuthorRole(LifecycleType lc){
-		return getLifecycleRoleByName(lc,"AuthorRole");
+		return getLifecycleRoleByName(lc,ROLE_AUTHOR);
 	}
 	public static UserRoleType getLifecycleEditorRole(LifecycleType lc){
-		return getLifecycleRoleByName(lc,"EditorRole");
+		return getLifecycleRoleByName(lc,ROLE_EDITOR);
 	}
 	public static UserRoleType getLifecycleRoleBucket(LifecycleType lc){
 		return getRoleByGroup(null,lc.getGroupId(),lc.getOrganizationId());
@@ -491,13 +404,10 @@ public class RocketSecurity {
 		return getPermissionByGroup(null,lc.getGroupId(),lc.getOrganizationId());
 	}
 	public static UserRoleType getProjectRoleBucket(ProjectType proj){
-		//return getRole("ProjectRoles-" + proj.getObjectId(),getProjectsRoleBucket(proj.getOrganizationId()), proj.getOrganizationId());
 		return getRoleByGroup(null,proj.getGroupId(),proj.getOrganizationId());
 	}
 	public static UserPermissionType getProjectPermissionBucket(ProjectType proj){
 		return getPermissionByGroup(null,proj.getGroupId(),proj.getOrganizationId());
-		//return ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).findPermission(PermissionEnumType.USER, pathBase, organizationId)
-		//return getPermission("ProjectPermissions-" + proj.getObjectId(),getProjectsPermissionBucket(proj.getOrganizationId()), proj.getOrganizationId());
 	}
 	public static UserRoleType getLifecycleRoleByName(LifecycleType lc, String name){
 		return getRoleByGroup(name,lc.getGroupId(),lc.getOrganizationId());
@@ -511,14 +421,7 @@ public class RocketSecurity {
 	public static UserPermissionType getProjectPermissionByName(ProjectType proj, String name){
 		return getPermissionByGroup(name,proj.getGroupId(),proj.getOrganizationId());
 	}
-	/*
-	private static UserRoleType getProjectsRoleBucket(long organizationId){
-		return getRole("ProjectRoles", getRocketRoles(organizationId), organizationId);
-	}
-	private static UserPermissionType getProjectsPermissionBucket(long organizationId){
-		return getPermission("ProjectPermissions", getRocketPermissions(organizationId), organizationId);
-	}
-	*/
+	
 	private static UserRoleType getLifecyclesRoleBucket(long organizationId){
 		return getRoleByGroup("Lifecycles", Rocket.getRocketApplicationGroup(organizationId).getId(), organizationId);
 	}
@@ -528,13 +431,13 @@ public class RocketSecurity {
 	}
 	
 	public static UserRoleType getAdminRole(long organizationId){
-		return getRoleByGroup("AdminRole", Rocket.getRocketApplicationGroup(organizationId).getId(), organizationId);
+		return getRoleByGroup(ROLE_ADMIN, Rocket.getRocketApplicationGroup(organizationId).getId(), organizationId);
 	}
 	public static UserRoleType getUserRole(long organizationId){
-		return getRoleByGroup("UserRole", Rocket.getRocketApplicationGroup(organizationId).getId(), organizationId);
+		return getRoleByGroup(ROLE_USER, Rocket.getRocketApplicationGroup(organizationId).getId(), organizationId);
 	}
 	public static UserRoleType getAuditRole(long organizationId){
-		return getRoleByGroup("AuditRole", Rocket.getRocketApplicationGroup(organizationId).getId(), organizationId);
+		return getRoleByGroup(ROLE_AUDIT, Rocket.getRocketApplicationGroup(organizationId).getId(), organizationId);
 	}
 	
 	public static UserRoleType getRocketRoles(long organizationId){
@@ -551,13 +454,7 @@ public class RocketSecurity {
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(parent);
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(parent);
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).findRole(RoleEnumType.USER,  parent.getPath() + (name != null ? "/" + name : ""), organizationId);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (DataAccessException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -568,15 +465,13 @@ public class RocketSecurity {
 		try {
 			
 			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName(name,parent,RoleEnumType.USER,  organizationId);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return role;
 	}
+	
 	private static UserPermissionType getPermissionByGroup(String name, long parentId, long organizationId){
 		UserPermissionType permission = null;
 		try {
@@ -584,107 +479,68 @@ public class RocketSecurity {
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(parent);
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(parent);
 			permission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).findPermission(PermissionEnumType.USER, parent.getPath() + (name != null ? "/" + name : ""), organizationId);
-			//permission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName(name, PermissionEnumType.USER,parent,organizationId);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (DataAccessException e) {
-			
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return permission;
 	}
-	private static UserPermissionType getPermission(String name, BasePermissionType parent, long organizationId){
-		UserPermissionType permission = null;
-		try {
-			
-			permission = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName(name,PermissionEnumType.USER, parent, organizationId);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		return permission;
-	}
+	
 	public static boolean canCreateProject(UserType user,LifecycleType lc){
 		boolean outBool = false;
 		try {
 			outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (FactoryException e) {
+		} catch (ArgumentException | FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
 	}	
+	
 	public static boolean canCreateLifecycle(UserType user){
 		boolean outBool = false;
 		try {
 			outBool = AuthorizationService.canChange(user,Rocket.getLifecycleGroup(user.getOrganizationId()));
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (FactoryException e) {
-			
+		} catch (ArgumentException | FactoryException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
 	}
+
 	public static boolean canChangeLifecycle(UserType user,LifecycleType lc){
 		boolean outBool = false;
 		try {
 			outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (FactoryException e) {
-			
+		} catch (ArgumentException | FactoryException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
 	}
+	
 	public static boolean canReadLifecycle(UserType user,LifecycleType lc){
 		boolean outBool = false;
 		try {
 			outBool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (FactoryException e) {
-			
+		} catch (ArgumentException | FactoryException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
 	}
+	
 	public static boolean canChangeProject(UserType user, ProjectType proj){
 		boolean outBool = false;
 		try {
 			outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(), proj.getOrganizationId()));
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (FactoryException e) {
-			
+		} catch (ArgumentException | FactoryException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
 	}
+	
 	public static boolean canReadProject(UserType user, ProjectType proj){
 		boolean outBool = false;
 		try {
 			outBool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(proj.getGroupId(),proj.getOrganizationId()));
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (FactoryException e) {
-			
+		} catch (ArgumentException | FactoryException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return outBool;
