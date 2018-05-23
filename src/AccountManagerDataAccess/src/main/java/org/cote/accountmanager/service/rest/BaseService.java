@@ -189,6 +189,7 @@ public class BaseService {
 		}
 		return outBool;
 	}
+	
 	private static <T> boolean updateObject(AuditEnumType type, UserType user, T inObj) throws FactoryException, ArgumentException {
 		boolean outBool = false;
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
@@ -211,6 +212,7 @@ public class BaseService {
 
 		return outBool;		
 	}
+	
 	private static <T> boolean deleteObject(AuditEnumType type, T inObj) throws ArgumentException, FactoryException{
 		boolean outBool = false;
 		if(enableExtendedAttributes){

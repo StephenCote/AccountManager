@@ -225,11 +225,8 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 				new_participant = new ValidationRuleParticipantType();
 				break;
 			default:
-				//throw new ArgumentException("Invalid participant type: '" + type.toString() + "'");
 				new_participant = super.newParticipant(type);
 				break;
-				//new_participant = new BaseParticipantType();
-				//break;
 		}
 		new_participant.setParticipantType(type);
 		return new_participant;
@@ -817,7 +814,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 	}
 	
 	public List<ArtifactType> getDependenciesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ArtifactType> items = new ArrayList<ArtifactType>();
+		List<ArtifactType> items = new ArrayList<>();
 		try{
 			ArtifactParticipantType[] parts = getDependencyParticipations(participation).toArray(new ArtifactParticipantType[0]);
 			if(parts.length > 0){
@@ -831,7 +828,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}	
 	public List<ArtifactType> getArtifactsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ArtifactType> items = new ArrayList<ArtifactType>();
+		List<ArtifactType> items = new ArrayList<>();
 		try{
 			ArtifactParticipantType[] parts = getArtifactParticipations(participation).toArray(new ArtifactParticipantType[0]);
 			if(parts.length > 0){
@@ -845,7 +842,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<ValidationRuleType> getValidationRulesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ValidationRuleType> items = new ArrayList<ValidationRuleType>();
+		List<ValidationRuleType> items = new ArrayList<>();
 		try{
 			ValidationRuleParticipantType[] parts = getValidationRuleParticipations(participation).toArray(new ValidationRuleParticipantType[0]);
 			if(parts.length > 0){
@@ -859,7 +856,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<TicketType> getTicketsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<TicketType> items = new ArrayList<TicketType>();
+		List<TicketType> items = new ArrayList<>();
 		try{
 			TicketParticipantType[] parts = getTicketParticipations(participation).toArray(new TicketParticipantType[0]);
 			if(parts.length > 0){
@@ -889,7 +886,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 	}
 	
 	public List<TraitType> getEntryTraitsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<TraitType> items = new ArrayList<TraitType>();
+		List<TraitType> items = new ArrayList<>();
 		try{
 			EntryTraitParticipantType[] parts = getEntryTraitParticipations(participation).toArray(new EntryTraitParticipantType[0]);
 			if(parts.length > 0){
@@ -903,7 +900,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<TraitType> getExitTraitsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<TraitType> items = new ArrayList<TraitType>();
+		List<TraitType> items = new ArrayList<>();
 		try{
 			ExitTraitParticipantType[] parts = getExitTraitParticipations(participation).toArray(new ExitTraitParticipantType[0]);
 			if(parts.length > 0){
@@ -917,7 +914,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<BaseGroupType> getGroupsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<BaseGroupType> items = new ArrayList<BaseGroupType>();
+		List<BaseGroupType> items = new ArrayList<>();
 		try{
 			GroupParticipantType[] parts = getGroupParticipations(participation).toArray(new GroupParticipantType[0]);
 			if(parts.length > 0){
@@ -931,7 +928,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<PersonType> getActorsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<PersonType> items = new ArrayList<PersonType>();
+		List<PersonType> items = new ArrayList<>();
 		try{
 			ActorParticipantType[] parts = getActorParticipations(participation).toArray(new ActorParticipantType[0]);
 			if(parts.length > 0){
@@ -945,7 +942,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<PersonType> getObserversFromParticipation(NameIdType participation) throws ArgumentException{
-		List<PersonType> items = new ArrayList<PersonType>();
+		List<PersonType> items = new ArrayList<>();
 		try{
 			ObserverParticipantType[] parts = getObserverParticipations(participation).toArray(new ObserverParticipantType[0]);
 			if(parts.length > 0){
@@ -959,7 +956,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<PersonType> getInfluencersFromParticipation(NameIdType participation) throws ArgumentException{
-		List<PersonType> items = new ArrayList<PersonType>();
+		List<PersonType> items = new ArrayList<>();
 		try{
 			InfluencerParticipantType[] parts = getInfluencerParticipations(participation).toArray(new InfluencerParticipantType[0]);
 			if(parts.length > 0){
@@ -973,7 +970,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<PersonType> getOrchestratorsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<PersonType> items = new ArrayList<PersonType>();
+		List<PersonType> items = new ArrayList<>();
 		try{
 			OrchestratorParticipantType[] parts = getOrchestratorParticipations(participation).toArray(new OrchestratorParticipantType[0]);
 			if(parts.length > 0){
@@ -989,7 +986,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 
 	
 	public List<LocationType> getBordersFromParticipation(NameIdType participation) throws ArgumentException{
-		List<LocationType> items = new ArrayList<LocationType>();
+		List<LocationType> items = new ArrayList<>();
 		try{
 			BorderParticipantType[] parts = getBorderParticipations(participation).toArray(new BorderParticipantType[0]);
 			if(parts.length > 0){
@@ -1003,7 +1000,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<LocationType> getBoundariesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<LocationType> items = new ArrayList<LocationType>();
+		List<LocationType> items = new ArrayList<>();
 		try{
 			BoundaryParticipantType[] parts = getBoundaryParticipations(participation).toArray(new BoundaryParticipantType[0]);
 			if(parts.length > 0){
@@ -1018,7 +1015,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 	}
 
 	public List<FormType> getFormsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<FormType> items = new ArrayList<FormType>();
+		List<FormType> items = new ArrayList<>();
 		try{
 			FormParticipantType[] parts = getFormParticipations(participation).toArray(new FormParticipantType[0]);
 			if(parts.length > 0){
@@ -1032,7 +1029,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<FormElementType> getFormElementsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<FormElementType> items = new ArrayList<FormElementType>();
+		List<FormElementType> items = new ArrayList<>();
 		try{
 			FormElementParticipantType[] parts = getFormElementParticipations(participation).toArray(new FormElementParticipantType[0]);
 			if(parts.length > 0){
@@ -1046,7 +1043,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<FormElementValueType> getFormElementValuesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<FormElementValueType> items = new ArrayList<FormElementValueType>();
+		List<FormElementValueType> items = new ArrayList<>();
 		try{
 			FormElementValueParticipantType[] parts = getFormElementValueParticipations(participation).toArray(new FormElementValueParticipantType[0]);
 			if(parts.length > 0){
@@ -1061,7 +1058,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 	}
 	
 	public List<StageType> getStagesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<StageType> items = new ArrayList<StageType>();
+		List<StageType> items = new ArrayList<>();
 		try{
 			StageParticipantType[] parts = getStageParticipations(participation).toArray(new StageParticipantType[0]);
 			if(parts.length > 0){
@@ -1075,7 +1072,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<ModuleType> getModulesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ModuleType> items = new ArrayList<ModuleType>();
+		List<ModuleType> items = new ArrayList<>();
 		try{
 			ModuleParticipantType[] parts = getModuleParticipations(participation).toArray(new ModuleParticipantType[0]);
 			if(parts.length > 0){
@@ -1089,7 +1086,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<RequirementType> getRequirementsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<RequirementType> items = new ArrayList<RequirementType>();
+		List<RequirementType> items = new ArrayList<>();
 		try{
 			RequirementParticipantType[] parts = getRequirementParticipations(participation).toArray(new RequirementParticipantType[0]);
 			if(parts.length > 0){
@@ -1103,7 +1100,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<ProcessStepType> getProcessStepsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ProcessStepType> items = new ArrayList<ProcessStepType>();
+		List<ProcessStepType> items = new ArrayList<>();
 		try{
 			ProcessStepParticipantType[] parts = getProcessStepParticipations(participation).toArray(new ProcessStepParticipantType[0]);
 			if(parts.length > 0){
@@ -1117,7 +1114,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<ProcessType> getProcessesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ProcessType> items = new ArrayList<ProcessType>();
+		List<ProcessType> items = new ArrayList<>();
 		try{
 			ProcessParticipantType[] parts = getProcessParticipations(participation).toArray(new ProcessParticipantType[0]);
 			if(parts.length > 0){
@@ -1131,7 +1128,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<WorkType> getWorkFromParticipation(NameIdType participation) throws ArgumentException{
-		List<WorkType> items = new ArrayList<WorkType>();
+		List<WorkType> items = new ArrayList<>();
 		try{
 			WorkParticipantType[] parts = getWorkParticipations(participation).toArray(new WorkParticipantType[0]);
 			if(parts.length > 0){
@@ -1145,7 +1142,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<NoteType> getNotesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<NoteType> items = new ArrayList<NoteType>();
+		List<NoteType> items = new ArrayList<>();
 		try{
 			NoteParticipantType[] parts = getNoteParticipations(participation).toArray(new NoteParticipantType[0]);
 			if(parts.length > 0){
@@ -1159,7 +1156,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<TaskType> getTasksFromParticipation(NameIdType participation) throws ArgumentException{
-		List<TaskType> items = new ArrayList<TaskType>();
+		List<TaskType> items = new ArrayList<>();
 		try{
 			TaskParticipantType[] parts = getTaskParticipations(participation).toArray(new TaskParticipantType[0]);
 			if(parts.length > 0){
@@ -1173,7 +1170,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<TimeType> getTimesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<TimeType> items = new ArrayList<TimeType>();
+		List<TimeType> items = new ArrayList<>();
 		try{
 			TimeParticipantType[] parts = getTimeParticipations(participation).toArray(new TimeParticipantType[0]);
 			if(parts.length > 0){
@@ -1187,7 +1184,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<CostType> getCostsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<CostType> items = new ArrayList<CostType>();
+		List<CostType> items = new ArrayList<>();
 		try{
 			CostParticipantType[] parts = getCostParticipations(participation).toArray(new CostParticipantType[0]);
 			if(parts.length > 0){
@@ -1201,7 +1198,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<CaseType> getCasesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<CaseType> items = new ArrayList<CaseType>();
+		List<CaseType> items = new ArrayList<>();
 		try{
 			CaseParticipantType[] parts = getCaseParticipations(participation).toArray(new CaseParticipantType[0]);
 			if(parts.length > 0){
@@ -1215,7 +1212,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<ModelType> getModelsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ModelType> items = new ArrayList<ModelType>();
+		List<ModelType> items = new ArrayList<>();
 		try{
 			ModelParticipantType[] parts = getModelParticipations(participation).toArray(new ModelParticipantType[0]);
 			if(parts.length > 0){
@@ -1229,7 +1226,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<ResourceType> getResourcesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ResourceType> items = new ArrayList<ResourceType>();
+		List<ResourceType> items = new ArrayList<>();
 		try{
 			ResourceParticipantType[] parts = getResourceParticipations(participation).toArray(new ResourceParticipantType[0]);
 			if(parts.length > 0){
@@ -1243,7 +1240,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<ScheduleType> getSchedulesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ScheduleType> items = new ArrayList<ScheduleType>();
+		List<ScheduleType> items = new ArrayList<>();
 		try{
 			ScheduleParticipantType[] parts = getScheduleParticipations(participation).toArray(new ScheduleParticipantType[0]);
 			if(parts.length > 0){
@@ -1257,7 +1254,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<BudgetType> getBudgetsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<BudgetType> items = new ArrayList<BudgetType>();
+		List<BudgetType> items = new ArrayList<>();
 		try{
 			BudgetParticipantType[] parts = getBudgetParticipations(participation).toArray(new BudgetParticipantType[0]);
 			if(parts.length > 0){
@@ -1271,7 +1268,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<GoalType> getGoalsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<GoalType> items = new ArrayList<GoalType>();
+		List<GoalType> items = new ArrayList<>();
 		try{
 			GoalParticipantType[] parts = getGoalParticipations(participation).toArray(new GoalParticipantType[0]);
 			if(parts.length > 0){
@@ -1285,7 +1282,7 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 		return items;
 	}
 	public List<ProjectType> getProjectsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<ProjectType> items = new ArrayList<ProjectType>();
+		List<ProjectType> items = new ArrayList<>();
 		try{
 			ProjectParticipantType[] parts = getProjectParticipations(participation).toArray(new ProjectParticipantType[0]);
 			if(parts.length > 0){

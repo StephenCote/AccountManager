@@ -1,4 +1,4 @@
--- create extension "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- select uuid_generate_v4();
 
 DROP TABLE IF EXISTS orgid CASCADE;

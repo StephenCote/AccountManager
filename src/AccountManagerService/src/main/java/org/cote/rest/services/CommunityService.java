@@ -25,7 +25,6 @@ package org.cote.rest.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;

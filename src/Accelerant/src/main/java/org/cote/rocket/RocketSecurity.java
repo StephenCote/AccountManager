@@ -27,12 +27,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
-import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
-import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
@@ -422,6 +420,7 @@ public class RocketSecurity {
 		return getPermissionByGroup(name,proj.getGroupId(),proj.getOrganizationId());
 	}
 	
+	/*
 	private static UserRoleType getLifecyclesRoleBucket(long organizationId){
 		return getRoleByGroup("Lifecycles", Rocket.getRocketApplicationGroup(organizationId).getId(), organizationId);
 	}
@@ -429,6 +428,7 @@ public class RocketSecurity {
 	private static UserPermissionType getLifecyclesPermissionBucket(long organizationId){
 		return getPermissionByGroup("Lifecycles", Rocket.getRocketApplicationGroup(organizationId).getId(), organizationId);
 	}
+	*/
 	
 	public static UserRoleType getAdminRole(long organizationId){
 		return getRoleByGroup(ROLE_ADMIN, Rocket.getRocketApplicationGroup(organizationId).getId(), organizationId);

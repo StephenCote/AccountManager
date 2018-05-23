@@ -199,15 +199,7 @@ public class ArtifactFactory extends NameIdGroupFactory {
 	}
 	public int deleteArtifactsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteArtifactsInGroup(DirectoryGroupType group)  throws FactoryException
 	{
@@ -215,8 +207,6 @@ public class ArtifactFactory extends NameIdGroupFactory {
 		// Need to get ids so as to delete participations as well
 		//
 		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
-		/// TODO: Delete participations
-		///
 		return deleteArtifactsByIds(ids, group.getOrganizationId());
 	}
 	

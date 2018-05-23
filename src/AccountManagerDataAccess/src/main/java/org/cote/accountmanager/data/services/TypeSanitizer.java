@@ -94,13 +94,52 @@ public class TypeSanitizer implements ITypeSanitizer{
 		return (type.equals(AuditEnumType.GROUP) && ((BaseGroupType)object).getGroupType().equals(GroupEnumType.DATA));
 	}
 	public <T> boolean useAlternateUpdate(AuditEnumType type, T object){
-		return false;
+		return (type.equals(AuditEnumType.DATA));
 	}
 	public <T> boolean useAlternateAdd(AuditEnumType type, T object){
 		return (type.equals(AuditEnumType.ACCOUNT) || type.equals(AuditEnumType.USER));
 	}
+	
+	private boolean updateVaultData(UserType user, DataType data) throws ArgumentException{
+		boolean outBool = false;
+		if(data.getVaulted() && data.getVaultId() != null){
+			data.setVaulted(false);
+			VaultBean vaultBean = vaultService.getVaultByUrn(user, data.getVaultId());
+			if(vaultBean == null) throw new ArgumentException("Vault '" + data.getVaultId() + "' does not exist");
+			try {
+				if(vaultBean.getActiveKeyId() == null) vaultService.newActiveKey(vaultBean);
+				vaultService.setVaultBytes(vaultBean, data, DataUtil.getValue(data));
+				outBool = true;
+			} catch (UnsupportedEncodingException | DataException | FactoryException e) {
+				logger.error(e);
+			}
+		}
+		return outBool;
+	}
+	
 	public <T> boolean update(AuditEnumType type, UserType owner, T object) throws FactoryException, ArgumentException{
-		return false;
+		boolean outBool = false;
+		switch(type){
+			case DATA:
+				INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
+				DataType data = (DataType)object;
+
+				if(data.getVaulted() && data.getVaultId() != null && !updateVaultData(owner,data)){
+					logger.error("Failed to encipher vault data");
+					return false;
+				}
+				if(data.getPointer()){
+					logger.error("Creating data pointers is forbidden for sanitized objects regardless of configuration");
+					return false;
+				}
+				outBool = iFact.update(data);
+				
+				break;
+			default:
+				logger.error("Unhandled type: " + type.toString());
+				break;
+		}
+		return outBool;
 	}
 	
 	/// 2017/09/14
@@ -371,6 +410,7 @@ public class TypeSanitizer implements ITypeSanitizer{
 					VaultBean vaultBean = vaultService.getVaultByUrn(user, rbean.getVaultId());
 					if(vaultBean == null) throw new ArgumentException("Vault '" + rbean.getVaultId() + "' does not exist");
 					try {
+						if(vaultBean.getActiveKeyId() == null) vaultService.newActiveKey(vaultBean);
 						vaultService.setVaultBytes(vaultBean, new_rec, DataUtil.getValue(rbean));
 					} catch (UnsupportedEncodingException e) {
 						logger.error(e);

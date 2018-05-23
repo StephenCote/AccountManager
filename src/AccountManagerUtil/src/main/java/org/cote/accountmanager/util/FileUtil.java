@@ -129,10 +129,11 @@ public class FileUtil {
 		File p = f.getParentFile();
 		if(!p.exists())
 			p.mkdirs();
-		if(!f.exists())
+		if(f.exists()){
 			if(!f.delete()){
 				logger.error(String.format("Failed to delete %s",path));
 			}
+		}
 		FileOutputStream fos = null;
 		try{
 			fos = new FileOutputStream(f);

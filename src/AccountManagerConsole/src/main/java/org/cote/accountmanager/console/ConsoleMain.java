@@ -26,6 +26,8 @@ package org.cote.accountmanager.console;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
@@ -156,7 +158,7 @@ public class ConsoleMain {
 		options.addOption("testCertificate",false,"Test certificate set to an object");
 		options.addOption("trust",false,"Bit indicating the store is a trust store");
 		options.addOption("private",false,"Bit indicating certificate containing the private key (a PKCS12 file) should be imported");
-		
+		options.addOption("testConnection",false,"Bit indicating to test the database connection");
 		//String storeName, char[] storePassword, boolean isTrust, String alias, char[] password, boolean isPrivate
 		
 		
@@ -172,8 +174,28 @@ public class ConsoleMain {
 		AuditDataMaintenance auditThread = null;
 		CommandLineParser parser = new PosixParser();
 		try {
+			CommandLine cmd = parser.parse( options, args);
+					
 			logger.debug("Setting up connection factory");
 			ConnectionFactory.setupConnectionFactory(props);
+			
+			if(cmd.hasOption("testConnection")){
+				logger.info("Testing database connection");
+				Connection c = ConnectionFactory.getInstance().getConnection(); 
+				if(c == null){
+					logger.error("Connection was not established");
+				}
+				else{
+					try {
+						c.close();
+						logger.info("Connection successfully established");
+					} catch (SQLException e) {
+						logger.error(e);
+					}
+				}
+				return;
+			}
+			
 			logger.debug("Warming up factories");
 			long startWarmUp = System.currentTimeMillis();
 			org.cote.rocket.Factories.prepare();
@@ -181,7 +203,7 @@ public class ConsoleMain {
 			long stopWarmUp = System.currentTimeMillis();
 			logger.debug("Completed warm up in " + (stopWarmUp - startWarmUp) + "ms");
 			auditThread = new AuditDataMaintenance();
-			CommandLine cmd = parser.parse( options, args);
+			;
 			
 			String schemaPath = (cmd.hasOption("schema") ? cmd.getOptionValue("schema") : defaultSchema);
 			String rocketSchemaPath = (cmd.hasOption("rocketSchema") ? cmd.getOptionValue("rocketSchema") : defaultRocketSchema);
