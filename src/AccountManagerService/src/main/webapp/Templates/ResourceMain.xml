@@ -3,11 +3,6 @@
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 	<import-xml src = "Fragments/TabTools.xml" id = "TabTools" />
 	<p style = "clear:both;font-size:0px;margin:0px;"></p>
-	<div rid = "group">
-	</div>	
-	<div rid = "data">
-	</div>	
-
 	<div rid = "artifact">
 	</div>	
 	<div rid = "resource">
@@ -18,8 +13,6 @@
 	</div>				
 	<div rid = "time">
 	</div>				
-	<div rid = "note">
-	</div>
 	<div rid = "module">
 	</div>
 
@@ -29,21 +22,15 @@
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
-				//this.serveTransaction("change_bus", Hemi.data.io.service.getBusType().ONLINE);
-				this.AddTab("group","Groups",this.scopeHandler("loadGroupsTab",0,1,1));
-				this.AddTab("data","Data",this.scopeHandler("loadDataTab",0,1,1));
 				this.AddTab("artifact","Artifacts",this.scopeHandler("loadArtifactTab",0,1,1));
 				this.AddTab("resource","Resources",this.scopeHandler("loadResourceTab",0,1,1));
 				this.AddTab("estimate","Estimates",this.scopeHandler("loadEstimateTab",0,1,1));
 				this.AddTab("cost","Costs",this.scopeHandler("loadCostsTab",0,1,1));
 				this.AddTab("time","Times",this.scopeHandler("loadTimesTab",0,1,1));
-				this.AddTab("note","Notes",this.scopeHandler("loadNoteTab",0,1,1));
-				
 				this.AddTab("module","Modules",this.scopeHandler("loadModuleTab",0,1,1));
-				//this.AddTab("model","Model",this.scopeHandler("loadModelTab",0,1,1));
 				this.AddTab("ticket","Tickets",this.scopeHandler("loadTicketTab",0,1,1));
 				this.ShowTab(0);
-				this.loadGroupsTab();
+				this.loadArtifactTab();
 			},
 			loadTimesTab : function(o){
 				this.loadTab("Time",o);

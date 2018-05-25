@@ -171,7 +171,6 @@ public class GenericResourceService {
 			INameIdFactory iFact = BaseService.getFactory(auditType);
 			if(!iFact.isClusterByParent() || !iFact.isClusterByGroup()){
 				logger.warn("Service intended for factories that are both clustered by group and parent");
-				//return Response.status(200).entity(obj).build();
 			}
 			NameIdType parentObj = (NameIdType)getObject(type,parentId,request).getEntity();
 			if(parentObj == null){
@@ -194,11 +193,10 @@ public class GenericResourceService {
 	public Response updateObject(String json, @PathParam("type") String type, @Context HttpServletRequest request){
 		boolean updated = false;
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
-		Class cls = Factories.getFactoryTypeClasses().get(FactoryEnumType.valueOf(type));
+		Class<?> cls = Factories.getFactoryTypeClasses().get(FactoryEnumType.valueOf(type));
 		if(cls != null){
 			NameIdType obj = (NameIdType)JSONUtil.importObject(json, cls);
 			if(obj != null){
-				//logger.info("Imported " + obj.getName());
 				if(obj.getObjectId() == null || obj.getObjectId().length() == 0){
 					updated = BaseService.add(auditType, obj, request);
 				}

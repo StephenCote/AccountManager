@@ -24,7 +24,8 @@
 		
 	},
 	refreshSession : function(s,v){
-		var b = uwm.rule("IsLoggedIn");
+		var b = (uwm.rule("IsLoggedIn") && AM6Client.isCommunityConfigured());
+		
 		this.GetElementByRID("ctl").style.display = (b ? "block":"none");
 		if(b){
 			

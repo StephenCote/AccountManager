@@ -1,4 +1,5 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
 -- select uuid_generate_v4();
 
 DROP TABLE IF EXISTS orgid CASCADE;

@@ -159,7 +159,7 @@ public class EntitySchema {
 	private BasePermissionType basePermissionType = null;
 	private AuthorizationPolicyType authorizationPolicyType = null;
 	private AccountType accountType = null;
-	private BaseTagType tagType = null;
+	private BaseTagType baseTagType = null;
 	private DataTagSearchRequest dataTagSearchRequest = null;
 	public EntitySchema(){
 		authenticationRequest = new AuthenticationRequestType();
@@ -167,7 +167,7 @@ public class EntitySchema {
 		authenticationRequestType = new AuthenticationRequestType();
 		authenticationResponseType = new AuthenticationResponseType();
 		dataTagSearchRequest = new DataTagSearchRequest();
-		tagType = new BaseTagType();
+		baseTagType = new BaseTagType();
 		authorizationPolicyType = new AuthorizationPolicyType();
 		addressType = new AddressType();
 		basePermissionType = new BasePermissionType();
@@ -307,14 +307,14 @@ public class EntitySchema {
 
 
 
-	public BaseTagType getTagType() {
-		return tagType;
+	public BaseTagType getBaseTagType() {
+		return baseTagType;
 	}
 
 
 
-	public void setTagType(BaseTagType tagType) {
-		this.tagType = tagType;
+	public void setBaseTagType(BaseTagType tagType) {
+		this.baseTagType = tagType;
 	}
 
 

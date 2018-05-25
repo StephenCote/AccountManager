@@ -331,6 +331,19 @@ public class CommunityService {
 		return Response.status(200).entity(configured).build();
 	}
 	
+	@RolesAllowed({"user","admin"})
+	@GET
+	@Path("/isconfigured/")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response isCommunityConfigured(@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean configured = false;
+		if(cp != null) configured = cp.isCommunityConfigured(user.getOrganizationId());
+		return Response.status(200).entity(configured).build();
+	}
+	
 	@RolesAllowed({"admin","user"})
 	@GET
 	@Path("/geo/traits/{type:[A-Za-z]+}/{objectId:[0-9A-Za-z\\-]+}")

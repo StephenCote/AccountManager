@@ -324,6 +324,9 @@
 				this.refreshList();
 				//this.openItem(o,"ListGroups",1);
 			}
+			else if(o.nameType.match(/^(account|person|user)$/gi)){
+				this.openItem(o, "Profile");
+			}
 
 		},
 		openItem : function(o,v,b){
@@ -532,7 +535,47 @@
 		},
 		setStatus : function(s){
 			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
-		}
+		},
+		decorateProfileIcon : function(o){
+				var _p = this.getProperties();
+				if(!_p.iconView) return o.name;
+				var w = (_p.iconWidth ? _p.iconWidth : 48);
+				var h = (_p.iconHeight ? _p.iconHeight : 48);
+				var oL = document.createElement("div");
+				var oP = document.createElement("p");
+				oP.setAttribute("style","text-indent:0px !important;");
+				var oP2 = document.createElement("p");
+				var oI = document.createElement("img");
+				oI.setAttribute("class","alignright");
+				var sIco = "/AccountManagerService/Media/Icons/user_48x48.png";
+				var sPid = AM6Client.getAttributeValue(o,"v1-profile",0);
+				
+				oP.appendChild(oI);
+				oP.appendChild(document.createTextNode(o.name));
+				oP.appendChild(document.createElement("br"));
+				oP.appendChild(document.createTextNode((o.description ? o.description : "")));
+				oP.appendChild(document.createElement("br"));
+				oP.appendChild(document.createTextNode((o.alias ? o.alias : "")));
+				oL.appendChild(oP);
+				oP2.setAttribute("class","clearalign");
+				oL.appendChild(oP2);
+				if(sPid){
+					AM6Client.get("DATA", sPid, function(s, v){
+						if(v && v.json) v = v.json;
+						if(v && v != null){;
+							var sOrg = AM6Client.dotPath(v.organizationPath);
+							oI.setAttribute("src","/AccountManagerService/thumbnail/" + sOrg + "/Data" + v.groupPath + "/" + v.name + "/" + w + "x" + h);
+						}
+						else{
+							oI.setAttribute("src",sIco);
+						}
+					});
+				}
+				else{
+					oI.setAttribute("src",sIco);
+				}
+				return oL;
+			}	
 
 	]]></embedded-script>
 </html-fragment>

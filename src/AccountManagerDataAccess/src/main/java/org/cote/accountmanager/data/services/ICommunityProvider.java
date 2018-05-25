@@ -27,11 +27,11 @@ import java.util.List;
 
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 
 public interface ICommunityProvider {
+	public boolean isCommunityConfigured(long organizationId);
 	public boolean configureCommunity(UserType adminUser);
 	public boolean configureEntitlements(UserType adminUser, String communityId, String projectId, String groupId);
 	public boolean enrollReaderInCommunities(UserType adminUser, String userId);

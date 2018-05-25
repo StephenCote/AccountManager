@@ -11,11 +11,14 @@
     <img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/kexi.png" width = "24" height = "24" onclick = "Hemi.app.createWindow('Log Viewer','Templates/LogViewer.xml', 'LogViewer');" title = "Framework Log Viewer" />
     <img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/gnome-word.png" width = "24" height = "24" onclick = "Hemi.app.createWindow('FVT Test Suite','Templates/FVTs.xml', 'FVTTestSuite');" title = "Framework Test Suite" />
 	<img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/gpa.png" onclick = "${this}.DoLogout()" width = "24" height = "24" title = "Logout" />
+	<span style = "padding-left:10px;padding-top:10px;color:#76933c;" rid = "profileName" onclick = "uwm.profile()">${property.userName}</span>
 	</span>
+	
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
-				
+				var o = uwm.getUser();
+				Hemi.xml.setInnerXHTML(this.GetElementByRID("profileName"),(o ? o.organizationPath + "/" + o.name : "Anonymous"));
 			},
 			DoLogout : function(){
 				window.uwm.logout();

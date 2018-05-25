@@ -57,6 +57,7 @@
 			this.GetElementByRID("password").disabled = true;
 			this.GetElementByRID("btnLogin").disabled = true;
 			this.SetFormValue("password","");
+			this.getProperties().userName = sName; 
 			//this.setStatus(" ");
 			//this.GetElementByRID("btnLogin").disabled = true;
 			window.uwm.operation("Authenticate", {opener:this.getObjectId(),user_name : sName, password : sPassword, organization: oOrg});		

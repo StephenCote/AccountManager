@@ -97,7 +97,85 @@
 	        			uwm.strToBin(uwm.base64Decode(sKey)),
 	        			uwm.strToBin(uwm.base64Decode(sIv))
 	        	);
+			},
+			profile : function(){
+				var oType = uwm.getUser();
+
+				/// A person object will exist for users created via registration or the console
+				///
+				var oP = AM6Client.userPerson(oType.objectId);
+				var sType = "User";
+				if(oP){
+					sType = 'Person';
+					oType = oP;
+				}
+				var sViewType = "Profile";
+				var oProps = {listType:sType,viewType:oType};
+				var oW = Hemi.app.createWindow(oType.name, uwm.getApiTypeView(sType) + "/Forms/" + sViewType + ".xml", "View-" + sType + "-" + oType.id , 0, 0, oProps, 0);
+	            if (oW) {
+	            	oW.resizeTo(475, 400);
+	            	Hemi.app.getWindowManager().CenterWindow(oW);
+	            	// Destroy the window when closed
+	            	//
+	            	oW.setHideOnClose(0);
+	            }
+			},
+			openPopInImage : function(sUrl){
+				var i1, i2, i3;
+				if((i1 = sUrl.indexOf("/media/") )== -1 || (i2 = sUrl.indexOf("/Data/")) == -1){
+					Hemi.logError("Invalid URL: " + sUrl);
+					return;
+				}
+				var sOrgPath = sUrl.substring(i1 + 6,i2);
+				var oOrg = AM6Client.find("ORGANIZATION","UNKNOWN",sOrgPath);
+				var sPath = sUrl.substring(i2 + 5,sUrl.length);
+				var sName = sPath.substring((i3 = sPath.lastIndexOf("/")) + 1, sPath.length);
+				var iW = parseInt(.8 * document.documentElement.clientWidth);
+				var iH = parseInt(.8 * document.documentElement.clientHeight);
+				Hemi.log("Pop image " + iW + " x " + iH);
+				iW = Math.floor(iW/250) * 250;
+				if(iW <= 0) iW = 250;
+				iH = Math.floor(iH/250) * 250;
+				if(iH <= 0) iH = 250;
+				var sMediaUrl = "/AccountManagerService/thumbnail" + sOrgPath + "/Data" + sPath + "/" + iW + "x" + iH;
+				var vProps = {
+					media_name : sName,
+					media_id : "N/A",
+					media_url: sMediaUrl
+				};
+				Hemi.app.createWindow(sName,"/AccountManagerService/Forms/ImageViewer.xml",sUrl,0,0,vProps,function(oW){
+					oW.setIsModal(1);
+					oW.setCanMinimize(0);
+					oW.setCanMaximize(0);
+					oW.center();
+				});
+			},
+			
+			decorateLinkToPopIn : function(oParent){
+				var aL = oParent.getElementsByTagName("a");
+				for(var i = 0; i < aL.length;i++){
+					if(!aL[i].href || !aL[i].href.match(/\/AccountManagerService\/media/)) continue;
+					aL[i].onclick = function(){
+						uwm.openPopInImage(this.href);
+						return false;
+					}
+				}
+			},
+			
+			handlers : {
+				load : [],
+				unload : []
+			},
+			addPageLoadHandler : function(f){
+				uwm.handlers.load.push(f);
+			},
+			processLoadHandlers : function(){
+				var aH = uwm.handlers.load, i = 0;
+				for(; i < aH.length;) aH[i++]();
+				aH.length = 0;
 			}
+
+
 			
 		};
 	}
@@ -157,6 +235,9 @@
 		cache[sType][sAct][sId]=vObj;
 		
 	}
+	function newPrimaryCredential(sType, sObjId, oAuthN, fH){
+		return Hemi.xml.postJSON(sCred + "/" + sType + "/" + sObjId,oAuthN,fH,(fH ? 1 : 0));
+	}
 	function deleteObject(sType,sObjId, fH){
 		delete cache[sType];
 		   return Hemi.xml.deleteJSON(sResource + "/" + sType + "/" + sObjId,fH,(fH ? 1 : 0));
@@ -198,6 +279,11 @@
 		var fc = function(s,v){if(f) f(s,v);};
 
 	   return Hemi.xml.getJSON(sComm + "/configure/" + sLid + "/" + sPid + "/" + sGid,fc,(fH ? 1 : 0));	
+	}
+	function isCommunityConfigured(fH){
+		var f = fH;
+		var fc = function(s,v){if(f) f(s,v);};
+	   return Hemi.xml.getJSON(sComm + "/isconfigured",fc,(fH ? 1 : 0));	
 	}
 	function getCommunityProjectRoleBase(oP, fH){
 		var sType = "ROLE";
@@ -321,6 +407,9 @@
 		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,sK,sObjectId,v.json);} if(f) f(s,v);};
 		return Hemi.xml.getJSON(sList + "/" + sType + "/" + sObjectId + "/" + iStart + "/" + iLength,fc,(fH ? 1 : 0));
 	}
+	function findTags(sType, sObjId, fH){
+		return Hemi.xml.getJSON(sSearch + "/" + sType + "/tags/" + sObjId,fH,(fH ? 1 : 0));
+	}
 	function findByTag(sType, oSearch, fH){
 		return Hemi.xml.postJSON(sSearch + "/" + sType + "/tags",oSearch,fH,(fH ? 1 : 0));
 	}
@@ -371,6 +460,13 @@
 	function setMember(sType, sObjectId, sActorType, sActorId, bSet, fH){
 		return Hemi.xml.getJSON(sAuthZ + "/" + sType + "/" + sObjectId + "/member/" + sActorType + "/" + sActorId + "/" + bSet,fH,(fH ? 1 : 0));
 	}
+	function getUserPersonObject(sId,fH){
+		if(!sId){
+			var o = getPrincipal();
+			if(o) sId = o.objectId;
+		}
+		return Hemi.xml.getJSON(sPrincipal + "/person" + (sId ? "/" + sId : ""),fH,(fH ? 1 : 0)); 
+	}
 	function getUserObject(sType,sOType,fH){
 		if(!sType && !sOType) return getPrincipal(fH);
 		return Hemi.xml.getJSON(sAuthZ + "/" + sType + "/user/" + sOType,fH,(fH ? 1 : 0));
@@ -395,6 +491,7 @@
 		communityProjectRoleBase : getCommunityProjectRoleBase,
 		findByTag : findByTag,
 		countByTag : countByTag,
+		findTags : findTags,
 		make : make,
 		mediaDataPath : mediaDataPath,
 		list : list,
@@ -408,11 +505,14 @@
 		principal : getPrincipal,
 		anonymous : getDocumentControl,
 		entitlements : listEntitlementsForType,
+		isCommunityConfigured : isCommunityConfigured,
 		configureCommunityProjectGroupEntitlements : configureCommunityProjectGroupEntitlements,
 		members : listMembers,
 		member : setMember,
 		user: getUserObject,
+		userPerson : getUserPersonObject,
 		currentOrganization : sCurrentOrganization,
+		newPrimaryCredential : newPrimaryCredential,
 		clearCache : clearCache,
 		clearAuthorizationCache : function(fH){
 			return Hemi.xml.getJSON(sCache + "/clearAuthorization",fH,(fH ? 1 : 0));
@@ -462,6 +562,19 @@
 //	window.addEventListener("load",clientLoad,false);
 //	function clientLoad(){
 
+	if(!window.uwmServices){
+		window.uwmServices = uwmServices = Hemi.json.rpc.service;
+		window.uwmServiceCache = uwmServiceCache = Hemi.json.rpc.cache.service;
+	}
+	
+	uwmServices.addService(
+		"AMSchema",
+		"/AccountManagerService/rest/schema/smd",
+		true,
+		true,
+		false
+	);
+	
 		Hemi.message.service.subscribe("onspaceconfigload", function (s, v){
 			if(!v.is_primary) return;
 			var oSpace = Hemi.app.space.service.getPrimarySpace();
@@ -473,8 +586,8 @@
 					principal = v.json;
 					AM6Client.currentOrganization = sCurrentOrganization = principal.organizationPath;
 				}
+				uwm.processLoadHandlers();
 			});
-			
 		});
 //	}
 	

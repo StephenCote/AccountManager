@@ -8,15 +8,12 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
+			this.getProperties().iconView = 1;
 			this.initGrid("Person",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Person","~/Persons")));
 
 		},
-		template_destroy : function(){
-			
-		},
-
-		handle_list_click : function(v){
-			
+		decorateListItemName : function(o){
+			return this.decorateProfileIcon(o);
 		}
 		]]>
 	</embedded-script>

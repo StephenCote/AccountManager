@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.cote.accountmanager.service.util.MediaOptions;
 import org.cote.accountmanager.service.util.MediaUtil;
 
-public class DWACServlet extends HttpServlet {
+public class ArticleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static int defCacheSeconds = 7200;
-    public DWACServlet() {
+    public ArticleServlet() {
         super();
         
     }

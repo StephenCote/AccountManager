@@ -30,6 +30,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -42,8 +43,10 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.UserPrincipal;
+import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -75,25 +78,53 @@ public class PrincipalService {
 		BaseService.populate(AuditEnumType.USER, docUser);
 		return Response.status(200).entity(docUser).build();
 	}
+
+	
+	
+	@RolesAllowed({"user"})
+	@GET
+	@Path("/person/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getOtherPerson(@PathParam("objectId") String objectId,@Context HttpServletRequest request){
+		UserType contUser = BaseService.readByObjectId(AuditEnumType.USER, objectId, request);
+		UserType user = ServiceUtil.getUserFromSession(request);
+		PersonType person = null;
+		if(contUser != null && user != null){
+			person = UserService.readPersonForUser(user, contUser);
+			if(person != null && BaseService.getEnableExtendedAttributes()){
+				Factories.getAttributeFactory().populateAttributes(person);
+			}
+		}
+		return Response.status(200).entity(person).build();
+	}
+	
+	@GET
+	@Path("/person")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getSelfPerson(@Context HttpServletRequest request){
+		UserType user = (UserType)getSelf(request).getEntity();
+		PersonType person = (PersonType)getOtherPerson(user.getObjectId(),request).getEntity();
+		return Response.status(200).entity(person).build();
+	}
 	
 	@GET
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSelf(@Context HttpServletRequest request){
 		Principal principal = request.getUserPrincipal();
-		String outToken = null;
 		UserType outUser = null;
 		if(principal != null && principal instanceof UserPrincipal){
 			UserPrincipal userp = (UserPrincipal)principal;
-			//userp.get
 			logger.info("UserPrincipal: " + userp.toString());
 			try {
 				OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(userp.getOrganizationPath());
 
 				UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getById(userp.getId(), org.getId());
 				if(user != null){
-					outToken = user.getUrn();
 					outUser = user;
+					if(BaseService.getEnableExtendedAttributes()){
+						Factories.getAttributeFactory().populateAttributes(outUser);
+					}
 				}
 			} catch (FactoryException | ArgumentException e) {
 				
@@ -103,8 +134,6 @@ public class PrincipalService {
 		else{
 			logger.info("Don't know what: " + (principal == null ? "Null" : "Uknown") + " principal");
 		}
-		boolean outBool = false;
-
 		return Response.status(200).entity(outUser).build();
 	}
 }

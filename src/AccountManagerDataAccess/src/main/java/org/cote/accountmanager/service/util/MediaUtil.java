@@ -395,8 +395,8 @@ public class MediaUtil {
 					((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(group);
 					((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(group);
 					String dotPath = UrnUtil.getDotOrganizationPath(org.getId());
-					AuditService.pendResult(audit, "Redirecting user " + user.getName() + " to " + request.getServletContext().getContextPath() + "/Thumbnail/" + dotPath + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight + " with restricted dimensions");
-					response.sendRedirect(request.getServletContext().getContextPath() + "/Thumbnail/" + dotPath + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight);
+					AuditService.pendResult(audit, "Redirecting user " + user.getName() + " to " + request.getServletContext().getContextPath() + "/thumbnail/" + dotPath + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight + " with restricted dimensions");
+					response.sendRedirect(request.getServletContext().getContextPath() + "/thumbnail/" + dotPath + "/Data" + group.getPath() + "/" + objName + "/" + maxWidth + "x" + maxHeight);
 					return;
 				}
 			}

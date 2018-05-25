@@ -953,10 +953,13 @@
 				ctl.getCanvas().Rasterize();
 				
 				if(galleryView.getProperties().tagMode){
-					var aT = accountManager.listTagsFor(o);
+					
+					var aT = AM6Client.findTags(o.nameType, o.objectId);
 					for(var i = 0; i < aT.length;i++){
 						oG.Text(aT[i].name, 5, 10 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
 					}
+
+					Hemi.logWarning("Tag list being converted to new API");
 				}
 			}
 			

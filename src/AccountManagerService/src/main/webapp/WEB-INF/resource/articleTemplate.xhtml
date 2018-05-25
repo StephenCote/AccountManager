@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en-US" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>%PAGETITLE%</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+	<link rel="stylesheet" href="/AccountManagerExample/Style/uwm.css" type="text/css" title = "uwm" />
+	<link rel="stylesheet" href="/RocketWeb/Style/rocket.css" type="text/css" />
+	<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+	<script type = "text/javascript">
+		var g_application_path = "/";
+	</script>
+    <script type = "text/javascript" src = "/AccountManagerExample/Scripts/bootstrap.jsp"></script>
+		<script type="text/javascript"><!--//
+			uwm.addPageLoadHandler(function(){
+				var aL = document.documentElement.getElementsByTagName("a");
+				for(var i = 0; i < aL.length;i++){
+					if(!aL[i].href || !aL[i].href.match(/\/AccountManager\/Media/)) continue;
+					aL[i].onclick = function(){
+						uwm.openPopInImage(this.href);
+						return false;
+					}
+				}
+			});
+			//-->
+		</script>
+    </head>
+    <body>
+         <div class = "uwm-header">
+            <h1>%TITLE%</h1>
+            <h2>%SUBTITLE%</h2>
+            <ul class = "uwm-menu uwm-menu-header">
+			<li class = "uwm-home"><a href = "/">Home</a></li>
+			<li class = "uwm-blog"><a href = "/Blog/%AUTHOR_USERNAME%">Blog</a></li>
+			<li class = "uwm-hemi"><a href = "/Hemi">Hemi</a></li>
+			<li class = "uwm-projects"><a href = "/projects">Projects</a></li>
+			<li class = "uwm-documents"><a href = "/documents">Documents</a></li>
+			<li class = "uwm-email"><a href = "#" component = "window_control" onclick = "return false;" template = "/Forms/Email.xml">Email</a></li>
+			</ul>
+			<div template = "/Forms/UnauthIn.xml" class = "uwm-login">Test</div>
+        </div>
+        %NAVIGATION%
+        <div class = "uwm-content">
+			%CONTENT%
+		</div>
+		%NAVIGATION%
+    </body>
+</html>

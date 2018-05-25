@@ -29,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.AddressFactory;
@@ -52,6 +53,7 @@ import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
+import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -68,6 +70,7 @@ import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
@@ -199,7 +202,11 @@ public class TypeSanitizer implements ITypeSanitizer{
 		logger.info("Processing alternate add for type " + type.toString());
 		INameIdFactory iFact = Factories.getNameIdFactory(FactoryEnumType.valueOf(type.toString()));
 		if(type.equals(AuditEnumType.USER)){
-			outBool = ((UserFactory)iFact).add(object, true);
+			//outBool = ((UserFactory)iFact).add(object, true);
+			UserType userObj = (UserType)object;
+			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Create person as user", AuditEnumType.USER, owner.getUrn());
+			AuditService.targetAudit(audit, AuditEnumType.PERSON, userObj.getName());
+			outBool = PersonService.createUserAsPerson(audit, userObj.getName(), null, null, userObj.getUserType(), userObj.getUserStatus(), owner.getOrganizationId());
 		}
 		else if(type.equals(AuditEnumType.ACCOUNT)){
 			outBool = ((AccountFactory)iFact).add(object, true);

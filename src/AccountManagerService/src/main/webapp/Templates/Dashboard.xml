@@ -1,0 +1,48 @@
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<div rid = "authRequired" style = "display:none;">
+	<h2>Authentication Required</h2>
+	</div>
+	<div class = "uwm-box-border" template = "/AccountManagerService/Forms/Profile.xml"></div>
+	<!--
+	<div rid = "galleryContainer" style = "display:none;height: 500px;width:100%;border: 1px dotted #CFCFCF;">
+	</div>
+	-->
+	<embedded-script><![CDATA[
+		template_init : function(){
+			Hemi.message.service.subscribe(this, "onsessionrefresh", "refreshSession");
+			/// window.setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').refreshSession()",250);
+		},
+		template_destroy : function(){
+			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "refreshSession");
+			if(window.galleryView) window.galleryView.destroy();
+		},
+		refreshSession : function(s,v){
+			var _s = this.getProperties(),b = uwm.rule("IsLoggedIn");
+			Hemi.log("Handle Session Refresh - Comparing " + b + " to " + _s.lastState);
+			this.GetElementByRID("authRequired").style.display = (b ? "none" : "block");
+			this.GetElementByRID("galleryContainer").style.display = (!b ? "none" : "block");
+			if(b != _s.lastState){
+				if(window.galleryView) window.galleryView.destroy();
+				if(b) this.setupCanvas();
+			}
+		},
+		setupCanvas : function(){
+			window.g_gallery_container = this.GetElementByRID("galleryContainer");
+			if(!window.galleryView){
+				var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");
+				eval(sTxt);
+				
+				/// timeout is set to coincide with any initial transition animation that alters the page layout, but which doesn't kick off a page resize
+				///
+				///window.setTimeout(galleryView.alignViews,350);
+			}
+		},
+		template_destroy : function(){
+			if(window.galleryView){
+				window.galleryView.destroy();
+				delete window.galleryView;
+			}
+		}
+	]]></embedded-script>
+</Template>

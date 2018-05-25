@@ -1,22 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template>
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
-	<p>Main</p>
-	<p><input type = "button" onclick = "${this}.DoGallery()" value = "Launch Gallery" /></p>
-	<p><input type = "button" onclick = "${this}.DoLogout()" value = "Logout" /></p>
-	<embedded-script>
-		<![CDATA[
-			template_init: function(){
-				
-			},
-			DoLogout : function(){
-				window.uwm.logout();
-				window.uwm.operation("ContinueWorkflow");
-			},
-			DoGallery : function(){
-				var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");
-				eval(sTxt);
-			}
-		]]>
-	</embedded-script>
+	<h1>Example Application</h1>
 </Template>

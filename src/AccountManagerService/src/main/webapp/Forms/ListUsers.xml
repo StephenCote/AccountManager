@@ -7,16 +7,11 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-
+			this.getProperties().iconView = 1;
 			this.initGrid("User",0,0,1);
-			//this.GetElementByRID("path").style.display = "none";
 		},
-		template_destroy : function(){
-			
-		},
-
-		handle_list_click : function(v){
-			///this.setStatus("Clicked: " + v.name);
+		decorateListItemName : function(o){
+			return this.decorateProfileIcon(o);
 		}
 		]]>
 	</embedded-script>

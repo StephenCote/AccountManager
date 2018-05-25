@@ -38,7 +38,7 @@
 			oI.setAttribute("class","alignright");
 			var sIco = "/AccountManagerService/Media/Icons/Crystal/48x48/48px-Crystal_Clear_action_filenew.png";
 			if(o.mimeType.match(/^image/)){
-				sIco = "/AccountManagerService/Thumbnail/" + AM6Client.dotPath(o.organizationPath) + "/Data" + o.groupPath + "/" + o.name + "/" + w + "x" + h
+				sIco = "/AccountManagerService/thumbnail/" + AM6Client.dotPath(o.organizationPath) + "/Data" + o.groupPath + "/" + o.name + "/" + w + "x" + h
 			}
 			oI.setAttribute("src",sIco);
 			oP.appendChild(oI);

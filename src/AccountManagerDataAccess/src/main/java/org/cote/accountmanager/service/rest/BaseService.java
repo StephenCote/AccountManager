@@ -69,12 +69,15 @@ import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.BaseSearchRequestType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonGroupType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.SortQueryType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
@@ -82,6 +85,8 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.OrderEnumType;
+import org.cote.accountmanager.objects.types.QueryEnumType;
 import org.cote.accountmanager.service.util.ServiceUtil;
 
 
@@ -93,7 +98,9 @@ public class BaseService {
 	private BaseService(){
 		
 	}
-	
+	public static boolean getEnableExtendedAttributes(){
+		return enableExtendedAttributes;
+	}
 	public static void setEnableExtendedAttributes(boolean b){
 		enableExtendedAttributes = b;
 	}
@@ -1238,15 +1245,30 @@ public class BaseService {
 		return dirs;
 	}
 	
-	private static <T> List<T> getListByGroup(AuditEnumType type, BaseGroupType group,long startRecord, int recordCount) throws ArgumentException, FactoryException {
+	private static ProcessingInstructionType getSearchInstruction(BaseSearchRequestType search){
+		
+		ProcessingInstructionType instruction = new ProcessingInstructionType();
+		if(search != null){
+			instruction.setPaginate(search.getRecordCount() > 0);
+			instruction.setRecordCount(search.getRecordCount());
+			instruction.setStartIndex(search.getStartRecord());
+			if(search.getSort() != null){
+				instruction.setOrderClause(search.getSort().getSortField().toString().toLowerCase() + " " + (search.getSort().getSortOrder() == OrderEnumType.ASCENDING ? "ASC" : "DESC"));
+			}
+		}
+		return instruction;
+	}
+	
+	private static <T> List<T> getListByGroup(AuditEnumType type, BaseGroupType group,BaseSearchRequestType search) throws ArgumentException, FactoryException {
 		List<T> outObj = new ArrayList<>();
 		INameIdFactory iFact = getFactory(type);
 		if(iFact.isClusterByGroup()){
 			INameIdGroupFactory iGFact = (INameIdGroupFactory)iFact;
-			outObj = iGFact.listInGroup(group, startRecord, recordCount, group.getOrganizationId());
+			outObj = iGFact.listInGroup(group, search.getStartRecord(), search.getRecordCount(), group.getOrganizationId());
 		}
 		else if(iFact.getFactoryType().equals(FactoryEnumType.DATA)){
-			outObj = FactoryBase.convertList(((DataFactory)iFact).getDataListByGroup((DirectoryGroupType)group, true,startRecord, recordCount, group.getOrganizationId()));
+			ProcessingInstructionType inst = getSearchInstruction(search);
+			outObj = FactoryBase.convertList(((DataFactory)iFact).getDataListByGroup((DirectoryGroupType)group,inst, !search.getFullRecord(),search.getStartRecord(), search.getRecordCount(), group.getOrganizationId()));
 		}
 		for(int i = 0; i < outObj.size();i++){
 
@@ -1325,6 +1347,17 @@ public class BaseService {
 		return listByGroup(type, groupType, groupId, startRecord, recordCount, user);
 	}
 	public static <T> List<T> listByGroup(AuditEnumType type, String groupType, String groupId, long startRecord, int recordCount, UserType user){
+		BaseSearchRequestType search = new BaseSearchRequestType();
+		SortQueryType sort = new SortQueryType();
+		sort.setSortField(QueryEnumType.NAME);
+		sort.setSortOrder(OrderEnumType.ASCENDING);
+		search.setSort(sort);
+		search.setPaginate(true);
+		search.setRecordCount(recordCount);
+		search.setStartRecord(startRecord);
+		return listByGroup(type, groupType, groupId, search, user);
+	}
+	public static <T> List<T> listByGroup(AuditEnumType type, String groupType, String groupId, BaseSearchRequestType search, UserType user){
 		List<T> outObj = new ArrayList<>();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listByGroup",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, type, groupId);
@@ -1339,7 +1372,7 @@ public class BaseService {
 		try{
 		if(AuthorizationService.canView(user, parentObj)){
 			AuditService.permitResult(audit, "Access authorized to group " + parentObj.getName());
-			outObj = getListByGroup(type,(BaseGroupType)parentObj,startRecord,recordCount);
+			outObj = getListByGroup(type,(BaseGroupType)parentObj,search);
 		}
 		else{
 			AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to view group " + parentObj.getName() + " (#" + parentObj.getId() + ")");
@@ -1568,6 +1601,9 @@ public class BaseService {
 							case DATA:
 								outObj = FactoryBase.convertList(((DataParticipationFactory)Factories.getFactory(FactoryEnumType.DATAPARTICIPATION)).getRolesForData((DataType)obj));
 								break;
+							default:
+								logger.error(String.format(FactoryException.UNHANDLED_TYPE, memberType));
+								break;
 							
 						}
 						
@@ -1599,6 +1635,7 @@ public class BaseService {
 							outObj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUserRoles((UserType)obj));
 							break;
 						default:
+							logger.error(String.format(FactoryException.UNHANDLED_TYPE, memberType));
 							break;
 					}
 					for(int i = 0; i < outObj.size();i++){
@@ -1653,7 +1690,9 @@ public class BaseService {
 						case USER:
 							break;
 						default:
+							logger.error(String.format(FactoryException.UNHANDLED_TYPE, memberType));
 							break;
+
 					}
 				}
 				else if(type == AuditEnumType.GROUP){
@@ -1667,6 +1706,10 @@ public class BaseService {
 						case USER:
 							outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getUsersInGroup((UserGroupType)container));
 							break;
+						default:
+							logger.error(String.format(FactoryException.UNHANDLED_TYPE, memberType));
+							break;
+
 					}
 				}
 			}

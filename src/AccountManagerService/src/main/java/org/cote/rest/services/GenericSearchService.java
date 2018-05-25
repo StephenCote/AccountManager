@@ -52,10 +52,13 @@ import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataTagSearchRequest;
 import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -132,7 +135,7 @@ public class GenericSearchService {
 	@POST
 	@Path("/tags")
 	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public List<DataType> findByTag(DataTagSearchRequest searchRequest,@Context HttpServletRequest request){
+	public Response findByTag(DataTagSearchRequest searchRequest,@Context HttpServletRequest request){
 
 		UserType user = ServiceUtil.getUserFromSession(request);
 		logger.warn("AuthZ Not Implemented Yet For listByTags");
@@ -158,7 +161,7 @@ public class GenericSearchService {
 		}
 		
 		logger.info("Returning " + list.size() + " items");
-		return list;
+		return Response.status(200).entity(list).build();
 		
 
 	}
@@ -182,8 +185,34 @@ public class GenericSearchService {
 		
 		logger.info("Returning " + count + " count");
 		return count;
-		
-
 	}
-
+	
+	@RolesAllowed({"user"})
+	@GET
+	@Path("/tags/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public Response findTags(@PathParam("type") String type, @PathParam("objectId") String objectId,@Context HttpServletRequest request){
+		List<BaseTagType> tags = new ArrayList<>();
+		AuditEnumType aType = AuditEnumType.valueOf(type);
+		
+		if(aType == AuditEnumType.ACCOUNT || aType == AuditEnumType.USER || aType == AuditEnumType.PERSON || aType == AuditEnumType.DATA || aType == AuditEnumType.GROUP){
+			Object obj = BaseService.readByObjectId(aType, objectId, request);
+			try{
+			TagParticipationFactory fact = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION));
+				if(obj != null){
+					if(aType == AuditEnumType.ACCOUNT) tags = fact.getAccountTags((AccountType)obj);
+					if(aType == AuditEnumType.PERSON) tags = fact.getPersonTags((PersonType)obj);
+					if(aType == AuditEnumType.USER) tags = fact.getUserTags((UserType)obj);
+					if(aType == AuditEnumType.DATA) tags = fact.getDataTags((DataType)obj);
+					if(aType == AuditEnumType.GROUP) tags = fact.getGroupTags((BaseGroupType)obj);
+					logger.info("Tag read extended to associated tags of authorized object access");
+				}
+			}
+			catch(ArgumentException | FactoryException e){
+				logger.error(e);
+			}
+		}
+		
+		return Response.status(200).entity(tags).build();
+	}
 }

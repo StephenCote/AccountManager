@@ -122,7 +122,7 @@
 		},
 		addType : function(o){
 			Hemi.log("Add group type: " + o.name + ":" + o.parentId);
-
+			
 			var b = AM6Client.update("GROUP",o);
 			
 			if(b && irocket.getCommunityMode() && irocket.getCommunityLifecycle() && irocket.getCommunityProject()){

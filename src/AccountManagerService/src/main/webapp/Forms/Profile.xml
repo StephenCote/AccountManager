@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<p>Profile ...</p>
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				var oU = 0;
+				if(this.getProperties().viewType && this.getProperties().listType){
+					oU = this.getProperties().viewType;
+					this.getProperties().profileType = this.getProperties().listType;
+				}
+				else{
+					oU = uwm.getUser();
+					var oP = AM6Client.userPerson(oU.objectId);
+					if(oP){
+						oU = oP;
+						this.getProperties().profileType = "Person";
+					}
+					else{
+						this.getProperties().profileType = "User";
+					}
+					
+				}
+				if(oU){
+					this.getProperties().profileId = oU.objectId;
+					this.loadTemplate("/AccountManagerService/Forms/ProfileFields.xml");
+				}
+			}
+			
+		]]>
+	</embedded-script>
+</Template>

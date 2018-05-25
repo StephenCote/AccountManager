@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<div>
+		<p style = "float: left;width:150px;">
+			<span style = "padding-left:10px;padding-top:10px;color:#76933c;" rid = "profileName" onclick = "${this}.openProfileType()">Anonymous</span>
+			<br />
+			<img rid = "btnProfile" onclick = "${this}.chooseProfile()" style = "border:1px dotted transparent;margin:0px;padding:0px;" src = "/AccountManagerService/Media/Icons/user_100x100.png" width = "100" height = "100" title = "Profile" />
+			<br />
+			<span style = "padding-left:10px;padding-top:10px;color:#76933c;" onclick = "${this}.chooseProfileText()">Choose</span> | <span style = "padding-left:10px;padding-top:10px;color:#76933c;" onclick = "${this}.openProfileText()">Edit</span>
+		</p>
+		<div style = "float:left;" rid = "txtProfile">
+			[ Profile ]
+			<br />
+		</div>
+	</div>
+	<p style = "clear:both;"></p>
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				window.debug = this;
+				this.GetElementByRID("btnProfile").onmouseover = function(e){
+					var o = Hemi.event.getEventSource(e);
+					o.style.border = "1px solid #00FF00";
+				};
+				this.GetElementByRID("btnProfile").onmouseout = function(e){
+					var o = Hemi.event.getEventSource(e);
+					o.style.borderColor = "transparent";
+				};
+				this.refreshProfile();
+			},
+			DoLogout : function(){
+				window.uwm.logout();
+				window.uwm.operation("ContinueWorkflow");
+			},
+			DoGallery : function(){
+				var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");
+				eval(sTxt);
+			},
+			handleDesignerSave : function(){
+				if(this.getObjects().profileText){
+					AM6Client.clearCache(this.getObjects().profileText);
+					delete this.getObjects().profileText;
+				}
+				Hemi.log("Handling designer save");
+				this.refreshProfile();
+			},
+			openProfileText : function(){
+
+				this.openItem(this.getObjects().profileText, "Data", (this.getObjects().profileText ? this.getObjects().profileText.objectId : 0));
+			},
+			openProfileType : function(){
+				this.openItem(this.getObjects().profile,this.getProperties().profileType,this.getProperties().profileId);
+			},
+			  refreshProfile : function(){
+			  		var sUid = this.getProperties().profileId;
+			  		var sUType = this.getProperties().profileType.toUpperCase();
+			  		
+			  		if(!sUid || !sUType){
+			  			Hemi.logWarning("No profile id or type provided");
+			  			return;
+			  		}
+			  		var ctl = this;
+			    	AM6Client.get(sUType,sUid,function(s,v){
+				    	var oP = (v && v.json ? v.json : v);
+				    	if(!oP){
+				    		Hemi.logWarning("Invalid object in client handler: " + s + " / " + v);
+				    		return;
+				    	}
+				    	Hemi.xml.setInnerXHTML(ctl.GetElementByRID("profileName"), oP.name);
+				    	ctl.getObjects().profile = oP;
+				    	var sPid = AM6Client.getAttributeValue(oP,"v1-profile",0);
+				    	var sTid = AM6Client.getAttributeValue(oP,"v1-profile-text",0);
+						Hemi.log("Profile: " + sPid + " / Text: " + sTid);
+				    	if(sPid && sPid.length > 0){
+					    	AM6Client.get("DATA",sPid,function(s,v){
+						    	if(v && v.json) v = v.json;
+						    	if(!v || v == null){
+						    		return;
+						    	}
+						    	var o = v;
+						    	var oG = o.groupPath;
+								var sOrg = AM6Client.dotPath(o.organizationPath);
+								var sThumbUrl = "/AccountManagerService/thumbnail/" + sOrg + "/Data" + oG + "/" + o.name + "/100x100";
+								var oImg = ctl.GetElementByRID("btnProfile");
+								oImg.removeAttribute("width");
+								oImg.removeAttribute("height");
+								oImg.src = sThumbUrl;
+							});
+						}
+						if(sTid && sTid.length > 0){
+					    	AM6Client.get("DATA",sTid,function(s,v){
+					    		if(v && v.json) v = v.json;
+						    	if(!v || v == null){
+						    		return;
+						    	}
+						    	var o = v;
+						    	ctl.getObjects().profileText = o;
+						    	bbConverter.copyInto(bbConverter.import(uwm.base64Decode(o.dataBytesStore)), ctl.GetElementByRID("txtProfile"));
+								uwm.decorateLinkToPopIn(ctl.GetElementByRID("txtProfile"));
+							});
+						}
+					});
+					
+			
+				},
+			    pickProfile : function(s, o, i, w){
+			    	var oP = this.getObjects().profile;
+			    	if(!oP) return;
+			    	var oAttr = AM6Client.getAttribute(oP,"v1-profile");
+					if(!oAttr || !oAttr.values.length){
+						AM6Client.addAttribute(oP,"v1-profile",o.objectId);
+					}
+					else{
+						oAttr.values = [o.objectId];
+					}
+					AM6Client.update(oP.nameType,oP);
+					this.refreshProfile();
+			    },
+				chooseProfile : function(){
+						var sPath = "~/GalleryHome";
+						var oProps = {openerId:this.getObjectId(),defaultPath:sPath,listType:"Data",picker:1,pickFunction:"pickProfile",listId:0};
+						var oW = Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/ListDatas.xml", "DataPicker", 0, 0, oProps);
+			            if (oW) {
+			            	Hemi.app.getWindowManager().CenterWindow(oW);
+			            	oW.setHideOnClose(0);
+			            }
+				},
+			    pickProfileText : function(s, o, i, w){
+			    	var oP = this.getObjects().profile;
+			    	if(!oP) return;
+			    	var oAttr = AM6Client.getAttribute(oP,"v1-profile-text");
+					if(!oAttr || !oAttr.values.length){
+						AM6Client.addAttribute(oP,"v1-profile-text",o.objectId);
+					}
+					else{
+						oAttr.values = [o.objectId];
+					}
+					AM6Client.update(oP.nameType,oP);
+					this.refreshProfile();
+			    },
+				chooseProfileText : function(){
+						var sPath = "~/Data";
+						var oProps = {openerId:this.getObjectId(),defaultPath:sPath,listType:"Data",picker:1,pickFunction:"pickProfileText",listId:0};
+						var oW = Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/ListDatas.xml", "DataPicker", 0, 0, oProps);
+			            if (oW) {
+			            	Hemi.app.getWindowManager().CenterWindow(oW);
+			            	oW.setHideOnClose(0);
+			            }
+				},
+				
+			openItem : function(o, sType, sGid,fHandler){
+				if(!o) o = AM6Client.get(sType.toUpperCase(),sGid);
+					
+			
+				
+				this.openWindow(sType, o, fHandler);
+		},
+		openWindow : function(sType,oType, fHandler){
+			var oProps = {openerId:this.getObjectId(),picker:0,viewType:oType,listId:0};
+			var oW = 0, bD = 0;
+			if(sType.match(/^data$/gi)){
+				oW = Hemi.app.createWindow("Design " + o.name, "/AccountManagerService/Forms/Design.xml", "DesView-" + o.id, 0, 0, oProps);
+				bD = 1;
+			}
+			else oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
+            if (oW) {
+            	oW.resizeTo((bD ? 600 : 475), 400);
+            	Hemi.app.getWindowManager().CenterWindow(oW);
+            	// Destroy the window when closed
+            	//
+            	oW.setHideOnClose(0);
+            }
+		}
+		]]>
+	</embedded-script>
+</Template>

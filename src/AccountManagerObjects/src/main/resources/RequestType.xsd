@@ -18,12 +18,19 @@
 	</complexType>
 
 	<complexType name="BaseSearchRequestType">
+		<sequence>
+			<element name="sort" type="tns:SortQueryType"></element>
+		</sequence>
 		<attribute name="startRecord" type="long" default="0"></attribute>
 		<attribute name="recordCount" type="int" default="0"></attribute>
-		<attribute name="paginate" type="boolean"></attribute>
+		<attribute name="paginate" type="boolean" default="false"></attribute>
 		<attribute name="populateGroup" type="boolean"
 			default="false">
 		</attribute>
-		<attribute name="organizationId" type="long"></attribute>
+		<attribute name="organizationId" type="long" default="0"></attribute>
+		<attribute name="fullRecord" type="boolean" default="false">
+			<annotation>
+				<documentation>Used primarily for DataType to specify whether or not a list of data returns the blob data along with the meta information.</documentation>
+			</annotation></attribute>
 	</complexType>
 </schema>

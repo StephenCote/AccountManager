@@ -848,7 +848,11 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		return roles;
 	}
-	
+	public boolean isCommunityConfigured(long organizationId){
+		DirectoryGroupType applicationDirectory = Rocket.getRocketApplicationGroup(organizationId);
+		return (applicationDirectory != null);
+		
+	}
 	public boolean configureCommunity(UserType adminUser){
 		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Configure community in organization #" + adminUser.getOrganizationId(), AuditEnumType.USER,adminUser.getUrn());

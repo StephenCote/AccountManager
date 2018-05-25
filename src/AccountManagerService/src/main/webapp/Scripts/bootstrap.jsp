@@ -22,5 +22,6 @@ if(!window.HemiEngine) window.HemiEngine=window.Hemi;
 <%@include file="client.js" %>
 <%@include file="community.js" %>
 <%@include file="policy.js" %>
+<%@include file="bbscript.js" %>
 <%@include file="3rdParty/base64.js" %>
 <%@include file="3rdParty/Aes.complete.js" %>
