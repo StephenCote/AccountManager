@@ -26,12 +26,12 @@
 		
 		addType : function(o){
 			if(irocket.getCommunityMode()){
-				var oP = AM6Client.addCommunityLifecycle(o.name);
+				var oP = AM6Client.addCommunity(o.name);
 				if(!oP || oP == null){
 					this.setStatus("Failed to create community lifecycle");
 					return false;
 				}
-				oP = AM6Client.communityLifecycle(o.name);
+				oP = AM6Client.community(o.name);
 				oP.description = o.description;
 				oP.goals = o.goals;
 				oP.budgets = o.budgets;

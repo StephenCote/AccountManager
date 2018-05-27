@@ -58,13 +58,14 @@
 					</includes>
 					<excludes>
 						<!-- 
-<exclude>**/TestFormFactory.java</exclude>
-<exclude>**/TestFormElementValue.java</exclude>
-						-->
-						<exclude>**/TestAuthorization.java</exclude>
-						<exclude>**/TestIdentityService.java</exclude>
 
-							<exclude>**/TestRocket.java</exclude>
+<exclude>**/TestCommunities.java</exclude>
+						-->
+<exclude>**/TestIdentityService.java</exclude>
+						<exclude>**/TestAuthorization.java</exclude>
+						<exclude>**/TestFormElementValue.java</exclude>
+
+							
 						<exclude>**/TestBulkFactory.java</exclude>
 						<exclude>**/TestCapabilities.java</exclude>
 						
@@ -78,11 +79,12 @@
 						<!-- REGRESSED -->
 						<exclude>**/TestBulkUpdate.java</exclude>
 						
+<exclude>**/TestRocket.java</exclude>
 						
 						<!--  RETEST -->
 						
 						
-						
+						<exclude>**/TestFormFactory.java</exclude>
 						
 						
 						

@@ -351,15 +351,12 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		return Factories.getNameIdFactory(FactoryEnumType.ACCOUNT).list(new QueryField[]{ field }, organizationId);
 	}
 */
-	public List<DataType> getDataListFromParticipations(DataParticipantType[] list, boolean detailsOnly, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException
+	public <T> List<T> getListFromParticipations(FactoryEnumType fType, BaseParticipantType[] list, boolean alternateQuery, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);
-		DataFactory dFact = Factories.getFactory(FactoryEnumType.DATA);
-		return dFact.getDataList(new QueryField[]{ field }, detailsOnly, startRecord, recordCount, organizationId);
-		/*
-		return Factory.DataFactoryInstance.GetDataList(new QueryField[] { match }, DetailsOnly, StartRecord, RecordCount, organizationId);
-		*/
-		//return new ArrayList<>();
+		INameIdFactory iFact = (INameIdFactory)Factories.getFactory(fType);
+		if(fType == FactoryEnumType.DATA) return convertList(((DataFactory)iFact).getDataList(new QueryField[]{ field }, alternateQuery, startRecord, recordCount, organizationId));
+		return iFact.paginateList(new QueryField[]{ field },startRecord, recordCount, organizationId);
 	}
 	public List<NameIdType> getParticipants(
 		NameIdType participation,

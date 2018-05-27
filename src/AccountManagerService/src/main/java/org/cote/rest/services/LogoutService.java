@@ -53,12 +53,13 @@ public class LogoutService {
 	public Response logout(@Context HttpServletRequest request){
 		boolean outBool = false;
 		try{
+			logger.info("Logging out session " + request.getSession().getId());
 			request.logout();
 			request.getSession().invalidate();
 			outBool = true;
 		}
 		catch(Exception e){
-			
+			logger.error(e);
 		}
 		return Response.status(200).entity(outBool).build();
 	}

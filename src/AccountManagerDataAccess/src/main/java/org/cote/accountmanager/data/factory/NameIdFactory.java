@@ -90,6 +90,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	protected boolean hasAuthorization = false;
 	
 	protected String systemRoleNameReader = null;
+	protected String systemRoleNameWriter = null;
 	protected String systemRoleNameAdministrator = null;
 	
 	/// 2014/12/26

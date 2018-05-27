@@ -53,14 +53,14 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>true</skipTests>
+  					<skipTests>false</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine>  
 
   					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-					<!--			
+								
 									
 								
 						<exclude>**/TestVaultService.java</exclude>
@@ -69,11 +69,9 @@
 							<exclude>**/TestBulkUpdate.java</exclude>
 							<exclude>**/TestBulkPerson.java</exclude>
 						<exclude>**/TestSoD.java</exclude>	
-						<exclude>**/TestEffectiveAuthorization.java</exclude>
-						<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 						<exclude>**/TestOrganizationFactory.java</exclude>
 						<exclude>**/TestKnowledgeBasedVerification.java</exclude>
-												<exclude>**/TestFunctionFactPolicy.java</exclude>
+						<exclude>**/TestFunctionFactPolicy.java</exclude>
 						<exclude>**/TestControlFactory.java</exclude>		
 						<exclude>**/TestFunctionFactory.java</exclude>	
 						<exclude>**/TestFactoryInterfaces.java</exclude>												
@@ -86,13 +84,13 @@
 						<exclude>**/TestFactoryCache.java</exclude>
 							
 						<exclude>**/TestCachePerformance.java</exclude>		
-						<exclude>**/TestBaseService.java</exclude>
+						
 						<exclude>**/TestTokenService.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>
 						<exclude>**/TestPolicyService.java</exclude>
 						
 						<exclude>**/TestRoleService.java</exclude>
-						<exclude>**/TestBulkAccount.java</exclude>
+						
 						<exclude>**/TestAttributes.java</exclude>
 						<exclude>**/TestAuditFactory.java</exclude>						
 						<exclude>**/TestUserRegistration.java</exclude>
@@ -108,7 +106,14 @@
 						<exclude>**/TestSecuritySpool.java</exclude>
 						<exclude>**/TestDBStress.java</exclude>
 						<exclude>**/TestDataRow.java</exclude>	
-						
+						<exclude>**/TestBulkAccount.java</exclude>
+						<exclude>**/TestDataTags.java</exclude>
+							<exclude>**/TestBaseService.java</exclude>
+							<exclude>**/TestEffectiveAuthorization.java</exclude>
+							<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
+						<!-- 
+
+							
 						-->
 					
 
@@ -119,7 +124,7 @@
 						<!-- REFACTOR/RETEST BAR -->
 						<exclude>**/TestUserLogin.java</exclude>
 						<!--  NOTE: The following tests are circumstantial to various migration efforts and need to be refactored -->
-						<exclude>**/TestDataTags.java</exclude>	
+						
 						<exclude>**/TestImportContacts.java</exclude>
 						<!--  NOTE: The following tests have contextual/ordering errors that need to be resolved -->
 						<exclude>**/TestUserSession.java</exclude>

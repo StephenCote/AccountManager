@@ -1,5 +1,5 @@
 <html-fragment>
-	<input type = "hidden" rid = "groupType" bind = "${bean.rocketType}" class = "rocket-text" />
+	
 	<div class = "rocket-column-2">
 		<p>
 			Description:

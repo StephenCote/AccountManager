@@ -49,6 +49,8 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.BaseParticipantType;
+import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataTagType;
 import org.cote.accountmanager.objects.DataType;
@@ -59,6 +61,7 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
+import org.cote.accountmanager.objects.types.TagEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.FileUtil;
@@ -200,9 +203,9 @@ public class DataAction {
 			String match = "Root/Home/product_user/Media";
 			String replace = "/Home/test@foo.bar/GalleryHome/rd";
 			
-			Map<String,DataTagType> dataTags = new HashMap<String,DataTagType>();
+			Map<String,BaseTagType> dataTags = new HashMap<String,BaseTagType>();
 			
-			DataTagType nTag = null;
+			BaseTagType nTag = null;
 			long startMap = System.currentTimeMillis();
 			
 			for(int i = 0; i < dataFile.length;i++){
@@ -228,7 +231,7 @@ public class DataAction {
 				long startTag = System.currentTimeMillis();
 				String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 				if(dataTags.containsKey(tags[i])==false){
-					DataTagType tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).newDataTag(user,tags[i],tagDir.getId());
+					BaseTagType tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).newTag(user,tags[i],TagEnumType.DATA,tagDir.getId());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TAG, tag);
 					dataTags.put(tags[i], tag);
 					nTag = tag;
@@ -267,7 +270,7 @@ public class DataAction {
 					}
 					startLookup = System.currentTimeMillis();
 					for(int d = 0; d < data.size(); d++){
-						DataParticipantType dpt = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).newDataTagParticipation(nTag, data.get(d));
+						BaseParticipantType dpt = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).newTagParticipation(nTag, data.get(d));
 						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TAGPARTICIPATION, dpt);
 					}
 					//logger.info("Bulk Queue: " + (System.currentTimeMillis() - startLookup));

@@ -50,16 +50,12 @@ public class AM5RequestWrapper extends HttpServletRequestWrapper {
     this.principal = new UserPrincipal(user.getId(), user.getName(), user.getOrganizationPath());
     try {
 		List<RolePrincipal> rpl = AM5LoginModule.getRoleSets(principal);
-		//logger.info("Roles: " + rpl.size());
 		for(RolePrincipal r : rpl){
-			//logger.info("Role: " + r.getName());
 			roles.add(r.getName());
 		}
 	} catch (LoginException | FactoryException | ArgumentException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-    //this.roles = inRoles;
     this.request = inRequest;
 
 

@@ -373,134 +373,27 @@ public class BaseService {
 		}
 	
 	}
-	public static boolean canViewType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
-		boolean outBool = false;
-		if(AuthorizationService.isMapOwner(user, obj)) return true;
-		INameIdFactory iFact = getFactory(type);
-		if(type.equals(AuditEnumType.USER)){
-			// allow for user requesting self
-			// this does not register true for 'isMapOwner' for the user object as a user does not own itslef
-			//
-			outBool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
-			if(!outBool)  outBool = AuthorizationService.isMapOwner(user, obj);
-			if(!outBool) outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
-			if(!outBool) outBool = RoleService.isFactoryReader(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
-		}
-		else if(iFact.isClusterByGroup()){
-			outBool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
-		}
-		else{
-			if(type.equals(AuditEnumType.DATA)){
-				outBool = AuthorizationService.canView(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
-			}
-			if(outBool == false) outBool = AuthorizationService.canView(user, obj);
-			
-		}
 
-		return outBool;
+	public static boolean canViewType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
+		return AuthorizationService.canView(user, obj);
 	}
 	public static boolean canCreateType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
-		boolean outBool = false;
-		INameIdFactory iFact = getFactory(type);
-		if(iFact.isClusterByGroup()){
-			NameIdDirectoryGroupType nobj = (NameIdDirectoryGroupType)obj;
-			if(nobj.getGroupId() <= 0L){
-				logger.error("Invalid group id");
-			}
-			else{
-				outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(nobj.getGroupId(),obj.getOrganizationId()));
-			}
-		}
-		else if(iFact.isClusterByParent()){
-			if(obj.getParentId() > 0L){
-				NameIdType parent = iFact.getById(obj.getParentId(),obj.getOrganizationId());
-				outBool = AuthorizationService.canChange(user, parent);
-			}
-		}
-		else if(type.equals(AuditEnumType.DATA)){
-			outBool = AuthorizationService.canChange(user, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((DataType)obj).getGroupId(),obj.getOrganizationId()));
-		}
-		else if(type.equals(AuditEnumType.USER)){
-			outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),user.getOrganizationId());
-		}
-		
-		if(outBool == false && (type.equals(AuditEnumType.PERMISSION) || type.equals(AuditEnumType.ROLE))){
-			logger.warn("***** REFACTOR - Why is this role check not in the Authorization service check?");
-			outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
-		}
-	
-		return outBool;
+		return AuthorizationService.canCreate(user, obj);
 	}
 	public static boolean canChangeType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
-		boolean outBool = false;
-		if(AuthorizationService.isMapOwner(user, obj)) return true;
-		INameIdFactory iFact = getFactory(type);
-		if(iFact.isClusterByGroup()){
-			outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
-		}
-		else if(type.equals(AuditEnumType.GROUP)){
-			BaseGroupType edir = iFact.getById(obj.getId(), user.getOrganizationId());
-			BaseGroupType opdir = iFact.getById(edir.getParentId(), user.getOrganizationId());
-			BaseGroupType pdir = iFact.getById(((BaseGroupType)obj).getParentId(), user.getOrganizationId());
-			if(opdir == null){
-				logger.error("Original Parent group (#" + obj.getParentId() + ") doesn't exist in organization " + user.getOrganizationId());
-				return false;
-			}
-			if(pdir == null){
-				logger.error("Specified Parent group (#" + obj.getParentId()+ ") doesn't exist in organization " + user.getOrganizationId());
-				return false;
-			}
-			if(opdir.getId() != pdir.getId() && !AuthorizationService.canCreate(user, pdir)){
-				logger.error("User " + user.getName() + " (#" + user.getId() + ") is not authorized to create in group " + pdir.getName() + " (#" + pdir.getId() + ")");
-				return false;
-			}
-
-			outBool = AuthorizationService.canChange(user, obj);
-		}
-		else if(type.equals(AuditEnumType.USER)){
-			outBool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
-			if(!outBool)  outBool = AuthorizationService.isMapOwner(user, obj);
-			if(!outBool) outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
-		}
-		else{
-			outBool = AuthorizationService.canChange(user, obj);
-		}
-
-		return outBool;
+		return AuthorizationService.canChange(user, obj);
 	}
 	public static boolean canDeleteType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
-		boolean outBool = false;
-		if(AuthorizationService.isMapOwner(user, obj)) return true;
-		INameIdFactory iFact = getFactory(type);
-		if(iFact.isClusterByGroup()){
-			/// NOTE: testing whether the parent group can be changed, which propogates to deleting the contained object
-			///
-			outBool = AuthorizationService.canChange(user,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)obj).getGroupId(),obj.getOrganizationId()));
-		}
-		else if(type.equals(AuditEnumType.USER)){
-			outBool = (user.getId().compareTo(obj.getId())==0 && user.getOrganizationId().compareTo(obj.getOrganizationId())==0);
-			if(outBool) throw new FactoryException("Self deletion not supported via Web interface");
-			outBool = AuthorizationService.isMapOwner(user, obj);
-			if(!outBool) outBool = RoleService.isFactoryAdministrator(user, Factories.getFactory(FactoryEnumType.ACCOUNT),obj.getOrganizationId());
-		}
-		else{
-			outBool = AuthorizationService.canDelete(user,obj);
-		}
-	
-		return outBool;
+		return AuthorizationService.canDelete(user, obj);
 	}
 	
 	/// Duped in AuthorizationService, except the type is taken from the object instead of from the AuditEnumType
 	private static <T> boolean authorizeRoleType(AuditEnumType type, UserType adminUser, BaseRoleType targetRole, T bucket, boolean view, boolean edit, boolean delete, boolean create) throws FactoryException, DataAccessException, ArgumentException{
-		boolean outBool = false;
-		outBool = AuthorizationService.authorizeType(adminUser, targetRole, (NameIdType)bucket, view, edit, delete, create);
-		return outBool;
+		return AuthorizationService.authorizeType(adminUser, targetRole, (NameIdType)bucket, view, edit, delete, create);
 	}
 	/// Duped in AuthorizationService, except the type is taken from the object instead of from the AuditEnumType
 	private static <T> boolean authorizeUserType(AuditEnumType type, UserType adminUser, UserType targetUser, T bucket, boolean view, boolean edit, boolean delete, boolean create) throws FactoryException, DataAccessException, ArgumentException{
-		boolean outBool = false;
-		outBool = AuthorizationService.authorizeType(adminUser, targetUser, (NameIdType)bucket, view, edit, delete, create);
-		return outBool;
+		return AuthorizationService.authorizeType(adminUser, targetUser, (NameIdType)bucket, view, edit, delete, create);
 	}
 	
 	public static <T> boolean authorizeRole(AuditEnumType type, long organizationId, long targetRoleId, T bucket, boolean view, boolean edit, boolean delete, boolean create, HttpServletRequest request){
@@ -1546,6 +1439,7 @@ public class BaseService {
 					outBool = RoleService.switchActorInRole(object, role, enable);
 					break;
 				default:
+					logger.error(String.format(FactoryException.UNHANDLED_TYPE, containerType.toString()));
 					break;
 			}
 			

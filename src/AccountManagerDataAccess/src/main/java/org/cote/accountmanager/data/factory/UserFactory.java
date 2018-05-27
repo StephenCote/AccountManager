@@ -36,6 +36,7 @@ import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.ContactInformationType;
@@ -57,7 +58,6 @@ import org.cote.accountmanager.objects.types.UserStatusEnumType;
 //
 public class UserFactory extends NameIdFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.USER, UserFactory.class); }
 	public UserFactory(){
 		super();
 		this.scopeToOrganization = true;
@@ -70,9 +70,11 @@ public class UserFactory extends NameIdFactory {
 		this.tableNames.add(this.primaryTableName);
 		this.factoryType = FactoryEnumType.USER;
 		
-		systemRoleNameReader = "AccountUsersReaders";
-		systemRoleNameAdministrator = "AccountAdministrators";
+		systemRoleNameReader = RoleService.ROLE_ACCOUNT_USERS_READERS;
+		systemRoleNameAdministrator = RoleService.ROLE_ACCOUNT_ADMINISTRATOR;
 	}
+	
+	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		UserType user = (UserType)obj;
@@ -123,7 +125,7 @@ public class UserFactory extends NameIdFactory {
 		if (deleted > 0)
 		{
 			((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).deleteContactInformationByReferenceType(user);
-			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).deleteUserParticipations(user);
+			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).deleteTagParticipations(user);
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).deleteRolesByUser(user);
 			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).deleteDataByUser(user);
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).deleteGroupsByUser(user);

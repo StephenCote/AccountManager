@@ -60,7 +60,6 @@ import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.GraphicsUtil;
-import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.StreamUtil;
 
 public class MediaUtil {
@@ -304,7 +303,6 @@ public class MediaUtil {
 						thumbGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, ".thumbnail", group, org.getId());
 					}
 				}
-				//DataType thumbData = 
 				if(thumbGroup == null){
 					AuditService.denyResult(audit, "The thumbnail group could not be found or created in " + group.getName() + (group.getPath() != null ? " (" + group.getPath() + ")" : ""));
 					response.sendError(404);
@@ -341,7 +339,7 @@ public class MediaUtil {
 							}
 							VaultBean vaultBean = null;
 							byte[] imageBytes = new byte[0];
-							if(chkData.getPointer() && isAllowDataPointers(request) == false){
+							if(chkData.getPointer() && !isAllowDataPointers(request)){
 								logger.error("Access to data pointer for thumbnail data is forbidden.");
 							}
 							else{
@@ -389,8 +387,7 @@ public class MediaUtil {
 			} /// End if thumbnail
 			else{
 				data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(objName, group);
-				//logger.info("Restrict Size: " + restrictSize + " / " + data.getMimeType());
-				if(data.getMimeType() != null && data.getMimeType().startsWith("image/") && restrictSize){
+				if(data != null && data.getMimeType() != null && data.getMimeType().startsWith("image/") && restrictSize){
 					logger.info("Redirecting to restricted image path");
 					((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).populate(group);
 					((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(group);
@@ -448,7 +445,6 @@ public class MediaUtil {
 		if(options.isUseTemplate() && options.getTemplatePath() != null){
 			
 			InputStream resourceContent = null;
-			// Map<String,String> roleMap = new HashMap<>();
 			String template = null;
 			if(templateContents.containsKey(options.getTemplatePath())) template = templateContents.get(options.getTemplatePath());
 			else{
@@ -476,7 +472,6 @@ public class MediaUtil {
 			}
 			if(template != null){
 				template = template.replaceAll("%TITLE%", data.getName() + " (" + data.getObjectId() + ") - Distributed Web Application Component");
-				//template = template.replaceAll("%CONTENT%", (options.isEncodeData() ? BinaryUtil.toBase64Str(value) : new String(value)));
 				template = template.replaceAll("%CONTENT%", request.getRequestURI().replaceAll("/dwac/", "/media/"));
 				value = template.getBytes();
 				if(options.getTemplateContentType() != null) response.setContentType(options.getTemplateContentType());

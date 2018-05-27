@@ -30,6 +30,8 @@ public class FactoryException extends Exception{
 	private static final long serialVersionUID = 1L;
 	public static final String TRACE_EXCEPTION = "Trace Exception";
 	public static final String OBJECT_UNKNOWN_TYPE = "Object cannot be of an unknown type";
+	public static final String OBJECT_NULL_REF = "Object is null for reference %s";
+	public static final String ARGUMENT_NULL = "Method argument is null";
 	public static final String OBJECT_NULL_TYPE = "Object is null for type %s";
 	public static final String TYPE_NOT_REGISTERED = "Type %s is not registered";
 	public static final String TYPE_ALREADY_REGISTERED = "Type %s is already registered";

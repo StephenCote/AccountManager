@@ -37,6 +37,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.ContactInformationType;
@@ -65,6 +66,7 @@ public class AccountFactory extends NameIdGroupFactory {
 		this.primaryTableName = "accounts";
 		this.tableNames.add(this.primaryTableName);
 		this.factoryType = FactoryEnumType.ACCOUNT;
+		systemRoleNameReader = RoleService.ROLE_ACCOUNT_USERS_READERS;
 		systemRoleNameAdministrator = "AccountAdministrators";
  
 	}
@@ -153,7 +155,7 @@ public class AccountFactory extends NameIdGroupFactory {
 			///
 			((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).deleteContactInformationByReferenceType(account);
 
-			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).deleteAccountParticipations(account);
+			((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).deleteTagParticipations(account);
 			((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteAccountGroupParticipations(account);
 			((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteAccountParticipations(account);
 			((DataParticipationFactory)Factories.getFactory(FactoryEnumType.DATAPARTICIPATION)).deleteAccountParticipations(account);

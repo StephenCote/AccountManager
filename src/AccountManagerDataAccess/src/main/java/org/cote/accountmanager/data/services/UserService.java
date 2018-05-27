@@ -27,10 +27,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
-import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.ContactType;
@@ -54,7 +52,7 @@ public class UserService {
 				AuditService.denyResult(audit, "Not authorized to read user");
 			}
 			else{
-				person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getPersonByUser(user);
+				person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getPersonByUser(contUser);
 				if(person == null){
 					AuditService.denyResult(audit, "Global person does not exist for user");
 					return person;

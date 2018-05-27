@@ -87,54 +87,23 @@ import org.junit.Test;
  */
 public class TestIdentityService extends BaseAccelerantTest{
 	public static final Logger logger = LogManager.getLogger(TestIdentityService.class);
-	private static boolean createNewOrganization = false;
-	private static ICommunityProvider provider = null;
+
 	
-	private OrganizationType getOrganization(String newOrgName){
-		OrganizationType newOrg = testOrganization;
-		if(createNewOrganization){
-			try {
-				
-				newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).addOrganization(newOrgName, OrganizationEnumType.DEVELOPMENT, testOrganization);
-				FactoryDefaults.setupOrganization(newOrg, SecurityUtil.getSaltedDigest("password"));
-			} catch (FactoryException | ArgumentException | DataAccessException e) {
-				
-				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			}
-		}
-		return newOrg;
-	}
 	
-	private ICommunityProvider getProvider(){
-		if(provider != null) return provider;
-		String pcls =testProperties.getProperty("factories.community");
-		try {
-			logger.info("Initializing community provider " + pcls);
-			Class cls = Class.forName(pcls);
-			ICommunityProvider f = (ICommunityProvider)cls.newInstance();
-			provider = f;
-			provider.setRandomizeSeedPopulation(false);
-			provider.setOrganizePersonManagement(true);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			logger.error(FactoryException.TRACE_EXCEPTION, e);
-		}
-		
-		return provider;
-	}
+
 	
 	private ProjectType getProviderCommunityProject(UserType user, LifecycleType community, String projectName,boolean cleanup){
 		ProjectType proj = null;
 		UserType admin = getAdminUser(user.getOrganizationId());
-		proj = provider.getCommunityProject(admin, community.getName(), projectName);
+		proj = getProvider().getCommunityProject(admin, community.getName(), projectName);
 		//logger.info(JSONUtil.exportObject(user));
 		if(proj != null && cleanup){
-			provider.deleteCommunityProject(admin, proj.getObjectId());
+			getProvider().deleteCommunityProject(admin, proj.getObjectId());
 			proj = null;
 		}
 		if(proj == null){
-			assertTrue("Failed to create community",provider.createCommunityProject(admin, community.getObjectId(), projectName));
-			proj = provider.getCommunityProject(admin, community.getName(), projectName);
+			assertTrue("Failed to create community",getProvider().createCommunityProject(admin, community.getObjectId(), projectName));
+			proj = getProvider().getCommunityProject(admin, community.getName(), projectName);
 			assertNotNull("Community project is null",proj);
 		}
 		return proj;
@@ -143,17 +112,17 @@ public class TestIdentityService extends BaseAccelerantTest{
 	private LifecycleType getProviderCommunity(UserType user, String communityName, boolean cleanup){
 		LifecycleType lf = null;
 		UserType admin = getAdminUser(user.getOrganizationId());
-		lf = provider.getCommunity(admin, communityName);
+		lf = getProvider().getCommunity(admin, communityName);
 		//logger.info(JSONUtil.exportObject(user));
 		if(lf != null && cleanup){
-			provider.deleteCommunity(admin, lf.getObjectId());
+			getProvider().deleteCommunity(admin, lf.getObjectId());
 			lf = null;
 		}
 		if(lf == null){
-			assertTrue("Failed to create community",provider.createCommunity(admin, communityName));
-			lf = provider.getCommunity(admin, communityName);
+			assertTrue("Failed to create community",getProvider().createCommunity(admin, communityName));
+			lf = getProvider().getCommunity(admin, communityName);
 			assertNotNull("Community is null",lf);
-			assertTrue("Failed to enroll admin",provider.enrollAdminInCommunity(admin,lf.getObjectId(), user.getObjectId()));
+			assertTrue("Failed to enroll admin",getProvider().enrollAdminInCommunity(admin,lf.getObjectId(), user.getObjectId()));
 		}
 		return lf;
 	}
@@ -166,7 +135,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 		assertNotNull("Directory is null", tdir);
 		int ct = BaseService.countByGroup(AuditEnumType.TRAIT, tdir, user);
 		if(ct == 0){
-			outBool = provider.importLocationTraits(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "featureCodes_en.txt");
+			outBool = getProvider().importLocationTraits(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "featureCodes_en.txt");
 		}
 		else{
 			outBool = true;
@@ -183,7 +152,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 		if(ct == 0){
 			logger.info("Loading project region and person seed data.");
 			outBool = (
-					provider.generateCommunityProjectRegion(admin, lf.getObjectId(), proj.getObjectId(), locationCount, populationSize, testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names"))
+					getProvider().generateCommunityProjectRegion(admin, lf.getObjectId(), proj.getObjectId(), locationCount, populationSize, testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names"))
 				);
 		}
 		else{
@@ -201,10 +170,10 @@ public class TestIdentityService extends BaseAccelerantTest{
 		if(ct == 0){
 			logger.info("Loading community location data.  Note: This may take a while.");
 			outBool = (
-				provider.importLocationCountryInfo(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "countryInfo.txt")
-				&& provider.importLocationAdmin1Codes(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "admin1CodesASCII.txt")
-				&& provider.importLocationAdmin2Codes(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"),  "admin2Codes.txt")
-				&& provider.importLocationCountryData(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "US,CA,MX","alternateNames.txt")
+				getProvider().importLocationCountryInfo(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "countryInfo.txt")
+				&& getProvider().importLocationAdmin1Codes(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "admin1CodesASCII.txt")
+				&& getProvider().importLocationAdmin2Codes(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"),  "admin2Codes.txt")
+				&& getProvider().importLocationCountryData(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "US,CA,MX","alternateNames.txt")
 			);
 		}
 		else{
@@ -234,7 +203,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 		*/
 		assertTrue("Failed to reload traits",reloadTraits(testUser,lf));
 		assertTrue("Failed to reload cinfo",reloadCountryInfo(testUser,lf));
-		//provider.generateCommunityProjectRegion(testUser, lf.getObjectId(), projectId, locationSize, seedSize, dictionaryPath, namesPath)
+		//getProvider().generateCommunityProjectRegion(testUser, lf.getObjectId(), projectId, locationSize, seedSize, dictionaryPath, namesPath)
 		
 		ProjectType p1 = getProviderCommunityProject(testUser, lf, projectName,true);
 		
@@ -242,7 +211,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 		
 		assertTrue("Failed to load project region",loadProjectRegion(testUser, lf, p1, locationSize, seedSize));
 		
-		assertTrue("Failed to generate project application",provider.generateCommunityProjectApplication(testUser, lf.getObjectId(), p1.getObjectId(), "Application - " + UUID.randomUUID().toString(), true, true, 25, 25, 1.0, testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names")));
+		assertTrue("Failed to generate project application",getProvider().generateCommunityProjectApplication(testUser, lf.getObjectId(), p1.getObjectId(), "Application - " + UUID.randomUUID().toString(), true, true, 25, 25, 1.0, testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names")));
 		
 		BasePermissionType[] permTest = DataGeneratorData.randomApplicationPermissions(25, 25);
 		assertTrue("Expected exact number of permissions, but received " + permTest.length,permTest.length == 25);
@@ -269,7 +238,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 		assertNotNull("Address is null",addr1);
 		logger.info(JSONUtil.exportObject(addr1));
 		*/
-		//provider.generateCommunityProjectRegion(testUser, communityId, projectId, locationSize, seedSize, testProperties.getProperty("data.generator.dictionary"), testProperties.getProperty("data.generator.names"));
+		//getProvider().generateCommunityProjectRegion(testUser, communityId, projectId, locationSize, seedSize, testProperties.getProperty("data.generator.dictionary"), testProperties.getProperty("data.generator.names"));
 	}
 	/*
 	@Test

@@ -196,7 +196,6 @@ public class TokenService {
 
 				OrganizationType org = oFact.find(authnRequest.getOrganizationPath());
 				if(org != null){
-					byte[] creds = authnRequest.getCredential();
 					String credStr = (new String(authnRequest.getCredential())).trim();
 
 					logger.info("Validating credential for '" + authnRequest.getSubject() + "'");
@@ -208,7 +207,6 @@ public class TokenService {
 					}
 				}
 			} catch (FactoryException | ArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

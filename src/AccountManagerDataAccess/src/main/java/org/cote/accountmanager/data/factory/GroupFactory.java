@@ -207,6 +207,9 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		BaseGroupType group = (BaseGroupType)object;
 		if (group.getOrganizationId() == null || group.getOrganizationId() <= 0) throw new FactoryException("Cannot add group without Organization.");
+		
+		/// 2018/05/25 - Why is 'Lifecycles' restricted here?
+		///
 		if(group.getName().equals("Lifecycles") && group.getParentId().compareTo(0L) == 0) throw new ArgumentException("Invalid parent id");
 		try{
 			DataRow row = prepareAdd(group, "groups");
@@ -549,7 +552,7 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	public DirectoryGroupType getCreateDirectory(UserType owner, String directoryName, DirectoryGroupType parent, long organizationId) throws FactoryException, ArgumentException
 	{
-
+		if(parent != null) populate(parent);
 		DirectoryGroupType vdir = getDirectoryByName(directoryName, parent, organizationId);
 		if (vdir == null)
 		{

@@ -59,7 +59,7 @@ public abstract class NameIdGroupFactory extends NameIdFactory implements INameI
 		this.hasUrn = true;
 		this.hasObjectId = true;
 		systemRoleNameAdministrator = RoleService.ROLE_DATA_ADMINISTRATOR;
-		systemRoleNameReader = RoleService.ROLE_DATA_READER;
+		systemRoleNameReader = RoleService.ROLE_DATA_READERS;
 	}
 	
 	@Override

@@ -52,13 +52,11 @@ import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.exceptions.FactoryException;
-import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AuditType;
-import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataTagSearchRequest;
 import org.cote.accountmanager.objects.DataType;
-import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -142,7 +140,7 @@ public class GenericSearchService {
 		logger.info("Searching for " + searchRequest.getRecordCount() + " data items starting at " + searchRequest.getStartRecord() + " having " + searchRequest.getTags().size() + " tags");
 		List<DataType> list = new ArrayList<>();
 		try {
-			list = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).getDataForTags(searchRequest.getTags().toArray(new BaseTagType[0]), searchRequest.getStartRecord(), searchRequest.getRecordCount(), user.getOrganizationId());
+			list = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).getForTags(FactoryEnumType.DATA,searchRequest.getTags().toArray(new BaseTagType[0]), searchRequest.getStartRecord(), searchRequest.getRecordCount(), user.getOrganizationId());
 			if(searchRequest.getPopulateGroup()){
 				logger.info("Pre-populating referenced groups");
 				for(int i = 0; i < list.size();i++){
@@ -172,7 +170,6 @@ public class GenericSearchService {
 	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public int countByTag(DataTagSearchRequest searchRequest,@Context HttpServletRequest request){
 		int count = 0;
-		UserType user = ServiceUtil.getUserFromSession(request);
 		logger.warn("AuthZ Not Implemented Yet For countByTags");
 		logger.info("Counting for " + searchRequest.getTags().size() + " tags");
 
@@ -199,12 +196,16 @@ public class GenericSearchService {
 			Object obj = BaseService.readByObjectId(aType, objectId, request);
 			try{
 			TagParticipationFactory fact = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION));
+			
 				if(obj != null){
+					tags = fact.getTags((NameIdType)obj);
+					/*
 					if(aType == AuditEnumType.ACCOUNT) tags = fact.getAccountTags((AccountType)obj);
 					if(aType == AuditEnumType.PERSON) tags = fact.getPersonTags((PersonType)obj);
 					if(aType == AuditEnumType.USER) tags = fact.getUserTags((UserType)obj);
 					if(aType == AuditEnumType.DATA) tags = fact.getDataTags((DataType)obj);
 					if(aType == AuditEnumType.GROUP) tags = fact.getGroupTags((BaseGroupType)obj);
+					*/
 					logger.info("Tag read extended to associated tags of authorized object access");
 				}
 			}

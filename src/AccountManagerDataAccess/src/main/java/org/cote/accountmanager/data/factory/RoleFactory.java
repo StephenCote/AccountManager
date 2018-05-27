@@ -36,6 +36,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
@@ -77,8 +78,8 @@ public class RoleFactory extends NameIdFactory {
 		this.tableNames.add(primaryTableName);
 		
 		factoryType = FactoryEnumType.ROLE;
-		systemRoleNameReader = "RoleReaders";
-		systemRoleNameAdministrator = "RoleAdministrators";
+		systemRoleNameReader = RoleService.ROLE_ROLE_READERS;
+		systemRoleNameAdministrator = RoleService.ROLE_ROLE_ADMINISTRATORS;
 	}
 	
 	@Override

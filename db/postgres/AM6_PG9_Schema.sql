@@ -258,7 +258,7 @@ create table statistics (
 	AccessedDate timestamp not null
 ) inherits (orgid,objectdate);
 CREATE UNIQUE INDEX IdxstatisticsRefOrg on statistics(ReferenceId,StatisticsType,OrganizationId);
-
+CREATE INDEX idxstatisticsidorg on statistics(id,organizationid);
 
 DROP TABLE IF EXISTS addresses CASCADE;
 create table addresses (

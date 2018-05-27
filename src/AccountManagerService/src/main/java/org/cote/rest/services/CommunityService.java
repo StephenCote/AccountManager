@@ -76,7 +76,7 @@ public class CommunityService {
 		String pcls = context.getInitParameter("factories.community");
 		try {
 			logger.info("Initializing community provider " + pcls);
-			Class cls = Class.forName(pcls);
+			Class<?> cls = Class.forName(pcls);
 			ICommunityProvider f = (ICommunityProvider)cls.newInstance();
 			provider = f;
 			provider.setRandomizeSeedPopulation(false);
@@ -205,7 +205,7 @@ public class CommunityService {
 	@Path("/new/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response newCommunityProject( @PathParam("name") String name, @Context HttpServletRequest request){
+	public Response newCommunity( @PathParam("name") String name, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		ICommunityProvider cp = getProvider();
 		boolean enrolled = false;

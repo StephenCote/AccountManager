@@ -44,6 +44,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DataColumnType;
@@ -93,8 +94,8 @@ public class DataFactory extends NameIdFactory {
 		this.primaryTableName = "data";
 		this.tableNames.add(this.primaryTableName);
 		factoryType = FactoryEnumType.DATA;
-		systemRoleNameReader = "DataReaders";
-		systemRoleNameAdministrator = "DataAdministrators";
+		systemRoleNameReader = RoleService.ROLE_DATA_READERS;
+		systemRoleNameAdministrator = RoleService.ROLE_DATA_ADMINISTRATOR;
 	}
 	@Override
 	protected void checkCacheExpires(){

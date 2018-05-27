@@ -151,9 +151,9 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 			
 			//assertTrue("Owner cannot change permission",AuthorizationService.isAuthorized(permission, admin, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(permission.getNameType(), permission.getOrganizationId())}));
 			setAuthZ = AuthorizationService.authorize(admin, setMember, object, AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId()), true);
-			isAuthZ = AuthorizationService.isAuthorized(checkMember, object, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
+			isAuthZ = AuthorizationService.isAuthorized(checkMember, object, AuthorizationService.PERMISSION_VIEW, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
 			deAuthZ = AuthorizationService.authorize(admin, setMember, object, AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId()), false);
-			notAuthZ = AuthorizationService.isAuthorized(checkMember,object, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
+			notAuthZ = AuthorizationService.isAuthorized(checkMember,object, AuthorizationService.PERMISSION_VIEW, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(object.getNameType(), object.getOrganizationId())});
 		} catch (NullPointerException | FactoryException | DataAccessException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);

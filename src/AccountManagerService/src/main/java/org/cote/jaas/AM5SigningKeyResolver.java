@@ -66,7 +66,6 @@ public class AM5SigningKeyResolver implements SigningKeyResolver{
 
 	@Override
 	public Key resolveSigningKey(JwsHeader arg0, String arg1) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

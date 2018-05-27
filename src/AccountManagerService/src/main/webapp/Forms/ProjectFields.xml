@@ -91,7 +91,7 @@
 			}
 			else{
 				uwmServiceCache.clearCache();
-				return AM6Client.add("PROJECT",o);
+				return AM6Client.update("PROJECT",o);
 			}
 		},
 		prepareSave : function(o){

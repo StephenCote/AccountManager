@@ -53,6 +53,7 @@ import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -91,6 +92,17 @@ public class AuthorizationService {
 		 return schemaBean;
 	 }
 	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/systemRoles")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getSystemRoles(@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		List<BaseRoleType> outList = RoleService.getSystemRoles(user.getOrganizationId());
+		logger.info("Get system roles for " + user.getOrganizationPath() + ": " + outList.size() + " roles returned");
+		return Response.status(200).entity(outList).build();
+	}
 	
 	@RolesAllowed({"admin","user"})
 	@GET
@@ -195,6 +207,9 @@ public class AuthorizationService {
 					((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(group);
 					obj = group;
 					break;
+				default:
+					logger.error(String.format(FactoryException.UNHANDLED_TYPE, auditType.toString()));
+					break;
 				}
 			}
 		}
@@ -216,14 +231,10 @@ public class AuthorizationService {
 		try {
 			targUser = ((NameIdFactory)Factories.getFactory(FactoryEnumType.USER)).getByObjectId(objectId, user.getOrganizationId());
 		} catch (FactoryException | ArgumentException e) {
-			// TODO Auto-generated catch block
 			logger.error(e);
 		}
-		
-		//AuditEnumType auditType = AuditEnumType.valueOf(objectType);
 		List<Object> objs = BaseService.listForMember(AuditEnumType.ROLE, user, targUser, FactoryEnumType.USER);
 		return Response.status(200).entity(objs).build();
-		//return RoleServiceImpl.getListForUser(user, targUser);
 	}
 
 }

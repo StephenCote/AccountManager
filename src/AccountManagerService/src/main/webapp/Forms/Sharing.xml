@@ -108,7 +108,7 @@
 					this.GetElementByRID((b ? "shareWhoName" : "shareName")).value = o.nameType + " " + o.name + " (#" + o.id + ")";
 					this.GetElementByRID((b ? "shareWhoType" : "shareType")).value = o.nameType;
 				}
-				this.GetElementByRID("systemGroupContainer").style.display = (o.nameType == "GROUP" ? "" : "none");
+				this.GetElementByRID("systemGroupContainer").style.display = (this.getProperties().viewType.nameType == "GROUP" ? "" : "none");
 			},
 		findType : function(b){
 			var sFType = this.GetElementByRID((b ? "shareWhoType":"shareType")).value;
@@ -151,7 +151,7 @@
 				var oO = 0;
 
 				if(sW.match(/^public$/gi)){
-					oO = accountManager.getPublicUser();
+					oO = AM6Client.anonymous();
 					sW = "User";
 				}
 				else if(sW.match(/^(role|group|person|account|user)$/gi)){
@@ -170,9 +170,8 @@
 				var r = 0;
 				if(sW.match(/^(role|user)$/gi)){
 					Hemi.log("Authorize " + sT + " " + sW);
-					r = accountManager["authorize" + sT + sW](0, oO.id, o.id, (b ? false : this.GetElementByRID("chkRead").checked), (b ? false : this.GetElementByRID("chkUpdate").checked), (b ? false : this.GetElementByRID("chkDelete").checked), (b ? false : this.GetElementByRID("chkAdd").checked));
- 
-					if(this.GetElementByRID("chkSystemGroups").checked){
+					r = AM6Client.permitSystem(o.nameType, o.objectId, oO.nameType, oO.objectId,(b ? false : this.GetElementByRID("chkRead").checked), (b ? false : this.GetElementByRID("chkUpdate").checked), (b ? false : this.GetElementByRID("chkDelete").checked), (b ? false : this.GetElementByRID("chkAdd").checked));
+					if(r && this.GetElementByRID("chkSystemGroups").checked){
 						if(o.nameType == "GROUP" && !o.name.match(/^\.thumbnail$/)){
 							var oT = AM6Client.find("GROUP","DATA",o.path + "/.thumbnail");
 							if(oT) this.authorizeType(b,oT);
@@ -183,7 +182,7 @@
 				if(sW.match(/^(role|user|person|account|group|user)$/gi)){
 				
 					for(var i = 0; i < aPerms.length; i++){
-						if(accountManager.setPermission(o,oO,aPerms[i].data,(b?false:true))){
+						if(AM6Client.permit(o.nameType, o.objectId,oO.nameType,oO.objectId,aPerms[i].data.objectId,(b?false:true))){
 							p++;
 						}
 					}

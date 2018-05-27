@@ -75,6 +75,8 @@ public class RocketSecurity {
 	private static String[] containerPermissions = new String[]{};
 	private static String[] containerRoles = new String[]{ROLE_ADMIN,ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_ARCHITECT,ROLE_DEVELOPER,ROLE_AUTHOR,ROLE_EDITOR};
 
+	private static String[] readerRoles = new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR};
+	private static String[] writerRoles = new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER};
 	/// "Projects" is intentionally left out because this list appears at both the lifecycle and project level
 	///
 	private static String[] directoryGroups = new String[]{"Schedules","Goals","Budgets",
@@ -206,11 +208,11 @@ public class RocketSecurity {
 			UserRoleType lRole = getLifecycleRoleBucket(lc);
 			UserRoleType rRole = getRocketRoles(lc.getOrganizationId());
 
-			setupRolesToReadContainer(adminUser,rRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
-			setupRolesToEditContainer(adminUser,rRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+			setupRolesToReadContainer(adminUser,rRole,readerRoles,dir);
+			setupRolesToEditContainer(adminUser,rRole,writerRoles,dir);
 			
-			setupRolesToReadContainer(adminUser,bRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
-			setupRolesToEditContainer(adminUser,bRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+			setupRolesToReadContainer(adminUser,bRole,readerRoles,dir);
+			setupRolesToEditContainer(adminUser,bRole,writerRoles,dir);
 	
 			setupRolesToReadContainer(adminUser,lRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_ARCHITECT,ROLE_DEVELOPER,ROLE_AUTHOR,ROLE_EDITOR},dir);
 			setupRolesToEditContainer(adminUser,lRole,new String[]{ROLE_ADMIN},dir);
@@ -241,12 +243,12 @@ public class RocketSecurity {
 		RocketSecurity.applyRolesToProjectDirectory(null, rRole, lRole, bRole, dir);
 	}
 	public static void applyRolesToProjectDirectory(UserType adminUser, UserRoleType rocketRole, UserRoleType lifecycleRole, UserRoleType projectRole, BaseGroupType dir) throws FactoryException, DataAccessException, ArgumentException{
-		setupRolesToReadContainer(adminUser,rocketRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
-		setupRolesToEditContainer(adminUser,rocketRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
-		setupRolesToReadContainer(adminUser,projectRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
-		setupRolesToEditContainer(adminUser,projectRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
-		setupRolesToReadContainer(adminUser,lifecycleRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
-		setupRolesToEditContainer(adminUser,lifecycleRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+		setupRolesToReadContainer(adminUser,rocketRole,readerRoles,dir);
+		setupRolesToEditContainer(adminUser,rocketRole,writerRoles,dir);
+		setupRolesToReadContainer(adminUser,projectRole,readerRoles,dir);
+		setupRolesToEditContainer(adminUser,projectRole,writerRoles,dir);
+		setupRolesToReadContainer(adminUser,lifecycleRole,readerRoles,dir);
+		setupRolesToEditContainer(adminUser,lifecycleRole,writerRoles,dir);
 		EffectiveAuthorizationService.pendGroupUpdate(dir);
 	}
 	
@@ -276,34 +278,34 @@ public class RocketSecurity {
 			return false;
 		}
 		/// apply Rocket-level roles on lifecycle directory
-		setupRolesToReadContainer(adminUser,rRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},lcDir);
-		setupRolesToEditContainer(adminUser,rRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},lcDir);
+		setupRolesToReadContainer(adminUser,rRole,readerRoles,lcDir);
+		setupRolesToEditContainer(adminUser,rRole,writerRoles,lcDir);
 
 		/// apply Lifecycle-level roles on lifecycle directory
-		setupRolesToReadContainer(adminUser,bRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},lcDir);
-		setupRolesToEditContainer(adminUser,bRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},lcDir);
+		setupRolesToReadContainer(adminUser,bRole,readerRoles,lcDir);
+		setupRolesToEditContainer(adminUser,bRole,writerRoles,lcDir);
 
 		/// Because the bulk operation in this implementation directly manipulates the participation table, it's necessary to tell the authorizaton service that it needs to update the related object
 		///
 		EffectiveAuthorizationService.pendGroupUpdate(lcDir);
 		
 		/// apply rocket-level roles on project directory
-		setupRolesToReadContainer(adminUser,rRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
-		setupRolesToEditContainer(adminUser,rRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+		setupRolesToReadContainer(adminUser,rRole,readerRoles,dir);
+		setupRolesToEditContainer(adminUser,rRole,writerRoles,dir);
 		
 		/// apply lifecycle-level roles on project directory
-		setupRolesToReadContainer(adminUser,bRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
-		setupRolesToEditContainer(adminUser,bRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+		setupRolesToReadContainer(adminUser,bRole,readerRoles,dir);
+		setupRolesToEditContainer(adminUser,bRole,writerRoles,dir);
 
 		EffectiveAuthorizationService.pendGroupUpdate(dir);
 
 		for(int i = 0; i < directoryGroups.length; i++){
 				dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(adminUser, directoryGroups[i], lcDir, lc.getOrganizationId());
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, dir);
-				setupRolesToReadContainer(adminUser,rRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
-				setupRolesToEditContainer(adminUser,rRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
-				setupRolesToReadContainer(adminUser,bRole,new String[]{ROLE_USER,ROLE_AUDIT,ROLE_MANAGER,ROLE_TESTER,ROLE_AUTHOR,ROLE_EDITOR},dir);
-				setupRolesToEditContainer(adminUser,bRole,new String[]{ROLE_ADMIN,ROLE_ARCHITECT,ROLE_DEVELOPER},dir);
+				setupRolesToReadContainer(adminUser,rRole,readerRoles,dir);
+				setupRolesToEditContainer(adminUser,rRole,writerRoles,dir);
+				setupRolesToReadContainer(adminUser,bRole,readerRoles,dir);
+				setupRolesToEditContainer(adminUser,bRole,writerRoles,dir);
 				EffectiveAuthorizationService.pendGroupUpdate(dir);
 		}
 

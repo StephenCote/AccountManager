@@ -57,7 +57,7 @@ public class LoginService {
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(CredentialType credential, @Context HttpServletRequest request, @Context HttpServletResponse response){
-		boolean outBool = false;
+
 		boolean loginSuccess = true;
 		
 		try {

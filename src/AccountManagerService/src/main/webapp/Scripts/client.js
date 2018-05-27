@@ -310,16 +310,17 @@
 	   return Hemi.xml.getJSON(sComm + "/permission/base/" + oP.objectId,fc,(fH ? 1 : 0));
 	}
 	function addCommunity(sCommunityName, fH){
+	   return Hemi.xml.getJSON(sComm + "/new/" + sCommunityName,fH,(fH ? 1 : 0));
+	}
+	function deleteCommunityProject(sObjId, fH){
+		var sType = "PROJECT";
+		delete cache[sType];
+	   return Hemi.xml.deleteJSON(sComm + "/project/" + sObjId,fH,(fH ? 1 : 0));
+	}
+	function deleteCommunity(sObjId, fH){
 		var sType = "COMMUNITY";
-		var o = getFromCache(sType, "GET", sCommunityName);
-		if(o){
-			if(fH) fH("",o);
-			return o;
-		}
-		var f = fH;
-		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sCommunityName,v.json);} if(f) f(s,v);};
-
-	   return Hemi.xml.getJSON(sComm + "/new/" + sCommunityName,fc,(fH ? 1 : 0));
+		delete cache[sType];
+	   return Hemi.xml.deleteJSON(sComm + "/" + sObjId,fH,(fH ? 1 : 0));
 	}
 	function getCommunity(sCommunityName, fH){
 		var sType = "COMMUNITY";
@@ -347,15 +348,7 @@
 	}
 	function addCommunityProject(sCommunityId, sProjectName,fH){
 		var sType = "COMMUNITY." + sCommunityId + ".PROJECT";
-		var o = getFromCache(sType, "GET", sProjectName);
-		if(o){
-			if(fH) fH("",o);
-			return o;
-		}
-		var f = fH;
-		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sProjectName,v.json);} if(f) f(s,v);};
-
-	   return Hemi.xml.getJSON(sComm + "/new/" + sCommunityId + "/" + sProjectName,fc,(fH ? 1 : 0));
+	   return Hemi.xml.getJSON(sComm + "/new/" + sCommunityId + "/" + sProjectName,fH,(fH ? 1 : 0));
 	}
 	
 	function get(sType,sObjectId,fH){
@@ -453,7 +446,24 @@
 		AM6Client.currentOrganization = sCurrentOrganization = cred.organizationPath;
 		Hemi.xml.postJSON("/AccountManagerService/rest/login",cred,fH,(fH ? 1 : 0));
 	}
-	
+	function listSystemRoles(fH){
+		var sK = sCurrentOrganization + " SystemRoles";
+		var o = getFromCache("ROLE", "GET", sK);
+		if(o){
+			if(fH) fH("",o);
+			return o;
+		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("ROLE","GET",sK,v.json);} if(f) f(s,v);};
+		
+		return Hemi.xml.getJSON(sAuthZ + "/ROLE/systemRoles",fc,(fH ? 1 : 0));
+	}
+	function permitSystem(sType, sObjectId, sActorType, sActorId, bView, bEdit, bDelete, bCreate, fH){
+		return Hemi.xml.getJSON(sAuthZ + "/" + sType + "/" + sObjectId + "/permit/" + sActorType + "/" + sActorId + "/" + bView + "/" + bEdit + "/" + bDelete + "/" + bCreate,fH,(fH ? 1 : 0));
+	}
+	function permit(sType, sObjectId, sActorType, sActorId, sPermId, bEnable, fH){
+		return Hemi.xml.getJSON(sAuthZ + "/" + sType + "/" + sObjectId + "/permit/" + sActorType + "/" + sActorId + "/" + sPermId + "/" + bEnable,fH,(fH ? 1 : 0));
+	}
 	function listMembers(sType, sObjectId, sActorType, fH){
 		return Hemi.xml.getJSON(sAuthZ + "/" + sType + "/" + sObjectId + "/" + sActorType,fH,(fH ? 1 : 0));
 	}
@@ -485,6 +495,8 @@
 		find : find,
 		addCommunityProject : addCommunityProject,
 		addCommunity : addCommunity,
+		deleteCommunity : deleteCommunity,
+		deleteCommunityProject : deleteCommunityProject,
 		community : getCommunity,
 		communityProject : getCommunityProject,
 		communityProjectPermissionBase : getCommunityProjectPermissionBase,
@@ -507,8 +519,11 @@
 		entitlements : listEntitlementsForType,
 		isCommunityConfigured : isCommunityConfigured,
 		configureCommunityProjectGroupEntitlements : configureCommunityProjectGroupEntitlements,
+		permit : permit,
+		permitSystem : permitSystem,
 		members : listMembers,
 		member : setMember,
+		systemRoles : listSystemRoles,
 		user: getUserObject,
 		userPerson : getUserPersonObject,
 		currentOrganization : sCurrentOrganization,

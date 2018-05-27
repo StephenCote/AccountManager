@@ -326,10 +326,12 @@ public class Rocket {
 	public static boolean deleteLifecycle(LifecycleType lc){
 		boolean outBool = false;
 		try {
+			((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(RocketSecurity.getLifecyclePermissionBucket(lc));
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).delete(RocketSecurity.getLifecycleRoleBucket(lc));
 			((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).delete(lc);
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).delete(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(lc.getGroupId(), lc.getOrganizationId()));
 			Factories.cleanupOrphans();
+			Factories.clearCaches();
 			/// Need to clean up remaining artifacts
 			///
 			outBool = true;
@@ -425,7 +427,7 @@ public class Rocket {
 	}
 	
 	public static boolean configureApplicationEnvironment(UserType adminUser) throws FactoryException, DataAccessException, ArgumentException{
-		boolean isConfigured = false;
+
 		long organizationId = adminUser.getOrganizationId();
 		if(!RoleService.getIsUserInRole(RoleService.getSystemAdministratorUserRole(organizationId), adminUser)){
 			logger.error("Only a system administrator may configure an organization for Rocket communities.");
@@ -462,8 +464,8 @@ public class Rocket {
 		RocketSecurity.setupRolesToReadContainer(adminUser,rocketRoles,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},lDir);
 		RocketSecurity.setupRolesToEditContainer(adminUser,rocketRoles,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},lDir);
 		EffectiveAuthorizationService.pendGroupUpdate(lDir);
-		
-		return isConfigured;
+		EffectiveAuthorizationService.rebuildPendingRoleCache();
+		return true;
 	}
 	
 	public static boolean configureApplicationEnvironment(long organizationId, String adminPassword) throws FactoryException, DataAccessException, ArgumentException{
@@ -476,7 +478,7 @@ public class Rocket {
 		isConfigured = configureApplicationEnvironment(adminUser);
 		SessionSecurity.logout(adminUser);
 		
-		EffectiveAuthorizationService.rebuildPendingRoleCache();
+		
 		
 		return isConfigured;
 	}

@@ -66,6 +66,7 @@ import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DataTagType;
@@ -95,6 +96,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
+import org.cote.accountmanager.objects.types.TagEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.DataUtil;
@@ -262,17 +264,16 @@ public class BaseDataAccessTest{
 		return data;
 	}
 	
-	public DataTagType getTag(UserType user, String tag_name){
+	public BaseTagType getTag(UserType user, DirectoryGroupType dir, TagEnumType type, String tag_name){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
-		DataTagType tag = null;
+		BaseTagType tag = null;
 		
 		try {
-			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user,"tags", user.getHomeDirectory(), user.getOrganizationId());
-			tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).getDataTagByName(tag_name, dir);
+			tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).getTagByName(tag_name, type, dir);
 			if(tag == null){
-				tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).newDataTag(user,tag_name, dir.getId());
+				tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).newTag(user,tag_name, type, dir.getId());
 				((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).add(tag);
-				tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).getDataTagByName(tag_name, dir);
+				tag = ((TagFactory)Factories.getFactory(FactoryEnumType.TAG)).getTagByName(tag_name, type, dir);
 			}
 		} catch (FactoryException e) {
 			

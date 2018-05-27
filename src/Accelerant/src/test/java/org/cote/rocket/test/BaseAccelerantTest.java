@@ -42,11 +42,14 @@ import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.FactoryBase;
+import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.data.services.ICommunityProvider;
 import org.cote.accountmanager.data.services.ServiceUtil;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.DataException;
@@ -58,9 +61,12 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.OrganizationEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.DataUtil;
+import org.cote.accountmanager.util.SecurityUtil;
 import org.cote.propellant.objects.ArtifactType;
 import org.cote.propellant.objects.BudgetType;
 import org.cote.propellant.objects.CostType;
@@ -125,6 +131,7 @@ import org.junit.After;
 import org.junit.Before;
 public class BaseAccelerantTest{
 	public static final Logger logger = LogManager.getLogger(BaseAccelerantTest.class);
+	private static ICommunityProvider provider = null;
 	private static String testUserName = "RocketQAUser";
 	protected static UserType testUser = null;
 	private static String sessionId = null;
@@ -1231,6 +1238,41 @@ public class BaseAccelerantTest{
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return user;
+	}
+	
+	protected OrganizationType getCreateOrganization(String newOrgName, String adminPassword){
+		OrganizationType newOrg = null;
+
+		try {
+			newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationByName(newOrgName, testOrganization);
+			if(newOrg == null){
+				newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).addOrganization(newOrgName, OrganizationEnumType.DEVELOPMENT, testOrganization);
+				FactoryDefaults.setupOrganization(newOrg, SecurityUtil.getSaltedDigest(adminPassword));
+			}
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
+			
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
+
+		return newOrg;
+	}
+	
+	protected ICommunityProvider getProvider(){
+		if(provider != null) return provider;
+		String pcls =testProperties.getProperty("factories.community");
+		try {
+			logger.info("Initializing community provider " + pcls);
+			Class cls = Class.forName(pcls);
+			ICommunityProvider f = (ICommunityProvider)cls.newInstance();
+			provider = f;
+			provider.setRandomizeSeedPopulation(false);
+			provider.setOrganizePersonManagement(true);
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(FactoryException.TRACE_EXCEPTION, e);
+		}
+		
+		return provider;
 	}
 	
 }

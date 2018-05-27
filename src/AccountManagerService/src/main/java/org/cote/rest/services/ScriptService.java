@@ -66,11 +66,10 @@ public class ScriptService {
 		String pcls = context.getInitParameter("factories.community");
 		try {
 			logger.info("Initializing community provider " + pcls);
-			Class cls = Class.forName(pcls);
+			Class<?> cls = Class.forName(pcls);
 			ICommunityProvider f = (ICommunityProvider)cls.newInstance();
 			provider = f;
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			logger.error(FactoryException.TRACE_EXCEPTION, e);
 		}
 		

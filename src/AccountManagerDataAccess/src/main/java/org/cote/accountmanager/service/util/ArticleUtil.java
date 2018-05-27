@@ -60,7 +60,6 @@ import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
-import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.util.AMCodeUtil;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.DataUtil;

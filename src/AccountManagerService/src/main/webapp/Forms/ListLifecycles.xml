@@ -26,31 +26,28 @@
 		provideDelete : function(o){
 			var ctl = this;
 			
-			var vCfg = {
-				hemiSvcCfg:1,
-				async:1,
-				handler:function(s, v){
-					if(ctl.getReadyState() != 4) return;
-					if(typeof v.json == "boolean" && v.json){
-						Hemi.log("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
-						ctl.setStatus("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
-						ctl.refreshList();
-					}
-					else{
-						Hemi.logError("Unabe to delete " + ctl.getProperties().typeName + " object #" + o.id);
-						ctl.setStatus("Unable to delete " + ctl.getProperties().typeName + " object #" + o.id);
-					}
-					AM6Client.clearCache();
-					
-					Hemi.message.service.publish("oncommunitychange",this);
+			var fH = function(s, v){
+				if(ctl.getReadyState() != 4) return;
+				if(typeof v.json == "boolean" && v.json){
+					Hemi.log("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
+					ctl.setStatus("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
+					ctl.refreshList();
 				}
+				else{
+					Hemi.logError("Unabe to delete " + ctl.getProperties().typeName + " object #" + o.id);
+					ctl.setStatus("Unable to delete " + ctl.getProperties().typeName + " object #" + o.id);
+				}
+				AM6Client.clearCache();
+				
+				Hemi.message.service.publish("oncommunitychange",this);
 			};
 			
+			
 			if(irocket.getCommunityMode()){
-				return AM6Client.delete("LIFECYCLE",o.objectId,vCfg.handler);
+				return AM6Client.deleteCommunity(o.objectId,fH);
 			}
 			else{
-				return AM6Client.delete("LIFECYCLE",o.objectId,vCfg.handler);
+				return AM6Client.delete("LIFECYCLE",o.objectId,fH);
 			}
 		},
 		refreshCommunityLifecycles : function(){

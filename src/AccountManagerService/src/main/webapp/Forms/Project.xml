@@ -17,7 +17,7 @@
 				if(!o){
 					o = new org.cote.objects.projectType();
 					o.name = "";
-					o.nameType = "PROjECT";
+					o.nameType = "PROJECT";
 					o.description = "";
 					o.id = 0;
 				}

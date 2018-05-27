@@ -24,10 +24,7 @@
 		},
 		provideDelete : function(o){
 			var ctl = this;
-			var vCfg = {
-				hemiSvcCfg:1,
-				async:1,
-				handler:function(s, v){
+			var fH = function(s, v){
 					if(ctl.getReadyState() != 4) return;
 					if(typeof v.json == "boolean" && v.json){
 						Hemi.log("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
@@ -41,13 +38,13 @@
 					AM6Client.clearCache();
 
 					Hemi.message.service.publish("oncommunitychange",this);
-				}
-			};
+				};
+
 			if(irocket.getCommunityMode()){
-				return AM6Client.delete("PROJECT",o.objectId, vCfg.handler);
+				return AM6Client.deleteCommunityProject(o.objectId, fH);
 			}
 			else{
-				return AM6Client.delete("PROJECT",o.objectId, vCfg.handler);
+				return AM6Client.delete("PROJECT",o.objectId, fH);
 			}
 		},
 		refreshCommunityProjects : function(){

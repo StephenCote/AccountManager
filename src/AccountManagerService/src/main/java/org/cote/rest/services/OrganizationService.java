@@ -85,13 +85,11 @@ public class OrganizationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public static Response addOrganization(@PathParam("parentId") String parentId,@PathParam("name") String name,AuthenticationRequestType adminCredential, @Context HttpServletRequest request){
 		boolean outBool = false;
-		String adminPassword = null;
 		if(adminCredential == null || adminCredential.getCredentialType().equals(CredentialEnumType.HASHED_PASSWORD)==false){
 			logger.error("Invalid admin credential");
 			return Response.status(200).entity(false).build();
 		}
 
-		String credStr = (new String(adminCredential.getCredential())).trim();
 		try{
 			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByObjectId(parentId, 0L);
 			UserType user = ServiceUtil.getUserFromSession(request);
@@ -131,13 +129,12 @@ public class OrganizationService {
 		return Response.status(200).entity(outBool).build();
 	}
 	
-	@RolesAllowed({"user"})
+	@RolesAllowed({"admin","user"})
 	@DELETE
 	@Path("/{objectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public static Response deleteOrganization(@PathParam("objectId") String parentId, @Context HttpServletRequest request){
 		boolean outBool = false;
-		String adminPassword = null;
 		try{
 			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByObjectId(parentId, 0L);
 			UserType user = ServiceUtil.getUserFromSession(request);

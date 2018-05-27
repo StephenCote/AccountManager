@@ -133,8 +133,8 @@ public class RestServiceConfig extends ResourceConfig{
 				for(int i = 0; i < facts.length;i++){
 					try {
 						logger.info("Priming " + facts[0]);
-						Class cls = Class.forName(facts[i]);
-						Factories f = (Factories)cls.newInstance();
+						Class<?> cls = Class.forName(facts[i]);
+						cls.newInstance();
 						logger.warn("Refactor to an interface - this is only preparing the base service");
 
 						if(facts[i].equals("org.cote.rocket.Factories")) org.cote.rocket.Factories.prepare();
@@ -164,11 +164,10 @@ public class RestServiceConfig extends ResourceConfig{
 				for(int i = 0; i < jobs.length;i++){
 					try {
 						logger.info("Starting " + jobs[i]);
-						Class cls = Class.forName(jobs[i]);
+						Class<?> cls = Class.forName(jobs[i]);
 						ThreadService f = (ThreadService)cls.newInstance();
 						maintenanceThreads.add(f);
 					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-						// TODO Auto-generated catch block
 						logger.error(FactoryException.TRACE_EXCEPTION, e);
 					}
 					

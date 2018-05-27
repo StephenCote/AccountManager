@@ -38,6 +38,7 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountTagType;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.DataTagType;
@@ -189,6 +190,7 @@ public class TagFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 		fields.add(QueryFields.getFieldTagType(useMap.getTagType()));
 	}
+	/*
 	public DataTagType newDataTag(UserType owner,String tagName, long groupId) throws ArgumentException{
 		return newTag(owner,tagName, TagEnumType.DATA, groupId);
 	}
@@ -204,7 +206,7 @@ public class TagFactory extends NameIdGroupFactory {
 	public UserTagType newGroupTag(UserType owner,String tagName, long groupId) throws ArgumentException{
 		return newTag(owner,tagName, TagEnumType.GROUP, groupId);
 	}
-
+	*/
 
 	@SuppressWarnings("unchecked")
 	public <T> T newTag(UserType owner,String tagName, TagEnumType type, long groupId) throws ArgumentException
@@ -260,10 +262,10 @@ public class TagFactory extends NameIdGroupFactory {
 		return newTag;
 	}
 
-	public List<DataType> getDataForTag(BaseTagType tag, long organizationId) throws FactoryException, ArgumentException{
-		return getDataForTags(new BaseTagType[]{tag}, 0L,0, organizationId);
+	public List<DataType> getForTag(BaseTagType tag, long organizationId) throws FactoryException, ArgumentException{
+		return getForTags(FactoryEnumType.valueOf(tag.getTagType().toString()),new BaseTagType[]{tag}, 0L,0, organizationId);
 	}
-	public List<DataType> getDataForTags(BaseTagType[] tags, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException{
+	public <T> List<T> getForTags(FactoryEnumType type, BaseTagType[] tags, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setPaginate(true);
 		instruction.setStartIndex(startRecord);
@@ -272,7 +274,7 @@ public class TagFactory extends NameIdGroupFactory {
 		if(parts.isEmpty()) return new ArrayList<>();
 		/// Don't apply pagination to the secondary query because it's already been paginated from the parts list
 		///
-		return ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).getDataListFromParticipations(parts.toArray(new DataParticipantType[0]), true, 0, 0, organizationId);
+		return ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).getListFromParticipations(type, parts.toArray(new BaseParticipantType[0]), true, 0, 0, organizationId);
 	
 	}
 
