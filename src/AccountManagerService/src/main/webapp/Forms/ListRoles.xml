@@ -3,16 +3,42 @@
 
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
+	<p rid = "systemRoles">
+		<input type = "button" value = "System Roles" onclick = "${this}.showSystemRoles()" />
+	</p>
 	<embedded-script>
 		<![CDATA[
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
 			this.initGrid("Role",0,0,1,0,uwm.getDefaultParentForType("Role",AM6Client.user("ROLE","USER")));
-
+			//this.showSystemRoles();
 		},
 		template_destroy : function(){
 			
+		},
+		showSystemRoles : function(){
+			var aS = AM6Client.systemRoles();
+			var oL = this.getList();
+			window.debug = this;
+			oL.clearItems();
+			var iI = 0;
+			for(var i = 0; i < aS.length; i++){
+				if(aS[i].roleType == "USER"){
+					oL.addItem(aS[i].roleType + " " + aS[i].name, aS[i]);
+					iI++;
+					/*
+					var o = document.createElement("span");
+					o.setAttribute("style", "color:#76933c;border-bottom: 1px dotted #76933c;");
+					o.appendChild(document.createTextNode(aS[i].name));
+					o.onclick = function(){
+						this.openItem(aS[i]);
+					};
+					this.GetElementByRID("systemRoles").appendChild(o);
+					*/
+				}
+			}
+			this.setTotalCount(iI);
 		},
 		decorateListItemName : function(o){
 			if(this.getObjects().parentRef && this.getObjects().parentRef.parentId == o.id) return "..";

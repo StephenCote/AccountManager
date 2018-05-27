@@ -1582,6 +1582,8 @@ public class BaseService {
 							outObj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getPersonsInRole((BaseRoleType)container));
 							break;
 						case USER:
+							outObj = FactoryBase.convertList(((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUsersInRole((BaseRoleType)container));
+
 							break;
 						default:
 							logger.error(String.format(FactoryException.UNHANDLED_TYPE, memberType));

@@ -7,9 +7,9 @@
 		</p>
 		<p>
 			<select rid = "shareWhoType" onchange = "${this}.refreshWhoView()">
-				<option selected = "true">Unknown</option>
+				<option>Unknown</option>
 				<option>Nobody</option>
-				<option value = "ROLE">Role</option>
+				<option selected = "true" value = "ROLE">Role</option>
 				<option value = "GROUP">Group</option>
 				<option value = "PERSON">Person</option>
 				<option value = "ACCOUNT">Account</option>

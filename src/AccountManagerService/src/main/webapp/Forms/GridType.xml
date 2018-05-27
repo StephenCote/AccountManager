@@ -343,6 +343,11 @@
 					else if(this.provideItem) o = this.provideItem(this.getProperties().typeName,o);
 					else if(o.id)  o = AM6Client.get(this.getProperties().typeName.toUpperCase(), o.id);
 					else o = AM6Client.getByName(this.getProperties().typeName.toUpperCase(), AM6Client.find("GROUP","DATA",o.groupPath).objectId,o.name);
+					if(!o || o == null){
+						Hemi.logError("Failed to retrieve object");
+						alert("Unable to open item");
+						return;
+					}
 					if(!o.populated) alert("still not populated");
 				}
 			}

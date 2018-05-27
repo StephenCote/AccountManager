@@ -179,7 +179,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new UserParticipantType[0]));
 		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRoles(match, account.getOrganizationId());
 	}
-	public List<UserType> getUsersInRole(UserRoleType role) throws FactoryException, ArgumentException
+	public List<UserType> getUsersInRole(BaseRoleType role) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> ap = getUserRoleParticipations(role);
 		return getUserListFromParticipations(ap.toArray(new UserParticipantType[0]), role.getOrganizationId());
