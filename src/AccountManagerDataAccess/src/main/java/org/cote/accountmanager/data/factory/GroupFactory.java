@@ -117,9 +117,6 @@ public class GroupFactory  extends NameIdFactory {
 
 		DirectoryGroupType homeDir = newDirectoryGroup("Home", rootDir, organizationId);
 		add(homeDir);
-		DirectoryGroupType personsDir = newDirectoryGroup("Persons", rootDir, organizationId);
-		add(personsDir);
-
 	}
 	public UserGroupType newUserGroup(String groupName, BaseGroupType parent, long organizationId)
 	{
@@ -607,7 +604,7 @@ public class GroupFactory  extends NameIdFactory {
 		BaseGroupType nestedGroup = null;
 
 		String name = null;
-
+		logger.info("Find group by path: '" + path + "'");
 		if (paths.length == 0 || path.equals("/"))
 		{
 			return getRootDirectory(organizationId);

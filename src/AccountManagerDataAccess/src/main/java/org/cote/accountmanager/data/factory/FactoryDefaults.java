@@ -302,9 +302,21 @@ public class FactoryDefaults {
 		RoleFactory rFact = Factories.getFactory(FactoryEnumType.ROLE);
 		rFact.addDefaultRoles(organization.getId());
 		
+		DirectoryGroupType rDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organization.getId());
+		DirectoryGroupType hDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getHomeDirectory(organization.getId());
+
+		/// Update home and root directory ownership to the Admin user
+		///
+		rDir.setOwnerId(adminUser.getId());
+		hDir.setOwnerId(adminUser.getId());
+		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).update(rDir);
+		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).update(hDir);
 		
 		DirectoryGroupType pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Persons", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organization.getId()), organization.getId());
 		DirectoryGroupType cDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Contacts", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organization.getId()), organization.getId());
+
+		
+		
 		AuthorizationService.authorizeType(adminUser, usersUsersRole, pDir, true, false, false, false);
 		AuthorizationService.authorizeType(adminUser, usersUsersRole, cDir, true, false, false, false);
 		AuthorizationService.authorizeType(adminUser, userAdminRole, pDir, true, true, false, true);

@@ -39,7 +39,7 @@ import org.w3c.dom.NodeList;
 
 public class ServiceSchemaBuilder {
 	public static final Logger logger = LogManager.getLogger(ServiceSchemaBuilder.class);
-	public static SchemaBean modelRESTService(Class c, String servicePath){
+	public static SchemaBean modelRESTService(Class<?> c, String servicePath){
 		SchemaBean schemaBean = new SchemaBean();
 		schemaBean.setServiceURL(servicePath);
 		Method[] ma = c.getDeclaredMethods();

@@ -86,6 +86,44 @@ public class GenericSearchService {
 		 schemaBean = ServiceSchemaBuilder.modelRESTService(this.getClass(),uri.getAbsolutePath().getRawPath().replaceAll("/smd$", ""));
 		 return schemaBean;
 	 }
+	@RolesAllowed({"user"})
+	@GET
+	@Path("/{objectType:[A-Za-z]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findRootObject(@PathParam("type") String type, @PathParam("objectType") String objectType, @Context HttpServletRequest request){
+		logger.info("Request to find root object from: " + type);
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		UserType user = ServiceUtil.getUserFromSession(request);
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "GenericSearchService", AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, auditType, "/");
+
+		Object obj = null;
+		if(auditType.equals(AuditEnumType.GROUP)){
+			try {
+				obj = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(user.getOrganizationId());
+				if(obj != null){
+					if(BaseService.canViewType(auditType, user, (NameIdType)obj)){
+						AuditService.permitResult(audit, "Permit to find root object " + auditType.toString());
+					}
+					else{
+						AuditService.denyResult(audit, "Not permitted to view object " + auditType.toString());
+						obj = null;
+					}
+				}
+				else{
+
+					AuditService.denyResult(audit, "Root object not found");
+				}
+			} catch (FactoryException | ArgumentException e) {
+				logger.error(e.getMessage());
+				obj = null;
+				AuditService.denyResult(audit, "Error: " + e.getMessage());
+			}
+
+		}
+
+		return Response.status(200).entity(obj).build();
+	}
 	
 	@RolesAllowed({"user"})
 	@GET
