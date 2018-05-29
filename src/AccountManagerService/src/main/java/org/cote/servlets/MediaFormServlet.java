@@ -137,6 +137,7 @@ public class MediaFormServlet extends HttpServlet {
 		logger.info(name);
 		logger.info(description);
 		logger.info(mimeType);
+		logger.info("Id = " + id);
 		logger.info("Group id = " + groupId);
 		logger.info("Group path = " + groupPath);
 		logger.info("Data size = " + data.length);

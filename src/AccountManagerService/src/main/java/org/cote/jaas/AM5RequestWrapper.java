@@ -43,7 +43,6 @@ public class AM5RequestWrapper extends HttpServletRequestWrapper {
  
   private UserPrincipal principal = null;
   private List<String> roles = new ArrayList<>();
-  private HttpServletRequest request = null;
    
   public AM5RequestWrapper(UserType user, HttpServletRequest inRequest) {
     super(inRequest);
@@ -54,9 +53,9 @@ public class AM5RequestWrapper extends HttpServletRequestWrapper {
 			roles.add(r.getName());
 		}
 	} catch (LoginException | FactoryException | ArgumentException e) {
-		e.printStackTrace();
+		logger.error(e);
 	}
-    this.request = inRequest;
+
 
 
   }

@@ -43,6 +43,7 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.util.BinaryUtil;
 
 @DeclareRoles({"admin","user"})
 @Path("/make/{type:[A-Za-z]+}")
@@ -71,11 +72,13 @@ public class GenericMakeService {
 	public Response findMakeObject(@PathParam("type") String type, @PathParam("objectType") String objectType, @PathParam("path") String path, @Context HttpServletRequest request){
 		logger.info("Request to find object from: " + type + " " + path + ", and if it doesn't exist, then make it");
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
-		if(path.startsWith("~") == false && path.startsWith(".") == false){
+		if(path.startsWith("B64-")) path = BinaryUtil.fromBase64Str(path.substring(4,path.length())).replaceAll("%3D", "=");
+		else if(path.startsWith("~") == false && path.startsWith(".") == false){
 			path = "/" + path;
-			/// Doubled up to allow for actual punctuation use
-			/// Clearly this is a bandaid
+			/// Check for base64 encoded values, prefaced with B64-
 			///
+			
+			
 			if(path.contains("..")) path = path.replaceAll("\\.\\.", "/");
 			else path = path.replace('.', '/');
 			logger.info("Alt path: " + path);

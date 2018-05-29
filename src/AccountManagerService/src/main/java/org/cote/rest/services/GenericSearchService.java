@@ -66,6 +66,7 @@ import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.accountmanager.util.BinaryUtil;
 
 @DeclareRoles({"admin","user"})
 @Path("/search/{type:[A-Za-z]+}")
@@ -132,11 +133,13 @@ public class GenericSearchService {
 	public Response findObject(@PathParam("type") String type, @PathParam("objectType") String objectType, @PathParam("path") String path, @Context HttpServletRequest request){
 		logger.info("Request to find object from: " + type + " " + path);
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
-		if(path.startsWith("~") == false && path.startsWith(".") == false){
+		if(path.startsWith("B64-")) path = BinaryUtil.fromBase64Str(path.substring(4,path.length())).replaceAll("%3D", "=");
+		else if(path.startsWith("~") == false && path.startsWith(".") == false){
 			path = "/" + path;
 			/// Doubled up to allow for actual punctuation use
 			/// Clearly this is a bandaid
 			///
+			
 			if(path.contains("..")) path = path.replaceAll("\\.\\.", "/");
 			else path = path.replace('.', '/');
 			logger.info("Alt path: " + path);
@@ -237,13 +240,6 @@ public class GenericSearchService {
 			
 				if(obj != null){
 					tags = fact.getTags((NameIdType)obj);
-					/*
-					if(aType == AuditEnumType.ACCOUNT) tags = fact.getAccountTags((AccountType)obj);
-					if(aType == AuditEnumType.PERSON) tags = fact.getPersonTags((PersonType)obj);
-					if(aType == AuditEnumType.USER) tags = fact.getUserTags((UserType)obj);
-					if(aType == AuditEnumType.DATA) tags = fact.getDataTags((DataType)obj);
-					if(aType == AuditEnumType.GROUP) tags = fact.getGroupTags((BaseGroupType)obj);
-					*/
 					logger.info("Tag read extended to associated tags of authorized object access");
 				}
 			}

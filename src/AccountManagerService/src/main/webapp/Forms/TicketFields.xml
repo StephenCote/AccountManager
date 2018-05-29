@@ -193,7 +193,7 @@
 		
 		
 		addType : function(o){
-			return AM6Client.update("TASK",o);
+			return AM6Client.update("TICKET",o);
 		},
 		prepareSave : function(o){
 

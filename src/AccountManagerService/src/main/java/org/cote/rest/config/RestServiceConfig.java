@@ -70,11 +70,7 @@ public class RestServiceConfig extends ResourceConfig{
         ServletContext context;
 
         private List<ThreadService> maintenanceThreads = new ArrayList<>();
-        /*
-        static DatabaseMaintenance dbMaintenance = null;
-    	private static AuditDataMaintenance auditThread = null;
-    	private static SessionDataMaintenance sessionThread = null;
-        */
+
         @Override
         public void onShutdown(Container container) {
             logger.info("Cleaning up AccountManager");
@@ -211,7 +207,6 @@ public class RestServiceConfig extends ResourceConfig{
 					}
 			}
 			AM5LoginModule.setRoleMap(roleMap);
-			//System.out.println("**** Loaded " + roleMap.toString() + " role maps");
 
 		}
     }

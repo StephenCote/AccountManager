@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.ContactType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ContactEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -73,6 +74,7 @@ public class PersonService {
 			/// TODO - change this to just get the persons directory from the GroupFactory
 			///
 			UserType adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
+			UserRoleType usersUsersRole = RoleService.getAccountUsersRole(adminUser);
 			DirectoryGroupType pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Persons", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organizationId), organizationId);
 			DirectoryGroupType cDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Contacts", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organizationId), organizationId);
 			
@@ -122,8 +124,12 @@ public class PersonService {
 				logger.warn("No email was specified during user registration");
 			}
 			
+			RoleService.addUserToRole(newUser, usersUsersRole);
+			
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
+			
+			EffectiveAuthorizationService.rebuildPendingRoleCache();
 			
 			outBool = true;
 			AuditService.permitResult(audit, "Created user '" + userName + "' (#" + newUser.getId() + ")");

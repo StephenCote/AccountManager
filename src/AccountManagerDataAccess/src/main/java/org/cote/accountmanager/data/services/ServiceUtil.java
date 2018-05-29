@@ -36,7 +36,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public class ServiceUtil {
-	public static final Logger logger = LogManager.getLogger(FactoryService.class);
+	public static final Logger logger = LogManager.getLogger(ServiceUtil.class);
 	public static boolean isFactorySetup(){
 		boolean outBool = false;
 		AccountType rootAcct = null;

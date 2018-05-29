@@ -60,8 +60,6 @@ public class AM5LoginModule implements LoginModule {
 
 	private static final Logger logger = LogManager.getLogger(AM5LoginModule.class);
 	
-	//private static String EAI_PASSWORD = "debugdebug";
-	
     // initial state
     protected Subject _subject;
     protected CallbackHandler _callbackHandler;
@@ -75,9 +73,8 @@ public class AM5LoginModule implements LoginModule {
     protected boolean _succeeded;
     protected boolean _commitSucceeded;
  
-    // username and password
+    // username
     protected String _name;
-    //protected char[] _password;
     protected String orgPath;
  
     protected Principal[] _authPrincipals;
@@ -87,18 +84,12 @@ public class AM5LoginModule implements LoginModule {
     public static void setAuthenticatedRole(String s){
     	authenticatedRole = s;
     }
-    /// TODO: Read this from the JSON file
+    
+    /// NOTE: RoleMap set in RestServiceConfig
     ///
     public static Map<String, String> getRoleMap(){
     	if(_roleMap != null) return _roleMap;
     	_roleMap = new HashMap<>();
-    	/*
-    	_roleMap.put("SystemAdministrators", "admin");
-    	_roleMap.put("DataAdministrators", "admin");
-    	_roleMap.put("AccountAdministrators", "admin");
-    	_roleMap.put("ApiUsers", "api");
-    	_roleMap.put("AccountUsers", "user");
-    	*/
     	return _roleMap;
     }
     

@@ -276,6 +276,7 @@ public class FactoryDefaults {
 		if(usersUsersRole == null){
 			logger.error("Failed to retrieve users users role");
 		}
+
 		RoleService.getAccountUsersReaderAccountRole(adminUser);
 		RoleService.getPermissionReaderAccountRole(adminUser);
 		RoleService.getRoleReaderAccountRole(adminUser);
@@ -283,7 +284,7 @@ public class FactoryDefaults {
 		RoleService.getGroupReaderAccountRole(adminUser);
 		RoleService.getObjectReaderAccountRole(adminUser);
 		RoleService.getApiUserUserRole(adminUser);
-		RoleService.getAccountUsersReaderUserRole(adminUser);
+		UserRoleType usersUsersReadersRole = RoleService.getAccountUsersReaderUserRole(adminUser);
 		RoleService.getRoleReaderUserRole(adminUser);
 		RoleService.getPermissionReaderUserRole(adminUser);
 		RoleService.getDataReaderUserRole(adminUser);
@@ -317,8 +318,8 @@ public class FactoryDefaults {
 
 		
 		
-		AuthorizationService.authorizeType(adminUser, usersUsersRole, pDir, true, false, false, false);
-		AuthorizationService.authorizeType(adminUser, usersUsersRole, cDir, true, false, false, false);
+		AuthorizationService.authorizeType(adminUser, usersUsersReadersRole, pDir, true, false, false, false);
+		AuthorizationService.authorizeType(adminUser, usersUsersReadersRole, cDir, true, false, false, false);
 		AuthorizationService.authorizeType(adminUser, userAdminRole, pDir, true, true, false, true);
 		AuthorizationService.authorizeType(adminUser, userAdminRole, cDir, true, true, false, true);
 		

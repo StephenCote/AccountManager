@@ -66,7 +66,6 @@ import org.cote.rocket.query.QueryFields;
 
 public class TicketFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.TICKET, TicketFactory.class); }
 	public TicketFactory(){
 		super();
 		this.tableNames.add("ticket");

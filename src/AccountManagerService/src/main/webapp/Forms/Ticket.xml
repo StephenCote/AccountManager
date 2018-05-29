@@ -19,8 +19,8 @@
 					o.nameType = "TICKET";
 					o.id = 0;
 					o.dueDate = (new Date());
-					o.completedDate = (new Date());
 					o.closedDate = (new Date());
+					/// o.expirationDate = (new Date());
 					o.reopenedDate = (new Date());
 					o.createdDate = (new Date());
 					o.modifiedDate = (new Date());

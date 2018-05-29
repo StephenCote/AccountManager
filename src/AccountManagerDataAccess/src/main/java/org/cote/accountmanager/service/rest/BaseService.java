@@ -55,7 +55,6 @@ import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
-import org.cote.accountmanager.data.services.FactoryService;
 import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.RoleService;
@@ -538,7 +537,8 @@ public class BaseService {
 					NameIdType beanObj = (NameIdType)bean;
 					if(beanObj.getAttributes().size() > 0){
 						NameIdType obj = null;
-						if(FactoryService.isDirectoryType(addType)) obj = readByName(addType,((NameIdDirectoryGroupType)bean).getGroupId(),((NameIdDirectoryGroupType)bean).getName(),user);
+						INameIdFactory iFact = getFactory(addType);
+						if(iFact.isClusterByGroup() || addType == AuditEnumType.DATA) obj = readByName(addType,((NameIdDirectoryGroupType)bean).getGroupId(),((NameIdDirectoryGroupType)bean).getName(),user);
 						else obj = readByName(addType,beanObj.getName(),user);
 						if(obj != null){
 							outBool = Factories.getAttributeFactory().updateAttributes((NameIdType)obj);

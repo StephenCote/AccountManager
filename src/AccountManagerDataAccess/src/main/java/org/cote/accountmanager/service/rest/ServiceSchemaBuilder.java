@@ -94,7 +94,7 @@ public class ServiceSchemaBuilder {
 		*/	
 		return meth;
 	}
-	public static boolean isAnnotated(Method m, Class c){
+	public static boolean isAnnotated(Method m, Class<?> c){
 		boolean outBool = false;
 		try{
 			Annotation[] an = m.getDeclaredAnnotations();
@@ -111,7 +111,7 @@ public class ServiceSchemaBuilder {
 		return outBool;
 			
 	}
-	public static ServiceSchemaMethod[] getMethods(Class c, Document d){
+	public static ServiceSchemaMethod[] getMethods(Class<?> c, Document d){
 		String name = c.getSimpleName();
 		Element svc = null;
 		NodeList nl = d.getElementsByTagName("service");

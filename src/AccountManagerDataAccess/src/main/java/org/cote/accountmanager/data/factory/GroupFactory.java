@@ -604,7 +604,7 @@ public class GroupFactory  extends NameIdFactory {
 		BaseGroupType nestedGroup = null;
 
 		String name = null;
-		logger.info("Find group by path: '" + path + "'");
+		logger.debug("Find group by path: '" + path + "'");
 		if (paths.length == 0 || path.equals("/"))
 		{
 			return getRootDirectory(organizationId);

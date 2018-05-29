@@ -61,6 +61,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.KeyStoreUtil;
 
 @DeclareRoles({"admin","user"})
@@ -96,11 +97,12 @@ public class CertificateService {
 		Certificate cert = null;
 		logger.info("Request to find organization certificate from: " + path);
 		AuditEnumType auditType = AuditEnumType.ORGANIZATION;
-		if(path.startsWith("~") == false && path.startsWith(".") == false){
+		if(path.startsWith("B64-")) path = BinaryUtil.fromBase64Str(path.substring(4,path.length())).replaceAll("%3D", "=");
+		else if(path.startsWith("~") == false && path.startsWith(".") == false){
 			path = "/" + path;
 			/// Doubled up to allow for actual punctuation use
 			/// Clearly this is a bandaid
-			///
+			///	
 			if(path.contains("..")) path = path.replaceAll("\\.\\.", "/");
 			else path = path.replace('.', '/');
 			logger.info("Alt path: " + path);

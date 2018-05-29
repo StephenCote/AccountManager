@@ -816,7 +816,7 @@ public class EffectiveAuthorizationService {
 		25: rid
 		*/
 		try{
-			long start_query = System.currentTimeMillis();
+			long startQuery = System.currentTimeMillis();
 			statement = conn.prepareStatement(sqlQuery);
 			statement.setString(1, referenceType);
 			statement.setString(2, referenceType);
@@ -857,10 +857,10 @@ public class EffectiveAuthorizationService {
 				out_ents.add(ent);
 			}
 
-			long stop_query = System.currentTimeMillis();
-			long diff = (stop_query - start_query);
+			long stopQuery = System.currentTimeMillis();
+			long diff = (stopQuery - startQuery);
 
-			logger.debug("*** QUERY TIME: " + (stop_query - start_query) + "ms");
+			logger.debug("*** QUERY TIME: " + diff + "ms");
 		}
 		catch(SQLException sqe){
 			logger.error(sqe.getMessage());
@@ -1253,8 +1253,8 @@ public class EffectiveAuthorizationService {
 			rset = stat.executeQuery();
 			if(rset.next()){
 				long matchId = rset.getLong(1);
-
-				/// TODO: Note, although deny's are stored at the datalevel, they are not currently being evaluated here
+				logger.debug("Matched on id " + matchId);
+				/// NOTE: Although deny's are stored at the datalevel, they are not currently being evaluated here
 				/// So a DENY will actually turn into a grant in the code
 				///
 				outBool = true;
@@ -1558,7 +1558,7 @@ public class EffectiveAuthorizationService {
 	}
 
 	private static <T> boolean rebuildRoleCache(String functionName, List<T> objects,long organizationId) throws ArgumentException{
-		boolean outBool = false;
+
 		Connection conn = ConnectionFactory.getInstance().getConnection();
 		int maxIn = maximum_insert_size;
 		List<StringBuilder> buffs = new ArrayList<>();

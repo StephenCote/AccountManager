@@ -436,7 +436,10 @@
 		var sK = "FIND-" + sObjType;
 		/// Band-aid - need to better encode these
 		///
-		if(sPath.match(/^\//) || sPath.match(/\./)) sPath = getDotPath(sPath,"..");
+		if(sPath.match(/^\//) || sPath.match(/\./)){
+			// sPath = getDotPath(sPath,"..");
+			sPath = "B64-" + uwm.base64Encode(sPath).replace(/=/gi,"%3D");
+		}
 		
 		var o = getFromCache(sType, sK, sPath);
 		if(o){
