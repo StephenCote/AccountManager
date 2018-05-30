@@ -69,6 +69,7 @@ import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BaseSearchRequestType;
+import org.cote.accountmanager.objects.BucketGroupType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
@@ -1601,6 +1602,10 @@ public class BaseService {
 							break;
 						case USER:
 							outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getUsersInGroup((UserGroupType)container));
+							break;
+						case DATA:
+							outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getDataInGroup((BucketGroupType)container));
+
 							break;
 						default:
 							logger.error(String.format(FactoryException.UNHANDLED_TYPE, memberType));

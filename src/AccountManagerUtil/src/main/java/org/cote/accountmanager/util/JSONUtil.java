@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class JSONUtil {
 	public static final Logger logger = LogManager.getLogger(JSONUtil.class);
-	public static <T> Map<String,T> getMap(byte[] data, Class keyClass, Class mapClass){
+	public static <T> Map<String,T> getMap(byte[] data, Class<?> keyClass, Class<?> mapClass){
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String,T> map = null;
 		try {
@@ -49,7 +49,7 @@ public class JSONUtil {
 		return map;
 		
 	}
-	public static <T> Map<String,T> getMap(String path, Class keyClass,Class mapClass){
+	public static <T> Map<String,T> getMap(String path, Class<?> keyClass,Class<?> mapClass){
 		return getMap(FileUtil.getFile(path),keyClass,mapClass);
 	}
 	

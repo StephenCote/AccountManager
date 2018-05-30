@@ -51,10 +51,12 @@
 	</div>
 	<div rid = "systemGroupContainer" style = "display: none;" class = "rocket-column-2">
 		<p>
-			Include System Groups:
+			System:
 		</p>
 		<p>
-			<input type = "checkbox" rid = "chkSystemGroups" />
+			<input type = "checkbox" rid = "chkSystemGroups" /> : .thumbnail
+			<br />
+			<input type = "checkbox" rid = "chkRecurseGroups" /> : Recurse
 		</p>
 	</div>
 	<div class = "rocket-column-2">
@@ -128,10 +130,15 @@
 			
 		},
 			authorize : function(){
-				this.authorizeType();
+				if(!this.GetElementByRID("chkRecurseGroups").checked || confirm("Recursive is currently client-driven, and so will take a while to complete as each authorization call is made independently.  Continue?")){
+					this.authorizeType();
+				}
 			},
 			unauthorize : function(){
-				this.authorizeType(1);
+				if(!this.GetElementByRID("chkRecurseGroups").checked || confirm("Recursive is currently client-driven, and so will take a while to complete as each authorization call is made independently.  Continue?")){
+
+					this.authorizeType(1);
+				}
 			},
 			
 			authorizeType : function(b,x){
@@ -171,10 +178,16 @@
 				if(sW.match(/^(role|user)$/gi)){
 					Hemi.log("Authorize " + sT + " " + sW);
 					r = AM6Client.permitSystem(o.nameType, o.objectId, oO.nameType, oO.objectId,(b ? false : this.GetElementByRID("chkRead").checked), (b ? false : this.GetElementByRID("chkUpdate").checked), (b ? false : this.GetElementByRID("chkDelete").checked), (b ? false : this.GetElementByRID("chkAdd").checked));
-					if(r && this.GetElementByRID("chkSystemGroups").checked){
-						if(o.nameType == "GROUP" && !o.name.match(/^\.thumbnail$/)){
-							var oT = AM6Client.find("GROUP","DATA",o.path + "/.thumbnail");
+					if(r && o.nameType == "GROUP" && !o.name.match(/^\.thumbnail$/)){
+						if(this.GetElementByRID("chkSystemGroups").checked){
+							var oT = AM6Client.make("GROUP","DATA",o.path + "/.thumbnail");
 							if(oT) this.authorizeType(b,oT);
+						}
+						if(this.GetElementByRID("chkRecurseGroups").checked){
+							var aSG = AM6Client.list("GROUP",o.objectId,0,0);
+							for(var s = 0; s < aSG.length; s++){
+								this.authorizeType(b,aSG[s]);
+							}
 						}
 					}
 				}

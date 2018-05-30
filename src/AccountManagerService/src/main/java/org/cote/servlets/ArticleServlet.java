@@ -8,12 +8,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.service.util.MediaOptions;
 import org.cote.accountmanager.service.util.MediaUtil;
 
 public class ArticleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static int defCacheSeconds = 7200;
+	public static final Logger logger = LogManager.getLogger(ArticleServlet.class);
     public ArticleServlet() {
         super();
         
@@ -31,7 +34,13 @@ public class ArticleServlet extends HttpServlet {
 		options.setEncodeData(true);
 		options.setTemplatePath("WEB-INF/resource/dwacTemplate.html");
 		options.setTemplateContentType("text/html");
-		MediaUtil.writeBinaryContent(request, response, options);
+		try{
+			MediaUtil.writeBinaryContent(request, response, options);
+		}
+		catch(IOException e){
+			logger.error(e.getMessage());
+			response.sendError(404);
+		}
 	}
 	
 	@Override

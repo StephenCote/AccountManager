@@ -47,12 +47,14 @@ public class JAXBUtil {
 	
 	/// 2017/06/30 - Switched the clone operation away from JAXB since there's a really bad GC issue when put under load
 	///
+	@SuppressWarnings("unchecked")
 	public static <U,T> T clone(Class<T> tClass, U map, QName qName){
 		/// Trying bouncing through JSON to avoid JAXB GC problems
 		///
 		return (T)JSONUtil.importObject(JSONUtil.exportObject(map), map.getClass());
-		//return jaxbClone(tClass, map, qName);
 	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <U,T> T jaxbClone(Class<T> tClass, U map, QName qName){
 		 T bean = null;
 		try{
@@ -72,6 +74,8 @@ public class JAXBUtil {
 		}
 		return bean;
 	}
+	
+	@SuppressWarnings("unchecked")
 	public static <T> T importObject(Class<T> tClass, String input){
 
 		T obj = null;
@@ -80,11 +84,7 @@ public class JAXBUtil {
 			context = JAXBContext.newInstance(tClass);
 		    ByteArrayInputStream bais =new ByteArrayInputStream(input.getBytes("UTF-8"));
 		    obj = (T) context.createUnmarshaller().unmarshal(bais);
-		} catch (JAXBException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-		}
-		catch (UnsupportedEncodingException e) {
+		} catch (JAXBException | UnsupportedEncodingException e) {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
@@ -102,14 +102,7 @@ public class JAXBUtil {
 		    baos.flush();
 		    output = new String(baos.toByteArray(),"UTF-8");
 		    baos.close();
-		} catch (JAXBException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-		}
-		catch (UnsupportedEncodingException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-		} catch (IOException e) {
+		} catch (JAXBException | IOException e) {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}

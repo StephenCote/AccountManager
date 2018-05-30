@@ -130,8 +130,7 @@ public class KeyStoreUtil {
 		boolean outBool = false;
 		boolean useAlias = false;
 		try{
-			Enumeration aliases = pkstore.aliases();
-		    int n = 0;
+			Enumeration<String> aliases = pkstore.aliases();
 		    while (aliases.hasMoreElements()) {
 		      String storeAlias = (String)aliases.nextElement();
 		         if (pkstore.isKeyEntry(storeAlias)) {
@@ -139,7 +138,7 @@ public class KeyStoreUtil {
 		            Key key = pkstore.getKey(storeAlias, password);
 	
 		            Certificate[] chain = pkstore.getCertificateChain(storeAlias);
-		            if(useAlias == false){
+		            if(!useAlias){
 		            	useAlias = true;
 		            	storeAlias = alias;
 		            }

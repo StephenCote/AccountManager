@@ -113,7 +113,7 @@ public class TokenService {
 			logger.error("Failed to retrieve token data with id '" + tokenId + "'");
 		}
 		else{
-			/// TODO: There's a bug/caveat to reading vaulted data - by using BaseService, TypeSanitizer's postFetch for data will decrypt, decipher, and decompress the data and return a volatile copy with the decrypted value
+			/// NOTE: There's a bug/caveat to reading vaulted data - by using BaseService, TypeSanitizer's postFetch for data will decrypt, decipher, and decompress the data and return a volatile copy with the decrypted value
 			/// But the meta data still indicates it's enciphered
 			try {
 				/// 2017/09/14
@@ -207,7 +207,7 @@ public class TokenService {
 					}
 				}
 			} catch (FactoryException | ArgumentException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage());
 			}
 		}
 		else{
@@ -282,7 +282,6 @@ public class TokenService {
 			return null;
 		}
 		
-		//Key key = MacProvider.generateKey();
 		Map<String,Object> claims = new HashMap<>();
 		claims.put("objectId", user.getObjectId());
 		claims.put("organizationPath", user.getOrganizationPath());

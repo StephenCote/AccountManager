@@ -24,7 +24,6 @@
 package org.cote.accountmanager.data.services;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -57,8 +56,10 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
  * At the moment, a filter class is defined to limit scripted access to the factories.
  */
 
+@SuppressWarnings("restriction")
 public class ScriptService {
 	public static final Logger logger = LogManager.getLogger(ScriptService.class);
+	@SuppressWarnings("unused")
 	private static final String scriptEngineJavaScript = "javascript";
 	private static final String scriptEngineNashorn = "nashorn";
 	private static String scriptEngineName = scriptEngineNashorn;
@@ -166,22 +167,25 @@ public class ScriptService {
 	    return out_scr;
 	}
 }
+@SuppressWarnings("restriction")
 class ScriptServiceFilter implements ClassFilter {
-	private static Pattern am5Factory = Pattern.compile("^org\\.cote.accountmanager\\.data\\.factory");
+
     private static Pattern[] restrictedClasses = new Pattern[]{
-    	Pattern.compile("^org\\.cote.accountmanager\\.data\\.factory"),
-    	Pattern.compile("^org\\.cote.accountmanager\\.data\\.Factories"),
-    	Pattern.compile("^org\\.cote.accountmanager\\.data\\.security"),
-    	Pattern.compile("^org\\.cote.rocket\\.factory"),
-    	Pattern.compile("^org\\.cote.rocket\\.Factories"),
-    	Pattern.compile("^org\\.cote.rocket\\.Factories")
+    	Pattern.compile("^org\\.cote\\.accountmanager\\.data\\.factory"),
+    	Pattern.compile("^org\\.cote\\.accountmanager\\.data\\.Factories"),
+    	Pattern.compile("^org\\.cote\\.accountmanager\\.data\\.security"),
+    	Pattern.compile("^org\\.cote\\.accountmanager\\.services\\.TypeSanitizer"),
+    	Pattern.compile("^org\\.cote\\.accountmanager\\.services\\.SessionSecurity"),
+    	Pattern.compile("^org\\.cote\\.accountmanager\\.services\\.VaultService"),
+    	Pattern.compile("^org\\.cote\\.rocket\\.factory"),
+    	Pattern.compile("^org\\.cote\\.rocket\\.Factories"),
+    	Pattern.compile("^org\\.cote\\.rocket\\.Factories"),
+    	Pattern.compile("^org\\.cote\\.rocket\\.services.TypeSanitizer")
     };
-	//private List<Pattern> restrictedClasses = new ArrayList<>(Arrays.asList(new Pattern[]{}));
 
 	@Override
     public boolean exposeToScripts(String s) {
 	  boolean outBool = true;
-      //if (am5Factory.matcher(s).find()) return false;
 	  for(int i = 0; i < restrictedClasses.length; i++){
 		  if(restrictedClasses[i].matcher(s).find()){
 			  outBool = false;

@@ -70,7 +70,6 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
-import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
@@ -1107,46 +1106,6 @@ public class VaultService
 		return vault;
 	}
 	
-	/// TODO: Deprecate?
-	private List<SecurityBean> getCiphers(VaultBean vault){
-		List<SecurityBean> beans = new ArrayList<SecurityBean>();
-		
-		try {
-			List<DataType> dataList = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByGroup(getVaultInstanceGroup(vault), false, 0, 0, vault.getServiceUser().getOrganizationId());
-			for(int i = 0; i < dataList.size();i++) beans.add(getCipherFromData(vault,dataList.get(i)));
-		} catch (FactoryException | ArgumentException | DataException e) {
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		return beans;
-	}
-	
-	
-	/// TODO: Deprecate?
-	private boolean updateImprovedData(VaultBean vault, DataType inData, byte[] in_bytes) throws FactoryException, ArgumentException, UnsupportedEncodingException, DataException, DataAccessException
-	{
-
-		if (inData == null) return false;
-
-		DirectoryGroupType loc_imp_dir = getVaultInstanceGroup(vault);
-
-		// if there is no localized improvement in the database, then don't continue
-		//
-		if (loc_imp_dir == null) return false;
-
-		// If there is no active key, then load the public key for the improvement, which will cause a new SecretKey to be created
-		// And then add the DES key export to the improvement for later reference
-		//
-		if (vault.getActiveKey() == null)
-		{
-			if(inData.getKeyId() != null) vault.setActiveKeyId(inData.getKeyId());
-			else newActiveKey(vault);
-		}
-
-		if (vault.getActiveKey() == null || vault.getActiveKeyId() == null) return false;
-		setVaultBytes(vault, inData, in_bytes);
-
-		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).update(inData);
-	}
 	public static String reportCacheSize(){
 		return "VaultService Cache Report\ncacheByUrn\t" + cacheByUrn.keySet().size() + "\n";
 	}

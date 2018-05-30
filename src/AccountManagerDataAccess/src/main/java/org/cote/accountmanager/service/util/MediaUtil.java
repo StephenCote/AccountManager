@@ -363,7 +363,7 @@ public class MediaUtil {
 								return;
 							}
 							DataType thumbData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(dataOwner, thumbGroup.getId());
-							thumbData.setMimeType("image/jpg");
+							thumbData.setMimeType("image/png");
 							thumbData.setName(thumbName);
 							if(vaultBean != null) vaultService.setVaultBytes(vaultBean, thumbData, thumbBytes);
 							else DataUtil.setValue(thumbData, thumbBytes);

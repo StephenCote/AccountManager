@@ -171,7 +171,7 @@ public class DataAction {
 			}
 
 			DataType thumbData = dfact.newData(user, thumbDir.getId());
-			thumbData.setMimeType("image/jpg");
+			thumbData.setMimeType("image/png");
 			thumbData.setName(thumbName);
 			if(vaultBean != null && chkData.getVaulted()){
 				vaultService.setVaultBytes(vaultBean, thumbData, thumbBytes);

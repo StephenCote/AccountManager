@@ -47,7 +47,6 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ContactParticipantType;
 import org.cote.accountmanager.objects.DataParticipantType;
-import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FactParticipantType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.GroupParticipantType;
@@ -344,13 +343,15 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		QueryField field = QueryFields.getFieldParticipantIds(list);
 		return Factories.getNameIdFactory(FactoryEnumType.PERSON).list(new QueryField[]{ field }, organizationId);
 	}
-/*
-	protected List<AccountType> getAccountsFromParticipations(AccountParticipantType[] list, long organizationId) throws FactoryException
+	protected <T> List<T> getDataListFromParticipations(BaseParticipantType[] list, long organizationId) throws FactoryException, ArgumentException
 	{
-		QueryField field = QueryFields.getFieldParticipationList(list, organizationId);
-		return Factories.getNameIdFactory(FactoryEnumType.ACCOUNT).list(new QueryField[]{ field }, organizationId);
+		if(list.length == 0) return new ArrayList<T>();
+		QueryField field = QueryFields.getFieldParticipantIds(list);
+		ProcessingInstructionType pit = new ProcessingInstructionType();
+		pit.setAlternateQuery(true);
+		return Factories.getNameIdFactory(FactoryEnumType.DATA).list(new QueryField[]{ field }, pit, organizationId);
 	}
-*/
+
 	public <T> List<T> getListFromParticipations(FactoryEnumType fType, BaseParticipantType[] list, boolean alternateQuery, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException
 	{
 		QueryField field = QueryFields.getFieldParticipantIds(list);

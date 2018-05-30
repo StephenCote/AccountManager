@@ -27,13 +27,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.fact.FactUtil;
-import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
-import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataType;
@@ -67,8 +64,6 @@ public class PolicyDefinitionUtil {
 			fact.setName(parm.getName());
 			fact.setFactType(parm.getFactType());
 			fact.setFactData(parm.getFactData());
-			//fact.setGroup(parm.getGroup());
-			//fact.s
 			fact.setNameType(parm.getNameType());
 			fact.setObjectId(parm.getObjectId());
 			fact.setLogicalOrder(parm.getLogicalOrder());
@@ -80,28 +75,7 @@ public class PolicyDefinitionUtil {
 			prt.getFacts().add(fact);
 		}
 		return prt;
-	/*	
-	
-		createPolicyRequest : function(d, s){
-		if(!d){
-			Hemi.logError("Missing policy definition");
-			return;
-		}
-		var r = new org.cote.beans.policyRequestType();
-		r.urn = d.urn;
-		r.requestType = (s ? s : "DECIDE");
-		r.organizationPath = accountManager.getOrganizationPath();
-		r.facts = [];
-		if(d.parameters && d.parameters.length){
-			for(var i = 0; i < d.parameters.length;i++){
-				var f = new org.cote.beans.factType();
-				for(var v in d.parameters[i]) f[v] = d.parameters[i][v];
-				r.facts.push(f);
-			}
-		}
-		return r;
-	*/
-	
+
 	}
 	public static PolicyDefinitionType generatePolicyDefinition(PolicyType pol) throws FactoryException, ArgumentException{
 		PolicyDefinitionType pdt = new PolicyDefinitionType();

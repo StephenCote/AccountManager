@@ -155,7 +155,6 @@ public class MediaFormServlet extends HttpServlet {
 				newData.setMimeType(mimeType);
 				newData.setOrganizationPath(user.getOrganizationPath());
 				DataUtil.setValue(newData,  data);
-				//bBit = DataServiceImpl.add(newData,request);
 				bBit = BaseService.add(AuditEnumType.DATA, newData, request);
 			}
 			 catch (DataException e) {

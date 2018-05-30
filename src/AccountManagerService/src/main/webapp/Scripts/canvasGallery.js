@@ -501,18 +501,6 @@
 				/// there should only be 2 shapes on the matte
 				///
 				if(oPanel.getObjects().shapes.length == 2 && (oShape = galleryView.getCanvas().getShapeById(oPanel.getObjects().shapes[0]))){
-					/*
-					Hemi.logError("Unexpected matte shape array");
-					return 0;
-				};
-				*/
-					/*
-					var oShape = galleryView.getCanvas().getShapeById(oPanel.getObjects().shapes[0]);
-					if(!oShape){
-						Hemi.logError("Matte shape not found");
-						return 0;
-					}
-					*/
 					gestureMatteImage(oPanel, oShape.referenceType, oShape.referenceId, oShape,bN,bA);
 				}
 				else{

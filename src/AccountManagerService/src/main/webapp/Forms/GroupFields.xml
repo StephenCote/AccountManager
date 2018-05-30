@@ -15,6 +15,7 @@
 			</select>
 		</p>
 	</div>
+
 	<div class = "rocket-column-2" rid = "shareContainer" style = "display:none;">
 		<p>
 			Sharing:
@@ -44,7 +45,7 @@
 			var o = this.getBean("rocketType");
 			this.GetElementByRID("groupType").disabled = (o.id ? true : false);
 			this.GetElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
-			if(o.id && o.groupType.match(/^(person|account|user)$/gi)){
+			if(o.id && o.groupType.match(/^(person|account|user|bucket)$/gi)){
 				this.toggleField("memberPickerToggle","memberPickerContent");
 				this.GetElementByRID("memberPicker").style.display = "block";
 				this.GetComponentByRID("membersList").setLoadHandler(this.scopeHandler("configMembersList",0,1,1));
@@ -61,7 +62,7 @@
 		addChildMember : function(){
 			var sType = this.GetElementByRID("groupType").value;
 			sType = sType.substring(0,1) + sType.substring(1,sType.length).toLowerCase();
-			this.manageList(sType, this.getObjectId(),"pickMember",uwm.getPathForType(sType),1);
+			this.manageList((sType=="Bucket" ? "Data" : sType), this.getObjectId(),"pickMember",uwm.getPathForType(sType),1);
 		},
 		pickMember : function(s, v){
 			if(v){
@@ -101,7 +102,7 @@
 			oL.clearItems();
 			var o = this.getBean("rocketType");
 			if(!o || o == null || o.id <= 0) return;
-			var aL = AM6Client.members("GROUP",o.objectId,sType);
+			var aL = AM6Client.members("GROUP",o.objectId,(sType == "BUCKET" ? "DATA" : sType));
 			for(var i = 0; i < aL.length;i++){
 				oL.addItem(aL[i].name,aL[i]);
 			}

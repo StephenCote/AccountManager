@@ -24,9 +24,6 @@
 package org.cote.accountmanager.util;
 
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -45,62 +42,54 @@ public class GraphicsUtil {
 	/// Adapted from earlier 2004 lib I created,
 	/// And updated based on http://stackoverflow.com/questions/1069095/how-do-you-create-a-thumbnail-image-out-of-a-jpeg-in-java
 	public static final Logger logger = LogManager.getLogger(GraphicsUtil.class);
+	public static final String IMAGE_FORMAT_JPG = "jpg";
+	public static final String IMAGE_FORMAT_PNG = "png";
+	public static final String IMAGE_FORMAT = IMAGE_FORMAT_PNG;
 	
-	public static byte[] createThumbnail(byte[] source_bytes, int maximum_width, int maximum_height) throws IOException {
+	
+	public static byte[] createThumbnail(byte[] sourceBytes, int maximumWidth, int maximumHeight) throws IOException {
 		
-		//long startTime = System.currentTimeMillis();
+		byte[] outBytes = new byte[0];
 		
-		byte[] out_bytes = new byte[0];
-		
-		Image image = ImageIO.read(new ByteArrayInputStream(source_bytes));
-		if(image == null) return out_bytes;
+		Image image = ImageIO.read(new ByteArrayInputStream(sourceBytes));
+		if(image == null) return outBytes;
 		
 		int width = image.getWidth(null);
 		int height = image.getHeight(null);
 		
 		/* nothing to do, the image is smaller */
-		if(width < maximum_width && height < maximum_height){
+		if(width < maximumWidth && height < maximumHeight){
 			System.out.println("Invalid dimensions");
-			return out_bytes;
+			return outBytes;
 		}
 		
-		double scale = (double)maximum_height/(double)height;
+		double scale = (double)maximumHeight/(double)height;
 
 
 		if (width > height){
-			scale = (double)maximum_width/(double)width;
+			scale = (double)maximumWidth/(double)width;
 		}
 
-		int scale_width = (int)(scale * width);
-		int scale_height = (int)(scale * height);
+		int scaleWidth = (int)(scale * width);
+		int scaleHeight = (int)(scale * height);
 
-		BufferedImage image_out = new BufferedImage(scale_width, scale_height,BufferedImage.TYPE_INT_RGB);
+		BufferedImage imageOut = new BufferedImage(scaleWidth, scaleHeight,BufferedImage.TYPE_INT_ARGB);
 
 		AffineTransform at = new AffineTransform();
 
 		if (scale < 1.0d){
 			at.scale(scale, scale);
 		}
-		Graphics2D g2d = image_out.createGraphics();
+		Graphics2D g2d = imageOut.createGraphics();
 
-		image_out.flush();
+		imageOut.flush();
 		g2d.drawImage(image, at, null);
 		g2d.dispose();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		ImageIO.write(image_out, "jpg", baos);
+		ImageIO.write(imageOut, IMAGE_FORMAT, baos);
 
-		//long stopTime = System.currentTimeMillis();
-		//logger.debug("Created thumbnail in " + (stopTime - startTime) + "ms");
 		return baos.toByteArray();
 	}
-	
-	private BufferedImage getCompatibleImage(int w, int h) {
-		  GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		  GraphicsDevice gd = ge.getDefaultScreenDevice();
-		  GraphicsConfiguration gc = gd.getDefaultConfiguration();
-		  BufferedImage image = gc.createCompatibleImage(w, h);
-		  return image;
-		}
 
 }

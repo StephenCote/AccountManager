@@ -47,6 +47,7 @@ import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
@@ -67,13 +68,26 @@ import org.cote.accountmanager.util.StreamUtil;
 
 public class ArticleUtil {
 	public static final Logger logger = LogManager.getLogger(ArticleUtil.class);
-	public static Pattern headerLinkPattern = Pattern.compile("\\<h1(?:\\s*)\\>((.|\\n|\\r)*?)\\</h1(?:\\s*)\\>");
-	public static String articleTemplate = null;
-	public static String articleSectionTemplate = null;
-	public static String articleMetaDataTemplate = null;
-	public static String articleNavBackTemplate = null;
-	public static String articleNavForwardTemplate = null;
-	
+	private static final Pattern articlePattern = Pattern.compile("^\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static final Pattern headerLinkPattern = Pattern.compile("\\<h1(?:\\s*)\\>((.|\\n|\\r)*?)\\</h1(?:\\s*)\\>");
+	private static String articleTemplate = null;
+	private static String articleSectionTemplate = null;
+	private static String articleMetaDataTemplate = null;
+	private static String articleNavBackTemplate = null;
+	private static String articleNavForwardTemplate = null;
+	protected static final String[] ARTICLE_ROLES = new String[]{
+			"BlogAuthor",
+			"ArticleAuthor"
+		};
+		
+	protected static int MAX_RECORD_COUNT = 3;
+		
+	/// Note: The patterns are different between the article and media utilities
+	/// The article patterns are simplified to reduce the URL length and make discovery simpler
+	protected static final Map<String,UserRoleType> roles = new HashMap<>();
+		
+
+
 	public static String getArticleTemplate(ServletContext context){
 		if(articleTemplate != null) return articleTemplate;
 		articleTemplate = getResourceFromParam(context, "template.article");
@@ -117,19 +131,6 @@ public class ArticleUtil {
 		return outStr;
 	}
 	
-	public static String[] ARTICLE_ROLES = new String[]{
-		"BlogAuthor",
-		"ArticleAuthor"
-	};
-	
-	public static int MAX_RECORD_COUNT = 3;
-	
-	/// Note: The patterns are different between the article and media utilities
-	/// The article patterns are simplified to reduce the URL length and make discovery simpler
-	public static Map<String,UserRoleType> roles = new HashMap<>();
-	
-	private static Pattern articlePattern = Pattern.compile("^\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-
 	public static UserRoleType getRoleByType(String type, long organizationId){
 		return getRoleByName(type + "Author",organizationId);
 	}
@@ -208,7 +209,14 @@ public class ArticleUtil {
 			organizationId = org.getId();
 
 			user = ServiceUtil.getUserFromSession(request);
-			if(user == null) user = Factories.getDocumentControl(organizationId);
+			if(user == null){
+				user = Factories.getDocumentControl(organizationId);
+				if(user == null){
+					AuditService.denyResult(audit, "Null user identified");
+					response.sendError(404);
+					return;
+				}
+			}
 			
 			targUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(subPath[0], organizationId);
 			if(targUser == null){
@@ -261,9 +269,9 @@ public class ArticleUtil {
 		boolean singleMode = false;
 		if(name == null || name.length() == 0){
 			String pageStr = request.getParameter("page");
-			int page = 0;
+			long page = 0;
 			if(pageStr != null && pageStr.matches("^\\d+$")){
-				page = (Integer.parseInt(pageStr)-1);
+				page = (Long.parseLong(pageStr)-1);
 				startIndex = page * recordCount;
 			}
 			AuditType caudit = AuditService.beginAudit(ActionEnumType.READ, "Count " + type + " items", AuditEnumType.USER, user.getName());
@@ -315,7 +323,7 @@ public class ArticleUtil {
 			response.sendError(404);
 			return;
 		}
-		DataType profile = null;//DataServiceImpl.getProfile(targUser);
+		DataType profile = UserService.getProfile(targUser);
 		String blogTitle = Factories.getAttributeFactory().getAttributeValueByName(profile, "blog.title");
 		String blogSubtitle = Factories.getAttributeFactory().getAttributeValueByName(profile, "blog.subtitle");
 		String author = Factories.getAttributeFactory().getAttributeValueByName(profile, "blog.signature");

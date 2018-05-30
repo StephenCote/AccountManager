@@ -40,7 +40,6 @@ public class ServiceUtil {
 	public static boolean isFactorySetup(){
 		boolean outBool = false;
 		AccountType rootAcct = null;
-		AccountType adminAcct = null;
 		UserType root = null;
 		UserType admin = null;
 		UserType doc = null;

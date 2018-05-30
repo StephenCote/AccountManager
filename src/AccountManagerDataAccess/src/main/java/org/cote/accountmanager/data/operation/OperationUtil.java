@@ -34,11 +34,11 @@ import org.cote.accountmanager.exceptions.FactoryException;
 public class OperationUtil {
 	public static final Logger logger = LogManager.getLogger(OperationUtil.class);
 
-	private static Map<String,Class> operations = new HashMap<String,Class>();
-	private static Map<String,IOperation> operationInst = new HashMap<String,IOperation>();
+	private static Map<String,Class<?>> operations = new HashMap<>();
+	private static Map<String,IOperation> operationInst = new HashMap<>();
 	
 	public static IOperation getOperationInstance(String className){
-		Class cls = getOperation(className);
+		Class<?> cls = getOperation(className);
 		IOperation oper = null;
 		if(cls == null){
 			logger.error(className + " is not defined");
@@ -50,18 +50,15 @@ public class OperationUtil {
 			oper = (IOperation)cls.newInstance();
 			operationInst.put(className, oper);
 
-		} catch (InstantiationException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return oper;
 	}
-	public static Class getOperation(String className){
+	public static Class<?> getOperation(String className){
 		if(operations.containsKey(className)) return operations.get(className);
-		Class cls = null;
+		Class<?> cls = null;
 		try {
 			cls = Class.forName(className);
 			operations.put(className, cls);

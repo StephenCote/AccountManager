@@ -31,7 +31,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class StreamUtil {
+	public static final Logger logger = LogManager.getLogger(StreamUtil.class);
 	public static long copyStream(InputStream in, OutputStream out) throws IOException{
 		long copied=0;
 		synchronized(in){
@@ -51,7 +55,6 @@ public class StreamUtil {
 
 	public static byte[] getStreamBytes(InputStream in) throws IOException{
 		
-		int copied = 0;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
 		synchronized(in){
@@ -63,7 +66,6 @@ public class StreamUtil {
 				bytesRead = in.read(read_buffer);
 				if (bytesRead == -1) break;
 				baos.write(read_buffer,0,bytesRead);
-				copied += bytesRead;
 			}
 		}
 		return baos.toByteArray();
@@ -73,27 +75,24 @@ public class StreamUtil {
 	
 	public static String streamToString(BufferedInputStream in) throws IOException{
 		int offset=2048;
-		int bytes_read=0;
-		String ret="";
-		int totalBytes=0;
+		int bytesRead=0;
 		StringBuilder sb=new StringBuilder();
 
 		int max=in.available();
 		boolean breakOut=false;
 
-		while(bytes_read != -1) {
+		while(bytesRead != -1) {
 			byte[] buffer = new byte[offset];
-			bytes_read = in.read(buffer,0,offset);
-			if(bytes_read == -1) break;
-			if(bytes_read > 0 && buffer[bytes_read -1] == -1){
-				bytes_read--;
+			bytesRead = in.read(buffer,0,offset);
+			if(bytesRead == -1) break;
+			if(bytesRead > 0 && buffer[bytesRead -1] == -1){
+				bytesRead--;
 				breakOut=true;
 			}
-			totalBytes+=bytes_read;
-			String sStr=new String(buffer, 0, bytes_read);
+			String sStr=new String(buffer, 0, bytesRead);
 			sb.append(sStr);
 
-			if(bytes_read >= max && max > 0) break;
+			if(bytesRead >= max && max > 0) break;
 			if(breakOut) break;
 		}
 		return sb.toString();
@@ -111,7 +110,7 @@ public class StreamUtil {
 			}
 		}
 		catch(IOException e){
-			System.out.println("StreamUtil:: fileHandleToBytes: " + e.toString());
+			logger.error("StreamUtil:: fileHandleToBytes: " + e.toString());
 		}
 		return baos.toByteArray();
 	}

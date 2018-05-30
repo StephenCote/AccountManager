@@ -298,23 +298,7 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	{
 		return (RoleParticipantType)newParticipant(group, role, ParticipantEnumType.ROLE, permission, affectType);
 	}
-/*
-	public List<DataType> getDataForPerson(BaseGroupType group, PersonType person) throws FactoryException, ArgumentException
-	{
-		long[] data_ids = ParticipationUtil.getDataFromGroupForPerson(group, person);
-		List<DataType> outList = new ArrayList<>();
-		if(data_ids.length == 0) return outList;
-		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByIds(data_ids, true, person.getOrganizationId());
 
-	}
-	public List<DataType> getDataForAccount(BaseGroupType group, AccountType account) throws FactoryException, ArgumentException
-	{
-		long[] data_ids = ParticipationUtil.getDataFromGroupForAccount(group, account);
-		List<DataType> outList = new ArrayList<>();
-		if(data_ids.length == 0) return outList;
-		return ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataListByIds(data_ids, true, account.getOrganizationId());
-	}
-*/
 	public boolean getIsDataInGroup(BaseGroupType group, DataType data) throws ArgumentException, FactoryException
 	{
 		return (getDataGroupParticipant(group, data) != null);
@@ -577,7 +561,11 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		List<PersonParticipantType> ap = getPersonGroupParticipations(group);
 		return getPersonListFromParticipations(ap.toArray(new PersonParticipantType[0]), group.getOrganizationId());
 	}
-
+	public List<DataType> getDataInGroup(BucketGroupType group) throws FactoryException, ArgumentException
+	{
+		List<DataParticipantType> ap = getDataGroupParticipations(group);
+		return getDataListFromParticipations(ap.toArray(new DataParticipantType[0]), group.getOrganizationId());
+	}
 	public List<UserType> getUsersInGroup(UserGroupType group) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> ap = getUserGroupParticipations(group);

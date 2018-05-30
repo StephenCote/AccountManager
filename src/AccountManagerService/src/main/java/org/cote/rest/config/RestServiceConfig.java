@@ -85,8 +85,7 @@ public class RestServiceConfig extends ResourceConfig{
 				Thread.sleep(1000);
 
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getMessage());
 			}
             maintenanceThreads.clear();
 

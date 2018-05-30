@@ -36,6 +36,7 @@ public class QueryField extends FieldMatch {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T getValue() {
 		return (T)value;
 	}

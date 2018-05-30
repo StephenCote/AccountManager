@@ -35,6 +35,9 @@ import org.cote.accountmanager.objects.AccountParticipantType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
+import org.cote.accountmanager.objects.BucketGroupType;
+import org.cote.accountmanager.objects.DataParticipantType;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonGroupType;
@@ -46,6 +49,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class GroupService{
 	public static final Logger logger = LogManager.getLogger(GroupService.class);
@@ -84,7 +88,7 @@ public class GroupService{
 	{
 		/// accommodate bulk inserts with a negative id - skip the check for the getUserInGroup, which will return true for bulk jobs
 		///
-		if (group.getId() < 0 || getIsUserInGroup(group, account) == false)
+		if (group.getId() < 0L || !getIsUserInGroup(group, account))
 		{
 			UserParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newUserGroupParticipation(group, account);
 			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
@@ -140,7 +144,7 @@ public class GroupService{
 	{
 		/// accommodate bulk inserts with a negative id - skip the check for the getGroupInGroup, which will return true for bulk jobs
 		///
-		if (group.getId() < 0 || getIsGroupInGroup(group, member) == false)
+		if (group.getId() < 0L || !getIsGroupInGroup(group, member))
 		{
 			GroupParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newGroupGroupParticipation(group, member);
 			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
@@ -197,7 +201,7 @@ public class GroupService{
 	{
 		/// accommodate bulk inserts with a negative id - skip the check for the getAccountInGroup, which will return true for bulk jobs
 		///
-		if (group.getId() < 0 || getIsAccountInGroup(group, account) == false)
+		if (group.getId() < 0L || !getIsAccountInGroup(group, account))
 		{
 			AccountParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(group, account);
 			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
@@ -217,6 +221,103 @@ public class GroupService{
 		}
 		return false;
 	}
+
+	
+	public static boolean switchActorInGroup(NameIdType actor, BaseGroupType group, boolean add) throws ArgumentException, DataAccessException, FactoryException{
+		boolean outBool = false;
+		if(
+			GroupEnumType.fromValue(actor.getNameType().toString()) != group.getGroupType()
+			&&
+			actor.getNameType() != NameEnumType.DATA
+			&&
+			group.getGroupType() != GroupEnumType.BUCKET
+		){
+			logger.error("Invalid actor/group combination: " + actor.getNameType().toString() + "/" + group.getGroupType().toString());
+			return false;
+		}
+
+		switch(actor.getNameType()){
+			case PERSON:
+				if(add) outBool = GroupService.addPersonToGroup((PersonType)actor, (PersonGroupType)group);
+				else outBool = GroupService.removePersonFromGroup((PersonGroupType)group,(PersonType)actor);
+				break;
+			case ACCOUNT:
+				if(add) outBool = GroupService.addAccountToGroup((AccountType)actor, (AccountGroupType)group);
+				else outBool = GroupService.removeAccountFromGroup((AccountGroupType)group,(AccountType)actor);
+				break;
+			case USER:
+				if(add) outBool = GroupService.addUserToGroup((UserType)actor, (UserGroupType)group);
+				else outBool = GroupService.removeUserFromGroup((UserGroupType)group,(UserType)actor);
+				break;
+			case DATA:
+				if(add) outBool = GroupService.addDataToGroup((DataType)actor, (BucketGroupType)group);
+				else outBool = GroupService.removeDataFromGroup((BucketGroupType)group,(DataType)actor);
+				break;
+			default:
+				logger.error(String.format(FactoryException.UNHANDLED_ACTOR_TYPE, actor.getNameType()));
+				break;
+			}
+
+		return outBool;
+	}
+	
+	public static boolean getIsDataInGroup(BucketGroupType group, DataType data) throws ArgumentException, FactoryException{
+		if(group == null){
+			logger.error("Group is null");
+			return false;
+		}
+		/// accommodate bulk inserts with a negative id; don't check the DB for the negative value
+		///
+		
+		if(group.getId() < 0) return true;
+		return getIsDataInGroup(group, data, null, AffectEnumType.UNKNOWN);
+	}
+	public static boolean getIsDataInGroup(BaseGroupType group, DataType data, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, FactoryException
+	{
+		if(group == null){
+			logger.error("Group is null");
+			return false;
+		}
+
+		/// accommodate bulk inserts with a negative id
+		///
+		if(group.getId() < 0) return true;
+		return ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getIsDataInGroup(group, data,permission,affectType);
+	}
+
+	public static boolean addDataToGroup(DataType data, BucketGroupType group) throws ArgumentException, DataAccessException, FactoryException
+	{
+		return addDataToGroup(data, group, null, AffectEnumType.UNKNOWN);
+
+	}
+
+	public static boolean addDataToGroup(DataType data, BucketGroupType group, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, DataAccessException, FactoryException
+	{
+		/// accommodate bulk inserts with a negative id - skip the check for the getDataInGroup, which will return true for bulk jobs
+		///
+		if (group.getId() < 0L || !getIsDataInGroup(group, data))
+		{
+			DataParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newDataGroupParticipation(group, data);
+			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
+			{
+				EffectiveAuthorizationService.pendDataUpdate(data);
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
+	public static boolean removeDataFromGroup(BucketGroupType group, DataType data) throws FactoryException, ArgumentException
+	{
+		if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteDataGroupParticipants(group, data))
+		{
+			EffectiveAuthorizationService.pendDataUpdate(data);
+			return true;
+		}
+		return false;
+	}
+	
 	public static boolean getIsPersonInGroup(PersonGroupType group, PersonType person) throws ArgumentException, FactoryException{
 		if(group == null){
 			logger.error("Group is null");
@@ -241,29 +342,6 @@ public class GroupService{
 		return ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getIsPersonInGroup(group, person,permission,affectType);
 	}
 	
-	public static boolean switchActorInGroup(NameIdType actor, BaseGroupType group, boolean add) throws ArgumentException, DataAccessException, FactoryException{
-		boolean outBool = false;
-		if(GroupEnumType.fromValue(actor.getNameType().toString()) != group.getGroupType()){
-			return false;
-		}
-		switch(actor.getNameType()){
-			case PERSON:
-				if(add) outBool = GroupService.addPersonToGroup((PersonType)actor, (PersonGroupType)group);
-				else outBool = GroupService.removePersonFromGroup((PersonGroupType)group,(PersonType)actor);
-				break;
-			case ACCOUNT:
-				if(add) outBool = GroupService.addAccountToGroup((AccountType)actor, (AccountGroupType)group);
-				else outBool = GroupService.removeAccountFromGroup((AccountGroupType)group,(AccountType)actor);
-				break;
-			case USER:
-				if(add) outBool = GroupService.addUserToGroup((UserType)actor, (UserGroupType)group);
-				else outBool = GroupService.removeUserFromGroup((UserGroupType)group,(UserType)actor);
-				break;
-			}
-
-		return outBool;
-	}
-
 	public static boolean addPersonToGroup(PersonType person, PersonGroupType group) throws ArgumentException, DataAccessException, FactoryException
 	{
 		return addPersonToGroup(person, group, null, AffectEnumType.UNKNOWN);
@@ -274,7 +352,7 @@ public class GroupService{
 	{
 		/// accommodate bulk inserts with a negative id - skip the check for the getPersonInGroup, which will return true for bulk jobs
 		///
-		if (group.getId() < 0 || getIsPersonInGroup(group, account) == false)
+		if (group.getId() < 0L || !getIsPersonInGroup(group, account))
 		{
 			PersonParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newPersonGroupParticipation(group, account);
 			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
@@ -285,6 +363,7 @@ public class GroupService{
 		}
 		return false;
 	}
+	
 	public static boolean removePersonFromGroup(PersonGroupType group, PersonType account) throws FactoryException, ArgumentException
 	{
 		if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deletePersonGroupParticipants(group, account))

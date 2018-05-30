@@ -25,7 +25,6 @@ package org.cote.accountmanager.util;
 import java.io.File;
 //import java.util.Vector;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -38,12 +37,7 @@ public class DirectoryUtil{
 	private boolean isOk=false;
 	private int dirCount=0;
 	private int fileCount=0;
-	private long dirByteSize=0;
 	private int dirKByteSize=0;
-	
-	private long start=0;
-	private long stop=0;
-	private long now=0;
 	
 	public DirectoryUtil(){
 	
@@ -89,8 +83,6 @@ public class DirectoryUtil{
 		List<File> dirList=new ArrayList<File>();
 		dirCount=0;
 		fileCount=0;
-		start=new Date().getTime();
-		now=new Date().getTime();
 		_getrecursive(directory,dirList,filter,recurse);
 		return dirList;
 	}
@@ -99,8 +91,6 @@ public class DirectoryUtil{
 		List<File> dirsList=new ArrayList<File>();
 		dirCount=0;
 		fileCount=0;
-		start=new Date().getTime();
-		now=new Date().getTime();
 		_getrecursive(directory,null,dirsList,filter,recurse);
 		return dirsList;
 	}
@@ -108,10 +98,7 @@ public class DirectoryUtil{
 	public long sizeof(){
 		dirCount=0;
 		fileCount=0;
-		start=new Date().getTime();
-		now=new Date().getTime();
-		long size=_getsizeof(directory);
-		dirByteSize=size;
+		long size=getSizeOf(directory);
 		dirKByteSize=new Long(size/1000).intValue();
 		return size;
 	}
@@ -120,11 +107,6 @@ public class DirectoryUtil{
 	}
 	private void _getrecursive(File f,List<File> dirs, List<File> dirlist, String filter,boolean recurse){
 
-		long mark=new Date().getTime();
-		if((mark - now) > 1000){
-			now=mark;
-			logger.info("Status: current: " + f.getAbsolutePath() + ": directories: " + dirCount + ", files: " + fileCount);
-		}
 		if(f.isDirectory()){
 			dirCount++;
 			if(dirlist != null) dirlist.add(f);
@@ -143,19 +125,14 @@ public class DirectoryUtil{
 		}
 
 	}
-	private long _getsizeof(File f){
+	private long getSizeOf(File f){
 		long size=0;
-		long mark=new Date().getTime();
-		if((mark - now) > 1000){
-			now=mark;
-			logger.info("Status: current: " + f.getAbsolutePath() + ": directories: " + dirCount + ", files: " + fileCount);
-		}
 		if(f.isDirectory()){
 			dirCount++;
 			File[] list=f.listFiles();
 			for(int i=0;i<list.length;i++){
 				if(list[i].isDirectory()){
-					size+=_getsizeof(list[i]);
+					size+=getSizeOf(list[i]);
 				}
 				else{
 					fileCount++;
