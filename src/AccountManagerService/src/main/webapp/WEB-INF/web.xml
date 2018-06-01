@@ -114,26 +114,36 @@
     <param-value>am:data:development:data:home.tokenuser..vault:dg9rzw5z</param-value>
   </context-param>
   
-<!-- 
-	Placeholder partly for default values
-    <context-param>
-    <description>Vault Path</description>
-    <param-name>vault.path</param-name>
-    <param-value>c:/Projects/vault</param-value>
-  </context-param>
-  
-    <context-param>
-    <description>Vault Name</description>
-    <param-name>vault.name</param-name>
-    <param-value>Development Vault 1</param-value>
+<context-param>
+    <description>Article Template</description>
+    <param-name>template.article</param-name>
+    <param-value>WEB-INF/resource/articleTemplate.xhtml</param-value>
   </context-param>
 
   <context-param>
-    <description>Vault Credential</description>
-    <param-name>vault.credential</param-name>
-    <param-value>c:/Projects/vault/credential.json</param-value>
+    <description>Article Template</description>
+    <param-name>template.article.meta</param-name>
+    <param-value>WEB-INF/resource/articleMetaDataTemplate.xhtml</param-value>
   </context-param>
-  -->
+
+   <context-param>
+    <description>Article Section Template</description>
+    <param-name>template.article.section</param-name>
+    <param-value>WEB-INF/resource/articleSectionTemplate.xhtml</param-value>
+  </context-param>
+  
+     <context-param>
+    <description>Article Nav Forward Template</description>
+    <param-name>template.article.navforward</param-name>
+    <param-value>WEB-INF/resource/articleNavForwardTemplate.xhtml</param-value>
+  </context-param>
+
+     <context-param>
+    <description>Article Nav Backward Template</description>
+    <param-name>template.article.navback</param-name>
+    <param-value>WEB-INF/resource/articleNavBackTemplate.xhtml</param-value>
+  </context-param>  
+
   <context-param>
     <description>Restrict Image Size</description>
     <param-name>image.restrict.size</param-name>
@@ -227,6 +237,13 @@
     <enabled>true</enabled>
     <async-supported>false</async-supported>
   </servlet>
+    <servlet>
+    <display-name>ArticleServlet</display-name>
+    <servlet-name>ArticleServlet</servlet-name>
+    <servlet-class>org.cote.servlets.ArticleServlet</servlet-class>
+    <enabled>true</enabled>
+    <async-supported>false</async-supported>
+  </servlet>
   <servlet>
     <display-name>ThumbnailServlet</display-name>
     <servlet-name>ThumbnailServlet</servlet-name>
@@ -243,11 +260,15 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>MediaFormServlet</servlet-name>
-    <url-pattern>/mediaForm</url-pattern>
+     <url-pattern>/mediaForm</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>MediaServlet</servlet-name>
     <url-pattern>/media/*</url-pattern>
+  </servlet-mapping>
+    <servlet-mapping>
+    <servlet-name>ArticleServlet</servlet-name>
+    <url-pattern>/article/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ThumbnailServlet</servlet-name>

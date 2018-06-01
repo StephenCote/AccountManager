@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.service.util.ArticleUtil;
 import org.cote.accountmanager.service.util.MediaOptions;
-import org.cote.accountmanager.service.util.MediaUtil;
 
 public class ArticleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -28,14 +28,15 @@ public class ArticleServlet extends HttpServlet {
 		response.setHeader("Cache-Control", "public,max-age="+ defCacheSeconds);
 		response.setDateHeader("Expires", expiry);
 		response.setCharacterEncoding("UTF-8");
-	    
+	    logger.info("Article Servlet");
 		MediaOptions options = new MediaOptions();
 		options.setUseTemplate(true);
+		options.setMediaBase("Articles");
 		options.setEncodeData(true);
 		options.setTemplatePath("WEB-INF/resource/dwacTemplate.html");
 		options.setTemplateContentType("text/html");
 		try{
-			MediaUtil.writeBinaryContent(request, response, options);
+			ArticleUtil.writeBinaryContent(request, response, options);
 		}
 		catch(IOException e){
 			logger.error(e.getMessage());

@@ -70,6 +70,7 @@ public class RoleService {
 	public static final String ROLE_ACCOUNT_USERS_READERS = "AccountUsersReaders";	
 	public static final String ROLE_ACCOUNT_USERS = "AccountUsers";
 	public static final String ROLE_API_USERS = "ApiUsers";
+	public static final String ROLE_ARTICLE_AUTHORS = "ArticleAuthors";
 	public static final String ROLE_PERMISSION_READERS = "PermissionReaders";
 	public static final String ROLE_ROLE_READERS = "RoleReaders";
 	public static final String ROLE_ROLE_ADMINISTRATORS = "RoleAdministrators";
@@ -77,7 +78,7 @@ public class RoleService {
 
 	
 	protected static final String[] SYSTEM_ROLE_NAMES = new String[]{
-		ROLE_SYSTEM_ADMINISTRATOR, ROLE_DATA_ADMINISTRATOR, ROLE_DATA_READERS,
+		ROLE_SYSTEM_ADMINISTRATOR, ROLE_DATA_ADMINISTRATOR, ROLE_DATA_READERS,ROLE_ARTICLE_AUTHORS,
 		ROLE_ACCOUNT_ADMINISTRATOR, ROLE_ACCOUNT_DEVELOPERS, ROLE_ACCOUNT_USERS, ROLE_ACCOUNT_USERS_READERS, ROLE_API_USERS,
 		ROLE_PERMISSION_READERS, ROLE_ROLE_READERS, ROLE_ROLE_ADMINISTRATORS, ROLE_GROUP_READERS, ROLE_OBJECT_READERS, ROLE_OBJECT_ADMINISTRATOR
 	};
@@ -118,7 +119,8 @@ public class RoleService {
 					RoleService.getPermissionReaderUserRole(organizationId),
 					RoleService.getDataReaderUserRole(organizationId),
 					RoleService.getGroupReaderUserRole(organizationId),
-					RoleService.getObjectReaderUserRole(organizationId)
+					RoleService.getObjectReaderUserRole(organizationId),
+					RoleService.getArticleAuthorUserRole(organizationId)
 				));
 				
 				SYSTEM_ROLE_OBJECTS.put(organizationId, outList);
@@ -649,7 +651,14 @@ public class RoleService {
 		{
 			return getUserRole(ROLE_API_USERS, null,organizationId);
 		}
-		
+		public static UserRoleType getArticleAuthorUserRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateUserRole(roleOwner, ROLE_ARTICLE_AUTHORS, null);
+		}
+		public static UserRoleType getArticleAuthorUserRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getUserRole(ROLE_ARTICLE_AUTHORS, null,organizationId);
+		}
 		public static AccountRoleType getAccountUsersReaderAccountRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
 		{
 			return getCreateAccountRole(roleOwner, ROLE_ACCOUNT_USERS_READERS, null);

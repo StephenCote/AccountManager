@@ -981,7 +981,10 @@ public class BaseService {
 	private static int count(AuditEnumType type, BaseGroupType group) throws ArgumentException, FactoryException {
 		
 		NameIdFactory factory = getFactory(type);
-		if(type == AuditEnumType.DATA) return ((DataFactory)factory).getCount((DirectoryGroupType)group);
+		if(type == AuditEnumType.DATA){
+			if(group.getGroupType() == GroupEnumType.DATA) return ((DataFactory)factory).getCount((DirectoryGroupType)group);
+			return 0;
+		}
 		return ((NameIdGroupFactory)factory).countInGroup(group);		
 	}
 	
@@ -1162,7 +1165,8 @@ public class BaseService {
 		}
 		else if(iFact.getFactoryType().equals(FactoryEnumType.DATA)){
 			ProcessingInstructionType inst = getSearchInstruction(search);
-			outObj = FactoryBase.convertList(((DataFactory)iFact).getDataListByGroup((DirectoryGroupType)group,inst, !search.getFullRecord(),search.getStartRecord(), search.getRecordCount(), group.getOrganizationId()));
+			if(group.getGroupType() == GroupEnumType.DATA) outObj = FactoryBase.convertList(((DataFactory)iFact).getDataListByGroup((DirectoryGroupType)group,inst, !search.getFullRecord(),search.getStartRecord(), search.getRecordCount(), group.getOrganizationId()));
+			/// else if(group.getGroupType() == GroupEnumType.BUCKET) outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getDataInGroup((BucketGroupType)group));
 		}
 		for(int i = 0; i < outObj.size();i++){
 

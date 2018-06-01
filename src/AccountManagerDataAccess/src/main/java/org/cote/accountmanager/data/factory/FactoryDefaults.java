@@ -285,6 +285,7 @@ public class FactoryDefaults {
 		RoleService.getObjectReaderAccountRole(adminUser);
 		RoleService.getApiUserUserRole(adminUser);
 		UserRoleType usersUsersReadersRole = RoleService.getAccountUsersReaderUserRole(adminUser);
+		RoleService.getArticleAuthorUserRole(adminUser);
 		RoleService.getRoleReaderUserRole(adminUser);
 		RoleService.getPermissionReaderUserRole(adminUser);
 		RoleService.getDataReaderUserRole(adminUser);

@@ -68,7 +68,8 @@ import org.cote.accountmanager.util.StreamUtil;
 
 public class ArticleUtil {
 	public static final Logger logger = LogManager.getLogger(ArticleUtil.class);
-	private static final Pattern articlePattern = Pattern.compile("^\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static final Pattern articlePattern = Pattern.compile("^\\/([A-Za-z0-9\\.]+)\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+			//Pattern.compile("^\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static final Pattern headerLinkPattern = Pattern.compile("\\<h1(?:\\s*)\\>((.|\\n|\\r)*?)\\</h1(?:\\s*)\\>");
 	private static String articleTemplate = null;
 	private static String articleSectionTemplate = null;
@@ -121,7 +122,7 @@ public class ArticleUtil {
 	public static String getResourceFromParam(ServletContext context,String paramName){
 		String outStr = null;
 		try {
-			BufferedInputStream bis = new BufferedInputStream(context.getResourceAsStream("/WEB-INF/" + context.getInitParameter(paramName)));
+			BufferedInputStream bis = new BufferedInputStream(context.getResourceAsStream(context.getInitParameter(paramName)));
 			outStr = StreamUtil.streamToString(bis);
 			bis.close();
 		} catch (IOException e) {
@@ -129,28 +130,6 @@ public class ArticleUtil {
 			logger.error("Error",e);
 		}
 		return outStr;
-	}
-	
-	public static UserRoleType getRoleByType(String type, long organizationId){
-		return getRoleByName(type + "Author",organizationId);
-	}
-	
-	public static UserRoleType getRoleByName(String name, long organizationId){
-		String key = organizationId + "-" + name;
-		if(roles.containsKey(key)) return roles.get(key);
-		UserRoleType role = null;
-		try{
-			UserType adminUser = ((INameIdFactory)Factories.getFactory(FactoryEnumType.USER)).getByName("Admin", organizationId);
-			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getCreateUserRole(adminUser, name, null);
-		}
-		catch (ArgumentException | FactoryException e) {
-			logger.error("Error",e);
-		}
-		if(role != null){
-			roles.put(key, role);
-		}
-		return role;
-
 	}
 	
 	public static void writeBinaryContent(HttpServletRequest request, HttpServletResponse response, MediaOptions options) throws IOException{
@@ -164,9 +143,8 @@ public class ArticleUtil {
 		}
 		
 		
-		logger.info("Article Path: " + path);
 		Matcher m = articlePattern.matcher(path);
-		if(!m.find() || m.groupCount() != 1){
+		if(!m.find() || m.groupCount() != 2){
 			AuditService.denyResult(audit, "Unexpected path construct");
 			response.sendError(404);
 			return;
@@ -179,16 +157,17 @@ public class ArticleUtil {
 		///			EG: /Blog/Steve
 		
 		
-		String orgPath = request.getServletContext().getInitParameter("organization.default");
-		String type = options.getMediaBase();
+		String orgPath = "/" + m.group(1).trim().replace('.', '/');
+		String sBaseDir = options.getMediaBase();
 		/// SubPath ==
 		///   0 : UserName
 		///	  1 : Article Name
 		///	If 1 is empty, then it's a list
 		///
-		String[] subPath = m.group(1).split("/");
+
+		String[] subPath = m.group(2).split("/");
 		
-		if(orgPath.length() == 0 || type.length() == 0 || subPath.length == 0){
+		if(orgPath.length() == 0 || sBaseDir.length() == 0 || subPath.length == 0){
 			AuditService.denyResult(audit, "Type, path, or name did not contain a value");
 			response.sendError(404);
 			return;
@@ -225,9 +204,9 @@ public class ArticleUtil {
 				return;
 			}
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(targUser);
-			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(type, targUser.getHomeDirectory(), targUser.getOrganizationId());
+			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName(sBaseDir, targUser.getHomeDirectory(), targUser.getOrganizationId());
 			if(dir == null){
-				AuditService.denyResult(audit, "Content directory is null for " + targUser.getName() + ": '~/" + type + "'");
+				AuditService.denyResult(audit, "Content directory is null for " + targUser.getName() + ": '~/" + sBaseDir + "'");
 				response.sendError(404);
 				return;
 			}
@@ -235,9 +214,9 @@ public class ArticleUtil {
 			/// This role check is in here more to stop people from driving random tests into the system
 			/// So if a user isn't in this role, they obviously don't want to share anything this way, so stop checking
 			///
-			role = getRoleByType(type,organizationId);
+			role = RoleService.getArticleAuthorUserRole(org.getId());
 			if(RoleService.getIsUserInEffectiveRole(role, targUser) == false){
-				AuditService.denyResult(audit, "User " + subPath[0] + " is not an authorized author in : '" + type + "Author' role");
+				AuditService.denyResult(audit, "User " + subPath[0] + " is not an authorized author in : '" + sBaseDir + "Author' role");
 				response.sendError(404);
 				return;
 			}
@@ -274,14 +253,14 @@ public class ArticleUtil {
 				page = (Long.parseLong(pageStr)-1);
 				startIndex = page * recordCount;
 			}
-			AuditType caudit = AuditService.beginAudit(ActionEnumType.READ, "Count " + type + " items", AuditEnumType.USER, user.getName());
+			AuditType caudit = AuditService.beginAudit(ActionEnumType.READ, "Count " + sBaseDir + " items", AuditEnumType.USER, user.getName());
 			AuditService.targetAudit(audit, AuditEnumType.GROUP, dir.getUrn());
 			totalCount = BaseService.count(caudit, AuditEnumType.DATA, user, dir);
 			logger.info("Page = " + pageStr + " / " + startIndex + " / " + recordCount);
 			if(startIndex < 0) startIndex = 0;
 			if(startIndex >= totalCount) startIndex = totalCount - recordCount;
 			
-			String urlBase = "/AccountManagerService/" + type + "/" + targUser.getName();
+			String urlBase = "/AccountManagerService/article" + orgPath + "/" + targUser.getName();
 			
 			if((startIndex + recordCount) < totalCount){
 				navForward = getArticleNavForwardTemplate(request.getServletContext());
@@ -351,6 +330,9 @@ public class ArticleUtil {
 			}
 
 			DataType data = articleData.get(i);
+			if(data.getDetailsOnly()){
+				data = BaseService.readByObjectId(AuditEnumType.DATA, data.getObjectId(), user);
+			}
 			try {
 				/// For lists, inject [h1] and [h2] if they don't already exist based on the data name and description
 				///
@@ -359,7 +341,7 @@ public class ArticleUtil {
 				if(contentDataStr.indexOf("[h1]") == -1) preface.append("[h1]" + data.getName() + "[/h1]");
 				if(contentDataStr.indexOf("[h2]") == -1 && data.getDescription() != null && data.getDescription().length() > 0) preface.append("[h2]" + data.getDescription() + "[/h2]");
 				String contentStr = AMCodeUtil.decodeAMCodeToHtml(preface.toString() + contentDataStr);
-				String linkUrl = "/AccountManager/article/" + targUser.getName() + "/" + data.getName();
+				String linkUrl = "/AccountManagerService/article" + orgPath + "/" + targUser.getName() + "/" + data.getName();
 				Matcher headerM = headerLinkPattern.matcher(contentStr);
 				/// this is an error if it doesn't find because it was just added when missing
 				///

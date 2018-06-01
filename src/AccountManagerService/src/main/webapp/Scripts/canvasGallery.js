@@ -32,6 +32,8 @@
 		}
 		
 		var ctl = Hemi.newObject("CanvasController","1.0",true,true,{
+			boxHeight : boxHeight,
+			boxWidth : boxWidth,
 			object_destroy : function(){
 				this.getCanvas().destroy();
 				this.getObjects().cvs_container.parentNode.removeChild(this.getObjects().cvs_container);
@@ -39,6 +41,7 @@
 			object_create : function(){
 				initializeCanvasController(this);
 				this.getCanvas().AddShapeDecorator(this);
+				this.getProperties().useWindowDimensions = 0;
 			},
 			getCanvasContainer : function(){
 				return this.getObjects().cvs_container;
@@ -217,6 +220,9 @@
 					if((oSrc.referenceType == "GROUP" || oSrc.referenceType == "OBJECT") && oTarg.action == "controlPanel"){
 						openObject(oPanel,oSrc.referenceType, oSrc.referenceId, oSrc);
 					}
+					if((oSrc.referenceType == "GROUP" || oSrc.referenceType == "OBJECT") && oTarg.action == "bucketItem"){
+						bucketObject(oPanel,oSrc.referenceType, oSrc.referenceId, oSrc);
+					}
 				}
 				else if (oSrc.referenceType == "OBJECT" && oTarg.referenceType == "GROUP"){
 					Hemi.logError("DEAD CODE WARNING");
@@ -365,6 +371,7 @@
 					itemPath:"GalleryHome/",
 					//itemIcon:"48px-Crystal_Clear_mimetype_kmultiple.png",
 					itemIcon:"48px-Crystal_Clear_filesystem_folder_grey.png",
+					itemIconBucket:"48px-Crystal_Clear_filesystem_folder_yellow.png",
 					actions:[
 					   //{action: "newGroup",vslot:0,label: "New Group",icon : "48px-Crystal_Clear_mimetype_misc.png"}
 					   //,{action: "viewUnassigned",vslot:1,label: "Tasks",icon : "48px-Crystal_Clear_filesystem_folder_grey.png"}
@@ -401,6 +408,7 @@
 					actions:[
 					 {action: "tagSearch",label:"Tag Search",icon:"Crystal_Clear_app_kfind.png"},
 			         {action: "newGroup",label: "New Group",icon : "Crystal_Clear_action_filenew.png"},
+			         {action: "newBucket",label: "New Bucket",icon : "Crystal_Clear_action_filenew.png"},
 			         {action: "dndUpload",label:"Drag/Drop Upload",icon:"Crystal_Clear_action_2uparrow.png"},
 				     {action: "newImage",label: "New Image",icon : "Crystal_Clear_mimetype_image.png"},
 				     {action: "openShare",label: "Sharing",icon : "Crystal_Clear_app_Login_Manager.png"},
@@ -419,9 +427,10 @@
 					actions:[
 					    {action:"navBack",small:1,slot:0,icon:"48px-Crystal_Clear_action_back.png"},
 						{action:"navNext",small:1,slot:1,icon:"48px-Crystal_Clear_action_forward.png"},
-						{action:"itemBack",small:1,slot:"mid-2",icon:"48px-Crystal_Clear_action_back.png"},
-						{action:"controlPanel",small:1,slot:"mid",icon:"48px-Crystal_Clear_app_ksysguard.png"},
-						{action:"itemNext",small:1,slot:"mid+2",icon:"48px-Crystal_Clear_action_forward.png"},
+						{action:"itemBack",small:1,slot:"mid-3",icon:"48px-Crystal_Clear_action_back.png"},
+						{action:"bucketItem",small:1,slot:"mid-1",icon:"48px-Crystal_Clear_filesystem_folder_yellow.png"},
+						{action:"controlPanel",small:1,slot:"mid+1",icon:"48px-Crystal_Clear_app_ksysguard.png"},
+						{action:"itemNext",small:1,slot:"mid+3",icon:"48px-Crystal_Clear_action_forward.png"},
 						{action:"deleteObject",small:1,slot:"slots - 3",icon:"48px-Crystal_Clear_filesystem_trashcan_empty.png"},
 						{action:"logout",small:1,slot:"slots - 2",icon:"48px-Crystal_Clear_app_logout.png"},
 						{action:"exit",small:1,slot:"slots - 1",icon:"48px-Crystal_Clear_app_shutdown.png"}
@@ -462,8 +471,11 @@
 			}, // end object create
 			_handle_keydown : function(e){
 				e = Hemi.event.getEvent(e);
-				var bN = 0,bA = 0,bC = 0,bU = 0;
-				
+				var oS = Hemi.event.getEventSource(e);
+				if(oS && oS.nodeName && oS.nodeName.match(/^(input|textarea|select)/gi)){
+					return;
+				}
+				var bN = 0,bA = 0,bC = 0,bU = 0,bBuck = 0, bGo = 0, bLast = 0;
 				switch(e.keyCode){
 					case 39:
 						bN = 1;
@@ -483,16 +495,29 @@
 						closeImage();
 						bC = 1;
 						break;
+					/// T
 					case 84:
 						this.getProperties().tagMode = (!this.getProperties().tagMode);
 						break;
+					/// B
+					case 66:
+						bBuck = 1;
+						break;
+					/// G
+					case 71:
+						bGo = 1;
+						break;
+					/// L
+					case 76:
+						bLast = 1;
+						break;
 					default:
-						Hemi.log("Unhandled key code: " + e.keyCode);
+						Hemi.logDebug("Unhandled key code: " + e.keyCode);
 						break;
 				}
 				
-				if((!bN && !bU) || bC){
-					Hemi.log("Unhandled combination");
+				if((!bLast && !bN && !bU && !bBuck && !bGo) || bC){
+					Hemi.logDebug("Unhandled combination");
 					return 0;
 				}
 				
@@ -501,9 +526,16 @@
 				/// there should only be 2 shapes on the matte
 				///
 				if(oPanel.getObjects().shapes.length == 2 && (oShape = galleryView.getCanvas().getShapeById(oPanel.getObjects().shapes[0]))){
-					gestureMatteImage(oPanel, oShape.referenceType, oShape.referenceId, oShape,bN,bA);
+					if(bBuck){
+						Hemi.log("Bucket object " + oShape.referenceType + " / " + oShape.referenceId);
+						bucketObject(oPanel, oShape.referenceType, oShape.referenceId, oShape);
+					}
+					else{
+						gestureMatteImage(oPanel, oShape.referenceType, oShape.referenceId, oShape,bN,bA);
+					}
 				}
 				else{
+					var oNavPanel = this.getCurrentViewPanel("nav");
 					if(bN){
 						if(e.shiftKey){
 							if(bA) this.navNext();
@@ -517,7 +549,15 @@
 					}
 					else if(bU){
 						this.log("cdup");
-						this.cdup(this.views()[0].panel("nav"),0,this.views()[0].panel("nav").getObjects().currentDirectory.parentId,0);
+						this.cdup(oNavPanel,0,oNavPanel.getObjects().currentDirectory.parentId,0);
+					}
+					else if(bGo){
+						pickText(this,"Go to",oNavPanel.getObjects().currentDirectory.path,"findDirectory");
+					}
+					else if(bLast){
+						if(oNavPanel.getObjects().lastDirectory){
+							this.cdup(oNavPanel,0,oNavPanel.getObjects().lastDirectory.id,0);
+						}
 					}
 					else{
 						this.log("otherwise");
@@ -597,6 +637,9 @@
 				}
 					
 			},
+			bucketItem : function(sType, sId){
+				bucketObject(0,sType, sId, 0);
+			},
 			openLog : function(){
 				Hemi.app.createWindow('Log Viewer','Templates/LogViewer.xml', 'LogViewer');
 			},
@@ -665,14 +708,17 @@
 			},
 			newStory : function(){
 				//openWindow(this.getCurrentViewPanel("nav"),"Story");
-				pickText(this,"New Story Name","createStory");
+				pickText(this,"New Story Name",0,"createStory");
 			},
 			deleteObject : function(oTargetPanel, sType, sId, oShape){
 				var oP = Hemi.registry.service.getObject(oShape.panelId);
 				deleteObject(oP, sType, sId, oShape);
 			},
 			newGroup : function(){
-				pickText(this,"New Group Name","createGroup");
+				pickText(this,"New Group Name",0,"createGroup");
+			},
+			newBucket : function(){
+				pickText(this,"New Group Name",0,"createBucket");
 			},
 			cd : function(oPanel,sType, sId, oShape){
 				changeDirectory(sId, oPanel,["content"]);
@@ -683,15 +729,29 @@
 			getCurrentGroup : function(){
 				return this.getCurrentView().panel("nav").getObjects().currentDirectory;
 			},
-			createGroup : function(s){
+			findDirectory : function(s, sType){
+				findDirectory(s);
+			},
+			createGroup : function(s, sType){
 				var d = this.getCurrentViewPanel("nav").getObjects().currentDirectory;
-				var b = AM6Client.make("GROUP","DATA",d.path + "/" + s);
+				
+				if(!sType) sType = "DATA";
+				var o = new org.cote.objects.baseGroupType();
+				o.name = s;
+				o.parentId = d.id;
+				o.nameType = "GROUP";
+				o.groupType = sType;
+				
+				var b = AM6Client.update("GROUP", o);
+				//var b = AM6Client.make("GROUP","DATA",d.path + "/" + s);
 				if(b){
-					//window.uwmServiceCache.clearServiceCache("Group");
 					AM6Client.clearCache("GROUP");
 					this.getCurrentViewPanel("nav").repaint();
 				}
 				this.logDebug("Create group: " + s + " " + (b ? true : false));
+			},
+			createBucket : function(s){
+				return this.createGroup(s, "BUCKET");
 			},
 			/*
 			createStory : function(sName){
@@ -762,24 +822,39 @@
 
 		
 		function deleteObject(oPanel, sType, sId, oShape){
-			var o = getObjectById(oPanel, sType, sId,0),ot = getObjectType(oPanel);
+			var o = getObjectById(oPanel, sType, sId,0),ot = getObjectType(oPanel), oNavPanel = galleryView.getCurrentViewPanel("nav");
 			if(!o){
 				ctl.logError("Invalid object for " + sId + " type " + ot);
 				return;
 			}
 			var oObj = o;
-			Hemi.xml.deleteJSON(g_application_path + "rest/resource/" + o.nameType + "/" + o.objectId,
-				function(s, v){
+			if(oNavPanel.getObjects().currentDirectory.groupType == "BUCKET" && o.nameType != "GROUP"){
+				ctl.log("Removing bucket member");
+				AM6Client.member("GROUP", oNavPanel.getObjects().currentDirectory.objectId, "DATA", o.objectId, false,function(s,v){
 					if(typeof v.json == "boolean" && v.json){
-						ctl.log("Deleted " + oObj.name);
+						ctl.log("Unbucketed " + o.urn + " in " + oNavPanel.getObjects().currentBucket.urn);
 						AM6Client.clearCache(oObj.nameType);
 						oPanel.repaint();
 					}
 					else{
-						ctl.logWarning("Unable to delete " + oObj.name);
+						ctl.logWarning("Unable to unbucket " + oObj.name + " from " + oNavPanel.getObjects().currentDirectory.name);
 					}
-				}
-			,1);
+				});
+			}
+			else{
+				Hemi.xml.deleteJSON(g_application_path + "rest/resource/" + o.nameType + "/" + o.objectId,
+					function(s, v){
+						if(typeof v.json == "boolean" && v.json){
+							ctl.log("Deleted " + oObj.name);
+							AM6Client.clearCache(oObj.nameType);
+							oPanel.repaint();
+						}
+						else{
+							ctl.logWarning("Unable to delete " + oObj.name);
+						}
+					}
+				,1);
+			}
 			
 			
 		}
@@ -946,8 +1021,6 @@
 					for(var i = 0; i < aT.length;i++){
 						oG.Text(aT[i].name, 5, 10 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
 					}
-
-					Hemi.logWarning("Tag list being converted to new API");
 				}
 			}
 			
@@ -1005,8 +1078,16 @@
 				aSub =  AM6Client.findByTag("DATA",oR);
 			}
 			else{
-				_s.totalCount = AM6Client.count(sObjType.toUpperCase(),_no.currentDirectory.objectId); 
-				aSub = AM6Client.list(sObjType.toUpperCase(),_no.currentDirectory.objectId, _s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
+				if(sType == 'Object' && _no.currentDirectory.groupType == "BUCKET"){
+					_no.currentBucketList = AM6Client.members("GROUP", _no.currentDirectory.objectId, "DATA");
+					_s.totalCount = _no.currentBucketList.length;
+					aSub = _no.currentBucketList.slice(_s.startIndex, _s.startIndex + _s.suggestedCount);
+					ctl.log("Showing " + aSub.length + " with suggested " + _s.suggestedCount + " offset by " + _s.suggestedCountOffset + " from " + _no.currentBucketList.length + " / " + _s.totalCount);
+				}
+				else{
+					_s.totalCount = AM6Client.count(sObjType.toUpperCase(),_no.currentDirectory.objectId); 
+					aSub = AM6Client.list(sObjType.toUpperCase(),_no.currentDirectory.objectId, _s.startIndex,_s.suggestedCount - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0));
+				}
 			}
 			
 			_o.currentList = [];
@@ -1033,16 +1114,36 @@
 		function checkRaster(oPanel){
 			var _s = oPanel.getProperties();
 			if(_s.rasterCount == _s.rasterTotal){
-				ctl.log("Raster " + oPanel.access_name + " with " + _s.rasterCount + ":" + _s.rasterTotal);
+				ctl.logDebug("Raster " + oPanel.access_name + " with " + _s.rasterCount + ":" + _s.rasterTotal);
 				ctl.getCanvas().Rasterize();
 			}
 		}
-		
+		function findDirectory(sPath){
+			var oPanel = galleryView.getCurrentView().panel("nav");
+			if(!sPath){
+				ctl.logError("Invalid path");
+				return;
+			}
+			sPath = sPath.replace(/^\.\//,"");
+			if(!sPath.match(/^(~|\/)/)){
+				sPath = oPanel.getObjects().currentDirectory.path;
+			}
+			var oG = AM6Client.find("GROUP","DATA",sPath);
+			if(!oG){
+				ctl.logError("Group not found for path '" + sPath + "'");
+				return;
+			}
+			
+			changeDirectory(oG.id, oPanel,["content"], 1);
+		}
 		function changeDirectory(sId,p, aF, bSkipDirReset){
 			var _o = p.getObjects(),_p = p.getProperties();
 			var o = AM6Client.get("GROUP",sId);
-			if(!o || o.id == _o.currentDirectory) return;
+			if(!o || o.id == _o.currentDirectory.id) return;
+			if(o.groupType == "BUCKET") _o.currentBucket = o;
+			_o.lastDirectory = _o.currentDirectory;
 			_o.currentDirectory = o;
+			
 			ctl.log("Changing directory to " + o.path);
 
 			galleryView.getCurrentViewPanel("content").getProperties().showTagSearch = 0;
@@ -1203,8 +1304,9 @@
 			var _s = p.getProperties(),_o=p.getObjects(),oP, g = (o.nameType == 'GROUP' ? o : AM6Client.get("GROUP",o.groupId)), _no = p.getObjects().view.panel("nav").getObjects();
 			
 			//ctl.log("Paint item " + o.name + " in " + g.path);
-			
-			var sIcoSrc = _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"] + _s.itemIcon;
+			var sIco = _s.itemIcon;
+			if(o.nameType == "GROUP" && o.groupType == "BUCKET" && _s.itemIconBucket) sIco = _s.itemIconBucket;
+			var sIcoSrc = _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"] + sIco;
 			if(!b && o.mimeType && o.mimeType.match(/^image/gi)){
 				sIcoSrc = _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"] + _s.itemIconImg;
 				if(g.id == _no.currentDirectory.id) g = _no.currentDirectory;
@@ -1229,7 +1331,9 @@
 			if(!o) return;
 			var _s = p.getProperties(),_o = p.getObjects(),s,sIcoSrc,oP,sB,_no = p.getObjects().view.panel("nav").getObjects();
 			sB =  _o.view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"];
-			s = (o.icon ? o.icon : _s.itemIcon);
+			s = _s.itemIcon;
+			if(o.nameType == "GROUP" && o.groupType == "BUCKET" && _s.itemIconBucket) s = _s.itemIconBucket;
+			if(o.icon) s = o.icon;
 			if(_no.baseGroup && o.id == _no.baseGroup.id){
 				sIcoSrc =  sB + "48px-Crystal_Clear_filesystem_folder_home2.png";
 			}
@@ -1404,11 +1508,11 @@
 		}
 		function boxWidth(o){
 			if(!o) o = ctl.getObjects().galleryContainer;
-			return (o == document.body ? (typeof window.innerWidth == "number" ? window.innerWidth : document.documentElement.clientWidth) : o.clientWidth);
+			return (o == document.body ? (ctl.getProperties().useWindowDimensions && typeof window.innerWidth == "number" ? window.innerWidth : document.body.clientWidth) : o.clientWidth);
 		}
 		function boxHeight(o){
 			if(!o) o = ctl.getObjects().galleryContainer;
-			return (o == document.body ? (typeof window.innerHeight == "number" ? window.innerHeight : document.documentElement.clientHeight) : o.clientHeight);
+			return (o == document.body ? (ctl.getProperties().useWindowDimensions && typeof window.innerHeight == "number" ? window.innerHeight : document.body.clientHeight) : o.clientHeight);
 		}
 		function scaleText(s){
 			var iLabelWidth = 12,b,i,x="";
@@ -1467,6 +1571,63 @@
 			}
 			*/
 			
+		}
+		
+		function bucketObject(oTargPanel,sType, sId, oShape){
+			
+			oTargPanel = galleryView.getCurrentViewPanel("content");
+			var oPanel = galleryView.getCurrentViewPanel("nav");
+			// !oShape && 
+			if(!oPanel.getObjects().currentBucket){
+				Hemi.logWarning("A shape and a bucket must be present to bucket the object");
+				return;
+			}
+			
+			if(oShape && oPanel.getObjects().currentBucket){
+				Hemi.log("Get object: " + sType + " / " + sId);
+				var o = getObjectById(oTargPanel,sType, sId, oShape);
+				if(!o || o == null){
+					Hemi.logError("Null object for " + sType + " " + sId);
+					return;
+				}
+				
+				AM6Client.member("GROUP", oPanel.getObjects().currentBucket.objectId, "DATA", o.objectId, true,function(s,v){
+					var oG = ctl.getCanvas();
+					var bBucket = v && typeof v.json == "boolean" && v.json;
+					Hemi.log("Bucketed " + o.urn + " in " + oPanel.getObjects().currentBucket.urn + ": " + bBucket);
+					if(ctl.getProperties().viewName == "matte"){
+						var iX = (ctl.getCurrentView("matte").width / 2) - 20;
+						var iY = ctl.getCurrentView("matte").height - 40;
+						oG.Text(scaleText("Add to bucket " + o.name + ": " + bBucket), iX, iY, "#FFFFFF","#FFFFFF","8pt","Arial");
+					}
+				});
+			}
+			else{
+				changeDirectory(oPanel.getObjects().currentBucket.id, oPanel,["content"]);
+			}
+			/*
+			var o = getObjectById(oPanel,sType, sId, oShape), _o = galleryView.getCurrentView().panel("content").getObjects();
+
+			
+			
+			
+			var oProps = {openerId:oPanel.getObjectId(),picker:0,viewType:o};
+			if(_o.viewWindow && !_o.viewWindow.getIsClosed()) _o.viewWindow.Close();
+			var sType = o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() ;
+			var oW = Hemi.app.createWindow(o.name, uwm.getApiTypeView(sType) + "/Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps);
+		    if (oW) {
+		    	oW.resizeTo(475, 400);
+		    	Hemi.app.getWindowManager().CenterWindow(oW);
+		    	// Destroy the window when closed
+		    	//
+		    	oW.setHideOnClose(0);
+		    	oW.setCanMinimize(0);
+		    	oW.setCanMaximize(0);
+		    	oW.setCanResize(0);
+		    	_o.viewWindow = oW;
+		    }
+		    */
+	
 		}
 		
 		function openObject(oTargPanel,sType, sId, oShape){
@@ -1612,8 +1773,8 @@
 			}
 			return v;
 		}
-		function pickText(o,sL,sH){
-			var oW = Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},HandlePickerLoaded);
+		function pickText(o,sL,sD,sH){
+			var oW = Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerLabel:sL,pickerDefault:sD,picker_handler:sH,openerId:o.getObjectId()},HandlePickerLoaded);
 			if(!oW) return;
 			oW.setHideOnClose(0);
 			oW.resizeTo(475,100);

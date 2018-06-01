@@ -18,6 +18,14 @@
 		template_init : function (){
 			this.GetElementByRID("pick-text").focus();
 			if(this.getProperties().pickerLabel) this.setPickerLabel(this.getProperties().pickerLabel);
+			var oText = this.GetElementByRID("pick-text");
+			if(this.getProperties().pickerDefault) oText.value = this.getProperties().pickerDefault;
+			var oCtl = this;
+			oText.onkeyup = function(e){
+				e = Hemi.event.getEvent(e);
+				if(e.keyCode == 13) oCtl.pickText();
+				if(e.keyCode == 27) oCtl.Close();
+			};
 		},
 		setPickerLabel : function(s){
 			if(this.setTitle) this.setTitle("Pick " + s);
