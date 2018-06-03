@@ -1255,6 +1255,15 @@ public class BaseService {
 		search.setStartRecord(startRecord);
 		return listByGroup(type, groupType, groupId, search, user);
 	}
+	public static void prepareSearchReques(BaseSearchRequestType search){
+		if(search == null) return;
+		if(search.getSort() == null){
+			SortQueryType sort = new SortQueryType();
+			sort.setSortField(QueryEnumType.NAME);
+			sort.setSortOrder(OrderEnumType.ASCENDING);
+			search.setSort(sort);
+		}
+	}
 	public static <T> List<T> listByGroup(AuditEnumType type, String groupType, String groupId, BaseSearchRequestType search, UserType user){
 		List<T> outObj = new ArrayList<>();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listByGroup",AuditEnumType.USER, user.getUrn());
@@ -1617,6 +1626,10 @@ public class BaseService {
 
 					}
 				}
+				for(T nObj : outObj){
+					NameIdType n = (NameIdType)nObj;
+					((NameIdFactory)Factories.getFactory(FactoryEnumType.valueOf(n.getNameType().toString()))).denormalize(n);
+				}
 			}
 			else{
 				AuditService.denyResult(audit, "User " + user.getUrn() + " not authorized to list " + memberType.toString());
@@ -1625,7 +1638,8 @@ public class BaseService {
 		} catch (ArgumentException | FactoryException e1) {
 			
 			logger.error(e1);
-		} 
+		}
+
 
 		return outObj;
 		

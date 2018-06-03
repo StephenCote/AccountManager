@@ -11,7 +11,7 @@
 		//
 		template_init : function(){
 			//if(!location.protocol.match(/^https/gi)) return;
-			var oMod = uwm.getRule("IsLoggedIn");
+			var oMod = uwm.rule("IsLoggedIn");
 			if(!oMod){
 				uwm.altMain = {
 					form : "Forms/MainIn.xml"

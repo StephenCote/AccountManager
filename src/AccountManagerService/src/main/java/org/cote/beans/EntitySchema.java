@@ -34,6 +34,7 @@ import org.cote.accountmanager.objects.AuthorizationPolicyType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.BaseSearchRequestType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
@@ -53,6 +54,7 @@ import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleType;
+import org.cote.accountmanager.objects.SortQueryType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.propellant.objects.ApplicationRequestType;
@@ -161,7 +163,11 @@ public class EntitySchema {
 	private AccountType accountType = null;
 	private BaseTagType baseTagType = null;
 	private DataTagSearchRequest dataTagSearchRequest = null;
+	private BaseSearchRequestType baseSearchRequestType = null;
+	private SortQueryType sortQueryType = null;
 	public EntitySchema(){
+		sortQueryType = new SortQueryType();
+		baseSearchRequestType = new BaseSearchRequestType();
 		authenticationRequest = new AuthenticationRequestType();
 		credentialType = new CredentialType();
 		authenticationRequestType = new AuthenticationRequestType();
@@ -232,6 +238,30 @@ public class EntitySchema {
 	}
 
 	
+
+	public BaseSearchRequestType getBaseSearchRequestType() {
+		return baseSearchRequestType;
+	}
+
+
+
+	public void setBaseSearchRequestType(BaseSearchRequestType baseSearchRequestType) {
+		this.baseSearchRequestType = baseSearchRequestType;
+	}
+
+
+
+	public SortQueryType getSortQueryType() {
+		return sortQueryType;
+	}
+
+
+
+	public void setSortQueryType(SortQueryType sortQueryType) {
+		this.sortQueryType = sortQueryType;
+	}
+
+
 
 	public AuthenticationRequestType getAuthenticationRequest() {
 		return authenticationRequest;

@@ -47,12 +47,14 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.BaseSearchRequestType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataTagSearchRequest;
 import org.cote.accountmanager.objects.DataType;
@@ -189,11 +191,7 @@ public class GenericSearchService {
 					((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).normalize(list.get(i));
 				}
 			}
-		} catch (FactoryException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -250,4 +248,46 @@ public class GenericSearchService {
 		
 		return Response.status(200).entity(tags).build();
 	}
+	
+	@RolesAllowed({"user"})
+	@POST
+	@Path("/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public Response findBy(BaseSearchRequestType searchRequest,@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
+
+		BaseSearchRequestType search = searchRequest;
+		if(search == null) search = new BaseSearchRequestType();
+		BaseService.prepareSearchReques(search);
+
+		UserType user = ServiceUtil.getUserFromSession(request);
+		logger.info("Searching for " + search.getRecordCount() + " " + type + " items starting at " + search.getStartRecord());
+
+		
+		
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		List<Object> objs = new ArrayList<>();
+		try{
+			INameIdFactory iFact = BaseService.getFactory(auditType);
+			if(iFact.isClusterByParent() && !iFact.isClusterByGroup()){
+				logger.error("Search list by cluster parent not yet implemented");
+				//objs = BaseService.listByParentObjectId(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
+			}
+			else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup() || iFact.isClusterByParent()){
+
+				objs = BaseService.listByGroup(auditType, "UNKNOWN", objectId, search,user);
+			}
+			else{
+				logger.error("Search list by organization not yet implemented");
+				//objs = BaseService.listByOrganization(auditType, startIndex, recordCount, request);
+				
+			}
+		}
+		catch(FactoryException f){
+			logger.error(f);
+		}
+		return Response.status(200).entity(objs).build();
+	}
+	
+
+	
 }

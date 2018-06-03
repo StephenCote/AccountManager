@@ -1,0 +1,43 @@
+<Template>
+<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+<div class = "uwm-content-section" rid = "content"></div>
+<embedded-script><![CDATA[
+	template_init : function(){
+		var ctl = this;
+		var oS = new org.cote.objects.baseSearchRequestType();
+		oS.sort = new org.cote.objects.sortQueryType();
+		oS.sort.sortOrder = "DESCENDING";
+		oS.sort.sortField = "CREATEDDATE";
+		oS.organizationId = 0;
+		oS.fullRecord = true;
+		oS.populateGroup = false;
+		oS.startRecord = 0;
+		oS.recordCount = 3;
+
+		var oG = AM6Client.find("GROUP","DATA","~/Articles");
+
+		AM6Client.findBy("DATA", oG.objectId, oS,function(s, v){
+				if(v && v.json && v.json.length){
+					if(!v.json[0].dataBytesStore || v.json[0].dataBytesStore.length == 0){
+						Hemi.xml.setInnerXHTML(ctl.GetElementByRID("content"),"Error translating blog content");
+					}
+					else{
+						bbConverter.copyInto(uwm.base64Decode(v.json[0].dataBytesStore),ctl.GetElementByRID("content"));
+						var aL = ctl.GetElementByRID("content").getElementsByTagName("a");
+						for(var i = 0; i < aL.length;i++){
+							if(!aL[i].href || !aL[i].href.match(/\/AccountManagerService\/media/)) continue;
+							aL[i].onclick = function(){
+								uwm.openPopInImage(this.href);
+								return false;
+							}
+						}
+					}
+				}
+				else{
+					Hemi.xml.setInnerXHTML(ctl.GetElementByRID("content"),"Articles Not Available");
+				}
+			});
+	}
+	
+]]></embedded-script>
+</Template>

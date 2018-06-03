@@ -47,6 +47,7 @@
 		DrawIOGridItem
 		DrawIOGridHeader
 		DrawIOGridFooter
+		preparePathChange
 		provideRefresh
 		provideList
 		provideCount
@@ -310,11 +311,11 @@
 			}
 			else if(o.nameType == "GROUP"){
 				if(!o.populated) o = AM6Client.get("GROUP",o.objectId);
+				this.getProperties().listGroupType = o.groupType;
 				this.GetElementByRID("path").value = o.path;
 				this.getProperties().start_record = 0;
 				this.getProperties().viewType = o;
 				this.refreshList();
-				//this.openItem(o,"ListGroups",1);
 			}
 			else if(o.nameType == "ROLE" || o.nameType == "PERMISSION"){
 				this.getObjects().parentRef = o;
@@ -436,10 +437,12 @@
 
 		refreshList : function(bSkipCountReset){
 			var sPath, _s = this.getProperties(), _o = this.getObjects();
+			var sFilt = this.GetElementByRID("filter").value;
+			
 			if(this.provideRefresh) this.provideRefresh(bSkipCountReset);
 
 			if(!_s.noGroup) sPath = this.getPath();
-
+			
 			var oL = this.getList();
 			oL.clearItems();
 			this.setStatus("");
@@ -475,18 +478,28 @@
 				///
 				if(!bSkipCountReset){
 					var count = 0;
-					var sFilt = this.GetElementByRID("filter").value;
+
 					//alert(_o.parentRef);
 					if(this.provideCount) count = this.provideCount(sPath, sFilt);
 					else if(sPath && !_s.noGroup){
 						var sT = "GROUP";
-						var sTO = "DATA";
+						/// var sTO = "DATA";
+						var sTO = "UNKNOWN";
 						if(_s.typeName.match(/^(permission|role)$/gi)){
 							sT = _s.typeName.toUpperCase();
 							sTO = "UNKNOWN";
 						}
 						var oP = AM6Client.find(sT,sTO,sPath);
-						if(oP && oP != null) count = AM6Client.count(_s.typeName.toUpperCase(),oP.objectId);
+						if(oP && oP != null){
+							if(this.preparePathChange) this.preparePathChange(oP, sFilt);
+							if(oP.groupType.match(/^bucket$/gi)){
+								
+								if(this.provideMemberCount) count = this.provideMemberCount();
+							}
+							else{
+								count = AM6Client.count(_s.typeName.toUpperCase(),oP.objectId);
+							}
+						}
 					}
 					else count = AM6Client.count(_s.typeName.toUpperCase(),(_o.parentRef ? _o.parentRef.objectId : "null")); 
 					if(count != null) this.setTotalCount(count);
@@ -503,14 +516,22 @@
 					
 					if(!tname.match(/^(group)$/gi)){
 						var sT = "GROUP";
-						var sTO = "DATA";
+						/// var sTO = "DATA";
+						var sTO = "UNKNOWN";
 						if(tname.match(/^(permission|role)$/gi)){
 							sT = tname.toUpperCase();
 							sTO = "UNKNOWN";
 						}
 						var oObj = AM6Client.find(sT, sTO, sPath);
-						if(oObj && oObj != null) aList = AM6Client.list(tname.toUpperCase(), oObj.objectId,_s.start_record,_s.record_count);
+						if(oObj && oObj != null){
+							if(oObj.groupType.match(/^bucket$/gi)){
+								if(this.provideMemberList) aList = this.provideMemberList(oObj, sFilt, _s.start_record,_s.record_count);
+							}
+							else{
+								aList = AM6Client.list(tname.toUpperCase(), oObj.objectId,_s.start_record,_s.record_count);
+							}
 						}
+					}
 					else{
 						var oObj = AM6Client.find(tname.toUpperCase(),_s.listGroupType,sPath);
 						if(oObj && oObj != null) aList = AM6Client.list(tname.toUpperCase(), oObj.objectId,_s.start_record,_s.record_count);
