@@ -130,18 +130,14 @@
 				var oOrg = AM6Client.find("ORGANIZATION","UNKNOWN",sOrgPath);
 				var sPath = sUrl.substring(i2 + 5,sUrl.length);
 				var sName = sPath.substring((i3 = sPath.lastIndexOf("/")) + 1, sPath.length);
-				var iW = parseInt(.8 * document.documentElement.clientWidth);
-				var iH = parseInt(.8 * document.documentElement.clientHeight);
-				Hemi.log("Pop image " + iW + " x " + iH);
-				iW = Math.floor(iW/250) * 250;
-				if(iW <= 0) iW = 250;
-				iH = Math.floor(iH/250) * 250;
-				if(iH <= 0) iH = 250;
-				var sMediaUrl = "/AccountManagerService/thumbnail" + sOrgPath + "/Data" + sPath + "/" + iW + "x" + iH;
+				var iX = parseInt(Math.min(document.documentElement.clientWidth,document.documentElement.clientHeight) * .8);
+				var sMediaUrl = "/AccountManagerService/thumbnail" + sOrgPath + "/Data" + sPath + "/" + iX + "x" + iX;
 				var vProps = {
 					media_name : sName,
 					media_id : "N/A",
-					media_url: sMediaUrl
+					media_url: sMediaUrl,
+					maxWidth : iX,
+					maxHeight : iX
 				};
 				Hemi.app.createWindow(sName,"/AccountManagerService/Forms/ImageViewer.xml",sUrl,0,0,vProps,function(oW){
 					oW.setIsModal(1);
@@ -301,6 +297,23 @@
 		var fc = function(s,v){if(f) f(s,v);};
 	   return Hemi.xml.getJSON(sComm + "/isconfigured",fc,(fH ? 1 : 0));	
 	}
+	function enrollReader(sUid, sCid, sPid, fH){
+		var aU = [sComm + "/enroll/reader/" + sUid];
+		if(sCid){
+			aU.push("/" + sCid);
+			if(sPid){
+				aU.push("/" + sPid);
+			}
+		}
+		return Hemi.xml.getJSON(aU.join(""),fc,(fH ? 1 : 0));
+	}
+	function enrollAdmin(sUid, sCid, fH){
+		var aU = [sComm + "/enroll/admin/" + sUid];
+		if(sCid){
+			aU.push("/" + sCid);
+		}
+		return Hemi.xml.getJSON(aU.join(""),fc,(fH ? 1 : 0));
+	}
 	function getCommunityProjectRoleBase(oP, fH){
 		var sType = "ROLE";
 		var o = getFromCache(sType, "GET", oP.objectId);
@@ -325,6 +338,9 @@
 
 	   return Hemi.xml.getJSON(sComm + "/permission/base/" + oP.objectId,fc,(fH ? 1 : 0));
 	}
+	function addProjectArtifacts(sType, sObjId, fH){
+		   return Hemi.xml.getJSON(sComm + "/artifacts/" + sType + "/" + sObjId,fH,(fH ? 1 : 0));
+		}
 	function addCommunity(sCommunityName, fH){
 	   return Hemi.xml.getJSON(sComm + "/new/" + sCommunityName,fH,(fH ? 1 : 0));
 	}
@@ -350,6 +366,23 @@
 
 	   return Hemi.xml.getJSON(sComm + "/find/" + sCommunityName,fc,(fH ? 1 : 0));
 	}
+	function getCommunityProjectFull(sObjectId,fH){
+		var sType = "COMMUNITY.PROJECT";
+		var o = getFromCache(sType, "GET", sObjectId);
+		if(o){
+			if(fH) fH("",o);
+			return o;
+		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sObjectId,v.json);} if(f) f(s,v);};
+
+	   return Hemi.xml.getJSON(sComm + "/project/" + sObjectId,fc,(fH ? 1 : 0));
+	}
+	function updateCommunityProject(oObj, sCommName, fH){
+		delete cache["COMMUNITY.PROJECT"];
+		if(sCommName) delete cache["COMMUNITY." + sCommName + ".PROJECT"];
+	   return Hemi.xml.postJSON(sComm + "/project",oObj,fH,(fH ? 1 : 0));
+	}
 	function getCommunityProject(sCommunityName, sProjectName,fH){
 		var sType = "COMMUNITY." + sCommunityName + ".PROJECT";
 		var o = getFromCache(sType, "GET", sProjectName);
@@ -362,6 +395,7 @@
 
 	   return Hemi.xml.getJSON(sComm + "/find/" + sCommunityName + "/" + sProjectName,fc,(fH ? 1 : 0));
 	}
+	
 	function addCommunityProject(sCommunityId, sProjectName,fH){
 		var sType = "COMMUNITY." + sCommunityId + ".PROJECT";
 	   return Hemi.xml.getJSON(sComm + "/new/" + sCommunityId + "/" + sProjectName,fH,(fH ? 1 : 0));
@@ -515,11 +549,16 @@
 		define : define,
 		evaluate : evaluate,
 		find : find,
+		addProjectArtifacts : addProjectArtifacts,
 		addCommunityProject : addCommunityProject,
 		addCommunity : addCommunity,
 		deleteCommunity : deleteCommunity,
 		deleteCommunityProject : deleteCommunityProject,
+		enrollReaderInCommunity : enrollReader,
+		enrollAdminInCommunity : enrollAdmin,
 		community : getCommunity,
+		communityProjectFull : getCommunityProjectFull,
+		updateCommunityProject : updateCommunityProject,
 		communityProject : getCommunityProject,
 		communityProjectPermissionBase : getCommunityProjectPermissionBase,
 		communityProjectRoleBase : getCommunityProjectRoleBase,
