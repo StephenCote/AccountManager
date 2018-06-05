@@ -1,14 +1,14 @@
 <html-fragment>
-<!-- 
-	<div class = "rocket-column-2">
+
+	<div style = "display:none;" rid = "objectIdCont" class = "rocket-column-2">
 		<p>
-			Id:
+			Object Id:
 		</p>
 		<p>
-			<input type = "text" class = "rocket-text rocket-text-short" rid = "id" bind = "${bean.rocketType}" disable = "true" />
+			<input type = "text" class = "rocket-text" rid = "objectId" bind = "${bean.rocketType}" disabled = "true" />
 		</p>
 	</div>
--->
+
 	<div rid = "pathCont" class = "rocket-column-2">
 		<p>
 			Path:
@@ -54,6 +54,7 @@
 			if(!this.setStatus) this.setStatus = this._setStatus;
 			Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
 			this.GetElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
+			this.GetElementByRID("objectIdCont").style.display = (uwm.debugMode && o.objectId ? "block" : "none");
 			this.setStatus("");
 			if(typeof _s.populate == "undefined") _s.populate = 1;
 			this.GetElementByRID("name").focus();

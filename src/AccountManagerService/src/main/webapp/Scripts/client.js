@@ -297,6 +297,11 @@
 		var fc = function(s,v){if(f) f(s,v);};
 	   return Hemi.xml.getJSON(sComm + "/isconfigured",fc,(fH ? 1 : 0));	
 	}
+	function configureCommunity(fH){
+		var f = fH;
+		var fc = function(s,v){if(f) f(s,v);};
+	   return Hemi.xml.getJSON(sComm + "/configure",fc,(fH ? 1 : 0));	
+	}
 	function enrollReader(sUid, sCid, sPid, fH){
 		var aU = [sComm + "/enroll/reader/" + sUid];
 		if(sCid){
@@ -305,14 +310,14 @@
 				aU.push("/" + sPid);
 			}
 		}
-		return Hemi.xml.getJSON(aU.join(""),fc,(fH ? 1 : 0));
+		return Hemi.xml.getJSON(aU.join(""),fH,(fH ? 1 : 0));
 	}
 	function enrollAdmin(sUid, sCid, fH){
 		var aU = [sComm + "/enroll/admin/" + sUid];
 		if(sCid){
 			aU.push("/" + sCid);
 		}
-		return Hemi.xml.getJSON(aU.join(""),fc,(fH ? 1 : 0));
+		return Hemi.xml.getJSON(aU.join(""),fH,(fH ? 1 : 0));
 	}
 	function getCommunityProjectRoleBase(oP, fH){
 		var sType = "ROLE";
@@ -559,6 +564,7 @@
 		community : getCommunity,
 		communityProjectFull : getCommunityProjectFull,
 		updateCommunityProject : updateCommunityProject,
+		configureCommunity : configureCommunity,
 		communityProject : getCommunityProject,
 		communityProjectPermissionBase : getCommunityProjectPermissionBase,
 		communityProjectRoleBase : getCommunityProjectRoleBase,
