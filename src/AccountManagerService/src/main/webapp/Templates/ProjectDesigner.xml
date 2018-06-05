@@ -1,0 +1,1621 @@
+<Template>
+<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<p rid = "projectControls" style = "display:none;">
+	<input type = "button" value = "Roll" onclick = "${this}.rollEstimates()" />
+	<input type = "button" value = "Unroll" onclick = "${this}.unrollEstimates()" />
+	<input type = "button" value = "Save" onclick = "${this}.save()" />
+	<!-- 
+	<input type = "button" value = "Debug Save" onclick = "${this}.save(1)" />
+	-->
+	</p>
+	<p>
+	Dev Note: Just make this whole thing one big WideSelect control, since that already has the buffering capability that makes working with large datasets easier.
+	Currently, it takes upwards of 30 seconds to build up a 2K row view; 9 seconds of that is on the deep populate of the project, which isn't the most efficient way to build out the whole dataset
+	</p>
+	<table style = "clear:both;display:none;border-collapse:collapse;" rid = "projectTable" border = "0" cellpadding="0" margin="0" cellspacing="0">
+	<thead>
+		<tr>
+			<th style = "width:55px;"></th>
+			<th style = "width:25px;"></th>
+			<th style = "width: 210px;">Name</th>
+			<th style = "width:125px;">Estimate</th>
+			<th style = "width:100px;">Start</th>
+			<th style = "width:100px;">Due</th>
+			<th style = "width:100px;">Depends</th>
+			<th style = "width:125px;">Resources</th>
+			<th style = "width:40px;"></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+			<input disabled="true" value="" class="rocket-text" type="text"
+				style="text-align:right;width: 25px !important; border-width: 0px !important;" />
+				<input type="button" class = "uwm-inline-button uwm-inline-button-info"  value = ""
+				onclick="${this}.openObject()" /></td>
+						<td></td>
+			<td>
+			<input type = "text" class = "rocket-text" style = "width:175px;" rid = "projectName" />
+			<input type = "button" onclick = "${this}.addStage()" value = "+" class = "uwm-inline-button" />
+			</td>
+			<td colspan = "6"></td>
+		</tr>
+	</tbody>
+	
+	</table>	
+<embedded-script><![CDATA[
+	template_init : function(){
+		var _o = this.getObjects(),_s = this.getProperties();
+		_s.debugRefresh = 1;
+		_s.elementNames = ["rowNum","status","budget","schedule","name","end","estimate","dependencies","resources"];
+		this.scopeHandler("project_picker_open",0,0,1);
+		this.scopeHandler("project_picker_choose",0,0,1);
+		Hemi.message.service.subscribe(this, "onsessionrefresh", "refreshSession");
+		Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
+		
+		Hemi.message.service.subscribe(this, "ondragstart", "handleDragStart");
+		Hemi.message.service.subscribe(this, "ondragover", "handleDrag");
+		Hemi.message.service.subscribe(this, "ondrop", "handleDrop");
+		Hemi.message.service.subscribe(this, "ondragend", "handleDragEnd");
+		
+		this.refreshSession();
+		_s.autoSchedule = 1;
+		
+		_s.realHoursInDay = 24;
+		_s.hoursInDay = 8;
+		_s.hoursInWeek = 40;
+		_s.realHoursInWeek = 168;
+		_s.hoursInYear = _s.hoursInWeek * 52;
+		_s.realHoursInYear = 8736;
+		_s.hoursInMonth = parseInt(_s.hoursInYear / 12); 
+		_s.realHoursInMonth = _s.hoursInMonth;
+		window.debugProject = this;
+	},
+	
+	template_destroy : function(){
+		this._prehandle_project_picker_open = 0;
+		this._prehandle_project_picker_choose = 0;
+		Hemi.message.service.unsubscribe(this, "onchangecommunity", "refreshCommunity");
+		Hemi.message.service.unsubscribe(this, "onsessionrefresh", "refreshSession");
+	},
+	save : function(bDebug){
+		var _o = this.getObjects(), p, b, o;
+		if(this.prepareSaveProject()){
+		
+			if(!bDebug){
+				/// Cleanup the trashed objects first
+				///
+				for(var i in _o.stageTrash) AM6Client.delete("STAGE",_o.stageTrash[i].objectId);
+				for(var i in _o.taskTrash) AM6Client.delete("TASK",_o.taskTrash[i].objectId);
+				_o.previousVersion = _o.project;
+				b = AM6Client.updateCommunityProject(_o.project);
+				if(b){
+					if(_o.project.objectId){
+						p = AM6Client.communityProjectFull(_o.project.objectId);
+					}
+					else{
+						o = AM6Client.getByName("PROJECT",AM6Client.find("GROUP","DATA",_o.project.groupPath).objectId,_o.project.name);
+						if(o){
+							p =  AM6Client.communityProjectFull(o.objectId);
+						}
+					}
+				}
+			}
+			else{
+				p = _o.project;
+			}
+			if(p && p!= null){
+				if(irocket.getCommunityMode()) irocket.setCommunityProject(p);
+				else irocket.setCurrentProject(p);
+			}
+			else{
+				alert("Todo: Add status display: Error saving");
+			}
+			
+		}
+	},
+	/// The save function is somewhat different than other atomic saves in that it will aggregate the current information
+	/// into the community/current project, clear its current contents, and then update via the rocket community.
+	///	Types of objects that need to be created/updated here are: project, stage, work, and task
+	///	Everything else should already be created via a model import
+	///
+	prepareSaveProject : function(){
+		var _o = this.getObjects(),p,s,i,t,ls,lt,_s = this.getProperties();
+		if(!(p = _o.project)){
+			Hemi.logError("Invalid project reference");
+			return;
+		}
+		if(!_o.project.groupPath) _o.project.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Project")).path;
+		_o.project.name = Hemi.text.trim(this.GetElementByRID("projectName").value);
+		/// chuck all the current stage references
+		/// note: this won't delete the stages
+		p.stages = [];
+		/// Use rowOrder to reset logical ids and stage references
+		///
+		for(var c = 0; c < _o.rowOrder.length;c++){
+			i = _o.rowOrder[c];
+			if(_o.stages[i]) s = _o.stages[i];
+			else if(_o.tasks[i]) t = _o.tasks[i];
+			else{
+				Hemi.logError("Invalid id reference: " + i);
+				continue;
+			}
+			if(s != ls){
+				Hemi.log("Preparing to save stage '" + s.object.name + "'");
+				this.prepareSaveStage(p, s);
+				if(_s.autoSchedule && ls){
+		         	ls.object.schedule.startTime = new Date(ls.minTaskTime);
+		         	ls.object.schedule.endTime = new Date(ls.maxTaskTime);
+				}
+				ls = s;	
+			}
+			/// Don't call prepareSave for child tasks
+			/// those will be handled recursively
+			if(t != lt && !t.parentGuid){
+				Hemi.log("Preparing to save task '" + t.object.name + "'");
+				this.prepareSaveTask(p, s, t, 0);
+				lt = t;
+			}
+		}
+		if(_s.autoSchedule && ls){
+		    ls.object.schedule.startTime = new Date(ls.minTaskTime);
+		    ls.object.schedule.endTime = new Date(ls.maxTaskTime);
+		}
+		return 1;
+	},
+	setElementValue : function(sId,sVar,bT){
+		if(bT) Hemi.xml.setInnerXHTML(this.GetElementByRID(sId),sVar);
+		else this.GetElementByRID(sId).value = sVar;
+	},
+	getElementValue : function(sId,bT){
+		if(bT) return Hemi.text.trim(Hemi.xml.getInnerText(this.GetElementByRID(sId)));
+		return Hemi.text.trim(this.GetElementByRID(sId).value);
+		
+	},
+	prepareSaveTask : function(p, s, t, pt){
+		
+		var sEn = this.getElementValue(t.guid + "estimate",0),_o = this.getObjects(),_s = this.getProperties();
+		/// status is already set
+		/// if estimate is set and the name changed, or there is a name but no estimate, then create a new estimate
+
+		t.object.name = Hemi.text.trim(this.GetElementByRID(t.guid + "name").value);
+		if(t.object.name.length == 0) t.object.name = s.object.name + " Task " + (this.getObjects().tasks.length + 1);
+		t.object.logicalOrder = t.index;
+		if(!t.object.groupPath) t.object.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Task")).path;
+		/// throw out childTask references - these wouldn't be saved anyway except through saving the community project
+		/// because task inheritence is determined by parentId, not participation
+		///
+		t.object.childTasks = [];
+		/// break the parentId off any persistant task if it's been pushed up
+		///
+		if(!pt){
+			t.object.parentId = 0;
+			s.object.work.tasks.push(t.object);
+		}
+		else pt.object.childTasks.push(t.object);
+	
+		/// iterate through child tasks and push through
+		for(var c = 0; c < t.childTasks.length;c++){
+			this.prepareSaveTask(p,s,this.getObjects().tasks[t.childTasks[c]],t);
+		}
+		
+				/// process dependencies
+		for(var i = 0; i < t.dependencies.length; i++){
+			var oA = new org.cote.objects.artifactType();
+			oA.nameType = "ARTIFACT";
+			var vA = (_o.stages[t.dependencies[i]] ? _o.stages[t.dependencies[i]] : _o.tasks[t.dependencies[i]]);
+			/// don't set any values here - let the backend saveCommunityProject process set the defaults 
+			oA.name = "";
+			oA.id = 0;
+			oA.description = "";
+			oA.artifactType = "UNKNOWN";
+			oA.createdDate = new Date();
+			oA.previousTransitionId = 0;
+			oA.nextTransitionId = 0;
+			oA.artifactDataId = 0;
+			oA.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Artifact")).path;
+			/// don't use referenceObject because, being overloaded, it will cause a deserialization error
+			///
+			//oA.referenceObject = vA.object;
+			if(!vA.object.urn) vA.object.urn = Hemi.guid();
+			oA.referenceUrn = vA.object.urn;
+
+			t.object.dependencies.push(oA);
+		}
+		
+		var d1 = new Date(), d2 = new Date();
+		var oE = this.GetElementByRID(t.guid + "end");
+	   	d2 = new Date(oE.value + (oE.type == "date" ? " 00:00:00":""));
+	   	d1 = new Date(d2.getTime() - (t.object.estimate && t.object.estimate.time ? this.getTimeMS(t.object.estimate.time,1) : 0));
+	   	t.object.startDate = d1;
+	   	t.object.dueDate = d2;
+	   	
+	   	if(_s.autoSchedule){
+	        var iTMS = (t.object.estimate && t.object.estimate.time ? this.getTimeMS(t.object.estimate.time,1) : 0);
+		  	if(s.minTaskTime == 0 || (t.object.dueDate.getTime() - iTMS) < s.minTaskTime) s.minTaskTime = (t.object.dueDate.getTime() - iTMS);
+		  	if(s.maxTaskTime == 0 || t.object.dueDate.getTime() > s.maxTaskTime) s.maxTaskTime = t.object.dueDate.getTime(); 
+		}
+	   	
+	},
+	prepareSaveStage : function(p, s){
+		 var _o = this.getObjects();
+		s.object.name = Hemi.text.trim(this.GetElementByRID(s.guid + "name").value);
+		if(!s.object.groupPath) s.object.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Stage")).path;
+		if(s.object.name.length == 0) s.object.name = p.name + " Stage " + (p.stages.length + 1);
+		s.logicalOrder = s.index;
+		if(!s.object.budget){
+			s.object.budget = new org.cote.objects.budgetType();
+			s.object.budget.budgetType = "UNKNOWN";
+			s.object.budget.nameType = "BUDGET";
+		}
+		if(!s.object.budget.groupPath) s.object.budget.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Budget")).path;
+		s.object.budget.name = Hemi.text.trim(this.GetElementByRID(s.guid + "budget").value);
+		if(s.object.budget.name.length == 0) s.object.budget.name = s.object.name + " Budget";
+		if(!s.object.work){
+			s.object.work = new org.cote.objects.workType();
+			s.object.work.nameType = "WORK";
+		}
+		if(!s.object.work.groupPath) s.object.work.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Work")).path;
+		s.object.work.tasks = [];
+		s.object.work.logicalOrder = s.index;
+		s.object.work.name = s.object.name;
+		if(!s.object.schedule){
+			s.object.schedule = new org.cote.objects.scheduleType();
+			s.object.schedule.nameType = "SCHEDULE";
+		}
+		if(!s.object.schedule.groupPath){
+			s.object.schedule.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Schedule")).path;
+		}
+		s.object.schedule.name = s.object.name;
+		
+		
+		
+		var aS = Hemi.text.trim(this.GetElementByRID(s.guid + "schedule").value).split(" to ");
+		var d1 = new Date(), d2 = new Date();
+		if(aS.length == 2){
+			d1 = new Date(aS[0]);
+			d2 = new Date(aS[1]);
+		}
+		s.object.schedule.startTime = d1;
+		s.object.schedule.endTime = d2;
+		
+		/// process dependencies
+		for(var i = 0; i < s.dependencies.length; i++){
+			var oA = new org.cote.objects.artifactType();
+			oA.nameType = "ARTIFACT";
+			var vA = (_o.stages[s.dependencies[i]] ? _o.stages[s.dependencies[i]] : _o.tasks[s.dependencies[i]]);
+			/// don't set any values here - let the backend saveCommunityProject process set the defaults 
+			o.name = "";
+			o.description = "";
+			o.artifactType = "UNKNOWN";
+			o.createdDate = new Date();
+			o.previousTransitionId = 0;
+			o.nextTransitionId = 0;
+			/// don't use referenceObject because, being overloaded, it will cause a deserialization error
+			///
+
+			if(!vA.object.urn) vA.object.urn = Hemi.guid();
+			o.referenceUrn = vA.object.urn;
+
+			s.object.work.artifacts.push(o);
+		}		
+		
+		p.stages.push(s.object);
+		
+	},
+	handleDragStart : function(s, v){
+		//Hemi.log("Drag start");
+	},
+	handleDragEnd : function(s, v){
+		var _o = this.getObjects();
+		//Hemi.log("Drag end");
+		if(_o.rowMarker) _o.rowMarker.style.borderTop = "";
+		
+	},
+	handleDrag : function(s, v){
+		var _o = this.getObjects(),oTR;
+		if(v.target){
+
+			if(_o.rowMarker) _o.rowMarker.style.borderTop = "";
+			var oTR = v.target.getContainer().parentNode;
+			//Hemi.log("Drag over: " + oTR.nodeName);
+			var sid = oTR.getAttribute("rid");
+			if(!_o.tasks[sid]) return;
+			oTR.style.borderTop = "1px solid #CFCFCF";
+			_o.rowMarker = oTR;
+		}
+	},
+	handleDrop : function(s, v){
+		var _o = this.getObjects(),oTR1,oTR2,sId1, sId2;
+		if(v.src && v.target){
+			oTR1 = v.src.getContainer().parentNode;
+			oTR2 = v.target.getContainer().parentNode;
+			sId1 = oTR1.getAttribute("rid");
+			sId2 = oTR2.getAttribute("rid");
+			if(!_o.tasks[sId1] || !_o.tasks[sId2]){
+				Hemi.logWarning("The source or target were not valid tasks");
+				return;
+			}
+			
+			this.moveRow(sId1, sId2, oTR1, oTR2);
+			
+		}
+	
+	},
+	isDeepChild : function(oT, sId){
+		var b = 0;
+		for(var i = 0; i < oT.childTasks.length; i++){
+			if(oT.childTasks[i] == sId || this.isDeepChild(this.getObjects().tasks[oT.childTasks[i]],sId)){
+				b = 1;
+				break;
+			}
+		}
+		return b;
+	},
+	/// Move sId1 ABOVE sId2
+	/// sId1, and all its children, should then be 'dented' and reparented against the previous sibling
+	/// Last, the entire table needs to be reindexed/redepended
+	///
+	moveRow : function(sId1, sId2, oR1, oR2, bNoReParent){
+		var _o = this.getObjects(), oT1, oT2;
+		oT1 = _o.tasks[sId1];
+		oT2 = _o.tasks[sId2];
+		if(!oT1 || !oT2){
+			Hemi.logError("Invalid tasks for " + sId1 + " and " + sId2);
+			return;
+		}
+		if(!oR1) oR1 = this.GetElementByRID(sId1);
+		if(!oR2) oR2 = this.GetElementByRID(sId2);
+		if(!oR1 || !oR2){
+			Hemi.logError("Invalid rows for " + sId1 + " and " + sId2);
+			return;
+		}
+		else if(sId1 == sId2){
+			Hemi.logError("Invalid self reference");
+			return;
+		}
+		else if(this.isDeepChild(oT1,sId2)){
+			Hemi.log("Invalid parent reference");
+			return;
+		}
+		/// Detect previous sibling relative to R2.  If it's R1, then break here - nothing to do.
+		///
+		var ind = oR2.index, oPrevSib, iNewDepth = 0, sStageGuid;
+		
+		/*
+		if(ind > 0) oPrevSib = _o.tasks[_o.rowOrder(ind-1)];
+		for(var i = ind -1; i >= 0; i--){
+			var nId = _o.rowOrder(i);
+			if(nId == sId1){
+				Hemi.log("Don't move task in place.");
+				break;
+			}
+			/// Don't look past the current stage (ie, beyond the task rows), because the relative row should already be in the desired stage
+			///
+			if(!_o.tasks[nId]) break;
+			oPrevSib = 
+		}
+		*/
+		/// First, move R1 above R2
+		///
+		Hemi.log("Moving row");
+		oR2.parentNode.insertBefore(oR1,oR2);
+
+		/// If oR1.parentGuid != oR2.parentGuid, then decouple T1 from its current parent
+		///
+		/*
+		if(bReParent){
+			Hemi.log("Reparenting to " + (oPrevSib ? oPrevSib.guid : " nothing"));
+			this.spliceTaskFromParent(oT1);
+			if(oPrevSib){
+				sStageGuid = oPrevSib.stageGuid;
+				iNewDepth = oPrevSib.depth + 1;
+				oPrevSib.childTasks.push(oT1.guid);
+				oT1.parentGuid = oPrevSib.guid;
+			}
+		}
+		else{
+			Hemi.log("Not reparenting");
+		}
+		*/
+		var oParent = (oT2.parentGuid ? _o.tasks[oT2.parentGuid] : 0);
+
+		if(!bNoReParent){
+			this.spliceTaskFromParent(oT1);
+			if(oT2.parentGuid){
+				Hemi.log("Reparenting to " + (oT2.parentGuid ? oT2.parentGuid : " nothing"));
+				
+				//if(oT2.parentGuid){
+					/// Splice the new child in above the current ref child
+					var iM = -1;
+					var oPar = _o.tasks[oT2.parentGuid];
+					for(var i = 0; i < oPar.childTasks.length;i++){
+						if(oPar.childTasks[i] == oT2.guid){
+							iM = i;
+							break;
+						}
+					}
+					if(iM >= 0){
+						Hemi.log("Splicing child in at index " + iM);
+						oT1.parentGuid = oT2.parentGuid;
+						oPar.childTasks.splice(iM,0,sId1);
+					}
+					else{
+						Hemi.logWarning("Failed to find correct child index.  Appending task to end of task list");
+						oPar.childTasks.push(sId1);
+					}
+				//}
+			}
+		}
+		iNewDepth = oT2.depth;
+		/// Move child tasks up, relative to oT1
+		///
+		for(var i = 0; i < oT1.childTasks.length; i++){
+			var sIdC = oT1.childTasks[i];
+			var oTRC = this.GetElementByRID(sIdC);
+			this.moveRow(sIdC, sId2, oTRC,oR2,1);
+		}
+		if(!bNoReParent){
+			if(iNewDepth != oT1.depth){
+				Hemi.log("Redepthing");
+				this.redepthTask(oT1,iNewDepth,1);
+			}
+		
+		
+			this.reindex();
+		}
+
+	},
+	refreshCommunity : function(oI){
+		this.refreshDisplay();
+	},
+	refreshSession : function(s,v){
+		this.refreshDisplay();
+	},
+	refreshDisplay : function(){
+		var _o = this.getObjects(),_s = this.getProperties(),b = uwm.rule("IsLoggedIn"), oP;
+		var aB = this.GetElementByRID("projectTable").querySelectorAll("tbody");
+		/// skip the first tbody
+		for(var i = aB.length - 1; i >= 1;i--) Hemi.xml.removeChild(aB[i],aB[i].parentNode,1);
+		
+		_o.stages = [];
+		_o.rowOrder = [];
+		_o.stageTrash = {};
+		_o.tasks = [];
+		_o.taskTrash = {};
+		_s.rowCount = 0;
+		
+		this.GetElementByRID("projectControls").style.display = (b ? "block" : "none");
+		this.GetElementByRID("projectTable").style.display = (b ? "block" : "none");
+		
+		if(!b) return;
+		
+		if(this.getBean &&  this.getBean("rocketType")){
+			oP =  this.getBean("rocketType");
+			if(oP.objectId) oP = AM6Client.communityProjectFull(oP.objectId);
+		}
+		else if(irocket.getCommunityMode() && irocket.getCommunityProject()){
+			oP = AM6Client.communityProjectFull(irocket.getCommunityProject().objectId);
+		}
+		else if(!irocket.getCommunityMode() && irocket.getCurrentProject()){
+			oP = (irocket.getCurrentProject().objectId ? AM6Client.communityProjectFull(irocket.getCurrentProject().objectId) : irocket.getCurrentProject());
+
+		}
+		else{
+			oP = new org.cote.objects.projectType();
+			oP.nameType = "PROJECT";
+			oP.name = "";
+			oP.description = "";
+			oP.id = 0;
+			oP.stages = [];
+		}
+		_o.project = oP;
+		if(!oP.stages.length) this.addStage();
+		for(var i = 0; i < oP.stages.length;i++){
+			this.addStage(oP.stages[i]);
+		}
+		this.rebuildDependencies();
+		this.refreshProjectDisplay();
+		
+
+
+	},
+	getStageTemplate : function(){
+		return Hemi.xml.getText("/AccountManagerService/Forms/Fragments/ProjectStageSection.xml" + (this.getProperties().debugRefresh ? "?" + this.getObjectId() : ""),0,0,"ProjectStageSection",1);
+	},
+	getRowTemplate : function(){
+		return Hemi.xml.getText("/AccountManagerService/Forms/Fragments/ProjectRowSection.xml" + (this.getProperties().debugRefresh ? "?" + this.getObjectId() : ""),0,0,"ProjectRowSection",1);
+	},
+
+	dentTask : function(s, b){
+		/// TODO: Refactor this into an id tree
+		///
+		var _o = this.getObjects(),o,np,md,po;
+		o = _o.tasks[s];
+		if(!o){
+			Hemi.logError("Task not found for guid " + s);
+			return;
+		}
+		if(b && !o.depth){
+			Hemi.log("Task " + s + " is already outdented");
+			return;
+		}
+		if(o.parentGuid && !_o.tasks[o.parentGuid]){
+			Hemi.logError("Parent does not exist");
+			return;
+		}
+		md = o.depth - (b ? 2 : 0);
+		if(md < 0) md = 0;
+		var ld = md;
+		/// Find nearest new parent
+		///    - if new depth is 0, then the new parent is nothing
+		///
+		for(var i = o.index -1; (!b || o.depth > 1) && i >= 0; i--){
+			var tp = _o.tasks[_o.rowOrder[i]];
+			/// this is ok because the rowOrder may contain stages or tasks
+			if(!tp) continue;
+			/// prevent walking up into a sibling ancestor stack
+			///
+			ld = (tp.depth < ld ? tp.depth : ld);
+			Hemi.log("Checking for parent at level " + ld + " vs " + md + " against possible parent depth " +  tp.depth);
+			///  && (!b || md > 0)
+			if(tp.depth <= md){
+				Hemi.log("Found new parent: " + tp.index); 
+				np = tp;
+				break;
+			}
+		}
+		//Hemi.log(md + " / " + np);
+		/// if new depth is greater than zero but there is no new parent, exit
+		/// this will happen if indenting the first child 
+		if((!b && md >= 0 && !np) || (np && np.guid == o.parentGuid)){
+			Hemi.log("Did not find a new parent because " + (np ? np.guid + " == " + o.parentGuid : " level issue"));
+			return;
+		}
+		if(b && o.depth > 1 && !np){
+			Hemi.logError("Bug: Cannot outdent to a positive depth without a parent");
+			alert("Outdent Error");
+			return;
+		}
+		
+		if(o.parentGuid){
+			//Hemi.log("Breaking the link to the current parent");
+			this.spliceTaskFromParent(o);
+		}
+		if(np){
+			Hemi.log("Creating the link to the new parent at index " + np.index);
+			o.parentGuid = np.guid;
+			np.childTasks.push(o.guid);
+		}
+		
+		Hemi.log("Adjusting task depths");
+		this.redepthTask(o,b);
+		Hemi.log((b ? "Out" : "In") + "dent task.  New Depth: " + o.depth);
+	},
+	spliceTaskFromParent : function(o){
+		var _o = this.getObjects();
+		if(!o.parentGuid) return;
+		var po = _o.tasks[o.parentGuid];
+		if(!po) return;
+		for(var i = 0; i < po.childTasks.length; i++){
+			if(po.childTasks[i] == o.guid){
+				po.childTasks.splice(i,1);
+				delete o.parentGuid;
+				break;
+			}
+		}
+
+	},
+	redepthTask : function(o,b, x){
+		
+		if(x) o.depth = b;
+		else o.depth += (b ? -1 : 1);
+		Hemi.log("Redepthing " + o.index + " to " + o.depth);
+		if(o.depth < 0){
+			alert("Invalid depth for task: " + o.guid);
+			return;
+		}
+		Hemi.log("Adjusting " + o.childTasks.length + " task depths");
+		for(var i = 0; i < o.childTasks.length; i++){
+			Hemi.log("Redepthing task " + o.childTasks[i]);
+			this.redepthTask(this.getObjects().tasks[o.childTasks[i]],(x ? b + 1 : b),x);
+		}
+		this.refreshTaskDisplay(o.guid,1);
+	},
+	checkResource : function(e, s){
+		var b = (e.shiftKey ? 1 : 0),_o = this.getObjects(),bC=0;
+		Hemi.log(e.keyCode + " : " + e.shiftKey);
+		if(b && e.keyCode == 38){
+			var oW = Hemi.app.getWindowManager().GetWindowByName("ResourcePicker");
+			if(oW) oW.Close();
+			var o = _o.tasks[s];
+			if(!o) return false;
+			var po = 0;
+			for(var i = o.index - 1; i >= 0; i--){
+				if((po = _o.tasks[_o.rowOrder[i]])){
+					break;
+				}
+			}
+			if(po){
+				o.object.resources = po.object.resources;
+				this.refreshTaskDisplay(o.guid);
+				
+			}
+		}
+		else if(e.keyCode == 13){
+			var oW = Hemi.app.getWindowManager().GetWindowByName("ResourcePicker");
+			if(oW) oW.Close();
+			Hemi.event.cancelEvent(e);
+			this.nextRow(s,1);
+			return false;
+		}
+	},
+	checkTask : function(e, s){
+		//Hemi.log(e.keyCode + " : " + e.shiftKey);
+		var b = (e.shiftKey ? 1 : 0);
+		if(e.keyCode == 9){
+			Hemi.event.cancelEvent(e);
+			this.dentTask(s, b);
+			return false;
+		}
+		else if(e.keyCode == 13){
+			Hemi.event.cancelEvent(e);
+			this.nextRow(s);
+			return false;
+		}
+	},
+	nextRow : function(s,d){
+		var _o = this.getObjects(),o,oS;
+		o = _o.tasks[s];
+		if(!o){
+			Hemi.log("Invalid task id: " + s);
+			return;
+		}
+		oS = _o.stages[o.stageGuid];
+		if(!oS){
+			Hemi.log("Invalid stage id: " + o.stageGuid);
+			return;
+		}
+		var aTr = this.GetElementByRID(oS.guid).parentNode.querySelectorAll("tr");
+		var sLid = aTr[aTr.length-1].getAttribute("rid");
+		Hemi.log("Checking next row: " + s + " :: " + sLid);
+		if(s == sLid){
+			this.addTask(oS.guid);
+			this.GetElementByRID(this.GetElementByRID(oS.guid).parentNode.lastChild.getAttribute("rid") + (d ? "resources" : "name")).focus();
+			this.reindex();
+		}
+		else{
+			var b = 0;
+			for(var i = 0; i < aTr.length;i++){
+				var sRid = aTr[i].getAttribute("rid");
+				if(b){
+					this.GetElementByRID(sRid + (d ? "resources" : "name")).focus();
+					break;
+				}
+				if(sRid == s) b = 1;
+			}
+		}
+	},
+	
+	/// Rebuild the guid-based dependency hash, which disconnects the object model from ids and uses in-page transitive ids
+	/// 
+	rebuildDependencies : function(){
+		var _o = this.getObjects();
+		/// look through all of the rows for any tasks or stage work where dependencies are specified
+		///
+		for(var i = 0; i < _o.rowOrder.length;i++){
+			var ct = _o.tasks[_o.rowOrder[i]];
+			
+			if(ct && (!ct.object.dependencies || !ct.object.dependencies.length)){
+				//Hemi.log("Skip task " + ct.object.name + " with no dependencies");
+				continue;
+			}
+			if(!ct) ct = _o.stages[_o.rowOrder[i]];
+			if(!ct || (ct.object.nameType == 'STAGE' && ct.object.work && (!ct.object.work.dependencies || !ct.object.work.dependencies.length))){
+				//Hemi.log("Skip stage " + ct.object.name + " with no dependencies");
+				continue;
+			}
+			ct.dependencies = [];
+			this.rebuildDependency(ct);
+		}
+	},
+	rebuildDependency : function(o){
+		var _o = this.getObjects();
+		var aR = [];
+		var aD = (o.object.nameType == 'STAGE' ? o.object.work : o.object).dependencies;
+		/// Clear the 'local' dependency list
+		///
+		o.dependencies = [];
+		/// Loop through dependencies
+		///
+		//Hemi.log("Dependencies: " + aD.length);
+		for(var i = 0; i < aD.length; i++){
+
+			var oD = aD[i];
+			for(var r = 0; r < _o.rowOrder.length;r++){
+				var ct = _o.tasks[_o.rowOrder[r]];
+				if(!ct) ct = _o.stages[_o.rowOrder[r]];
+				if(!ct) continue;
+				if(ct.object.nameType == oD.artifactType && ct.object.id == oD.artifactDataId){
+					aR.push("" + (r + 1));
+					o.dependencies.push(ct.guid);
+					break;
+				}
+			}
+		}
+		this.GetElementByRID(o.guid + "dependencies").value = aR.join(",");
+		
+	},
+	
+	/// Note: Stages don't support dependencies
+	///
+	updateDependencies : function(s){
+		var _o = this.getObjects(),o,
+		o = _o.tasks[s];
+		if(!o) o = _o.stages[s];
+		if(!o){
+			Hemi.logError("Task or stage not found for guid " + s);
+			return;
+		}
+		var aTL = [];
+		/// Create a hash of the values
+		var aV = Hemi.text.trim(this.GetElementByRID(s + "dependencies").value).split(",");
+		var vH = [];
+		for(var i = 0; i < aV.length;i++){
+			var z = parseInt(aV[i]);
+			if(isNaN(z)) continue;
+			vH[z-1] = 1;
+		}
+		/// Look through all the tasks to find the dependencies by index
+		///
+		for(var i = 0; i < _o.rowOrder.length;i++){
+			var ct = _o.tasks[_o.rowOrder[i]];
+			if(!ct) ct = _o.stages[_o.rowOrder[i]];
+			if(ct.index == o.index){
+				Hemi.logDebug("Skipping self task");
+			}
+			if(vH[ct.index]){
+				aTL.push(ct.guid);
+				vH[ct.index] = 0;
+			}
+		}
+		
+		Hemi.log("Attached " + aTL.length + " task and stage dependencies"); 
+		o.dependencies = aTL;
+	},
+	addStage : function(oS){
+		var p = this.getProperties(),_o = this.getObjects(),d1 = new Date().getTime(), d2;
+		var sId = Hemi.guid();
+		//var sId = this.getStageIdPrefix(p.stageCount+1);
+		
+		_o.stages[sId] = {
+			guid:sId,
+			index:_o.rowOrder.length,
+			object:(oS ? oS : null),
+			childTasks : [],
+			dependencies : [],
+			minTaskTime : 0,
+			maxTaskTime : 0
+		};
+		_o.rowOrder[p.rowCount] = sId;
+
+		p.rowCount++;
+
+		/// Prime the stage list
+		var oP = this.getStage(sId);
+		
+		
+		var sT = this.getStageTemplate().replace(/\${id}/gi,sId);
+		//sT = sT.replace(/\${estimateOptions}/gi,this.getEstimateTimeList());
+		//sT = sT.replace(/\${rowNum}/gi,p.stageCount);
+ 		var sB =  sT;
+ 		//alert(sT);
+ 		
+		var oX = Hemi.xml.parseXmlDocument(sB);
+	   	if(!oX || !oX.documentElement){
+	   		alert("Invalid XML from:\n\n" + sB);
+	   		return;
+	   	}
+		for(var i = 0; i < oX.documentElement.childNodes.length;i++){
+ 			Hemi.xml.setInnerXHTML(this.GetElementByRID("projectTable"), oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
+ 		}
+		var aC = this.GetElementByRID("projectTable").childNodes;
+
+		// Note -extendSpaceConfiguration operates against a container, without registering the container itself
+		// therefore, the container (tr) is not registered when configured like this
+	   	// 
+
+	   	this.extendSpaceConfiguration(aC[aC.length-1]);
+	   	
+	   	this.GetElementByRID(sId + "rowNum").value = p.rowCount;
+	   	/*
+   		for(var i = 0; i < 10; i++){
+   			_o.stages[sId].childTasks.push(this.addTask(sId));
+   		} 
+	   	*/
+	   	
+	   	if(oS && oS.work){
+	   		var oW = (!oS.work.id || oS.work.populated ? oS.work : AM6Client.get("WORK",oS.work.objectId));
+			var iL = oW.tasks.length;
+	   		for(var i = 0; i < iL || i < 1; i++){
+	   			this.addTask(sId,(i < iL ? oW.tasks[i] : 0));
+	   		} 
+	   	}
+	   	else for(var i = 0; i < 1; i++) this.addTask(sId);
+
+	   	d2 = new Date().getTime();
+	   	this.refreshStageDisplay(sId);
+	   	Hemi.log("Time to render stage: " + (d2 - d1));
+	},
+	refreshProjectDisplay : function(){
+		var _o = this.getObjects(), o;
+		o = _o.project;
+		this.GetElementByRID("projectName").value = o.name; 
+	},
+	refreshStageDisplay : function(sId){
+		var _o = this.getObjects(), o;
+		if((o = _o.stages[sId].object) == null) return;
+		this.GetElementByRID(sId + "name").value = o.name;
+		if(o.schedule){
+	   		this.GetElementByRID(sId + "schedule").value = 
+	   			Hemi.text.pad((o.schedule.startTime.getMonth() + 1),2) + "/" + Hemi.text.pad(o.schedule.startTime.getDate(),2) + "/" + o.schedule.startTime.getFullYear()
+	   			+ " to "
+	   			+ Hemi.text.pad((o.schedule.endTime.getMonth() + 1),2) + "/" + Hemi.text.pad(o.schedule.endTime.getDate(),2) + "/" + o.schedule.endTime.getFullYear();
+	   		;
+	   	}
+	   	if(o.budget){
+	   		this.GetElementByRID(sId + "budget").value = (o.budget.time ? o.budget.time.name : o.budget.name);
+	   	}
+		
+	},
+	addTask : function(sStageId, oT, sParentId,iD){
+		var p = this.getProperties(), _o = this.getObjects();
+		if(typeof iD != "number" || iD < 0) iD = 0;
+		var sId = Hemi.guid();
+		
+		/// Prime the task list
+		///
+		_o.tasks[sId] = {
+			stageGuid:sStageId,
+			guid:sId,
+			parentGuid:sParentId,
+			index : _o.rowOrder.length,
+			depth:iD,
+			childTasks:[],
+			dependencies : [],
+			object : (oT ? oT : null)
+		};
+		oT = this.getTaskAtRow(sId,oT);
+		_o.rowOrder[_o.rowOrder.length] = sId;
+		p.rowCount++;
+		_o.stages[sStageId].childTasks.push(sId);
+		var sT = this.getRowTemplate().replace(/\${id}/gi,sId);
+		sT = sT.replace(/\${rowNum}/gi,p.rowCount);
+		//sT = sT.replace(/\${stageNum}/gi,p.stageCount);
+		
+		//sT = sT.replace(/\${estimateOptions}/gi,this.getEstimateTimeList());
+ 		var sB = sT ;
+		var oX = Hemi.xml.parseXmlDocument(sB);
+	   	if(!oX || !oX.documentElement){
+	   		alert("Invalid XML from:\n\n" + sB);
+	   		return;
+	   	}
+
+	   	var oBody = this.GetElementByRID(sStageId).parentNode;
+	   	if(!oBody || oBody == null){
+	   		alert("Null model reference");
+	   		return;
+	   	}
+		for(var i = 0; i < oX.documentElement.childNodes.length;i++){
+			Hemi.xml.setInnerXHTML(oBody, oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
+		}
+		var aC = oBody.childNodes;
+		
+	   	this.extendSpaceConfiguration(aC[aC.length-1]);
+	   	this.GetElementByRID(sId + "rowNum").value = p.rowCount;
+	   	var obj = this;
+	   	this.GetElementByRID(sId + "name").onkeydown = function(e){
+	   		obj.checkTask(e, sId); 
+	   	};
+	   	this.GetElementByRID(sId + "resources").onkeydown = function(e){
+	   		obj.checkResource(e, sId); 
+	   	};
+	   	/*
+	   	this.GetElementByRID(sId + "estimate").onkeydown =  function(e){
+			Hemi.event.cancelEvent(e);
+			return false;
+		};
+		*/
+		if(oT.id > 0){
+			oT = (!oT.objectId || oT.populated ? oT : AM6Client.get("TASK", oT.objectId));
+			for(var i = 0; oT.childTasks && i < oT.childTasks.length;i++){
+				_o.tasks[sId].childTasks.push(this.addTask(sStageId,oT.childTasks[i],sId,iD + 1));
+			}
+		}
+		this.refreshTaskDisplay(sId);
+		//if(sParentId) _o.tasks[sParentId].childTasks[_o.tasks[sParentId].childTasks.length] = sId;
+	   	return sId;
+ 	},
+	deleteRow : function(sId,bNoIndex,bNoStageUpdate){
+		var o,oT,_o = this.getObjects(),p = this.getProperties(),udef;
+		
+		oT = _o.tasks[sId];
+		o = oT.object;
+		if(o.id > 0){
+			this.getObjects().taskTrash[o.id] = o;
+		}
+		
+		///this.getObjects().rowOrder.splice(oT.index,1);
+		
+		/// Don't splice rowOrder on delete because it could be in bulk and the indexes aren't updated yet
+		///
+		_o.rowOrder[oT.index] = 0;
+		
+
+		/// If not deleting due to a deleted stage (part 1), then disconnect from parent and outdent child tasks
+		///
+		if(!bNoStageUpdate){
+			/// Outdent Child Tasks
+			Hemi.log("Adjust task hierarchy for " + oT.childTasks.length + " child tasks");
+			for(var i = 0; i < oT.childTasks.length;i++){
+				this.dentTask(oT.childTasks[i],1);
+			}
+		
+			/// Disconnect from parent
+			///
+			if(oT.parentGuid) this.spliceTaskFromParent(oT);
+		}
+		
+	
+		this.getObjects().tasks[sId] = udef;
+		var oXForm = this.GetForm();
+	   	for(var i = 0; i < p.elementNames.length; i++){
+			oXForm.removeElement(oXForm.getElementByName(sId + p.elementNames[i]));
+		}
+		Hemi.log("Delete Row: " + sId);
+		var oRow = this.GetElementByRID(sId);
+		if(oRow){
+			/// Remove and unlink node and all framework objects;
+			Hemi.xml.removeChildren(oRow, 1);
+			Hemi.xml.removeChild(oRow,oRow.parentNode,1);
+		}
+		else{
+			Hemi.logError("Row " + sId + " not found");
+		}
+		if(!bNoStageUpdate){
+			Hemi.log("Detaching task from the stage");
+			var s = _o.stages[oT.stageGuid];
+			if(!s || s == null){
+				Hemi.logError("Failed to find stage for id " + o.stageGuid);
+			}
+			else{
+				for(var c = 0; c < s.childTasks.length;c++){
+					if(s.childTasks[c] == sId){
+						s.childTasks.splice(c,1);
+						break;
+					}
+				}
+			}
+		}		
+		
+		if(!bNoIndex) this.reindex();
+		else Hemi.log("Need to reindex rows, update dependencies");
+	},
+	deleteStage : function(sId){
+		var o,_o = this.getObjects(),p = this.getProperties(),udef,oS;
+		oS = _o.stages[sId];
+		o = oS.object;
+		if(o.id > 0){
+			this.getObjects().stageTrash[o.id] = o;
+		}
+		/// Don't splice on delete because it could be in bulk and the indexes aren't updated yet
+		///
+		_o.rowOrder[oS.index] = 0;
+		_o.stages[sId] = udef;
+		
+		var oXForm = this.GetForm();
+			   	for(var i = 0; i < p.elementNames.length; i++){
+			oXForm.removeElement(oXForm.getElementByName(sId + p.elementNames[i]));
+		}
+		Hemi.log("Delete Tasks: " + oS.childTasks.length);
+		for(var c = 0; c < oS.childTasks.length;c++){
+			/// delete row, don't reindex or try to change the stage (this)
+			///
+			this.deleteRow(oS.childTasks[c],1,1);
+		}
+		Hemi.log("Delete Row: " + sId);
+		var oRow = this.GetElementByRID(sId).parentNode;
+		if(oRow){
+			/// Remove and unlink node and all framework objects;
+			Hemi.xml.removeChildren(oRow, 1);
+			Hemi.xml.removeChild(oRow,oRow.parentNode,1);
+		}
+		else{
+			Hemi.logError("Row " + sId + " not found");
+		}
+		this.reindex();
+
+	},
+	reindex : function(){
+		var _o = this.getObjects(),_p = this.getProperties(),o,oN = [],iC=0;
+		var aTR = this.GetElementByRID("projectTable").querySelectorAll("tr");
+		for(var i = 0; i < aTR.length; i++){
+			var cid = aTR[i].getAttribute("rid");
+			if(!cid){
+				Hemi.logWarning("Expected rid at row " + i);
+			}
+			o = _o.tasks[cid];
+			if(!o) o = _o.stages[cid];
+			if(!o){
+				Hemi.logDebug("Splice for " + cid);
+				continue;
+			}
+			o.index = iC;
+			this.GetElementByRID(o.guid + "rowNum").value = (iC + 1);
+			oN[iC++]=o.guid;
+		}
+		_o.rowOrder = oN;
+		_p.rowCount = _o.rowOrder.length;
+		this.redepends();
+	},
+	
+	/// Sets the dependency fields with the row number convenience
+	/// Requires that the dependency model is already imported into the UI row structure
+	/// AND that the UI row model is already indexed
+	///
+	redepends : function(){
+		var _o = this.getObjects(),_p = this.getProperties(),o,co;
+		for(var i = 0; i < _o.rowOrder.length; i++){
+			o = _o.tasks[_o.rowOrder[i]];
+			if(!o) o = _o.stages[_o.rowOrder[i]];
+			if(!o){
+				Hemi.logError("Invalid row index at " + i);
+				continue;
+			}
+			var aD = [];
+			for(var c = 0; c < o.dependencies.length; c++){
+				co = _o.tasks[o.dependencies[c]];
+				if(!co) co = _o.stages[o.dependencies[c]];
+				if(!co){
+					Hemi.logWarning("Invalid dependency: '" + o.dependencies[c] + "'");
+					continue;
+				}
+				aD.push(co.index + 1);
+			}
+			this.GetElementByRID(o.guid + "dependencies").value = aD.join(",");
+		}	
+	},
+ 	rebindTask : function(sId){
+		var _o = this.getObjects(), o;
+		if((o = _o.tasks[sId].object) == null) return;
+		o.name = this.GetElementByRID(sId + "name").value;
+		o.taskStatus = this.GetElementByRID(sId + "status").value;
+		if(o.taskStatus.length == 0) o.taskStatus = "UNKNOWN";  	
+ 	},
+	refreshTaskDisplay : function(sId, bRebind){
+		if(bRebind) this.rebindTask(sId);
+		var _o = this.getObjects(), o;
+		if((o = _o.tasks[sId].object) == null){
+			Hemi.logError("Invalid object reference for guid '" + sId + "'");
+			return;
+		}
+		
+	   	//this.GetElementByRID(sId + "status").value = (o.taskStatus.match(/^UNKNOWN$/) ? "" : o.taskStatus);
+	   	var sStat = "uwm-inline-button ";
+	   	if(o.taskStatus == "UNKNOWN" && o.estimate) o.taskStatus = "ESTIMATED";
+		switch(o.taskStatus){
+			case "UNKNOWN":
+				sStat += "uwm-inline-button-broken";
+				break;
+			case "ESTIMATED":
+				sStat += "uwm-inline-button-clock";
+				break;
+			case "IN_PROGRESS":
+				sStat += "uwm-inline-button-restart";
+				break;
+			case "COMPLETED":
+				sStat += "uwm-inline-button-bookmark-silver";
+				break;
+			case "BLOCKED":
+				sStat += "uwm-inline-button-logout";
+				break;
+			case "APPROVED":
+				sStat += "uwm-inline-button-bookmark";
+				break;
+			case "WASTE":
+				sStat += "uwm-inline-button-trash-empty";
+				break;
+			case "UNPLANNED":
+				sStat += "uwm-inline-button-info";
+				break;
+			case "REJECTED":
+				sStat += "uwm-inline-button-trash-empty";
+				break;
+			default:
+				Hemi.log("Invalid status: " + o.taskStatus);
+				break;
+		}	   	
+		//Hemi.log("Set class name to : " + sStat);
+	   	this.GetElementByRID(sId + "status").className = sStat;
+	   	this.GetElementByRID(sId + "name").value = o.name;
+	   	var oE = this.GetElementByRID(sId + "end");
+	   	if(oE.type.match(/^date/gi)) oE.value = o.dueDate.getFullYear() + "-" + Hemi.text.pad((o.dueDate.getMonth() + 1),2) + "-" + Hemi.text.pad(o.dueDate.getDate(),2);
+	   	else oE.value = (o.dueDate.getMonth() + 1) + "/" + Hemi.text.pad(o.dueDate.getDate(),2) + "/" + o.dueDate.getFullYear();
+	   	this.GetElementByRID(sId + "name").style.paddingLeft = (_o.tasks[sId].depth * 20) + "px";
+	   	//Hemi.log("Padding to " + (_o.tasks[sId].depth * 10) + "px;");
+	   	this.GetComponentByRID(sId + "end").synchronizeValue();
+	   	//this.GetElementByRID(sId + "estimate").value = (o.estimate ? o.estimate.name : "");
+	   	this.setElementValue(sId + "estimate",(o.estimate ? o.estimate.name : ""),0);
+	   	var aR = [];
+	   	for(var i = 0; o.resources && i < o.resources.length; i++){
+	   		aR.push(o.resources[i].name);
+	   	}
+	   	this.GetElementByRID(sId + "resources").value = aR.join(",");
+	},
+	getTaskAtRow : function(i, oT){
+		var o = this.getObjects(), ot;
+		if(!i) return;
+		//if(!o.tasks[s]) o.tasks[s] = {};
+		if((ot = o.tasks[i].object) == null){
+			ot = new org.cote.objects.taskType();
+			ot.name = "";
+			ot.description = "";
+			ot.taskStatus = "UNKNOWN";
+			ot.nameType = "TASK";
+			ot.id = 0;
+			ot.logicalOrder = o.tasks[i].index;
+			ot.startDate = (new Date());
+			ot.dueDate = (new Date());
+			ot.completedDate = (new Date());
+			ot.dependencies = [];
+			o.tasks[i].object = ot;
+
+		}
+		return ot;
+	},
+	getStage : function(sId){
+		var o = this.getObjects(), ot;
+		if(!sId) return;
+		if((ot = o.stages[sId].object) == null){
+			ot = new org.cote.objects.stageType();
+			ot.nameType = "STAGE";
+			ot.name = "";
+			ot.description = "";
+			ot.id = 0;
+			ot.logicalOrder = o.stages[sId].index;
+			
+			ot.work = new org.cote.objects.workType();
+			ot.work.nameType = "WORK";
+			ot.work.name = "";
+			ot.work.description = "";
+			ot.work.id = 0;
+			ot.work.logicalOrder = i;
+			ot.work.dependencies = [];
+			
+			ot.schedule = new org.cote.objects.scheduleType();
+			ot.schedule.nameType = "SCHEDULE";
+			ot.schedule.name = "";
+			ot.schedule.id = 0;
+			ot.schedule.startTime = new Date();
+			ot.schedule.endTime = ot.schedule.startTime;
+			
+			o.stages[sId].object = ot;
+			
+		}
+		return ot;
+	},
+	
+	openObject : function(sId){
+		var o = this.getObjects(),sType, oT,obj;
+		if(!sId){
+			sType = "Project";
+			oT = o.project;
+			sId = "__project";
+		}
+		else if(o.stages[sId] && o.stages[sId].object){
+			sType = "Stage";
+			oT = o.stages[sId].object;
+		}
+		else if(o.tasks[sId]){
+			sType = "Task";
+			oT = o.tasks[sId].object;
+		}
+		else{
+			return;
+		}
+		obj = (oT.id > 0 ? window[uwm.getApi(sType)]["get" + sType + "ById"](oT.id) : oT);
+		if(obj == null){
+			Hemi.logError("Failed to retrieve object with id " + oT.id);
+			return;
+		}
+		var oProps = {customSave:1,openerId:this.getObjectId(),picker:0,viewType:obj,referenceId:sId,provideSave:"saveType"};
+		var oW = Hemi.app.createWindow(obj.name, uwm.getApiTypeView(sType) + "/Forms/" + sType+ ".xml", "View-" + sId, 0, 0, oProps);
+	    if (oW) {
+	    	oW.resizeTo(475, 400);
+	    	Hemi.app.getWindowManager().CenterWindow(oW);
+	    	oW.setHideOnClose(0);
+	    	oW.setCanMinimize(0);
+	    	oW.setCanMaximize(0);
+	    	oW.setCanResize(0);
+
+	    }
+	},
+	
+	saveType : function(w,o){
+		var _o = this.getObjects(), _p = this.getProperties(),sId;
+
+		if(!(sId = w.getProperties().referenceId)){
+			alert("Expected form to include a reference id to the displayed record");
+			return;
+		}
+		if(sId == "__project"){
+			this.saveProject(o);
+		}
+		else if(_o.stages[sId]){
+			this.saveStage(_o.stages[sId],o);
+		}
+		else if(_o.tasks[sId]){
+			this.saveTask(_o.tasks[sId],o);
+		}
+		else{
+			alert("Referenced display was not found.  Aborting save.");
+			return;
+		}
+	},
+	saveProject : function(o){
+		this.getObjects().project = o;
+		this.refreshProjectDisplay();
+	},
+	saveStage : function(s, o){
+		s.object = o;
+		this.refreshStageDisplay(s.guid);
+	},
+	saveTask : function(s, o){
+		s.object = o;
+		this.refreshTaskDisplay(s.guid);
+	},
+	
+	chooseSchedule : function(sId){
+		var _o = this.getObjects(),o;
+		o = (_o.stages[sId] ? _o.stages[sId] : _o.tasks[sId]);
+		if(!o) return;
+
+		var ctid=sId + "schedule";
+		this.openPicker("SchedulePicker",{type:"schedule",stage:o.guid,ctrlId:ctid});
+	},
+	chooseTask : function(sId){
+		var _o = this.getObjects(),o;
+		o = _o.tasks[sId];
+		if(!o) return;
+		var ctid=sId + "name";
+		this.openPicker("TaskPicker",{type:"task",task:o.guid,ctrlId:ctid});
+	},
+
+	chooseEstimate : function(sId){
+		var _o = this.getObjects(),o;
+		o = (_o.stages[sId] ? _o.stages[sId] : _o.tasks[sId]);
+		if(!o) return;
+		var ctid=sId + "estimate";
+		this.openPicker("EstimatePicker",{type:"estimate",task:(o.stageGuid ? o.guid : 0),stage:(!o.stageGuid ? o.guid : 0),ctrlId:ctid});
+	},
+	chooseBudget : function(sId){
+		var _o = this.getObjects(),o;
+		o = _o.stages[sId];
+		if(!o) return;
+		var ctid=sId + "budget";
+		this.openPicker("BudgetPicker",{type:"budget",stage:o.guid,ctrlId:ctid});
+	},
+	chooseResources : function(sId){
+		var _o = this.getObjects(),o;
+		o = _o.tasks[sId];
+		if(!o) return;
+		var ctid=sId + "resources";
+		this.openPicker("ResourcePicker",{multiple:1,type:"resources",task:o.guid,ctrlId:ctid});
+	},
+	chooseTaskStatus : function(sId){
+		var _o = this.getObjects(),o;
+		o = _o.tasks[sId];
+		if(!o) return;
+		var ctid=sId + "status";
+		this.openPicker("TaskStatusPicker",{type:"taskStatus",task:o.guid,ctrlId:ctid});
+	},
+
+	chooseStage : function(sId){
+		var _o = this.getObjects(),o;
+		o = (_o.stages[sId] ? _o.stages[sId] : _o.tasks[sId]);
+		if(!o) return;
+		var ctid=sId + "estimate";
+		var ctid= sId + "name";
+		//this.getObjects().link_target = {type:"stage",stage:sId,ctrlId:ctid};
+		this.openPicker("StagePicker",{type:"stage",stage:o.guid,ctrlId:ctid});
+		
+	},
+
+	openPicker : function(sType, vSrc){
+		vSrc.opener_id = this.getObjectId();
+		var oW = Hemi.app.createWindow("Template Picker","Templates/Picker.xml",sType,0,0,vSrc,this._prehandle_project_picker_open);
+		/// If !oW, the window already exists, so close it
+		///
+		if(!oW){
+			oW = Hemi.app.getWindowManager().GetWindowByName(sType);
+			if(oW) oW.Close();
+			return;
+		}
+		
+          	if (oW) {
+          		oW.resizeTo(400, 250);
+          		if(vSrc.ctrlId){
+          			var o = this.GetElementByRID(vSrc.ctrlId);
+          			/*
+          			var l = Hemi.css.getAbsoluteLeft(o);
+					var t = Hemi.css.getAbsoluteTop(o) + o.offsetHeight;
+					Hemi.log("Move " + vSrc.ctrlId + " to " + l + ", " + t);
+					oW.moveTo(l + "px",t + "px");
+					*/
+					Hemi.ui.util.alignControl(oW,o,oW.getContainer());
+          		}
+          		else{
+          			Hemi.app.getWindowManager().CenterWindow(oW);
+          		}
+          		// Destroy the window when closed
+          		//
+          		oW.setHideOnClose(0);
+          	}
+	},
+	_handle_project_picker_open : function(oW){
+		var _o = this.getObjects();
+		oW.setTitle("Pick " + oW.getProperties().type);
+		oW.setCanResize(0);
+		oW.setCanMinimize(0);
+		oW.setCanMaximize(0);
+		oW.SetPickerHandler(this._prehandle_project_picker_choose);
+		oW.setHideOnClose(0);
+		_o.current_picker = oW;
+		oW.GetPickerList().clearItems();
+		var oLT = oW.getProperties();
+		var aL = [];
+		switch(oLT.type){
+			case "taskStatus":
+				aL = [
+					"UNKNOWN",
+		    		"ESTIMATED",
+		    		"IN_PROGRESS",
+		    		"COMPLETED",
+		    		"BLOCKED",
+		    		"APPROVED",
+		    		"WASTE",
+		    		"UNPLANNED",
+		    		"REJECTED"
+				].sort();
+				break;
+			case "process":
+				aL = p.steps;
+				break;
+			case "schedule":
+				aL = AM6Client.list("SCHEDULE",AM6Client.make("GROUP","DATA",irocket.getBasePath("Schedule")).objectId,0,0);
+				break;
+			case "resources":
+				aL = AM6Client.list("RESOURCE",AM6Client.make("GROUP","DATA",irocket.getBasePath("Resource")).objectId,0,0);
+				break;
+			case "task":
+				aL = AM6Client.list("TASK",AM6Client.make("GROUP","DATA",irocket.getBasePath("Task")).objectId,0,0);
+				break;
+			case "stage":
+				aL = AM6Client.list("STAGE",AM6Client.make("GROUP","DATA",irocket.getBasePath("Schedule")).objectId,0,0);
+				break;
+			case "budget":
+				aL = AM6Client.list("BUDGET",AM6Client.make("GROUP","DATA",irocket.getBasePath("Budget")).objectId,0,0);
+				break;
+
+			case "estimate":
+				var aEL = AM6Client.list("ESTIMATE",AM6Client.make("GROUP","DATA",irocket.getBasePath("Estimate")).objectId,0,0);
+				for(var i = 0; i < aEL.length;i++) if(aEL[i].time) aL.push(aEL[i]);
+				break;
+		}
+		for(var i = 0; i < aL.length; i++){
+			oW.GetPickerList().addItem((typeof aL[i] == "string" ? aL[i] : aL[i].name),aL[i]);
+		}
+		if(oLT.type == "resources"){
+			oW.selectValues(_o.tasks[oLT.task].object.resources);
+		}
+		
+	},
+	_handle_project_picker_choose : function(oPicker, oItem){
+		_o = this.getObjects();
+		var oList;
+		var oLT = oPicker.getProperties();
+		var sN = "";
+		var bStage = 0;
+		switch(oLT.type){
+			case "process":
+				sN = oLT.stage + "name";
+				break;
+			case "taskStatus":
+				_o.tasks[oLT.task].object.taskStatus = oItem.data;
+				break;
+			case "budget":
+				_o.stages[oLT.stage].object.budget = oItem.data;;
+				bStage = 1;
+				break;
+			case "schedule":
+				_o.stages[oLT.stage].object.schedule = oItem.data;;
+				bStage = 1;
+				///this.pushScheduleToTasks(oItem.data,oLT.stage);
+				break;
+			case "estimate":
+				if(oLT.task){
+					_o.tasks[oLT.task].object.estimate = oItem.data;
+				}
+				else if (oLT.stage){
+					_o.stages[oLT.stage].object.estimate = oItem.data;
+					bStage = 1;
+				}
+				break;
+			case "resources":
+				var a = [];
+				for(var i = 0; i < oItem.length;i++){
+					a.push(oItem[i].data);
+				}
+				_o.tasks[oLT.task].object.resources = a;
+				this.GetElementByRID(oLT.task + "resources").focus();
+				break;
+			case "task":
+				_o.tasks[oLT.task].object = oItem.data;
+				break;
+			case "stage":
+				_o.stages[oLT.stage].object = oItem.data;
+				bStage = 1;
+				break;
+			default:
+				Hemi.logError("Unhandled type: '" + oLT.type + "'");
+				break;
+
+		}
+		
+		if(!bStage){
+			this.refreshTaskDisplay(oLT.task);
+		}
+		else{
+			this.refreshStageDisplay(oLT.stage);
+		}
+		
+		oPicker.Close();
+	},
+	
+   getTimeMS : function(oT,b){
+   		var iM = 0,_s = this.getProperties();
+   		if(!oT || oT == null) return 0;
+		switch(oT.basisType){
+			case "MINUTE":
+				iM = 60;
+				break;
+			case "HOUR":
+				iM = 3600;
+				break;
+			case "DAY":
+				iM = 3600 * (b ? _s.realHoursInDay : _s.hoursInDay);
+				break;
+			case "WEEK":
+				iM = 3600 * (b ? _s.realHoursInWeek : _s.hoursInWeek);
+				break;
+			case "MONTH":
+				iM = 3600 * (b ? _s.realHoursInMonth : _s.hoursInMonth);
+				break;
+			case "YEAR":
+				iM = 3600 * (b ? _s.realHoursInYear : _s.hoursInYear);
+				break;
+		}
+		return oT.value * (iM * 1000);
+   },
+   unrollEstimates : function(){
+   	this.rerollEstimates(1);
+   },
+   rollEstimates : function(){
+   	this.rerollEstimates(0);
+   },
+   /// TODO: For roll-up, the depth/sum needs to be stored in a hash against the parent and not just reset.
+   rerollEstimates : function(bUnroll){
+	var _o = this.getObjects(),oT,oS,nId,iD = 0,iSum=0,oLS=0;
+	var vPSum = {};
+	   for(var i = _o.rowOrder.length; i >= 0; i--){
+	   	  
+	      oT = 0;
+	      oS = 0;
+	      nId = _o.rowOrder[i];
+	      if(_o.tasks[nId]) oT = _o.tasks[nId];
+	      if(_o.stages[nId]) oS = _o.stages[nId];
+	      if(!oT && !oS){
+	         /// error
+	         //iSum = 0;
+	         //iD = 0;
+	         continue;
+	      }
+	      if(oS){
+	         /// handle stages separately
+	
+	         //iSum = 0;
+	         if(oLS){
+	         	oLS.object.schedule.startTime = new Date(oLS.minTaskTime);
+	         	oLS.object.schedule.endTime = new Date(oLS.maxTaskTime);
+	         	this.refreshStageDisplay(oLS.guid);
+	         }
+			 oLS = oS;
+	         continue;
+	      }
+
+	      if(!oT.object) continue;
+			if(!vPSum[oT.parentGuid]) vPSum[oT.parentGuid] = 0;
+			if(!vPSum[oT.guid]) vPSum[oT.guid] = 0;
+	      /// depth shift
+	      if(oT.depth != iD){
+	      	/// if task has children, take the value of iSum as the estimate
+	        if(oT.childTasks && oT.childTasks.length > 0){
+	        	if(bUnroll){
+	        		oT.object.estimate = AM6Client.getByName("ESTIMATE",AM6Client.find("GROUP", "DATA",irocket.getBasePath("Estimate")).objectId, "Zero");
+	        	}
+	        	else{
+		            //var oE = oT.object.estimate;
+		            iSum = vPSum[oT.guid];
+		            vSum = (iSum > 0 ? Math.ceil(iSum/3600000) : 0);
+		            /// if no estimate, or not an auto estimate, then create an auto estimate from the sum
+		            var oE = AM6Client.getByName("ESTIMATE",AM6Client.make("GROUP", "DATA",irocket.getBasePath("Estimate")).objectId,vSum + " Hours - Auto");
+
+		            if(!oE){
+		               oE = new org.cote.objects.estimateType();
+			    		oE.name = vSum + " Hours - Auto";
+			    		oE.nameType = "ESTIMATE";
+		                oE.estimateType = "SWAG";
+		                oE.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Estimate")).path;
+					}
+					oT.object.estimate = oE;
+					/// if the estimate has no time value, find a time value for the sum value
+					///
+					var oTime = oE.time;
+					if(!oTime) oTime = AM6Client.getByName("TIME",AM6Client.make("GROUP", "DATA",irocket.getBasePath("Time")).objectId,"" + iSum + " Hours");
+					if(!oTime){
+						oTime = new org.cote.objects.timeType();
+						oTime.nameType = "TIME";
+					}
+					oTime.basisType = "HOUR";
+					/// iSum should be in ms, so round up to nearest hour
+					oTime.value = vSum
+					oE.time = oTime;
+					vPSum[oT.parentGuid] += (oT.object.estimate && oT.object.estimate.time ? this.getTimeMS(oT.object.estimate.time) : 0);
+					/// and let the sum value keep-rolling up
+				}
+	         } // end if child
+	         /// the depth changed but the task has no children.  If the depth is greater than iD, then restart the sum.
+	         else if(!bUnroll){
+	         	
+	         	var iCnt = (oT.object.estimate && oT.object.estimate.time ? this.getTimeMS(oT.object.estimate.time) : 0);
+	         	vPSum[oT.parentGuid] += iCnt;
+	         }
+	       } // end if different depth
+	       /// else, it's at the same depth, so keep adding to the sum
+	       else if(!bUnroll){
+	       		Hemi.log("Adding " + oT.name + " estimate " + (oT.estimate ? oT.estimate.name : " Null"));
+	       		vPSum[oT.parentGuid] += (oT.object.estimate && oT.object.estimate.time ? this.getTimeMS(oT.object.estimate.time) : 0);
+	       } 
+
+	     	if(oT.object.estimate){
+	     		this.setElementValue(oT.guid + "estimate",oT.object.estimate.name,0);
+	     	}
+	        iD = oT.depth;
+	        
+	        oS = _o.stages[oT.stageGuid]; 
+	        var iTMS = (oT.object.estimate && oT.object.estimate.time ? this.getTimeMS(oT.object.estimate.time,1) : 0);
+		  	if(oS.minTaskTime == 0 || (oT.object.dueDate.getTime() - iTMS) < oS.minTaskTime) oS.minTaskTime = (oT.object.dueDate.getTime() - iTMS);
+		  	if(oS.maxTaskTime == 0 || oT.object.dueDate.getTime() > oS.maxTaskTime) oS.maxTaskTime = oT.object.dueDate.getTime(); 
+	        
+	         
+	      } // end for
+	      if(oLS){
+	       	oLS.object.schedule.startTime = new Date(oLS.minTaskTime);
+	       	oLS.object.schedule.endTime = new Date(oLS.maxTaskTime);
+	       	this.refreshStageDisplay(oLS.guid);
+	       }
+	   } // end function
+	 
+	
+]]></embedded-script>
+</Template>

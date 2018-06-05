@@ -35,6 +35,7 @@
 			boxHeight : boxHeight,
 			boxWidth : boxWidth,
 			object_destroy : function(){
+				this.getObjects().galleryContainer.style.overflow = "";
 				this.getCanvas().destroy();
 				this.getObjects().cvs_container.parentNode.removeChild(this.getObjects().cvs_container);
 			},
@@ -1426,6 +1427,7 @@
 			var _s = o.getProperties();
 			var _o = o.getObjects();
 			_o.galleryContainer = (typeof g_gallery_container == "object" ? g_gallery_container : document.body);
+			_o.galleryContainer.style.overflow = "hidden";
 			if(!_o.cvs_container){
 				_o.cvs_container = document.createElement("div");
 				_o.galleryContainer.appendChild(_o.cvs_container);

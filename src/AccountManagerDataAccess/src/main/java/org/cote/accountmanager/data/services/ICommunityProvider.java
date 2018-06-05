@@ -27,11 +27,13 @@ import java.util.List;
 
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 
 public interface ICommunityProvider {
 	public boolean isCommunityConfigured(long organizationId);
+	public boolean addProjectArtifacts(UserType user, AuditEnumType auditType, String objectId);
 	public boolean configureCommunity(UserType adminUser);
 	public boolean configureEntitlements(UserType adminUser, String communityId, String projectId, String groupId);
 	public boolean enrollReaderInCommunities(UserType adminUser, String userId);
@@ -50,7 +52,8 @@ public interface ICommunityProvider {
 	public <T> T getCommunityProject(UserType user, String communityName, String projectName);
 	public BasePermissionType getCommunityProjectPermissionBase(UserType user, String projectId);
 	public BaseRoleType getCommunityProjectRoleBase(UserType user, String projectId);
-	
+	public <T> boolean saveCommunityProject(T project,UserType user);
+	public void deepPopulate(NameIdType object, UserType user);
 	public boolean importLocationTraits(UserType user, AuditEnumType type, String objectId, String locationPath, String fileName);
 	public boolean importLocationCountryInfo(UserType user, AuditEnumType type, String objectId, String locationPath, String fileName);
 	public boolean importLocationAdmin1Codes(UserType user, AuditEnumType type, String objectId, String locationPath, String fileName);

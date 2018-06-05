@@ -3,6 +3,7 @@
 	<div rid = "authRequired" style = "display:none;">
 	<h2>Authentication Required</h2>
 	</div>
+	
 	<div class = "uwm-box-border uwm-content" template = "/AccountManagerService/Forms/Profile.xml"></div>
 	<div class = "uwm-box-border uwm-content" template = "/AccountManagerService/Templates/RecentArticles.xml"></div>
 	<!--

@@ -135,7 +135,7 @@ public class BaseService {
 		}
 		NameIdType obj = (NameIdType)object;
 		if(obj.getNameType() == NameEnumType.UNKNOWN){
-			throw new ArgumentException("Invalid object");
+			throw new ArgumentException("Invalid object: A NameType was not specified");
 		}
 		if(user != null && obj.getOrganizationPath() == null){
 			logger.warn("Organization path not specified. Using context user's organization");
@@ -170,7 +170,7 @@ public class BaseService {
 		}
 		NameIdType obj = (NameIdType)object;
 		if(obj.getOrganizationId().compareTo(0L) == 0 || obj.getNameType() == NameEnumType.UNKNOWN){
-			throw new ArgumentException("Invalid object");
+			throw new ArgumentException("Invalid object: A NameType or Organization was not specified.");
 		}
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(obj.getNameType().toString()));
 		iFact.denormalize(object);

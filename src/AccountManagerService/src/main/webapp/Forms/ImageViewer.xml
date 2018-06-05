@@ -7,10 +7,15 @@
 	<embedded-script>
 		<![CDATA[
 		template_init : function(){
-			var _s = this.getProperties();
+			var _s = this.getProperties(), _o = this.getObjects();
 			if(!_s.media_name){
 				return;
 			}
+			window.debug = this;
+
+			if(_o.title_bar) _o.title_bar.style.display = "none";
+			if(_o.status_bar) _o.status_bar.style.display = "none";
+			if(_o.body) _o.body.style.overflow = "hidden";
 			this.setTitle(_s.media_name + " (" + _s.media_id + ")");
 			this.scopeHandler("imageviewer_load",0,0,1);
 			this.scopeHandler("video_load",0,0,1);
@@ -66,29 +71,21 @@
 			// Add 40px to accomodate title and status bar
 			//
 			Hemi.log("Start dimen: " + o.width + "X" + o.height);
+			var iW = o.width;
+			var iH = o.height;
+			var iRat = 1;
 			if(o.width > _s.maxWidth || o.height > _s.maxHeight){
-				/*
-				var iS = (_s.maxWidth / o.width);
-				if(o.height > o.width) iS = (_s.maxHeight / o.height);
-				var iW = (iS * o.width);
-				var iH = (iS * o.height); 
-				*/
-				var iS1 = (_s.maxWidth / o.width);
-				var iS2 = (_s.maxHeight / o.height);
-				var iW = (iS1 * o.width);
-				var iH = (iS1 * o.height);
-				if(_s.maxHeight < iH){
-					iW = (iS2 * o.width);
-					iH = (iS2 * o.height);
-				}
-				o.width = iW;
-				o.height = iH;
-				Hemi.log("End dimen: " + o.width + "X" + o.height + " with (" + iS1 + "/" + iS2 + ")");			
+
+				iRat = Math.min((_s.maxWidth / o.width),(_s.maxHeight / o.height));
+				
+				o.width = parseInt(iW * iRat);
+				o.height = parseInt(iH * iRat);
+				Hemi.log("End dimen: " + (iW * iRat) + "X" + (iH * iRat) + " with (" + iRat + ")");			
 			}
 			
-			this.resizeTo(o.width, o.height + 50);
+			this.resizeTo(parseInt(iW * iRat), parseInt(iH * iRat));
+			if(this.flushBody) this.flushBody();
 			Hemi.app.getWindowManager().CenterWindow(this);
-			//this.flushBody();
 		},
 		template_destroy : function(){
 			this._prehandle_imageviewer_load = 0;

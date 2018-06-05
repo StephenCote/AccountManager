@@ -15,7 +15,7 @@
 		oS.recordCount = 3;
 
 		var oG = AM6Client.find("GROUP","DATA","~/Articles");
-
+		if(!oG) return;
 		AM6Client.findBy("DATA", oG.objectId, oS,function(s, v){
 				if(v && v.json && v.json.length){
 					if(!v.json[0].dataBytesStore || v.json[0].dataBytesStore.length == 0){

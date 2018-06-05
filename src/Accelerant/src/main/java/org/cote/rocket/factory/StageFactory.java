@@ -67,9 +67,9 @@ public class StageFactory extends NameIdGroupFactory {
 	{
 		StageType stage = (StageType)obj;
 		
-		((WorkFactory)Factories.getFactory(FactoryEnumType.WORK)).depopulate(stage.getWork());
-		((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).depopulate(stage.getSchedule());
-		((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).depopulate(stage.getBudget());
+		if(stage.getWork() != null) ((WorkFactory)Factories.getFactory(FactoryEnumType.WORK)).depopulate(stage.getWork());
+		if(stage.getSchedule() != null) ((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).depopulate(stage.getSchedule());
+		if(stage.getBudget() != null) ((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).depopulate(stage.getBudget());
 		
 		stage.setPopulated(false);
 		updateToCache(stage);

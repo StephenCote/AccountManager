@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -50,6 +51,7 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
@@ -174,6 +176,20 @@ public class CommunityService {
 	}
 	
 	@RolesAllowed({"admin","user"})
+	@POST
+	@Path("/project")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updateCommunityProject(ProjectType project, @Context HttpServletRequest request){
+
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean updated = false;
+		if(cp != null) updated = cp.saveCommunityProject(project, user);
+		return Response.status(200).entity(updated).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
 	@DELETE
 	@Path("/project/{projectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -185,6 +201,26 @@ public class CommunityService {
 		boolean enrolled = false;
 		if(cp != null) enrolled = cp.deleteCommunityProject(user, projectId);
 		return Response.status(200).entity(enrolled).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/project/{projectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getCommunityProject(@PathParam("projectId") String projectId, @Context HttpServletRequest request){
+
+		UserType user = ServiceUtil.getUserFromSession(request);
+		if(user == null){
+			logger.error("Null user");
+			return Response.status(404).build();
+		}
+		ICommunityProvider cp = getProvider();
+		ProjectType project = BaseService.readByObjectId(AuditEnumType.PROJECT, projectId, request);
+		if(cp != null && project != null){
+			cp.deepPopulate(project, user);
+		}
+		return Response.status(200).entity(project).build();
 	}
 	
 	@RolesAllowed({"admin","user"})
@@ -342,6 +378,19 @@ public class CommunityService {
 		boolean configured = false;
 		if(cp != null) configured = cp.isCommunityConfigured(user.getOrganizationId());
 		return Response.status(200).entity(configured).build();
+	}
+	
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/artifacts/{type:[A-Za-z]+}/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response addProjectArtifacts(@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean addArt = cp.addProjectArtifacts(user, AuditEnumType.valueOf(type),objectId);
+		return Response.status(200).entity(addArt).build();
 	}
 	
 	@RolesAllowed({"admin","user"})

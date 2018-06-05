@@ -52,7 +52,7 @@
 		template_init : function(){
 			var o = this.getBean("rocketType"), _s = this.getProperties(), o;
 			if(!this.setStatus) this.setStatus = this._setStatus;
-			Hemi.message.service.subscribe(this, "oncommunitychange", "refreshCommunity");
+			Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
 			this.GetElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
 			this.setStatus("");
 			if(typeof _s.populate == "undefined") _s.populate = 1;
@@ -77,7 +77,7 @@
 			}
 		},
 		template_destroy : function(){
-			Hemi.message.service.unsubscribe(this, "oncommunitychange", "refreshCommunity");
+			Hemi.message.service.unsubscribe(this, "onchangecommunity", "refreshCommunity");
 		},
 		closeObject : function(){
 			var o = this.getBean("rocketType");

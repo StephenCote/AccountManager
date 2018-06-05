@@ -225,7 +225,7 @@
 				o = this.getBean("rocketType");
 			}
 			var oProps = {openerId:this.getObjectId(),picker:0,viewType:o};
-			var oW = Hemi.app.createWindow("Design " + o.name, "/AccountManagerService/Forms/Design.xml", "DesView-" + o.id, 0, 0, oProps);
+			var oW = Hemi.app.createWindow("Design " + o.name, "/AccountManagerService/Forms/DataDesign.xml", "DesView-" + o.id, 0, 0, oProps);
             if (oW) {
             	oW.resizeTo(600, 400);
             	Hemi.app.getWindowManager().CenterWindow(oW);

@@ -38,7 +38,8 @@
 				oP.projects = o.projects;
 				oP.schedules = o.schedules;
 				if(AM6Client.update("LIFECYCLE",oP)){
-					Hemi.message.service.publish("oncommunitychange",this);
+					AM6Client.clearCache("LIFECYCLE");
+					Hemi.message.service.publish("onchangecommunity",this);
 					return 1;
 				}
 				return 0;

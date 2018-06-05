@@ -1,0 +1,42 @@
+<html-fragment><tbody>
+				<tr rid="${id}" style = "border-top: .1em dotted #AAAAFF;">
+					<td>
+						<input disabled="true" value="1" class="rocket-text" type="text" style="text-align:right;width: 25px !important; border-width: 0px !important;" rid="${id}rowNum" />
+						<input type="button" class = "uwm-inline-button uwm-inline-button-info"  value = ""
+							onclick="${this}.openObject('${id}')" />
+					</td>
+					<td><input disabled="true" value="" class="rocket-text" type="text" style="width: 25px !important; border-width: 0px !important;" rid="${id}status" /></td>
+					<td><input type="text" rid="${id}name" class="rocket-text"  style="width: 175px !important;" />
+					<input type = "button" onclick = "${this}.chooseStage('${id}')" value = "..." class = "uwm-inline-button" />
+					</td>
+					<!-- 
+					<td><input type="text" onclick = "${this}.chooseMethodology(${stageNum})" rid="${id}methodology" class="rocket-text"  style="width: 100px !important;" /></td>
+					-->
+					<td>
+						<input type="text" onclick = "${this}.chooseBudget('${id}')" rid="${id}budget" class="rocket-text"  style="width: 120px !important;" />
+						<!-- 
+						<input type = "button"  value = "..." class = "uwm-inline-button" />
+						-->
+						<!--
+						<select rid = "${id}estimate" class = "rocket-text">${estimateOptions}</select>
+						-->
+					</td>
+					<!--
+					<td colspan = "2"><input type="text" onclick = "${this}.chooseProcess(${stageNum})" rid="${id}name" class="rocket-text"  style="width: 225px !important;" /></td>
+					-->
+					<td colspan = "2">
+					<input type = "text" disabled = "true" style="width: 170px !important;" rid = "${id}schedule" class = "rocket-text" />
+					<input type = "button" onclick = "${this}.chooseSchedule('${id}')" value = "..." class = "uwm-inline-button" />
+					</td>
+					<td>
+						<input class="rocket-text" type="text" style="width: 100px !important;"
+							onblur = "${this}.updateDependencies('${id}')"
+							rid="${id}dependencies" />
+					</td>
+					<td></td>
+					<td style = "padding-left:15px;">
+						<input type="button" class = "uwm-inline-button"  value = "X"
+							onclick="${this}.deleteStage('${id}')" />
+					</td>
+				</tr>
+				</tbody></html-fragment>

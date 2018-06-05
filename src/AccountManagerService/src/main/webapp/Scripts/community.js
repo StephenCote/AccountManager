@@ -555,7 +555,7 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 		return applyMethodologyToProject(oP, oM);
 	},
 	setCommunityProject : function(p,b){
-		currenProject = 0;
+		currentProject = 0;
 		contextProject = (p ? p : 0);
 		contextProjectGroup = 0;
 		if(contextProject) contextProjectGroup = AM6Client.get("GROUP",contextProject.groupId);
@@ -569,6 +569,7 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 	setCommunityMode : function(b){
 		communityMode = (b ? true : false);
 		updateBase();
+		Hemi.message.service.publish("onchangecommunity", this);
 	},
 	setCurrentProject : function(o){
 		if(communityMode) return;

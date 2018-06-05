@@ -20,7 +20,6 @@
 		showSystemRoles : function(){
 			var aS = AM6Client.systemRoles();
 			var oL = this.getList();
-			window.debug = this;
 			oL.clearItems();
 			var iI = 0;
 			for(var i = 0; i < aS.length; i++){

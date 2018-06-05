@@ -37,7 +37,7 @@
 					}
 					AM6Client.clearCache();
 
-					Hemi.message.service.publish("oncommunitychange",this);
+					Hemi.message.service.publish("onchangecommunity",this);
 				};
 
 			if(irocket.getCommunityMode()){

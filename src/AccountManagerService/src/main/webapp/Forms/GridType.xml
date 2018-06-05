@@ -122,7 +122,7 @@
 		},
 		embedded_destroy : function(){
 			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_list_session_refresh");
-			Hemi.message.service.unsubscribe(this, "oncommunitychange", "refreshCommunity");
+			Hemi.message.service.unsubscribe(this, "onchangecommunity", "refreshCommunity");
 			this._prehandle_input_keypress = null;
 		},
 		_handle_input_keypress : function(e){
@@ -150,7 +150,7 @@
 			this.getList().setResultHandler( this.scopeHandler("typelistclick",0,0,1));
 			this.refreshList();
 			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_list_session_refresh");
-			Hemi.message.service.subscribe(this, "oncommunitychange", "refreshCommunity");
+			Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
 		},
 				
 		getList : function(){
@@ -301,13 +301,16 @@
 			/// Data
 
 			if(o.nameType == "DATA" && o.mimeType && o.mimeType.match(/^text/)){
-				this.openItem(o,"Design");
+				this.openItem(o,"DataDesign",1);
 			}
 			else if(o.nameType == "DATA" && o.mimeType && o.mimeType.match(/^image/)){
 				this.openDataData(o);
 			}
 			else if(o.nameType == "FORM" && !o.isTemplate){
 				this.openItem(o,"FormView");
+			}
+			else if(o.nameType == "PROJECT"){
+				this.openItem(o,"ProjectDesign",1);
 			}
 			else if(o.nameType == "GROUP"){
 				if(!o.populated) o = AM6Client.get("GROUP",o.objectId);
@@ -364,7 +367,7 @@
 			if(sType.match(/^group$/gi)) oProps.defaultGroupType = this.getProperties().listGroupType;
 			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + (v ? v : sType) + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps);
             if (oW) {
-            	oW.resizeTo((v ? 600 : 475), 400);
+            	oW.resizeTo((v ? 700 : 475), (v ? 500 : 400));
             	Hemi.app.getWindowManager().CenterWindow(oW);
             	// Destroy the window when closed
             	//

@@ -10,13 +10,14 @@
 <embedded-script><![CDATA[
 	template_init : function(){
 		Hemi.message.service.subscribe(this, "onsessionrefresh", "refreshSession");
-		Hemi.message.service.subscribe(this, "oncommunitychange", "refreshCommunity");
+		Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
 		this.refreshMode(1);
 		this.refreshSession();
 	},
 	refreshCommunity : function(s, v){
 		if(v == this) return;
-		
+
+		this.GetElementByRID("mode").value = (irocket.getCommunityMode() ? "1" : "0");
 		this.getProperties().blockAnnounce = 1;
 		this.refreshLifecycleList();
 		this.refreshProjectList();
@@ -108,7 +109,7 @@
 			irocket.setCurrentProject(o);
 			this.GetElementByRID("projects").selectedIndex = 0;
 		}
-		if(!this.getProperties().blockAnnounce) Hemi.message.service.publish("oncommunitychange",this);
+		if(!this.getProperties().blockAnnounce) Hemi.message.service.publish("onchangecommunity",this);
 		
 	},
 	template_destroy : function(){

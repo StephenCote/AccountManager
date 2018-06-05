@@ -1,0 +1,57 @@
+<html-fragment><tr rid = "${id}">
+		<td component = "draggable">
+			<input disabled="true" value="1" class="rocket-text" type="text"
+				style="text-align:right;width: 25px !important; border-width: 0px !important;" rid="${id}rowNum" />
+			<input type="button" class = "uwm-inline-button uwm-inline-button-info"  value = ""
+				onclick="${this}.openObject('${id}')" />
+		</td>
+		<td>
+		<!--
+			<input value="" class="rocket-text" type="text" onclick ="${this}.chooseTaskStatus('${id}')"
+				style="width: 75px !important; border-width: 0px !important;" rid="${id}status" />
+		-->
+			<input type="button" class = "uwm-inline-button uwm-inline-button-broken"  value = ""
+				onclick="${this}.chooseTaskStatus('${id}')" rid="${id}status" />
+		</td>
+		<td>
+			<input class="rocket-text" type="text" style="width: 175px !important;"
+				rid="${id}name" />
+			<input type = "button" onclick="${this}.chooseTask('${id}')" value = "..." class = "uwm-inline-button" />
+		</td>
+		<td>
+		<!-- onclick="${this}.chooseEstimate('${id}')" rid = "${id}estimate" --> 
+			<input 
+				type="text" rid="${id}estimate" style="width: 120px !important;"
+				class="rocket-text" onclick="${this}.chooseEstimate('${id}')" />
+		
+				<!-- 
+			<input type = "button" onclick="${this}.chooseEstimate('${id}')" value = "..." class = "uwm-inline-button" />
+			-->
+			<!--
+			<select rid = "${id}estimate" class = "rocket-text">${estimateOptions}</select>
+			-->
+		</td>
+		<!-- 
+		<td></td>
+		-->
+		<td style = "text-align:right;" colspan = "2">
+			<input class="rocket-text" type="date" component="calendar"
+				style="width: 150px !important;" rid="${id}end" />
+		</td>
+		<td>
+			<input class="rocket-text" type="text" style="width: 100px !important;"
+				onblur = "${this}.updateDependencies('${id}')"
+				rid="${id}dependencies" />
+		</td>
+		<td>
+			<input class="rocket-text" type="text" style="width: 120px !important;"
+				rid="${id}resources" onclick = "${this}.chooseResources('${id}')" />
+				<!--
+				<input type = "button" onclick = "${this}.chooseResources('${id}')" value = "..." class = "uwm-inline-button" />
+				-->
+		</td>
+		<td style = "padding-left:15px;">
+			<input type="button" class = "uwm-inline-button"  value = "X"
+				onclick="${this}.deleteRow('${id}')" />
+		</td>
+	</tr></html-fragment>

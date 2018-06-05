@@ -19,7 +19,6 @@
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
-				window.debug = this;
 				this.GetElementByRID("btnProfile").onmouseover = function(e){
 					var o = Hemi.event.getEventSource(e);
 					o.style.border = "1px solid #00FF00";
@@ -161,7 +160,7 @@
 			var oProps = {openerId:this.getObjectId(),picker:0,viewType:oType,listId:0};
 			var oW = 0, bD = 0;
 			if(sType.match(/^data$/gi)){
-				oW = Hemi.app.createWindow("Design " + o.name, "/AccountManagerService/Forms/Design.xml", "DesView-" + o.id, 0, 0, oProps);
+				oW = Hemi.app.createWindow("Design " + o.name, "/AccountManagerService/Forms/DataDesign.xml", "DesView-" + o.id, 0, 0, oProps);
 				bD = 1;
 			}
 			else oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);

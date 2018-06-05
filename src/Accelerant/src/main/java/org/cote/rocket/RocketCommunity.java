@@ -65,6 +65,7 @@ import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.ICommunityProvider;
+import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.ScriptService;
 import org.cote.accountmanager.exceptions.DataException;
@@ -80,6 +81,7 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.GroupParticipantType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserPermissionType;
@@ -95,20 +97,28 @@ import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.DataUtil;
+import org.cote.propellant.objects.ArtifactType;
 import org.cote.propellant.objects.EventType;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.LocationType;
 import org.cote.propellant.objects.ProjectType;
+import org.cote.propellant.objects.StageType;
+import org.cote.propellant.objects.TaskType;
 import org.cote.propellant.objects.TraitType;
+import org.cote.propellant.objects.WorkType;
+import org.cote.propellant.objects.types.ArtifactEnumType;
 import org.cote.propellant.objects.types.GeographyEnumType;
 import org.cote.propellant.objects.types.TraitEnumType;
+import org.cote.rocket.factory.ArtifactFactory;
 import org.cote.rocket.factory.EventFactory;
 import org.cote.rocket.factory.LifecycleFactory;
 import org.cote.rocket.factory.LocationFactory;
 import org.cote.rocket.factory.ProjectFactory;
 import org.cote.rocket.factory.TraitFactory;
+import org.cote.rocket.util.CommunityProjectUtil;
 import org.cote.rocket.util.DataGeneratorData;
 import org.cote.rocket.util.DataGeneratorUtil;
+import org.cote.rocket.util.ImportMap;
 
 /*
  * 2017/10/16 - AUTHORIZATION NOTE
@@ -155,6 +165,35 @@ public class RocketCommunity implements ICommunityProvider {
 		geoIdToPost.clear();
 		locByCode.clear();
 	}
+	
+	public boolean addProjectArtifacts(UserType user, AuditEnumType auditType, String objectId){
+		boolean outBool = false;
+		/// TODO: Add AuthZ check
+		/// And refactor the API to avoid the duplication here
+		///
+		logger.warn("**** Refactor warning: Authorization check not yet in place");
+		try{
+			if(auditType == AuditEnumType.LIFECYCLE){
+				LifecycleType lc = BaseService.readByObjectId(auditType, objectId, user);
+				outBool = (lc != null
+					&& RocketModel.addAgileArtifacts(user, lc)
+					&& RocketModel.addWaterfallArtifacts(user, lc)
+				);
+			}
+			else if(auditType == AuditEnumType.PROJECT){
+				ProjectType pj = BaseService.readByObjectId(auditType, objectId, user);
+				outBool = (pj != null
+					&& RocketModel.addAgileArtifacts(user, pj)
+					&& RocketModel.addWaterfallArtifacts(user, pj)
+				);
+			}
+		}
+		catch(DataAccessException | FactoryException | ArgumentException e){
+			logger.error(e);
+		}
+		return outBool;
+	}
+	
 	public boolean importLocationTraits(UserType user, AuditEnumType auditType, String objectId, String locationPath, String featuresFileName){
 		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, LOCATION_FEATURES,AuditEnumType.USER, user.getUrn());
@@ -1519,6 +1558,16 @@ public class RocketCommunity implements ICommunityProvider {
 	}
 	
 	
+	
+	public <T> boolean saveCommunityProject(T project,UserType user){
+		return CommunityProjectUtil.saveCommunityProject((ProjectType)project, user);
+	}
+	
+	public void deepPopulate(NameIdType object, UserType user){
+		CommunityProjectUtil.deepPopulate(AuditEnumType.valueOf(object.getNameType().toString()), object, user);
+	}
+	
+	
 	public boolean updateCommunityProjectScript(UserType user, String communityId, String projectId, String name, String dataStr){
 		boolean outBool = false;
 		DataType data = getCommunityProjectScriptData(user, communityId, projectId, name);
@@ -1546,8 +1595,6 @@ public class RocketCommunity implements ICommunityProvider {
 		return outBool;
 	}
 	private String processTokens(AuditType audit, UserType user, String communityId, String projectId, DataType data, Map<String,Object> params) throws DataException, FactoryException, ArgumentException{
-
-		
 		LifecycleType lc = getLifecycle(audit, user, communityId);
 		ProjectType proj = getProject(audit,user, projectId);
 		if(lc == null || proj == null) return null;
@@ -1579,8 +1626,6 @@ public class RocketCommunity implements ICommunityProvider {
 				.replaceAll("\\$\\{lastEventName\\}", (lastEvent != null ? lastEvent.getName() : null))
 				.replaceAll("\\$\\{lastEventUrn\\}",  (lastEvent != null ? lastEvent.getUrn() : null))
 		;
-
-
 	}
 	public Object executeCommunityProjectScript(UserType user, String communityId, String projectId, String name){
 		long startTime = System.currentTimeMillis();

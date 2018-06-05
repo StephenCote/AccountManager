@@ -82,9 +82,8 @@
 				oP.stages = o.stages;
 				oP.schedule = o.schedule;
 				if(AM6Client.update("PROJECT",oP)){
-					//irocket.importEstimates("/AccountManagerService/Models/estimateModel.js");
-					//irocket.importEstimates("/AccountManagerService/Models/estimateModel.js");
-					Hemi.message.service.publish("oncommunitychange",this);
+					AM6Client.clearCache("PROJECT");
+					Hemi.message.service.publish("onchangecommunity",this);
 					return 1;
 				}
 				return 0;
