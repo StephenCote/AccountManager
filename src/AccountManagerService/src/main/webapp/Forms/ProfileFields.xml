@@ -107,6 +107,7 @@
 			    pickProfile : function(s, o, i, w){
 			    	var oP = this.getObjects().profile;
 			    	if(!oP) return;
+			    	
 			    	var oAttr = AM6Client.getAttribute(oP,"v1-profile");
 					if(!oAttr || !oAttr.values.length){
 						AM6Client.addAttribute(oP,"v1-profile",o.objectId);
@@ -114,7 +115,21 @@
 					else{
 						oAttr.values = [o.objectId];
 					}
+					
 					AM6Client.update(oP.nameType,oP);
+					if(this.getProperties().linkProfileId){
+						var oX = AM6Client.get((oP.nameType == "PERSON" ? "USER" : "PERSON"),this.getProperties().linkProfileId);
+						if(oX != null){
+							oAttr = AM6Client.getAttribute(oX,"v1-profile");
+							if(!oAttr || !oAttr.values.length){
+								AM6Client.addAttribute(oX,"v1-profile",o.objectId);
+							}
+							else{
+								oAttr.values = [o.objectId];
+							}
+							AM6Client.update(oX.nameType,oX);
+						}
+					}
 					this.refreshProfile();
 			    },
 				chooseProfile : function(){

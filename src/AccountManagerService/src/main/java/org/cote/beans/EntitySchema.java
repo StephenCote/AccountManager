@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
+import org.cote.accountmanager.objects.ApplicationProfileType;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
@@ -121,7 +122,7 @@ public class EntitySchema {
 	private LocationType locationType = null;
 	private EventType eventType = null;
 	private TraitType traitType = null;
-	
+	private ApplicationProfileType applicationProfileType = null;
 	private StageType stageType = null;
 	private TaskType taskType = null;
 	private TicketType ticketType = null;
@@ -166,6 +167,7 @@ public class EntitySchema {
 	private BaseSearchRequestType baseSearchRequestType = null;
 	private SortQueryType sortQueryType = null;
 	public EntitySchema(){
+		applicationProfileType = new ApplicationProfileType();
 		sortQueryType = new SortQueryType();
 		baseSearchRequestType = new BaseSearchRequestType();
 		authenticationRequest = new AuthenticationRequestType();
@@ -238,6 +240,18 @@ public class EntitySchema {
 	}
 
 	
+
+	public ApplicationProfileType getApplicationProfileType() {
+		return applicationProfileType;
+	}
+
+
+
+	public void setApplicationProfileType(ApplicationProfileType applicationProfileType) {
+		this.applicationProfileType = applicationProfileType;
+	}
+
+
 
 	public BaseSearchRequestType getBaseSearchRequestType() {
 		return baseSearchRequestType;

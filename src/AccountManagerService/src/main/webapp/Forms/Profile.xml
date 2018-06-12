@@ -5,14 +5,20 @@
 		<![CDATA[
 			template_init: function(){
 				var oU = 0;
+				
+				/// The link is specifically for the master person/user at the organization level
+				///
+				var sLinkProfId = 0;
+				
 				if(this.getProperties().viewType && this.getProperties().listType){
 					oU = this.getProperties().viewType;
 					this.getProperties().profileType = this.getProperties().listType;
 				}
-				else{
-					oU = uwm.getUser();
+				else oU = uwm.getUser();
+				if(oU.nameType == "USER"){
 					var oP = AM6Client.userPerson(oU.objectId);
 					if(oP){
+						sLinkProfId = oU.objectId;
 						oU = oP;
 						this.getProperties().profileType = "Person";
 					}
@@ -21,8 +27,13 @@
 					}
 					
 				}
+				/// If the person includes a user ...
+				else if(oU.nameType == "PERSON" && oU.users.length > 0){
+					sLinkProfId = oU.users[0].objectId;
+				}
 				if(oU){
 					this.getProperties().profileId = oU.objectId;
+					this.getProperties().linkProfileId = sLinkProfId;
 					this.loadTemplate("/AccountManagerService/Forms/ProfileFields.xml");
 				}
 			}

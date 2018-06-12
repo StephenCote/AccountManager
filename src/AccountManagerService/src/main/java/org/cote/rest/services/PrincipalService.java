@@ -43,8 +43,10 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.security.UserPrincipal;
+import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.ApplicationProfileType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
@@ -54,6 +56,7 @@ import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.rocket.services.RoleService;
 
 @DeclareRoles({"user"})
 @Path("/principal")
@@ -98,6 +101,7 @@ public class PrincipalService {
 		return Response.status(200).entity(person).build();
 	}
 	
+	@RolesAllowed({"user"})
 	@GET
 	@Path("/person")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -105,6 +109,25 @@ public class PrincipalService {
 		UserType user = (UserType)getSelf(request).getEntity();
 		PersonType person = (PersonType)getOtherPerson(user.getObjectId(),request).getEntity();
 		return Response.status(200).entity(person).build();
+	}
+
+	@RolesAllowed({"user"})
+	@GET
+	@Path("/application")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getApplicationProfile(@Context HttpServletRequest request){
+		ApplicationProfileType app = new ApplicationProfileType();
+		UserType user = (UserType)getSelf(request).getEntity();
+		app.getSystemRoles().addAll(RoleService.getSystemRoles(user.getOrganizationId()));
+		app.setUser(user);
+		app.setPerson((PersonType)getOtherPerson(user.getObjectId(),request).getEntity());
+		try {
+			app.getUserRoles().addAll(EffectiveAuthorizationService.getEffectiveRolesForUser(user));
+		} catch (ArgumentException | FactoryException e) {
+			logger.error(e);
+		}
+		app.setOrganizationPath(user.getOrganizationPath());
+		return Response.status(200).entity(app).build();
 	}
 	
 	@GET

@@ -3,6 +3,9 @@
 
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
+	<p rid = "systemPersons">
+		<input type = "button" value = "System Persons" onclick = "${this}.showSystemPersons()" />
+	</p>
 	<embedded-script>
 		<![CDATA[
 		// Requires TemplateTools to be included
@@ -11,6 +14,12 @@
 			this.getProperties().iconView = 1;
 			this.initGrid("Person",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Person","~/Persons")));
 
+		},
+		showSystemPersons : function(){
+			this.GetElementByRID("path").value = "/Persons";
+			this.getProperties().start_record = 0;
+			this.getProperties().viewType = o;
+			this.refreshList();
 		},
 		decorateListItemName : function(o){
 			return this.decorateProfileIcon(o);

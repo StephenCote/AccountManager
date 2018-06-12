@@ -14,12 +14,13 @@
           validationQuery="SELECT 1"
           validationInterval="30000"
           timeBetweenEvictionRunsMillis="30000"
-          maxActive="10"
+          maxActive="100"
           minIdle="5"
           maxWait="10000"
           initialSize="10"
           removeAbandonedTimeout="60"
           removeAbandoned="true"
+          abandonWhenPercentageFull="50"
           logAbandoned="true"
           minEvictableIdleTimeMillis="30000"
           jmxEnabled="true"
@@ -28,7 +29,9 @@
           username="devuser"
           password="password"
           driverClassName="org.postgresql.Driver"
-          url="jdbc:postgresql://localhost:5432/devdb"/>
+          url="jdbc:postgresql://localhost:5432/devdb"
+          closeMethod="close"
+          />
     <Resources
         cachingAllowed="true"
         cacheMaxSize="100000"

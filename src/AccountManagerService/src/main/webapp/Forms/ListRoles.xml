@@ -18,7 +18,7 @@
 			
 		},
 		showSystemRoles : function(){
-			var aS = AM6Client.systemRoles();
+			var aS = AM6Client.application().systemRoles;
 			var oL = this.getList();
 			oL.clearItems();
 			var iI = 0;
@@ -26,15 +26,6 @@
 				if(aS[i].roleType == "USER"){
 					oL.addItem(aS[i].roleType + " " + aS[i].name, aS[i]);
 					iI++;
-					/*
-					var o = document.createElement("span");
-					o.setAttribute("style", "color:#76933c;border-bottom: 1px dotted #76933c;");
-					o.appendChild(document.createTextNode(aS[i].name));
-					o.onclick = function(){
-						this.openItem(aS[i]);
-					};
-					this.GetElementByRID("systemRoles").appendChild(o);
-					*/
 				}
 			}
 			this.setTotalCount(iI);
