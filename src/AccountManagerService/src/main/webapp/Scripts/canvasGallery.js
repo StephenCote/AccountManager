@@ -476,7 +476,7 @@
 				if(oS && oS.nodeName && oS.nodeName.match(/^(input|textarea|select)/gi)){
 					return;
 				}
-				var bN = 0,bA = 0,bC = 0,bU = 0,bBuck = 0, bGo = 0, bLast = 0;
+				var bN = 0,bA = 0,bC = 0,bU = 0,bBuck = 0, bGo = 0, bHome = 0, bLast = 0;
 				switch(e.keyCode){
 					case 39:
 						bN = 1;
@@ -504,9 +504,14 @@
 					case 66:
 						bBuck = 1;
 						break;
+					
 					/// G
 					case 71:
 						bGo = 1;
+						break;
+					/// H
+					case 72:
+						bHome = 1;
 						break;
 					/// L
 					case 76:
@@ -517,7 +522,7 @@
 						break;
 				}
 				
-				if((!bLast && !bN && !bU && !bBuck && !bGo) || bC){
+				if((!bLast && !bN && !bU && !bBuck && !bGo && !bHome) || bC){
 					Hemi.logDebug("Unhandled combination");
 					return 0;
 				}
@@ -553,7 +558,10 @@
 						this.cdup(oNavPanel,0,oNavPanel.getObjects().currentDirectory.parentId,0);
 					}
 					else if(bGo){
-						pickText(this,"Go to",oNavPanel.getObjects().currentDirectory.path,"findDirectory");
+						pickText(this,"Path",oNavPanel.getObjects().currentDirectory.path,"findDirectory");
+					}
+					else if(bHome){
+						pickText(this,"Path","~/","findHome");
 					}
 					else if(bLast){
 						if(oNavPanel.getObjects().lastDirectory){
@@ -733,6 +741,9 @@
 			findDirectory : function(s, sType){
 				findDirectory(s);
 			},
+			findHome : function(s, sType){
+				if(s) this.setHome("gallery",s);
+			},
 			createGroup : function(s, sType){
 				var d = this.getCurrentViewPanel("nav").getObjects().currentDirectory;
 				
@@ -796,6 +807,22 @@
 			},
 			alignViews : function(){
 				resetGalleryDimensions();
+			},
+			/// Reset the root of the view after initial loading
+			///
+			setHome : function(sView, sPath){
+				var oV = this.view(sView);
+				if(!oV.getProperties().basePath) return;
+				if(!sPath.match(/\/$/)) sPath = sPath + "/";
+				oV.getProperties().basePath = sPath;
+				for(var p = 0; p < oV.panels().length; p++){
+					var oP = oV.panels()[p];
+					var _o = oP.getObjects();
+					var sPName = oP.getProperties().panelName;
+					delete _o.currentDirectory;
+					delete _o.baseGroup;
+				}
+				this.switchView("gallery",["nav","content","commands"]);
 			}
 
 	
@@ -1719,6 +1746,7 @@
 								
 								_s.rasterCount = 0;
 								_s.rasterTotal = 0;
+								_s.panelName = s;
 	
 							},
 							getShapes : function(){
