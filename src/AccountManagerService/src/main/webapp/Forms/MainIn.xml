@@ -30,7 +30,7 @@
 				Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
 			},
 			refreshCommunity : function(s, v){
-				if(v == this) return;
+				if(v == this || this.getProperties().blockAnnounce) return;
 				
 				this.getProperties().blockAnnounce = 1;
 				this.refreshLifecycleList();
@@ -67,6 +67,7 @@
 					else if(oSel1.options.length > 1) oSel1.selectedIndex = 1;
 					else oSel1.selectedIndex = 0;
 				}
+				this.selectLifecycle();
 			},
 			refreshProjectList : function(){
 				var oSel = this.GetElementByRID("projects");
