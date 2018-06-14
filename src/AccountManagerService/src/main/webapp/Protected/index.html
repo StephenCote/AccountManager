@@ -7,7 +7,7 @@
 
    		<link rel="stylesheet" href="/AccountManagerService/Style/uwm.css" type="text/css" title = "uwm" />
    		<link rel="stylesheet" href="/AccountManagerService/Style/rocket.css" type="text/css" />
- 
+ 		<link rel="stylesheet" href="/AccountManagerService/Style/flyout.css" type="text/css" />
 
 		<script type = "text/javascript">
    			var g_application_path = "/AccountManagerService/";
@@ -15,125 +15,11 @@
         <script type = "text/javascript" src = "/AccountManagerService/Scripts/bootstrap.jsp"></script>
    		<script type = "text/javascript">
 			irocket.setCommunityMode(false);
-			uwm.addPageLoadHandler(function(){
-
-			
-			});
 			function doLogout(){
 				AM6Client.logout(function(){location.href = "/AccountManagerService/";});
 			}
 
    		</script>
-
-		  <style type = "text/css">
-		  	/* CSS layout based on fly-out menu example (TODO: Add credits) */
-       * {
-  box-sizing: border-box;
-}
-
-html, body {
-  min-height: 100%;
-}
-
-a {
-  text-decoration: none;
-}
-
-.main-header {
-	background: #FFFFFF repeat scroll 0 0 transparent;
-	background: linear-gradient(to bottom, #0804a9, #ffffff) repeat scroll 0 0 transparent;
-	background: -moz-linear-gradient(center top , #0804a9, #ffffff) repeat scroll 0 0 transparent;
-	background: -webkit-gradient(linear,left top, left bottom, from(#0804a9), to(#ffffff)) repeat scroll 0 0 transparent;
-
-  padding: 5px;
-  text-align: center;
-  color: white;
-  text-shadow: #222 0px -1px 1px;
-  position: fixed;
-  width: 100%;
-  left: 0;
-  transition: all 0.2s ease;
-}
-.main-header h1 {
-	margin-top:.5em;
-	margin-bottom: 0em;
-}
-.main-header a {
-  position: absolute;
-  left: 20px;
-  top: 20px;
-  color: white;
-  font-size: 32px;
-}
-
-.page-wrap {
-  float: right;
-  width: 100%;
-  transition: width 0.2s ease;
-}
-
-.main-nav {
-  position: fixed;
-  top: 0;
-  width: 0;
-  height: 100%;
-  background: #4444FF;
-  overflow-y: auto;
-  transition: width 0.2s ease;
-  z-index:10;
-}
-.main-nav a {
-  display: block;
-  background: linear-gradient(#0000FF, #000055);
-  border-top: 1px solid #484848;
-  border-bottom: 1px solid #2E2E2E;
-  color: white;
-  padding: 15px;
-}
-.main-nav a:hover, .main-nav a:focus {
-  background: linear-gradient(#4444FF, #4444AA);
-}
-.main-nav:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: 34px;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4));
-}
-
-.content {
-  padding: 100px 20px 20px 20px;
-}
-
-.close-menu {
-  display: none;
-}
-
-#main-nav:target {
-  width: 20%;
-}
-
-#main-nav:target + .page-wrap {
-  width: 80%;
-}
-#main-nav:target + .page-wrap .open-menu {
-  display: none;
-}
-#main-nav:target + .page-wrap .close-menu {
-  display: block;
-}
-#main-nav:target + .page-wrap .main-header {
-  width: 80%;
-  left: 20%;
-}
-input.button{
-	border: 1px dotted #505050;
-}
-input.button:hover{
-	border: 1px solid #CFCFCF;
-        </style>
 
 	<script type = "text/javascript">
 	function switchForm(sForm){
