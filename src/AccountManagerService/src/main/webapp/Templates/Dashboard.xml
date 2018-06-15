@@ -1,11 +1,13 @@
 <Template>
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 	<div rid = "authRequired" style = "display:none;">
+	<!--
 	<h2>Authentication Required</h2>
+	-->
 	</div>
 	
-	<div class = "uwm-box-border uwm-content" template = "/AccountManagerService/Forms/Profile.xml"></div>
-	<div class = "uwm-box-border uwm-content" template = "/AccountManagerService/Templates/RecentArticles.xml"></div>
+	<div class = "uwm-box-border uwm-content" rid = "profileCont" template = "/AccountManagerService/Forms/Profile.xml"></div>
+	<div class = "uwm-box-border uwm-content" rid = "articleCont" template = "/AccountManagerService/Templates/RecentArticles.xml"></div>
 	<!--
 	<div rid = "galleryContainer" style = "display:none;height: 500px;width:100%;border: 1px dotted #CFCFCF;">
 	</div>
@@ -13,6 +15,7 @@
 	<embedded-script><![CDATA[
 		template_init : function(){
 			Hemi.message.service.subscribe(this, "onsessionrefresh", "refreshSession");
+			this.refreshSession();
 			/// window.setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').refreshSession()",250);
 		},
 		template_destroy : function(){
@@ -23,10 +26,13 @@
 			var _s = this.getProperties(),b = uwm.rule("IsLoggedIn");
 			Hemi.log("Handle Session Refresh - Comparing " + b + " to " + _s.lastState);
 			this.GetElementByRID("authRequired").style.display = (b ? "none" : "block");
-			this.GetElementByRID("galleryContainer").style.display = (!b ? "none" : "block");
+			/// this.GetElementByRID("galleryContainer").style.display = (!b ? "none" : "block");
 			if(b != _s.lastState){
 				if(window.galleryView) window.galleryView.destroy();
-				if(b) this.setupCanvas();
+				/// if(b) this.setupCanvas();
+				
+				this.GetComponentByRID("profileCont").loadTemplate("/AccountManagerService/Forms/Profile.xml");
+				this.GetComponentByRID("articleCont").loadTemplate("/AccountManagerService/Templates/RecentArticles.xml");
 			}
 		},
 		setupCanvas : function(){

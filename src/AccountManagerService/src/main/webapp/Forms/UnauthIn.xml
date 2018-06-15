@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template>
-
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 	<span rid = "cntLogin" style = "display:none; text-decoration:underline;cursor:pointer;" tabindex = "1" onclick = "${this}.loadTemplate('/AccountManagerService/Forms/LoginIn.xml')">
 		<img valign = "middle" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/user-auth.png" width = "24" height = "24" alt = "Crystal SVG Icon - User Auth" />
@@ -10,8 +9,8 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-			//if(!location.protocol.match(/^https/gi)) return;
-			var oMod = uwm.rule("IsLoggedIn");
+			var oMod = uwm.getRule("IsLoggedIn");
+
 			if(!oMod){
 				uwm.altMain = {
 					form : "Forms/MainIn.xml"

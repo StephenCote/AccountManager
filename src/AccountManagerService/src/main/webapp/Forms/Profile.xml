@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template>
-	<p>Profile ...</p>
+	<p>Not Authenticated</p>
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
@@ -15,6 +15,7 @@
 					this.getProperties().profileType = this.getProperties().listType;
 				}
 				else oU = uwm.getUser();
+				if(!oU || oU == null) return;
 				if(oU.nameType == "USER"){
 					var oP = AM6Client.userPerson(oU.objectId);
 					if(oP){

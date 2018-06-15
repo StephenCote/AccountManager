@@ -2,7 +2,7 @@
 <Template>
 <import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 <div rid = "cntLogin" style = "display:none;">
-<input type = "hidden" rid = "organization_path" value = "/Public" />
+<input type = "text" class = "rocket-text rocket-text-short" rid = "organization_path" value = "/Public" />
 <input type = "text" class = "rocket-text rocket-text-short" rid = "user_name" />
 <input type = "password" class = "rocket-text rocket-text-short" rid = "password" />
 <img valign = "middle" rid = "btnLogin" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/user-auth.png" onclick = "${this}.doLogin()" width = "24" height = "24" alt = "Crystal SVG Icon - User Auth" />
@@ -12,7 +12,6 @@
 		// Requires TemplateTools to be included
 		//
 		template_init : function(){
-			if(!location.protocol.match(/^https/gi)) return;
 			var oMod = uwm.getRule("IsLoggedIn");
 			if(!oMod){
 				uwm.altMain = {
@@ -45,12 +44,7 @@
 		},
 		doLogin : function(){
 			if(!this.Validate()) return;
-			var oOrg = AM6Client.find("ORGANIZATION",this.GetFormValue("organization_path"));
-			if(!oOrg){
-				//this.setStatus("Invalid organization");
-				return;
-			}
-			
+			var sOrg = this.GetFormValue("organization_path");
 			var sName = this.GetFormValue("user_name");
 			var sPassword = this.GetFormValue("password");
 			this.GetElementByRID("user_name").disabled = true;
@@ -58,9 +52,8 @@
 			this.GetElementByRID("btnLogin").disabled = true;
 			this.SetFormValue("password","");
 			this.getProperties().userName = sName; 
-			//this.setStatus(" ");
-			//this.GetElementByRID("btnLogin").disabled = true;
-			window.uwm.operation("Authenticate", {opener:this.getObjectId(),user_name : sName, password : sPassword, organization: oOrg});		
+
+			window.uwm.operation("Authenticate", {opener:this.getObjectId(),user_name : sName, password : sPassword, organization: sOrg});		
 		},
 
 		Validate : function(){

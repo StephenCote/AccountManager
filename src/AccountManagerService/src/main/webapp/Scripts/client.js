@@ -27,21 +27,102 @@
 		window.uwm = {
 				
 			debugMode : 1,
-			operation : function(){
-				
-			},
-			/// This is a static implementation while refactoring
-			///
-			rule : function(sRule){
-				if(sRule == "IsLoggedIn"){
-					return (getPrincipal() != null ? 1 : 0);
+			createContent : function(i, u, f){
+				var o = document.getElementById(i);
+				var ai = Hemi.GetSpecifiedAttribute(o, "acrid");
+				var c = 0;
+				if(ai){
+					c = Hemi.registry.service.getObject(ai);
 				}
+				else{
+					c = Hemi.app.createApplicationComponent(0, o, Hemi.app.space.service.getPrimarySpace(), i);
+					c.setTemplateIsSpace(1);
+					c.setAsync(1);
+				}
+				
+				c.local_template_init = f;
+				c.loadTemplate(u);
+				
+				return c;
 			},
+
+
+			getRule : function(sName){
+				return Hemi.app.module.service.getModuleByName(sName.toLowerCase());
+			},
+			
+			rule : function(sName, vParams, sSuccessOp, sFailOp, oNode, fStatus, fSuite){
+				var oTest = Hemi.app.module.test.service.NewTest(sName.toLowerCase(), oNode, fStatus, fSuite, g_application_path + "Rules/");
+				var bOut = 0;
+				Hemi.log("START RULE: " + sName);
+				if(!vParams && uwm.altPane) vParams = {opener:uwm.altPane.opener};
+				if(vParams){
+					for(var i in vParams){
+						oTest.getProperties()[i]=vParams[i];
+					}
+				}
+				oTest.RunTests();
+				var oTestResult = oTest.getTestByName("Test" + sName);
+				if(oTestResult && oTestResult.data == true){
+					/// Only set return val to op if all operations are updated to expect a return value
+					/// There was a few hours well spent
+					bOut = 1;
+					if(sSuccessOp){
+						window.uwm.operation(sSuccessOp, vParams, oNode, sName);
+					}
+				}
+				else if(sFailOp){
+					window.uwm.operation(sFailOp, vParams, oNode, sName);
+				}
+				oTest.destroy();
+				Hemi.log("EXIT RULE: " + sName + " (" + (bOut ? true : false) + ")");
+				return bOut;
+			},
+			operation : function(sName, vParams, oNode, sRule){
+				var oMod = Hemi.app.module.service.NewModule(sName.toLowerCase(), oNode, g_application_path + "Operations/");
+				if(!vParams && uwm.altPane) vParams = {opener:uwm.altPane.opener};
+				if(vParams){
+					for(var i in vParams){
+						oMod.getProperties()[i]=vParams[i];
+					}
+				}
+				if(oMod == null) return 0;
+				if(oMod.SetRule) oMod.SetRule(sRule);
+				if(oMod.DoOperation) return oMod.DoOperation();
+				else return 1;
+
+			},
+
+			
 			getUser : function(){
 				return getPrincipal();
 			},
+			
+			login : function(o, u, p, v){
+				var vParms = (v ? v : {});
+				AM6Client.loginWithPassword(o, u, p, function(s, v){
+					var oU;
+					if(v && v.json){
+						AM6Client.clearCache(0,1);
+						oU = window.uwm.getUser();
+						/// window.uwm.session =window.uwm.user.session;
+						if(uwm.altFlushSession) uwm.altFlushSession();
+					}
+					Hemi.message.service.publish("onsessionrefresh", oU);
+					vParms.user = oU;
+					uwm.operation("ContinueWorkflow", vParms, 0, "Authenticate");
+					
+				});
+
+				return 1;
+				
+			},
+			
 			logout : function(){
+				var b = AM6Client.logout();
+				Hemi.message.service.publish("onsessionrefresh", null);
 				if(doLogout) doLogout();
+				return b;
 			},
 			getApi : function(sType){
 				return AM6Client;
@@ -208,7 +289,7 @@
 	function getCache(){
 		return cache;
 	}
-	function clearCache(vType,fH){
+	function clearCache(vType,bLocalOnly, fH){
 		var sType = vType, oObj;
 		if(typeof vType == "object" && vType != null){
 			sType = vType.nameType;
@@ -217,11 +298,11 @@
 		}
 		if(!sType){
 			cache = {};
-			return Hemi.xml.getJSON(sCache + "/clearAll",fH,(fH ? 1 : 0));
+			return (bLocalOnly ? 1 : Hemi.xml.getJSON(sCache + "/clearAll",fH,(fH ? 1 : 0)));
 		}
 		else{
 			delete cache[sType];
-			return Hemi.xml.getJSON(sCache + "/clear/" + sType,fH,(fH ? 1 : 0));
+			return (bLocalOnly ? 1 : Hemi.xml.getJSON(sCache + "/clear/" + sType,fH,(fH ? 1 : 0)));
 		}
 	}
 	function removeFromCache(vType, sObjId){
@@ -510,12 +591,20 @@
 	
 	function logout(fH){
 		AM6Client.currentOrganization = sCurrentOrganization = 0;
-		Hemi.xml.getJSON("/AccountManagerService/rest/logout",fH,(fH ? 1 : 0));
+		AM6Client.clearCache(0,1);
+		return Hemi.xml.getJSON("/AccountManagerService/rest/logout",fH,(fH ? 1 : 0));
 	}
-
+	function loginWithPassword(sOrg, sName, sCred, fH){
+		var cred = new org.cote.objects.credentialType();
+		cred.name = sName;
+		cred.credential = Base64.encode(sCred);
+		cred.organizationPath = sOrg;
+		cred.credentialType = "HASHED_PASSWORD";
+		return AM6Client.login(cred,fH);
+	}
 	function login(cred, fH){
 		AM6Client.currentOrganization = sCurrentOrganization = cred.organizationPath;
-		Hemi.xml.postJSON("/AccountManagerService/rest/login",cred,fH,(fH ? 1 : 0));
+		return Hemi.xml.postJSON("/AccountManagerService/rest/login",cred,fH,(fH ? 1 : 0));
 	}
 	function listSystemRoles(fH){
 		var sK = sCurrentOrganization + " SystemRoles";
@@ -650,6 +739,7 @@
 			}
 		},
 		login : login,
+		loginWithPassword : loginWithPassword,
 		logout : logout
 	};
 	

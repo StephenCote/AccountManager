@@ -1,26 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
+    <meta charset="utf-8">
 <title>Insert title here</title>
    		<link rel="stylesheet" href="/AccountManagerService/Style/uwm.css" type="text/css" title = "uwm" />
    		<link rel="stylesheet" href="/AccountManagerService/Style/rocket.css" type="text/css" />
-
+		<link rel="stylesheet" href="/AccountManagerService/Style/flyout.css" type="text/css" />
 <script type = "text/javascript" src = "Scripts/bootstrap.jsp"></script>
 <script type = "text/javascript">
 function doLogout(){
 	AM6Client.logout(function(){ });
 }
 function doGoLogin(){
-	location.href = "/AccountManagerService/Protected/";
+	/// location.href = "/AccountManagerService/Protected/";
 }
 function login(sOrg, sName, sCred){
-	var cred = new org.cote.objects.credentialType();
-	cred.name = sName;
-	cred.credential = Base64.encode(sCred);
-	cred.organizationPath = sOrg;
-	cred.credentialType = "HASHED_PASSWORD";
-	AM6Client.login(cred,doGoLogin);
+	uwm.login(sOrg, sName, sCred,doGoLogin);
 }
 function doLogin(){
 	login("/FirstContact","test@foo.bar","password");
@@ -36,17 +31,42 @@ function doLogin4(){
 	login("/Development","Admin","password");
 }
 
+function switchForm(sForm){
+	var oS = Hemi.app.space.service.getPrimarySpace();
+	var oA = oS.getSpaceObjectByName("mainForm").object.getApplicationComponent();
+	oA.loadTemplate(sForm)
+}
 </script>
 
 </head>
 <body>
-<h1>Unprotected - Account Manager Service</h1>
-<div template = "Templates/ToolBar.xml"></div>
-<p><input type = "button" value = "Go Login" onclick = "doGoLogin()" /></p>
-<p><input type = "button" value = "Login - Admin" onclick = "doLogin4()" /></p>
-<p><input type = "button" value = "Login - test@foo.bar" onclick = "doLogin()" /></p>
-<p><input type = "button" value = "Login - Rocket QA User" onclick = "doLogin3()" /></p>
-<p><input type = "button" value = "Login - TestUser3" onclick = "doLogin2()" /></p>
-<p><input type = "button" value = "Logout" onclick = "doLogout()" /></p>
+<nav class="main-nav" id="main-nav">
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/Dashboard.xml')">Dashboard</a>
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/AssetMain.xml')">Assets</a>
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/BusinessMain.xml')">Business</a>
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/DevelopmentMain.xml')">Development</a>
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/EventMain.xml')">Events</a>
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/FormMain.xml')">Form</a>
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/IdentityMain.xml')">Identity</a>
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/MethodMain.xml')">Process</a>
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/ProjectMain.xml')">Project</a>
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/PolicyMain.xml')">Policy</a>
+	<a href="#" onclick = "switchForm('/AccountManagerService/Templates/ResourceMain.xml')">Resource</a>
+</nav>
+<div class = "page-wrap">
+	<header class = "main-header">
+	<a href="#main-nav" class="open-menu">
+      ☰
+    </a>
+    <a href="#" class="close-menu">
+      ☰
+    </a>
+    <h1>Account Manager Service</h1>
+    <div template = "/AccountManagerService/Forms/UnauthIn.xml"></div>
+  </header>
+    <div class="content">
+    	<div rid = "mainForm" style = "min-height:500px;" template = "/AccountManagerService/Templates/Dashboard.xml"></div>
+ 	 </div>
+</div>
 </body>
 </html>
