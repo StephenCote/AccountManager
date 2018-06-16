@@ -286,6 +286,7 @@
 	var sComm = sBase + "/community";
 	var sCred = sBase + "/credential";
 	var sPol = sBase + "/policy";
+	var sToken = sBase + "/token";
 	function getCache(){
 		return cache;
 	}
@@ -497,6 +498,10 @@
 	   return Hemi.xml.getJSON(sComm + "/new/" + sCommunityId + "/" + sProjectName,fH,(fH ? 1 : 0));
 	}
 	
+	function validateMaterialToken(sType,sT, fH){
+	   return Hemi.xml.getJSON(sToken + "/material/validate/" + sType + "/" + sT,fH,(fH ? 1 : 0));
+	}
+	
 	function get(sType,sObjectId,fH){
 		var o = getFromCache(sType, "GET", sObjectId);
 		if(o){
@@ -696,6 +701,7 @@
 		userPerson : getUserPersonObject,
 		currentOrganization : sCurrentOrganization,
 		newPrimaryCredential : newPrimaryCredential,
+		validateMaterialToken : validateMaterialToken,
 		clearCache : clearCache,
 		clearAuthorizationCache : function(fH){
 			return Hemi.xml.getJSON(sCache + "/clearAuthorization",fH,(fH ? 1 : 0));

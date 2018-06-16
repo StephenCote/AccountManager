@@ -27,6 +27,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.ServletContext;
@@ -48,19 +50,26 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.AuthenticationResponseEnumType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
@@ -78,6 +87,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Path("/token")
 public class TokenService {
 	public static final Logger logger = LogManager.getLogger(TokenService.class);
+	private static Pattern uidTokenPattern = Pattern.compile("^(\\d+)-(\\d+)-(\\d+)-(\\d+)-(\\d+)");
 
 	private static VaultService vaultService = new VaultService();
 	private static SchemaBean schemaBean = null;
@@ -179,6 +189,91 @@ public class TokenService {
 		return Response.status(outToken == null || outToken.length() == 0 ? 500 : 200).entity(outToken).build();
 	}
 	
+	
+	/// Material tokens are used primarily as a shared, limited access token related to FirstContact operations 
+	///
+	private boolean checkMaterialToken(String type, String token, HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.AUTHENTICATE, "validateCredential", AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
+		boolean outBool = false;
+		if(token == null || token.length() == 0){
+			AuditService.denyResult(audit, "Credential is missing");
+			return outBool;
+		}
+		try{
+			Matcher m = uidTokenPattern.matcher(token);
+			if(m.find() == false || m.groupCount() < 4){
+				AuditService.denyResult(audit, "Credential is not in an expected token format");
+				return false;
+			}
+			int orgId = Integer.parseInt(m.group(1));
+			int userId = Integer.parseInt(m.group(2));
+			int objId = Integer.parseInt(m.group(3));
+			logger.info("Parsing " + orgId + " " + userId + " " + type + " " + objId);
+			OrganizationType oOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
+			if(oOrg == null){
+				AuditService.denyResult(audit, "Invalid organization from id " + orgId);
+				return false;
+			}
+			UserType targUser = Factories.getNameIdFactory(FactoryEnumType.USER).getById(userId, oOrg.getId());
+			if(targUser == null){
+				AuditService.denyResult(audit, "Invalid user from id " + userId);
+				return false;
+			}
+			
+			FactoryEnumType ftype = FactoryEnumType.valueOf(type);
+			NameIdType obj = null;
+			
+			if(ftype == FactoryEnumType.GROUP){
+				obj = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(objId, oOrg.getId());
+			}
+			/*
+			/// Not supported at the moment
+			else if(ftype == FactoryEnumType.PERSON){
+				obj = ((GroupFactory)Factories.getFactory(FactoryEnumType.PERSON)).getById(objId, oOrg.getId());
+			}
+			 */
+			else{
+				AuditService.denyResult(audit, "Unsupported token type " + type);
+				return false;
+			}
+			if(obj == null){
+				AuditService.denyResult(audit, "Invalid group from id " + objId);
+				return false;
+			}
+			CredentialType currentCred = org.cote.accountmanager.data.security.CredentialService.getPrimaryCredential(obj);
+			if(currentCred == null){
+				AuditService.denyResult(audit, "Object does not define a credential");
+				return false;
+			}
+			if(org.cote.accountmanager.data.security.CredentialService.validatePasswordCredential(obj, currentCred, token)){
+				AuditService.permitResult(audit, "Validated credential");
+				outBool = true;
+				
+			}
+			else{
+				AuditService.denyResult(audit, "Failed to validate credential");
+				return false;
+			}
+
+
+			
+		}
+		catch (FactoryException | ArgumentException e) {
+			
+			logger.error("Error",e);
+		}
+		return outBool;
+	}
+	
+	@RolesAllowed({"api","user","admin"})
+	@GET
+	@Path("/material/validate/{type:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}/{token:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response validateMaterialToken(@PathParam("type") String type,@PathParam("token") String token,@Context HttpServletRequest request){
+		
+		return Response.status(200).entity(checkMaterialToken(type, token, request)).build();
+	}
+
 
 	
 	@POST

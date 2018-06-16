@@ -1,0 +1,151 @@
+<Template>
+<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	<!--
+	<span template = "/AccountManagerService/Forms/Profile.xml"></span>
+	-->
+	<div class = "rocket-column-2">
+		<p >
+			Make Contact:
+		</p>
+		<p >
+			<img rid = "btnAlert" style = "border:1px dotted transparent;margin:0px;padding:0px;" src = "/AccountManagerService/Media/Icons/emergency_100x100.png" width = "100" height = "100" title = "Alert!" />
+			<!--
+			<br />
+			<input style = "width:100px;font:14pt Arial;margin:0px;padding:0px;" type = "text" class = "rocket-text" rid = "alertToken" />
+			-->
+		</p>
+	</div>
+	<div class = "rocket-column-2" rid = "credentialContainer">
+		<p>
+			Emergency Token:
+		</p>
+		<p>
+			<input type = "button" class = "rocket-button" value = "Reset Token" onclick = "${this}.resetCredential()" />
+			<input type = "button" class = "rocket-button" value = "Validate" onclick = "${this}.validateToken()" />
+		</p>
+		<p style = "float:none;margin-left: 145px !important;">An emergency token allows non-members to notify your contacts</p>
+	</div>
+	<div class = "rocket-column-2">
+		<p >
+			Upload:
+		</p>
+		<p >
+			<import-xml src = "/AccountManagerService/Forms/DndFormFragment.xml" id = "DndFormFragment" />
+			<br />
+			<a href = "/AccountManagerService/Templates/FirstContactTemplate.xlsx" target = "_blank">Contact Template</a>
+			<br />
+			<b>Note:</b> The uploaded file name must end with <i>FirstContactTemplate.xlsx</i> or <i>FirstContactTemplate.csv</i>
+			
+		</p>
+	</div>
+
+	<div class = "rocket-column-2">
+		<p >
+			Template:
+		</p>
+		<p >
+			<a href = "/AccountManagerService/Templates/FirstContactTemplate.xlsx" target = "_blank">Download FirstContact Template</a>
+		</p>
+	</div>
+	<p style = "clear:both;font-size:0px;margin:0px;"></p>
+	
+	<import-xml src = "/AccountManagerService/Forms/Fragments/StatusFrag.xml" id = "StatusFrag" />
+
+
+
+<embedded-script><![CDATA[
+	template_init : function(){
+		this.scopeHandler("picker_loaded", 0, 0, 1);
+		this.GetElementByRID("dndPath").placeholder = "~/Data";
+		this.GetElementByRID("dndPathCont").style.display = "none";
+		this.resizeDndTarget(100,100);
+		this.GetElementByRID("uploadprogress").style.display = "none";
+		this.getProperties().dndHandler = "handleDnd";
+		this.setStatus("Drag a list of contacts into the target area");
+		this.GetElementByRID("btnAlert").onmouseover = function(e){
+			var o = Hemi.event.getEventSource(e);
+			o.style.border = "1px solid #00FF00";
+		};
+		this.GetElementByRID("btnAlert").onmouseout = function(e){
+			var o = Hemi.event.getEventSource(e);
+			o.style.borderColor = "transparent";
+		};
+
+	},
+	template_destroy : function(){
+		this._prehandle_picker_loaded = 0;
+	},
+	_handle_picker_loaded: function (v) {
+	    v.resizeTo(475, 450);
+
+		v.GetComponentByRID("typelist").GetWideSelect().getContainer().style.height = "340px";
+       },
+
+ 
+	handleDnd : function(){
+		AM6Client.clearCache("DATA",1);
+		this.setStatus("Upload complete");
+		
+	},
+	/// Need to make this a fragment since it's starting to get repeated for non BaseType forms
+	///
+	toggleField : function(l, n){
+		var lbl =  this.GetElementByRID(l);//(typeof l == "string" ? this.GetElementByRID(l) : l);
+		var cnt =  this.GetElementByRID(n);//(typeof n == "string" ? this.GetElementByRID(n) : n);
+		var b = cnt.mark;
+		var s = (b ? "[ - ]" : "[ + ]");
+		var d = (b ? "block" : "none");
+		cnt.mark = (b ? 0 : 1);
+		Hemi.xml.setInnerXHTML(lbl,s);
+		cnt.style.display = d;
+		if(!lbl.mark){
+			var ctl = this;
+			lbl.mark = 1;
+			var sL = l;
+			var sN = n;
+			lbl.onclick = function(){
+				ctl.toggleField(sL,sN);
+				ctl.resizeForm();
+			};
+		}
+		//this.resizeForm();
+	},
+	handleOpenCredential : function(oW){
+		
+	},
+	validateToken : function(){
+		this.pickText(this,"Token","validateTokenValue","");
+	},
+	validateTokenValue : function(s){
+		if(!s || s.length == 0) return;
+		var b = AM6Client.validateMaterialToken("GROUP",s);
+		if(b) this.setStatus("Token is valid");
+		else this.setStatus("Token is not valid");
+		
+	},
+	resetCredential : function(){
+		var o = AM6Client.find("GROUP","DATA","~/Persons");
+		/// Using anything other than a USER or GROUP for a credential attachment is not supported at the moment
+		///
+		/// AM6Client.userPerson();
+		var oProps = {openerId:this.getObjectId(),viewType:o,tokenMode:1,materialToken:1};
+		var oW = Hemi.app.createWindow(o.name + " Credentials", "/AccountManagerService/Forms/CredentialForm.xml", "Credential-" + o.id, 0, 0, oProps, this.scopeHandler("handleOpenCredential",0,1,1));
+           if (oW) {
+           	oW.resizeTo(475, 400);
+           	Hemi.app.getWindowManager().CenterWindow(oW);
+           	oW.setHideOnClose(0);
+           }
+	
+	},
+	pickText : function(o,sL,sH, sDV){
+		var oW = Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","ValidateToken",0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()});
+		if(!oW) return;
+		oW.setHideOnClose(0);
+		oW.resizeTo(475,100);
+		oW.center();
+		oW.setIsModal(true);
+		oW.hideButtons();
+	}
+	
+]]></embedded-script>
+</Template>

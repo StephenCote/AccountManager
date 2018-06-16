@@ -1,0 +1,240 @@
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+	
+<div class = "uwm-box-border uwm-content">
+	<import-xml src = "Fragments/TabTools.xml" id = "TabTools" />
+	<p style = "clear:both;font-size:0px;margin:0px;"></p>
+	<span rid = "tabs">
+	<div rid = "activity">
+	</div>
+	<div rid = "person">
+	</div>
+	<div rid = "role">
+	</div>
+	</span>
+	<import-xml src = "/AccountManagerService/Forms/Fragments/StatusFrag.xml" id = "StatusFrag" />
+</div>
+<embedded-script><![CDATA[
+	template_init : function(){
+		if(!uwm.rule("IsLoggedIn")){
+			this.refreshSession(0);
+		}
+		else{
+			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_session_refresh");
+			this.AddTab("activity","Activities",this.scopeHandler("loadActivitiesTab",0,1,1));
+			this.AddTab("person","Persons",this.scopeHandler("loadPersonsTab",0,1,1));
+			this.AddTab("role","Roles",this.scopeHandler("loadRolesTab",0,1,1));
+			this.scopeHandler("load_object_tab",0,0,1);
+
+			this.ShowTab(0);
+			this.loadActivitiesTab();
+			
+			this.checkDefaultConfig();
+		}
+	},
+	newData : function(sName, sDesc, sMime, sData, sPath){
+		var o = new org.cote.objects.dataType();
+		o.name = sName;
+		o.blob = true;
+		o.nameType = "DATA";
+		o.dataBytesStore = uwm.base64Encode(sData);
+		o.groupPath = sPath;
+		o.mimeType = sMime;
+		o.description = sDesc;
+		o.id = 0;
+		o.createdDate = new Date();
+		o.modifiedDate = o.createdDate;
+		o.expiryDate = o.createdDate;
+		return o;
+	},
+	newRole : function(sName, sType, oPar){
+		var o = new org.cote.objects.baseRoleType();
+		o.id = 0;
+		o.name = sName;
+		o.parentId = oPar.id;
+		o.nameType = "ROLE";
+		o.roleType = sType;
+		return o;
+	},
+	checkDefaultConfig : function(){
+
+		var oP = uwm.getUser();
+		var bConf = AM6Client.getAttributeValue(oP,"first-contact-v1-config","false");
+		window.dbg = bConf;
+		if(bConf.match(/^false$/gi)){
+		
+			var sDEmail = "[h1]Unfortunate News[/h1][div]It is with a heavy heart that ${informant} has indicated ${myname} passed away. ${informant} shares this information: ${tidings}. Understanding many will want to reach out to lend and receive support, and find out more information, please direct your questions to ${primary}.[/div]";
+			var sBEmail = "[h1]My Unfortunate News[/h1][div]It is with a heavy heart that I have passed away. ${informant} shares this information: ${tidings}. Understanding many will want to reach out to lend and receive support, and find out more information, please direct your questions to ${primary}.[/div]";
+			var sMEmail = "[h1]My Medical News[/h1][div]You are receiving this message because I have become incapacitated due to a medical condition. ${informant} shares this information: ${tidings}. Understanding many will want to reach out to lend and receive support, and find out more information, please direct your questions to ${primary}.[/div]";
+			var sDText = "First Contact: ${myname} has passed away";
+			var sBText = "First Contact: ${myname} has passed away";
+			var sMText = "First Contact: ${myname} is in the hospital";
+			var oD = AM6Client.find("GROUP","DATA","~/Data");
+			AM6Client.update("DATA", this.newData("BEREAVEMENT Email", "Template for bereavement email", "text/plain", sBEmail, oD.path));
+			AM6Client.update("DATA", this.newData("DEATH Email", "Template for death email", "text/plain", sDEmail, oD.path));
+			AM6Client.update("DATA", this.newData("MEDICAL Email", "Template for medical email", "text/plain", sMEmail, oD.path));
+			AM6Client.update("DATA", this.newData("BEREAVEMENT Text", "Template for bereavement text", "text/plain", sBText, oD.path));
+			AM6Client.update("DATA", this.newData("DEATH Text", "Template for death text", "text/plain", sDText, oD.path));
+			AM6Client.update("DATA", this.newData("MEDICAL Text", "Template for medical text", "text/plain", sMText, oD.path));
+
+			var oParent = uwm.getDefaultParentForType("Role",AM6Client.user("ROLE","USER"));
+			AM6Client.update("ROLE",this.newRole("Primary Contacts", "PERSON", oParent));
+			AM6Client.update("ROLE",this.newRole("Secondary Contacts", "PERSON", oParent));
+			AM6Client.addAttribute(oP,"first-contact-v1-config","true");
+			AM6Client.update("USER",oP);
+		}
+	},
+	provideSelectItem : function(o){
+		if(!o.nameType && o.data) o = o.data;
+		if(!o.nameType.match(/^(role|person)$/gi)) return;
+		var v = this.GetElementByRID("tab-" + o.id);
+		if(!v || v == null){
+			if(!o.populated) o = AM6Client.get(o.nameType, o.id);
+			this.provideOpenItem(o);
+		}
+		else this.ShowTab(v.tab_index);
+	},
+	provideOpenItem : function(o){
+		var v = this.GetElementByRID("tab-" + o.id);
+		if(v && v!=null) this.provideSelectItem(o);
+		else this.newTab(o);
+	},
+	closeRole : function(c, o){
+		return this.closePerson(c,o,1);
+	},
+	closePerson : function(c, o,b){
+		var v = this.GetElementByRID("tab-" + o.id);
+		/// Need to destroy the underlying XHTML component 
+		/// which isn't returned via getComponentByRID, because that's the application component
+		/// but not when it's only an XHTMLComponent
+		/// 
+		var vc =this.getTemplateSpace().getSpaceObjectByName("tab-" + o.id);
+		if(vc && vc.object) vc = vc.object;
+		if(!v || v == null) return;
+		this.ShowTab((b?2:1));
+		c.destroy();
+		
+		if(v.tab_index){
+			var t = this.getObjects().tabs[v.tab_index].tab;
+			t.parentNode.removeChild(t);
+			this.getObjects().tabs[v.tab_index] = null;
+		}
+		
+		if(vc) vc.destroy();
+	},
+	handleOpenPersonList : function(o){
+		if(o.resizeList) o.resizeList();
+		var aH = ["button_delete","button_new","button_open","button_design","path","button_spacer_1","button_spacer_2"];
+		for(var i = 0; i < aH.length; i++){
+			c = o.GetElementByRID(aH[i]);
+			if(!c) alert("invalid: " + aH[i]);
+			else o.GetElementByRID(aH[i]).style.display = "none";
+		}
+	},
+	handleOpenPerson : function(o){
+		/// Hide all the fields we're not interested in using
+		///
+		if(!o.GetElementByRID) return;
+		var aH = ["btnFact","aliasCont","suffixCont","genderCont","attributePicker","accountPicker","userPicker","personPicker","pathCont","descriptionCont","titleCont","prefixCont"],c;
+		for(var i = 0; i < aH.length; i++){
+			c = o.GetElementByRID(aH[i]);
+			if(!c) alert("invalid: " + aH[i]);
+			else o.GetElementByRID(aH[i]).style.display = "none";
+		}
+		/// Toggle open the contact field
+		///
+		o.toggleField("contactPickerToggle","contactPickerContent");
+	},
+	newTab : function(o){
+		this.getObjects().ctxObj = o;
+		var oD = document.createElement("div");
+		oD.setAttribute("rid","tab-" + o.id);
+		var oT = this.GetElementByRID("tabs");
+		oT.appendChild(oD);
+	   	this.extendSpaceConfiguration(oT.childNodes[oT.childNodes.length-1]);
+	   	this.AddTab("tab-" + o.id,o.name,this._prehandle_load_object_tab);
+	   	this.ShowTab(this.getObjects().tabs.length-1);
+	   	this._handle_load_object_tab(oD);
+	},
+	_handle_load_object_tab : function(s,o){
+		var ctx = this.getObjects().ctxObj;
+		if(!ctx) return;
+		delete this.getObjects().ctxObj;
+		
+		var c = this.GetElementByRID("tab-" + ctx.id);
+		if(c.loaded) return;
+		c.loaded = 1;
+		
+		var oDiv = document.createElement("div");
+		c.appendChild(oDiv);
+		var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
+		ac.setTemplateIsSpace(1);
+		ac.getProperties().openerId = this.getObjectId();
+		ac.getProperties().viewType = ctx;
+		
+		if(ctx.nameType == "PERSON"){
+			ac.provideClose = this.scopeHandler("closePerson",0,1,1);
+			ac.local_template_init = this.scopeHandler("handleOpenPerson",0,1,1);
+			ac.loadTemplate("/AccountManagerService/Forms/Person.xml");
+		}
+		else if(ctx.nameType == "ROLE"){
+			ac.provideClose = this.scopeHandler("closeRole",0,1,1);
+			ac.loadTemplate("/AccountManagerService/Forms/Role.xml");
+		}
+
+
+	},
+	template_destroy : function(){
+		Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_session_refresh");
+	},
+	loadActivitiesTab : function(o){
+		this.loadTab("Activity",o);
+	},
+	loadPersonsTab : function(o){
+		this.loadTab("Person",o);
+	},
+	loadRolesTab : function(o){
+		this.loadTab("Role",o);
+	},
+	loadTab : function(s, o){
+		var c = this.GetElementByRID(s.toLowerCase());
+		if(c.loaded) return;
+		c.loaded = 1;
+		
+		var oDiv = document.createElement("div");
+		c.appendChild(oDiv);
+		var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
+		ac.setTemplateIsSpace(1);
+		ac.getProperties().openerId = this.getObjectId();
+		if(s.match(/^(person|role)$/gi)){
+			//ac.getProperties().defaultPath = "~/Persons";
+			ac.decorateListItemName = this.decoratePersonItem;
+			ac.provideOpenItem = this.scopeHandler("provideOpenItem",0,1,1);
+			ac.provideSelectItem = this.scopeHandler("provideSelectItem",0,1,1);
+			ac.local_template_init = this.scopeHandler("handleOpenPersonList",0,1,1);
+			ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+		}
+		else if(s.match(/^activity$/gi)){ 
+			ac.loadTemplate("/AccountManagerService/Templates/AlertActivities.xml");
+		}
+		
+	},
+	decoratePersonItem : function(o){
+		/*
+		var sF = accountManager.getAttributeValue(o,"firstName");
+		var sM = accountManager.getAttributeValue(o,"middleName");
+		var sL = accountManager.getAttributeValue(o,"lastName");
+		if(sF || sM || sL) return (sF ? sF : "") + (sM ? " " + sM : "") + (sL ? " " + sL : "");
+		*/
+		return o.name;
+	},
+	refreshSession : function(b){
+		if(typeof b == "undefined") b = uwm.rule("IsLoggedIn");
+		if(!b) this.loadTemplate("/AccountManagerService/Forms/UnauthMain.xml");
+	},
+	handle_session_refresh : function(s,v){
+		this.refreshSession();
+	}
+	
+]]></embedded-script>
+</Template>

@@ -61,4 +61,44 @@
 			<extension base="tns:BaseSpoolType"></extension>
 		</complexContent>
 	</complexType>
+	
+	
+	    <simpleType name="AlertEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="MEDICAL"></enumeration>
+    		<enumeration value="DEATH"></enumeration>
+    		<enumeration value="BEREAVEMENT"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="QueueLevelEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="NONE"></enumeration>
+    		<enumeration value="EVENT"></enumeration>
+    		<enumeration value="REMAINDER"></enumeration>
+    		<enumeration value="PRIMARY"></enumeration>
+    		<enumeration value="SECONDARY"></enumeration>
+    		<enumeration value="TERTIARY"></enumeration>
+    		<enumeration value="QUARTERNARY"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="QueueStatusEnumType">
+    	<restriction base="string">
+    		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="EMPTY"></enumeration>
+    		<enumeration value="PRIMED"></enumeration>
+    		<enumeration value="POPULATED"></enumeration>
+    		<enumeration value="ACTIVE"></enumeration>
+    		<enumeration value="ERROR"></enumeration>
+    		<enumeration value="PRIMED_ERROR"></enumeration>
+    		<enumeration value="POPULATED_ERROR"></enumeration>
+    		<enumeration value="ACTIVE_ERROR"></enumeration>
+    		<enumeration value="DIRTY"></enumeration>
+    		<enumeration value="FLUSHED"></enumeration>
+    	</restriction>
+    </simpleType>
+	
 </schema>

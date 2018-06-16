@@ -70,10 +70,20 @@
   <description>Maintenance Jobs</description>
   <param-name>maintenance.jobs</param-name>
   <!-- 
+  /// Optional for periodic orphan cleanup
+  ///
   org.cote.accountmanager.data.services.DatabaseMaintenance,
   org.cote.rocket.services.RocketDatabaseMaintenance,
+  /// Optional for FirstContact message processing and contact imports
+  ///
+  org.cote.accountmanager.data.services.DataImportJob,
+  org.cote.accountmanager.data.services.QueueProcessorJob,
+  /// Recommended: Audit, Session, and Application import jobs
+  org.cote.accountmanager.data.services.AuditDataMaintenance,
+  org.cote.accountmanager.data.services.SessionDataMaintenance,
+  org.cote.rocket.services.ApplicationImportService
    -->
-  <param-value>org.cote.accountmanager.data.services.AuditDataMaintenance,org.cote.accountmanager.data.services.SessionDataMaintenance,org.cote.rocket.services.ApplicationImportService</param-value>
+  <param-value>org.cote.accountmanager.data.services.DataImportJob,org.cote.accountmanager.data.services.QueueProcessorJob,org.cote.accountmanager.data.services.DatabaseMaintenance,org.cote.rocket.services.RocketDatabaseMaintenance,org.cote.accountmanager.data.services.AuditDataMaintenance,org.cote.accountmanager.data.services.SessionDataMaintenance,org.cote.rocket.services.ApplicationImportService</param-value>
   </context-param>
  	 <context-param>
     <description>Database Connection Type</description>
