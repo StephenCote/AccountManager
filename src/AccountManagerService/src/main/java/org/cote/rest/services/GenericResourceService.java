@@ -197,7 +197,7 @@ public class GenericResourceService {
 		if(cls != null){
 			NameIdType obj = (NameIdType)JSONUtil.importObject(json, cls);
 			if(obj != null){
-				if(obj.getObjectId() == null || obj.getObjectId().length() == 0){
+				if(obj.getObjectId() == null || obj.getObjectId().length() == 0 || obj.getObjectId().equalsIgnoreCase("undefined")){
 					updated = BaseService.add(auditType, obj, request);
 				}
 				else{
