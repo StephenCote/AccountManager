@@ -42,7 +42,7 @@
 			},
 			DoLogout : function(){
 				window.uwm.logout();
-				window.uwm.operation("ContinueWorkflow",{opener:this.getObjectId()});
+				/// window.uwm.operation("ContinueWorkflow",{opener:this.getObjectId()});
 			},
 			DoGallery : function(){
 				var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");

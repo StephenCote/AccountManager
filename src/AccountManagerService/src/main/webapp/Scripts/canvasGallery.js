@@ -799,7 +799,7 @@
 				window.uwm.logout();
 				window.uwm.operation("ContinueWorkflow");
 				*/
-				doLogout();
+				if(typeof doLogout == "function") doLogout();
 				this.destroy();
 			},
 			exit : function(){

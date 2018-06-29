@@ -121,7 +121,10 @@
 			logout : function(){
 				var b = AM6Client.logout();
 				Hemi.message.service.publish("onsessionrefresh", null);
-				if(doLogout) doLogout();
+
+				if(typeof doLogout == "function"){
+					doLogout();
+				}
 				return b;
 			},
 			getApi : function(sType){
@@ -201,24 +204,28 @@
 	            	oW.setHideOnClose(0);
 	            }
 			},
-			openPopInImage : function(sUrl){
+			openPopInImage : function(sUrl, sMimeType, bVid, bDirect, oCont){
 				var i1, i2, i3;
 				if((i1 = sUrl.indexOf("/media/") )== -1 || (i2 = sUrl.indexOf("/Data/")) == -1){
 					Hemi.logError("Invalid URL: " + sUrl);
 					return;
 				}
+				if(!bDirect) bDirect = bVid;
 				var sOrgPath = sUrl.substring(i1 + 6,i2);
 				var oOrg = AM6Client.find("ORGANIZATION","UNKNOWN",sOrgPath);
 				var sPath = sUrl.substring(i2 + 5,sUrl.length);
 				var sName = sPath.substring((i3 = sPath.lastIndexOf("/")) + 1, sPath.length);
-				var iX = parseInt(Math.min(document.documentElement.clientWidth,document.documentElement.clientHeight) * .8);
-				var sMediaUrl = "/AccountManagerService/thumbnail" + sOrgPath + "/Data" + sPath + "/" + iX + "x" + iX;
+				if(!oCont) oCont = document.documentElement;
+				var iX = parseInt(Math.min(oCont.clientWidth,oCont.clientHeight) * .8);
+				var sMediaUrl = "/AccountManagerService/" + (bDirect ? "media" : "thumbnail") + sOrgPath + "/Data" + sPath + (bDirect ? "" : "/" + iX + "x" + iX);
 				var vProps = {
 					media_name : sName,
 					media_id : "N/A",
 					media_url: sMediaUrl,
 					maxWidth : iX,
-					maxHeight : iX
+					maxHeight : iX,
+					video : bVid,
+					mimeType : sMimeType
 				};
 				Hemi.app.createWindow(sName,"/AccountManagerService/Forms/ImageViewer.xml",sUrl,0,0,vProps,function(oW){
 					oW.setIsModal(1);

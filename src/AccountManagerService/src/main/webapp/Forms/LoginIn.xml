@@ -2,9 +2,19 @@
 <Template>
 <import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 <div rid = "cntLogin" style = "display:none;">
-<input type = "text" class = "rocket-text rocket-text-short" rid = "organization_path" value = "/Public" />
-<input type = "text" class = "rocket-text rocket-text-short" rid = "user_name" />
-<input type = "password" class = "rocket-text rocket-text-short" rid = "password" />
+
+<select onchange = "${this}.toggleChoose()" rid = "organization_path" class = "rocket-select rocket-select-shorter">
+<option value = "_choose_">Specify ...</option>
+<option value = "/Development">Development</option>
+<option value = "/FirstContact">FirstContact</option>
+<option value = "/Public" selected = "true">Public</option>
+<option value = "/Accelerant/Rocket">Rocket</option>
+</select>
+<span rid = "chooseCont" style = "display: none;">
+<input type = "text" class = "rocket-text rocket-text-shorter" rid = "organization_choose_path" value = "/Public" />
+</span>
+<input type = "text" class = "rocket-text rocket-text-shorter" rid = "user_name" />
+<input type = "password" class = "rocket-text rocket-text-shorter" rid = "password" />
 <img valign = "middle" rid = "btnLogin" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/user-auth.png" onclick = "${this}.doLogin()" width = "24" height = "24" alt = "Crystal SVG Icon - User Auth" />
 </div>
 	<embedded-script>
@@ -35,6 +45,10 @@
 				
 			}
 		},
+		toggleChoose : function(){
+			var sV = this.GetElementByRID("organization_path").value;
+			this.GetElementByRID("chooseCont").style.display = (sV.match(/^_choose_$/) ? "" : "none");
+		},
 		template_destroy:function(){
 			this._prehandle_input_keypress = null;
 		},
@@ -45,6 +59,7 @@
 		doLogin : function(){
 			if(!this.Validate()) return;
 			var sOrg = this.GetFormValue("organization_path");
+			if(sOrg.match(/^_choose_$/)) sOrg = this.GetFormValue("organization_choose_path");
 			var sName = this.GetFormValue("user_name");
 			var sPassword = this.GetFormValue("password");
 			this.GetElementByRID("user_name").disabled = true;

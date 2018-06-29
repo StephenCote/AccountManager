@@ -90,3 +90,9 @@ textarea.rocket-text-short
 input.rocket-text-short{
 	width: 75px !important;
 }
+input.rocket-text-shorter{
+	width: 10em !important;
+}
+.rocket-select-shorter{
+	width: 10em !important;
+}

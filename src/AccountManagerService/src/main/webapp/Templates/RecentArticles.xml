@@ -4,6 +4,7 @@
 <embedded-script><![CDATA[
 	template_init : function(){
 		var ctl = this;
+		if(!uwm.rule("IsLoggedIn")) return; 
 		var oS = new org.cote.objects.baseSearchRequestType();
 		oS.sort = new org.cote.objects.sortQueryType();
 		oS.sort.sortOrder = "DESCENDING";

@@ -95,6 +95,12 @@
 			if(oSel.selectedIndex == -1) oSel.value = "binary";
 			this.displayData();
 			this.changeDataType();
+
+			if(this.getProperties().autoDisplay){
+				this.loadDetailData();
+				/// this.GetElementByRID("textData").focus();
+				this.showTextFloat();
+			}
 			this.updateURL();
 			//this.local_handle_resize = this.resizers;
 			
@@ -208,6 +214,7 @@
 		},
 		loadDetailData : function(){
 			var o = this.getBean("rocketType");
+			if(!o.detailsOnly) return;
 			o = AM6Client.get("DATA",o.objectId);
 			if(o != null){
 				this.clearBean("rocketType");
