@@ -74,11 +74,13 @@
 						Hemi.log("Profile: " + sPid + " / Text: " + sTid);
 				    	if(sPid && sPid.length > 0){
 					    	AM6Client.get("DATA",sPid,function(s,v){
+					    		/// TODO: There's an issue here where if the attribute reference is invalid (ie: the object was deleted) it's not being caught here
 						    	if(v && v.json) v = v.json;
-						    	if(!v || v == null){
+						    	if(!v || v == null || !v.nameType){
 						    		return;
 						    	}
 						    	var o = v;
+								
 						    	var oG = o.groupPath;
 								var sOrg = AM6Client.dotPath(o.organizationPath);
 								var sThumbUrl = "/AccountManagerService/thumbnail/" + sOrg + "/Data" + oG + "/" + o.name + "/100x100";

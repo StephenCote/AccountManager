@@ -6,8 +6,8 @@
 	-->
 	</div>
 	
-	<div class = "uwm-box-border uwm-content" rid = "profileCont" template = "/AccountManagerService/Forms/Profile.xml"></div>
-	<div class = "uwm-box-border uwm-content" rid = "articleCont" template = "/AccountManagerService/Templates/RecentArticles.xml"></div>
+	<div class = "uwm-box-border uwm-content" rid = "profileCont" template = "/AccountManagerService/Templates/Blank.xml"></div>
+	<div class = "uwm-box-border uwm-content" rid = "articleCont" template = "/AccountManagerService/Templates/Blank.xml"></div>
 	<!--
 	<div rid = "galleryContainer" style = "display:none;height: 500px;width:100%;border: 1px dotted #CFCFCF;">
 	</div>
