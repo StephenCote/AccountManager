@@ -19,13 +19,18 @@
 
 				ctl = Hemi.newObject("Console","1.0",true,true,{
 					object_create : function(){
-						var _s = this.getProperties();
+						var _s = this.getProperties(), _o = this.getObjects();
 						_s.iconView = 1;
-						this.getObjects().history = [];
-						this.getProperties().historyIndex = 0;
+						_s.maximize = 1;
+						_o.history = [];
+						_s.historyIndex = 0;
+						_o.use = [];
+						_o.useMap = {};
 						Hemi.event.addScopeBuffer(this);
 						this.scopeHandler("keydown",0,0,1);
 						this.scopeHandler("session_refresh",0,0,1);
+						this.scopeHandler("window_resize",0,0,1);
+						Hemi.event.addEventListener(window,"resize",this._prehandle_window_resize);
 						Hemi.message.service.subscribe(this, "onsessionrefresh", "_prehandle_session_refresh");
 						Hemi.message.service.subscribe(this, "onbuffercommitted", "handle_buffer_commit", this.getList());
 						document.getElementById("commandLine").onkeydown = this._prehandle_keydown;
@@ -35,13 +40,32 @@
 					
 					object_destroy : function(){
 						Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_session_refresh");
+						Hemi.message.service.unsubscribe(this, "onbuffercommitted", "handle_buffer_commit", this.getList());
+						Hemi.event.removeEventListener(window,"resize",this._prehandle_window_resize);
+					},
+					_handle_window_resize : function(){
+						this.resizeFrame();
+					},
+					resizeFrame : function(w, h){
+						if(!h && this.getProperties().maximize){
+							/// Drop the list size down temporarily
+							this.getList().getContainer().style.height = "50px";
+							h = (document.getElementById("contentContainer").parentNode.clientHeight - document.getElementById("contentContainer").offsetTop - document.getElementById("commandContainer").offsetHeight) + "px";
+							//alert(h + "/" + (document.body.clientHeight - document.getElementById("contentContainer").offsetTop) );
+						}
+						if(w) document.getElementById("typelist").style.width = w;;
+						if(h){
+							
+							document.getElementById("typelist").style.height = h;
+						}
+						this.getList().getContainer().style.height = document.getElementById("typelist").clientHeight + "px";
+						
 					},
 					configList : function(s, v){
 						this.addLine("Account Manager Service 5.6","_avoid");
 						this.addLine("Simple Shell 1.0","_avoid");
 						this.refreshDisplay();
 						var oL = this.getList();
-						oL.getContainer().style.height = document.getElementById("typelist").clientHeight + "px";
 						oL.setAutoScroll(1);
 						var oC = this;
 						oL.setResultHandler(function(s,v){
@@ -51,6 +75,8 @@
 							}
 							//window.dbg = v;
 						});
+						setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').resizeFrame()",50);
+
 						/// oL.setAutoSelect(1);
 					},
 					viewObject : function(o){
@@ -103,6 +129,25 @@
 						if(!o || !o.object) return 0;
 						return o.object.getApplicationComponent();
 					},
+					peek : function(c, s){
+						var _o = this.getObjects(), a = [],p,r,sP;
+						if(c.match(/^(ls|cd)$/)){
+							sP = s.substring(0,s.lastIndexOf("/"));
+							this.processCommand("ls -hide " + sP, 1);
+							s = s.substring(s.lastIndexOf("/") + 1, s.length);
+						}
+						p = new RegExp("^" + s);
+						a = _o.currentGroupList;
+						if(!c.match(/^(ls|cd)$/)) a = a.concat(_o.currentDataList);
+						for(i = 0; i < a.length; i++){
+							if(a[i].name.match(p)){
+								r = a[i].name;
+								break;
+							}
+						}
+						if(r && sP) r = sP + "/" + r;
+						return r;
+					},
 					_handle_keydown : function(e){
 						e = Hemi.event.getEvent(e);
 						var oS = Hemi.event.getEventSource(e), _s = this.getProperties(); _o = this.getObjects();
@@ -113,6 +158,12 @@
 								var aC = this.parseCommand(document.getElementById("commandLine").value.trim());
 								if(this.peekCommands.includes(aC[0])){
 									Hemi.event.cancelEvent(e);
+									var sPeek = this.peek(aC[0], aC[aC.length-1]);
+									if(sPeek){
+										var sCmd = document.getElementById("commandLine").value;
+										sCmd = sCmd.substring(0,sCmd.lastIndexOf(" ") + 1) + sPeek;
+										document.getElementById("commandLine").value = sCmd;
+									}
 									return false;
 								}
 								break;
@@ -147,22 +198,50 @@
 								return false;
 								break;
 							default:
-								Hemi.log(e.keyCode);
+								// Hemi.log(e.keyCode);
 								break;
 						}
 						
 					},
 					parseCommand : function(s){
 						var aS;
-						if(!s || (aS = s.match(/[@\w\.\-\~\/]+|"[^"]+"/g)) == null) return [];
+						if(!s || (aS = s.match(/[\(\)\$@\w\.\-\~\/]+|"[^"]+"/g)) == null) return [];
 						return aS;
 					},
 					isCommand : function(s){
 						var aS = this.parseCommand(s);
 						return (this.commands[aS[0]] ? 1 : 0);
 					},
+					useCommand : function(aS, ix){
+						var _o = this.getObjects(),o,ues = /^\$(\d+)\./,sC;
+						if(!(o = _o.use[ix])){
+							this.addLine("Unknown use index '" + ix + "'");
+							return;
+						}
+						if(aS[0].match(ues)){
+							sC = aS[0].replace(ues,"");
+							/// Method
+							if(sC.match(/\(/)){
+								if(sC.match(/^view/)){
+									this.viewObject(o);
+								}
+							}
+							else{
+								this.addLine(o[sC]);	
+							}
+						}
+						else{
+							
+							for(var i in o){
+								if(o[i]) this.addLine("(" + (typeof o[i]) + ") " +  i + " = " + o[i]);
+							}
+						}
+						
+						
+					},
 					processCommand : function(s, bHide){
-						var aS = this.parseCommand(s), bAuth = (this.getObjects().user ? 1 : 0);
+						var aS = this.parseCommand(s), bAuth = (this.getObjects().user ? 1 : 0), ue = /^\$(\d+)/, m;
+						
 						if(!aS.length){
 							return;
 						}
@@ -182,8 +261,13 @@
 							this.addLine("Not authenticated");
 							return;
 						}
-						if(!this.commands[aS[0]]){
-							this.addLine("Unknown command: " + aS[0]);
+						if(!this.commands[aS[0]] || this.commands[aS[0]] == null){
+							if( (m = s.match(ue)) && m.length >= 2 ){
+								this.useCommand(aS, parseInt(m[1])-1);
+							}
+							else{
+								this.addLine("Unknown command: " + aS[0]);
+							}
 							return;
 						}
 						this.commands[aS[0]].apply(this,aS.slice(1));
@@ -191,6 +275,10 @@
 					
 					},
 					_handle_session_refresh : function(s,v){
+						if(!v || v == null){
+							this.processCommand("clearHistory", 1);
+							this.processCommand("clear", 1);
+						}
 						this.refreshDisplay();
 					},
 					refreshDisplay : function(){
@@ -287,8 +375,8 @@
 							});
 						},
 						logout : function(){
-							this.processCommand("clearHistory", 1);
-							this.processCommand("clear", 1);
+							// this.processCommand("clearHistory", 1);
+							// this.processCommand("clear", 1);
 							var b = uwm.logout();
 							if(b) this.addLine("Good bye!");
 							delete this.getObjects().currentGroup;
@@ -302,6 +390,10 @@
 								this.addLine(i);
 							}
 						},
+						clearUse : function(){
+							this.getObjects().use.length = 0;
+							this.getObjects().useMap = {};
+						},
 						clear : function(){
 							this.getList().clearItems();
 						},
@@ -314,6 +406,35 @@
 						history : function(){
 							var aH = this.getObjects().history;
 							for(var i = 0; i < aH.length; i++) this.addLine(aH[i]);
+						},
+						use : function(sOpt){
+							
+							if(!sOpt){
+								this.addLine("Syntax: use pattern");
+								return;
+							}
+							var _o = this.getObjects(), a, o, ix;
+							a = _o.currentDataList.concat(_o.currentGroupList);
+							ix = _o.use.length;
+							for(var i = 0; i < a.length; i++){
+								if(a[i].name == sOpt){
+									o = a[i];
+									break;
+								}
+							}
+							if(o){
+								if(typeof _o.useMap[o.objectId] != "undefined"){
+									this.addLine("Alreading using " + o.objectId);
+								}
+								else{
+									_o.use[ix] = o;
+									_o.useMap[o.objectId] = ix;
+									this.addLine("Using " + o.name + " (" + o.objectId + ") as $" + (ix + 1));
+								}
+							}
+							else{
+								this.addLine("Object not found");
+							}
 						},
 						ls : function(bOpt){
 							var sP = this.getProperties().currentPath, _o = this.getObjects(), bNoDisplay = (bOpt == "-hide");
@@ -458,7 +579,7 @@
 					},
 					privateCommands : ["login","logout","history","clearHistory"],
 					anonymousCommands : ["help","login"],
-					peekCommands : ["ls","cd"]
+					peekCommands : ["ls","cd","use"]
 						
 				});
 				
@@ -503,11 +624,11 @@
     <div template = "/AccountManagerService/Forms/UnauthIn.xml"></div>
   </header>
   
-  <div class="content">
+  <div id = "contentContainer" class="content">
   	<div class = "uwm-box-border">
 	  	<div class = "console-history" component = "wideselect" id = "typelist">
 		</div>
-		<div class = "uwm-box-border" class = "command"><span id = "prompt" class = "prompt">Anonymous:$</span><input class = "console-text" type = "text" id = "commandLine" /></div>
+		<div id = "commandContainer" class = "command"><span id = "prompt" class = "prompt">Anonymous:$</span><input class = "console-text" type = "text" id = "commandLine" /></div>
 	</div>
   </div>
 
