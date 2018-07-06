@@ -10,7 +10,9 @@
 		//
 		template_init : function(){
 			var oMod = uwm.getRule("IsLoggedIn");
-
+			Hemi.event.addScopeBuffer(this);
+			this.scopeHandler("session_refresh",0,0,1);
+			Hemi.message.service.subscribe(this, "onsessionrefresh",this._prehandle_session_refresh);
 			if(!oMod){
 				uwm.altMain = {
 					form : "Forms/MainIn.xml"
@@ -29,6 +31,13 @@
 				this.GetElementByRID("cntLogin").style.display = "";
 			}
 
+		},
+		template_destroy : function(){
+			Hemi.message.service.unsubscribe(this, "onsessionrefresh",this._prehandle_session_refresh);
+		},
+		_handle_session_refresh : function(s,v){
+			window.uwm.operation("ContinueWorkflow",{opener:this.getObjectId()});
+			/// if(uwm.rule("IsLoggedIn")) this.loadTemplate("/AccountManagerService/Forms/MainIn.xml");
 		}
 	
 		]]>

@@ -110,7 +110,7 @@
 					}
 					Hemi.message.service.publish("onsessionrefresh", oU);
 					vParms.user = oU;
-					uwm.operation("ContinueWorkflow", vParms, 0, "Authenticate");
+					//uwm.operation("ContinueWorkflow", vParms, 0, "Authenticate");
 					
 				});
 

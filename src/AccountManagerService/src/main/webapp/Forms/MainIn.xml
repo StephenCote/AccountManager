@@ -28,6 +28,12 @@
 				var o = uwm.getUser();
 				Hemi.xml.setInnerXHTML(this.GetElementByRID("profileName"),(o ? o.organizationPath + "/" + o.name : "Anonymous"));
 				Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
+				Hemi.event.addScopeBuffer(this);
+				this.scopeHandler("session_refresh",0,0,1);
+				Hemi.message.service.subscribe(this, "onsessionrefresh",this._prehandle_session_refresh);
+			},
+			template_destroy : function(){
+				Hemi.message.service.unsubscribe(this, "onsessionrefresh",this._prehandle_session_refresh);
 			},
 			refreshCommunity : function(s, v){
 				if(v == this || this.getProperties().blockAnnounce) return;
@@ -42,7 +48,7 @@
 			},
 			DoLogout : function(){
 				window.uwm.logout();
-				window.uwm.operation("ContinueWorkflow",{opener:this.getObjectId()});
+				//window.uwm.operation("ContinueWorkflow",{opener:this.getObjectId()});
 			},
 			DoGallery : function(){
 				var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");
@@ -119,6 +125,10 @@
 				}
 				if(!this.getProperties().blockAnnounce) Hemi.message.service.publish("onchangecommunity",this);
 				
+			},
+			_handle_session_refresh : function(s,v){
+				/// if(!uwm.rule("IsLoggedIn")) this.loadTemplate("/AccountManagerService/Forms/UnauthIn.xml");
+				window.uwm.operation("ContinueWorkflow",{opener:this.getObjectId()});
 			}
 		]]>
 	</embedded-script>
