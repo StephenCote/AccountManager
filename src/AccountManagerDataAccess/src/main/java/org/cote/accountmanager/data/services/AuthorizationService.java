@@ -227,7 +227,7 @@ public class AuthorizationService {
 			else if (iFact.isClusterByGroup()) groupId = ((NameIdDirectoryGroupType)object).getGroupId();
 			BaseGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(groupId,object.getOrganizationId());
 			if(group == null){
-				logger.error(String.format(FactoryException.OBJECT_NULL_TYPE, groupId));
+				logger.error(String.format(FactoryException.OBJECT_NULL_TYPE, object.getNameType().toString()));
 				return outBool;
 			}
 			BasePermissionType perm = getPermission(actor, group, permissionBase);

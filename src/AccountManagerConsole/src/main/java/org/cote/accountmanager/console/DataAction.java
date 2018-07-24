@@ -28,8 +28,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
@@ -332,7 +334,19 @@ public class DataAction {
 	private static void importBulkFiles(UserType user, DirectoryGroupType dir, List<File> bulkFiles, boolean isPointer, boolean createThumbnail, boolean vault, String vaultUrn) throws ArgumentException, FactoryException, DataAccessException, DataException, UnsupportedEncodingException{
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 		VaultBean vaultBean = (vault ? vaultService.getVaultByUrn(user, vaultUrn) : null);
+		DataFactory df = Factories.getFactory(FactoryEnumType.DATA);
+		Set<String> currentSet = new HashSet<>();
+		if(dir.getId() > 0L){
+			List<DataType> currentData = df.getDataListByGroup(dir, true, 0L, 0, user.getOrganizationId());
+			for(DataType d : currentData){
+				currentSet.add(d.getName());
+			}
+		}
 		for(int i = 0; i < bulkFiles.size();i++){
+			if(currentSet.contains(bulkFiles.get(i).getName())){
+				logger.info("Skipping existing file '" + bulkFiles.get(i).getName() + "'");
+				continue;
+			}
 			if(i > 0 && (i % maxLoad) == 0){
 				///  && vaultBean.getActiveKeyId() == null
 				if(vaultBean != null){
