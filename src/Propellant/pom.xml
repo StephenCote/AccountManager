@@ -17,6 +17,7 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
@@ -35,10 +36,11 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.7.0</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -48,18 +50,11 @@
 				<configuration> <filesets> <fileset> <directory>src/generated/java</directory> 
 				<includes> <include>**/*.java</include> </includes> </fileset> </filesets> 
 				</configuration> </plugin> -->
-			<plugin>
-				<!-- <groupId>com.sun.tools.xjc.maven2</groupId> <artifactId>maven-jaxb-plugin</artifactId> 
-					<version>1.1.1</version> -->
+	<plugin>
+
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
 				<artifactId>maven-jaxb2-plugin</artifactId>
-				<!-- <version>0.8.1</version> -->
-				<!-- 
-				<configuration>
-					<extension>true</extension>
-					<useDependenciesAsEpisodes>true</useDependenciesAsEpisodes>
-				</configuration>
-				-->
+
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>
@@ -69,24 +64,28 @@
 
 
 						<configuration>
-							<!-- <extension>true</extension> <episodes> <episode> <groupId>org.cote.accountmanager</groupId> 
-								<artifactId>objects</artifactId> </episode> </episodes> -->
+							
 							<args>
 								<arg>-extension</arg>
-
 								<arg>-Xdefault-value</arg>
 								<arg>-Xfix-primitives</arg>
+								<arg>-Xannotate</arg>
 							</args>
-							<!-- <includeSchemas> <includeSchema>*.xsd</includeSchema> </includeSchemas> -->
+
+							<includeSchemas>
+								<includeSchema>*.xsd</includeSchema>
+							</includeSchemas>
+
+              <extension>true</extension>
+
 							<schemaDirectory>src/main/resources</schemaDirectory>
 
 							<generateDirectory>src/generated/java</generateDirectory>
 							<readOnly>true</readOnly>
 							<removeOldOutput>false</removeOldOutput>
-							<!-- <xsdOptions> <xsdOption> <extension>true</extension> </xsdOption> 
-								</xsdOptions> <args>-extension</args> -->
-							<plugins>
 
+							<plugins>
+							
 								<plugin>
 									<groupId>org.jvnet.jaxb2_commons</groupId>
 									<artifactId>jaxb2-basics</artifactId>
@@ -98,11 +97,18 @@
 									<artifactId>jaxb2-default-value</artifactId>
 									<version>1.1</version>
 								</plugin>
-								<plugin>
-									<groupId>de.sweber</groupId>
-									<artifactId>jaxb2-primitive-fixer-plugin</artifactId>
-									<version>1.0.0-SNAPSHOT</version>
-								</plugin>
+								
+								                <plugin>
+                  <groupId>org.jvnet.jaxb2_commons</groupId>
+                  <artifactId>jaxb2-basics-annotate</artifactId>
+                  <version>0.6.0</version>
+                </plugin>
+              
+								            <plugin>
+                <groupId>de.sweber</groupId>
+                <artifactId>jaxb2-primitive-fixer-plugin</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </plugin>
 							</plugins>
 						</configuration>
 					</execution>
@@ -149,12 +155,6 @@
 		</pluginManagement>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
