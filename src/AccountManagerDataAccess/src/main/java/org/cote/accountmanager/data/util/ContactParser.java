@@ -65,8 +65,10 @@ public class ContactParser {
 					return 0;
 				}
 				SheetType sheet = wb.getSheets().get(0);
-				if(sheet.getRows().size() <= 4){
-					logger.error("Unexpected row count");
+				/// 2018/07/31 - Change minimum row count to support only one row.  This was originally coded as requiring at least two contacts
+				///
+				if(sheet.getRows().size() < 4){
+					logger.error("Unexpected row count: " + sheet.getRows().size());
 					return 0;
 				}
 				mapColumns(sheet.getRows().get(2),columnMap);
