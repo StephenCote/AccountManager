@@ -65,7 +65,6 @@ import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.ICommunityProvider;
-import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.ScriptService;
 import org.cote.accountmanager.exceptions.DataException;
@@ -97,19 +96,13 @@ import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.DataUtil;
-import org.cote.propellant.objects.ArtifactType;
 import org.cote.propellant.objects.EventType;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.LocationType;
 import org.cote.propellant.objects.ProjectType;
-import org.cote.propellant.objects.StageType;
-import org.cote.propellant.objects.TaskType;
 import org.cote.propellant.objects.TraitType;
-import org.cote.propellant.objects.WorkType;
-import org.cote.propellant.objects.types.ArtifactEnumType;
 import org.cote.propellant.objects.types.GeographyEnumType;
 import org.cote.propellant.objects.types.TraitEnumType;
-import org.cote.rocket.factory.ArtifactFactory;
 import org.cote.rocket.factory.EventFactory;
 import org.cote.rocket.factory.LifecycleFactory;
 import org.cote.rocket.factory.LocationFactory;
@@ -118,7 +111,6 @@ import org.cote.rocket.factory.TraitFactory;
 import org.cote.rocket.util.CommunityProjectUtil;
 import org.cote.rocket.util.DataGeneratorData;
 import org.cote.rocket.util.DataGeneratorUtil;
-import org.cote.rocket.util.ImportMap;
 
 /*
  * 2017/10/16 - AUTHORIZATION NOTE
