@@ -23,9 +23,10 @@
 			if(window.galleryView) window.galleryView.destroy();
 		},
 		refreshSession : function(s,v){
-			var _s = this.getProperties(),b = uwm.rule("IsLoggedIn");
+			var _s = this.getProperties(),b = uwm.rule("IsLoggedIn"), oA = this.GetElementByRID("authRequired");
 			Hemi.log("Handle Session Refresh - Comparing " + b + " to " + _s.lastState);
-			this.GetElementByRID("authRequired").style.display = (b ? "none" : "block");
+			if(!oA) return;
+			oA.style.display = (b ? "none" : "block");
 			/// this.GetElementByRID("galleryContainer").style.display = (!b ? "none" : "block");
 			if(b != _s.lastState){
 				if(window.galleryView) window.galleryView.destroy();
