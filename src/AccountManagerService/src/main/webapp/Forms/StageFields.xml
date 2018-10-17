@@ -4,7 +4,7 @@
 			Description:
 		</p>
 		<p>
-			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text rocket-text-short" />
+			<input type = "text" rid = "description" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
 	<div class = "rocket-column-2">
