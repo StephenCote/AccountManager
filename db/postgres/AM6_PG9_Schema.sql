@@ -1644,7 +1644,7 @@ CREATE UNIQUE INDEX IdxApproverObjId ON approver(ObjectId);
 CREATE INDEX IdxRequestReference on request(RequestorType, RequestorId);
 CREATE UNIQUE INDEX IdxRequestObjId ON request(ObjectId);
 
-CREATE INDEX IdxApprovalReference on approver(ApproverId, ApproverType);
+CREATE INDEX IdxApprovalReference on approval(ApproverId, ApproverType);
 CREATE INDEX IdxApprovalRequest on approval(Response, RequestId);
 CREATE UNIQUE INDEX IdxApprovalObjId ON approval(ObjectId);
 
