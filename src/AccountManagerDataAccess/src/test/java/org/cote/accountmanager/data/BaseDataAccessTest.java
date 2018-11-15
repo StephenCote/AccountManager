@@ -44,6 +44,7 @@ import org.cote.accountmanager.data.factory.FactFactory;
 import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.FunctionFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.OperationFactory;
 import org.cote.accountmanager.data.factory.PatternFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
@@ -520,6 +521,27 @@ public class BaseDataAccessTest{
 		((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(srcFact);
 		return srcFact;
 	}
+	public FactType getCreateEntitlementParamFact(UserType user,String name, DirectoryGroupType fdir) throws ArgumentException, FactoryException{
+		FactType srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name, fdir);
+		if(srcFact != null) return srcFact;
+		srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(user, fdir.getId());
+		srcFact.setName(name);
+		srcFact.setFactType(FactEnumType.PARAMETER);
+		srcFact.setFactoryType(FactoryEnumType.UNKNOWN);
+		((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(srcFact);
+		return srcFact;
+	}
+	public FactType getCreateOperationFact(UserType user,String name, String opUrn, DirectoryGroupType fdir) throws ArgumentException, FactoryException{
+		FactType srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(name, fdir);
+		if(srcFact != null) return srcFact;
+		srcFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(user, fdir.getId());
+		srcFact.setName(name);
+		srcFact.setFactType(FactEnumType.OPERATION);
+		srcFact.setFactoryType(FactoryEnumType.OPERATION);
+		srcFact.setSourceUrn(opUrn);
+		((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(srcFact);
+		return srcFact;
+	}
 	public static FunctionType getCreateFunction(UserType user, String name, FunctionEnumType funcType, DataType data, DirectoryGroupType dir){
 		FunctionType func = null;
 		try{
@@ -770,5 +792,25 @@ public class BaseDataAccessTest{
 		return role;
 	}
 
+	public <T> T getApplicationGroup(String name,GroupEnumType type,DirectoryGroupType dir){
+		T group = null;
+		try {
+			GroupFactory iFact = (GroupFactory)Factories.getFactory(FactoryEnumType.GROUP);
+			iFact.populate(dir);
+			iFact.denormalize(dir);
+			
+			//group = iFact.makePath(testUser, type.toString(), dir.getPath() + "/" + name, dir.getOrganizationId());
+			group = (T)iFact.getGroupByName(name, type, dir, dir.getOrganizationId());
+			if(group == null) {
+				BaseGroupType newGroup = iFact.newAccountGroup(testUser, name, dir, dir.getOrganizationId());
+				iFact.add(newGroup);
+				group = (T)iFact.getGroupByName(name, type, dir, dir.getOrganizationId());
+			}
+		} catch (FactoryException | ArgumentException e) {
+			
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
+		return group;
+	}
 	
 }

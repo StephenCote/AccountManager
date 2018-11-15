@@ -35,6 +35,7 @@
 			<option>OPERATION</option>
 			<option>EXPRESSION</option>
 			<option>AUTHORIZATION</option>
+			<option>APPROVAL</option>
 			<option>SEPARATION_OF_DUTY</option>
 			</select>
     	</p>
