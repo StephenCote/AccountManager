@@ -107,6 +107,9 @@
     <simpleType name="NameEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="APPROVER"></enumeration>
+    		<enumeration value="APPROVAL"></enumeration>
+    		<enumeration value="REQUEST"></enumeration>
     		<enumeration value="VAULT"></enumeration>
     		<enumeration value="TRAIT"></enumeration>
     		<enumeration value="LOCATION"></enumeration>
@@ -322,6 +325,8 @@
     		<enumeration value="RAW"></enumeration>
     		<enumeration value="MESSAGE_QUEUE"></enumeration>
     		<enumeration value="SECURITY_TOKEN"></enumeration>
+    		<enumeration value="REQUEST"></enumeration>
+    		<enumeration value="APPROVAL"></enumeration>
     	</restriction>
     </simpleType>
 
@@ -334,6 +339,8 @@
     		<enumeration value="MESSAGE"></enumeration>
     		<enumeration value="QUEUE"></enumeration>
     		<enumeration value="DATA"></enumeration>
+
+    		<enumeration value="REQUEST"></enumeration>
     	</restriction>
     </simpleType>
     <simpleType name="SpoolStatusEnumType">
@@ -385,6 +392,9 @@
     <simpleType name="AuditEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="APPROVER"></enumeration>
+    		<enumeration value="REQUEST"></enumeration>
+    		<enumeration value="APPROVAL"></enumeration>
     		<enumeration value="VAULT"></enumeration>
     		<enumeration value="LOCATION"></enumeration>
     		<enumeration value="ORGANIZATION"></enumeration>
@@ -537,6 +547,9 @@
     <simpleType name="FactoryEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="APPROVER"></enumeration>
+    		<enumeration value="REQUEST"></enumeration>
+    		<enumeration value="APPROVAL"></enumeration>
     		<enumeration value="LOCATION"></enumeration>
     		<enumeration value="LOCATIONPARTICIPATION"></enumeration>
     		<enumeration value="EVENT"></enumeration>

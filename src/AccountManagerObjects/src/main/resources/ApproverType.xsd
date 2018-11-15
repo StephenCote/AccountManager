@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xsd:schema targetNamespace="http://www.cote.org/accountmanager/objects"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:pref="http://www.cote.org/accountmanager/objects/types">
+	xmlns:tns="http://www.cote.org/accountmanager/objects"
+	xmlns:pref="http://www.cote.org/accountmanager/objects/types">
+	<xsd:include schemaLocation=""></xsd:include>
 	<xsd:include schemaLocation="AccountType.xsd"></xsd:include>
 	<xsd:include schemaLocation="PersonType.xsd"></xsd:include>
 	<xsd:include schemaLocation="GroupType.xsd"></xsd:include>
 	<xsd:include schemaLocation="AttributeType.xsd"></xsd:include>
 	<xsd:include schemaLocation="NameId.xsd"></xsd:include>
 	<xsd:include schemaLocation=""></xsd:include>
-	<xsd:import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></xsd:import>
+	<xsd:import schemaLocation="Types.xsd"
+		namespace="http://www.cote.org/accountmanager/objects/types">
+	</xsd:import>
 
 
 
 
+	<xsd:include schemaLocation="SpoolType.xsd"></xsd:include>
 	<xsd:simpleType name="ApproverEnumType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
@@ -26,29 +31,28 @@
 	</xsd:simpleType>
 
 	<xsd:complexType name="ApproverType">
-		<xsd:sequence>
-			<xsd:element name="personApprover" type="xsd:string"></xsd:element>
-			<xsd:element name="groupApprover" type="xsd:string"></xsd:element>
-			<xsd:element name="applicationSource" type="xsd:string"></xsd:element>
-			<xsd:element name="groupSource" type="xsd:string"></xsd:element>
-			<xsd:element name="permissionSource"
-				type="xsd:string">
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="approverId" type="xsd:long" default="0"></xsd:attribute>
-		<xsd:attribute name="sourceId" type="xsd:long"></xsd:attribute>
-		<xsd:attribute name="approverType" type="tns:ApproverEnumType"
-			default="UNKNOWN">
-		</xsd:attribute>
-		<xsd:attribute name="sourceType" type="tns:ApproverEnumType"
-			default="UNKNOWN">
-		</xsd:attribute>
-		<xsd:attribute name="approverLevel" type="xsd:int"
-			default="0">
-		</xsd:attribute>
-		<xsd:attribute name="approvalType"
-			type="tns:ApprovalEnumType">
-		</xsd:attribute>
+		<xsd:complexContent>
+			<xsd:extension base="tns:BaseAccessType">
+				<xsd:attribute name="approverId" type="xsd:long"
+					default="0">
+				</xsd:attribute>
+				<xsd:attribute name="approverType"
+					type="tns:ApproverEnumType" default="UNKNOWN">
+				</xsd:attribute>
+
+				<xsd:attribute name="approverLevel" type="xsd:int"
+					default="0">
+				</xsd:attribute>
+
+				<xsd:attribute name="approvalType"
+					type="tns:ApprovalEnumType">
+				</xsd:attribute>
+
+
+
+
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 
@@ -59,7 +63,7 @@
 			<xsd:enumeration value="APPLICATION"></xsd:enumeration>
 			<xsd:enumeration value="ACCESS"></xsd:enumeration>
 			<xsd:enumeration value="FEDERAL"></xsd:enumeration>
-			<xsd:enumeration value="DATAOWNER"></xsd:enumeration>
+			<xsd:enumeration value="OWNER"></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -84,4 +88,115 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 
+
+	<xsd:complexType name="ApprovalType">
+		<xsd:complexContent>
+			<xsd:extension base="tns:ApproverType">
+				<xsd:sequence>
+					<xsd:element name="signature"
+						type="xsd:base64Binary" minOccurs="0" maxOccurs="1">
+					</xsd:element>
+					<xsd:element name="messages" type="tns:MessageSpoolType"></xsd:element>
+				</xsd:sequence>
+				<xsd:attribute name="response"
+					type="tns:ApprovalResponseEnumType">
+				</xsd:attribute>
+				<xsd:attribute name="responseMessage"
+					type="xsd:string">
+				</xsd:attribute>
+				<xsd:attribute name="createdDate" type="xsd:dateTime"></xsd:attribute>
+				<xsd:attribute name="modifiedDate"
+					type="xsd:dateTime">
+				</xsd:attribute>
+				<xsd:attribute name="expiryDate" type="xsd:dateTime"></xsd:attribute>
+				<xsd:attribute name="signerId" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							signerId is the CredentialType/SecurityType.
+							private key used to create the signature.
+							This is only the id. The key must be
+							available and accessible.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="validationId" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							validationId is the
+							CredentialType/SecurityType that may be used
+							to validate the signature. This is only the
+							id. The key must be available and
+							accessible.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="approvalId" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="requestId" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:simpleType name="ApprovalResponseEnumType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
+			<xsd:enumeration value="PERMIT"></xsd:enumeration>
+			<xsd:enumeration value="DENY"></xsd:enumeration>
+			<xsd:enumeration value="REMOVE"></xsd:enumeration>
+			<xsd:enumeration value="CERTIFIED"></xsd:enumeration>
+			<xsd:enumeration value="PENDING"></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="AccessRequestType">
+		<xsd:complexContent>
+			<xsd:extension base="tns:BaseAccessType">
+				<xsd:sequence>
+					<xsd:element name="messages"
+						type="tns:MessageSpoolType" minOccurs="0" maxOccurs="unbounded">
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:attribute name="requestorId" type="xsd:long"></xsd:attribute>
+				<xsd:attribute name="requestorType"
+					type="tns:ApproverEnumType">
+				</xsd:attribute>
+
+				<xsd:attribute name="actionType"
+					type="pref:ActionEnumType">
+				</xsd:attribute>
+				<xsd:attribute name="delegateId" type="xsd:long"></xsd:attribute>
+				<xsd:attribute name="delegateType"
+					type="tns:ApproverEnumType">
+				</xsd:attribute>
+				<xsd:attribute name="createdDate" type="xsd:dateTime"></xsd:attribute>
+				<xsd:attribute name="modifiedDate"
+					type="xsd:dateTime">
+				</xsd:attribute>
+				<xsd:attribute name="expiryDate" type="xsd:dateTime"></xsd:attribute>
+				<xsd:attribute name="description" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="BaseAccessType">
+		<xsd:complexContent>
+			<xsd:extension base="tns:NameIdType">
+				<xsd:attribute name="entitlementType"
+					type="tns:ApproverEnumType" default="UNKNOWN">
+				</xsd:attribute>
+
+				<xsd:attribute name="entitlementId" type="xsd:long"
+					default="0">
+				</xsd:attribute>
+
+				<xsd:attribute name="referenceType"
+					type="pref:FactoryEnumType">
+				</xsd:attribute>
+
+				<xsd:attribute name="referenceId" type="xsd:long"
+					default="0">
+				</xsd:attribute>
+
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 </xsd:schema>

@@ -33,6 +33,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.FactoryBase;
+import org.cote.accountmanager.objects.ApprovalEnumType;
+import org.cote.accountmanager.objects.ApproverEnumType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.ConditionEnumType;
@@ -49,6 +51,7 @@ import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.RuleEnumType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
@@ -321,6 +324,38 @@ public class QueryFields {
 	public static QueryField getFieldEndTime(XMLGregorianCalendar val)
 	{
 		return getTimestampField("endtime", val);
+	}
+	public static QueryField getFieldApproverLevel(int level)
+	{
+		return getIntField("approverlevel", level);
+	}
+	public static QueryField getFieldApprovalType(ApprovalEnumType type)
+	{
+		return getStringField("approvaltype", type.toString());
+	}
+	public static QueryField getFieldApproverType(ApproverEnumType type)
+	{
+		return getStringField("approvertype", type.toString());
+	}
+	public static QueryField getFieldApproverId(NameIdType obj)
+	{
+		return getBigIntField("approverid", (obj != null ? obj.getId() : 0));
+	}
+	public static QueryField getFieldApproverId(long id)
+	{
+		return getBigIntField("approverid", id);
+	}
+	public static QueryField getFieldEntitlementType(ApproverEnumType type)
+	{
+		return getStringField("entitlementtype", type.toString());
+	}
+	public static QueryField getFieldEntitlementId(NameIdType obj)
+	{
+		return getBigIntField("entitlementid", (obj != null ? obj.getId() : 0));
+	}
+	public static QueryField getFieldEntitlementId(long id)
+	{
+		return getBigIntField("entitlementid", id);
 	}
 /*
 	public static QueryField getFieldOrganization(NameIdType map)
@@ -665,6 +700,9 @@ public class QueryFields {
 	}
 	public static QueryField getFieldAuditTargetData(String audit_data){
 		return getStringField("audittargetdata",audit_data);
+	}
+	public static QueryField getFieldActionType(ActionEnumType type){
+		return getStringField("actiontype",type.toString());
 	}
 	public static QueryField getFieldReferenceType(FactoryEnumType type){
 		return getStringField("referencetype",type.toString());

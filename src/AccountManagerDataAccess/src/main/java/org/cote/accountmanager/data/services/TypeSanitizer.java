@@ -52,6 +52,7 @@ import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
+import org.cote.accountmanager.objects.ApproverType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -216,6 +217,20 @@ public class TypeSanitizer implements ITypeSanitizer{
 		T outObj = null;
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 		switch(type){
+			case APPROVER:
+				ApproverType apbean = (ApproverType)in_obj;
+				ApproverType new_apr = new ApproverType();
+				MapUtil.shallowCloneNameIdDirectoryType(apbean, new_apr);
+				new_apr.setApprovalType(apbean.getApprovalType());
+				new_apr.setApproverId(apbean.getApproverId());
+				new_apr.setApproverLevel(apbean.getApproverLevel());
+				new_apr.setApproverType(apbean.getApproverType());
+				new_apr.setEntitlementId(apbean.getEntitlementId());
+				new_apr.setEntitlementType(apbean.getEntitlementType());
+				new_apr.setReferenceId(apbean.getReferenceId());
+				new_apr.setReferenceType(apbean.getReferenceType());
+				outObj = (T)new_apr;
+				break;
 			case TAG:
 				BaseTagType vtbean = (BaseTagType)in_obj;
 				BaseTagType new_tag = ((TagFactory)iFact).newTag(user,vtbean.getName(),vtbean.getTagType(),vtbean.getGroupId());

@@ -34,6 +34,7 @@ import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkAccountFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkAddressFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkApproverFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkAsymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkContactFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkContactInformationFactory;
@@ -108,6 +109,7 @@ public class BulkFactories{
 	    BulkFactories.registerClass(FactoryEnumType.TAG, BulkTagFactory.class); 
 	    BulkFactories.registerClass(FactoryEnumType.TAGPARTICIPATION, BulkTagParticipationFactory.class); 
 	    BulkFactories.registerClass(FactoryEnumType.USER, BulkUserFactory.class);
+	    BulkFactories.registerClass(FactoryEnumType.APPROVER, BulkApproverFactory.class);
     }
 	
     public static void prepare(){

@@ -33,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.AddressFactory;
+import org.cote.accountmanager.data.factory.ApproverFactory;
 import org.cote.accountmanager.data.factory.AsymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.AttributeFactory;
 import org.cote.accountmanager.data.factory.AuditFactory;
@@ -84,6 +85,7 @@ import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
+import org.cote.accountmanager.objects.ApproverType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -158,6 +160,7 @@ public class Factories {
 	    Factories.registerClass(FactoryEnumType.TAG, TagFactory.class); 
 	    Factories.registerClass(FactoryEnumType.TAGPARTICIPATION, TagParticipationFactory.class); 
 	    Factories.registerClass(FactoryEnumType.USER, UserFactory.class); 
+	    Factories.registerClass(FactoryEnumType.APPROVER, ApproverFactory.class); 
 	}
 	
 	static {
@@ -196,6 +199,7 @@ public class Factories {
 	    Factories.registerTypeClass(FactoryEnumType.TAG, BaseTagType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.TAGPARTICIPATION, BaseParticipantType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.USER, UserType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.APPROVER, ApproverType.class); 
 	}
 	
 	static {
@@ -206,6 +210,7 @@ public class Factories {
 	    Factories.registerNameTypeSanitizer(NameEnumType.CREDENTIAL, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.DATA, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.FACT, TypeSanitizer.class); 
+	    
 	    Factories.registerNameTypeSanitizer(NameEnumType.FUNCTIONFACT, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.FUNCTION, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.GROUP, TypeSanitizer.class); 
@@ -219,6 +224,7 @@ public class Factories {
 	    Factories.registerNameTypeSanitizer(NameEnumType.RULE, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.TAG, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.USER, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.APPROVER, TypeSanitizer.class); 
 	}
 	
 	
