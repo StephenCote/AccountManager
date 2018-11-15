@@ -1,4 +1,4 @@
--- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+﻿-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
 -- select uuid_generate_v4();
 
@@ -531,6 +531,38 @@ create table control (
 	ControlId bigint not null default 0
 ) inherits(objorgid,objectdate,objectreference);
 
+
+create table approver (
+	ApproverType varchar(64) not null,
+	ApproverId bigint not null default 0,
+	ApproverLevel int not null default 0,
+	EntitlementType varchar(64) not null,
+	EntitlementId bigint not null default 0,
+	ApprovalType varchar(64) not null
+) inherits(objorgid,objectreference);
+
+create table request (
+	RequestorType varchar(64) not null,
+	RequestorId bigint not null default 0,
+	DelegateType varchar(64) not null,
+	DelegateId bigint not null default 0,
+	EntitlementType varchar(64) not null,
+	EntitlementId bigint not null default 0,
+	ActionType varchar(64) not null
+) inherits(objorgid,objectdate,objectdescription,objectreference);
+
+create table approval (
+	Response varchar(64) not null,
+	ResponseMessage varchar(255),
+	SignerId varchar(64),
+	ValidationId varchar(64),
+	ApprovalId varchar(64),
+	RequestId varchar(64),
+	Signature bytea,
+	ApproverType varchar(64) not null,
+	ApproverId bigint not null default 0,
+	ApproverLevel int not null default 0
+) inherits(objorgid,objectdate,objectdescription,objectreference);
 
 -- REWORK
 
@@ -1606,6 +1638,16 @@ CREATE UNIQUE INDEX IdxruleparticipationCbo on ruleparticipation(ParticipationId
 CREATE UNIQUE INDEX IdxCredentialObjId ON credential(ObjectId);
 CREATE UNIQUE INDEX IdxControlReference on control(ControlType,ControlAction,ReferenceId,ReferenceType);
 CREATE UNIQUE INDEX IdxControlObjId ON control(ObjectId);
+CREATE UNIQUE INDEX IdxApproverEntReference on approver(ApproverId, ApproverType, ApprovalType, ReferenceId,ReferenceType,EntitlementId,EntitlementType);
+CREATE UNIQUE INDEX IdxApproverObjId ON approver(ObjectId);
+
+CREATE INDEX IdxRequestReference on request(RequestorType, RequestorId);
+CREATE UNIQUE INDEX IdxRequestObjId ON request(ObjectId);
+
+CREATE INDEX IdxApprovalReference on approver(ApproverId, ApproverType);
+CREATE INDEX IdxApprovalRequest on approval(Response, RequestId);
+CREATE UNIQUE INDEX IdxApprovalObjId ON approval(ObjectId);
+
 
 CREATE INDEX idxattributerefid_Id ON attribute(ReferenceId,ReferenceType,OrganizationId);
 CREATE INDEX asymmetrickeys_OwnId ON asymmetrickeys(OwnerId);
