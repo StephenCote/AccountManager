@@ -541,14 +541,17 @@ create table approver (
 	ApprovalType varchar(64) not null
 ) inherits(objorgid,objectreference);
 
+--- ParentId included directly versus inheritence since the additional name and urn fields aren't needed here
 create table request (
+	ParentId bigint not null default 0,
 	RequestorType varchar(64) not null,
 	RequestorId bigint not null default 0,
 	DelegateType varchar(64) not null,
 	DelegateId bigint not null default 0,
 	EntitlementType varchar(64) not null,
 	EntitlementId bigint not null default 0,
-	ActionType varchar(64) not null
+	ActionType varchar(64) not null,
+	ApprovalStatus varchar(64)
 ) inherits(objorgid,objectdate,objectdescription,objectreference);
 
 create table approval (
@@ -558,6 +561,7 @@ create table approval (
 	ValidationId varchar(64),
 	ApprovalId varchar(64),
 	RequestId varchar(64),
+	ApprovalStatus varchar(64),
 	Signature bytea,
 	ApproverType varchar(64) not null,
 	ApproverId bigint not null default 0,
@@ -1641,7 +1645,7 @@ CREATE UNIQUE INDEX IdxControlObjId ON control(ObjectId);
 CREATE UNIQUE INDEX IdxApproverEntReference on approver(ApproverId, ApproverType, ApprovalType, ReferenceId,ReferenceType,EntitlementId,EntitlementType);
 CREATE UNIQUE INDEX IdxApproverObjId ON approver(ObjectId);
 
-CREATE INDEX IdxRequestReference on request(RequestorType, RequestorId);
+CREATE INDEX IdxRequestReference on request(ParentId,RequestorType, RequestorId);
 CREATE UNIQUE INDEX IdxRequestObjId ON request(ObjectId);
 
 CREATE INDEX IdxApprovalReference on approval(ApproverId, ApproverType);
