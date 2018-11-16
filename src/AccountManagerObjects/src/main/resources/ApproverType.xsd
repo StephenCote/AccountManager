@@ -45,7 +45,7 @@
 				</xsd:attribute>
 
 				<xsd:attribute name="approvalType"
-					type="tns:ApprovalEnumType">
+					type="tns:ApprovalEnumType" default="UNKNOWN">
 				</xsd:attribute>
 
 
@@ -99,7 +99,7 @@
 					<xsd:element name="messages" type="tns:MessageSpoolType"></xsd:element>
 				</xsd:sequence>
 				<xsd:attribute name="response"
-					type="tns:ApprovalResponseEnumType">
+					type="tns:ApprovalResponseEnumType" default="UNKNOWN">
 				</xsd:attribute>
 				<xsd:attribute name="responseMessage"
 					type="xsd:string">
@@ -139,11 +139,13 @@
 	<xsd:simpleType name="ApprovalResponseEnumType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
-			<xsd:enumeration value="PERMIT"></xsd:enumeration>
+			<xsd:enumeration value="APPROVE"></xsd:enumeration>
 			<xsd:enumeration value="DENY"></xsd:enumeration>
 			<xsd:enumeration value="REMOVE"></xsd:enumeration>
 			<xsd:enumeration value="CERTIFIED"></xsd:enumeration>
 			<xsd:enumeration value="PENDING"></xsd:enumeration>
+			<xsd:enumeration value="DUPLICATE"></xsd:enumeration>
+			<xsd:enumeration value="REQUEST"></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -155,17 +157,21 @@
 						type="tns:MessageSpoolType" minOccurs="0" maxOccurs="unbounded">
 					</xsd:element>
 				</xsd:sequence>
-				<xsd:attribute name="requestorId" type="xsd:long"></xsd:attribute>
+				<xsd:attribute name="requestorId" type="xsd:long"
+					default="0">
+				</xsd:attribute>
 				<xsd:attribute name="requestorType"
-					type="tns:ApproverEnumType">
+					type="tns:ApproverEnumType" default="UNKNOWN">
 				</xsd:attribute>
 
 				<xsd:attribute name="actionType"
-					type="pref:ActionEnumType">
+					type="pref:ActionEnumType" default="UNKNOWN">
 				</xsd:attribute>
-				<xsd:attribute name="delegateId" type="xsd:long"></xsd:attribute>
+				<xsd:attribute name="delegateId" type="xsd:long"
+					default="0">
+				</xsd:attribute>
 				<xsd:attribute name="delegateType"
-					type="tns:ApproverEnumType">
+					type="tns:ApproverEnumType" default="UNKNOWN">
 				</xsd:attribute>
 				<xsd:attribute name="createdDate" type="xsd:dateTime"></xsd:attribute>
 				<xsd:attribute name="modifiedDate"
@@ -173,6 +179,7 @@
 				</xsd:attribute>
 				<xsd:attribute name="expiryDate" type="xsd:dateTime"></xsd:attribute>
 				<xsd:attribute name="description" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="approvalStatus" type="tns:ApprovalResponseEnumType" default="UNKNOWN"></xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -189,7 +196,7 @@
 				</xsd:attribute>
 
 				<xsd:attribute name="referenceType"
-					type="pref:FactoryEnumType">
+					type="pref:FactoryEnumType" default="UNKNOWN">
 				</xsd:attribute>
 
 				<xsd:attribute name="referenceId" type="xsd:long"

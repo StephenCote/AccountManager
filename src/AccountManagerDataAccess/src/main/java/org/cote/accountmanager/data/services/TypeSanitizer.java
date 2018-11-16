@@ -50,6 +50,7 @@ import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ApproverType;
@@ -230,6 +231,25 @@ public class TypeSanitizer implements ITypeSanitizer{
 				new_apr.setReferenceId(apbean.getReferenceId());
 				new_apr.setReferenceType(apbean.getReferenceType());
 				outObj = (T)new_apr;
+				break;
+			case REQUEST:
+				AccessRequestType rqbean = (AccessRequestType)in_obj;
+				AccessRequestType new_rq = new AccessRequestType();
+				MapUtil.shallowCloneNameIdDirectoryType(rqbean, new_rq);
+				new_rq.setActionType(rqbean.getActionType());
+				new_rq.setCreatedDate(rqbean.getCreatedDate());
+				new_rq.setDelegateId(rqbean.getDelegateId());
+				new_rq.setDelegateType(rqbean.getDelegateType());
+				new_rq.setDescription(rqbean.getDescription());
+				new_rq.setEntitlementId(rqbean.getEntitlementId());
+				new_rq.setEntitlementType(rqbean.getEntitlementType());
+				new_rq.setExpiryDate(rqbean.getExpiryDate());
+				new_rq.setModifiedDate(rqbean.getModifiedDate());
+				new_rq.setReferenceId(rqbean.getReferenceId());
+				new_rq.setReferenceType(rqbean.getReferenceType());
+				new_rq.setRequestorId(rqbean.getRequestorId());
+				new_rq.setRequestorType(rqbean.getRequestorType());
+
 				break;
 			case TAG:
 				BaseTagType vtbean = (BaseTagType)in_obj;
@@ -444,7 +464,10 @@ public class TypeSanitizer implements ITypeSanitizer{
 					return null;
 				}
 				outObj = (T)new_rec;
-				break;				
+				break;
+			default:
+				logger.warn(String.format(FactoryException.UNHANDLED_TYPE, type));
+				break;
 		}
 		return outObj;
 	}

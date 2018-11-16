@@ -34,6 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.objects.ApprovalEnumType;
+import org.cote.accountmanager.objects.ApprovalResponseEnumType;
 import org.cote.accountmanager.objects.ApproverEnumType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -356,6 +357,34 @@ public class QueryFields {
 	public static QueryField getFieldEntitlementId(long id)
 	{
 		return getBigIntField("entitlementid", id);
+	}
+	public static QueryField getFieldRequestorType(ApproverEnumType type)
+	{
+		return getStringField("requestortype", type.toString());
+	}
+	public static QueryField getFieldApprovalStatus(ApprovalResponseEnumType type)
+	{
+		return getStringField("approvalstatus", type.toString());
+	}
+	public static QueryField getFieldRequestorId(NameIdType obj)
+	{
+		return getBigIntField("requestorid", (obj != null ? obj.getId() : 0));
+	}
+	public static QueryField getFieldRequestorId(long id)
+	{
+		return getBigIntField("requestorid", id);
+	}
+	public static QueryField getFieldDelegateType(ApproverEnumType type)
+	{
+		return getStringField("delegatetype", type.toString());
+	}
+	public static QueryField getFieldDelegateId(NameIdType obj)
+	{
+		return getBigIntField("delegateid", (obj != null ? obj.getId() : 0));
+	}
+	public static QueryField getFieldDelegateId(long id)
+	{
+		return getBigIntField("delegateid", id);
 	}
 /*
 	public static QueryField getFieldOrganization(NameIdType map)

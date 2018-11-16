@@ -12,13 +12,16 @@ import org.cote.accountmanager.data.factory.FactFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.PatternFactory;
 import org.cote.accountmanager.data.factory.PolicyFactory;
+import org.cote.accountmanager.data.factory.RequestFactory;
 import org.cote.accountmanager.data.factory.RuleFactory;
 import org.cote.accountmanager.data.security.RequestService;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
 import org.cote.accountmanager.objects.ApprovalEnumType;
+import org.cote.accountmanager.objects.ApprovalResponseEnumType;
 import org.cote.accountmanager.objects.ApproverType;
 import org.cote.accountmanager.objects.ControlActionEnumType;
 import org.cote.accountmanager.objects.ControlEnumType;
@@ -34,6 +37,7 @@ import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleEnumType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
@@ -100,6 +104,96 @@ public class TestAccessApproval extends BaseDataAccessTest {
      *    (Note: There is currently no state on policy processing, so this will either be a refactor or separate policy evaluations or same policy evaluation with the prior approval status being evaluated each time)
 	 */
 	
+	
+	@Test
+	public void TestCreateEmptyRequest() {
+		boolean error = false;
+		AccessRequestType request = null;
+		try {
+			logger.info("Test creating an empty request to use for containment");
+			RequestFactory rFact = ((RequestFactory)Factories.getFactory(FactoryEnumType.REQUEST));
+			request = rFact.newAccessRequest(testUser, ActionEnumType.REQUEST, null, null, null, null, 0L);
+			assertNotNull("Request is null", request);
+			//logger.info(JSONUtil.exportObject(request));
+			assertTrue("Failed to add request",rFact.add(request));
+			
+			List<AccessRequestType> reqs = rFact.getAccessRequestsForType(testUser, null, null, null, ApprovalResponseEnumType.REQUEST,0L, testUser.getOrganizationId());
+			//logger.info("Found " + reqs.size() + " requests for " + testUser.getUrn());
+		} catch (FactoryException | ArgumentException e) {
+			error = true;
+			e.printStackTrace();
+			logger.error(e);
+		}
+		assertFalse("Test threw an error", error);
+		assertNotNull("Request is null", request);
+	}
+	
+	@Test
+	public void TestCreateRequestForGroup() {
+		boolean error = false;
+		AccessRequestType request = null;
+		DirectoryGroupType app1 = getApplication("Application 1");
+		AccountGroupType group1 = getApplicationGroup("Group #1", GroupEnumType.ACCOUNT, app1);
+
+		try {
+			logger.info("Test creating an group access request");
+			RequestFactory rFact = ((RequestFactory)Factories.getFactory(FactoryEnumType.REQUEST));
+			request = rFact.newAccessRequest(testUser, ActionEnumType.REQUEST, null, null, null, group1, 0L);
+			assertNotNull("Request is null", request);
+			//logger.info(JSONUtil.exportObject(request));
+			assertTrue("Failed to add request",rFact.add(request));
+			
+			List<AccessRequestType> reqs = rFact.getAccessRequestsForType(testUser, null, null, group1, ApprovalResponseEnumType.REQUEST,0L, testUser.getOrganizationId());
+			//logger.info("Found " + reqs.size() + " requests for " + testUser.getUrn() + " to obtain " + group1.getUrn() + " access");
+		} catch (FactoryException | ArgumentException e) {
+			error = true;
+			e.printStackTrace();
+			logger.error(e);
+		}
+		assertFalse("Test threw an error", error);
+		assertNotNull("Request is null", request);
+	}
+	@Test
+	public void TestCreateRequestBasket() {
+		boolean error = false;
+		AccessRequestType request = null;
+		AccessRequestType childRequest = null;
+		DirectoryGroupType app1 = getApplication("Application 1");
+		AccountGroupType group1 = getApplicationGroup("Group #1", GroupEnumType.ACCOUNT, app1);
+		ApplicationPermissionType per1 = getApplicationPermission("Permission #1",PermissionEnumType.APPLICATION,app1);
+		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
+		try {
+			logger.info("Test creating a bulk request basket");
+			RequestFactory rFact = ((RequestFactory)Factories.getFactory(FactoryEnumType.REQUEST));
+			request = rFact.newAccessRequest(testUser, ActionEnumType.REQUEST, null, null, null, null, 0L);
+			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.REQUEST, request);
+			/// request now has a temporary id that can be used for a parent value
+			
+			assertNotNull("Request is null", request);
+			//logger.info("Bulk object:\n" + JSONUtil.exportObject(request));
+
+			childRequest = rFact.newAccessRequest(testUser, ActionEnumType.REQUEST, null, null, null, group1, request.getId());
+			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.REQUEST, childRequest);
+	
+			childRequest = rFact.newAccessRequest(testUser, ActionEnumType.REQUEST, null, null, app1, per1, request.getId());
+			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.REQUEST, childRequest);
+			
+			BulkFactories.getBulkFactory().write(sessionId);
+			BulkFactories.getBulkFactory().close(sessionId);
+			//logger.info(JSONUtil.exportObject(request));
+			//assertTrue("Failed to add request",rFact.add(request));
+			
+			//List<AccessRequestType> reqs = rFact.getAccessRequestsForType(testUser, null, null, group1, 0L, testUser.getOrganizationId());
+			//logger.info("Found " + reqs.size() + " requests for " + testUser.getUrn() + " to obtain " + group1.getUrn() + " access");
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
+			error = true;
+			e.printStackTrace();
+			logger.error(e);
+		}
+
+		assertFalse("Test threw an error", error);
+		assertNotNull("Request is null", request);
+	}
 	
 	@Test
 	public void TestRequestAccess() {

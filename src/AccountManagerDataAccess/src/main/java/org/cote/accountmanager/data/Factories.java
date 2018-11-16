@@ -64,6 +64,7 @@ import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.factory.PersonParticipationFactory;
 import org.cote.accountmanager.data.factory.PolicyFactory;
 import org.cote.accountmanager.data.factory.PolicyParticipationFactory;
+import org.cote.accountmanager.data.factory.RequestFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.factory.RuleFactory;
@@ -83,6 +84,7 @@ import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.TypeSanitizer;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ApproverType;
@@ -161,6 +163,7 @@ public class Factories {
 	    Factories.registerClass(FactoryEnumType.TAGPARTICIPATION, TagParticipationFactory.class); 
 	    Factories.registerClass(FactoryEnumType.USER, UserFactory.class); 
 	    Factories.registerClass(FactoryEnumType.APPROVER, ApproverFactory.class); 
+	    Factories.registerClass(FactoryEnumType.REQUEST, RequestFactory.class); 
 	}
 	
 	static {
@@ -200,6 +203,7 @@ public class Factories {
 	    Factories.registerTypeClass(FactoryEnumType.TAGPARTICIPATION, BaseParticipantType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.USER, UserType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.APPROVER, ApproverType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.REQUEST, AccessRequestType.class); 
 	}
 	
 	static {
@@ -225,6 +229,7 @@ public class Factories {
 	    Factories.registerNameTypeSanitizer(NameEnumType.TAG, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.USER, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.APPROVER, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.REQUEST, TypeSanitizer.class); 
 	}
 	
 	

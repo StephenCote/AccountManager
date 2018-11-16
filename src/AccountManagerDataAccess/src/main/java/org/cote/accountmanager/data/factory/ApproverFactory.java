@@ -146,7 +146,7 @@ public class ApproverFactory extends NameIdFactory {
 	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
 		ApproverType obj = (ApproverType)object;
-		DataRow row = prepareAdd(obj, "approver");
+		DataRow row = prepareAdd(obj, this.primaryTableName);
 		try{
 
 			row.setCellValue("referencetype",obj.getReferenceType().toString());
@@ -178,7 +178,7 @@ public class ApproverFactory extends NameIdFactory {
 		newCred.setApproverId(rset.getLong("approverid"));
 		newCred.setApproverType(ApproverEnumType.fromValue(rset.getString("approvertype")));
 		newCred.setApprovalType(ApprovalEnumType.fromValue(rset.getString("approvaltype")));
-		newCred.setEntitlementId(rset.getLong("referenceid"));
+		newCred.setEntitlementId(rset.getLong("entitlementid"));
 		newCred.setEntitlementType(ApproverEnumType.fromValue(rset.getString("entitlementtype")));
 		newCred.setApproverLevel(rset.getInt("approverlevel"));
 		
