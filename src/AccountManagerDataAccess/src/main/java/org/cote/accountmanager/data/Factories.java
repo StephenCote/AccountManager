@@ -33,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.AddressFactory;
+import org.cote.accountmanager.data.factory.ApprovalFactory;
 import org.cote.accountmanager.data.factory.ApproverFactory;
 import org.cote.accountmanager.data.factory.AsymmetricKeyFactory;
 import org.cote.accountmanager.data.factory.AttributeFactory;
@@ -87,6 +88,7 @@ import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
+import org.cote.accountmanager.objects.ApprovalType;
 import org.cote.accountmanager.objects.ApproverType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseParticipantType;
@@ -163,6 +165,7 @@ public class Factories {
 	    Factories.registerClass(FactoryEnumType.TAGPARTICIPATION, TagParticipationFactory.class); 
 	    Factories.registerClass(FactoryEnumType.USER, UserFactory.class); 
 	    Factories.registerClass(FactoryEnumType.APPROVER, ApproverFactory.class); 
+	    Factories.registerClass(FactoryEnumType.APPROVAL, ApprovalFactory.class); 
 	    Factories.registerClass(FactoryEnumType.REQUEST, RequestFactory.class); 
 	}
 	
@@ -202,7 +205,8 @@ public class Factories {
 	    Factories.registerTypeClass(FactoryEnumType.TAG, BaseTagType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.TAGPARTICIPATION, BaseParticipantType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.USER, UserType.class); 
-	    Factories.registerTypeClass(FactoryEnumType.APPROVER, ApproverType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.APPROVER, ApproverType.class);
+	    Factories.registerTypeClass(FactoryEnumType.APPROVAL, ApprovalType.class);
 	    Factories.registerTypeClass(FactoryEnumType.REQUEST, AccessRequestType.class); 
 	}
 	

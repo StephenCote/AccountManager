@@ -1019,7 +1019,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		return updateToCache(obj, getCacheKeyName(obj));
 	}
 	public boolean updateToCache(NameIdType obj,String keyName) throws ArgumentException{
-		if(this.haveCacheId(obj.getId())) removeFromCache(obj,keyName);
+		if(this.haveCacheId(obj.getId()) || (keyName != null && typeNameMap.containsKey(keyName))) removeFromCache(obj,keyName);
 		return addToCache(obj, keyName);
 	}
 
@@ -1035,6 +1035,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		}
 		int length = typeMap.size();
 		if(typeNameMap.containsKey(keyName) || typeIdMap.containsKey(map.getId())){
+			/// logger.warn("Type name map contains " + keyName + " (" + typeNameMap.containsKey(keyName) + ") or Type id map contains " + map.getId() + " (" + typeIdMap.containsKey(map.getId()) + ")");
 			return false;
 		}
 		typeMap.add(map);

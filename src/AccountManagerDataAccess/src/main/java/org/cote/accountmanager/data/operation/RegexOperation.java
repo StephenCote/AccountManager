@@ -33,6 +33,8 @@ import org.cote.accountmanager.data.fact.FactUtil;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.PatternType;
+import org.cote.accountmanager.objects.PolicyRequestType;
+import org.cote.accountmanager.objects.PolicyResponseType;
 
 public class RegexOperation implements IOperation {
 	public static final Logger logger = LogManager.getLogger(RegexOperation.class);
@@ -40,7 +42,7 @@ public class RegexOperation implements IOperation {
 	public <T> T read(FactType sourceFact,final FactType referenceFact){
 		return FactUtil.factoryRead(sourceFact, referenceFact);
 	}
-	public OperationResponseEnumType operate(final PatternType pattern, FactType sourceFact,final FactType referenceFact){
+	public OperationResponseEnumType operate(final PolicyRequestType prt,PolicyResponseType prr, final PatternType pattern, FactType sourceFact,final FactType referenceFact){
 		if(sourceFact.getFactData() == null){
 			logger.error("Invalid argument.  Expecting source string value");
 			return OperationResponseEnumType.ERROR;

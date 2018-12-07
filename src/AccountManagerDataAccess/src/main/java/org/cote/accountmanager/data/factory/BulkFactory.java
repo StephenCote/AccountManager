@@ -521,10 +521,11 @@ public class BulkFactory {
 		///
 		String key = factory.getCacheKeyName(object);
 		if(!factory.updateToCache(object,key)){
-			logger.warn("Failed to add object '" + object.getName() + "' to factory cache with key name " + factory.getCacheKeyName(object));
+			logger.warn("Failed to add object '" + object.getNameType().toString() + " " + object.getObjectId() + "' to " + factoryType.toString() + " factory cache with key name " + factory.getCacheKeyName(object));
 		}
 		
 		if(updateSet.get(sessionId).get(factoryType).contains(key)){
+			logger.warn(factoryType.toString() + " update set for session " + sessionId + " already includes " + key);
 			return;
 		}
 

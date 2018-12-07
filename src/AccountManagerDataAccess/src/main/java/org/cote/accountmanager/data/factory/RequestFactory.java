@@ -85,7 +85,7 @@ public class RequestFactory  extends NameIdFactory {
 	@Override
 	public <T> String getCacheKeyName(T obj){
 		AccessRequestType t = (AccessRequestType)obj;
-		return t.getActionType().toString() + "-" + t.getReferenceType().toString() + "-" + t.getReferenceId()+ "-" + t.getEntitlementType().toString() + "-" + t.getEntitlementId() + "-" + t.getRequestorType().toString() + "-" + t.getRequestorId() + "-" + t.getParentId();
+		return t.getActionType().toString() + "-" + t.getReferenceType().toString() + "-" + t.getReferenceId()+ "-" + t.getEntitlementType().toString() + "-" + t.getEntitlementId() + "-" + t.getRequestorType().toString() + "-" + t.getRequestorId() + "-" + t.getParentId() + "-" + t.getCreatedDate().toGregorianCalendar().getTimeInMillis();
 	}
 	
 	@Override
@@ -116,7 +116,7 @@ public class RequestFactory  extends NameIdFactory {
 		if(delegate != null && EnumUtils.isValidEnum(ApproverEnumType.class, delegate.getNameType().toString()) == false) throw new ArgumentException("Invalid delegate type");
 		if(requestor == null) requestor = owner;
 		AccessRequestType appr = new AccessRequestType();
-		appr.setNameType(NameEnumType.APPROVER);
+		appr.setNameType(NameEnumType.REQUEST);
 		appr.setActionType(ActionEnumType.valueOf(action.toString()));
 		if(entitlement != null) {
 			appr.setEntitlementId(entitlement.getId());
@@ -166,7 +166,6 @@ public class RequestFactory  extends NameIdFactory {
 
 			row.setCellValue("referencetype",obj.getReferenceType().toString());
 			row.setCellValue("referenceid",obj.getReferenceId());
-			row.setCellValue("actiontype",obj.getActionType().toString());
 			row.setCellValue("entitlementtype",obj.getEntitlementType().toString());
 			row.setCellValue("entitlementid",obj.getEntitlementId());
 		
@@ -182,7 +181,7 @@ public class RequestFactory  extends NameIdFactory {
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
 		AccessRequestType newApr = new AccessRequestType();
-		newApr.setNameType(NameEnumType.CREDENTIAL);
+		newApr.setNameType(NameEnumType.REQUEST);
 		super.read(rset, newApr);
 		newApr.setApprovalStatus(ApprovalResponseEnumType.valueOf(rset.getString("approvalstatus")));
 		newApr.setDelegateId(rset.getLong("delegateid"));
@@ -210,6 +209,7 @@ public class RequestFactory  extends NameIdFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		AccessRequestType useMap = (AccessRequestType)map;
+		logger.info("Set status to " + useMap.getApprovalStatus().toString());
 		fields.add(QueryFields.getFieldApprovalStatus(useMap.getApprovalStatus()));
 		fields.add(QueryFields.getFieldRequestorId(useMap.getRequestorId()));
 		fields.add(QueryFields.getFieldRequestorType(useMap.getRequestorType()));
@@ -219,7 +219,6 @@ public class RequestFactory  extends NameIdFactory {
 		fields.add(QueryFields.getFieldActionType(useMap.getActionType()));
 		fields.add(QueryFields.getFieldReferenceId(useMap.getReferenceId()));
 		fields.add(QueryFields.getFieldReferenceType(useMap.getReferenceType()));
-		fields.add(QueryFields.getFieldActionType(useMap.getActionType()));
 		fields.add(QueryFields.getFieldEntitlementId(useMap.getEntitlementId()));
 		fields.add(QueryFields.getFieldEntitlementType(useMap.getEntitlementType()));
 		fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));

@@ -42,6 +42,8 @@ import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
+import org.cote.accountmanager.data.operation.IOperation;
+import org.cote.accountmanager.data.operation.OperationUtil;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.ScriptService;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -54,6 +56,7 @@ import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.FunctionEnumType;
 import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -186,6 +189,7 @@ public class FactUtil {
 						outObj = (T)((ControlFactory)fact).getControlByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;		
 					/// NameIdGroupFactory types
+					case OPERATION:
 					case ACCOUNT:
 					case CONTACT:
 					case PERSON:
@@ -197,6 +201,9 @@ public class FactUtil {
 							dir =  getDirectoryFromFact(sourceFact,referenceFact);
 							outObj = (T)((NameIdGroupFactory)fact).getByNameInGroup(sourceFact.getSourceUrn(), dir);
 							logger.debug("Looking for " + useRef.getFactoryType() + " " + sourceFact.getSourceUrn() + " in " + (dir != null ? dir.getPath() : "Null Dir") + " - Result is " + (outObj == null ? "Null":"Found"));
+						}
+						if(outObj != null && useRef.getFactoryType() == FactoryEnumType.OPERATION) {
+							outObj = (T)OperationUtil.getOperationInstance(((OperationType)outObj).getOperation());
 						}
 						break;
 					/// Data is a predecessor to the NameIdGroupFactory type, but it doesn't inherity from that base class

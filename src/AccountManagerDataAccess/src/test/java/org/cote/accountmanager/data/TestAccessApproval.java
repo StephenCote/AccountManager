@@ -10,10 +10,13 @@ import org.cote.accountmanager.data.factory.ApproverFactory;
 import org.cote.accountmanager.data.factory.ControlFactory;
 import org.cote.accountmanager.data.factory.FactFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.PatternFactory;
 import org.cote.accountmanager.data.factory.PolicyFactory;
 import org.cote.accountmanager.data.factory.RequestFactory;
 import org.cote.accountmanager.data.factory.RuleFactory;
+import org.cote.accountmanager.data.operation.LookupOwnerOperation;
+import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.security.RequestService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
@@ -22,6 +25,7 @@ import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
 import org.cote.accountmanager.objects.ApprovalEnumType;
 import org.cote.accountmanager.objects.ApprovalResponseEnumType;
+import org.cote.accountmanager.objects.ApprovalType;
 import org.cote.accountmanager.objects.ApproverType;
 import org.cote.accountmanager.objects.ControlActionEnumType;
 import org.cote.accountmanager.objects.ControlEnumType;
@@ -33,6 +37,8 @@ import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonRoleType;
+import org.cote.accountmanager.objects.PolicyDefinitionType;
+import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleEnumType;
 import org.cote.accountmanager.objects.RuleType;
@@ -153,6 +159,7 @@ public class TestAccessApproval extends BaseDataAccessTest {
 		assertFalse("Test threw an error", error);
 		assertNotNull("Request is null", request);
 	}
+	
 	@Test
 	public void TestCreateRequestBasket() {
 		boolean error = false;
@@ -195,10 +202,21 @@ public class TestAccessApproval extends BaseDataAccessTest {
 		assertNotNull("Request is null", request);
 	}
 	
+	/*
+	 * To test access requests, the following conditions must be true:
+	 * - a valid user to make the request
+	 * - a valid user to approve the request
+	 * - an entitlement
+	 * - an approver defined for the entitlement, or parent application
+	 * - at least on enabled policy (eg: Owner Approval Policy)
+	 * - a control that correlates the entitlement to the policy
+	 */
+	
 	@Test
 	public void TestRequestAccess() {
 		
 		DirectoryGroupType app1 = getApplication("Application 1");
+		Factories.getAttributeFactory().populateAttributes(app1);
 		PersonRoleType roleP = getApplicationRole("Role #1",RoleEnumType.PERSON,app1);
 		AccountRoleType roleP2 = getApplicationRole("Role #2",RoleEnumType.ACCOUNT,app1);
 		ApplicationPermissionType per1 = getApplicationPermission("Permission #1",PermissionEnumType.APPLICATION,app1);
@@ -206,6 +224,7 @@ public class TestAccessApproval extends BaseDataAccessTest {
 		AccountGroupType group1 = getApplicationGroup("Group #1", GroupEnumType.ACCOUNT, app1);
 		AccountGroupType group2 = getApplicationGroup("Group #2", GroupEnumType.ACCOUNT, app1);
 		assertNotNull("Group 1 is null", group1);
+		ApproverType apro = null;
 		ApproverType apr1 = null;
 		ApproverType apr2 = null;
 		boolean error = false;
@@ -213,22 +232,33 @@ public class TestAccessApproval extends BaseDataAccessTest {
 		try {
 			ApproverFactory aFact = ((ApproverFactory)Factories.getFactory(FactoryEnumType.APPROVER));
 
-			logger.info("Cleaning up pre-test conditions");
+			//logger.info("Cleaning up pre-test conditions");
 			//aFact.deleteApproversForType(null, group1);
 			//aFact.deleteApproversForType(null, per1);
 			
+			List<ApproverType> aLo = aFact.getApproversForType(null, group1, 1,ApprovalEnumType.OWNER);
 			List<ApproverType> aL = aFact.getApproversForType(null, group1, 1,ApprovalEnumType.ACCESS);
 			List<ApproverType> aL2 = aFact.getApproversForType(app1, per1, 1,ApprovalEnumType.ACCESS);
 			
 			//logger.info("Group Approver size: " + aL.size());
 			//logger.info("Perm Approver size: " + aL2.size());
+			if(aLo.size() == 1) apro = aLo.get(0);
+			else{
+				apro = aFact.newApprover(testUser, null, group1, testUser, ApprovalEnumType.OWNER, 1);
+				assertTrue("Failed to add approver 1", aFact.add(apro));
+				apro = aFact.getApproversForType(null, group1, 1,ApprovalEnumType.OWNER).get(0);
+
+				Factories.getAttributeFactory().newAttribute(app1, RequestService.ATTRIBUTE_NAME_OWNER, Long.toString(apro.getId()));
+				Factories.getAttributeFactory().addAttributes(app1);
+			}
 			if(aL.size() == 1) apr1 = aL.get(0);
 			else{
 				apr1 = aFact.newApprover(testUser, null, group1, testUser, ApprovalEnumType.ACCESS, 1);
 				assertTrue("Failed to add approver 1", aFact.add(apr1));
 			}
-			if(aL2.size() == 1) apr2 = aFact.newApprover(testUser, app1, per1, testUser, ApprovalEnumType.ACCESS, 1);
+			if(aL2.size() == 1) apr2 = aL2.get(0);
 			else {
+				apr2 = aFact.newApprover(testUser, app1, per1, testUser, ApprovalEnumType.ACCESS, 1);
 				assertTrue("Failed to add approver 2", aFact.add(apr2));
 			}
 			assertNotNull("Approval object is null", apr1);
@@ -248,9 +278,60 @@ public class TestAccessApproval extends BaseDataAccessTest {
 				((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).add(ownerControl);
 			}
 			assertTrue("Entitlement " + group1.getName() + " is not requestable", RequestService.isRequestable(group1));
+			
+			
+			List<AccessRequestType> reqs = RequestService.listOpenAccessRequests(testUser);
+			if(reqs.size() > 0) {
+				logger.info("Cleaning up outstanding requests: " + reqs.size());
+				String reqUpdate = BulkFactories.getBulkFactory().newBulkSession();
+				for(AccessRequestType arq : reqs) {
+					arq.setApprovalStatus(ApprovalResponseEnumType.REMOVE);
+					BulkFactories.getBulkFactory().modifyBulkEntry(reqUpdate, FactoryEnumType.REQUEST, arq);
+				}
+				BulkFactories.getBulkFactory().write(reqUpdate);
+				BulkFactories.getBulkFactory().close(reqUpdate);
+				reqs = RequestService.listOpenAccessRequests(testUser);
+			}
+			
+		
+			//logger.info("Open requests (there should be zero): " + reqs.size());
+			
+			assertTrue("Expected zero outstanding requests for user " + testUser.getUrn(), reqs.size() == 0);
+			
+			RequestFactory rFact = ((RequestFactory)Factories.getFactory(FactoryEnumType.REQUEST));
+			AccessRequestType request = rFact.newAccessRequest(testUser, ActionEnumType.REQUEST, null, null, null, group1, 0L);
+			assertNotNull("Request is null", request);
+			assertTrue("Failed to add request",rFact.add(request));
+			
+			reqs = rFact.getAccessRequestsForType(testUser, null, null, group1, ApprovalResponseEnumType.REQUEST,0L, testUser.getOrganizationId());
+			assertTrue("Expected one outstanding request for user " + testUser.getUrn(), reqs.size() == 1);
+
+			
+			/// Each access request will result in one or more policies
+			/// From an end user and approval perspective, these can be requested as a bucket/basket, and approval can be handled at that level as well (if desired)
+			/// Behind the scenese, it's all individual records to track the request, the approval, etc.
+			/// Therefore, in evaluating a request for approval, it's necessary to:
+			/// 1) Get one or more pending request
+			/// 2) For each request, obtain all of the policies for that request
+			/// 3) For each policy for each request, evaluate the policy to obtain the approvers
+			/// 4) Generate the approval entries per the policy
+			/// 
+			for(AccessRequestType arq : reqs) {
+				//List<PolicyType> reqPols= RequestService.getRequestPolicies(group1, true);
+				List<PolicyType> reqPols= RequestService.getRequestPolicies(arq);
+				assertTrue("Expected at least one policy", reqPols.size() > 0);
+				logger.info("Applicable policy controls for request: " + reqPols.size());
+				List<ApprovalType> approvals = RequestService.evaluateRequestPolicies(arq, reqPols);
+				assertTrue("Expected at least one approval", approvals.size() > 0);
+
+			}
+			//prt.setUrn(pol.getUrn());
+			//prt.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(pol.getOrganizationId()));
+
+			
 			//assertTrue("Entitlement " + per1.getName()  + " is not requestable", RequestService.isRequestable(per1));
 			
-		} catch (ArgumentException | FactoryException e) {
+		} catch (ArgumentException | FactoryException | DataAccessException e) {
 			logger.error(e);
 			e.printStackTrace();
 			error = true;

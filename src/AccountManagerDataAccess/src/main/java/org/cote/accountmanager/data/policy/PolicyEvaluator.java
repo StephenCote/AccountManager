@@ -461,7 +461,8 @@ public class PolicyEvaluator {
 			case INTERNAL:
 				IOperation oper = OperationUtil.getOperationInstance(op.getOperation());
 				if(oper == null) outResponse = OperationResponseEnumType.ERROR;
-				else outResponse = oper.operate(pattern, fact, matchFact);
+				else outResponse = oper.operate(prt, prr, pattern, fact, matchFact);
+				
 				break;
 			case FUNCTION:
 				logger.error("NEED TO REFACTOR. THIS IS ONLY AN INITIAL STUB");

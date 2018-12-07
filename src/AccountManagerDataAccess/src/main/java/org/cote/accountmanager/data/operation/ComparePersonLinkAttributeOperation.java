@@ -35,6 +35,8 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.PolicyRequestType;
+import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 
@@ -43,7 +45,7 @@ public class ComparePersonLinkAttributeOperation implements IOperation {
 	public <T> T read(FactType sourceFact,final FactType referenceFact){
 		return FactUtil.factoryRead(sourceFact, referenceFact);
 	}
-	public OperationResponseEnumType operate(final PatternType pattern, FactType sourceFact,final FactType referenceFact){
+	public OperationResponseEnumType operate(final PolicyRequestType prt,PolicyResponseType prr, final PatternType pattern, FactType sourceFact,final FactType referenceFact){
 		if(referenceFact.getSourceUrn() == null){
 			logger.error("Match fact " + referenceFact.getUrn() + " doesn't define a source urn");
 			return OperationResponseEnumType.ERROR;

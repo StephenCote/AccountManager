@@ -34,6 +34,8 @@ import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
 import org.cote.accountmanager.objects.PatternType;
+import org.cote.accountmanager.objects.PolicyRequestType;
+import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
@@ -43,7 +45,7 @@ public class MatchSystemRoleOperation implements IOperation {
 	public <T> T read(FactType sourceFact,final FactType referenceFact){
 		return FactUtil.factoryRead(sourceFact, referenceFact);
 	}
-	public OperationResponseEnumType operate(final PatternType pattern, FactType sourceFact,final FactType referenceFact){
+	public OperationResponseEnumType operate(final PolicyRequestType prt,PolicyResponseType prr, final PatternType pattern, FactType sourceFact,final FactType referenceFact){
 		if(sourceFact.getFactReference() == null || sourceFact.getFactReference().getNameType() == NameEnumType.UNKNOWN){
 			logger.error("Invalid argument");
 			return OperationResponseEnumType.ERROR;

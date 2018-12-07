@@ -1,26 +1,3 @@
-/*******************************************************************************
- * Copyright (C) 2002, 2017 Stephen Cote Enterprises, LLC. All rights reserved.
- * Redistribution without modification is permitted provided the following conditions are met:
- *
- *    1. Redistribution may not deviate from the original distribution,
- *        and must reproduce the above copyright notice, this list of conditions
- *        and the following disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *    2. Products may be derived from this software.
- *    3. Redistributions of any form whatsoever must retain the following acknowledgment:
- *        "This product includes software developed by Stephen Cote Enterprises, LLC"
- *
- * THIS SOFTWARE IS PROVIDED BY STEPHEN COTE ENTERPRISES, LLC ``AS IS''
- * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THIS PROJECT OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
 import java.sql.ResultSet;
@@ -42,21 +19,21 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.ApprovalEnumType;
+import org.cote.accountmanager.objects.ApprovalResponseEnumType;
 import org.cote.accountmanager.objects.ApproverEnumType;
 import org.cote.accountmanager.objects.ApproverType;
+import org.cote.accountmanager.objects.ApprovalType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
-import org.cote.accountmanager.util.CalendarUtil;
 
-public class ApproverFactory extends NameIdFactory {
-
-	public ApproverFactory(){
+public class ApprovalFactory  extends NameIdFactory {
+	private DatatypeFactory dtFactory = null;
+	public ApprovalFactory(){
 		super();
 		this.hasOwnerId = true;
 		this.hasParentId=false;
@@ -66,16 +43,23 @@ public class ApproverFactory extends NameIdFactory {
 		this.aggressiveKeyFlush = false;
 		this.useThreadSafeCollections = false;
 		this.scopeToOrganization = true;
-		this.primaryTableName = "approver";
+		this.primaryTableName = "approval";
 		this.tableNames.add(primaryTableName);
 
-		factoryType = FactoryEnumType.APPROVER;
+		factoryType = FactoryEnumType.APPROVAL;
+		
+		try {
+			dtFactory = DatatypeFactory.newInstance();
+		} catch (DatatypeConfigurationException e) {
+			
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
 
 	}
 	@Override
 	public void mapBulkIds(NameIdType map){
 		super.mapBulkIds(map);
-		ApproverType cit = (ApproverType)map;
+		ApprovalType cit = (ApprovalType)map;
 		if(cit.getReferenceId().compareTo(0L) < 0){
 			Long tmpId = BulkFactories.getBulkFactory().getMappedId(cit.getReferenceId());
 			if(tmpId.compareTo(0L) > 0) cit.setReferenceId(tmpId);
@@ -91,8 +75,8 @@ public class ApproverFactory extends NameIdFactory {
 	}
 	@Override
 	public <T> String getCacheKeyName(T obj){
-		ApproverType t = (ApproverType)obj;
-		return t.getApproverType().toString() + "-" + t.getApproverLevel() + "-" + t.getReferenceType().toString() + "-" + t.getReferenceId()+ "-" + t.getEntitlementType().toString() + "-" + t.getEntitlementId();
+		ApprovalType t = (ApprovalType)obj;
+		return t.getApprovalType().toString() + "-" + t.getApproverLevel() + "-" + t.getReferenceType().toString() + "-" + t.getReferenceId()+ "-" + t.getEntitlementType().toString() + "-" + t.getEntitlementId() +"-" + t.getCreatedDate().toGregorianCalendar().getTimeInMillis();
 	}
 	
 	@Override
@@ -105,24 +89,45 @@ public class ApproverFactory extends NameIdFactory {
 	@Override
 	public <T> boolean delete(T object) throws FactoryException, ArgumentException
 	{
-		ApproverType obj = (ApproverType)object;
+		ApprovalType obj = (ApprovalType)object;
 		removeFromCache(obj);
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
 	}
-	
-	public ApproverType newApprover(UserType owner, NameIdType targetObject, NameIdType entitlement, NameIdType approver, ApprovalEnumType approvalType, int level) throws ArgumentException
+	public ApprovalType newApproval(AccessRequestType request, ApproverType approver) throws ArgumentException
+	{
+		ApprovalType approval = new ApprovalType();
+		approval.setNameType(NameEnumType.APPROVAL);
+		approval.setApprovalType(ApprovalEnumType.ACCESS);
+		approval.setApproverId(approver.getApproverId());
+		approval.setApproverType(approver.getApproverType());
+		
+	    GregorianCalendar cal = new GregorianCalendar();
+	    cal.setTime(new Date());
+		approval.setCreatedDate(dtFactory.newXMLGregorianCalendar(cal));
+		approval.setModifiedDate(dtFactory.newXMLGregorianCalendar(cal));
+		cal.add(GregorianCalendar.WEEK_OF_MONTH, 2);
+		approval.setExpiryDate(dtFactory.newXMLGregorianCalendar(cal));
+		
+		approval.setEntitlementType(request.getEntitlementType());
+		approval.setEntitlementId(request.getEntitlementId());
+		approval.setRequestId(request.getObjectId());
+		approval.setResponse(ApprovalResponseEnumType.UNKNOWN);
+		
+		return approval;
+	}
+	public ApprovalType newApproval(UserType owner, NameIdType targetObject, NameIdType entitlement, NameIdType approver, ApprovalEnumType approvalType, int level) throws ArgumentException
 	{
 		if (owner == null || owner.getId().compareTo(0L)==0) throw new ArgumentException("Invalid owner");
 		if(entitlement == null) throw new ArgumentException("Invalid entitlement object");
-		
+		/*
 		if(entitlement.getNameType() == NameEnumType.PERMISSION && (targetObject == null || targetObject.getNameType() == NameEnumType.UNKNOWN)) throw new ArgumentException("Invalid target object");
 		if(EnumUtils.isValidEnum(ApproverEnumType.class, entitlement.getNameType().toString()) == false) throw new ArgumentException("Invalid entitlement type");
 		if(EnumUtils.isValidEnum(ApproverEnumType.class, approver.getNameType().toString()) == false) throw new ArgumentException("Invalid approver type");
 
-		ApproverType appr = new ApproverType();
+		ApprovalType appr = new ApprovalType();
 		appr.setNameType(NameEnumType.APPROVER);
-		appr.setApproverType(ApproverEnumType.valueOf(approver.getNameType().toString()));
+		appr.setApprovalType(ApprovalEnumType.valueOf(approver.getNameType().toString()));
 		appr.setApproverId(approver.getId());
 		appr.setEntitlementType(ApproverEnumType.valueOf(entitlement.getNameType().toString()));
 		appr.setEntitlementId(entitlement.getId());
@@ -133,22 +138,28 @@ public class ApproverFactory extends NameIdFactory {
 		appr.setApproverLevel(level);
 		appr.setApprovalType(approvalType);
 		return appr;
+		*/
+		return null;
 	}
 	
 	@Override
 	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
-		ApproverType obj = (ApproverType)object;
+		ApprovalType obj = (ApprovalType)object;
 		DataRow row = prepareAdd(obj, this.primaryTableName);
 		try{
+			row.setCellValue("requestid",obj.getRequestId());
+			row.setCellValue("response",obj.getResponse().toString());
+			row.setCellValue("responsemessage", obj.getResponseMessage());
+			row.setCellValue("signerid",obj.getSignerId());
+			row.setCellValue("validationid",obj.getValidationId());
+			row.setCellValue("signature", obj.getSignature());
 
 			row.setCellValue("referencetype",obj.getReferenceType().toString());
 			row.setCellValue("referenceid",obj.getReferenceId());
 			row.setCellValue("approvertype",obj.getApproverType().toString());
-			row.setCellValue("approvaltype",obj.getApprovalType().toString());
 			row.setCellValue("approverid",obj.getApproverId());
-			row.setCellValue("entitlementtype",obj.getEntitlementType().toString());
-			row.setCellValue("entitlementid",obj.getEntitlementId());
+			row.setCellValue("approvalid",obj.getApproverId());
 			row.setCellValue("approverlevel",obj.getApproverLevel());
 		
 			if(insertRow(row)) return true;
@@ -162,17 +173,20 @@ public class ApproverFactory extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		ApproverType newCred = new ApproverType();
-		newCred.setNameType(NameEnumType.APPROVER);
+		ApprovalType newCred = new ApprovalType();
+		newCred.setNameType(NameEnumType.APPROVAL);
 		super.read(rset, newCred);
-		
+		newCred.setRequestId(rset.getString("requestid"));
+		newCred.setSignature(rset.getBytes("signature"));
+		newCred.setSignerId(rset.getString("signerid"));
+		newCred.setValidationId(rset.getString("validationid"));
+		newCred.setResponseMessage(rset.getString("responsemessage"));
+		newCred.setResponse(ApprovalResponseEnumType.valueOf(rset.getString("response")));
 		newCred.setReferenceId(rset.getLong("referenceid"));
 		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
 		newCred.setApproverId(rset.getLong("approverid"));
 		newCred.setApproverType(ApproverEnumType.fromValue(rset.getString("approvertype")));
 		newCred.setApprovalType(ApprovalEnumType.fromValue(rset.getString("approvaltype")));
-		newCred.setEntitlementId(rset.getLong("entitlementid"));
-		newCred.setEntitlementType(ApproverEnumType.fromValue(rset.getString("entitlementtype")));
 		newCred.setApproverLevel(rset.getInt("approverlevel"));
 		
 		return newCred;
@@ -180,30 +194,36 @@ public class ApproverFactory extends NameIdFactory {
 	
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
-		ApproverType useMap = (ApproverType)map;
+		ApprovalType useMap = (ApprovalType)map;
+		
+		fields.add(QueryFields.getFieldValidationId(useMap.getValidationId()));
+		fields.add(QueryFields.getFieldSignerId(useMap.getSignerId()));
+		fields.add(QueryFields.getFieldSignature(useMap.getSignature()));
+		fields.add(QueryFields.getFieldRequestId(useMap.getRequestId()));
+		fields.add(QueryFields.getFieldResponse(useMap.getResponse()));
+		fields.add(QueryFields.getFieldResponseMessage(useMap.getResponseMessage()));
+		
 		fields.add(QueryFields.getFieldReferenceId(useMap.getReferenceId()));
 		fields.add(QueryFields.getFieldReferenceType(useMap.getReferenceType()));
 		fields.add(QueryFields.getFieldApproverId(useMap.getApproverId()));
-		fields.add(QueryFields.getFieldApproverType(useMap.getApproverType()));
 		fields.add(QueryFields.getFieldApprovalType(useMap.getApprovalType()));
-		fields.add(QueryFields.getFieldEntitlementId(useMap.getEntitlementId()));
-		fields.add(QueryFields.getFieldEntitlementType(useMap.getEntitlementType()));
+		fields.add(QueryFields.getFieldApprovalType(useMap.getApprovalType()));
 		fields.add(QueryFields.getFieldApproverLevel(useMap.getApproverLevel()));
 	}
-	public ApproverType getApproverByObjectId(String id, long organizationId) throws FactoryException, ArgumentException{
+	public ApprovalType getApproverByObjectId(String id, long organizationId) throws FactoryException, ArgumentException{
 		List<NameIdType> sec = getByObjectId(id, organizationId);
-		if(!sec.isEmpty()) return (ApproverType)sec.get(0);
+		if(!sec.isEmpty()) return (ApprovalType)sec.get(0);
 		return null;
 	}
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
-		ApproverType data = (ApproverType)object;
+		ApprovalType data = (ApprovalType)object;
 		removeFromCache(data);
 		return super.update(data, null);
 	}
-	
-	public List<ApproverType> getApproversForType(NameIdType obj, NameIdType entitlement, int level, ApprovalEnumType approvalType) throws FactoryException, ArgumentException{
+	/*
+	public List<ApprovalType> getApproversForType(NameIdType obj, NameIdType entitlement, int level, ApprovalEnumType approvalType) throws FactoryException, ArgumentException{
 		List<QueryField> fields = new ArrayList<>();
 		// allow id of 0 for global approver checks
 		if(obj == null && entitlement == null) throw new ArgumentException("Either an object or entitlement must be specified");
@@ -238,6 +258,7 @@ public class ApproverFactory extends NameIdFactory {
 		}
 		return (this.deleteByField(fields.toArray(new QueryField[0]), (obj == null ? entitlement : obj).getOrganizationId()) > 0);
 	}
+	*/
 
 	
 }

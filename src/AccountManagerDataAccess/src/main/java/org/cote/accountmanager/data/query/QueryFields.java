@@ -346,6 +346,30 @@ public class QueryFields {
 	{
 		return getBigIntField("approverid", id);
 	}
+	public static QueryField getFieldResponse(ApprovalResponseEnumType art)
+	{
+		return getStringField("response", art.toString());
+	}
+	public static QueryField getFieldResponseMessage(String msg)
+	{
+		return getStringField("responsemessage", msg);
+	}
+	public static QueryField getFieldRequestId(String objId)
+	{
+		return getStringField("requestid", objId);
+	}
+	public static QueryField getFieldSignerId(String objId)
+	{
+		return getStringField("signerid", objId);
+	}
+	public static QueryField getFieldValidationId(String objId)
+	{
+		return getStringField("validationid", objId);
+	}
+	public static QueryField getFieldSignature(byte[] data)
+	{
+		return getBytesField("signature", data);
+	}
 	public static QueryField getFieldEntitlementType(ApproverEnumType type)
 	{
 		return getStringField("entitlementtype", type.toString());
