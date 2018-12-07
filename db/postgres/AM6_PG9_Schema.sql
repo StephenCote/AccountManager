@@ -1,4 +1,4 @@
-﻿-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
 -- select uuid_generate_v4();
 
@@ -561,7 +561,6 @@ create table approval (
 	ValidationId varchar(64),
 	ApprovalId varchar(64),
 	RequestId varchar(64),
-	ApprovalStatus varchar(64),
 	Signature bytea,
 	ApproverType varchar(64) not null,
 	ApproverId bigint not null default 0,
@@ -700,7 +699,7 @@ select U.id as accountid,D.id as dataid, D.name as DataName, D.ownerid as dataow
 
 
 --- Accumulate permissions moving up from the leaf 
---- this is actually coded reverse of what ‘from-leaf’ might imply - it looks DOWN from root_id
+--- this is actually coded reverse of what 'from-leaf' might imply - it looks DOWN from root_id
 --- Note: The views must reference roles -> roleid and participation -> leafed
 CREATE OR REPLACE FUNCTION roles_from_leaf(root_id BIGINT,organizationid BIGINT) 
         RETURNS TABLE (leafid BIGINT,roleid BIGINT, parentid BIGINT, organizationid BIGINT)
@@ -716,7 +715,7 @@ CREATE OR REPLACE FUNCTION roles_from_leaf(root_id BIGINT,organizationid BIGINT)
 	select * from role_tree;
         $$ LANGUAGE 'sql';
 
--- this is actually coded reverse of what ‘from-leaf’ might imply - it looks DOWN from root_id
+-- this is actually coded reverse of what 'from-leaf' might imply - it looks DOWN from root_id
 -- I reused this logic below for rolling up groups given a branch
 ---
 CREATE OR REPLACE FUNCTION roles_from_leaf(IN root_id bigint)
@@ -778,7 +777,7 @@ CREATE OR REPLACE FUNCTION leveled_roles_from_leaf(root_id BIGINT,organizationid
         $$ LANGUAGE 'sql';
 
 --- Accumulate permissions for roles moving down from the leaf/trunk (reverse rbac)
---- this is actually coded reverse of what ‘to-leaf’ might imply - it looks UP from root_id
+--- this is actually coded reverse of what 'to-leaf' might imply - it looks UP from root_id
 --- Note: The views must reference roles -> roleid and participation -> leafed
 CREATE OR REPLACE FUNCTION roles_to_leaf(root_id BIGINT,organizationid BIGINT) 
         RETURNS TABLE (leafid BIGINT,roleid BIGINT, parentid BIGINT, organizationid BIGINT)
