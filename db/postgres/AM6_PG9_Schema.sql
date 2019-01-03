@@ -1234,6 +1234,19 @@ or
 organizationid not in (select id from organizations)
 ;
 
+create or replace view orphanTagParticipations as
+select id from TagParticipation GP1
+where (participanttype = 'USER' and participantid not in (select id from Users U1))
+OR (participanttype = 'PERSON' and participantid not in (select id from Persons P1))
+OR (participanttype = 'ACCOUNT' and participantid not in (select id from Accounts A1))
+OR (participanttype = 'ROLE' and participantid not in (select id from Roles R1))
+OR (participanttype = 'GROUP' and participantid not in (select id from Groups G1))
+OR (participanttype = 'DATA' and participantid not in (select id from Data D1))
+OR (participationid not in (select id from Tags))
+or
+organizationid not in (select id from organizations)
+;
+
 create or replace view orphanContactInformationParticipations as
 select id from ContactInformationParticipation GP1
 where (participanttype = 'CONTACT' and participantid not in (select id from Contacts U1))
@@ -1348,7 +1361,7 @@ CREATE OR REPLACE FUNCTION cleanup_orphans()
 	delete from roleparticipation where id in (select id from orphanRoleParticipations);
 	delete from groupparticipation where id in (select id from orphanGroupParticipations);
 	delete from personparticipation where id in (select id from orphanPersonParticipations);
-
+	delete from tagparticipation where id in (select id from orphanTagParticipations);
 	delete from credential where id in (select id from orphanCredentials);
 
         delete from attribute where referencetype = 'GROUP' and referenceid not in (select id from groups);
