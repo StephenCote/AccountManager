@@ -983,10 +983,52 @@
 			_s.showImage = 1;
 			_s.showImageId = sId;
 			_s.showImageIndex = iViewIndex;
+			var bVid = (o.mimeType && o.mimeType.match(/^video/i));
+			var vCont = galleryView.getCanvasController().getObjects().galleryContainer;
+			if(_o.video){
+				vCont.removeChild(_o.video);
+				delete _o.video;
+			}
+			
 			//_s.showControlPanel = 0;
 			//this.clearView(1);
-			var img = new Image();
 			
+			/// Handle Video ....
+			var img, sH;
+			if(bVid){
+				var oV = document.createElement("video");
+			    oV.setAttribute("style","position: absolute;");
+				
+				oV.setAttribute("class", "test");
+				oV.setAttribute("autoplay","true");
+				oV.setAttribute("controls","true");
+				var oS = document.createElement("source");
+				oS.setAttribute("src","/AccountManagerService/media/" + AM6Client.dotPath(o.organizationPath) + "/Data" + o.groupPath + "/" + o.name);
+				oS.setAttribute("type", o.mimeType);
+				sH = "onloadedmetadata";
+				//sH = "loadeddata";
+				oV.appendChild(oS);
+				vCont.appendChild(oV);
+				_o.video = oV;
+				img = oV;
+				/*
+				var ctx = this.getCanvas().getTemporaryContext();
+				var cvs = this.getCanvas().getObjects().temp_canvas;
+				cvs.style.width = cvs.clientWidth + "px";
+				cvs.style.height = cvs.clientHeight + "px";
+			    var cw = Math.floor(cvs.clientWidth / 100);
+			    var ch = Math.floor(cvs.clientHeight / 100);
+			    cvs.width = cw;
+			    cvs.height = ch;
+			    oV.addEventListener('play', function(){
+					ctl.drawVideo(this, ctx, cw, ch);
+			    },false);
+			    */
+			}
+			else{
+				img = new Image();
+				sH = "onload";
+			}
 			
 			
 			var oG = ctl.getCanvas();
@@ -994,25 +1036,35 @@
 			
 			//oG.Rect(0, 0, mP.width(), mP.height(), "#000000","#000000");
 	
-			img.onload = function(){
+			img[sH] = function(){
 	
 				var iMaxWidth = mP.width();
 				var iMaxHeight = mP.height();
-				if(img.width > iMaxWidth || img.height > iMaxHeight){
-					var iS1 = (iMaxWidth / img.width);
-					var iS2 = (iMaxHeight / img.height);
-					var iW = (iS1 * img.width);
-					var iH = (iS1 * img.height);
-					if(iMaxHeight < iH){
-						iW = (iS2 * img.width);
-						iH = (iS2 * img.height);
+				var iW = (bVid ? img.videoWidth : img.width);
+				var iH = (bVid ? img.videoHeight : img.height);
+				var iSW = iW;
+				var iSH = iH;
+				if(iW > iMaxWidth || iH > iMaxHeight){
+					var iS1 = (iMaxWidth / iW);
+					var iS2 = (iMaxHeight / iH);
+					iSW = (iS1 * iW);
+					iSH = (iS1 * iH);
+					if(iMaxHeight < iSH){
+						iSW = (iS2 * iW);
+						iSH = (iS2 * iH);
 					}
-					img.width = iW;
-					img.height = iH;			
+					img[bVid ? "videoWidth" : "width"] = iSW;
+					img[bVid ? "videoHeight" : "height"] = iSH;			
 				}
-				var iX = (iMaxWidth - img.width) / 2;
-				var iY = (iMaxHeight - img.height) / 2; 
-				galleryView.logDebug("View image: " + o.name + " with dimensions " + img.width + "x" + img.height + " at " + iX + ", " + iY);
+				var iX = (iMaxWidth - iSW) / 2;
+				var iY = (iMaxHeight - iSH) / 2; 
+				if(bVid){
+					img.style.top = iY + "px";
+					img.style.left = iX + "px";
+					img.style.width = iSW + "px";
+					img.style.height = iSH + "px";
+				}
+				galleryView.logDebug("View " + (bVid ? "video" : "image") + ": " + o.name + " with dimensions " + iSW + "x" + iSH + " at " + iX + ", " + iY);
 				
 				clearPanel(mP);
 				
@@ -1050,9 +1102,10 @@
 						oG.Text(aT[i].name, 5, 10 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
 					}
 				}
+
 			}
 			
-			img.src = "data:" + o.mimeType + ";base64," + o.dataBytesStore;
+			if(!bVid) img.src = "data:" + o.mimeType + ";base64," + o.dataBytesStore;
 	
 	
 		}
@@ -1254,7 +1307,10 @@
 				}
 			}
 			aPS.length = 0;
-			
+			if(_o.video){
+				galleryView.getCanvasController().getObjects().galleryContainer.removeChild(_o.video);
+				delete _o.video;
+			}
 			ctl.getCanvas().ClearTempCanvas();
 			
 			oCvs.setTemporaryContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
