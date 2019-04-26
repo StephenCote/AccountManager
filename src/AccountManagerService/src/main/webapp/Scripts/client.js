@@ -30,20 +30,27 @@
 			createContent : function(i, u, f){
 				var o = document.getElementById(i);
 				var ai = Hemi.GetSpecifiedAttribute(o, "acrid");
-				var c = 0;
+				var c = 0, p;
 				if(ai){
-					c = Hemi.registry.service.getObject(ai);
+					p = Promise.resolve(Hemi.registry.service.getObject(ai));
 				}
 				else{
-					c = Hemi.app.createApplicationComponent(0, o, Hemi.app.space.service.getPrimarySpace(), i);
-					c.setTemplateIsSpace(1);
-					c.setAsync(1);
+					p = new Promise((res,rej)=>{
+						Hemi.app.createApplicationComponent(0, o, Hemi.app.space.service.getPrimarySpace(), i)
+						.then((c)=>{
+							c.setTemplateIsSpace(1);
+							c.setAsync(1);
+							res(c);
+							return c;
+						});
+					});
 				}
-				
-				c.local_template_init = f;
-				c.loadTemplate(u);
-				
-				return c;
+				p.then((c) =>{
+					c.local_template_init = f;
+					c.loadTemplate(u);
+					return c;
+				});
+				return p;
 			},
 
 
@@ -52,45 +59,62 @@
 			},
 			
 			rule : function(sName, vParams, sSuccessOp, sFailOp, oNode, fStatus, fSuite){
-				var oTest = Hemi.app.module.test.service.NewTest(sName.toLowerCase(), oNode, fStatus, fSuite, g_application_path + "Rules/");
-				var bOut = 0;
-				Hemi.log("START RULE: " + sName);
-				if(!vParams && uwm.altPane) vParams = {opener:uwm.altPane.opener};
-				if(vParams){
-					for(var i in vParams){
-						oTest.getProperties()[i]=vParams[i];
-					}
-				}
-				oTest.RunTests();
-				var oTestResult = oTest.getTestByName("Test" + sName);
-				if(oTestResult && oTestResult.data == true){
-					/// Only set return val to op if all operations are updated to expect a return value
-					/// There was a few hours well spent
-					bOut = 1;
-					if(sSuccessOp){
-						window.uwm.operation(sSuccessOp, vParams, oNode, sName);
-					}
-				}
-				else if(sFailOp){
-					window.uwm.operation(sFailOp, vParams, oNode, sName);
-				}
-				oTest.destroy();
-				Hemi.log("EXIT RULE: " + sName + " (" + (bOut ? true : false) + ")");
-				return bOut;
+				
+				var oRuleP = new Promise((res,rej)=>{
+					var oTestP = Hemi.app.module.test.service.NewTest(sName.toLowerCase(), oNode, fStatus, function(oTest){
+						var oTestResult = oTest.getTestByName("Test" + sName), bOut = 0;
+						Hemi.logDebug("CHECK TEST RESULT: " + sName + " " + oTestResult.data);
+						if(oTestResult && oTestResult.data == true){
+							/// Only set return val to op if all operations are updated to expect a return value
+							/// There was a few hours well spent
+							bOut = 1;
+							if(sSuccessOp){
+								window.uwm.operation(sSuccessOp, vParams, oNode, sName);
+							}
+						}
+						else if(sFailOp){
+							window.uwm.operation(sFailOp, vParams, oNode, sName);
+						}
+						if(fSuite) fSuite(oTest);
+						oTest.destroy();
+						Hemi.logDebug("EXIT RULE: " + sName + " (" + (bOut ? true : false) + ")");
+						res(bOut);
+					}, g_application_path + "Rules/");
+
+					window.testP = oTestP;
+					oTestP.then((oTest)=>{
+						var bOut = 0;
+						Hemi.logDebug("START RULE: " + sName);
+						if(!vParams && uwm.altPane) vParams = {opener:uwm.altPane.opener};
+						if(vParams){
+							for(var i in vParams){
+								oTest.getProperties()[i]=vParams[i];
+							}
+						}
+						oTest.RunTests();
+						return oTest;
+					});
+				});
+				window.ruleP = oRuleP;
+				return oRuleP;
 			},
 			operation : function(sName, vParams, oNode, sRule){
-				var oMod = Hemi.app.module.service.NewModule(sName.toLowerCase(), oNode, g_application_path + "Operations/");
-				if(!vParams && uwm.altPane) vParams = {opener:uwm.altPane.opener};
-				if(vParams){
-					for(var i in vParams){
-						oMod.getProperties()[i]=vParams[i];
-					}
-				}
-				if(oMod == null) return 0;
-				if(oMod.SetRule) oMod.SetRule(sRule);
-				if(oMod.DoOperation) return oMod.DoOperation();
-				else return 1;
-
+				var oModJ = new Promise((res,rej)=>{
+					var oModP = Hemi.app.module.service.NewModule(sName.toLowerCase(), oNode, g_application_path + "Operations/");
+					oModP.then((oMod) => {
+						if(!vParams && uwm.altPane) vParams = {opener:uwm.altPane.opener};
+						if(vParams){
+							for(var i in vParams){
+								oMod.getProperties()[i]=vParams[i];
+							}
+						}
+						if(oMod == null) return 0;
+						if(oMod.SetRule) oMod.SetRule(sRule);
+						if(oMod.DoOperation) return res(oMod.DoOperation());
+						else res(1);
+					});
+				});
+				return oModJ;
 			},
 
 			
@@ -98,20 +122,28 @@
 				return getPrincipal();
 			},
 			
-			login : function(o, u, p, v){
-				var vParms = (v ? v : {});
+			login : function(o, u, p, v2, fH){
+				var vParms = (v2 ? v2 : {});
 				AM6Client.loginWithPassword(o, u, p, function(s, v){
-					var oU;
+
 					if(v && v.json){
 						AM6Client.clearCache(0,1);
-						oU = window.uwm.getUser();
-						/// window.uwm.session =window.uwm.user.session;
-						if(uwm.altFlushSession) uwm.altFlushSession();
+						window.uwm.getUser().then((oU2)=>{
+							/// window.uwm.session =window.uwm.user.session;
+							if(uwm.altFlushSession) uwm.altFlushSession();
+
+							vParms.user = oU2;
+							Hemi.message.service.publish("onsessionrefresh", oU2);
+							/// uwm.operation("ContinueWorkflow", vParms, 0, "Authenticate");
+							if(fH) fH("",oU2);
+
+						});
 					}
-					Hemi.message.service.publish("onsessionrefresh", oU);
-					vParms.user = oU;
-					//uwm.operation("ContinueWorkflow", vParms, 0, "Authenticate");
-					
+					else{
+						Hemi.message.service.publish("onsessionrefresh", 0);
+						vParms.user = 0;
+						uwm.operation("ContinueWorkflow", vParms, 0, "Authenticate");
+					}
 				});
 
 				return 1;
@@ -119,13 +151,15 @@
 			},
 			
 			logout : function(){
-				var b = AM6Client.logout();
-				Hemi.message.service.publish("onsessionrefresh", null);
+				return AM6Client.logout().then((b)=>{
+					Hemi.message.service.publish("onsessionrefresh", null);
+	
+					if(typeof doLogout == "function"){
+						doLogout();
+					}
+					return b;
+				});
 
-				if(typeof doLogout == "function"){
-					doLogout();
-				}
-				return b;
 			},
 			getApi : function(sType){
 				return AM6Client;
@@ -183,26 +217,30 @@
 	        	);
 			},
 			profile : function(){
-				var oType = uwm.getUser();
+				uwm.getUser().then((oType)=>{
 
-				/// A person object will exist for users created via registration or the console
-				///
-				var oP = AM6Client.userPerson(oType.objectId);
-				var sType = "User";
-				if(oP){
-					sType = 'Person';
-					oType = oP;
-				}
-				var sViewType = "Profile";
-				var oProps = {listType:sType,viewType:oType};
-				var oW = Hemi.app.createWindow(oType.name, uwm.getApiTypeView(sType) + "/Forms/" + sViewType + ".xml", "View-" + sType + "-" + oType.id , 0, 0, oProps, 0);
-	            if (oW) {
-	            	oW.resizeTo(475, 400);
-	            	Hemi.app.getWindowManager().CenterWindow(oW);
-	            	// Destroy the window when closed
-	            	//
-	            	oW.setHideOnClose(0);
-	            }
+					/// A person object will exist for users created via registration or the console
+					///
+					var oP = AM6Client.userPerson(oType.objectId);
+					var sType = "User";
+					if(oP){
+						sType = 'Person';
+						oType = oP;
+					}
+					var sViewType = "Profile";
+					var oProps = {listType:sType,viewType:oType};
+					Hemi.app.createWindow(oType.name, uwm.getApiTypeView(sType) + "/Forms/" + sViewType + ".xml", "View-" + sType + "-" + oType.id , 0, 0, oProps, 0)
+					.then((oW)=>{
+			            if (oW) {
+			            	oW.resizeTo(475, 400);
+			            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+			            	// Destroy the window when closed
+			            	//
+			            	oW.setHideOnClose(0);
+			            }
+					});
+				});
+	            
 			},
 			openPopInImage : function(sUrl, sMimeType, bVid, bDirect, oCont){
 				var i1, i2, i3;
@@ -299,6 +337,7 @@
 	}
 	function clearCache(vType,bLocalOnly, fH){
 		var sType = vType, oObj;
+		Hemi.xml.clearCache();
 		if(typeof vType == "object" && vType != null){
 			sType = vType.nameType;
 			oObj = vType;
@@ -379,11 +418,19 @@
 		var o = getFromCache("USER", "GET", "_principal_");
 		if(o){
 			if(fH) fH("",o);
-			return o;
+			return Promise.resolve(o);
 		}
 		var f = fH;
 		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("USER","GET","_principal_",v.json);} if(f) f(s,v);};
-	   return Hemi.xml.getJSON(sPrincipal + "/",fc,(fH ? 1 : 0));
+		/// return Hemi.xml.getJSON(sPrincipal + "/",fc,(fH ? 1 : 0));
+		return new Promise((res,rej)=>{
+			Hemi.xml.promiseJSON(sPrincipal + "/","GET",0,0).then((x)=>{
+				fc("",x);
+				if(f) f("",x);
+				
+				res(x);
+			});
+		});
 	}
 	function configureCommunityProjectGroupEntitlements(sLid, sPid, sGid,fH){
 		var f = fH;
@@ -602,9 +649,13 @@
 	}
 	
 	function logout(fH){
+		var f = fH;
 		AM6Client.currentOrganization = sCurrentOrganization = 0;
 		AM6Client.clearCache(0,1);
-		return Hemi.xml.getJSON("/AccountManagerService/rest/logout",fH,(fH ? 1 : 0));
+		return Hemi.xml.promiseJSON("/AccountManagerService/rest/logout","GET",0,0).then((b)=>{
+			if(f) f("", b);
+			return b;
+		});
 	}
 	function loginWithPassword(sOrg, sName, sCred, fH){
 		var cred = new org.cote.objects.credentialType();
@@ -642,13 +693,26 @@
 	function setMember(sType, sObjectId, sActorType, sActorId, bSet, fH){
 		return Hemi.xml.getJSON(sAuthZ + "/" + sType + "/" + sObjectId + "/member/" + sActorType + "/" + sActorId + "/" + bSet,fH,(fH ? 1 : 0));
 	}
+	
 	function getUserPersonObject(sId,fH){
-		if(!sId){
-			var o = getPrincipal();
-			if(o) sId = o.objectId;
-		}
-		return Hemi.xml.getJSON(sPrincipal + "/person" + (sId ? "/" + sId : ""),fH,(fH ? 1 : 0)); 
+		return new Promise((res, rej) => {
+			if(!sId){
+				getPrincipal().then((o)=>{
+					var o = getPrincipal();
+					if(o) sId = o.objectId;
+					Hemi.xml.promiseJSON(sPrincipal + "/person" + (sId ? "/" + sId : ""),"GET").then((x)=>{
+						if(fH) fH("",x);
+						res(x);
+					});
+				});
+			}
+			else Hemi.xml.promiseJSON(sPrincipal + "/person" + (sId ? "/" + sId : ""),fH,(fH ? 1 : 0)).then((x)=>{
+				if(fH) fH("",x);
+				res(x);
+			});
+		});
 	}
+
 	function getUserObject(sType,sOType,fH){
 		if(!sType && !sOType) return getPrincipal(fH);
 		return Hemi.xml.getJSON(sAuthZ + "/" + sType + "/user/" + sOType,fH,(fH ? 1 : 0));
@@ -759,9 +823,10 @@
 //	window.addEventListener("load",clientLoad,false);
 //	function clientLoad(){
 
+	/*
 
 	(function(){
-		if(!window.uwmServices){
+		if(!window.uwmServices && Hemi.json.rpc.service){
 			window.uwmServices = uwmServices = Hemi.json.rpc.service;
 			window.uwmServiceCache = uwmServiceCache = Hemi.json.rpc.cache.service;
 		}
@@ -774,21 +839,39 @@
 				,true
 			);
 	}());
-	
-		Hemi.message.service.subscribe("onspaceconfigload", function (s, v){
-			if(!v.is_primary) return;
-			var oSpace = Hemi.app.space.service.getPrimarySpace();
-	
-			getPrincipal(function(s,v){
-				principal = 0;
-				AM6Client.currentOrganization = sCurrentOrganization = 0;
-				if(v && v != null && v.json != null){
-					principal = v.json;
-					AM6Client.currentOrganization = sCurrentOrganization = principal.organizationPath;
-				}
-				uwm.processLoadHandlers();
+	*/
+		var uwmServices;
+		
+		HemiConfig.frameworkLoad = function(){
+			if(!window.uwmServices){
+				window.uwmServices = uwmServices = Hemi.json.rpc.service;
+				window.uwmServiceCache = uwmServiceCache = Hemi.json.rpc.cache.service;
+			}
+
+			window.uwmServices.addService(
+					"AMSchema",
+					"/AccountManagerService/rest/schema/smd",
+					{"serviceType":"JSON-REST","serviceURL":"/AccountManagerService/rest/schema","methods":[{"name":"get","httpMethod":"GET","parameters":[],"returnValue":{"name":"retVal","type":"org.cote.accountmanager.service.rest.SchemaBean"}},{"name":"entity","httpMethod":"GET","parameters":[],"returnValue":{"name":"retVal","type":"org.cote.beans.EntitySchema"}},{"name":"smd","httpMethod":"GET","parameters":[{"name":"p0","type":"javax.ws.rs.core.UriInfo"}],"returnValue":{"name":"retVal","type":"org.cote.accountmanager.service.rest.SchemaBean"}}]},
+					{"defaultPackage":"org.cote.objects","authenticationRequest":{"credential":null,"checkCredential":null,"tokens":[],"subject":null,"organizationPath":null,"credentialType":"UNKNOWN","checkCredentialType":null,"subjectType":"UNKNOWN"},"noteType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"text":null,"childNotes":[],"createdDate":null,"modifiedDate":null},"lifecycleType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"schedules":[],"budgets":[],"projects":[],"goals":[],"description":null},"artifactType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"previousTransition":null,"nextTransition":null,"referenceObject":null,"artifactType":"UNKNOWN","description":null,"createdDate":null,"previousTransitionId":0,"nextTransitionId":0,"artifactDataId":0,"referenceUrn":null},"blueprintType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"artifacts":[],"cases":[],"requirements":[],"dependencies":[],"models":[],"description":null,"modelType":null},"budgetType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"time":null,"cost":null,"budgetType":null,"description":null},"caseType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"actors":[],"prerequisites":[],"sequence":[],"diagrams":[],"caseType":null,"description":null},"costType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"currencyType":null,"value":null},"estimateType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"cost":null,"time":null,"description":null,"estimateType":null},"expenseType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"budget":null,"time":null,"cost":null,"reason":null,"expenseType":null},"formType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"elements":[],"description":null,"template":null,"childForms":[],"viewTemplate":null,"isTemplate":false,"isGrid":false},"formElementType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"elementValues":[],"validationRule":null,"elementTemplate":null,"elementType":null,"description":null,"elementName":null,"elementLabel":null},"formElementValueType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"textValue":null,"isBinary":false,"formId":0,"formElementId":0,"binaryId":0},"goalType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"schedule":null,"budget":null,"requirements":[],"dependencies":[],"cases":[],"assigned":null,"goalType":"UNKNOWN","description":null,"priority":null},"methodologyType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"processes":[],"budgets":[],"description":null},"modelType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"artifacts":[],"cases":[],"requirements":[],"dependencies":[],"models":[],"description":null,"modelType":null},"moduleType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"artifacts":[],"work":[],"actualTime":null,"actualCost":null,"description":null,"moduleType":null},"processType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"steps":[],"budgets":[],"iterates":false,"description":null},"processStepType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"goals":[],"budgets":[],"requirements":[],"description":null},"projectType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"blueprints":[],"requirements":[],"dependencies":[],"artifacts":[],"modules":[],"stages":[],"schedule":null,"description":null},"requirementType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"note":null,"form":null,"requirementType":null,"description":null,"priority":"UNKNOWN","requirementId":null,"requirementStatus":null},"resourceType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"resourceData":null,"estimate":null,"schedule":null,"resourceType":null,"utilization":0,"resourceDataId":0,"description":null},"scheduleType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"goals":[],"budgets":[],"startTime":null,"endTime":null},"locationType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"boundaries":[],"borders":[],"description":null,"childLocations":[],"geographyType":null,"classification":null},"eventType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"location":null,"entryTraits":[],"exitTraits":[],"things":[],"actors":[],"observers":[],"influencers":[],"orchestrators":[],"groups":[],"childEvents":[],"eventType":null,"description":null,"startDate":null,"endDate":null},"traitType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"description":null,"traitType":null,"score":null,"alignmentType":null},"applicationProfileType":{"userRoles":[],"systemRoles":[],"user":null,"person":null,"organizationPath":null},"stageType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"methodology":null,"work":null,"budget":null,"schedule":null,"description":null},"taskType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"requirements":[],"artifacts":[],"work":[],"notes":[],"estimate":null,"actualTime":[],"actualCost":[],"resources":[],"dependencies":[],"childTasks":[],"taskStatus":null,"description":null,"createdDate":null,"modifiedDate":null,"completedDate":null,"dueDate":null,"startDate":null},"ticketType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"assignedResource":null,"requiredResources":[],"estimate":null,"actualTime":null,"actualCost":null,"tickets":[],"dependencies":[],"artifacts":[],"notes":[],"forms":[],"audit":[],"createdDate":null,"modifiedDate":null,"dueDate":null,"closedDate":null,"reopenedDate":null,"description":null,"ticketStatus":null,"priority":null,"severity":null},"timeType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"basisType":null,"value":null},"validationRuleType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"errorMessage":null,"replacementValue":null,"description":null,"rules":[],"expression":null,"isRuleSet":false,"isReplacementRule":false,"validationType":null,"comparison":false,"allowNull":false},"workType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"resources":[],"tasks":[],"artifacts":[],"dependencies":[],"description":null},"applicationRequestType":{"sort":null,"startRecord":0,"recordCount":0,"paginate":false,"populateGroup":false,"organizationId":0,"fullRecord":false,"lifecycleId":0,"projectId":0,"imports":[],"applicationId":0},"identityDataImportType":{"header":[],"name":null,"type":null},"baseRoleType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"roleType":null,"referenceId":0,"parentPath":null},"dataTypeSchema":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"securityType":null,"dataBytesStore":null,"cipherKey":null,"passKey":null,"detailsOnly":false,"publicId":"0","description":null,"dimensions":null,"mimeType":null,"size":0,"createdDate":null,"modifiedDate":null,"expiryDate":null,"blob":false,"compressed":false,"shortData":null,"passwordProtected":false,"passwordProtect":false,"enciphered":false,"encipher":false,"vaulted":false,"vaultId":null,"keyId":null,"readDataBytes":false,"wasDataBlob":false,"rating":0,"pointer":false,"dataHash":null,"compressionType":"NONE","volatile":true},"cryptoBeanSchema":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"publicKeyBytes":null,"privateKeyBytes":null,"cipherIV":null,"cipherKey":null,"encryptedCipherIV":null,"encryptedCipherKey":null,"cipherProvider":"BC","symmetricCipherKeySpec":"AES/CBC/PKCS7Padding","asymmetricCipherKeySpec":"RSA","randomSeedLength":576,"encryptCipherKey":false,"reverseEncrypt":false,"hashProvider":"SHA-512","cipherKeySpec":"AES","cipherKeySize":256,"keySize":1024,"globalKey":false,"primaryKey":false,"organizationKey":false,"symmetricKeyId":0,"asymmetricKeyId":0,"previousKeyId":0,"javaClass":"org.cote.beans.CryptoBean","spoolId":null},"userType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"contactInformation":null,"session":null,"homeDirectory":null,"statistics":null,"sessionStatus":"UNKNOWN","userStatus":"UNKNOWN","userType":"UNKNOWN","databaseRecord":false,"userId":null,"accountId":0},"directoryGroupType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupType":"UNKNOWN","referenceId":0,"path":null},"baseGroupType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupType":"UNKNOWN","referenceId":0,"path":null},"userGroupType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupType":"UNKNOWN","referenceId":0,"path":null},"contactInformationType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"contacts":[],"addresses":[],"contactInformationType":null,"description":null,"referenceId":0},"personType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"description":null,"firstName":null,"middleName":null,"lastName":null,"title":null,"suffix":null,"birthDate":null,"gender":null,"alias":null,"prefix":null,"users":[],"accounts":[],"contactInformation":null,"partners":[],"dependents":[],"notes":[]},"contactType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"contactValue":null,"description":null,"contactType":null,"locationType":null,"preferred":false},"addressType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"addressLine1":null,"addressLine2":null,"city":null,"region":null,"state":null,"postalCode":null,"country":null,"description":null,"locationType":null,"preferred":false},"organizationType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"organizationParent":null,"logicalId":0,"referenceId":0,"organizationType":"UNKNOWN"},"attributeType":{"values":[],"name":null,"dataType":null,"index":null,"referenceType":null,"referenceId":null,"organizationId":null},"credentialType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"salt":null,"credential":null,"referenceType":"UNKNOWN","referenceId":0,"createdDate":null,"modifiedDate":null,"expiryDate":null,"primary":false,"previousCredentialId":0,"nextCredentialId":0,"keyId":null,"vaultId":null,"enciphered":false,"vaulted":false,"credentialType":"UNKNOWN","hashProvider":"SHA-512"},"authenticationRequestType":{"credential":null,"checkCredential":null,"tokens":[],"subject":null,"organizationPath":null,"credentialType":"UNKNOWN","checkCredentialType":null,"subjectType":"UNKNOWN"},"authenticationResponseType":{"message":null,"user":null,"sessionId":null,"response":null,"organizationPath":null,"organizationId":null},"policyDefinitionType":{"parameters":[],"organizationPath":null,"urn":null,"expiresDate":null,"decisionAge":null,"enabled":null,"modifiedDate":null,"createdDate":null},"policyRequestType":{"facts":[],"contextUser":null,"urn":null,"subject":null,"credential":null,"requestType":null,"asyncRequest":false,"organizationPath":null,"subjectType":null},"policyResponseType":{"message":null,"patternChain":[],"response":null,"urn":null,"expiresDate":null,"score":0},"factType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"description":null,"score":0,"factReference":null,"factData":null,"sourceUrn":null,"sourceDataType":"UNKNOWN","sourceUrl":null,"factType":"UNKNOWN","factoryType":"UNKNOWN","parameter":false,"sourceType":null},"functionType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"description":null,"score":0,"facts":[],"functionData":null,"functionType":"UNKNOWN","sourceUrl":null,"sourceUrn":null},"functionFactType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"description":null,"score":0,"functionUrn":null,"factUrn":null},"patternType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"description":null,"score":0,"fact":null,"match":null,"operation":null,"factUrn":null,"comparator":null,"patternType":null,"matchUrn":null,"operationUrn":null},"policyType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"description":null,"score":0,"rules":[],"enabled":false,"expiresDate":null,"decisionAge":0,"modifiedDate":null,"createdDate":null,"condition":null},"operationType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"description":null,"score":0,"operation":null,"operationType":null},"ruleType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"logicalOrder":0,"description":null,"score":0,"rules":[],"patterns":[],"ruleType":"UNKNOWN","condition":"UNKNOWN"},"basePermissionType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"permissionType":null,"referenceId":0,"parentPath":null},"authorizationPolicyType":{"roles":[],"permissions":[],"members":[],"contextType":null,"factoryType":null,"contextId":0,"contextName":null,"memberType":null,"systemAdministrator":false,"accountAdministrator":false,"dataAdministrator":false,"contextUrn":null,"roleReader":false,"accountReader":false,"groupReader":false,"authenticated":false,"authenticationId":null},"accountType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"contactInformation":null,"statistics":null,"accountType":null,"accountStatus":null,"referenceId":0,"accountId":null,"databaseRecord":false},"baseTagType":{"attributes":[],"nameType":"UNKNOWN","parentId":0,"name":null,"id":0,"ownerId":0,"populated":false,"objectId":null,"attributesPopulated":false,"urn":null,"organizationId":0,"organizationPath":null,"groupId":null,"groupPath":null,"tagType":null},"dataTagSearchRequest":{"sort":null,"startRecord":0,"recordCount":0,"paginate":false,"populateGroup":false,"organizationId":0,"fullRecord":false,"tags":[]},"baseSearchRequestType":{"sort":null,"startRecord":0,"recordCount":0,"paginate":false,"populateGroup":false,"organizationId":0,"fullRecord":false},"sortQueryType":{"sortOrder":"UNKNOWN","sortField":"UNKNOWN"}}
+					,true
+				);
+			Hemi.message.service.subscribe("onspaceconfigload", function (s, v){
+		
+				if(!v.is_primary) return;
+				var oSpace = Hemi.app.space.service.getPrimarySpace();
+				
+				
+				getPrincipal(function(s,v){
+					principal = 0;
+					AM6Client.currentOrganization = sCurrentOrganization = 0;
+					if(v && v != null && v.json != null){
+						principal = v.json;
+						AM6Client.currentOrganization = sCurrentOrganization = principal.organizationPath;
+					}
+					uwm.processLoadHandlers();
+				});
 			});
-		});
+		};
 //	}
 	
 }());
