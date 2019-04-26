@@ -8,21 +8,22 @@ this.DoOperation = function(){
 	var sName = this.getProperties().user_name;
 	var sPass = this.getProperties().password;
 	var sOrg = this.getProperties().organization;
-	
-	var bAuthN = uwm.login(sOrg,sName, sPass,{opener:this.getProperties().opener});
-	if(bAuthN){
-		if(typeof bAuthN == "boolean"){
-			this.log("Logged in!");
-			uwm.operation("ContinueWorkflow", {opener:this.getProperties().opener,session:oSession}, 0, this.ruleName);
+	var oP = this.getProperties().opener;
+	uwm.login(sOrg,sName, sPass,{opener:this.getProperties().opener},function(s,v){
+		if(v){
+			if(typeof v == "boolean" || typeof v == "object"){
+				console.debug("Logged in!");
+				uwm.operation("ContinueWorkflow", {opener:oP,session:0}, 0, this.ruleName);
+			}
+			else{
+				console.debug("Pending Async Login Request ...");
+			}
 		}
 		else{
-			this.log("Pending Async Login Request ...");
+			console.error("Failed to log in");
+			uwm.operation("RequireAuthentication");
 		}
-	}
-	else{
-		this.logError("Failed to log in");
-		uwm.operation("RequireAuthentication");
-	}
+	});
 }
 this.SetRule = function(sRule){
 	this.ruleName = sRule;
