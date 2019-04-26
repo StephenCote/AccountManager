@@ -103,14 +103,16 @@
 		openFormView : function(){
 			var oForm = this.getBean("rocketType");
 			var oProps = {viewType:oForm};
-			var oW = Hemi.app.createWindow(oForm.name, "/AccountManagerService/Forms/FormView.xml", "View-" + oForm.id, 0, 0, oProps);
-            if (oW) {
-            	oW.resizeTo(600, 400);
-            	Hemi.app.getWindowManager().CenterWindow(oW);
-            	// Destroy the window when closed
-            	//
-            	oW.setHideOnClose(0);
-            }
+			Hemi.app.createWindow(oForm.name, "/AccountManagerService/Forms/FormView.xml", "View-" + oForm.id, 0, 0, oProps)
+			.then((oW)=>{
+	            if (oW) {
+	            	oW.resizeTo(600, 400);
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	// Destroy the window when closed
+	            	//
+	            	oW.setHideOnClose(0);
+	            }
+            });
 		},
 		displayTemplate : function(){
 			var o = this.getBean("rocketType");

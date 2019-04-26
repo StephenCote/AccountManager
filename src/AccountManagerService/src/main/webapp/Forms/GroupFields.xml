@@ -113,14 +113,16 @@
 		openShare : function(){
 			var o = this.getBean("rocketType");
 			var oProps = {viewType:o};
-			var oW = Hemi.app.createWindow('Sharing','/AccountManagerService/Forms/Sharing.xml','Sharing-' + o.id,0,0,oProps);
-			if(oW){
-				oW.setCanMinimize(0);
-				oW.setCanMaximize(0);
-		    	oW.resizeTo(475, 400);
-		    	oW.setHideOnClose(0);
-		    	Hemi.app.getWindowManager().CenterWindow(oW);
-			}
+			Hemi.app.createWindow('Sharing','/AccountManagerService/Forms/Sharing.xml','Sharing-' + o.id,0,0,oProps)
+			.then((oW)=>{
+				if(oW){
+					oW.setCanMinimize(0);
+					oW.setCanMaximize(0);
+			    	oW.resizeTo(475, 400);
+			    	oW.setHideOnClose(0);
+			    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+				}
+			});
 		},
 		addType : function(o){
 			Hemi.log("Add group type: " + o.name + ":" + o.mimeType);

@@ -30,6 +30,11 @@
 			}
 			if(this.getProperties().designMode) this.loadTemplate("/AccountManagerService/Templates/Designer.xml");
 			else this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+		},
+		template_post_init : function(){
+			// if(this.getProperties().designMode) this.loadTemplate("/AccountManagerService/Templates/Designer.xml");
+			// else this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
+
 		}
 	]]></embedded-script>
 </Template>

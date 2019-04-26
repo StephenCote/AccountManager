@@ -87,13 +87,15 @@
 						
 		},
 		pickText : function(o,sL,sH, sDV){
-			var oW = Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},this._prehandle_picker_loaded);
-			if(!oW) return;
-			oW.setHideOnClose(0);
-			oW.resizeTo(475,100);
-			oW.center();
-			oW.setIsModal(true);
-			oW.hideButtons();
+			Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},this._prehandle_picker_loaded)
+			.then((oW)=>{
+				if(!oW) return;
+				oW.setHideOnClose(0);
+				oW.resizeTo(475,100);
+				oW.center();
+				oW.setIsModal(true);
+				oW.hideButtons();
+			});
 		},
 		_handle_picker_loaded : function(oW){
 	

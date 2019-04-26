@@ -11,8 +11,6 @@
 			if(!_s.media_name){
 				return;
 			}
-			window.debug = this;
-
 			if(_o.title_bar) _o.title_bar.style.display = "none";
 			if(_o.status_bar) _o.status_bar.style.display = "none";
 			if(_o.body) _o.body.style.overflow = "hidden";
@@ -62,7 +60,7 @@
         	}
         	Hemi.log("End dimen: " + o.videoWidth + "X" + o.videoHeight);
         	this.resizeTo(o.videoWidth, o.videoHeight + 50);
-			Hemi.app.getWindowManager().CenterWindow(this);
+			Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(this);});
 
 		},
 		_handle_imageviewer_load : function(e){
@@ -85,7 +83,7 @@
 			
 			this.resizeTo(parseInt(iW * iRat), parseInt(iH * iRat));
 			if(this.flushBody) this.flushBody();
-			Hemi.app.getWindowManager().CenterWindow(this);
+			Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(this);});
 		},
 		template_destroy : function(){
 			this._prehandle_imageviewer_load = 0;

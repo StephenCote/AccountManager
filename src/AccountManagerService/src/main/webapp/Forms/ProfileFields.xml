@@ -71,7 +71,7 @@
 				    	ctl.getObjects().profile = oP;
 				    	var sPid = AM6Client.getAttributeValue(oP,"v1-profile",0);
 				    	var sTid = AM6Client.getAttributeValue(oP,"v1-profile-text",0);
-						Hemi.log("Profile: " + sPid + " / Text: " + sTid);
+						Hemi.logDebug("Profile: " + sPid + " / Text: " + sTid);
 				    	if(sPid && sPid.length > 0){
 					    	AM6Client.get("DATA",sPid,function(s,v){
 					    		/// TODO: There's an issue here where if the attribute reference is invalid (ie: the object was deleted) it's not being caught here
@@ -137,11 +137,13 @@
 				chooseProfile : function(){
 						var sPath = "~/GalleryHome";
 						var oProps = {openerId:this.getObjectId(),defaultPath:sPath,listType:"Data",picker:1,pickFunction:"pickProfile",listId:0};
-						var oW = Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/ListDatas.xml", "DataPicker", 0, 0, oProps);
-			            if (oW) {
-			            	Hemi.app.getWindowManager().CenterWindow(oW);
-			            	oW.setHideOnClose(0);
-			            }
+						Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/ListDatas.xml", "DataPicker", 0, 0, oProps)
+						.then((oW)=>{
+				            if (oW) {
+				            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+				            	oW.setHideOnClose(0);
+				            }
+			            });
 				},
 			    pickProfileText : function(s, o, i, w){
 			    	var oP = this.getObjects().profile;
@@ -159,11 +161,13 @@
 				chooseProfileText : function(){
 						var sPath = "~/Data";
 						var oProps = {openerId:this.getObjectId(),defaultPath:sPath,listType:"Data",picker:1,pickFunction:"pickProfileText",listId:0};
-						var oW = Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/ListDatas.xml", "DataPicker", 0, 0, oProps);
-			            if (oW) {
-			            	Hemi.app.getWindowManager().CenterWindow(oW);
-			            	oW.setHideOnClose(0);
-			            }
+						Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/ListDatas.xml", "DataPicker", 0, 0, oProps)
+						.then((oW)=>{
+				            if (oW) {
+				            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+				            	oW.setHideOnClose(0);
+				            }
+			            });
 				},
 				
 			openItem : function(o, sType, sGid,fHandler){
@@ -175,18 +179,20 @@
 		},
 		openWindow : function(sType,oType, fHandler){
 			var oProps = {openerId:this.getObjectId(),picker:0,viewType:oType,listId:0};
-			var oW = 0, bD = 0;
+			var oWp = 0, bD = 0;
 			if(sType.match(/^data$/gi)){
-				oW = Hemi.app.createWindow("Design " + o.name, "/AccountManagerService/Forms/DataDesign.xml", "DesView-" + o.id, 0, 0, oProps);
+				oWp = Hemi.app.createWindow("Design " + o.name, "/AccountManagerService/Forms/DataDesign.xml", "DesView-" + o.id, 0, 0, oProps);
 				bD = 1;
 			}
-			else oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
-            if (oW) {
-            	oW.resizeTo((bD ? 600 : 475), 400);
-            	Hemi.app.getWindowManager().CenterWindow(oW);
-            	// Destroy the window when closed
-            	//
-            	oW.setHideOnClose(0);
+			else oWp = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
+            if (oWp) {
+            	oWp.then((oW)=>{
+	            	oW.resizeTo((bD ? 600 : 475), 400);
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	// Destroy the window when closed
+	            	//
+	            	oW.setHideOnClose(0);
+            	});
             }
 		}
 		]]>

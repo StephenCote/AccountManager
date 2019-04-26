@@ -65,6 +65,7 @@
 			/// if(uwm.rule("IsLoggedIn")) this.loadTemplate("/AccountManagerService/Forms/MainIn.xml");
 		},
 		doLogin : function(){
+
 			if(!this.Validate()) return;
 			var sOrg = this.GetFormValue("organization_path");
 			if(sOrg.match(/^_choose_$/)) sOrg = this.GetFormValue("organization_choose_path");

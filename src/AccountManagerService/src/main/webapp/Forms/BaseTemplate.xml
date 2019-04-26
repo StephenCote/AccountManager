@@ -66,14 +66,16 @@
         },
 		manageList : function(sType, sListId, sFN, sDefPath,bManPick){
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:1,manualPick:bManPick,pickFunction:sFN,listId:sListId,defaultPath:sDefPath};
-			var oW = Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, this._prehandle_manager_loaded);
-            if (oW) {
-            	oW.resizeTo(475, 300);
-            	Hemi.app.getWindowManager().CenterWindow(oW);
-            	// Destroy the window when closed
-            	//
-            	oW.setHideOnClose(0);
-            }
+			Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, this._prehandle_manager_loaded)
+			.then((oW)=>{
+	            if (oW) {
+	            	oW.resizeTo(475, 300);
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	// Destroy the window when closed
+	            	//
+	            	oW.setHideOnClose(0);
+	            }
+	           });
 		},
 		local_handle_close : function(v){
 			if(this.handle_close) return this.handle_close(v);
@@ -131,23 +133,27 @@
 		},
 		openWindow : function(sType,oType, fHandler){
 			var oProps = {openerId:this.getObjectId(),listType:sType,picker:0,viewType:oType,listId:0};
-			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
-            if (oW) {
-            	oW.resizeTo(475, 400);
-            	Hemi.app.getWindowManager().CenterWindow(oW);
-            	// Destroy the window when closed
-            	//
-            	oW.setHideOnClose(0);
-            }
+			Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler)
+			.then((oW)=>{
+	            if (oW) {
+	            	oW.resizeTo(475, 400);
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	// Destroy the window when closed
+	            	//
+	            	oW.setHideOnClose(0);
+	            }
+            });
 		},
 		pickText : function(o,sL,sH, sDV){
-			var oW = Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},this._prehandle_picker_loaded);
-			if(!oW) return;
-			oW.setHideOnClose(0);
-			oW.resizeTo(400,100);
-			oW.center();
-			oW.setIsModal(true);
-			oW.hideButtons();
+			Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()},this._prehandle_picker_loaded)
+			.then((oW)=>{
+				if(!oW) return;
+				oW.setHideOnClose(0);
+				oW.resizeTo(400,100);
+				oW.center();
+				oW.setIsModal(true);
+				oW.hideButtons();
+			});
 		},
 		_handle_picker_loaded : function(oW){
 	

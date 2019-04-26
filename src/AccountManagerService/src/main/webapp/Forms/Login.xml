@@ -40,6 +40,7 @@
 		},
 
 		DoLogin : function(){
+
 			if(!this.Validate()) return;
 			var oOrg = AM6Client.find("ORGANIZATION",this.getOrgPath());
 			if(!oOrg){

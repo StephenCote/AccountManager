@@ -133,14 +133,16 @@
 			openShare : function(){
 				var o = this.getBean("rocketType");
 				var oProps = {viewType:o};
-				var oW = Hemi.app.createWindow('Sharing','/AccountManagerService/Forms/Sharing.xml','Sharing-' + o.id,0,0,oProps);
-				if(oW){
-					oW.setCanMinimize(0);
-					oW.setCanMaximize(0);
-			    	oW.resizeTo(475, 400);
-			    	oW.setHideOnClose(0);
-			    	Hemi.app.getWindowManager().CenterWindow(oW);
-				}
+				Hemi.app.createWindow('Sharing','/AccountManagerService/Forms/Sharing.xml','Sharing-' + o.id,0,0,oProps)
+				.then((oW)=>{
+					if(oW){
+						oW.setCanMinimize(0);
+						oW.setCanMaximize(0);
+				    	oW.resizeTo(475, 400);
+				    	oW.setHideOnClose(0);
+				    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+					}
+				});
 			},
 		updateURL : function(){
 			var o = this.getBean("rocketType");
@@ -232,15 +234,17 @@
 				o = this.getBean("rocketType");
 			}
 			var oProps = {openerId:this.getObjectId(),picker:0,viewType:o};
-			var oW = Hemi.app.createWindow("Design " + o.name, "/AccountManagerService/Forms/DataDesign.xml", "DesView-" + o.id, 0, 0, oProps);
-            if (oW) {
-            	oW.resizeTo(600, 400);
-            	Hemi.app.getWindowManager().CenterWindow(oW);
-            	// Destroy the window when rd
-            	//
-            	oW.setHideOnClose(0);
-            	this.Close();
-            }
+			Hemi.app.createWindow("Design " + o.name, "/AccountManagerService/Forms/DataDesign.xml", "DesView-" + o.id, 0, 0, oProps)
+			.then((oW)=>{
+	            if (oW) {
+	            	oW.resizeTo(600, 400);
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	// Destroy the window when rd
+	            	//
+	            	oW.setHideOnClose(0);
+	            	this.Close();
+	            }
+            });
 		},
 		viewData : function(){
 			var o = this.getBean("rocketType");
@@ -256,14 +260,16 @@
 			}
 
 			var vData = {media_name:o.name,media_id:o.id,maxWidth:500,maxHeight:500,video:bVid,mimeType:o.mimeType,media_url:sUrl};
-			var oW = Hemi.app.createWindow("View " + o.name, "/AccountManagerService/Forms/ImageViewer.xml", "BinaryView-" + o.id, 0, 0, vData);
-            if (oW) {
-            	oW.resizeTo(475, 300);
-            	Hemi.app.getWindowManager().CenterWindow(oW);
-            	// Destroy the window when closed
-            	//
-            	oW.setHideOnClose(0);
-            }
+			Hemi.app.createWindow("View " + o.name, "/AccountManagerService/Forms/ImageViewer.xml", "BinaryView-" + o.id, 0, 0, vData)
+			.then((oW)=>{
+	            if (oW) {
+	            	oW.resizeTo(475, 300);
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	// Destroy the window when closed
+	            	//
+	            	oW.setHideOnClose(0);
+	            }
+            });
 		},
 		changeDataType : function(){
 			var o = this.getBean("rocketType");

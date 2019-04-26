@@ -358,7 +358,7 @@
 				var p = this.getObjects().process;
 				oW.setCanResize(0);
 				oW.resizeTo(200,300);
-				Hemi.app.getWindowManager().CenterWindow(oW);
+				Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
 				oW.setIsModal(1);
 				oW.SetPickerHandler(this._prehandle_project_picker_choose);
 				oW.setHideOnClose(0);
@@ -447,26 +447,28 @@
 			},
 			openPicker : function(vSrc, sType, sListId, sFN){
 				var oProps = {openerId:this.getObjectId(),sourceId:vSrc,listType:sType,picker:1,pickFunction:sFN};
-				var oW = Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, 0);
-            	if (oW) {
-            		oW.resizeTo(400, 200);
-            		
-            		if(vSrc.ctrlId){
-            			var o = this.GetElementByRID(vSrc.ctrlId);
-            			var l = Hemi.css.getAbsoluteLeft(o);
-						var t = Hemi.css.getAbsoluteTop(o) + o.offsetHeight;
-						Hemi.log("Move " + vSrc.ctrlId + " to " + l + ", " + t);
-						oW.moveTo(l + "px",t + "px");
-						
-            		}
-            		else{
-            		
-            			Hemi.app.getWindowManager().CenterWindow(oW);
-            		}
-            		// Destroy the window when closed
-            		//
-            		oW.setHideOnClose(0);
-            	}
+				Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, 0)
+				.then((oW)=>{
+	            	if (oW) {
+	            		oW.resizeTo(400, 200);
+	            		
+	            		if(vSrc.ctrlId){
+	            			var o = this.GetElementByRID(vSrc.ctrlId);
+	            			var l = Hemi.css.getAbsoluteLeft(o);
+							var t = Hemi.css.getAbsoluteTop(o) + o.offsetHeight;
+							Hemi.log("Move " + vSrc.ctrlId + " to " + l + ", " + t);
+							oW.moveTo(l + "px",t + "px");
+							
+	            		}
+	            		else{
+	            		
+	            			Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            		}
+	            		// Destroy the window when closed
+	            		//
+	            		oW.setHideOnClose(0);
+	            	}
+            	});
 			},
 			DoLogout : function(){
 				window.uwm.logout();

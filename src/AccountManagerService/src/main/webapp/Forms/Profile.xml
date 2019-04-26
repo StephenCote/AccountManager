@@ -4,40 +4,47 @@
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
-				var oU = 0;
+				var oUp = 0;
 				
 				/// The link is specifically for the master person/user at the organization level
 				///
 				var sLinkProfId = 0;
 				
 				if(this.getProperties().viewType && this.getProperties().listType){
-					oU = this.getProperties().viewType;
+					oUp = Promise.resolve(this.getProperties().viewType);
 					this.getProperties().profileType = this.getProperties().listType;
 				}
-				else oU = uwm.getUser();
-				if(!oU || oU == null) return;
-				if(oU.nameType == "USER"){
-					var oP = AM6Client.userPerson(oU.objectId);
-					if(oP){
-						sLinkProfId = oU.objectId;
-						oU = oP;
-						this.getProperties().profileType = "Person";
-					}
-					else{
-						this.getProperties().profileType = "User";
-					}
+				else oUp = uwm.getUser();
+				
+				oUp.then((oU)=>{
+					if(!oU || oU == null) return;
 					
-				}
-				/// If the person includes a user ...
-				else if(oU.nameType == "PERSON" && oU.users.length > 0){
-					sLinkProfId = oU.users[0].objectId;
-				}
-				if(oU){
-					this.getProperties().profileId = oU.objectId;
-					this.getProperties().linkProfileId = sLinkProfId;
-					this.loadTemplate("/AccountManagerService/Forms/ProfileFields.xml");
-				}
-			}
+					if(oU.nameType == "USER"){
+						AM6Client.userPerson(oU.objectId).then((oP)=>{
+							if(oP){
+								sLinkProfId = oU.objectId;
+								oU = oP;
+								this.getProperties().profileType = "Person";
+							}
+							else{
+								this.getProperties().profileType = "User";
+							}
+							this.completeConfig(oU, sLinkProfId);
+						});
+						
+					}
+					/// If the person includes a user ...
+					else if(oU.nameType == "PERSON" && oU.users.length > 0){
+						this.completeConfig(oU, oU.users[0].objectId);
+					}
+
+				});
+			},
+			completeConfig : function(oU, sLinkProfId){
+				this.getProperties().profileId = oU.objectId;
+				this.getProperties().linkProfileId = sLinkProfId;
+				this.loadTemplate("/AccountManagerService/Forms/ProfileFields.xml");
+			},
 			
 		]]>
 	</embedded-script>

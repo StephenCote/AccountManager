@@ -206,14 +206,16 @@
 			
 		manageList : function(sType, sListId, sFN){
 			var oProps = {openerId:this.getObjectId(),listType:"Tag",picker:1,manualPick:1,pickFunction:sFN,listId:sListId};
-			var oW = Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, 0);
-            if (oW) {
-            	oW.resizeTo(475, 300);
-            	Hemi.app.getWindowManager().CenterWindow(oW);
-            	// Destroy the window when closed
-            	//
-            	oW.setHideOnClose(0);
-            }
+			Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + (sListId ? sListId : Hemi.guid()), 0, 0, oProps, 0)
+			.then((oW)=>{
+	            if (oW) {
+	            	oW.resizeTo(475, 300);
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	// Destroy the window when closed
+	            	//
+	            	oW.setHideOnClose(0);
+	            }
+            });
 		}
 			
 		]]>

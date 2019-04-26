@@ -25,12 +25,13 @@
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
-				var o = uwm.getUser();
-				Hemi.xml.setInnerXHTML(this.GetElementByRID("profileName"),(o ? o.organizationPath + "/" + o.name : "Anonymous"));
-				Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
-				Hemi.event.addScopeBuffer(this);
-				this.scopeHandler("session_refresh",0,0,1);
-				Hemi.message.service.subscribe(this, "onsessionrefresh",this._prehandle_session_refresh);
+				uwm.getUser().then((o)=>{
+					Hemi.xml.setInnerXHTML(this.GetElementByRID("profileName"),(o ? o.organizationPath + "/" + o.name : "Anonymous"));
+					Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
+					Hemi.event.addScopeBuffer(this);
+					this.scopeHandler("session_refresh",0,0,1);
+					Hemi.message.service.subscribe(this, "onsessionrefresh",this._prehandle_session_refresh);
+				});
 			},
 			template_destroy : function(){
 				Hemi.message.service.unsubscribe(this, "onsessionrefresh",this._prehandle_session_refresh);

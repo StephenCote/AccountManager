@@ -32,15 +32,16 @@
 			var a = oI.data;
 			if(a.detailsOnly) a = AM6Client.get("DATA",a.objectId);
 			var vData = {media_name:a.name,media_id:a.id,maxWidth:500,maxHeight:500,media_url:"data:" + a.mimeType + ";base64," + a.dataBytesStore};
-			var oW = Hemi.app.createWindow("View " + a.name, "/AccountManagerService/Forms/ImageViewer.xml", "View-" + a.id, 0, 0, vData);
-            if (oW) {
-            	oW.resizeTo(475, 300);
-            	Hemi.app.getWindowManager().CenterWindow(oW);
-            	// Destroy the window when closed
-            	//
-            	oW.setHideOnClose(0);
-            } 
-	
+			Hemi.app.createWindow("View " + a.name, "/AccountManagerService/Forms/ImageViewer.xml", "View-" + a.id, 0, 0, vData)
+			.then((oW)=>{
+	            if (oW) {
+	            	oW.resizeTo(475, 300);
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	// Destroy the window when closed
+	            	//
+	            	oW.setHideOnClose(0);
+	            } 
+			});
 		},
 		addData : function(){
 			this.manageList("Data", this.getDataList().getObjectId());

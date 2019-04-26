@@ -50,6 +50,7 @@
 	<p style = "clear:both;"><span rid = "status"></span></p>
 	<embedded-script><![CDATA[
 		template_init : function(){
+			console.log("Initialize base fields template");
 			var o = this.getBean("rocketType"), _s = this.getProperties(), o;
 			if(!this.setStatus) this.setStatus = this._setStatus;
 			Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");

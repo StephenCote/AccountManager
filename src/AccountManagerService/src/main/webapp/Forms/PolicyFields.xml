@@ -117,14 +117,16 @@
 		
 		var o = this.getBean("rocketType");
 		var oProps = {policy:o};
-		var oW = Hemi.app.createWindow("Evaluate " + o.name, "/AccountManagerService/Forms/EvaluatePolicy.xml", "Evaluate-" + o.urn, 0, 0, oProps, 0);
-        if (oW) {
-           	oW.resizeTo(475, 400);
-           	Hemi.app.getWindowManager().CenterWindow(oW);
-           	// Destroy the window when closed
-           	//
-           	oW.setHideOnClose(0);
-           }
+		Hemi.app.createWindow("Evaluate " + o.name, "/AccountManagerService/Forms/EvaluatePolicy.xml", "Evaluate-" + o.urn, 0, 0, oProps, 0)
+		.then((oW)=>{
+	        if (oW) {
+	           	oW.resizeTo(475, 400);
+	           	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	           	// Destroy the window when closed
+	           	//
+	           	oW.setHideOnClose(0);
+	        }
+	    });
 	},
 
 	definePolicy : function(){
