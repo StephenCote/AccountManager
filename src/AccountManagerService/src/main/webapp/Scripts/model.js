@@ -4,6 +4,7 @@ window.model = model = Hemi.newObject("AMM","1.0",true,true,{
 	subType : [
 		"Address","Contact","Application","Group","Ticket","Story","Requirement","Note","Module","Model","Goal","ValidationRule","Form","FormElement","Case","Artifact","ProcessStep","Process","Method","Stage","Data","Work","Task","Cost","Time","Estimate","Budget","Person","Account","Resource","Lifecycle","Project","Schedule","Methodology","Policy","Pattern","Rule","Fact","Operation","Function","Permission","Role","Tag","Event","Location","Trait"
 	],
+	dependencies : ["hemi.event"],
 	object_create : function(){
 		Hemi.event.addScopeBuffer(this);
 		Hemi.message.service.subscribe(this,"onchangedirectory", this.scopeHandler("change_directory",0,0,1));

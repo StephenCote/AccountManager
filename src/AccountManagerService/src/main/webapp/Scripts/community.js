@@ -478,12 +478,14 @@
 			if(!_o[tl] || _o[tl] == null) return false;
 			var oProps = {openerId:obj.getObjectId(),listType:t,picker:0,viewType:0,listId:0},p = _o[tl];
 			oProps.viewType = p;
-			var oW = Hemi.app.createWindow(p.name, uwm.getApiTypeView(t) + "/Forms/" + t + ".xml", "View-" + t + "-" + p.id , 0, 0, oProps);
-            if (oW) {
-            	oW.resizeTo(475, 400);
-            	Hemi.app.getWindowManager().CenterWindow(oW);
-            	oW.setHideOnClose(0);
-            }
+			Hemi.app.createWindow(p.name, uwm.getApiTypeView(t) + "/Forms/" + t + ".xml", "View-" + t + "-" + p.id , 0, 0, oProps)
+			.then((oW)=>{
+	            if (oW) {
+	            	oW.resizeTo(475, 400);
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	oW.setHideOnClose(0);
+	            }
+			});
 		};
 		o.create = function(v){
 			var b = false;

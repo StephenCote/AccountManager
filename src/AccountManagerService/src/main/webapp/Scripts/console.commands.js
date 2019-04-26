@@ -44,10 +44,11 @@
 			var oU;
 			if(v && v.json){
 				AM6Client.clearCache(0,1);
-				oU = window.uwm.getUser();
-				if(uwm.altFlushSession) uwm.altFlushSession();
-				oC.addLine("Welcome!");
-				Hemi.message.service.publish("onsessionrefresh", oU);
+				window.uwm.getUser().then((oU)=>{
+					if(uwm.altFlushSession) uwm.altFlushSession();
+					oC.addLine("Welcome!");
+					Hemi.message.service.publish("onsessionrefresh", oU);
+				});
 			}
 			
 		});

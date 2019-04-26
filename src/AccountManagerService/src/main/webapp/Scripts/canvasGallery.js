@@ -22,24 +22,24 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 	(function(){
-		Hemi.include("hemi.event");
-		Hemi.include("hemi.util.logger");
-		Hemi.include("hemi.graphics.canvas");
 		
 		if(window.galleryView){
 			window.galleryView.destroy();
 			window.galleryView  = null;
 		}
 		
-		var ctl = Hemi.newObject("CanvasController","1.0",true,true,{
+		var ctl,ctlP;
+		Hemi.newObject("CanvasController","1.0",true,true,{
 			boxHeight : boxHeight,
 			boxWidth : boxWidth,
+			dependencies : ["hemi.event","hemi.util.logger","hemi.graphics.canvas"],
 			object_destroy : function(){
 				this.getObjects().galleryContainer.style.overflow = "";
 				this.getCanvas().destroy();
 				this.getObjects().cvs_container.parentNode.removeChild(this.getObjects().cvs_container);
 			},
 			object_create : function(){
+				ctl = this;
 				initializeCanvasController(this);
 				this.getCanvas().AddShapeDecorator(this);
 				this.getProperties().useWindowDimensions = 0;
@@ -330,8 +330,10 @@
 				}
 			}
 		});
+
 		
-		window.galleryView = Hemi.newObject("GalleryView","1.0",true,true,{
+		Hemi.newObject("GalleryView","1.0",true,true,{
+			dependencies : ["hemi.event","hemi.util.logger","hemi.graphics.canvas"],
 			object_destroy : function(){
 				this.getCanvasController().destroy();
 				Hemi.event.removeEventListener(window,"keydown",this._prehandle_keydown);
@@ -341,6 +343,7 @@
 				Hemi.event.removeEventListener(window,"orientationchange",this._prehandle_window_resize);
 			},
 			object_create : function(){
+				galleryView = this;
 				var _s = this.getProperties();
 				Hemi.util.logger.addLogger(this, "Gallery View", "Gallery View", 232);
 				/*
@@ -356,119 +359,123 @@
 				this.scopeHandler("keydown",0,0,1);
 								
 				instrumentVC(this);
-				var v = this.view("gallery",{scaleHeight:1,scaleWidth:1,basePath:"~/"});
-				v.panel("nav",{
-					width:100,
-					height:"boxHeight-50",
-					top:0,
-					left:0,
-					thumbWidth:50,
-					thumbHeight:50,
-					thumbTree:1,
-					smallIcon:1,
-					vslot:1,
-					suggestedCountOffset:3,
-					itemType:"Group",
-					itemPath:"GalleryHome/",
-					//itemIcon:"48px-Crystal_Clear_mimetype_kmultiple.png",
-					itemIcon:"48px-Crystal_Clear_filesystem_folder_grey.png",
-					itemIconBucket:"48px-Crystal_Clear_filesystem_folder_yellow.png",
-					actions:[
-					   //{action: "newGroup",vslot:0,label: "New Group",icon : "48px-Crystal_Clear_mimetype_misc.png"}
-					   //,{action: "viewUnassigned",vslot:1,label: "Tasks",icon : "48px-Crystal_Clear_filesystem_folder_grey.png"}
-					],
-					
-					menu:[
-					   {action: "demote",icon : "48px-Crystal_Clear_action_forward.png"}
-					]
+				var vP = this.view("gallery",{scaleHeight:1,scaleWidth:1,basePath:"~/"}),v1, v2, v3, v4, v5;
+				vP.getObjects().promise.then((v)=>{
+					v1 = v.panel("nav",{
+						width:100,
+						height:"boxHeight-50",
+						top:0,
+						left:0,
+						thumbWidth:50,
+						thumbHeight:50,
+						thumbTree:1,
+						smallIcon:1,
+						vslot:1,
+						suggestedCountOffset:3,
+						itemType:"Group",
+						itemPath:"GalleryHome/",
+						//itemIcon:"48px-Crystal_Clear_mimetype_kmultiple.png",
+						itemIcon:"48px-Crystal_Clear_filesystem_folder_grey.png",
+						itemIconBucket:"48px-Crystal_Clear_filesystem_folder_yellow.png",
+						actions:[
+						   //{action: "newGroup",vslot:0,label: "New Group",icon : "48px-Crystal_Clear_mimetype_misc.png"}
+						   //,{action: "viewUnassigned",vslot:1,label: "Tasks",icon : "48px-Crystal_Clear_filesystem_folder_grey.png"}
+						],
+						
+						menu:[
+						   {action: "demote",icon : "48px-Crystal_Clear_action_forward.png"}
+						]
+					});
+					v2 = v.panel("content",{
+						width:"boxWidth-100",
+						height:"boxHeight-50",
+						top:0,
+						left:100,
+						thumbWidth:128,
+						thumbHeight:128,
+						thumbScroll:0,
+						objectType:"Data",
+						itemType:"Object",
+						itemPath:"GalleryHome/",
+						//itemIcon:"48px-Crystal_Clear_action_filenew.png",
+						//itemIcon:"Crystal_Clear_action_filenew.png",
+						itemIcon : "Crystal_Clear_mimetype_misc.png",
+						itemIconImg : "Crystal_Clear_mimetype_image.png"
+					});
+					v3 = v.panel("controlPanel",{
+						width:"boxWidth-100",
+						height:"boxHeight-50",
+						top:0,
+						left:100,
+						thumbWidth:128,
+						thumbHeight:128,
+						thumbScroll:0,
+						actions:[
+						 {action: "tagSearch",label:"Tag Search",icon:"Crystal_Clear_app_kfind.png"},
+				         {action: "newGroup",label: "New Group",icon : "Crystal_Clear_action_filenew.png"},
+				         {action: "newBucket",label: "New Bucket",icon : "Crystal_Clear_action_filenew.png"},
+				         {action: "dndUpload",label:"Drag/Drop Upload",icon:"Crystal_Clear_action_2uparrow.png"},
+					     {action: "newImage",label: "New Image",icon : "Crystal_Clear_mimetype_image.png"},
+					     {action: "openShare",label: "Sharing",icon : "Crystal_Clear_app_Login_Manager.png"},
+					     {action: "openCache",label: "Cache",icon : "Crystal_Clear_app_database.png"},
+					     {action: "openLog",label: "Log",icon : "Crystal_Clear_app_kexi.png"},
+					     {action: "openDebug",label: "Debug",icon : "/AccountManagerService/Media/Icons/Hemi_Logo_128x128.png"}
+						]
+					});
+					v4 = v.panel("commands",{
+						width:"boxWidth",
+						height:50,
+						top:"boxHeight-50",
+						left:0,
+						thumbWidth:50,
+						thumbHeight:50,
+						actions:[
+						    {action:"navBack",small:1,slot:0,icon:"48px-Crystal_Clear_action_back.png"},
+							{action:"navNext",small:1,slot:1,icon:"48px-Crystal_Clear_action_forward.png"},
+							{action:"itemBack",small:1,slot:"mid-3",icon:"48px-Crystal_Clear_action_back.png"},
+							{action:"bucketItem",small:1,slot:"mid-1",icon:"48px-Crystal_Clear_filesystem_folder_yellow.png"},
+							{action:"controlPanel",small:1,slot:"mid+1",icon:"48px-Crystal_Clear_app_ksysguard.png"},
+							{action:"itemNext",small:1,slot:"mid+3",icon:"48px-Crystal_Clear_action_forward.png"},
+							{action:"deleteObject",small:1,slot:"slots - 3",icon:"48px-Crystal_Clear_filesystem_trashcan_empty.png"},
+							{action:"logout",small:1,slot:"slots - 2",icon:"48px-Crystal_Clear_app_logout.png"},
+							{action:"exit",small:1,slot:"slots - 1",icon:"48px-Crystal_Clear_app_shutdown.png"}
+						]
+		
+					});
+					v5 = v.panel("matte",{
+						width:"boxWidth",
+						height:"boxHeight",
+						backgroundColor:"#000000",
+						strokeColor:"#000000",
+						top:0,
+						left:0,
+						thumbWidth:50,
+						thumbHeight:50,
+						/// Matte Config defines the control boundary regions
+						///
+						matteConfig : {
+							left: 50,
+							right: 50,
+							top: 50,
+							bottom: 50
+						},
+						actions:[]
+					});
+					//this.view("tasks",{scaleHeight:1,scaleWidth:1}).panel("nav",{width:100}).panel("content",{left:100}).panel("control",{row:2,top:0,height:100}).panel("footer",{row:3,height:50,width:"33%"}).panel("footer2",{row:3,height:50,width:"33%"}).panel("footer3",{row:3,height:50,width:"33%"});
+					//initializeVC(this);
+					Promise.all([v1.getObjects().promise,v2.getObjects().promise,v3.getObjects().promise,v4.getObjects().promise,v5.getObjects().promise]).then(()=>{
+						var gc = ctl.getObjects().galleryContainer;
+						this.getCanvasController().getCanvasContainer().style.cssText = "position:absolute;top:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteTop(gc)) + "px;left:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteLeft(gc)) + "px;";
+		
+						this.switchView("gallery",["nav","content","commands"]);
+						Hemi.event.addEventListener(window,"hashchange",this._prehandle_hash_change);
+						Hemi.event.addEventListener(window,"resize",this._prehandle_window_resize);
+						Hemi.event.addEventListener(window,"hashchange",this._prehandle_window_resize);
+						Hemi.event.addEventListener(window,"orientationchange",this._prehandle_window_resize);
+						Hemi.event.addEventListener(window,"keydown",this._prehandle_keydown);
+					});
 				});
-				v.panel("content",{
-					width:"boxWidth-100",
-					height:"boxHeight-50",
-					top:0,
-					left:100,
-					thumbWidth:128,
-					thumbHeight:128,
-					thumbScroll:0,
-					objectType:"Data",
-					itemType:"Object",
-					itemPath:"GalleryHome/",
-					//itemIcon:"48px-Crystal_Clear_action_filenew.png",
-					//itemIcon:"Crystal_Clear_action_filenew.png",
-					itemIcon : "Crystal_Clear_mimetype_misc.png",
-					itemIconImg : "Crystal_Clear_mimetype_image.png"
-				});
-				v.panel("controlPanel",{
-					width:"boxWidth-100",
-					height:"boxHeight-50",
-					top:0,
-					left:100,
-					thumbWidth:128,
-					thumbHeight:128,
-					thumbScroll:0,
-					actions:[
-					 {action: "tagSearch",label:"Tag Search",icon:"Crystal_Clear_app_kfind.png"},
-			         {action: "newGroup",label: "New Group",icon : "Crystal_Clear_action_filenew.png"},
-			         {action: "newBucket",label: "New Bucket",icon : "Crystal_Clear_action_filenew.png"},
-			         {action: "dndUpload",label:"Drag/Drop Upload",icon:"Crystal_Clear_action_2uparrow.png"},
-				     {action: "newImage",label: "New Image",icon : "Crystal_Clear_mimetype_image.png"},
-				     {action: "openShare",label: "Sharing",icon : "Crystal_Clear_app_Login_Manager.png"},
-				     {action: "openCache",label: "Cache",icon : "Crystal_Clear_app_database.png"},
-				     {action: "openLog",label: "Log",icon : "Crystal_Clear_app_kexi.png"},
-				     {action: "openDebug",label: "Debug",icon : "/AccountManagerService/Media/Icons/Hemi_Logo_128x128.png"}
-					]
-				});
-				v.panel("commands",{
-					width:"boxWidth",
-					height:50,
-					top:"boxHeight-50",
-					left:0,
-					thumbWidth:50,
-					thumbHeight:50,
-					actions:[
-					    {action:"navBack",small:1,slot:0,icon:"48px-Crystal_Clear_action_back.png"},
-						{action:"navNext",small:1,slot:1,icon:"48px-Crystal_Clear_action_forward.png"},
-						{action:"itemBack",small:1,slot:"mid-3",icon:"48px-Crystal_Clear_action_back.png"},
-						{action:"bucketItem",small:1,slot:"mid-1",icon:"48px-Crystal_Clear_filesystem_folder_yellow.png"},
-						{action:"controlPanel",small:1,slot:"mid+1",icon:"48px-Crystal_Clear_app_ksysguard.png"},
-						{action:"itemNext",small:1,slot:"mid+3",icon:"48px-Crystal_Clear_action_forward.png"},
-						{action:"deleteObject",small:1,slot:"slots - 3",icon:"48px-Crystal_Clear_filesystem_trashcan_empty.png"},
-						{action:"logout",small:1,slot:"slots - 2",icon:"48px-Crystal_Clear_app_logout.png"},
-						{action:"exit",small:1,slot:"slots - 1",icon:"48px-Crystal_Clear_app_shutdown.png"}
-					]
-	
-				});
-				v.panel("matte",{
-					width:"boxWidth",
-					height:"boxHeight",
-					backgroundColor:"#000000",
-					strokeColor:"#000000",
-					top:0,
-					left:0,
-					thumbWidth:50,
-					thumbHeight:50,
-					/// Matte Config defines the control boundary regions
-					///
-					matteConfig : {
-						left: 50,
-						right: 50,
-						top: 50,
-						bottom: 50
-					},
-					actions:[]
-				});			
-				//this.view("tasks",{scaleHeight:1,scaleWidth:1}).panel("nav",{width:100}).panel("content",{left:100}).panel("control",{row:2,top:0,height:100}).panel("footer",{row:3,height:50,width:"33%"}).panel("footer2",{row:3,height:50,width:"33%"}).panel("footer3",{row:3,height:50,width:"33%"});
-				//initializeVC(this);
-				var gc = ctl.getObjects().galleryContainer;
-				this.getCanvasController().getCanvasContainer().style.cssText = "position:absolute;top:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteTop(gc)) + "px;left:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteLeft(gc)) + "px;";
 
-				this.switchView("gallery",["nav","content","commands"]);
-				Hemi.event.addEventListener(window,"hashchange",this._prehandle_hash_change);
-				Hemi.event.addEventListener(window,"resize",this._prehandle_window_resize);
-				Hemi.event.addEventListener(window,"hashchange",this._prehandle_window_resize);
-				Hemi.event.addEventListener(window,"orientationchange",this._prehandle_window_resize);
-				Hemi.event.addEventListener(window,"keydown",this._prehandle_keydown);
-				
 			}, // end object create
 			_handle_keydown : function(e){
 				e = Hemi.event.getEvent(e);
@@ -655,32 +662,38 @@
 			openShare : function(oTargetPanel, sType, sId, oShape){
 				var d = this.getCurrentViewPanel("nav").getObjects().currentDirectory;
 				var oProps = {viewType:d};
-				var oW = Hemi.app.createWindow('Sharing','/AccountManagerService/Forms/Sharing.xml','Sharing-' + d.id,0,0,oProps);
-				if(oW){
-					oW.setCanMinimize(0);
-					oW.setCanMaximize(0);
-			    	oW.resizeTo(475, 400);
-			    	oW.setHideOnClose(0);
-			    	Hemi.app.getWindowManager().CenterWindow(oW);
-				}
+				Hemi.app.createWindow('Sharing','/AccountManagerService/Forms/Sharing.xml','Sharing-' + d.id,0,0,oProps)
+				.then((oW)=>{
+					if(oW){
+						oW.setCanMinimize(0);
+						oW.setCanMaximize(0);
+				    	oW.resizeTo(475, 400);
+				    	oW.setHideOnClose(0);
+				    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});
+					}
+				});
 			},
 			openCache : function(oTargetPanel, sType, sId, oShape){
-				var oW = Hemi.app.createWindow('Cache','/AccountManagerService/Forms/CacheUtility.xml','Cache');
-				if(oW){
-					oW.setCanMinimize(0);
-					oW.setCanMaximize(0);
-			    	oW.resizeTo(475, 400);
-			    	oW.setHideOnClose(0);
-			    	Hemi.app.getWindowManager().CenterWindow(oW);
-				}
+				Hemi.app.createWindow('Cache','/AccountManagerService/Forms/CacheUtility.xml','Cache')
+				.then((oW)=>{
+					if(oW){
+						oW.setCanMinimize(0);
+						oW.setCanMaximize(0);
+				    	oW.resizeTo(475, 400);
+				    	oW.setHideOnClose(0);
+				    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});
+					}
+				});
 			},
 			tagSearch: function(){
 				var oProps = {altSearch:1,openerId:this.getObjectId(),searchHandler:"doTagSearch"};
-				var oW = Hemi.app.createWindow('Tag Search','/AccountManagerService/Forms/TagSearch.xml','TagSearch',0,0,oProps);
-				if(!oW) return;
-				oW.resizeTo(475,400);
-				oW.setHideOnClose(0);
-				Hemi.app.getWindowManager().CenterWindow(oW);
+				Hemi.app.createWindow('Tag Search','/AccountManagerService/Forms/TagSearch.xml','TagSearch',0,0,oProps)
+				.then((oW)=>{
+					if(!oW) return;
+					oW.resizeTo(475,400);
+					oW.setHideOnClose(0);
+					Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});
+				});
 			},
 			doTagSearch : function(aT){
 				var oP = this.getCurrentViewPanel("content"),oP2 = this.getCurrentViewPanel("nav");
@@ -697,11 +710,13 @@
 				this.getCurrentView().panel("content").repaint();
 			},
 			openDebug : function(){
-				var oW = Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler');
-				if(!oW) return;
-				oW.setCanMinimize(0);
-				oW.setCanMaximize(0);
-				oW.moveTo(0,0);
+				Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler')
+				.then((oW)=>{
+					if(!oW) return;
+					oW.setCanMinimize(0);
+					oW.setCanMaximize(0);
+					oW.moveTo(0,0);
+				});
 			},
 			navNext : function(){
 				next(this.getCurrentViewPanel("nav"));
@@ -1702,7 +1717,7 @@
 			var oW = Hemi.app.createWindow(o.name, uwm.getApiTypeView(sType) + "/Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps);
 		    if (oW) {
 		    	oW.resizeTo(475, 400);
-		    	Hemi.app.getWindowManager().CenterWindow(oW);
+		    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
 		    	// Destroy the window when closed
 		    	//
 		    	oW.setHideOnClose(0);
@@ -1721,29 +1736,30 @@
 			var oProps = {openerId:oPanel.getObjectId(),picker:0,viewType:o};
 			if(_o.viewWindow && !_o.viewWindow.getIsClosed()) _o.viewWindow.Close();
 			var sType = o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() ;
-			var oW = Hemi.app.createWindow(o.name, uwm.getApiTypeView(sType) + "/Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps);
-		    if (oW) {
-		    	oW.resizeTo(475, 400);
-		    	Hemi.app.getWindowManager().CenterWindow(oW);
-		    	// Destroy the window when closed
-		    	//
-		    	oW.setHideOnClose(0);
-		    	oW.setCanMinimize(0);
-		    	oW.setCanMaximize(0);
-		    	oW.setCanResize(0);
-		    	_o.viewWindow = oW;
-		    }
-	
+			Hemi.app.createWindow(o.name, uwm.getApiTypeView(sType) + "/Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps)
+		    .then((oW)=>{
+				if (oW) {
+			    	oW.resizeTo(475, 400);
+			    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});
+			    	// Destroy the window when closed
+			    	//
+			    	oW.setHideOnClose(0);
+			    	oW.setCanMinimize(0);
+			    	oW.setCanMaximize(0);
+			    	oW.setCanResize(0);
+			    	_o.viewWindow = oW;
+			    }
+		    });
 		}
 		
 		function instrumentVC(o){
 			Hemi.object.addObjectAccessor(o,"view");
 			o.views = function(){return this.getViews();};
 			o.view = function(s,cfg){
-				var v;
-				if((v = this.getViewByName(s))) return v;
+				var vP;
+				if((vP = this.getViewByName(s))) return vP;
 				if(!cfg) cfg = {};
-				v = Hemi.newObject("View " + s,"1.0",true,true,{
+				vP = Hemi.newObject("View " + s,"1.0",true,true,{
 					object_create : function(){
 						var _s = this.getProperties(),_o = this.getObjects();
 						Hemi.object.addObjectAccessor(this,"panel");
@@ -1770,11 +1786,14 @@
 					panels : function(){
 						return this.getPanels();
 					},
+					/// currently returning two values - a promise if not created, and the object if so
+					/// this is to avoid retooling everything else at the moment not expecting a promise
+					/// and it's not really necessary either
 					panel : function(s,cfg){
-						var v;
-						if((v = this.getPanelByName(s))) return v;
+						var pP;
+						if((pP = this.getPanelByName(s))) return pP;
 						if(!cfg) cfg = {};
-						v = Hemi.newObject("Panel " + s,"1.0",true,true,{
+						pP = Hemi.newObject("Panel " + s,"1.0",true,true,{
 							object_create : function(){
 								var _s = this.getProperties(), _o = this.getObjects();
 								
@@ -1842,15 +1861,21 @@
 							}
 							
 						});
-						v.getObjects().view = this;
-						this.addNewPanel(v,s);
-						return v;
-					}
+						pP.getObjects().promise.then((v)=>{
+							v.getObjects().view = this;
+							this.addNewPanel(v,s);
+							return v;
+						});
+						return pP;
+					} /// end panel constructor
 				});
-				v.getObjects().controller = this;
-				this.addNewView(v,s);
-				return v;
-			}
+				vP.getObjects().promise.then((v)=>{
+					v.getObjects().controller = this;
+					this.addNewView(v,s);
+					return v;
+				});
+				return vP;
+			} /// end view constructor
 		}
 		function expressPosition(v, oV){
 			var vs = oV.getProperties();
@@ -1860,26 +1885,30 @@
 			return v;
 		}
 		function pickText(o,sL,sD,sH){
-			var oW = Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerLabel:sL,pickerDefault:sD,picker_handler:sH,openerId:o.getObjectId()},HandlePickerLoaded);
-			if(!oW) return;
-			oW.setHideOnClose(0);
-			oW.resizeTo(475,100);
-			oW.center();
-			oW.setIsModal(true);
-			oW.hideButtons();
+			Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","TextPicker-" + Hemi.guid(),0,0,{pickerLabel:sL,pickerDefault:sD,picker_handler:sH,openerId:o.getObjectId()},HandlePickerLoaded)
+			.then((oW)=>{
+				if(!oW) return;
+				oW.setHideOnClose(0);
+				oW.resizeTo(475,100);
+				oW.center();
+				oW.setIsModal(true);
+				oW.hideButtons();
+			});
 		}
 		function HandlePickerLoaded(oW){
 	
 		}
 		function openWindow(oPanel,sType,oType, fHandler){
 			var oProps = {openerId:oPanel.getObjectId(),listType:sType,picker:0,viewType:oType};
-			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
-	        if (oW) {
-	        	oW.resizeTo(475, 400);
-	        	Hemi.app.getWindowManager().CenterWindow(oW);
-	        	// Destroy the window when closed
-	        	//
-	        	oW.setHideOnClose(0);
-	        }
+			Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler)
+			.then((oW)=>{
+		        if (oW) {
+		        	oW.resizeTo(475, 400);
+		        	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});
+		        	// Destroy the window when closed
+		        	//
+		        	oW.setHideOnClose(0);
+		        }
+			});
 		}
 	}());

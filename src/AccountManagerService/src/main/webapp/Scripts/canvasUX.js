@@ -618,7 +618,7 @@
 					oW.setCanMaximize(0);
 			    	oW.resizeTo(475, 400);
 			    	oW.setHideOnClose(0);
-			    	Hemi.app.getWindowManager().CenterWindow(oW);
+			    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
 				}
 			},
 			openCache : function(oTargetPanel, sType, sId, oShape){
@@ -628,7 +628,7 @@
 					oW.setCanMaximize(0);
 			    	oW.resizeTo(475, 400);
 			    	oW.setHideOnClose(0);
-			    	Hemi.app.getWindowManager().CenterWindow(oW);
+			    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
 				}
 			},
 			tagSearch: function(){
@@ -637,7 +637,7 @@
 				if(!oW) return;
 				oW.resizeTo(475,400);
 				oW.setHideOnClose(0);
-				Hemi.app.getWindowManager().CenterWindow(oW);
+				Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
 			},
 			doTagSearch : function(aT){
 				var oP = this.getCurrentViewPanel("content"),oP2 = this.getCurrentViewPanel("nav");
@@ -1539,7 +1539,7 @@
 			var oW = Hemi.app.createWindow(o.name, uwm.getApiTypeView(sType) + "/Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps);
 		    if (oW) {
 		    	oW.resizeTo(475, 400);
-		    	Hemi.app.getWindowManager().CenterWindow(oW);
+		    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
 		    	// Destroy the window when closed
 		    	//
 		    	oW.setHideOnClose(0);
@@ -1561,7 +1561,7 @@
 			var oW = Hemi.app.createWindow(o.name, uwm.getApiTypeView(sType) + "/Forms/" + o.nameType.substring(0,1) + o.nameType.substring(1,o.nameType.length).toLowerCase() + ".xml", "View-" + o.id, 0, 0, oProps);
 		    if (oW) {
 		    	oW.resizeTo(475, 400);
-		    	Hemi.app.getWindowManager().CenterWindow(oW);
+		    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
 		    	// Destroy the window when closed
 		    	//
 		    	oW.setHideOnClose(0);
@@ -1712,7 +1712,7 @@
 			var oW = Hemi.app.createWindow((oType && oType.id ? oType.name : "New" + sType), uwm.getApiTypeView(sType) + "/Forms/" + sType + ".xml", "View-" + (oType && oType.id ? sType + "-" + oType.id : Hemi.guid()), 0, 0, oProps, fHandler);
 	        if (oW) {
 	        	oW.resizeTo(475, 400);
-	        	Hemi.app.getWindowManager().CenterWindow(oW);
+	        	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
 	        	// Destroy the window when closed
 	        	//
 	        	oW.setHideOnClose(0);

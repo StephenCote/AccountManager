@@ -59,14 +59,13 @@
 					if(v && v.data){
 						oC.viewObject(v.data);
 					}
-					//window.dbg = v;
 				});
 				setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').resizeFrame()",50);
 
 				/// oL.setAutoSelect(1);
 			},
 			viewObject : function(o){
-				var oW;
+				var oWp;
 				if(o.nameType == "DATA"){
 					if(o.mimeType.match(/video/gi) || o.mimeType.match(/^image/gi)){
 						var bVid = o.mimeType.match(/^video\//gi);
@@ -75,7 +74,7 @@
 					}
 					else if(o.mimeType.match(/^text/gi) || o.mimeType.match(/xml/gi) || o.mimeType.match(/javascript/gi)){
 						var oProps = {openerId:this.getObjectId(),picker:0,viewType:o,autoDisplay:1};
-						oW = Hemi.app.createWindow(o.name, uwm.getApiTypeView("DATA") + "/Forms/Data.xml", "View-" + o.id, 0, 0, oProps);
+						oWp = Hemi.app.createWindow(o.name, uwm.getApiTypeView("DATA") + "/Forms/Data.xml", "View-" + o.id, 0, 0, oProps);
 
 					}
 				}
@@ -86,16 +85,18 @@
 				else if(o.nameType == "USER" || o.nameType == "PERSON"){
 					if(!o.populated) o = AM6Client.get(o.nameType, o.objectId);
 					var oProps = {openerId:this.getObjectId(),picker:0,viewType:o,autoDisplay:1,listType:(o.nameType == "USER" ? "User" : "Person")};
-					oW = Hemi.app.createWindow(o.name, uwm.getApiTypeView(o.nameType) + "/Forms/Profile.xml", "View-" + o.id, 0, 0, oProps);
+					oWp = Hemi.app.createWindow(o.name, uwm.getApiTypeView(o.nameType) + "/Forms/Profile.xml", "View-" + o.id, 0, 0, oProps);
 
 				}
-			    if (oW) {
-			    	oW.resizeTo(475, 400);
-			    	Hemi.app.getWindowManager().CenterWindow(oW);
-			    	oW.setHideOnClose(0);
-			    	oW.setCanMinimize(0);
-			    	oW.setCanMaximize(0);
-			    	oW.setCanResize(0);
+			    if (oWp) {
+			    	oWp.then((oW)=>{
+				    	oW.resizeTo(475, 400);
+				    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+				    	oW.setHideOnClose(0);
+				    	oW.setCanMinimize(0);
+				    	oW.setCanMaximize(0);
+				    	oW.setCanResize(0);
+			    	});
 			    }
 			},
 			addLine : function(s, v){
@@ -277,22 +278,23 @@
 			},
 			refreshDisplay : function(){
 				
-				var oU = uwm.getUser(), _o = this.getObjects(), _s = this.getProperties(), sP = "Anonymous:$", sPa = "/";
-				_o.user = (oU && oU != null ? oU : null);
-				if(_o.user != null){
-					sP = oU.name + ":$";
-					sPa = "/Home/" + oU.name;
-					_s.currentPath = sPa;
-					this.loadStorage();
-					/// this.processCommand("ls -hide", 1);
-					this.processCommand("cd \"" + _s.currentPath + "\"", 1);
-				}
-				else{
-					_s.currentPath = "/";
-				}
-				
-				Hemi.xml.setInnerXHTML(document.getElementById("prompt"), sP);
-				
+				var _o = this.getObjects(), _s = this.getProperties(), sP = "Anonymous:$", sPa = "/";
+				uwm.getUser().then((oU)=>{
+					_o.user = (oU && oU != null ? oU : null);
+					if(_o.user != null){
+						sP = oU.name + ":$";
+						sPa = "/Home/" + oU.name;
+						_s.currentPath = sPa;
+						this.loadStorage();
+						/// this.processCommand("ls -hide", 1);
+						this.processCommand("cd \"" + _s.currentPath + "\"", 1);
+					}
+					else{
+						_s.currentPath = "/";
+					}
+					
+					Hemi.xml.setInnerXHTML(document.getElementById("prompt"), sP);
+				});
 			},
 			loadStorage : function(){
 				var _o = this.getObjects();
