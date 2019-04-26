@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+<title>Account Manager Service</title>
+		<link rel="shortcut icon" href="/AccountManagerService/favicon.ico">
+   		<link rel="stylesheet" href="/AccountManagerService/Style/uwm.css" type="text/css" title = "uwm" />
+   		<link rel="stylesheet" href="/AccountManagerService/Style/rocket.css" type="text/css" />
+<!-- 
+<link rel="stylesheet" href="/AccountManagerService/Style/flyout.css" type="text/css" />
+-->
+<!--  -->
+<script type = "text/javascript">
+if(!window.g_application_path) window.g_application_path = "/AccountManagerService/";
+if(!window.HemiConfig) window.HemiConfig = {
+	dependencies : ["hemi.json.rpc","hemi.json.rpc.cache","hemi.css","hemi.app","hemi.app.comp","hemi.app.module","hemi.app.module.test","hemi.ui.wideselect"],
+	frameworkLoad : function(){
+		console.log("Hemi Framework Core Loaded");
+	}
+};
+if(!window.HemiConfig.hemi_base) window.HemiConfig.hemi_base= "/HemiFramework/Hemi/";
+</script>
+<!-- 
+<script type = "text/javascript" src = "/HemiFramework/Hemi/hemi.js"></script>
+-->
+  
+		
+<script type = "text/javascript" src = "Scripts/bootstrap.loose.jsp"></script>
+
+<script type = "text/javascript">
+
+var testObj;
+/*
+Hemi.include("hemi.css");
+Hemi.include("hemi.app");
+Hemi.include("hemi.app.comp");
+Hemi.include("hemi.app.module");
+Hemi.include("hemi.ui.wideselect");
+*/
+function clientLoad(){
+	var oH = document.querySelectorAll("h2")[0];
+	var sVer = "Error";
+	if(typeof Hemi == "object") sVer = Hemi.version;
+	oH.innerHTML = `Version ${sVer}`;
+	/*
+	if(typeof Hemi == "object"){
+		Hemi.xml.getJSON("/AccountManagerService/Test/testData.json",handleTraditional,1);	
+	}
+	Hemi.xml.promiseJSON("/AccountManagerService/Test/testData2.json")
+		.then(function(data){
+			document.querySelector("#testData2").innerHTML = `Test: ${data.name}`;
+		})
+		.catch(function(error){
+			document.querySelector("#testData2").innerHTML = `Test: Error`;
+			window.xmlError = error;
+		})
+	;
+	Hemi.xml.promiseText("/AccountManagerService/Test/testData.txt")
+	.then(function(data){
+		document.querySelector("#testData3").innerHTML = `Test: ${data}`;
+		window.xmlData = data;
+	})
+	.catch(function(error){
+		document.querySelector("#testData3").innerHTML = `Test: Error`;
+		window.xmlError = error;
+	});
+	
+	testObj = Hemi.newObject("Test Object","1.0", true, true, {"example":"1.1","object_create":function()
+		{
+			this.testProperty = "Tested";
+			document.querySelector("#testData4").innerHTML = this.getObjectId() + " " + this.example + " " + this.testProperty;
+			Hemi.object.addObjectAccessor(this, "test");
+			Hemi.include("hemi.util.logger").then(()=>{
+				HemiEngine.util.logger.addLogger(this, "Test", "Test Object", "950");
+				this.log("Test Object");
+			});
+		}
+	});
+*/
+	/// Hemi.include("hemi.task");
+
+}
+function handleTraditional(s, v){
+	document.querySelector("#testData").innerHTML = `Test: ${v.json.name}`;
+}
+window.addEventListener("load",clientLoad,false);
+
+function testForm(){
+	Hemi.app.createWindow(Hemi.guid(),"/AccountManagerService/Forms/Data.xml");
+	///.then((o)=>{o.setHideOnClose(0);});	
+}
+</script>
+
+</head>
+<body>
+
+<h1>Hemi 4</h1>
+<h2>[ Version ]</h2>
+<!-- 
+<div template = "/AccountManagerService/Forms/UnauthIn.xml"></div>
+-->
+<div template = "Templates/ToolBar.xml"></div>
+
+<div>
+<input type = "button" value = "Test" onclick = "testForm()" />
+</div>
+<!-- 
+<div template = "Templates/FrameworkProfiler.xml"></div>
+-->
+<div template = "/AccountManagerService/Forms/Data.xml">[ Data Template ]</div>
+<!--
+<div template= "/AccountManagerService/Templates/TestTemplate.xml">[Example Template]</div>
+-->
+<!--
+<p>Pre log viewer</p>
+<div template = "Templates/LogViewer.xml">[ Viewer ]</div>
+<p>Post log viewer</p>
+-->
+<!--
+<h2 id = "testData">[ Test Data ]</h2>
+<h2 id = "testData2">[ Test Data 2 ]</h2>
+<h2 id = "testData3">[ Test Data 3 ]</h2>
+<h2 id = "testData4">[ Test Data 4 ]</h2>
+<p>Test page for Hemi version 4.</p>
+<p>
+Hemi version 4 is an update to modernize the internal framework structure, development patterns, and make use of modern JavaScript features.
+</p>
+<p>
+This particular page is deployed with <i>AccountManagerService</i> while testing some of the interoperability.
+</p>
+-->
+</body>
+</html>
