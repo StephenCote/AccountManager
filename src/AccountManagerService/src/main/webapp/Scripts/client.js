@@ -843,6 +843,14 @@
 		var uwmServices;
 		
 		HemiConfig.frameworkLoad = function(){
+			completeLoadFramework();
+		};
+		
+		function completeLoadFramework(){
+			if(!Hemi.lookup("hemi.json.rpc") || Hemi.json.rpc.service == null){
+				setTimeout(completeLoadFramework,10);
+				return;
+			};
 			if(!window.uwmServices){
 				window.uwmServices = uwmServices = Hemi.json.rpc.service;
 				window.uwmServiceCache = uwmServiceCache = Hemi.json.rpc.cache.service;
@@ -871,7 +879,7 @@
 					uwm.processLoadHandlers();
 				});
 			});
-		};
+		}
 //	}
 	
 }());

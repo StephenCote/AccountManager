@@ -14,7 +14,11 @@ response.setCharacterEncoding("UTF-8");
 %>
 (function(){
 	if(!window.g_application_path) window.g_application_path = "/AccountManagerService/";
-	if(!window.HemiConfig) window.HemiConfig = {};
+	if(!window.HemiConfig){
+		window.HemiConfig = {
+			dependencies : []
+		};
+	}
 	if(!window.HemiConfig.hemi_base) window.HemiConfig.hemi_base= "/HemiFramework/Hemi/";
 })();
 <c:import url="http://localhost:8080/HemiFramework/Hemi/hemi.comp.js" />
