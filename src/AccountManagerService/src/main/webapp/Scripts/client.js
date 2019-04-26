@@ -426,8 +426,6 @@
 		return new Promise((res,rej)=>{
 			Hemi.xml.promiseJSON(sPrincipal + "/","GET",0,0).then((x)=>{
 				fc("",x);
-				if(f) f("",x);
-				
 				res(x);
 			});
 		});
@@ -868,12 +866,11 @@
 				if(!v.is_primary) return;
 				var oSpace = Hemi.app.space.service.getPrimarySpace();
 				
-				
 				getPrincipal(function(s,v){
 					principal = 0;
 					AM6Client.currentOrganization = sCurrentOrganization = 0;
-					if(v && v != null && v.json != null){
-						principal = v.json;
+					if(v && v != null){
+						principal = v;
 						AM6Client.currentOrganization = sCurrentOrganization = principal.organizationPath;
 					}
 					uwm.processLoadHandlers();
