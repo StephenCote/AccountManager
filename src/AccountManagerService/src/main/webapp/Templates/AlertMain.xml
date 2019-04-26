@@ -58,31 +58,31 @@
 	},
 	checkDefaultConfig : function(){
 
-		var oP = uwm.getUser();
-		var bConf = AM6Client.getAttributeValue(oP,"first-contact-v1-config","false");
-		window.dbg = bConf;
-		if(bConf.match(/^false$/gi)){
-		
-			var sDEmail = "[h1]Unfortunate News[/h1][div]It is with a heavy heart that ${informant} has indicated ${myname} passed away. ${informant} shares this information: ${tidings}. Understanding many will want to reach out to lend and receive support, and find out more information, please direct your questions to ${primary}.[/div]";
-			var sBEmail = "[h1]My Unfortunate News[/h1][div]It is with a heavy heart that I have passed away. ${informant} shares this information: ${tidings}. Understanding many will want to reach out to lend and receive support, and find out more information, please direct your questions to ${primary}.[/div]";
-			var sMEmail = "[h1]My Medical News[/h1][div]You are receiving this message because I have become incapacitated due to a medical condition. ${informant} shares this information: ${tidings}. Understanding many will want to reach out to lend and receive support, and find out more information, please direct your questions to ${primary}.[/div]";
-			var sDText = "First Contact: ${myname} has passed away";
-			var sBText = "First Contact: ${myname} has passed away";
-			var sMText = "First Contact: ${myname} is in the hospital";
-			var oD = AM6Client.find("GROUP","DATA","~/Data");
-			AM6Client.update("DATA", this.newData("BEREAVEMENT Email", "Template for bereavement email", "text/plain", sBEmail, oD.path));
-			AM6Client.update("DATA", this.newData("DEATH Email", "Template for death email", "text/plain", sDEmail, oD.path));
-			AM6Client.update("DATA", this.newData("MEDICAL Email", "Template for medical email", "text/plain", sMEmail, oD.path));
-			AM6Client.update("DATA", this.newData("BEREAVEMENT Text", "Template for bereavement text", "text/plain", sBText, oD.path));
-			AM6Client.update("DATA", this.newData("DEATH Text", "Template for death text", "text/plain", sDText, oD.path));
-			AM6Client.update("DATA", this.newData("MEDICAL Text", "Template for medical text", "text/plain", sMText, oD.path));
-
-			var oParent = uwm.getDefaultParentForType("Role",AM6Client.user("ROLE","USER"));
-			AM6Client.update("ROLE",this.newRole("Primary Contacts", "PERSON", oParent));
-			AM6Client.update("ROLE",this.newRole("Secondary Contacts", "PERSON", oParent));
-			AM6Client.addAttribute(oP,"first-contact-v1-config","true");
-			AM6Client.update("USER",oP);
-		}
+		uwm.getUser().then((oP)=>{
+			var bConf = AM6Client.getAttributeValue(oP,"first-contact-v1-config","false");
+			if(bConf.match(/^false$/gi)){
+			
+				var sDEmail = "[h1]Unfortunate News[/h1][div]It is with a heavy heart that ${informant} has indicated ${myname} passed away. ${informant} shares this information: ${tidings}. Understanding many will want to reach out to lend and receive support, and find out more information, please direct your questions to ${primary}.[/div]";
+				var sBEmail = "[h1]My Unfortunate News[/h1][div]It is with a heavy heart that I have passed away. ${informant} shares this information: ${tidings}. Understanding many will want to reach out to lend and receive support, and find out more information, please direct your questions to ${primary}.[/div]";
+				var sMEmail = "[h1]My Medical News[/h1][div]You are receiving this message because I have become incapacitated due to a medical condition. ${informant} shares this information: ${tidings}. Understanding many will want to reach out to lend and receive support, and find out more information, please direct your questions to ${primary}.[/div]";
+				var sDText = "First Contact: ${myname} has passed away";
+				var sBText = "First Contact: ${myname} has passed away";
+				var sMText = "First Contact: ${myname} is in the hospital";
+				var oD = AM6Client.find("GROUP","DATA","~/Data");
+				AM6Client.update("DATA", this.newData("BEREAVEMENT Email", "Template for bereavement email", "text/plain", sBEmail, oD.path));
+				AM6Client.update("DATA", this.newData("DEATH Email", "Template for death email", "text/plain", sDEmail, oD.path));
+				AM6Client.update("DATA", this.newData("MEDICAL Email", "Template for medical email", "text/plain", sMEmail, oD.path));
+				AM6Client.update("DATA", this.newData("BEREAVEMENT Text", "Template for bereavement text", "text/plain", sBText, oD.path));
+				AM6Client.update("DATA", this.newData("DEATH Text", "Template for death text", "text/plain", sDText, oD.path));
+				AM6Client.update("DATA", this.newData("MEDICAL Text", "Template for medical text", "text/plain", sMText, oD.path));
+	
+				var oParent = uwm.getDefaultParentForType("Role",AM6Client.user("ROLE","USER"));
+				AM6Client.update("ROLE",this.newRole("Primary Contacts", "PERSON", oParent));
+				AM6Client.update("ROLE",this.newRole("Secondary Contacts", "PERSON", oParent));
+				AM6Client.addAttribute(oP,"first-contact-v1-config","true");
+				AM6Client.update("USER",oP);
+			}
+		});
 	},
 	provideSelectItem : function(o){
 		if(!o.nameType && o.data) o = o.data;
@@ -167,21 +167,22 @@
 		
 		var oDiv = document.createElement("div");
 		c.appendChild(oDiv);
-		var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
-		ac.setTemplateIsSpace(1);
-		ac.getProperties().openerId = this.getObjectId();
-		ac.getProperties().viewType = ctx;
-		
-		if(ctx.nameType == "PERSON"){
-			ac.provideClose = this.scopeHandler("closePerson",0,1,1);
-			ac.local_template_init = this.scopeHandler("handleOpenPerson",0,1,1);
-			ac.loadTemplate("/AccountManagerService/Forms/Person.xml");
-		}
-		else if(ctx.nameType == "ROLE"){
-			ac.provideClose = this.scopeHandler("closeRole",0,1,1);
-			ac.loadTemplate("/AccountManagerService/Forms/Role.xml");
-		}
-
+		Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace())
+		.then((ac)=>{
+			ac.setTemplateIsSpace(1);
+			ac.getProperties().openerId = this.getObjectId();
+			ac.getProperties().viewType = ctx;
+			
+			if(ctx.nameType == "PERSON"){
+				ac.provideClose = this.scopeHandler("closePerson",0,1,1);
+				ac.local_template_init = this.scopeHandler("handleOpenPerson",0,1,1);
+				ac.loadTemplate("/AccountManagerService/Forms/Person.xml");
+			}
+			else if(ctx.nameType == "ROLE"){
+				ac.provideClose = this.scopeHandler("closeRole",0,1,1);
+				ac.loadTemplate("/AccountManagerService/Forms/Role.xml");
+			}
+		});
 
 	},
 	template_destroy : function(){
@@ -203,20 +204,22 @@
 		
 		var oDiv = document.createElement("div");
 		c.appendChild(oDiv);
-		var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
-		ac.setTemplateIsSpace(1);
-		ac.getProperties().openerId = this.getObjectId();
-		if(s.match(/^(person|role)$/gi)){
-			//ac.getProperties().defaultPath = "~/Persons";
-			ac.decorateListItemName = this.decoratePersonItem;
-			ac.provideOpenItem = this.scopeHandler("provideOpenItem",0,1,1);
-			ac.provideSelectItem = this.scopeHandler("provideSelectItem",0,1,1);
-			ac.local_template_init = this.scopeHandler("handleOpenPersonList",0,1,1);
-			ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
-		}
-		else if(s.match(/^activity$/gi)){ 
-			ac.loadTemplate("/AccountManagerService/Templates/AlertActivities.xml");
-		}
+		Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace())
+		.then((ac)=>{
+			ac.setTemplateIsSpace(1);
+			ac.getProperties().openerId = this.getObjectId();
+			if(s.match(/^(person|role)$/gi)){
+				//ac.getProperties().defaultPath = "~/Persons";
+				ac.decorateListItemName = this.decoratePersonItem;
+				ac.provideOpenItem = this.scopeHandler("provideOpenItem",0,1,1);
+				ac.provideSelectItem = this.scopeHandler("provideSelectItem",0,1,1);
+				ac.local_template_init = this.scopeHandler("handleOpenPersonList",0,1,1);
+				ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+			}
+			else if(s.match(/^activity$/gi)){ 
+				ac.loadTemplate("/AccountManagerService/Templates/AlertActivities.xml");
+			}
+		});
 		
 	},
 	decoratePersonItem : function(o){

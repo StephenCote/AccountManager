@@ -85,9 +85,7 @@
 					while ((m = sText.match(rReg)) && m.length > 1){
 						sText = sText.replace(rReg, g_application_path + "media/" + AM6Client.dotPath(AM6Client.currentOrganization) + "/Data" + oGB.path + "/" + m[1]);
 					}
-					if(sText.match(/DWAC/)){
-						window.debugStr = sText;
-					}
+
 					var o = AM6Client.getByName("DATA", oG.objectId, sOName);
 					if(o != null){
 						AM6Client.delete("DATA", o.objectId);
@@ -141,7 +139,7 @@
 			},
 			provideItem : function(vS){
 				//alert(s + ":" + this.getProperties().current_tab + ":" + this.provideCreateItem);
-				var oW, sId = Hemi.guid(), oProps = this.getProps();
+				var oWp, sId = Hemi.guid(), oProps = this.getProps();
 				
 				if(typeof vS == "object"){
 					if(vS.detailsOnly) vS = AM6Client.get("DATA", vS.objectId);
@@ -154,38 +152,40 @@
 
 				switch(this.getProperties().current_tab){
 					case "Components":
-						oW = Hemi.app.createWindow("Component Builder", "Templates/ComponentBuilder.xml", "component-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						oWp = Hemi.app.createWindow("Component Builder", "Templates/ComponentBuilder.xml", "component-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
 						break;
 					case "Templates":
-						oW = Hemi.app.createWindow("Template Builder", "Templates/TemplateBuilder.xml", "template-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						oWp = Hemi.app.createWindow("Template Builder", "Templates/TemplateBuilder.xml", "template-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
 						break;
 					case "Fragments":
-						oW = Hemi.app.createWindow("Fragment Builder", "Templates/FragmentBuilder.xml", "fragment-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						oWp = Hemi.app.createWindow("Fragment Builder", "Templates/FragmentBuilder.xml", "fragment-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
 						break;
 					case "Modules":
-						oW = Hemi.app.createWindow("Module Builder", "Templates/ModuleBuilder.xml", "module-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						oWp = Hemi.app.createWindow("Module Builder", "Templates/ModuleBuilder.xml", "module-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
 						break;
 					case "Tests":
 						oProps.testFeat = 1;
-						oW = Hemi.app.createWindow("Test Builder", "Templates/ModuleBuilder.xml", "test-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						oWp = Hemi.app.createWindow("Test Builder", "Templates/ModuleBuilder.xml", "test-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
 						break;
 					case "Tasks":
-						oW = Hemi.app.createWindow("Task Builder", "Templates/TaskBuilder.xml", "task-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						oWp = Hemi.app.createWindow("Task Builder", "Templates/TaskBuilder.xml", "task-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
 						break;
 					case "Projects":
-						oW = Hemi.app.createWindow("Project Builder", "Templates/ProjectBuilder.xml", "project-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
+						oWp = Hemi.app.createWindow("Project Builder", "Templates/ProjectBuilder.xml", "project-" + sId, 0, 0, oProps, this._prehandle_template_loaded);
 						break;
 					case "Pub":
 						var sUrl = g_application_path + "dwac/" + AM6Client.dotPath(AM6Client.currentOrganization) + "/Data" + vS.groupPath + "/" + vS.name;
 						window.open(sUrl, vS.objectId);
 						break;
 				}
-				if (oW) {
-					oW.resizeTo(650, 650);
-					Hemi.app.getWindowManager().CenterWindow(oW);
-					// Destroy the window when finished
-					//
-					oW.setHideOnClose(0);
+				if (oWp) {
+					oWp.then((oW)=>{
+						oW.resizeTo(650, 650);
+						Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+						// Destroy the window when finished
+						//
+						oW.setHideOnClose(0);
+					});
 				}
 			},
 			loadComponentsTab : function(o){
@@ -225,15 +225,17 @@
 				
 				var oDiv = document.createElement("div");
 				c.appendChild(oDiv);
-				var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
-				ac.setTemplateIsSpace(1);
-				ac.provideCreateItem = this.scopeHandler("provideItem",0,1,1);
-				ac.provideOpenItem = ac.provideCreateItem;
-				this.configureGroup(s);
-				var sBPath = uwm.getPathForType("DWAC");
-				var sPath = sBPath + "/" + s;
-				ac.getProperties().defaultPath = sPath;
-				ac.loadTemplate(uwm.getApiTypeView("Data") + "/Forms/ListDatas.xml");
+				Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace())
+				.then((ac)=>{
+					ac.setTemplateIsSpace(1);
+					ac.provideCreateItem = this.scopeHandler("provideItem",0,1,1);
+					ac.provideOpenItem = ac.provideCreateItem;
+					this.configureGroup(s);
+					var sBPath = uwm.getPathForType("DWAC");
+					var sPath = sBPath + "/" + s;
+					ac.getProperties().defaultPath = sPath;
+					ac.loadTemplate(uwm.getApiTypeView("Data") + "/Forms/ListDatas.xml");
+				});
 			},
 			configureGroups : function(){
 				var aG = ["Components","Fragments","Modules","Projects","Pub","Tasks","Tests","Templates"];

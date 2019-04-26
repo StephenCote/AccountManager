@@ -69,7 +69,7 @@
 		_s.realHoursInYear = 8736;
 		_s.hoursInMonth = parseInt(_s.hoursInYear / 12); 
 		_s.realHoursInMonth = _s.hoursInMonth;
-		window.debugProject = this;
+
 	},
 	
 	template_destroy : function(){
@@ -1229,16 +1229,18 @@
 			return;
 		}
 		var oProps = {customSave:1,openerId:this.getObjectId(),picker:0,viewType:obj,referenceId:sId,provideSave:"saveType"};
-		var oW = Hemi.app.createWindow(obj.name, uwm.getApiTypeView(sType) + "/Forms/" + sType+ ".xml", "View-" + sId, 0, 0, oProps);
-	    if (oW) {
-	    	oW.resizeTo(475, 400);
-	    	Hemi.app.getWindowManager().CenterWindow(oW);
-	    	oW.setHideOnClose(0);
-	    	oW.setCanMinimize(0);
-	    	oW.setCanMaximize(0);
-	    	oW.setCanResize(0);
-
-	    }
+		Hemi.app.createWindow(obj.name, uwm.getApiTypeView(sType) + "/Forms/" + sType+ ".xml", "View-" + sId, 0, 0, oProps)
+		.then((oW)=>{
+		    if (oW) {
+		    	oW.resizeTo(475, 400);
+		    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+		    	oW.setHideOnClose(0);
+		    	oW.setCanMinimize(0);
+		    	oW.setCanMaximize(0);
+		    	oW.setCanResize(0);
+	
+		    }
+	    });
 	},
 	
 	saveType : function(w,o){
@@ -1333,14 +1335,15 @@
 
 	openPicker : function(sType, vSrc){
 		vSrc.opener_id = this.getObjectId();
-		var oW = Hemi.app.createWindow("Template Picker","Templates/Picker.xml",sType,0,0,vSrc,this._prehandle_project_picker_open);
+		Hemi.app.createWindow("Template Picker","Templates/Picker.xml",sType,0,0,vSrc,this._prehandle_project_picker_open)
 		/// If !oW, the window already exists, so close it
 		///
-		if(!oW){
-			oW = Hemi.app.getWindowManager().GetWindowByName(sType);
-			if(oW) oW.Close();
-			return;
-		}
+		.then((oW)=>{
+			if(!oW){
+				oW = Hemi.app.getWindowManager().GetWindowByName(sType);
+				if(oW) oW.Close();
+				return;
+			}
 		
           	if (oW) {
           		oW.resizeTo(400, 250);
@@ -1355,12 +1358,13 @@
 					Hemi.ui.util.alignControl(oW,o,oW.getContainer());
           		}
           		else{
-          			Hemi.app.getWindowManager().CenterWindow(oW);
+          			Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
           		}
           		// Destroy the window when closed
           		//
           		oW.setHideOnClose(0);
           	}
+          });
 	},
 	_handle_project_picker_open : function(oW){
 		var _o = this.getObjects();

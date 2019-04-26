@@ -14,7 +14,6 @@
 		<![CDATA[
 			template_init: function(){
 				//this.serveTransaction("change_bus", Hemi.data.io.service.getBusType().ONLINE);
-				window.dbg = this;
 				this.AddTab("lifecycle","Lifecycles",this.scopeHandler("loadLifecycleTab",0,1,1));
 				this.AddTab("project","Projects",this.scopeHandler("loadProjectTab",0,1,1));
 				this.AddTab("stage","Stages",this.scopeHandler("loadStageTab",0,1,1));
@@ -73,9 +72,11 @@
 				
 				var oDiv = document.createElement("div");
 				c.appendChild(oDiv);
-				var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
-				ac.setTemplateIsSpace(1);
-				ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+				Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace())
+				.then((ac)=>{
+					ac.setTemplateIsSpace(1);
+					ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+				});
 			}
 		]]>
 	</embedded-script>

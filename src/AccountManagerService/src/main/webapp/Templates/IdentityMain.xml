@@ -72,17 +72,21 @@
 				
 				var oDiv = document.createElement("div");
 				c.appendChild(oDiv);
-				var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
-				ac.setTemplateIsSpace(1);
-				ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+				Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace())
+				.then((ac)=>{
+					ac.setTemplateIsSpace(1);
+					ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+				});
 			},
 			openGenerator : function(){
-				var oW = Hemi.app.createWindow("Data Generator", "/RocketWeb/Templates/DataGenerator.xml", "Data Generator");
-	            if (oW) {
-	            	oW.resizeTo(475, 400);
-	            	Hemi.app.getWindowManager().CenterWindow(oW);
-	            	oW.setHideOnClose(0);
-	            }
+				Hemi.app.createWindow("Data Generator", "/RocketWeb/Templates/DataGenerator.xml", "Data Generator")
+				.then((oW)=>{
+		            if (oW) {
+		            	oW.resizeTo(475, 400);
+		            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+		            	oW.setHideOnClose(0);
+		            }
+	            });
 			},
 			DoLogout : function(){
 				window.uwm.logout();

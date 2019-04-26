@@ -421,13 +421,15 @@
 		chooseData : function(sFN){
 			var sPath = (this.getProperties().lastPickerPath ? this.getProperties().lastPickerPath : "~/GalleryHome");
 			var oProps = {openerId:this.getObjectId(),defaultPath:sPath,listType:"Data",picker:1,pickFunction:sFN,listId:0};
-			var oW = Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/ListDatas.xml", "DataPicker", 0, 0, oProps, this._prehandle_picker_loaded);
-            if (oW) {
-            	Hemi.app.getWindowManager().CenterWindow(oW);
-            	// Destroy the window when closed
-            	//
-            	oW.setHideOnClose(0);
-            }
+			Hemi.app.createWindow("ManageList", "/AccountManagerService/Forms/ListDatas.xml", "DataPicker", 0, 0, oProps, this._prehandle_picker_loaded)
+			.then((oW)=>{
+	            if (oW) {
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	// Destroy the window when closed
+	            	//
+	            	oW.setHideOnClose(0);
+	            }
+            });
 		},
 		
 		/// Copy from BaseFields.xml

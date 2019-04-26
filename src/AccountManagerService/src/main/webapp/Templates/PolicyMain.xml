@@ -53,9 +53,11 @@
 				
 				var oDiv = document.createElement("div");
 				c.appendChild(oDiv);
-				var ac = Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace());
-				ac.setTemplateIsSpace(1);
-				ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+				Hemi.app.createApplicationComponent(0, oDiv, this.getTemplateSpace())
+				.then((ac)=>{
+					ac.setTemplateIsSpace(1);
+					ac.loadTemplate(uwm.getApiTypeView(s) + "/Forms/List" + s + "s.xml");
+				});
 			}
 		]]>
 	</embedded-script>

@@ -129,22 +129,26 @@
 		///
 		/// AM6Client.userPerson();
 		var oProps = {openerId:this.getObjectId(),viewType:o,tokenMode:1,materialToken:1};
-		var oW = Hemi.app.createWindow(o.name + " Credentials", "/AccountManagerService/Forms/CredentialForm.xml", "Credential-" + o.id, 0, 0, oProps, this.scopeHandler("handleOpenCredential",0,1,1));
-           if (oW) {
-           	oW.resizeTo(475, 400);
-           	Hemi.app.getWindowManager().CenterWindow(oW);
-           	oW.setHideOnClose(0);
-           }
+		Hemi.app.createWindow(o.name + " Credentials", "/AccountManagerService/Forms/CredentialForm.xml", "Credential-" + o.id, 0, 0, oProps, this.scopeHandler("handleOpenCredential",0,1,1))
+		.then((oW)=>{
+	           if (oW) {
+	           	oW.resizeTo(475, 400);
+	           	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	           	oW.setHideOnClose(0);
+	           }
+          });
 	
 	},
 	pickText : function(o,sL,sH, sDV){
-		var oW = Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","ValidateToken",0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()});
-		if(!oW) return;
-		oW.setHideOnClose(0);
-		oW.resizeTo(475,100);
-		oW.center();
-		oW.setIsModal(true);
-		oW.hideButtons();
+		Hemi.app.createWindow("Picker","/AccountManagerService/Forms/TextPicker.xml","ValidateToken",0,0,{pickerValue:sDV,pickerLabel:sL,picker_handler:sH,openerId:o.getObjectId()})
+		.then((oW)=>{
+			if(!oW) return;
+			oW.setHideOnClose(0);
+			oW.resizeTo(475,100);
+			oW.center();
+			oW.setIsModal(true);
+			oW.hideButtons();
+		});
 	}
 	
 ]]></embedded-script>
