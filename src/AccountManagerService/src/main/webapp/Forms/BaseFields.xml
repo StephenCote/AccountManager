@@ -70,7 +70,6 @@
 			}
 			this.initAttributePicker();
 			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver){
-				//Hemi.log("CALL PARENT RESOLVE");
 				o.parentResolver(this);
 			}
 			else{
@@ -93,7 +92,7 @@
 			
 		},
 		parentResolver : function(v){
-			Hemi.log("PARENT RESOLVE");
+
 			var _s = this.getProperties();
 			if(this.resolve) this.resolve(v);
 			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver) o.parentResolver(v);
