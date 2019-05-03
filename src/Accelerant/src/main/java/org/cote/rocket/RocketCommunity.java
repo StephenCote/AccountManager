@@ -1471,10 +1471,11 @@ public class RocketCommunity implements ICommunityProvider {
 			
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 
-			for(int i = 0; i < epochSize; i++){
-				int count = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).countInGroup(dutil.getEventsDir());
-				boolean modeled = (count >= (2+i));
-				if(modeled) continue;
+			int count = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).countInGroup(dutil.getEventsDir());
+
+			for(int i = count; i < epochSize; i++){
+				// boolean modeled = (count >= (2+i));
+				// if(modeled) continue;
 				logger.info("MODEL Epoch " + (i + 1));
 				dutil.generateEpoch(sessionId, epochEvolutions,1);
 			}
