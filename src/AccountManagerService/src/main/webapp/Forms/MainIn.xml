@@ -52,8 +52,10 @@
 				//window.uwm.operation("ContinueWorkflow",{opener:this.getObjectId()});
 			},
 			DoGallery : function(){
-				var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");
-				eval(sTxt);
+				Hemi.xml.promiseText("/AccountManagerService/Scripts/canvasGallery.js","GET")
+				.then((sTxt) => {
+					if(sTxt) eval(sTxt);
+				});
 			},
 			toggleCommunity : function(){
 				irocket.setCommunityMode(!irocket.getCommunityMode());
