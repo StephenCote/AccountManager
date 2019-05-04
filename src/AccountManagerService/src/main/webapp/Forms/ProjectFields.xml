@@ -17,10 +17,82 @@
 	<import-xml src = "/AccountManagerService/Forms/StagePicker.xml" id = "StagePicker" />
 	<import-xml src = "/AccountManagerService/Forms/DataDndPicker.xml" id = "DataDndPicker" />
 
-
+	<div rid = "regionCont" style = "display:none;clear:both;" class = "rocket-column-2">
+		<p rid = "lblRegion">
+			Configure Project Region:
+		</p>
+		<p>
+			<input rid = "txtLocCount" type = "text" class = "rocket-text rocket-text-short" value = "3" />
+			<input rid = "txtInitPop" type = "text" class = "rocket-text rocket-text-short" value = "250" />
+			<input rid = "btnConfigProjectRegion" type = "button" class = "rocket-button" value = "Configure" onclick = "${this}.configureProjectRegion()" />
+		</p>
+	</div>
+	<div rid = "evolveCont" style = "display:none;clear:both;" class = "rocket-column-2">
+		<p rid = "lblEvolve">
+			Evolve Project Region:
+		</p>
+		<p>
+			<input rid = "txtEpochCount" type = "text" class = "rocket-text rocket-text-short" value = "1" />
+			<input rid = "txtIterCount" type = "text" class = "rocket-text rocket-text-short" value = "12" />
+			<input rid = "btnConfigProjectRegion" type = "button" class = "rocket-button" value = "Evolve" onclick = "${this}.evolveProjectRegion()" />
+		</p>
+	</div>
 
 	<embedded-script><![CDATA[
-		embedded_init : function(o){
+		evolveProjectRegion : function(){
+			var o = this.getBean("rocketType"), oC = this;
+			this.setStatus("Evolving project region");
+			
+			AM6Client.evolveCommunityProjectRegion(irocket.getCommunityLifecycle().objectId, o.objectId, this.GetElementByRID("txtEpochCount").value, this.GetElementByRID("txtIterCount").value, function(s, v){
+				if(v && v.json) v = v.json;
+				if(v){
+					oC.setStatus("Evolved project region");
+					oC.refreshRegionCont();
+				}
+				else oC.setStatus("Failed to evolve project region");
+			});
+		
+		
+		},
+		configureProjectRegion : function(){
+			var o = this.getBean("rocketType"), oC = this;
+			this.setStatus("Configuring project region");
+			
+			AM6Client.configureCommunityProjectRegion(irocket.getCommunityLifecycle().objectId, o.objectId, this.GetElementByRID("txtLocCount").value, this.GetElementByRID("txtInitPop").value, function(s, v){
+				if(v && v.json) v = v.json;
+				if(v){
+					oC.setStatus("Configured project region");
+					oC.refreshRegionCont();
+				}
+				else oC.setStatus("Failed to configure project region");
+			});
+		
+		
+		},
+		refreshRegionCont : function(){
+			var bD1 = 0;
+			var bD2 = 0;
+			var o = this.getBean("rocketType");
+
+			if(o.objectId && irocket.getCommunityMode()){
+				AM6Client.clearCache("EVENT",1);
+				var oL =  AM6Client.find("GROUP","DATA",o.groupPath + "/Events");
+				if(oL){
+					var iL = AM6Client.count("EVENT",oL.objectId);
+					console.log("Count: " + iL);
+					if(iL == 0) bD1 = 1;
+					else{
+						bD2 = 1;
+						this.GetElementByRID("txtEpochCount").value = iL + 1;
+					}
+				}
+			}
+
+			this.GetElementByRID("regionCont").style.display = (bD1 ? "block" : "none" );
+			this.GetElementByRID("evolveCont").style.display = (bD2 ? "block" : "none" );
+		
+		},
+		embedded_init : function(){
 			var o = this.getBean("rocketType"),_s = this.getProperties();
 			_s.dndHandler = "local_handle_dnd_form";
 			_s.dndShowForm = "local_handle_dnd_form_show";
@@ -40,7 +112,8 @@
 			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
 			this.GetComponentByRID("modulesList").setLoadHandler(this.scopeHandler("configModulesList",0,1,1));
 			this.GetComponentByRID("stagesList").setLoadHandler(this.scopeHandler("configStagesList",0,1,1));
-
+			
+			this.refreshRegionCont();
 		},
 		embedded_destroy : function(){
 
