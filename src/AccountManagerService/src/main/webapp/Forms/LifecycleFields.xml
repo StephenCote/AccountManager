@@ -12,8 +12,19 @@
 	<import-xml src = "/AccountManagerService/Forms/GoalPicker.xml" id = "GoalPicker" />
 	<import-xml src = "/AccountManagerService/Forms/BudgetPicker.xml" id = "BudgetPicker" />
 	
+	<div rid = "regionCont" style = "display:none;clear:both;" class = "rocket-column-2">
+		<p rid = "lblRegion">
+			Configure Regions:
+		</p>
+		<p>
+			<input rid = "txtCountryCodes" type = "text" class = "rocket-text" value = "CA,US" />
+			<input rid = "btnConfigRegion" type = "button" class = "rocket-button" value = "Configure" onclick = "${this}.configureRegions()" />
+		</p>
+	</div>
+	
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
+			var o = this.getBean("rocketType");
 			this.getProperties().projectListProp = "projects";
 			this.getProperties().scheduleListProp = "schedules";
 			this.getProperties().budgetListProp = "budgets";
@@ -22,8 +33,78 @@
 			this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
 			this.GetComponentByRID("schedulesList").setLoadHandler(this.scopeHandler("configSchedulesList",0,1,1));
 			this.GetComponentByRID("projectsList").setLoadHandler(this.scopeHandler("configProjectsList",0,1,1));
+			
+			var bD = 0;
+			if(o.objectId && irocket.getCommunityMode()){
+				var oL =  AM6Client.find("GROUP","DATA",o.groupPath + "/Locations");
+				if(oL){
+					var iL = AM6Client.list("LOCATION",oL.objectId,0,0);
+					if(iL == 0) bD = 1;
+				}
+			}
+			this.GetElementByRID("regionCont").style.display = (bD ? "block" : "none" );
 		},
+		configureRegions : function(){
+			
+			if(!confirm("Configuring lifecycle regions may take several minutes while administrative codes and traits are populated.")) return;
+			this.config1();
+		},
+		config1 : function(){
+			var o = this.getBean("rocketType"), oC = this;
+			this.setStatus("Configuring traits");
+			
+			AM6Client.configureCommunityTraits(o.objectId, function(s, v){
+				try{
+				if(v && v.json) v = v.json;
+				oC.setStatus("Configured traits: " + (v ? "true" : "false"));
+				if(v) oC.config2();
+				else oC.setStatus("Failed to configure traits");
+				} catch(e){ alert(e.message);}
+			});
 		
+		},
+		config2 : function(){
+			var o = this.getBean("rocketType"), oC = this;
+			this.setStatus("Configuring country info");
+			AM6Client.configureCommunityCountryInfo(o.objectId,function(s2, v2){
+				try{
+				if(v2 && v2.json) v2 = v2.json;
+				oC.setStatus("Configured country info: " + (v2 ? "true" : "false"));
+				if(v2) oC.config3();
+				else oC.setStatus("Failed to configure country info");
+				}
+				catch(e){alert(e);}
+			});
+		},
+		config3 : function(){
+			var o = this.getBean("rocketType"), oC = this;
+			this.setStatus("Configuring admin 1 codes");
+			AM6Client.configureCommunityAdmin1Codes(o.objectId,function(s3, v3){
+				if(v3 && v3.json) v3 = v3.json;
+				oC.setStatus("Configured country admin 1 codes: " + (v3 ? "true" : "false"));
+				if(v3) oC.config4();
+				else oC.setStatus("Failed to configure country admin 1 codes");
+			});
+		},
+		config4 : function(){
+			var o = this.getBean("rocketType"), oC = this;
+			this.setStatus("Configuring admin 2 codes");
+			AM6Client.configureCommunityAdmin2Codes(o.objectId,function(s3, v3){
+				if(v3 && v3.json) v3 = v3.json;
+				oC.setStatus("Configured country admin 2 codes: " + (v3 ? "true" : "false"));
+				if(v3) oC.config5();
+				else oC.setStatus("Failed to configure country admin 2 codes");
+			});
+		},
+		config5 : function(){
+			var o = this.getBean("rocketType"), oC = this;
+			this.setStatus("Configuring country data");
+			AM6Client.configureCommunityCountryData(o.objectId,this.GetElementByRID("txtCountryCodes").value.split(","),true,function(s5, v5){
+				if(v5 && v5.json) v5 = v5.json;
+				oC.setStatus((v5 ? "COMPLETED" : "FAILED") + ": Configured country data: " + (v5 ? "true" : "false"));
+			});
+		},
+
 		addType : function(o){
 			if(irocket.getCommunityMode()){
 				var oP = AM6Client.addCommunity(o.name);
