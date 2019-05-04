@@ -348,7 +348,11 @@
 			return (bLocalOnly ? 1 : Hemi.xml.getJSON(sCache + "/clearAll",fH,(fH ? 1 : 0)));
 		}
 		else{
+			
 			delete cache[sType];
+			if(sType.match(/^(project|lifecycle)$/gi)) delete cache["GROUP"];
+			delete cache["COUNT"];
+
 			return (bLocalOnly ? 1 : Hemi.xml.getJSON(sCache + "/clear/" + sType,fH,(fH ? 1 : 0)));
 		}
 	}
@@ -435,6 +439,41 @@
 		var fc = function(s,v){if(f) f(s,v);};
 
 	   return Hemi.xml.getJSON(sComm + "/configure/" + sLid + "/" + sPid + "/" + sGid,fc,(fH ? 1 : 0));	
+	}
+	function configureCommunityTraits(sLid,fH){
+		var f = fH;
+		var fc = function(s,v){if(f) f(s,v);};
+	   return Hemi.xml.getJSON(sComm + "/geo/traits/LIFECYCLE/" + sLid,fc,(fH ? 1 : 0));	
+	}
+	function configureCommunityCountryInfo(sLid,fH){
+		var f = fH;
+		var fc = function(s,v){if(f) f(s,v);};
+	   return Hemi.xml.getJSON(sComm + "/geo/countryInfo/LIFECYCLE/" + sLid,fc,(fH ? 1 : 0));	
+	}
+	function configureCommunityCountryData(sLid,aCountries, bAlternate, fH){
+		var f = fH;
+		var fc = function(s,v){if(f) f(s,v);};
+	   return Hemi.xml.getJSON(sComm + "/geo/country/LIFECYCLE/" + sLid + "/" + aCountries.join(",") + "/" + (bAlternate ? "true" : "false"), fc,(fH ? 1 : 0));	
+	}
+	function configureCommunityAdmin1Codes(sLid,fH){
+		var f = fH;
+		var fc = function(s,v){if(f) f(s,v);};
+	   return Hemi.xml.getJSON(sComm + "/geo/admin1Codes/LIFECYCLE/" + sLid,fc,(fH ? 1 : 0));	
+	}
+	function configureCommunityProjectRegion(sLid,sPid,iRegions, iInitPop, fH){
+		var f = fH;
+		var fc = function(s,v){if(f) f(s,v);};
+	   return Hemi.xml.getJSON(sComm + "/generate/region/" + sLid + "/" + sPid + "/" + iRegions + "/" + iInitPop,fc,(fH ? 1 : 0));	
+	}
+	function evolveCommunityProjectRegion(sLid,sPid,iEpochs, iEvolutions, fH){
+		var f = fH;
+		var fc = function(s,v){if(f) f(s,v);};
+	   return Hemi.xml.getJSON(sComm + "/generate/evolve/" + sLid + "/" + sPid + "/" + iEpochs + "/" + iEvolutions,fc,(fH ? 1 : 0));	
+	}
+	function configureCommunityAdmin2Codes(sLid,fH){
+		var f = fH;
+		var fc = function(s,v){if(f) f(s,v);};
+	   return Hemi.xml.getJSON(sComm + "/geo/admin2Codes/LIFECYCLE/" + sLid,fc,(fH ? 1 : 0));	
 	}
 	function isCommunityConfigured(fH){
 		var f = fH;
@@ -593,7 +632,7 @@
 	}
 	function list(sType,sObjectId,iStart,iLength,fH){
 		
-		var sK = "LIST-" + iStart + "-" + iLength;
+		var sK = "LIST-" + sType + "-" + (sObjectId ? sObjectId : "0") + "-" + iStart + "-" + iLength;
 		var o = getFromCache(sType, sK, sObjectId);
 		if(o){
 			if(fH) fH("",o);
@@ -758,6 +797,13 @@
 		principal : getPrincipal,
 		anonymous : getDocumentControl,
 		entitlements : listEntitlementsForType,
+		configureCommunityTraits : configureCommunityTraits,
+		configureCommunityCountryInfo : configureCommunityCountryInfo,
+		configureCommunityAdmin1Codes : configureCommunityAdmin1Codes,
+		configureCommunityAdmin2Codes : configureCommunityAdmin2Codes,
+		configureCommunityCountryData : configureCommunityCountryData,
+		configureCommunityProjectRegion : configureCommunityProjectRegion,
+		evolveCommunityProjectRegion : evolveCommunityProjectRegion,
 		isCommunityConfigured : isCommunityConfigured,
 		configureCommunityProjectGroupEntitlements : configureCommunityProjectGroupEntitlements,
 		permit : permit,
