@@ -27,7 +27,7 @@
 	pickAccount : function(s, v){
 		var o = this.getBean("rocketType");
 		o[this.getProperties().accountProp] = v;
-		this.GetElementByRID("account").value = (v ? v.name : "");
+		this.getElementByRID("account").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>
