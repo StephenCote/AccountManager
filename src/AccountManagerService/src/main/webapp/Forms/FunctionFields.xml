@@ -79,8 +79,8 @@
 				Hemi.logError("Unsupported function import type " + oBean.nameType + " #" + oBean.id);
 				return;
 			}
-			this.GetElementByRID("sourceUrl").value = "";
-			this.GetElementByRID("sourceUrn").value = oBean.urn;
+			this.getElementByRID("sourceUrl").value = "";
+			this.getElementByRID("sourceUrn").value = oBean.urn;
 
 			
 		},

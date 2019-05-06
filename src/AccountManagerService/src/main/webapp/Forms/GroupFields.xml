@@ -43,24 +43,24 @@
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
 			var o = this.getBean("rocketType");
-			this.GetElementByRID("groupType").disabled = (o.id ? true : false);
-			this.GetElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
+			this.getElementByRID("groupType").disabled = (o.id ? true : false);
+			this.getElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
 			if(o.id && o.groupType.match(/^(person|account|user|bucket)$/gi)){
 				this.toggleField("memberPickerToggle","memberPickerContent");
-				this.GetElementByRID("memberPicker").style.display = "block";
-				this.GetComponentByRID("membersList").setLoadHandler(this.scopeHandler("configMembersList",0,1,1));
+				this.getElementByRID("memberPicker").style.display = "block";
+				this.getComponentByRID("membersList").setLoadHandler(this.scopeHandler("configMembersList",0,1,1));
 			}
 
 		},
 		
 		openChildMember : function(){
 			var oI = this.getMembersList().getActiveItem();
-			var sType = this.GetElementByRID("groupType").value;
+			var sType = this.getElementByRID("groupType").value;
 			sType = sType.substring(0,1) + sType.substring(1,sType.length).toLowerCase();
 			if(oI && oI.data && this.openItem) this.openItem(oI.data,sType);
 		},
 		addChildMember : function(){
-			var sType = this.GetElementByRID("groupType").value;
+			var sType = this.getElementByRID("groupType").value;
 			sType = sType.substring(0,1) + sType.substring(1,sType.length).toLowerCase();
 			this.manageList((sType=="Bucket" ? "Data" : sType), this.getObjectId(),"pickMember",uwm.getPathForType(sType),1);
 		},
@@ -95,7 +95,7 @@
 			this.refreshMembers();
 		},
 		refreshMembers : function(a){
-			var sType = this.GetElementByRID("groupType").value;
+			var sType = this.getElementByRID("groupType").value;
 			//sType = sType.substring(0,1) + sType.substring(1,sType.length).toLowerCase();
 		
 			var oL = this.getMembersList();
@@ -108,7 +108,7 @@
 			}
 		},
 		getMembersList : function(){
-			return this.GetComponentByRID("membersList").GetWideSelect();
+			return this.getComponentByRID("membersList").GetWideSelect();
 		},
 		openShare : function(){
 			var o = this.getBean("rocketType");

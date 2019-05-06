@@ -113,8 +113,8 @@
 		this.chooseType();
 	},
 	chooseType : function(){
-		var sT = this.GetElementByRID("patternType").value;
-		this.GetElementByRID("operationContainer").style.display = (sT.match(/^operation$/gi) ? "block" : "none");
+		var sT = this.getElementByRID("patternType").value;
+		this.getElementByRID("operationContainer").style.display = (sT.match(/^operation$/gi) ? "block" : "none");
 	},
 	chooseFact : function(){
 		this.manageList("Fact", this.getObjectId(),"pickFact");
@@ -127,7 +127,7 @@
 	pickFact : function(s, v){
 		var o = this.getBean("rocketType");
 		o[this.getProperties().factProp] = v;
-		this.GetElementByRID("fact").value = (v ? v.name : "");
+		this.getElementByRID("fact").value = (v ? v.name : "");
 	},
 chooseMatch : function(){
 		this.manageList("Fact", this.getObjectId(),"pickMatch");
@@ -140,7 +140,7 @@ chooseMatch : function(){
 	pickMatch : function(s, v){
 		var o = this.getBean("rocketType");
 		o[this.getProperties().matchProp] = v;
-		this.GetElementByRID("match").value = (v ? v.name : "");
+		this.getElementByRID("match").value = (v ? v.name : "");
 	},
 	addType : function(o){
 			Hemi.log("Add pattern type: " + o.name + ":" + o.patternType);

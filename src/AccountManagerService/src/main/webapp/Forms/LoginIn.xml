@@ -41,16 +41,16 @@
 				uwm.rule("IsLoggedIn",{opener:this.getObjectId()}, "ContinueWorkflow","RequireAuthentication");
 			}
 			else{
-				this.GetElementByRID("cntLogin").style.display = "";
-				this.GetElementByRID("user_name").focus();
+				this.getElementByRID("cntLogin").style.display = "";
+				this.getElementByRID("user_name").focus();
 				this.scopeHandler("input_keypress",0,0,1);
-				this.GetElementByRID("password").onkeypress = this._prehandle_input_keypress;
+				this.getElementByRID("password").onkeypress = this._prehandle_input_keypress;
 				
 			}
 		},
 		toggleChoose : function(){
-			var sV = this.GetElementByRID("organization_path").value;
-			this.GetElementByRID("chooseCont").style.display = (sV.match(/^_choose_$/) ? "" : "none");
+			var sV = this.getElementByRID("organization_path").value;
+			this.getElementByRID("chooseCont").style.display = (sV.match(/^_choose_$/) ? "" : "none");
 		},
 		template_destroy:function(){
 			this._prehandle_input_keypress = null;
@@ -67,14 +67,14 @@
 		doLogin : function(){
 
 			if(!this.Validate()) return;
-			var sOrg = this.GetFormValue("organization_path");
-			if(sOrg.match(/^_choose_$/)) sOrg = this.GetFormValue("organization_choose_path");
-			var sName = this.GetFormValue("user_name");
-			var sPassword = this.GetFormValue("password");
-			this.GetElementByRID("user_name").disabled = true;
-			this.GetElementByRID("password").disabled = true;
-			this.GetElementByRID("btnLogin").disabled = true;
-			this.SetFormValue("password","");
+			var sOrg = this.getFormValue("organization_path");
+			if(sOrg.match(/^_choose_$/)) sOrg = this.getFormValue("organization_choose_path");
+			var sName = this.getFormValue("user_name");
+			var sPassword = this.getFormValue("password");
+			this.getElementByRID("user_name").disabled = true;
+			this.getElementByRID("password").disabled = true;
+			this.getElementByRID("btnLogin").disabled = true;
+			this.setFormValue("password","");
 			this.getProperties().userName = sName; 
 
 			window.uwm.operation("Authenticate", {opener:this.getObjectId(),user_name : sName, password : sPassword, organization: sOrg});		
@@ -83,8 +83,8 @@
 		Validate : function(){
 		
 			try{
-				this.Assert(this.ValidateForPattern("user_name","not-empty"),"Invalid user_name");
-				this.Assert(this.ValidateForPattern("password","not-empty"),"Invalid password");
+				this.assert(this.validateForPattern("user_name","not-empty"),"Invalid user_name");
+				this.assert(this.validateForPattern("password","not-empty"),"Invalid password");
 			}
 			catch(e){
 				//this.setStatus((typeof e== "string" ? e : e.message ? e.message : e.description));

@@ -217,7 +217,7 @@
 			},
 			
 			loadTab : function(s, o){
-				var c = this.GetElementByRID(s.toLowerCase());
+				var c = this.getElementByRID(s.toLowerCase());
 				this.getProperties().current_tab = s;
 
 				if(c.loaded) return;

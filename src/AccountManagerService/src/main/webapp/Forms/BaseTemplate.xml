@@ -41,8 +41,8 @@
         _handle_profiler_loaded : function(oW){
         	if(typeof oW.ShowTab == "function" && typeof ActiveSource == "object"){
 				oW.ShowTab("Active Source");
-				var oSource = oW.GetElementByRID("oSource");
-				var oEval = oW.GetElementByRID("oEval");
+				var oSource = oW.getElementByRID("oSource");
+				var oEval = oW.getElementByRID("oEval");
 				var sCont = "";
 				ActiveObjects.valContainer = 0;
 				ActiveObjects.valReference = 0;
@@ -91,8 +91,8 @@
 			}
 		},
 		toggleField : function(l, n){
-			var lbl =  this.GetElementByRID(l);//(typeof l == "string" ? this.GetElementByRID(l) : l);
-			var cnt =  this.GetElementByRID(n);//(typeof n == "string" ? this.GetElementByRID(n) : n);
+			var lbl =  this.getElementByRID(l);
+			var cnt =  this.getElementByRID(n);
 			var b = cnt.mark;
 			var s = (b ? "[ - ]" : "[ + ]");
 			var d = (b ? "block" : "none");

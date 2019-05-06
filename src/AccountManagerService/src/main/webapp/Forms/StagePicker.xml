@@ -45,7 +45,7 @@
 			}
 		},
 		getStagesList : function(){
-			return this.GetComponentByRID("stagesList").GetWideSelect();
+			return this.getComponentByRID("stagesList").GetWideSelect();
 		},
 		prepareSaveStagesList : function(o){
 			aP = this.getProperties().stageListProp;

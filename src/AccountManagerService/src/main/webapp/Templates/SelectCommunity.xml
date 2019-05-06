@@ -17,7 +17,7 @@
 	refreshCommunity : function(s, v){
 		if(v == this) return;
 
-		this.GetElementByRID("mode").value = (irocket.getCommunityMode() ? "1" : "0");
+		this.getElementByRID("mode").value = (irocket.getCommunityMode() ? "1" : "0");
 		this.getProperties().blockAnnounce = 1;
 		this.refreshLifecycleList();
 		this.refreshProjectList();
@@ -27,7 +27,7 @@
 	refreshSession : function(s,v){
 		var b = (uwm.rule("IsLoggedIn") && AM6Client.isCommunityConfigured());
 		
-		this.GetElementByRID("ctl").style.display = (b ? "block":"none");
+		this.getElementByRID("ctl").style.display = (b ? "block":"none");
 		if(b){
 			
 			this.refreshLifecycleList();
@@ -37,16 +37,16 @@
 		}
 	},
 	selectMode : function(b){
-		irocket.setCommunityMode((this.GetElementByRID("mode").value == "1" ? 1 : 0));
+		irocket.setCommunityMode((this.getElementByRID("mode").value == "1" ? 1 : 0));
 		if(!b) this.refreshSession();
 	},
 	refreshMode : function(){
-		this.GetElementByRID("mode").value = (irocket.getCommunityMode() ? "1" : "0");
+		this.getElementByRID("mode").value = (irocket.getCommunityMode() ? "1" : "0");
 	},
 	refreshLifecycleList : function(bNoUp){
-		this.GetElementByRID("lifecycleCont").style.display = (irocket.getCommunityMode() ? "" : "none");
+		this.getElementByRID("lifecycleCont").style.display = (irocket.getCommunityMode() ? "" : "none");
 
-		var oSel1 = this.GetElementByRID("lifecycles");
+		var oSel1 = this.getElementByRID("lifecycles");
 		oSel1.options.length = 1;
 
 		if(irocket.getCommunityMode()){
@@ -62,7 +62,7 @@
 		}
 	},
 	refreshProjectList : function(){
-		var oSel = this.GetElementByRID("projects");
+		var oSel = this.getElementByRID("projects");
 		oSel.options.length = 1;
 		if(irocket.getCommunityMode() && !irocket.getCommunityLifecycle()) return;
 		
@@ -84,7 +84,7 @@
 		else oSel.selectedIndex = 0;
 	},
 	selectLifecycle : function(){
-		var vS = this.GetElementByRID("lifecycles").value;
+		var vS = this.getElementByRID("lifecycles").value;
 		if(vS.match(/^\d+$/) && vS != "0"){
 			var oL = AM6Client.get("LIFECYCLE",vS);
 			irocket.setCommunityLifecycle(oL);
@@ -93,7 +93,7 @@
 		}
 	},
 	selectProject : function(){
-		var vS = this.GetElementByRID("projects").value;
+		var vS = this.getElementByRID("projects").value;
 
 		if(vS.match(/^\d+$/) && vS != "0"){
 			var oP = AM6Client.get("PROJECT",vS);
@@ -107,7 +107,7 @@
 			o.id = 0;
 			o.stages = [];
 			irocket.setCurrentProject(o);
-			this.GetElementByRID("projects").selectedIndex = 0;
+			this.getElementByRID("projects").selectedIndex = 0;
 		}
 		if(!this.getProperties().blockAnnounce) Hemi.message.service.publish("onchangecommunity",this);
 		

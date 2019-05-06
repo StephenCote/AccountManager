@@ -30,7 +30,7 @@
 	pickWork : function(s, v){
 		var o = this.getBean("rocketType");
 		o[this.getProperties().workProp] = v;
-		this.GetElementByRID("work").value = (v ? v.name : "");
+		this.getElementByRID("work").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

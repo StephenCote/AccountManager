@@ -45,7 +45,7 @@
 			}
 		},
 		getModelsList : function(){
-			return this.GetComponentByRID("modelsList").GetWideSelect();
+			return this.getComponentByRID("modelsList").GetWideSelect();
 		},
 		prepareSaveModelsList : function(o){
 			aP = this.getProperties().modelListProp;

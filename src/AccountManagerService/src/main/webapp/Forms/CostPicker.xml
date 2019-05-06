@@ -46,7 +46,7 @@
 			}
 		},
 		getCostsList : function(){
-			return this.GetComponentByRID("costsList").GetWideSelect();
+			return this.getComponentByRID("costsList").GetWideSelect();
 		},
 		prepareSaveCostsList : function(o){
 			aP = this.getProperties().costListProp;

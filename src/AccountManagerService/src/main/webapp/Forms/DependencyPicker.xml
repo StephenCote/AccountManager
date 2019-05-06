@@ -60,7 +60,7 @@
 			}
 		},
 		getDependenciesList : function(){
-			return this.GetComponentByRID("dependenciesList").GetWideSelect();
+			return this.getComponentByRID("dependenciesList").GetWideSelect();
 		},
 		
 		prepareSaveDependenciesList : function(o){

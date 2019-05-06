@@ -54,7 +54,7 @@
 			this.chooseResourceType(1);
 		},
 		chooseResourceType : function(b){
-			var sVal = this.GetElementByRID("resourceType").value,d;
+			var sVal = this.getElementByRID("resourceType").value,d;
 			var o = this.getBean("rocketType");
 			if(b) d = this.getResourceDataByType();
 			var bUser = (sVal == "USER"), bPerson = (sVal == "PERSON"), bAccount = (sVal == "ACCOUNT");
@@ -62,9 +62,9 @@
 			this.pickAccount(null,(bAccount ? d : 0));
 			this.pickPerson(null,(bPerson ? d : 0));
 			o.resourceDataId = 0;
-			this.GetElementByRID("userPickerCont").style.display = (bUser ? "block" : "none");
-			this.GetElementByRID("accountPickerCont").style.display = (bAccount ? "block" : "none");
-			this.GetElementByRID("personPickerCont").style.display = (bPerson ? "block" : "none");
+			this.getElementByRID("userPickerCont").style.display = (bUser ? "block" : "none");
+			this.getElementByRID("accountPickerCont").style.display = (bAccount ? "block" : "none");
+			this.getElementByRID("personPickerCont").style.display = (bPerson ? "block" : "none");
 			
 		},
 		getResourceDataByType : function(){
@@ -73,13 +73,13 @@
 				d = o.resourceData;
 			}
 			else if(o.resourceDataId){
-				if(this.GetElementByRID("resourceType").value == "USER"){
+				if(this.getElementByRID("resourceType").value == "USER"){
 					d = AM6Client.get("USER",o.resourceDataId);
 				}
-				else if(this.GetElementByRID("resourceType").value == "ACCOUNT"){
+				else if(this.getElementByRID("resourceType").value == "ACCOUNT"){
 					d = AM6Client.get("ACCOUNT",o.resourceDataId);
 				}
-				else if(this.GetElementByRID("resourceType").value == "PERSON"){
+				else if(this.getElementByRID("resourceType").value == "PERSON"){
 					d = AM6Client.get("PERSON",o.resourceDataId);
 				}
 
@@ -101,11 +101,11 @@
 			delete o.account;
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("utilization").className = "rocket-text rocket-text-short";
+			this.getElementByRID("utilization").className = "rocket-text rocket-text-short";
 			this.applyResourceId(o);			
 			delete o.resourceData;
-			if(!this.ValidateForPattern("utilization","numbers-only")){
-				this.GetElementByRID("utilization").className = "rocket-text rocket-text-short rocket-text-error";
+			if(!this.validateForPattern("utilization","numbers-only")){
+				this.getElementByRID("utilization").className = "rocket-text rocket-text-short rocket-text-error";
 				this.setStatus("Utilization may only be numeric");
 				return 0;
 			}

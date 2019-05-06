@@ -16,7 +16,7 @@
 	<embedded-script><![CDATA[
 		embedded_init : function(){
 			if(!this.getProperties().processListProp) this.getProperties().processListProp = "processes";
-			//this.GetComponentByRID("processesList").setLoadHandler(this.scopeHandler("configProcessesList",0,1,1));
+			//this.getComponentByRID("processesList").setLoadHandler(this.scopeHandler("configProcessesList",0,1,1));
 		},
 		openProcess : function(){
 			var oI = this.getProcessesList().getActiveItem();
@@ -45,7 +45,7 @@
 			}
 		},
 		getProcessesList : function(){
-			return this.GetComponentByRID("processesList").GetWideSelect();
+			return this.getComponentByRID("processesList").GetWideSelect();
 		},
 		prepareSaveProcessesList : function(o){
 			aP = this.getProperties().processListProp;

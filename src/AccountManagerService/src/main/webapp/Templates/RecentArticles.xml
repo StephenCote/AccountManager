@@ -22,11 +22,11 @@
 				AM6Client.findBy("DATA", oG.objectId, oS,function(s, v){
 						if(v && v.json && v.json.length){
 							if(!v.json[0].dataBytesStore || v.json[0].dataBytesStore.length == 0){
-								Hemi.xml.setInnerXHTML(ctl.GetElementByRID("content"),"Error translating blog content");
+								Hemi.xml.setInnerXHTML(ctl.getElementByRID("content"),"Error translating blog content");
 							}
 							else{
-								bbConverter.copyInto(uwm.base64Decode(v.json[0].dataBytesStore),ctl.GetElementByRID("content"));
-								var aL = ctl.GetElementByRID("content").getElementsByTagName("a");
+								bbConverter.copyInto(uwm.base64Decode(v.json[0].dataBytesStore),ctl.getElementByRID("content"));
+								var aL = ctl.getElementByRID("content").getElementsByTagName("a");
 								for(var i = 0; i < aL.length;i++){
 									if(!aL[i].href || !aL[i].href.match(/\/AccountManagerService\/media/)) continue;
 									aL[i].onclick = function(){
@@ -37,7 +37,7 @@
 							}
 						}
 						else{
-							Hemi.xml.setInnerXHTML(ctl.GetElementByRID("content"),"Articles Not Available");
+							Hemi.xml.setInnerXHTML(ctl.getElementByRID("content"),"Articles Not Available");
 						}
 					});
 			});

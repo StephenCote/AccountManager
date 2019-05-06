@@ -8,7 +8,7 @@
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
-				var oCG = this.GetElementByRID("canvas-gallery");
+				var oCG = this.getElementByRID("canvas-gallery");
 				oCG.style.cssText = "position:absolute;top:0px;left:0px;";
 				this.scopeHandler("window_resize",0,0,1);
 				this.scopeHandler("component_loaded",0,0,1);

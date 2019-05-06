@@ -45,7 +45,7 @@
 			}
 		},
 		getSchedulesList : function(){
-			return this.GetComponentByRID("schedulesList").GetWideSelect();
+			return this.getComponentByRID("schedulesList").GetWideSelect();
 		},
 		prepareSaveSchedulesList : function(o){
 			aP = this.getProperties().scheduleListProp;

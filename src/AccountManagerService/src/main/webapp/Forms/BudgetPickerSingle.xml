@@ -30,7 +30,7 @@
 	pickBudget : function(s, v){
 		var o = this.getBean("rocketType");
 		o[this.getProperties().budgetProp] = v;
-		this.GetElementByRID("budget").value = (v ? v.name : "");
+		this.getElementByRID("budget").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

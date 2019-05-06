@@ -17,7 +17,7 @@
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			this.GetElementByRID("pathCont").style.display = "none";
+			this.getElementByRID("pathCont").style.display = "none";
 		},
 		addType : function(o){
 			Hemi.log("Add tag type: " + o.name );

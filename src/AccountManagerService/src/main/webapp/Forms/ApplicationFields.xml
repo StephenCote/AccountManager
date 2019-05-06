@@ -16,7 +16,7 @@
 		local_template_init : function(o){
 			var o = this.getBean("rocketType");
 			if(this.resizeTo) this.resizeTo(525, 400);
-			this.GetElementByRID("pathCont").style.display = "none";
+			this.getElementByRID("pathCont").style.display = "none";
 			if(o.id){
 				this.getProperties().dndDataPath = o.path;
 				this.AddTab("account","Accounts",this.scopeHandler("loadAccountTab",0,1,1));
@@ -36,7 +36,7 @@
 
 			if(_s.typeName.match(/^account$/gi) && o.getPath){
 				Hemi.log("RESOLVE " + _s.typeName + " to " + o.getPath());
-				o.GetElementByRID("path").value = o.getPath();
+				o.getElementByRID("path").value = o.getPath();
 			}
 		},
 		loadAccountTab : function(o){
@@ -53,7 +53,7 @@
 		},
 		loadTab : function(s, o){
 			var oBean = this.getBean("rocketType");
-			var c = this.GetElementByRID(s.toLowerCase());
+			var c = this.getElementByRID(s.toLowerCase());
 			if(c.loaded) return;
 			c.loaded = 1;
 			

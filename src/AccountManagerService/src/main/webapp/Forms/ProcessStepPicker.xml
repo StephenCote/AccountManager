@@ -16,7 +16,7 @@
 	<embedded-script><![CDATA[
 	embedded_init : function(){
 		if(!this.getProperties().processStepListProp) this.getProperties().processStepListProp = "processSteps";
-		//this.GetComponentByRID("processStepsList").setLoadHandler(this.scopeHandler("configProcessStepsList",0,1,1));
+		//this.getComponentByRID("processStepsList").setLoadHandler(this.scopeHandler("configProcessStepsList",0,1,1));
 	},
 	openProcessStep : function(){
 		var oI = this.getProcessStepsList().getActiveItem();
@@ -46,7 +46,7 @@
 			}
 		},
 		getProcessStepsList : function(){
-			return this.GetComponentByRID("processStepsList").GetWideSelect();
+			return this.getComponentByRID("processStepsList").GetWideSelect();
 		},
 		prepareSaveProcessStepsList : function(o){
 			aP = this.getProperties().processStepListProp;

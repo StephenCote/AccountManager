@@ -97,20 +97,20 @@
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			this.GetComponentByRID("rulesList").setLoadHandler(this.scopeHandler("configRulesList",0,1,1));
+			this.getComponentByRID("rulesList").setLoadHandler(this.scopeHandler("configRulesList",0,1,1));
 			this.displayRules();
 			this.chooseValidationType();
 		},
 		chooseValidationType : function(){
-			var oSel = this.GetElementByRID("validationType");
-			this.GetElementByRID("compCont").style.display = (oSel.value == "BOOLEAN" ? "block" : "none");
-			this.GetElementByRID("repCont").style.display = (oSel.value == "REPLACEMENT" ? "block" : "none");
+			var oSel = this.getElementByRID("validationType");
+			this.getElementByRID("compCont").style.display = (oSel.value == "BOOLEAN" ? "block" : "none");
+			this.getElementByRID("repCont").style.display = (oSel.value == "REPLACEMENT" ? "block" : "none");
 		},
 		displayRules : function(){
 			var o = this.getBean("rocketType");
-			var c = this.GetElementByRID("isRuleSet");
+			var c = this.getElementByRID("isRuleSet");
 			var bIsSet = c.checked;
-			this.GetElementByRID("rulesCont").style.display = (bIsSet ? "block" : "none");
+			this.getElementByRID("rulesCont").style.display = (bIsSet ? "block" : "none");
 		},
 		openRule : function(){
 			var oI = this.getRulesList().getActiveItem();
@@ -142,22 +142,22 @@
 			}
 		},
 		getRulesList : function(){
-			return this.GetComponentByRID("rulesList").GetWideSelect();
+			return this.getComponentByRID("rulesList").GetWideSelect();
 		},
 		addType : function(o){
 			Hemi.log("Add validation rule type: " + o.name + ":" + o.text);
 			return AM6Client.update("VALIDATIONRULE",o);
 		},
 		prepareSave : function(o){
-			//this.GetElementByRID("text").className = "rocket-text";
+			//this.getElementByRID("text").className = "rocket-text";
 			o.rules = [];
 			if(o.isRuleSet){
 				var aRules = this.getRulesList().getItems();
 				for(var i = 0; i < aRules.length;i++) o.rules.push(aRules[i].data);
 			}
 			/*
-			if(!this.ValidateForPattern("text","not-empty")){
-				this.GetElementByRID("text").className = "rocket-text rocket-text-error";
+			if(!this.validateForPattern("text","not-empty")){
+				this.getElementByRID("text").className = "rocket-text rocket-text-error";
 				this.setStatus("Text cannot be empty");
 				return 0;
 			}

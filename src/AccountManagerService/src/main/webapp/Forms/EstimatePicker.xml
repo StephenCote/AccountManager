@@ -21,7 +21,7 @@
 		pickEstimate : function(s, v){
 			var o = this.getBean("rocketType");
 			o.estimate = v;
-			this.GetElementByRID("estimate").value = (v ? v.name + " " + v.estimateType : "");
+			this.getElementByRID("estimate").value = (v ? v.name + " " + v.estimateType : "");
 		},
 		openEstimate : function(){
 			var o = this.getBean("rocketType");

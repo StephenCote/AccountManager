@@ -30,7 +30,7 @@
 	pickResource : function(s, v){
 		var o = this.getBean("rocketType");
 		o[this.getProperties().resourceProp] = v;
-		this.GetElementByRID("resource").value = (v ? v.name : "");
+		this.getElementByRID("resource").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

@@ -38,11 +38,11 @@
 	
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
-			this.GetElementByRID("permissionPicker").style.display = "block";
+			this.getElementByRID("permissionPicker").style.display = "block";
 			this.toggleField("permissionPickerToggle","permissionPickerContent");
 
-			this.GetElementByRID("pathCont").style.display = "none";
-			this.GetComponentByRID("permissionsList").setLoadHandler(this.scopeHandler("configPermissionsList",0,1,1));
+			this.getElementByRID("pathCont").style.display = "none";
+			this.getComponentByRID("permissionsList").setLoadHandler(this.scopeHandler("configPermissionsList",0,1,1));
 		},
 		
 		openChildPermission : function(){
@@ -76,7 +76,7 @@
 			}
 		},
 		getPermissionsList : function(){
-			return this.GetComponentByRID("permissionsList").GetWideSelect();
+			return this.getComponentByRID("permissionsList").GetWideSelect();
 		},
 		embedded_destroy : function(){
 		},

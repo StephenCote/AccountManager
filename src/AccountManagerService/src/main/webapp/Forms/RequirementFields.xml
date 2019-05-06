@@ -86,10 +86,10 @@
 			return AM6Client.update("REQUIREMENT",o);
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("text").className = "rocket-text";
+			this.getElementByRID("text").className = "rocket-text";
 			/*
-			if(!this.ValidateForPattern("text","not-empty")){
-				this.GetElementByRID("text").className = "rocket-text rocket-text-error";
+			if(!this.validateForPattern("text","not-empty")){
+				this.getElementByRID("text").className = "rocket-text rocket-text-error";
 				this.setStatus("Text cannot be empty");
 				return 0;
 			}

@@ -162,7 +162,7 @@
 			return AM6Client.update(o.nameType, o);
 		},
 		findType : function(bData){
-			var sFType = this.GetElementByRID((bData ? "factType" : "factoryType")).value;
+			var sFType = this.getElementByRID((bData ? "factType" : "factoryType")).value;
 			this.manageList(sFType.substring(0,1) + sFType.substring(1,sFType.length).toLowerCase(),0,(bData ? "pickData" : "pickType"));
 		},
 		pickData : function(t, o){
@@ -181,7 +181,7 @@
 				return;
 			}
 			if(bDataOnly){
-				this.GetElementByRID("factData").value = oBean.id;
+				this.getElementByRID("factData").value = oBean.id;
 				return;
 			}
 			var sPath = "";
@@ -213,19 +213,19 @@
 				}
 			}
 			if(_s.referByUrn){
-				this.GetElementByRID("sourceUrl").value = "";
-				this.GetElementByRID("sourceUrn").value = oBean.urn;
+				this.getElementByRID("sourceUrl").value = "";
+				this.getElementByRID("sourceUrn").value = oBean.urn;
 			}
 			else{
-				this.GetElementByRID("sourceUrn").value = oBean.name;
-				this.GetElementByRID("sourceUrl").value = sPath;
+				this.getElementByRID("sourceUrn").value = oBean.name;
+				this.getElementByRID("sourceUrl").value = sPath;
 			}
-			this.GetElementByRID("sourceType").value = sSrcType;
-			this.GetElementByRID("factoryType").value = oBean.nameType;
-			this.GetElementByRID("factType").value = sFactType;
+			this.getElementByRID("sourceType").value = sSrcType;
+			this.getElementByRID("factoryType").value = oBean.nameType;
+			this.getElementByRID("factType").value = sFactType;
 			if(!bSkipName){
-				this.GetElementByRID("name").value = oBean.name + " Fact";
-				this.GetElementByRID("description").value = "Fact representing a relative link to " + oBean.nameType + " " + oBean.name + " with current id #" + oBean.id + " in organization " + oBean.organizationPath;
+				this.getElementByRID("name").value = oBean.name + " Fact";
+				this.getElementByRID("description").value = "Fact representing a relative link to " + oBean.nameType + " " + oBean.name + " with current id #" + oBean.id + " in organization " + oBean.organizationPath;
 			}
 
 			

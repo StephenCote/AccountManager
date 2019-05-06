@@ -27,7 +27,7 @@
 	pickPerson : function(s, v){
 		var o = this.getBean("rocketType");
 		o[this.getProperties().personProp] = v;
-		this.GetElementByRID("person").value = (v ? v.name : "");
+		this.getElementByRID("person").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

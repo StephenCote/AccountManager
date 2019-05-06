@@ -1125,19 +1125,19 @@
 	
 		}
 		function showDNDForm(oW){
-			if(!oW.GetElementByRID) return;
+			if(!oW.getElementByRID) return;
 			oW.setHideOnClose(0);
 			oW.setTitle("Drag-n-Drop");
 			oW.resizeTo(290,350);
 			var oP = galleryView.getCurrentViewPanel("nav");
-			oW.GetElementByRID("path").value = oP.getObjects().currentDirectory.path;
+			oW.getElementByRID("path").value = oP.getObjects().currentDirectory.path;
 		}
 		function showDataForm(oW){
-			if(!oW.GetElementByRID) return;
+			if(!oW.getElementByRID) return;
 			var oP = galleryView.getCurrentViewPanel("nav");
-			oW.GetElementByRID("dataTypeContainer").style.display = "none";
-			oW.GetElementByRID("mimeType").value = "binary";
-			oW.GetElementByRID("path").value = oP.getObjects().currentDirectory.path;
+			oW.getElementByRID("dataTypeContainer").style.display = "none";
+			oW.getElementByRID("mimeType").value = "binary";
+			oW.getElementByRID("path").value = oP.getObjects().currentDirectory.path;
 			oW.changeDataType();
 		}
 		

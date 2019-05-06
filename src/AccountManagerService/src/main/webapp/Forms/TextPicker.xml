@@ -16,9 +16,9 @@
 	<embedded-script>
             <![CDATA[
 		template_init : function (){
-			this.GetElementByRID("pick-text").focus();
+			this.getElementByRID("pick-text").focus();
 			if(this.getProperties().pickerLabel) this.setPickerLabel(this.getProperties().pickerLabel);
-			var oText = this.GetElementByRID("pick-text");
+			var oText = this.getElementByRID("pick-text");
 			if(this.getProperties().pickerDefault) oText.value = this.getProperties().pickerDefault;
 			var oCtl = this;
 			oText.onkeyup = function(e){
@@ -29,7 +29,7 @@
 		},
 		setPickerLabel : function(s){
 			if(this.setTitle) this.setTitle("Pick " + s);
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("picker-label"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("picker-label"),s);
 		},
 		setPickerHandler : function(f){
 			this.getProperties().picker_handler = f;
@@ -38,7 +38,7 @@
 			this.getProperties().picker_handler = 0;
 		},
 		pickText : function(){
-			if(this.getProperties().picker_handler && this.getProperties().openerId) Hemi.registry.service.getObject(this.getProperties().openerId)[this.getProperties().picker_handler](this.GetElementByRID("pick-text").value);
+			if(this.getProperties().picker_handler && this.getProperties().openerId) Hemi.registry.service.getObject(this.getProperties().openerId)[this.getProperties().picker_handler](this.getElementByRID("pick-text").value);
 			this.Close();
 		}
 	

@@ -5,7 +5,7 @@
 		</p>
 		<p>
 			<input type = "text" rid = "urlText" class = "rocket-text" style = "width:150px !important;" />
-			<input type = "button" class = "rocket-button" value = "..." onclick = "window.open(${this}.GetElementByRID('urlText').value)" />
+			<input type = "button" class = "rocket-button" value = "..." onclick = "window.open(${this}.getElementByRID('urlText').value)" />
 		</p>
 	</div>
 	<div class = "rocket-column-2" rid = "shareContainer" style = "display:none;">
@@ -91,14 +91,14 @@
 	<textarea rid = "textDataFloat" style = "z-index:250;display:none;position:absolute;top:0px;left:0px;width:250px;height:250px;" onblur = "${this}.hideTextFloat()"></textarea>
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
-			var oSel = this.GetElementByRID("mimeType");
+			var oSel = this.getElementByRID("mimeType");
 			if(oSel.selectedIndex == -1) oSel.value = "binary";
 			this.displayData();
 			this.changeDataType();
 
 			if(this.getProperties().autoDisplay){
 				this.loadDetailData();
-				/// this.GetElementByRID("textData").focus();
+				/// this.getElementByRID("textData").focus();
 				this.showTextFloat();
 			}
 			this.updateURL();
@@ -112,23 +112,22 @@
 			}
 		},
 		resizers : function(){
-			//this.ResizeFrame(this.GetElementByRID("textDataFloat"));
-			this.GetElementByRID("textDataFloat").style.height = (this.getContainer().clientHeight - (this.getObjects().title_bar.offsetHeight + this.getObjects().status_bar.offsetHeight)) + "px";
-			this.GetElementByRID("textDataFloat").style.width = "100%";
+			this.getElementByRID("textDataFloat").style.height = (this.getContainer().clientHeight - (this.getObjects().title_bar.offsetHeight + this.getObjects().status_bar.offsetHeight)) + "px";
+			this.getElementByRID("textDataFloat").style.width = "100%";
 		},
 		showTextFloat : function(){
-			this.GetElementByRID("textDataFloat").style.top = (this.getObjects().title_bar ? this.getObjects().title_bar.offsetHeight + "px" : "0px");
+			this.getElementByRID("textDataFloat").style.top = (this.getObjects().title_bar ? this.getObjects().title_bar.offsetHeight + "px" : "0px");
 			// (this.getBody ? this.getBody().offsetTop + "px" : "0px");
 			// 
-			this.GetElementByRID("textDataFloat").style.display = "block";
-			this.GetElementByRID("textDataFloat").value = this.GetElementByRID("textData").value;
-			this.GetElementByRID("textDataFloat").focus();
+			this.getElementByRID("textDataFloat").style.display = "block";
+			this.getElementByRID("textDataFloat").value = this.getElementByRID("textData").value;
+			this.getElementByRID("textDataFloat").focus();
 			this.resizers();
 			
 		},
 		hideTextFloat : function(){
-			this.GetElementByRID("textDataFloat").style.display = "none";
-			this.GetElementByRID("textData").value = this.GetElementByRID("textDataFloat").value;
+			this.getElementByRID("textDataFloat").style.display = "none";
+			this.getElementByRID("textData").value = this.getElementByRID("textDataFloat").value;
 		},
 			openShare : function(){
 				var o = this.getBean("rocketType");
@@ -154,7 +153,7 @@
 					+ g_application_path + "media/" + AM6Client.dotPath(AM6Client.currentOrganization) + "/Data" + g + "/" + o.name
 				;
 				/*
-				var oC = this.GetElementByRID("urlLabel");
+				var oC = this.getElementByRID("urlLabel");
 				Hemi.xml.removeChildren(oC);
 				var oA = document.createElement("a");
 				oA.setAttribute("target","_blank");
@@ -162,35 +161,35 @@
 				oA.appendChild(document.createTextNode(o.groupPath + "/" + o.name));
 				oC.appendChild(oA);
 				*/
-				this.GetElementByRID("urlText").value = sUrl;
+				this.getElementByRID("urlText").value = sUrl;
 				b = "block";
 			}
-			this.GetElementByRID("urlContainer").style.display = b;
+			this.getElementByRID("urlContainer").style.display = b;
 		},
 		displayData : function(){
 			var o = this.getBean("rocketType");
-			this.GetElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
+			this.getElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
 			if(o.id && o.detailsOnly) return;
 			
-			this.GetElementByRID("textData").value = "";
+			this.getElementByRID("textData").value = "";
 			if(o.mimeType){
 				if(!o.mimeType.match(/^text\/plain$/gi) && !o.mimeType.match(/^application\/xml$/gi)){
-					var oSel = this.GetElementByRID("mimeType");
+					var oSel = this.getElementByRID("mimeType");
 					oSel.options[oSel.options.length] = new Option(o.mimeType,o.mimeType);
 					oSel.value = o.mimeType;
 				}
 				if(o.mimeType.match(/^text/) && o.dataBytesStore){
-					this.GetElementByRID("textData").value = uwm.base64Decode(o.dataBytesStore);
+					this.getElementByRID("textData").value = uwm.base64Decode(o.dataBytesStore);
 				}
 			}
 		},
-		isBinary : function(){ var v = this.GetElementByRID("mimeType").value; return (v.match(/^binary$/) || v.match(/^image\//gi) || v.match(/^video\//gi)); },
+		isBinary : function(){ var v = this.getElementByRID("mimeType").value; return (v.match(/^binary$/) || v.match(/^image\//gi) || v.match(/^video\//gi)); },
 		addType : function(o){
 			Hemi.log("Add data type: " + o.name + ":" + o.mimeType);
 
 			var v = "";
 			if(o.mimeType && o.mimeType.match(/^text/)){
-				v = this.GetElementByRID("textData").value;
+				v = this.getElementByRID("textData").value;
 				return AM6Client.update("DATA",o);
 			}
 			else if(this.isBinary()){
@@ -273,20 +272,20 @@
 		},
 		changeDataType : function(){
 			var o = this.getBean("rocketType");
-			var oSel = this.GetElementByRID("mimeType");
+			var oSel = this.getElementByRID("mimeType");
 			
 			var bBin = this.isBinary();
 			//alert(bBin + "\n" + oSel.selectedIndex);
 			var bDet = (o.id && o.detailsOnly);
-			//this.GetElementByRID("detailsOnlyContainer").style.display = (bDet ? "block" : "none");
+			//this.getElementByRID("detailsOnlyContainer").style.display = (bDet ? "block" : "none");
 			/// Intentionally NOT allowing video to be loaded here
 			///
-			this.GetElementByRID("loadBtn").disabled = (bDet && (!bBin || !o.mimeType.match(/^image/)) ? false : true);
-			this.GetElementByRID("clearBtn").disabled = (!bDet ? true : false);
-			this.GetElementByRID("binaryContainer").style.display = (!bDet && bBin ? "block" : "none");
-			this.GetElementByRID("textContainer").style.display = (!bDet && !bBin ? "block" : "none");
-			this.GetElementByRID("viewBtn").disabled = (bBin && (o.mimeType.match(/^image/) || o.mimeType.match(/^video/)) ? false : true);
-			this.GetElementByRID("designBtn").disabled = (o.mimeType.match(/^text/) ? false : true);
+			this.getElementByRID("loadBtn").disabled = (bDet && (!bBin || !o.mimeType.match(/^image/)) ? false : true);
+			this.getElementByRID("clearBtn").disabled = (!bDet ? true : false);
+			this.getElementByRID("binaryContainer").style.display = (!bDet && bBin ? "block" : "none");
+			this.getElementByRID("textContainer").style.display = (!bDet && !bBin ? "block" : "none");
+			this.getElementByRID("viewBtn").disabled = (bBin && (o.mimeType.match(/^image/) || o.mimeType.match(/^video/)) ? false : true);
+			this.getElementByRID("designBtn").disabled = (o.mimeType.match(/^text/) ? false : true);
 			if(bBin) this.initFrame();
 		},
 		initFrame : function(){
@@ -305,7 +304,7 @@
 				this.getProperties().timeout = setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').setupFrame()",50);
 			}
 			else{
-				this.GetElementByRID("mediaUploadFrame").style.display = "block";
+				this.getElementByRID("mediaUploadFrame").style.display = "block";
 				oF.document.location.href = "/AccountManagerService/Forms/MediaUpload.html";
 				this.probeFrame();
 			}
@@ -317,12 +316,12 @@
 					this.setStatus("Uploading ...");
 				}
 				else if(v.messages[0] == "fileChange"){
-					var sN = this.GetElementByRID("name").value;
+					var sN = this.getElementByRID("name").value;
 					var sF = v.messages[1];
 					if(!sF || sF.length == 0) return;
 					sF = sF.replace(/\\/gi,"/");
 					sF = sF.substring(sF.lastIndexOf("/")+1,sF.length);
-					this.GetElementByRID("name").value = sF;
+					this.getElementByRID("name").value = sF;
 				}
 			}
 		},
@@ -352,7 +351,7 @@
 			}
 		},
 		prepareSave : function(o){
-			///this.GetElementByRID("endTime").className = "rocket-text";
+			///this.getElementByRID("endTime").className = "rocket-text";
 			///o.dataBytesStore = "";
 			/// For updating, if a detailed binary object is being saved, don't allow to save here - only allow through the uploader
 			/// therefore, save as detailsOnly
@@ -364,7 +363,7 @@
 					o.detailsOnly = true;
 				}
 				if(o.mimeType.match(/^text/)){
-					o.dataBytesStore = uwm.base64Encode(this.GetElementByRID("textData").value);
+					o.dataBytesStore = uwm.base64Encode(this.getElementByRID("textData").value);
 				}
 			}
 			return 1;

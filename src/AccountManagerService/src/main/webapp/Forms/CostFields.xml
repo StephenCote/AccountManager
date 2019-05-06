@@ -19,10 +19,10 @@
 		},
 
 		prepareSave : function(o){
-			this.GetElementByRID("value").className = "rocket-text";
+			this.getElementByRID("value").className = "rocket-text";
 
-			if(!this.ValidateForPattern("value","numbers-only")){
-				this.GetElementByRID("value").className = "rocket-text rocket-text-error";
+			if(!this.validateForPattern("value","numbers-only")){
+				this.getElementByRID("value").className = "rocket-text rocket-text-error";
 				this.setStatus("Value must only contain numeric characters");
 				return 0;
 			}

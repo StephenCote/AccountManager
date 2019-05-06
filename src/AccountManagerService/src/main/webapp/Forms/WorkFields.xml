@@ -28,10 +28,10 @@
 			this.getProperties().artifactListProp = "artifacts";
 			this.getProperties().taskListProp = "tasks";
 			this.getProperties().dependencyListProp = "dependencies";
-			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
-			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
-			this.GetComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
-			this.GetComponentByRID("tasksList").setLoadHandler(this.scopeHandler("configTasksList",0,1,1));
+			this.getComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.getComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.getComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
+			this.getComponentByRID("tasksList").setLoadHandler(this.scopeHandler("configTasksList",0,1,1));
 
 		},
 
@@ -41,7 +41,7 @@
 			return AM6Client.update("WORK",o);
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("logicalOrder").className = "rocket-text";
+			this.getElementByRID("logicalOrder").className = "rocket-text";
 
 			o.dependencies = [];
 			var aDependencies = this.getDependenciesList().getItems();
@@ -59,8 +59,8 @@
 			var aResources = this.getResourcesList().getItems();
 			for(var i = 0; i < aResources.length;i++) o.resources.push(aResources[i].data);
 
-			if(!this.ValidateForPattern("logicalOrder","numbers-only")){
-				this.GetElementByRID("logicalOrder").className = "rocket-text rocket-text-error";
+			if(!this.validateForPattern("logicalOrder","numbers-only")){
+				this.getElementByRID("logicalOrder").className = "rocket-text rocket-text-error";
 				this.setStatus("Text cannot be empty");
 				return 0;
 			}

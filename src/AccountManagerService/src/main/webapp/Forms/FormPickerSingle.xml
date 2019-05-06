@@ -26,7 +26,7 @@
 	pickForm : function(s, v){
 		var o = this.getBean("rocketType");
 		o.form = v;
-		this.GetElementByRID("form").value = (v ? v.name : "");
+		this.getElementByRID("form").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

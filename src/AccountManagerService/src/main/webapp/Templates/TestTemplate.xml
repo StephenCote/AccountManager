@@ -2,7 +2,7 @@
 <import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 <h2>Example Title</h2>
 <p rid = "exampleId">Example content</p>
-<p><input type = "button" value= "Test" onclick = "alert(${this}.GetElementByRID)"/></p>
+<p><input type = "button" value= "Test" onclick = "alert(${this}.getElementByRID)"/></p>
 <p><input type = "text" value = "Example text" onkeyup = "${this}.echo()" rid = "exText" /></p>
 <p>Echo: <span rid = "exEcho">Example text</span></p>
 <p><input type= "button" value = "Destroy" onclick = "${this}.destroy()" /></p>
@@ -12,15 +12,15 @@ template_init : function(){
 	var oP = document.createElement("p");
 	oP.appendChild(document.createTextNode("Test scripted content"));
 	this.getContainer().appendChild(oP);
-	if(!this.GetElementByRID){
+	if(!this.getElementByRID){
 		oP.innerHTML = "<b style = 'color: #FF0000;'>Error: Include failed to load</b>";
 	}
 	else{
-		Hemi.xml.setInnerXHTML(this.GetElementByRID("exampleId"), "Example overwrite with external utility");
+		Hemi.xml.setInnerXHTML(this.getElementByRID("exampleId"), "Example overwrite with external utility");
 	}
 },
 echo : function(){
-	Hemi.xml.setInnerXHTML(this.GetElementByRID("exEcho"),this.GetElementByRID("exText").value);
+	Hemi.xml.setInnerXHTML(this.getElementByRID("exEcho"),this.getElementByRID("exText").value);
 }
 ]]></embedded-script>
 </Template>

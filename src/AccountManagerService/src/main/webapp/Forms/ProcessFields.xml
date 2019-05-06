@@ -29,8 +29,8 @@
 		embedded_init : function(o){
 			this.getProperties().processStepListProp = "steps";
 			this.getProperties().budgetListProp = "budgets";
-			this.GetComponentByRID("processStepsList").setLoadHandler(this.scopeHandler("configProcessStepsList",0,1,1));
-			this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
+			this.getComponentByRID("processStepsList").setLoadHandler(this.scopeHandler("configProcessStepsList",0,1,1));
+			this.getComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
 		},
 		
 		addType : function(o){
@@ -41,9 +41,9 @@
 			this.prepareSaveBudgetsList(o);
 			this.prepareSaveProcessStepsList(o);
 
-			this.GetElementByRID("logicalOrder").className = "rocket-text";
-			if(!this.ValidateForPattern("logicalOrder","numbers-only")){
-				this.GetElementByRID("logicalOrder").className = "rocket-text rocket-text-error";
+			this.getElementByRID("logicalOrder").className = "rocket-text";
+			if(!this.validateForPattern("logicalOrder","numbers-only")){
+				this.getElementByRID("logicalOrder").className = "rocket-text rocket-text-error";
 				this.setStatus("Text cannot be empty");
 				return 0;
 			}

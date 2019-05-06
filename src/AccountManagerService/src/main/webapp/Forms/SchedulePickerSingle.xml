@@ -30,7 +30,7 @@
 	pickSchedule : function(s, v){
 		var o = this.getBean("rocketType");
 		o[this.getProperties().scheduleProp] = v;
-		this.GetElementByRID("schedule").value = (v ? v.name : "");
+		this.getElementByRID("schedule").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

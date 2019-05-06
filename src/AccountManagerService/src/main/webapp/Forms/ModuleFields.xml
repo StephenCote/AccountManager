@@ -31,8 +31,8 @@
 			this.getProperties().artifactListProp = "artifacts";
 			this.getProperties().workListProp = "work";
 			
-			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
-			this.GetComponentByRID("worksList").setLoadHandler(this.scopeHandler("configWorksList",0,1,1));
+			this.getComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.getComponentByRID("worksList").setLoadHandler(this.scopeHandler("configWorksList",0,1,1));
 		
 			var o = this.getBean("rocketType");
 			this.getProperties().timeProp = "actualTime";

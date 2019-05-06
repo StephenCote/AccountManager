@@ -136,14 +136,14 @@
 			
 			this.getProperties().keep_buffers = 0;
 			if(!this.setStatus){
-				this.GetElementByRID("status").style.display = "block";
+				this.getElementByRID("status").style.display = "block";
 				this.setStatus = this._setStatus;
 			}
 			this.setStatus("Setting up designer ...");
 			setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').setup_designer()",50);
 		},
 		_setStatus : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("status"),s);
 		},
 		local_minimize : function(){
 			// fix for latest FF 1.5
@@ -171,7 +171,7 @@
 		LoadDesignerTemplate : function(){
 			this.setStatus("Loading template ...");
 			Hemi.log("Load designer template");
-			var sTemplate = this.GetFormValue("template");
+			var sTemplate = this.getFormValue("template");
 			if(!sTemplate || !sTemplate.match(/\.xml/g)){
 				if(sTemplate == "blank"){
 					this.WriteContent("<html><body><h1>Title</h1><h2>Sub Title</h2><div>[ body ]</div></body></html>","designer");
@@ -361,7 +361,7 @@
 		_handle_picker_loaded: function (v) {
 		    v.resizeTo(475, 450);
 
-			v.GetComponentByRID("typelist").GetWideSelect().getContainer().style.height = "340px";
+			v.getComponentByRID("typelist").GetWideSelect().getContainer().style.height = "340px";
         },
         /// Based on Tim's answer at http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
         ///
@@ -435,7 +435,7 @@
 		/// Copy from BaseFields.xml
 		///
 		getPath : function(){
-			var o = this.GetElementByRID("path"), s;
+			var o = this.getElementByRID("path"), s;
 			if(!(s = o.value).length){
 				s = o.placeholder;
 				if(!s) s = "~/" + this.getProperties().typeName + "s";
@@ -447,18 +447,18 @@
 		saveType : function(){
 			this.synchronizeForm();
 			var o = this.getBean("rocketType");
-			this.GetElementByRID("path").className = "rocket-text";
-			this.GetElementByRID("name").className = "rocket-text";
+			this.getElementByRID("path").className = "rocket-text";
+			this.getElementByRID("name").className = "rocket-text";
 			this.setStatus("");
-			if(!this.ValidateForPattern("name","not-empty")){
-				this.GetElementByRID("name").className = "rocket-text rocket-text-error";
+			if(!this.validateForPattern("name","not-empty")){
+				this.getElementByRID("name").className = "rocket-text rocket-text-error";
 				this.setStatus("Name cannot be empty");
 				return;
 			}
 			var sPath = this.getPath();
 			var oGroup = AM6Client.make("GROUP","DATA",sPath);
 			if(!oGroup || oGroup == null){
-				this.GetElementByRID("path").className = "rocket-text rocket-text-error";
+				this.getElementByRID("path").className = "rocket-text rocket-text-error";
 				this.setStatus("Invalid group");
 				return;
 			}
@@ -662,14 +662,14 @@
 		},
 		
 		resize_designer : function(){
-			this.ResizeFrame("designer",0,0);
+			this.resizeFrame("designer",0,0);
 		},
 
 		resize_preview_frame : function(){
-			this.ResizeFrame("preview_frame",0,0);
+			this.resizeFrame("preview_frame",0,0);
 		},
 		resize_preview_source : function(){
-			this.ResizeFrame("preview_source",10,0);
+			this.resizeFrame("preview_source",10,0);
 		}
 		
 

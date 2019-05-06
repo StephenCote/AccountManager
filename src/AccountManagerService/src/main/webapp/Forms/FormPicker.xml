@@ -58,7 +58,7 @@
 			}
 		},
 		getFormsList : function(){
-			return this.GetComponentByRID("formsList").GetWideSelect();
+			return this.getComponentByRID("formsList").GetWideSelect();
 		},
 		
 		prepareSaveFormsList : function(o){

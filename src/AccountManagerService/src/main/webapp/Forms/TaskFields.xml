@@ -83,16 +83,16 @@
 			this.getProperties().artifactListProp = "artifacts";
 			this.getProperties().resourceListProp = "resources";
 			this.getProperties().workListProp = "work";
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("taskPickerTitle"),"Child Tasks");
-			this.GetComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
-			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
-			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
-			this.GetComponentByRID("tasksList").setLoadHandler(this.scopeHandler("configTasksList",0,1,1));
-			this.GetComponentByRID("timesList").setLoadHandler(this.scopeHandler("configTimesList",0,1,1));
-			this.GetComponentByRID("costsList").setLoadHandler(this.scopeHandler("configCostsList",0,1,1));
-			this.GetComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
-			this.GetComponentByRID("notesList").setLoadHandler(this.scopeHandler("configNotesList",0,1,1));
-			this.GetComponentByRID("worksList").setLoadHandler(this.scopeHandler("configWorksList",0,1,1));
+			Hemi.xml.setInnerXHTML(this.getElementByRID("taskPickerTitle"),"Child Tasks");
+			this.getComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
+			this.getComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.getComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.getComponentByRID("tasksList").setLoadHandler(this.scopeHandler("configTasksList",0,1,1));
+			this.getComponentByRID("timesList").setLoadHandler(this.scopeHandler("configTimesList",0,1,1));
+			this.getComponentByRID("costsList").setLoadHandler(this.scopeHandler("configCostsList",0,1,1));
+			this.getComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
+			this.getComponentByRID("notesList").setLoadHandler(this.scopeHandler("configNotesList",0,1,1));
+			this.getComponentByRID("worksList").setLoadHandler(this.scopeHandler("configWorksList",0,1,1));
 			var o = this.getBean("rocketType");
 			this.pickEstimate('Estimate',o.estimate);
 		},
@@ -144,7 +144,7 @@
 			return b;
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("logicalOrder").className = "rocket-text";
+			this.getElementByRID("logicalOrder").className = "rocket-text";
 
 			o.requirements = [];
 			var aRequirements = this.getRequirementsList().getItems();
@@ -178,8 +178,8 @@
 			var aResources = this.getResourcesList().getItems();
 			for(var i = 0; i < aResources.length;i++) o.resources.push(aResources[i].data);
 
-			if(!this.ValidateForPattern("logicalOrder","numbers-only")){
-				this.GetElementByRID("logicalOrder").className = "rocket-text rocket-text-error";
+			if(!this.validateForPattern("logicalOrder","numbers-only")){
+				this.getElementByRID("logicalOrder").className = "rocket-text rocket-text-error";
 				this.setStatus("Text cannot be empty");
 				return 0;
 			}

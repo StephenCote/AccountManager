@@ -13,15 +13,15 @@
 		embedded_init : function(o){
 			this.getProperties().processListProp = "processes";
 			this.getProperties().budgetListProp = "budgets";
-			this.GetComponentByRID("processesList").setLoadHandler(this.scopeHandler("configProcessesList",0,1,1));
-			this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
+			this.getComponentByRID("processesList").setLoadHandler(this.scopeHandler("configProcessesList",0,1,1));
+			this.getComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
 		},
 		
 		addType : function(o){
 			return AM6Client.update("METHODOLOGY",o);
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("endTime").className = "rocket-text";
+			this.getElementByRID("endTime").className = "rocket-text";
 			this.prepareSaveProcessesList(o);
 			this.prepareSaveBudgetsList(o);
 			return 1;

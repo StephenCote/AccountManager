@@ -45,7 +45,7 @@
 			}
 		},
 		getTimesList : function(){
-			return this.GetComponentByRID("timesList").GetWideSelect();
+			return this.getComponentByRID("timesList").GetWideSelect();
 		},
 		prepareSaveTimesList : function(o){
 			aP = this.getProperties().timeListProp;

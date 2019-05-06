@@ -91,8 +91,8 @@
 	</div>
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			this.GetComponentByRID("elementsList").setLoadHandler(this.scopeHandler("configElementsList",0,1,1));
-			this.GetComponentByRID("formsList").setLoadHandler(this.scopeHandler("configFormsList",0,1,1));
+			this.getComponentByRID("elementsList").setLoadHandler(this.scopeHandler("configElementsList",0,1,1));
+			this.getComponentByRID("formsList").setLoadHandler(this.scopeHandler("configFormsList",0,1,1));
 			var o = this.getBean("rocketType");
 			this.toggleField("formPickerToggle","formPickerContent");
 			this.toggleField("elementPickerToggle","elementPickerContent");
@@ -116,16 +116,16 @@
 		},
 		displayTemplate : function(){
 			var o = this.getBean("rocketType");
-			var c = this.GetElementByRID("isTemplate");
+			var c = this.getElementByRID("isTemplate");
 			var bIsTemplate = c.checked;
 
-			this.GetElementByRID("templateCont").style.display = (!bIsTemplate ? "block" : "none");
-			this.GetElementByRID("gridCont").style.display = (bIsTemplate ? "block" : "none");
-			this.GetElementByRID("elementsCtrl").style.display = (bIsTemplate ? "block" : "none");
-			this.GetElementByRID("formsCtrl").style.display = (bIsTemplate ? "block" : "none");
-			this.GetElementByRID("viewTemplateCont").style.display = (bIsTemplate ? "block" : "none");
+			this.getElementByRID("templateCont").style.display = (!bIsTemplate ? "block" : "none");
+			this.getElementByRID("gridCont").style.display = (bIsTemplate ? "block" : "none");
+			this.getElementByRID("elementsCtrl").style.display = (bIsTemplate ? "block" : "none");
+			this.getElementByRID("formsCtrl").style.display = (bIsTemplate ? "block" : "none");
+			this.getElementByRID("viewTemplateCont").style.display = (bIsTemplate ? "block" : "none");
 			this.refreshElements((!bIsTemplate && o.template && o.template.elements ? o.template.elements : o.elements));
-			this.GetElementByRID("viewCont").style.display = (o.id > 0 && !bIsTemplate ? "block" : "none");
+			this.getElementByRID("viewCont").style.display = (o.id > 0 && !bIsTemplate ? "block" : "none");
 		},
 		openTemplate : function(){
 			var o = this.getBean("rocketType");
@@ -137,7 +137,7 @@
 		pickTemplate : function(s, v){
 			var o = this.getBean("rocketType");
 			o.template = v;
-			this.GetElementByRID("formTemplate").value = (v ? v.name : "");
+			this.getElementByRID("formTemplate").value = (v ? v.name : "");
 		},
 		openViewTemplate : function(){
 			var o = this.getBean("rocketType");
@@ -181,7 +181,7 @@
 		pickViewTemplate : function(s, v){
 			var o = this.getBean("rocketType");
 			o.viewTemplate = v;
-			this.GetElementByRID("formViewTemplate").value = (v ? v.name : "");
+			this.getElementByRID("formViewTemplate").value = (v ? v.name : "");
 		},
 		openElement : function(){
 			var oI = this.getElementsList().getActiveItem();
@@ -199,7 +199,7 @@
 			var o = this.getBean("rocketType");
 			var oL = this.getElementsList();
 			oL.getContainer().className = "rocket-wideselect-container";
-			var c = this.GetElementByRID("isTemplate");
+			var c = this.getElementByRID("isTemplate");
 			var bIsTemplate = c.checked;
 			this.refreshElements((!bIsTemplate && o.template && o.template.elements ? o.template.elements : o.elements));
 		},
@@ -213,7 +213,7 @@
 			}
 		},
 		getElementsList : function(){
-			return this.GetComponentByRID("elementsList").GetWideSelect();
+			return this.getComponentByRID("elementsList").GetWideSelect();
 		},
 		
 		
@@ -233,7 +233,7 @@
 			var o = this.getBean("rocketType");
 			var oL = this.getFormsList();
 			oL.getContainer().className = "rocket-wideselect-container";
-			var c = this.GetElementByRID("isTemplate");
+			var c = this.getElementByRID("isTemplate");
 			var bIsTemplate = c.checked;
 			this.refreshForms((!bIsTemplate && o.template && o.template.childForms ? o.template.childForms : o.childForms));
 		},
@@ -247,7 +247,7 @@
 			}
 		},
 		getFormsList : function(){
-			return this.GetComponentByRID("formsList").GetWideSelect();
+			return this.getComponentByRID("formsList").GetWideSelect();
 		},		
 		
 		addType : function(o){

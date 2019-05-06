@@ -19,7 +19,7 @@
 <embedded-script><![CDATA[
 embedded_init : function(){
 	var o = this.getBean("formBean");
-	this.GetElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
+	this.getElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
 	this.scopeHandler("profiler_loaded", 0, 0, 1);
 	/// If the form defines a template
 	/// Then it is up to the template to provide a new row button and a save button
@@ -27,10 +27,10 @@ embedded_init : function(){
 	///
 	if(o.template){
 		if(!o.template.viewTemplate){
-			this.GetElementByRID("btnSaveCont").style.display = "block";
+			this.getElementByRID("btnSaveCont").style.display = "block";
 		}
 		if(o.template.isGrid){
-			this.GetElementByRID("defNewRowCont").style.display = "block";
+			this.getElementByRID("defNewRowCont").style.display = "block";
 		}
 	}
 	if(!this.setStatus) this.setStatus = this._setStatus;
@@ -46,8 +46,8 @@ embedded_init : function(){
         _handle_profiler_loaded : function(oW){
         	if(typeof oW.ShowTab == "function" && typeof ActiveSource == "object"){
 				oW.ShowTab("Active Source");
-				var oSource = oW.GetElementByRID("oSource");
-				var oEval = oW.GetElementByRID("oEval");
+				var oSource = oW.getElementByRID("oSource");
+				var oEval = oW.getElementByRID("oEval");
 				var sCont = "";
 				ActiveObjects.valContainer = 0;
 				ActiveObjects.valReference = 0;
@@ -69,7 +69,7 @@ embedded_init : function(){
         },
 deleteRow : function(sId){
 	var o = this.getBean("formBean");
-	var oXForm = this.GetForm();
+	var oXForm = this.getForm();
    	for(var i = 0; i < o.template.elements.length; i++){
    		var oE = o.template.elements[i];
 		delete o[sId + oE.elementName];
@@ -77,7 +77,7 @@ deleteRow : function(sId){
 	}
 	this.setBean(o,"formBean");
 	Hemi.log("Delete Row: " + sId);
-	var oRow = this.GetElementByRID(sId + "Row");
+	var oRow = this.getElementByRID(sId + "Row");
 	if(oRow){
 		/// Remove and unlink node and all framework objects;
 		Hemi.xml.removeChildren(oRow, 1);
@@ -136,10 +136,10 @@ addRow : function(){
    
 	
    	for(var i = 0; i < oX.documentElement.childNodes.length;i++){
-   		Hemi.xml.setInnerXHTML(this.GetElementByRID("rowCont"), oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
+   		Hemi.xml.setInnerXHTML(this.getElementByRID("rowCont"), oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
    	}
-   	var aC = this.GetElementByRID("rowCont").childNodes;
-   	//Hemi.xml.setInnerXHTML(this.GetElementByRID("rowCont"),oX.documentElement,1);
+   	var aC = this.getElementByRID("rowCont").childNodes;
+   	//Hemi.xml.setInnerXHTML(this.getElementByRID("rowCont"),oX.documentElement,1);
    	this.extendSpaceConfiguration(aC[aC.length-1]);
    	
    
@@ -173,7 +173,7 @@ addRow : function(){
 		return out_bool;
 	},
 saveForm:function(){
-	if(!this.ValidateForm(1)){
+	if(!this.validateForm(1)){
 		return;
 	}
 	this.synchronizeForm();
@@ -239,7 +239,7 @@ saveForm:function(){
 	   return a.join("");
 	},
 		_setStatus : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("status"),s);
 		}
 ]]></embedded-script>
 </html-fragment>

@@ -23,7 +23,7 @@
 			this.pickGroup(this.getProperties().typeName,oP);
 		}
 		else{
-			this.GetElementByRID("GroupPickerCont").style.display = "none";
+			this.getElementByRID("GroupPickerCont").style.display = "none";
 		}
 	},
 	chooseGroup : function(){
@@ -45,7 +45,7 @@
 			return;
 		}
 		o.GroupId = (v ? v.id : 0);
-		this.GetElementByRID("Group").value = (v ? v.name : "");
+		this.getElementByRID("Group").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

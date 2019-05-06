@@ -30,7 +30,7 @@
 	pickMethodology : function(s, v){
 		var o = this.getBean("rocketType");
 		o[this.getProperties().methodologyProp] = v;
-		this.GetElementByRID("methodology").value = (v ? v.name : "");
+		this.getElementByRID("methodology").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

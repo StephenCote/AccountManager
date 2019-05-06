@@ -47,15 +47,15 @@
 			this.getProperties().resourceListProp = "actors";
 			this.getProperties().artifactListProp = "prerequisites";
 			this.getProperties().dataListProp = "diagrams";
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("dataPickerTitle"),"Diagrams");
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("taskPickerTitle"),"Sequence");
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("resourcePickerTitle"),"Actors");
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("artifactPickerTitle"),"Prerequisites");
-			this.GetComponentByRID("dataList").setLoadHandler(this.scopeHandler("configDataList",0,1,1));
-			this.GetComponentByRID("tasksList").setLoadHandler(this.scopeHandler("configTasksList",0,1,1));
-			this.GetComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
-			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
-			//this.GetComponentByRID("actorsList").setLoadHandler(this.scopeHandler("configActorsList",0,1,1));
+			Hemi.xml.setInnerXHTML(this.getElementByRID("dataPickerTitle"),"Diagrams");
+			Hemi.xml.setInnerXHTML(this.getElementByRID("taskPickerTitle"),"Sequence");
+			Hemi.xml.setInnerXHTML(this.getElementByRID("resourcePickerTitle"),"Actors");
+			Hemi.xml.setInnerXHTML(this.getElementByRID("artifactPickerTitle"),"Prerequisites");
+			this.getComponentByRID("dataList").setLoadHandler(this.scopeHandler("configDataList",0,1,1));
+			this.getComponentByRID("tasksList").setLoadHandler(this.scopeHandler("configTasksList",0,1,1));
+			this.getComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
+			this.getComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			//this.getComponentByRID("actorsList").setLoadHandler(this.scopeHandler("configActorsList",0,1,1));
 		},
 		
 		addType : function(o){
@@ -64,7 +64,7 @@
 		},
 		prepareSave : function(o){
 			this.prepareSaveDatasList(o);
-			this.GetElementByRID("text").className = "rocket-text";
+			this.getElementByRID("text").className = "rocket-text";
 			o.actors = [];
 			var aActors = this.getResourcesList().getItems();
 			for(var i = 0; i < aActors.length;i++) o.actors.push(aActors[i].data);
@@ -82,8 +82,8 @@
 			for(var i = 0; i < aPrerequisites.length;i++) o.diagrams.push(aPrerequisites[i].data);
 			
 			/*
-			if(!this.ValidateForPattern("text","not-empty")){
-				this.GetElementByRID("text").className = "rocket-text rocket-text-error";
+			if(!this.validateForPattern("text","not-empty")){
+				this.getElementByRID("text").className = "rocket-text rocket-text-error";
 				this.setStatus("Text cannot be empty");
 				return 0;
 			}

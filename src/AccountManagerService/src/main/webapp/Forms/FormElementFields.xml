@@ -128,20 +128,20 @@
 		pickViewTemplate : function(s, v){
 			var o = this.getBean("rocketType");
 			o.elementTemplate = v;
-			this.GetElementByRID("elementViewTemplate").value = (v ? v.name : "");
+			this.getElementByRID("elementViewTemplate").value = (v ? v.name : "");
 		},
 		refreshValues : function(){
 			var o = this.getBean("rocketType");
-			var oSel = this.GetElementByRID("elementType");
+			var oSel = this.getElementByRID("elementType");
 			if(oSel.value.match(/select/gi)){
 				var aBuff = [];
 				for(var i = 0; i < o.elementValues.length;i++) aBuff.push(o.elementValues[i].textValue);
-				this.GetElementByRID("optionValues").value = aBuff.join("\n");
+				this.getElementByRID("optionValues").value = aBuff.join("\n");
 			}
 		},
 		chooseElementType : function(){
-			var oSel = this.GetElementByRID("elementType");
-			this.GetElementByRID("optCont").style.display = (oSel.value.match(/select/gi) ? "block" : "none");
+			var oSel = this.getElementByRID("elementType");
+			this.getElementByRID("optCont").style.display = (oSel.value.match(/select/gi) ? "block" : "none");
 		},
 		openRule : function(){
 			var o = this.getBean("rocketType");
@@ -153,7 +153,7 @@
 		pickRule : function(s, v){
 			var o = this.getBean("rocketType");
 			o.validationRule = v;
-			this.GetElementByRID("formRule").value = (v ? v.name : "");
+			this.getElementByRID("formRule").value = (v ? v.name : "");
 		},
 		addType : function(o){
 			return AM6Client.update("FORMELEMENT",o);
@@ -161,9 +161,9 @@
 		prepareSave : function(o){
 			var o = this.getBean("rocketType");
 			o.elementValues = [];
-			var oSel = this.GetElementByRID("elementType");
+			var oSel = this.getElementByRID("elementType");
 			if(oSel.value.match(/select/gi)){
-				var aVals = this.GetElementByRID("optionValues").value.split("\n");
+				var aVals = this.getElementByRID("optionValues").value.split("\n");
 				for(var i = 0; i < aVals.length;i++){
 					var sVal = Hemi.text.trim(aVals[i]);
 					if(sVal.length == 0) continue;

@@ -16,7 +16,7 @@
 
 		},
 		showSystemPersons : function(){
-			this.GetElementByRID("path").value = "/Persons";
+			this.getElementByRID("path").value = "/Persons";
 			this.getProperties().start_record = 0;
 			this.getProperties().viewType = o;
 			this.refreshList();

@@ -8,7 +8,7 @@
 		<![CDATA[
 			template_init: function(){
 				Hemi.log("Load complete registration form");
-				var oSuppl = this.GetElementByRID("suppl");
+				var oSuppl = this.getElementByRID("suppl");
 				Hemi.xml.setInnerXHTML(oSuppl,"");
 				if(window.uwm.registration){
 					var sRegId = window.uwm.getSessionData("registration-id",window.uwm.registration);

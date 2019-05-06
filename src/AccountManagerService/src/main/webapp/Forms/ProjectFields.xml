@@ -19,19 +19,20 @@
 
 	<div rid = "regionCont" style = "display:none;clear:both;" class = "rocket-column-2">
 		<p rid = "lblRegion">
-			Configure Project Region:
+			<span rid = "cfgRegionToggle"></span> Configure Region:
 		</p>
-		<p>
+		<p rid = "cfgRegionCont">
 			<input rid = "txtLocCount" type = "text" class = "rocket-text rocket-text-short" value = "3" />
 			<input rid = "txtInitPop" type = "text" class = "rocket-text rocket-text-short" value = "250" />
 			<input rid = "btnConfigProjectRegion" type = "button" class = "rocket-button" value = "Configure" onclick = "${this}.configureProjectRegion()" />
 		</p>
 	</div>
+
 	<div rid = "evolveCont" style = "display:none;clear:both;" class = "rocket-column-2">
 		<p rid = "lblEvolve">
-			Evolve Project Region:
+			<span rid = "evoRegionToggle"></span> Evolve Region:
 		</p>
-		<p>
+		<p rid = "evoRegionCont">
 			<input rid = "txtEpochCount" type = "text" class = "rocket-text rocket-text-short" value = "1" />
 			<input rid = "txtIterCount" type = "text" class = "rocket-text rocket-text-short" value = "12" />
 			<input rid = "btnConfigProjectRegion" type = "button" class = "rocket-button" value = "Evolve" onclick = "${this}.evolveProjectRegion()" />
@@ -43,7 +44,7 @@
 			var o = this.getBean("rocketType"), oC = this;
 			this.setStatus("Evolving project region");
 			
-			AM6Client.evolveCommunityProjectRegion(irocket.getCommunityLifecycle().objectId, o.objectId, this.GetElementByRID("txtEpochCount").value, this.GetElementByRID("txtIterCount").value, function(s, v){
+			AM6Client.evolveCommunityProjectRegion(irocket.getCommunityLifecycle().objectId, o.objectId, this.getElementByRID("txtEpochCount").value, this.getElementByRID("txtIterCount").value, function(s, v){
 				if(v && v.json) v = v.json;
 				if(v){
 					oC.setStatus("Evolved project region");
@@ -58,7 +59,7 @@
 			var o = this.getBean("rocketType"), oC = this;
 			this.setStatus("Configuring project region");
 			
-			AM6Client.configureCommunityProjectRegion(irocket.getCommunityLifecycle().objectId, o.objectId, this.GetElementByRID("txtLocCount").value, this.GetElementByRID("txtInitPop").value, function(s, v){
+			AM6Client.configureCommunityProjectRegion(irocket.getCommunityLifecycle().objectId, o.objectId, this.getElementByRID("txtLocCount").value, this.getElementByRID("txtInitPop").value, function(s, v){
 				if(v && v.json) v = v.json;
 				if(v){
 					oC.setStatus("Configured project region");
@@ -83,13 +84,13 @@
 					if(iL == 0) bD1 = 1;
 					else{
 						bD2 = 1;
-						this.GetElementByRID("txtEpochCount").value = iL + 1;
+						this.getElementByRID("txtEpochCount").value = iL + 1;
 					}
 				}
 			}
 
-			this.GetElementByRID("regionCont").style.display = (bD1 ? "block" : "none" );
-			this.GetElementByRID("evolveCont").style.display = (bD2 ? "block" : "none" );
+			this.getElementByRID("regionCont").style.display = (bD1 ? "block" : "none" );
+			this.getElementByRID("evolveCont").style.display = (bD2 ? "block" : "none" );
 		
 		},
 		embedded_init : function(){
@@ -106,12 +107,15 @@
 			this.pickSchedule('Schedule',o.schedule);
 			
 			
-			this.GetComponentByRID("blueprintsList").setLoadHandler(this.scopeHandler("configBlueprintsList",0,1,1));
-			this.GetComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
-			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
-			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
-			this.GetComponentByRID("modulesList").setLoadHandler(this.scopeHandler("configModulesList",0,1,1));
-			this.GetComponentByRID("stagesList").setLoadHandler(this.scopeHandler("configStagesList",0,1,1));
+			this.getComponentByRID("blueprintsList").setLoadHandler(this.scopeHandler("configBlueprintsList",0,1,1));
+			this.getComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
+			this.getComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.getComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.getComponentByRID("modulesList").setLoadHandler(this.scopeHandler("configModulesList",0,1,1));
+			this.getComponentByRID("stagesList").setLoadHandler(this.scopeHandler("configStagesList",0,1,1));
+			
+			this.toggleField("cfgRegionToggle","cfgRegionCont");
+			this.toggleField("evoRegionToggle","evoRegionCont");
 			
 			this.refreshRegionCont();
 		},

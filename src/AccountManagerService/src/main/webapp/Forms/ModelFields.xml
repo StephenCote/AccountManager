@@ -20,18 +20,18 @@
 			this.getProperties().modelListProp = "models";
 			this.getProperties().requirementListProp = "requirements";
 			
-			this.GetComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
-			this.GetComponentByRID("casesList").setLoadHandler(this.scopeHandler("configCasesList",0,1,1));
-			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
-			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
-			this.GetComponentByRID("modelsList").setLoadHandler(this.scopeHandler("configModelsList",0,1,1));
+			this.getComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
+			this.getComponentByRID("casesList").setLoadHandler(this.scopeHandler("configCasesList",0,1,1));
+			this.getComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.getComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.getComponentByRID("modelsList").setLoadHandler(this.scopeHandler("configModelsList",0,1,1));
 		},
 	
 		addType : function(o){
 			return AM6Client.update("MODEL",o);
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("endTime").className = "rocket-text";
+			this.getElementByRID("endTime").className = "rocket-text";
 			o.cases = [];
 			var aCases = this.getCasesList().getItems();
 			for(var i = 0; i < aCases.length;i++) o.cases.push(aCases[i].data);

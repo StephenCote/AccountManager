@@ -106,8 +106,8 @@
 <embedded-script><![CDATA[
 	embedded_init : function(){
 		var o = this.getBean("rocketType");
-			this.GetElementByRID("rulePicker").style.display = "block";
-			this.GetElementByRID("defineCont").style.display = (o.id ? "block" : "none");
+			this.getElementByRID("rulePicker").style.display = "block";
+			this.getElementByRID("defineCont").style.display = (o.id ? "block" : "none");
 			this.toggleField("rulePickerToggle","rulePickerContent");
 			if(!this.getProperties().ruleListProp) this.getProperties().ruleListProp = "rules";
 			
@@ -133,7 +133,7 @@
 		this.sendToDebug(AM6Client.define(this.getBean("rocketType").objectId));
 	},
 setRulePickerLabel : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("rulePickerLabel"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("rulePickerLabel"),s);
 		},
 		initRulePicker : function(){
 			/// Have to put a little extra logic here because rule information is optional for addresses
@@ -142,7 +142,7 @@ setRulePickerLabel : function(s){
 			
 			if(_s.enableRuleInformation){
 				//this.getProperties().ruleListProp = "rules";
-				this.GetComponentByRID("rulesList").setLoadHandler(this.scopeHandler("configRulesList",0,1,1));
+				this.getComponentByRID("rulesList").setLoadHandler(this.scopeHandler("configRulesList",0,1,1));
 			}
 		},
 
@@ -175,7 +175,7 @@ setRulePickerLabel : function(s){
 			}
 		},
 		getRulesList : function(){
-			return this.GetComponentByRID("rulesList").GetWideSelect();
+			return this.getComponentByRID("rulesList").GetWideSelect();
 		},
 	addType : function(o){
 			Hemi.log("Add policy type: " + o.name);

@@ -21,15 +21,15 @@
 		embedded_init : function(o){
 			this.getProperties().budgetListProp = "budgets";
 			this.getProperties().goalListProp = "goals";
-			this.GetComponentByRID("goalsList").setLoadHandler(this.scopeHandler("configGoalsList",0,1,1));
-			this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
+			this.getComponentByRID("goalsList").setLoadHandler(this.scopeHandler("configGoalsList",0,1,1));
+			this.getComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
 		},
 	
 		addType : function(o){
 			return AM6Client.update("SCHEDULE",o);
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("endTime").className = "rocket-text";
+			this.getElementByRID("endTime").className = "rocket-text";
 			o.goals = [];
 			o.budgets = [];
 			var aGoals = this.getGoalsList().getItems();
@@ -38,7 +38,7 @@
 			for(var i = 0; i < aBudgets.length;i++) o.budgets.push(aBudgets[i].data);
 			Hemi.log("Adding " + o.goals.length + " Goals and " + o.budgets.length + " Budgets"); 
 			if(o.startTime.getTime() > (o.endTime.getTime() + 1000)){
-				this.GetElementByRID("endTime").className = "rocket-text rocket-text-error";
+				this.getElementByRID("endTime").className = "rocket-text rocket-text-error";
 				this.setStatus("End time cannot be before the start time");
 				return;
 			}

@@ -48,10 +48,10 @@
 		if( _o.entityMap[id] ){
 			Hemi.log("Clearing map for " + id);
 			delete _o.entityMap[id];
-			this.GetElementByRID(id).value = "";
+			this.getElementByRID(id).value = "";
 		}
 		else{
-			this.GetElementByRID(id).value = "[ error ]";
+			this.getElementByRID(id).value = "[ error ]";
 		}
 		
 	},
@@ -67,7 +67,7 @@
 	},
 	pickType : function(s, v, i){
 		Hemi.log("Setting value for " + i.ctrlId);
-		this.GetElementByRID(i.ctrlId).value = (v ? this.getEntityLabel(v) : "[ error ]");
+		this.getElementByRID(i.ctrlId).value = (v ? this.getEntityLabel(v) : "[ error ]");
 		this.getObjects().entityMap[i.ctrlId] = (v ? v.id + "" : "");
 	},
 	openPicker : function(vSrc, sType, sListId, sFN){
@@ -78,7 +78,7 @@
           		oW.resizeTo(475, 300);
           		
           		if(vSrc.ctrlId){
-          			var o = this.GetElementByRID(vSrc.ctrlId);
+          			var o = this.getElementByRID(vSrc.ctrlId);
           			var l = Hemi.css.getAbsoluteLeft(o);
 				var t = Hemi.css.getAbsoluteTop(o) + o.offsetHeight;
 				Hemi.log("Move " + vSrc.ctrlId + " to " + l + ", " + t);

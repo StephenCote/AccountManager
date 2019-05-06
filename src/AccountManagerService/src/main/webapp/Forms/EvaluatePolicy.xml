@@ -24,33 +24,33 @@
 <embedded-script><![CDATA[
 	template_init : function(){
 		var oP = this.getProperties().policy;
-		this.GetElementByRID("policyUrn").value = oP.name;
+		this.getElementByRID("policyUrn").value = oP.name;
 		AM6Client.define(oP.objectId,this.scopeHandler("loadPolicyDefinition",0,1,1));
 		this._setStatus("Specify any parameter values and then evaluate the policy");
 	},
 	_setStatus : function(s){
-		Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+		Hemi.xml.setInnerXHTML(this.getElementByRID("status"),s);
 	},
 	evaluatePolicyRequest : function(){
-		var sPR = this.GetElementByRID("policyRequestType").value;
+		var sPR = this.getElementByRID("policyRequestType").value;
 		var oP = azn.createPolicyRequest(this.getProperties().policyDef, sPR);
 		
 		for(var i = 0; oP.parameters && i < oP.parameters.length; i++){
 			var sU = oP.parameters[i].urn;
-			oP.parameters[i].factData = this.GetElementByRID(sU).value;
+			oP.parameters[i].factData = this.getElementByRID(sU).value;
 		}
 		window.policyRequest = oP;
 		var ctl = this;
 		AM6Client.evaluate(oP,function(s,v){
 			if(v && v.json) v = v.json;
 			window.policyResponse = v;
-			Hemi.xml.setInnerXHTML(ctl.GetElementByRID("status"),"Response: " + (v && v != null ? v.response : "Null response"));
+			Hemi.xml.setInnerXHTML(ctl.getElementByRID("status"),"Response: " + (v && v != null ? v.response : "Null response"));
 		});
 	},
 	loadPolicyDefinition : function(s, v){
 		if(v && v.json) v = v.json;
 		this.getProperties().policyDef = v;
-		var oP = this.GetElementByRID("parameters");
+		var oP = this.getElementByRID("parameters");
 		Hemi.xml.removeChildren(oP);
 		for(var i = 0; v.parameters && i < v.parameters.length; i++){
 			var oD = document.createElement("div");

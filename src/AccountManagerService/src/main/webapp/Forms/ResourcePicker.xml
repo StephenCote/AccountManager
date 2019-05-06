@@ -44,7 +44,7 @@
 		}
 	},
 	getResourcesList : function(){
-		return this.GetComponentByRID("resourcesList").GetWideSelect();
+		return this.getComponentByRID("resourcesList").GetWideSelect();
 	},
 		prepareSaveResourcesList : function(o){
 			aP = this.getProperties().resourceListProp;

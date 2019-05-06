@@ -26,7 +26,7 @@
 		<![CDATA[
 			template_init: function(){
 				uwm.getUser().then((o)=>{
-					Hemi.xml.setInnerXHTML(this.GetElementByRID("profileName"),(o ? o.organizationPath + "/" + o.name : "Anonymous"));
+					Hemi.xml.setInnerXHTML(this.getElementByRID("profileName"),(o ? o.organizationPath + "/" + o.name : "Anonymous"));
 					Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
 					Hemi.event.addScopeBuffer(this);
 					this.scopeHandler("session_refresh",0,0,1);
@@ -44,8 +44,8 @@
 				// this.refreshProjectList();
 				this.getProperties().blockAnnounce = 0;
 				
-				this.GetElementByRID("communityBtn").src = "/AccountManagerService/Media/Icons/" + (irocket.getCommunityMode()? "Crystal/24x24/Crystal_Clear_app_Login_Manager.png" : "user_24x24.png");
-				this.GetElementByRID("communityContainer").style.display = (irocket.getCommunityMode() ? "" : "none");
+				this.getElementByRID("communityBtn").src = "/AccountManagerService/Media/Icons/" + (irocket.getCommunityMode()? "Crystal/24x24/Crystal_Clear_app_Login_Manager.png" : "user_24x24.png");
+				this.getElementByRID("communityContainer").style.display = (irocket.getCommunityMode() ? "" : "none");
 			},
 			DoLogout : function(){
 				window.uwm.logout();
@@ -62,7 +62,7 @@
 				this.refreshCommunity();
 			},
 			refreshLifecycleList : function(bNoUp){
-				var oSel1 = this.GetElementByRID("lifecycles");
+				var oSel1 = this.getElementByRID("lifecycles");
 				oSel1.options.length = 1;
 		
 				if(irocket.getCommunityMode()){
@@ -79,7 +79,7 @@
 				this.selectLifecycle();
 			},
 			refreshProjectList : function(){
-				var oSel = this.GetElementByRID("projects");
+				var oSel = this.getElementByRID("projects");
 				oSel.options.length = 1;
 				if(irocket.getCommunityMode() && !irocket.getCommunityLifecycle()) return;
 				
@@ -101,7 +101,7 @@
 				else oSel.selectedIndex = 0;
 			},
 			selectLifecycle : function(){
-				var vS = this.GetElementByRID("lifecycles").value;
+				var vS = this.getElementByRID("lifecycles").value;
 				if(vS.match(/^\d+$/) && vS != "0"){
 					var oL = AM6Client.get("LIFECYCLE",vS);
 					irocket.setCommunityLifecycle(oL);
@@ -110,7 +110,7 @@
 				}
 			},
 			selectProject : function(){
-				var vS = this.GetElementByRID("projects").value;
+				var vS = this.getElementByRID("projects").value;
 		
 				if(vS.match(/^\d+$/) && vS != "0"){
 					var oP = AM6Client.get("PROJECT",vS);
@@ -124,7 +124,7 @@
 					o.id = 0;
 					o.stages = [];
 					irocket.setCurrentProject(o);
-					this.GetElementByRID("projects").selectedIndex = 0;
+					this.getElementByRID("projects").selectedIndex = 0;
 				}
 				if(!this.getProperties().blockAnnounce) Hemi.message.service.publish("onchangecommunity",this);
 				

@@ -66,7 +66,7 @@
 			},
 
 			loadTab : function(s, o){
-				var c = this.GetElementByRID(s.toLowerCase());
+				var c = this.getElementByRID(s.toLowerCase());
 				if(c.loaded) return;
 				c.loaded = 1;
 				

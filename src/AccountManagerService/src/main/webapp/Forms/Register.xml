@@ -15,7 +15,7 @@
 			Email as Login:
 		</p>
 		<p>
-			<input onclick = "${this}.GetElementByRID('user_name').disabled = this.checked" type = "checkbox" class = "input_checkbox" rid = "email_login" checked="true" />
+			<input onclick = "${this}.getElementByRID('user_name').disabled = this.checked" type = "checkbox" class = "input_checkbox" rid = "email_login" checked="true" />
 		</p>
 	</div>
 	<div class = "rocket-column-2">
@@ -67,10 +67,10 @@
 		},
 		DoRegister : function(){
 
-			var bChecked = this.GetFormValue("email_login");
+			var bChecked = this.getFormValue("email_login");
 			if(bChecked){
 				this.synchronizeForm(1);
-				this.SetFormValue("user_name",this.GetFormValue("email"));
+				this.setFormValue("user_name",this.getFormValue("email"));
 			}
 			if(!this.Validate()) return;
 			
@@ -80,22 +80,22 @@
 				return;
 			}
 			
-			var sName = this.GetFormValue("user_name");
-			var sPassword = this.GetFormValue("password");
-			var sEmail = this.GetFormValue("email");
-			this.SetFormValue("password","");
-			this.SetFormValue("confirm_password","");
+			var sName = this.getFormValue("user_name");
+			var sPassword = this.getFormValue("password");
+			var sEmail = this.getFormValue("email");
+			this.setFormValue("password","");
+			this.setFormValue("confirm_password","");
 			this.setStatus(" ");
 			window.uwm.operation("Register", {user_name : sName, password : sPassword, email:sEmail, organization: oOrg});		
 		},
 
 		Validate : function(){
 			try{
-				this.Assert(this.ValidateForPattern("user_name","not-empty"),"Invalid user_name");
-				this.Assert(this.ValidateForPattern("user_name","not-empty"),"Invalid user_name");
-				this.Assert(this.ValidateForPattern("password","not-empty"),"Invalid password");
-				this.Assert(this.ValidateForPattern("confirm_password","not-empty"),"Invalid password confirmation");
-				this.Assert(this.GetFormValue("password") == this.GetFormValue("confirm_password"), "Password confirmation doesn't match");
+				this.assert(this.validateForPattern("user_name","not-empty"),"Invalid user_name");
+				this.assert(this.validateForPattern("user_name","not-empty"),"Invalid user_name");
+				this.assert(this.validateForPattern("password","not-empty"),"Invalid password");
+				this.assert(this.validateForPattern("confirm_password","not-empty"),"Invalid password confirmation");
+				this.assert(this.getFormValue("password") == this.getFormValue("confirm_password"), "Password confirmation doesn't match");
 			}
 			catch(e){
 				this.setStatus((typeof e== "string" ? e : e.message ? e.message : e.description));
@@ -105,7 +105,7 @@
 		},
 		
 		setStatus : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("status"),s);
 		}
 		]]>
 	</embedded-script>

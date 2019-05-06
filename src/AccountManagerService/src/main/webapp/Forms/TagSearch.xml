@@ -19,10 +19,10 @@
 				this.initGrid("Data", "~/Data");
 			}
 			else{
-				this.GetElementByRID("buttons-bar").style.display = "none";
-				this.GetElementByRID("typelist").style.display = "none";
+				this.getElementByRID("buttons-bar").style.display = "none";
+				this.getElementByRID("typelist").style.display = "none";
 			}
-			this.GetElementByRID("path").style.display = "none";
+			this.getElementByRID("path").style.display = "none";
 			
 		},
 		decorateListItemName : function(o){
@@ -103,8 +103,8 @@
 		/// Note: This is modded from the default
 
 		toggleField : function(l, n){
-			var lbl =  this.GetElementByRID(l);//(typeof l == "string" ? this.GetElementByRID(l) : l);
-			var cnt =  this.GetElementByRID(n);//(typeof n == "string" ? this.GetElementByRID(n) : n);
+			var lbl =  this.getElementByRID(l);//(typeof l == "string" ? this.getElementByRID(l) : l);
+			var cnt =  this.getElementByRID(n);//(typeof n == "string" ? this.getElementByRID(n) : n);
 			var b = cnt.mark;
 			var s = (b ? "[ - ]" : "[ + ]");
 			var d = (b ? "block" : "none");

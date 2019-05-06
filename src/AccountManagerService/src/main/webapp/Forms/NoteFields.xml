@@ -42,25 +42,25 @@
 	<textarea rid = "textNoteFloat" style = "z-index:250;display:none;position:absolute;top:0px;left:0px;width:250px;height:250px;" onblur = "${this}.hideTextFloat()"></textarea>
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
-			this.GetComponentByRID("notesList").setLoadHandler(this.scopeHandler("configNotesList",0,1,1));
+			this.getComponentByRID("notesList").setLoadHandler(this.scopeHandler("configNotesList",0,1,1));
 		},
 		resizers : function(){
-			this.GetElementByRID("textNoteFloat").style.height = (this.getContainer().clientHeight - (this.getObjects().title_bar.offsetHeight + this.getObjects().status_bar.offsetHeight)) + "px";
-			this.GetElementByRID("textNoteFloat").style.width = "100%";
+			this.getElementByRID("textNoteFloat").style.height = (this.getContainer().clientHeight - (this.getObjects().title_bar.offsetHeight + this.getObjects().status_bar.offsetHeight)) + "px";
+			this.getElementByRID("textNoteFloat").style.width = "100%";
 		},
 		showTextFloat : function(){
-			this.GetElementByRID("textNoteFloat").style.top = (this.getObjects().title_bar ? this.getObjects().title_bar.offsetHeight + "px" : "0px");
+			this.getElementByRID("textNoteFloat").style.top = (this.getObjects().title_bar ? this.getObjects().title_bar.offsetHeight + "px" : "0px");
 			// (this.getBody ? this.getBody().offsetTop + "px" : "0px");
 			// 
-			this.GetElementByRID("textNoteFloat").style.display = "block";
-			this.GetElementByRID("textNoteFloat").value = this.GetElementByRID("text").value;
-			this.GetElementByRID("textNoteFloat").focus();
+			this.getElementByRID("textNoteFloat").style.display = "block";
+			this.getElementByRID("textNoteFloat").value = this.getElementByRID("text").value;
+			this.getElementByRID("textNoteFloat").focus();
 			this.resizers();
 			
 		},
 		hideTextFloat : function(){
-			this.GetElementByRID("textNoteFloat").style.display = "none";
-			this.GetElementByRID("text").value = this.GetElementByRID("textNoteFloat").value;
+			this.getElementByRID("textNoteFloat").style.display = "none";
+			this.getElementByRID("text").value = this.getElementByRID("textNoteFloat").value;
 		},
 		openChildNote : function(){
 			var oI = this.getNotesList().getActiveItem();
@@ -92,7 +92,7 @@
 			}
 		},
 		getNotesList : function(){
-			return this.GetComponentByRID("notesList").GetWideSelect();
+			return this.getComponentByRID("notesList").GetWideSelect();
 		},
 		updateChildNotes : function(o){
 			var aI = this.getNotesList().getItems();
@@ -133,9 +133,9 @@
 			return b; 
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("text").className = "rocket-text";
-			if(!this.ValidateForPattern("text","not-empty")){
-				this.GetElementByRID("text").className = "rocket-text rocket-text-error";
+			this.getElementByRID("text").className = "rocket-text";
+			if(!this.validateForPattern("text","not-empty")){
+				this.getElementByRID("text").className = "rocket-text rocket-text-error";
 				this.setStatus("Text cannot be empty");
 				return 0;
 			}

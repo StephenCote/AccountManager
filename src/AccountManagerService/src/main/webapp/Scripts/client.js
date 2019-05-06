@@ -25,7 +25,7 @@
 	
 	if(!window.uwm){
 		window.uwm = {
-				
+			developerMode : 0,	
 			debugMode : 1,
 			createContent : function(i, u, f){
 				var o = document.getElementById(i);

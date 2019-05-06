@@ -53,14 +53,16 @@
 			var o = this.getBean("rocketType"), _s = this.getProperties(), o;
 			if(!this.setStatus) this.setStatus = this._setStatus;
 			Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
-			this.GetElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
-			this.GetElementByRID("objectIdCont").style.display = (uwm.debugMode && o.objectId ? "block" : "none");
+			this.getElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
+			this.getElementByRID("objectIdCont").style.display = (uwm.developerMode && o.objectId ? "block" : "none");
+			this.getElementByRID("pathCont").style.display = (uwm.developerMode && o.objectId ? "block" : "none");
+
 			this.setStatus("");
 			if(typeof _s.populate == "undefined") _s.populate = 1;
-			this.GetElementByRID("name").focus();
+			this.getElementByRID("name").focus();
 			if(!_s.viewTypeName) _s.viewTypeName = _s.typeName;
 			if(this.setTitle) this.setTitle(_s.viewTypeName + " - " + (o.id ? o.name : "New"));
-			if(!o.id || !o.nameType.match(/^(group|role|permission|person|account|user|data|function|operation)$/gi)) this.GetElementByRID("btnFact").style.display = "none";
+			if(!o.id || !o.nameType.match(/^(group|role|permission|person|account|user|data|function|operation)$/gi)) this.getElementByRID("btnFact").style.display = "none";
 			if(this.resizeTo && this.getBody){
 				if(this.getBody().scrollHeight > this.getBody().offsetHeight){
 					var iH = this.getBody().scrollHeight + 50;
@@ -85,7 +87,7 @@
 			else if(this.Close) this.Close();
 		},
 		refreshCommunity : function(s, v){
-			//this.GetElementByRID("path").placeholder = uwm.getPathForType(this.getProperties().typeName,"~/" + this.getProperties().typeName + "s");
+			//this.getElementByRID("path").placeholder = uwm.getPathForType(this.getProperties().typeName,"~/" + this.getProperties().typeName + "s");
 		},
 		embedded_init : function(){
 
@@ -100,13 +102,13 @@
 		saveType : function(){
 			this.synchronizeForm();
 			var o = this.getBean("rocketType"),_s = this.getProperties();
-			this.GetElementByRID("path").className = "rocket-text";
-			this.GetElementByRID("endTime").className = "rocket-text";
-			this.GetElementByRID("name").className = "rocket-text";
+			this.getElementByRID("path").className = "rocket-text";
+			this.getElementByRID("endTime").className = "rocket-text";
+			this.getElementByRID("name").className = "rocket-text";
 			this.setStatus("");
 
-			if(!this.ValidateForPattern("name","not-empty")){
-				this.GetElementByRID("name").className = "rocket-text rocket-text-error";
+			if(!this.validateForPattern("name","not-empty")){
+				this.getElementByRID("name").className = "rocket-text rocket-text-error";
 				this.setStatus("Name cannot be empty");
 				return;
 			}
@@ -195,7 +197,7 @@
 		},
 
 		getPath : function(){
-			var o = this.GetElementByRID("path"), s;
+			var o = this.getElementByRID("path"), s;
 			if(!(s = o.value).length){
 				s = o.placeholder;
 				if(!s) s = "~/" + this.getProperties().typeName + "s";
@@ -204,7 +206,7 @@
 		},
 
 		_setStatus : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("status"),s);
 		}
 	]]></embedded-script>
 </html-fragment>

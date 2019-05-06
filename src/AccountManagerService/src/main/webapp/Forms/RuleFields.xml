@@ -83,10 +83,10 @@
 	<embedded-script><![CDATA[
 	embedded_init : function(){
 		var o = this.getBean("rocketType");
-			this.GetElementByRID("patternPicker").style.display = "block";
+			this.getElementByRID("patternPicker").style.display = "block";
 			this.toggleField("patternPickerToggle","patternPickerContent");
 			if(!this.getProperties().patternListProp) this.getProperties().patternListProp = "patterns";
-			this.GetElementByRID("rulePicker").style.display = "block";
+			this.getElementByRID("rulePicker").style.display = "block";
 			this.toggleField("rulePickerToggle","rulePickerContent");
 			if(!this.getProperties().ruleListProp) this.getProperties().ruleListProp = "rules";
 			
@@ -96,7 +96,7 @@
 
 	},
 setPatternPickerLabel : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("patternPickerLabel"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("patternPickerLabel"),s);
 		},
 		initPatternPicker : function(){
 			/// Have to put a little extra logic here because pattern information is optional for addresses
@@ -105,7 +105,7 @@ setPatternPickerLabel : function(s){
 			
 			if(_s.enablePatternInformation){
 				//this.getProperties().patternListProp = "patterns";
-				this.GetComponentByRID("patternsList").setLoadHandler(this.scopeHandler("configPatternsList",0,1,1));
+				this.getComponentByRID("patternsList").setLoadHandler(this.scopeHandler("configPatternsList",0,1,1));
 			}
 		},
 
@@ -138,10 +138,10 @@ setPatternPickerLabel : function(s){
 			}
 		},
 		getPatternsList : function(){
-			return this.GetComponentByRID("patternsList").GetWideSelect();
+			return this.getComponentByRID("patternsList").GetWideSelect();
 		},
 setRulePickerLabel : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("rulePickerLabel"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("rulePickerLabel"),s);
 		},
 		initRulePicker : function(){
 			/// Have to put a little extra logic here because rule information is optional for addresses
@@ -150,7 +150,7 @@ setRulePickerLabel : function(s){
 			
 			if(_s.enableRuleInformation){
 				//this.getProperties().ruleListProp = "rules";
-				this.GetComponentByRID("rulesList").setLoadHandler(this.scopeHandler("configRulesList",0,1,1));
+				this.getComponentByRID("rulesList").setLoadHandler(this.scopeHandler("configRulesList",0,1,1));
 			}
 		},
 
@@ -183,7 +183,7 @@ setRulePickerLabel : function(s){
 			}
 		},
 		getRulesList : function(){
-			return this.GetComponentByRID("rulesList").GetWideSelect();
+			return this.getComponentByRID("rulesList").GetWideSelect();
 		},
 	addType : function(o){
 			Hemi.log("Add rule type: " + o.name + ":" + o.patternType);

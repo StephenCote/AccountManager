@@ -16,7 +16,7 @@
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			this.GetElementByRID("userPicker").style.display = "block";
+			this.getElementByRID("userPicker").style.display = "block";
 			this.toggleField("userPickerToggle","userPickerContent");
 			if(!this.getProperties().userListProp) this.getProperties().userListProp = "users";
 		},
@@ -24,7 +24,7 @@
 			this.prepareSaveUsersList(o);
 		},
 		setUserPickerLabel : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("userPickerLabel"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("userPickerLabel"),s);
 		},
 		initUserPicker : function(){
 			/// Have to put a little extra logic here because user information is optional for addresses
@@ -32,7 +32,7 @@
 			_s.enableUserInformation = (o != null ? 1 : 0);
 			if(_s.enableUserInformation){
 				this.getProperties().userListProp = "users";
-				this.GetComponentByRID("usersList").setLoadHandler(this.scopeHandler("configUsersList",0,1,1));
+				this.getComponentByRID("usersList").setLoadHandler(this.scopeHandler("configUsersList",0,1,1));
 			}
 		},
 
@@ -67,7 +67,7 @@
 			}
 		},
 		getUsersList : function(){
-			return this.GetComponentByRID("usersList").GetWideSelect();
+			return this.getComponentByRID("usersList").GetWideSelect();
 		},
 		prepareSaveUsersList : function(o){
 			var _s = this.getProperties(), aP;

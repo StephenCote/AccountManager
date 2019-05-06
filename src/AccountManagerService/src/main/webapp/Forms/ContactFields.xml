@@ -49,11 +49,10 @@
 	</div>
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			//this.GetElementByRID("pathCont").style.display = "none";
+
 		},
 		addType : function(o){
 			Hemi.log("Add contact type: " + o.name );
-			//var b = false;
 			
 			return AM6Client.update("CONTACT",o);
 		},

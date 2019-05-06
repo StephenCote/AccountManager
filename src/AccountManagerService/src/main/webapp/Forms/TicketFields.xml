@@ -146,11 +146,11 @@
 			this.getProperties().resourceListProp = "requiredResources";
 			this.getProperties().formListProp = "forms";
 			this.getProperties().noteListProp = "notes";
-			this.GetComponentByRID("notesList").setLoadHandler(this.scopeHandler("configNotesList",0,1,1));
-			this.GetComponentByRID("formsList").setLoadHandler(this.scopeHandler("configFormsList",0,1,1));
-			this.GetComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
-			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
-			this.GetComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
+			this.getComponentByRID("notesList").setLoadHandler(this.scopeHandler("configNotesList",0,1,1));
+			this.getComponentByRID("formsList").setLoadHandler(this.scopeHandler("configFormsList",0,1,1));
+			this.getComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
+			this.getComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.getComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
 		},
 		chooseAssigned : function(){
 			this.manageList("Resource", this.getObjectId(),"pickAssigned");
@@ -159,7 +159,7 @@
 		pickAssigned : function(s, v){
 			var o = this.getBean("rocketType");
 			o.assignedResource = v;
-			this.GetElementByRID("assigned").value = (v ? v.name : "");
+			this.getElementByRID("assigned").value = (v ? v.name : "");
 		},
 		chooseEstimate : function(){
 			this.manageList("Estimate", this.getObjectId(),"pickEstimate");
@@ -168,7 +168,7 @@
 		pickEstimate : function(s, v){
 			var o = this.getBean("rocketType");
 			o.estimate = v;
-			this.GetElementByRID("estimate").value = (v ? v.name + " " + v.estimateType : "");
+			this.getElementByRID("estimate").value = (v ? v.name + " " + v.estimateType : "");
 		},
 		chooseActualTime : function(){
 			this.manageList("Time", this.getObjectId(),"pickActualTime");
@@ -177,7 +177,7 @@
 		pickActualTime : function(s, v){
 			var o = this.getBean("rocketType");
 			o.actualTime = v;
-			this.GetElementByRID("actualTime").value = (v ? v.name + " " + v.basisType : "");
+			this.getElementByRID("actualTime").value = (v ? v.name + " " + v.basisType : "");
 		},
 		chooseActualCost : function(){
 			this.manageList("Cost", this.getObjectId(),"pickActualCost");
@@ -186,7 +186,7 @@
 		pickActualCost : function(s, v){
 			var o = this.getBean("rocketType");
 			o.actualCost = v;
-			this.GetElementByRID("actualCost").value = (v ? v.name + " " + v.currencyType : "");
+			this.getElementByRID("actualCost").value = (v ? v.name + " " + v.currencyType : "");
 		},
 		
 

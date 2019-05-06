@@ -126,7 +126,7 @@
 			return;
 		}
 		if(!_o.project.groupPath) _o.project.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Project")).path;
-		_o.project.name = Hemi.text.trim(this.GetElementByRID("projectName").value);
+		_o.project.name = Hemi.text.trim(this.getElementByRID("projectName").value);
 		/// chuck all the current stage references
 		/// note: this won't delete the stages
 		p.stages = [];
@@ -164,12 +164,12 @@
 		return 1;
 	},
 	setElementValue : function(sId,sVar,bT){
-		if(bT) Hemi.xml.setInnerXHTML(this.GetElementByRID(sId),sVar);
-		else this.GetElementByRID(sId).value = sVar;
+		if(bT) Hemi.xml.setInnerXHTML(this.getElementByRID(sId),sVar);
+		else this.getElementByRID(sId).value = sVar;
 	},
 	getElementValue : function(sId,bT){
-		if(bT) return Hemi.text.trim(Hemi.xml.getInnerText(this.GetElementByRID(sId)));
-		return Hemi.text.trim(this.GetElementByRID(sId).value);
+		if(bT) return Hemi.text.trim(Hemi.xml.getInnerText(this.getElementByRID(sId)));
+		return Hemi.text.trim(this.getElementByRID(sId).value);
 		
 	},
 	prepareSaveTask : function(p, s, t, pt){
@@ -178,7 +178,7 @@
 		/// status is already set
 		/// if estimate is set and the name changed, or there is a name but no estimate, then create a new estimate
 
-		t.object.name = Hemi.text.trim(this.GetElementByRID(t.guid + "name").value);
+		t.object.name = Hemi.text.trim(this.getElementByRID(t.guid + "name").value);
 		if(t.object.name.length == 0) t.object.name = s.object.name + " Task " + (this.getObjects().tasks.length + 1);
 		t.object.logicalOrder = t.index;
 		if(!t.object.groupPath) t.object.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Task")).path;
@@ -224,7 +224,7 @@
 		}
 		
 		var d1 = new Date(), d2 = new Date();
-		var oE = this.GetElementByRID(t.guid + "end");
+		var oE = this.getElementByRID(t.guid + "end");
 	   	d2 = new Date(oE.value + (oE.type == "date" ? " 00:00:00":""));
 	   	d1 = new Date(d2.getTime() - (t.object.estimate && t.object.estimate.time ? this.getTimeMS(t.object.estimate.time,1) : 0));
 	   	t.object.startDate = d1;
@@ -239,7 +239,7 @@
 	},
 	prepareSaveStage : function(p, s){
 		 var _o = this.getObjects();
-		s.object.name = Hemi.text.trim(this.GetElementByRID(s.guid + "name").value);
+		s.object.name = Hemi.text.trim(this.getElementByRID(s.guid + "name").value);
 		if(!s.object.groupPath) s.object.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Stage")).path;
 		if(s.object.name.length == 0) s.object.name = p.name + " Stage " + (p.stages.length + 1);
 		s.logicalOrder = s.index;
@@ -249,7 +249,7 @@
 			s.object.budget.nameType = "BUDGET";
 		}
 		if(!s.object.budget.groupPath) s.object.budget.groupPath = AM6Client.make("GROUP", "DATA",irocket.getBasePath("Budget")).path;
-		s.object.budget.name = Hemi.text.trim(this.GetElementByRID(s.guid + "budget").value);
+		s.object.budget.name = Hemi.text.trim(this.getElementByRID(s.guid + "budget").value);
 		if(s.object.budget.name.length == 0) s.object.budget.name = s.object.name + " Budget";
 		if(!s.object.work){
 			s.object.work = new org.cote.objects.workType();
@@ -270,7 +270,7 @@
 		
 		
 		
-		var aS = Hemi.text.trim(this.GetElementByRID(s.guid + "schedule").value).split(" to ");
+		var aS = Hemi.text.trim(this.getElementByRID(s.guid + "schedule").value).split(" to ");
 		var d1 = new Date(), d2 = new Date();
 		if(aS.length == 2){
 			d1 = new Date(aS[0]);
@@ -364,8 +364,8 @@
 			Hemi.logError("Invalid tasks for " + sId1 + " and " + sId2);
 			return;
 		}
-		if(!oR1) oR1 = this.GetElementByRID(sId1);
-		if(!oR2) oR2 = this.GetElementByRID(sId2);
+		if(!oR1) oR1 = this.getElementByRID(sId1);
+		if(!oR2) oR2 = this.getElementByRID(sId2);
 		if(!oR1 || !oR2){
 			Hemi.logError("Invalid rows for " + sId1 + " and " + sId2);
 			return;
@@ -452,7 +452,7 @@
 		///
 		for(var i = 0; i < oT1.childTasks.length; i++){
 			var sIdC = oT1.childTasks[i];
-			var oTRC = this.GetElementByRID(sIdC);
+			var oTRC = this.getElementByRID(sIdC);
 			this.moveRow(sIdC, sId2, oTRC,oR2,1);
 		}
 		if(!bNoReParent){
@@ -474,7 +474,7 @@
 	},
 	refreshDisplay : function(){
 		var _o = this.getObjects(),_s = this.getProperties(),b = uwm.rule("IsLoggedIn"), oP;
-		var aB = this.GetElementByRID("projectTable").querySelectorAll("tbody");
+		var aB = this.getElementByRID("projectTable").querySelectorAll("tbody");
 		/// skip the first tbody
 		for(var i = aB.length - 1; i >= 1;i--) Hemi.xml.removeChild(aB[i],aB[i].parentNode,1);
 		
@@ -485,8 +485,8 @@
 		_o.taskTrash = {};
 		_s.rowCount = 0;
 		
-		this.GetElementByRID("projectControls").style.display = (b ? "block" : "none");
-		this.GetElementByRID("projectTable").style.display = (b ? "block" : "none");
+		this.getElementByRID("projectControls").style.display = (b ? "block" : "none");
+		this.getElementByRID("projectTable").style.display = (b ? "block" : "none");
 		
 		if(!b) return;
 		
@@ -676,12 +676,12 @@
 			Hemi.log("Invalid stage id: " + o.stageGuid);
 			return;
 		}
-		var aTr = this.GetElementByRID(oS.guid).parentNode.querySelectorAll("tr");
+		var aTr = this.getElementByRID(oS.guid).parentNode.querySelectorAll("tr");
 		var sLid = aTr[aTr.length-1].getAttribute("rid");
 		Hemi.log("Checking next row: " + s + " :: " + sLid);
 		if(s == sLid){
 			this.addTask(oS.guid);
-			this.GetElementByRID(this.GetElementByRID(oS.guid).parentNode.lastChild.getAttribute("rid") + (d ? "resources" : "name")).focus();
+			this.getElementByRID(this.getElementByRID(oS.guid).parentNode.lastChild.getAttribute("rid") + (d ? "resources" : "name")).focus();
 			this.reindex();
 		}
 		else{
@@ -689,7 +689,7 @@
 			for(var i = 0; i < aTr.length;i++){
 				var sRid = aTr[i].getAttribute("rid");
 				if(b){
-					this.GetElementByRID(sRid + (d ? "resources" : "name")).focus();
+					this.getElementByRID(sRid + (d ? "resources" : "name")).focus();
 					break;
 				}
 				if(sRid == s) b = 1;
@@ -743,7 +743,7 @@
 				}
 			}
 		}
-		this.GetElementByRID(o.guid + "dependencies").value = aR.join(",");
+		this.getElementByRID(o.guid + "dependencies").value = aR.join(",");
 		
 	},
 	
@@ -759,7 +759,7 @@
 		}
 		var aTL = [];
 		/// Create a hash of the values
-		var aV = Hemi.text.trim(this.GetElementByRID(s + "dependencies").value).split(",");
+		var aV = Hemi.text.trim(this.getElementByRID(s + "dependencies").value).split(",");
 		var vH = [];
 		for(var i = 0; i < aV.length;i++){
 			var z = parseInt(aV[i]);
@@ -817,9 +817,9 @@
 	   		return;
 	   	}
 		for(var i = 0; i < oX.documentElement.childNodes.length;i++){
- 			Hemi.xml.setInnerXHTML(this.GetElementByRID("projectTable"), oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
+ 			Hemi.xml.setInnerXHTML(this.getElementByRID("projectTable"), oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
  		}
-		var aC = this.GetElementByRID("projectTable").childNodes;
+		var aC = this.getElementByRID("projectTable").childNodes;
 
 		// Note -extendSpaceConfiguration operates against a container, without registering the container itself
 		// therefore, the container (tr) is not registered when configured like this
@@ -827,7 +827,7 @@
 
 	   	this.extendSpaceConfiguration(aC[aC.length-1]);
 	   	
-	   	this.GetElementByRID(sId + "rowNum").value = p.rowCount;
+	   	this.getElementByRID(sId + "rowNum").value = p.rowCount;
 	   	/*
    		for(var i = 0; i < 10; i++){
    			_o.stages[sId].childTasks.push(this.addTask(sId));
@@ -850,21 +850,21 @@
 	refreshProjectDisplay : function(){
 		var _o = this.getObjects(), o;
 		o = _o.project;
-		this.GetElementByRID("projectName").value = o.name; 
+		this.getElementByRID("projectName").value = o.name; 
 	},
 	refreshStageDisplay : function(sId){
 		var _o = this.getObjects(), o;
 		if((o = _o.stages[sId].object) == null) return;
-		this.GetElementByRID(sId + "name").value = o.name;
+		this.getElementByRID(sId + "name").value = o.name;
 		if(o.schedule){
-	   		this.GetElementByRID(sId + "schedule").value = 
+	   		this.getElementByRID(sId + "schedule").value = 
 	   			Hemi.text.pad((o.schedule.startTime.getMonth() + 1),2) + "/" + Hemi.text.pad(o.schedule.startTime.getDate(),2) + "/" + o.schedule.startTime.getFullYear()
 	   			+ " to "
 	   			+ Hemi.text.pad((o.schedule.endTime.getMonth() + 1),2) + "/" + Hemi.text.pad(o.schedule.endTime.getDate(),2) + "/" + o.schedule.endTime.getFullYear();
 	   		;
 	   	}
 	   	if(o.budget){
-	   		this.GetElementByRID(sId + "budget").value = (o.budget.time ? o.budget.time.name : o.budget.name);
+	   		this.getElementByRID(sId + "budget").value = (o.budget.time ? o.budget.time.name : o.budget.name);
 	   	}
 		
 	},
@@ -901,7 +901,7 @@
 	   		return;
 	   	}
 
-	   	var oBody = this.GetElementByRID(sStageId).parentNode;
+	   	var oBody = this.getElementByRID(sStageId).parentNode;
 	   	if(!oBody || oBody == null){
 	   		alert("Null model reference");
 	   		return;
@@ -912,16 +912,16 @@
 		var aC = oBody.childNodes;
 		
 	   	this.extendSpaceConfiguration(aC[aC.length-1]);
-	   	this.GetElementByRID(sId + "rowNum").value = p.rowCount;
+	   	this.getElementByRID(sId + "rowNum").value = p.rowCount;
 	   	var obj = this;
-	   	this.GetElementByRID(sId + "name").onkeydown = function(e){
+	   	this.getElementByRID(sId + "name").onkeydown = function(e){
 	   		obj.checkTask(e, sId); 
 	   	};
-	   	this.GetElementByRID(sId + "resources").onkeydown = function(e){
+	   	this.getElementByRID(sId + "resources").onkeydown = function(e){
 	   		obj.checkResource(e, sId); 
 	   	};
 	   	/*
-	   	this.GetElementByRID(sId + "estimate").onkeydown =  function(e){
+	   	this.getElementByRID(sId + "estimate").onkeydown =  function(e){
 			Hemi.event.cancelEvent(e);
 			return false;
 		};
@@ -968,12 +968,12 @@
 		
 	
 		this.getObjects().tasks[sId] = udef;
-		var oXForm = this.GetForm();
+		var oXForm = this.getForm();
 	   	for(var i = 0; i < p.elementNames.length; i++){
 			oXForm.removeElement(oXForm.getElementByName(sId + p.elementNames[i]));
 		}
 		Hemi.log("Delete Row: " + sId);
-		var oRow = this.GetElementByRID(sId);
+		var oRow = this.getElementByRID(sId);
 		if(oRow){
 			/// Remove and unlink node and all framework objects;
 			Hemi.xml.removeChildren(oRow, 1);
@@ -1013,7 +1013,7 @@
 		_o.rowOrder[oS.index] = 0;
 		_o.stages[sId] = udef;
 		
-		var oXForm = this.GetForm();
+		var oXForm = this.getForm();
 			   	for(var i = 0; i < p.elementNames.length; i++){
 			oXForm.removeElement(oXForm.getElementByName(sId + p.elementNames[i]));
 		}
@@ -1024,7 +1024,7 @@
 			this.deleteRow(oS.childTasks[c],1,1);
 		}
 		Hemi.log("Delete Row: " + sId);
-		var oRow = this.GetElementByRID(sId).parentNode;
+		var oRow = this.getElementByRID(sId).parentNode;
 		if(oRow){
 			/// Remove and unlink node and all framework objects;
 			Hemi.xml.removeChildren(oRow, 1);
@@ -1038,7 +1038,7 @@
 	},
 	reindex : function(){
 		var _o = this.getObjects(),_p = this.getProperties(),o,oN = [],iC=0;
-		var aTR = this.GetElementByRID("projectTable").querySelectorAll("tr");
+		var aTR = this.getElementByRID("projectTable").querySelectorAll("tr");
 		for(var i = 0; i < aTR.length; i++){
 			var cid = aTR[i].getAttribute("rid");
 			if(!cid){
@@ -1051,7 +1051,7 @@
 				continue;
 			}
 			o.index = iC;
-			this.GetElementByRID(o.guid + "rowNum").value = (iC + 1);
+			this.getElementByRID(o.guid + "rowNum").value = (iC + 1);
 			oN[iC++]=o.guid;
 		}
 		_o.rowOrder = oN;
@@ -1082,14 +1082,14 @@
 				}
 				aD.push(co.index + 1);
 			}
-			this.GetElementByRID(o.guid + "dependencies").value = aD.join(",");
+			this.getElementByRID(o.guid + "dependencies").value = aD.join(",");
 		}	
 	},
  	rebindTask : function(sId){
 		var _o = this.getObjects(), o;
 		if((o = _o.tasks[sId].object) == null) return;
-		o.name = this.GetElementByRID(sId + "name").value;
-		o.taskStatus = this.GetElementByRID(sId + "status").value;
+		o.name = this.getElementByRID(sId + "name").value;
+		o.taskStatus = this.getElementByRID(sId + "status").value;
 		if(o.taskStatus.length == 0) o.taskStatus = "UNKNOWN";  	
  	},
 	refreshTaskDisplay : function(sId, bRebind){
@@ -1100,7 +1100,7 @@
 			return;
 		}
 		
-	   	//this.GetElementByRID(sId + "status").value = (o.taskStatus.match(/^UNKNOWN$/) ? "" : o.taskStatus);
+	   	//this.getElementByRID(sId + "status").value = (o.taskStatus.match(/^UNKNOWN$/) ? "" : o.taskStatus);
 	   	var sStat = "uwm-inline-button ";
 	   	if(o.taskStatus == "UNKNOWN" && o.estimate) o.taskStatus = "ESTIMATED";
 		switch(o.taskStatus){
@@ -1136,21 +1136,21 @@
 				break;
 		}	   	
 		//Hemi.log("Set class name to : " + sStat);
-	   	this.GetElementByRID(sId + "status").className = sStat;
-	   	this.GetElementByRID(sId + "name").value = o.name;
-	   	var oE = this.GetElementByRID(sId + "end");
+	   	this.getElementByRID(sId + "status").className = sStat;
+	   	this.getElementByRID(sId + "name").value = o.name;
+	   	var oE = this.getElementByRID(sId + "end");
 	   	if(oE.type.match(/^date/gi)) oE.value = o.dueDate.getFullYear() + "-" + Hemi.text.pad((o.dueDate.getMonth() + 1),2) + "-" + Hemi.text.pad(o.dueDate.getDate(),2);
 	   	else oE.value = (o.dueDate.getMonth() + 1) + "/" + Hemi.text.pad(o.dueDate.getDate(),2) + "/" + o.dueDate.getFullYear();
-	   	this.GetElementByRID(sId + "name").style.paddingLeft = (_o.tasks[sId].depth * 20) + "px";
+	   	this.getElementByRID(sId + "name").style.paddingLeft = (_o.tasks[sId].depth * 20) + "px";
 	   	//Hemi.log("Padding to " + (_o.tasks[sId].depth * 10) + "px;");
-	   	this.GetComponentByRID(sId + "end").synchronizeValue();
-	   	//this.GetElementByRID(sId + "estimate").value = (o.estimate ? o.estimate.name : "");
+	   	this.getComponentByRID(sId + "end").synchronizeValue();
+	   	//this.getElementByRID(sId + "estimate").value = (o.estimate ? o.estimate.name : "");
 	   	this.setElementValue(sId + "estimate",(o.estimate ? o.estimate.name : ""),0);
 	   	var aR = [];
 	   	for(var i = 0; o.resources && i < o.resources.length; i++){
 	   		aR.push(o.resources[i].name);
 	   	}
-	   	this.GetElementByRID(sId + "resources").value = aR.join(",");
+	   	this.getElementByRID(sId + "resources").value = aR.join(",");
 	},
 	getTaskAtRow : function(i, oT){
 		var o = this.getObjects(), ot;
@@ -1348,7 +1348,7 @@
           	if (oW) {
           		oW.resizeTo(400, 250);
           		if(vSrc.ctrlId){
-          			var o = this.GetElementByRID(vSrc.ctrlId);
+          			var o = this.getElementByRID(vSrc.ctrlId);
           			/*
           			var l = Hemi.css.getAbsoluteLeft(o);
 					var t = Hemi.css.getAbsoluteTop(o) + o.offsetHeight;
@@ -1461,7 +1461,7 @@
 					a.push(oItem[i].data);
 				}
 				_o.tasks[oLT.task].object.resources = a;
-				this.GetElementByRID(oLT.task + "resources").focus();
+				this.getElementByRID(oLT.task + "resources").focus();
 				break;
 			case "task":
 				_o.tasks[oLT.task].object = oItem.data;

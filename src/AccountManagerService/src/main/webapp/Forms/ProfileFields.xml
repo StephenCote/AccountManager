@@ -19,11 +19,11 @@
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
-				this.GetElementByRID("btnProfile").onmouseover = function(e){
+				this.getElementByRID("btnProfile").onmouseover = function(e){
 					var o = Hemi.event.getEventSource(e);
 					o.style.border = "1px solid #00FF00";
 				};
-				this.GetElementByRID("btnProfile").onmouseout = function(e){
+				this.getElementByRID("btnProfile").onmouseout = function(e){
 					var o = Hemi.event.getEventSource(e);
 					o.style.borderColor = "transparent";
 				};
@@ -67,7 +67,7 @@
 				    		Hemi.logWarning("Invalid object in client handler: " + s + " / " + v);
 				    		return;
 				    	}
-				    	Hemi.xml.setInnerXHTML(ctl.GetElementByRID("profileName"), oP.name);
+				    	Hemi.xml.setInnerXHTML(ctl.getElementByRID("profileName"), oP.name);
 				    	ctl.getObjects().profile = oP;
 				    	var sPid = AM6Client.getAttributeValue(oP,"v1-profile",0);
 				    	var sTid = AM6Client.getAttributeValue(oP,"v1-profile-text",0);
@@ -84,7 +84,7 @@
 						    	var oG = o.groupPath;
 								var sOrg = AM6Client.dotPath(o.organizationPath);
 								var sThumbUrl = "/AccountManagerService/thumbnail/" + sOrg + "/Data" + oG + "/" + o.name + "/100x100";
-								var oImg = ctl.GetElementByRID("btnProfile");
+								var oImg = ctl.getElementByRID("btnProfile");
 								oImg.removeAttribute("width");
 								oImg.removeAttribute("height");
 								oImg.src = sThumbUrl;
@@ -98,8 +98,8 @@
 						    	}
 						    	var o = v;
 						    	ctl.getObjects().profileText = o;
-						    	bbConverter.copyInto(bbConverter.import(uwm.base64Decode(o.dataBytesStore)), ctl.GetElementByRID("txtProfile"));
-								uwm.decorateLinkToPopIn(ctl.GetElementByRID("txtProfile"));
+						    	bbConverter.copyInto(bbConverter.import(uwm.base64Decode(o.dataBytesStore)), ctl.getElementByRID("txtProfile"));
+								uwm.decorateLinkToPopIn(ctl.getElementByRID("txtProfile"));
 							});
 						}
 					});

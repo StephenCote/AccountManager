@@ -23,23 +23,23 @@
 			if(window.galleryView) window.galleryView.destroy();
 		},
 		refreshSession : function(s,v){
-			var _s = this.getProperties(),bR = uwm.rule("IsLoggedIn"), oA = this.GetElementByRID("authRequired");
+			var _s = this.getProperties(),bR = uwm.rule("IsLoggedIn"), oA = this.getElementByRID("authRequired");
 			bR.then((b)=>{
 				Hemi.logDebug("Handle Session Refresh - Comparing " + b + " to " + _s.lastState);
 				if(!oA) return;
 				oA.style.display = (b ? "none" : "block");
-				/// this.GetElementByRID("galleryContainer").style.display = (!b ? "none" : "block");
+				/// this.getElementByRID("galleryContainer").style.display = (!b ? "none" : "block");
 				if(b != _s.lastState){
 					if(window.galleryView) window.galleryView.destroy();
 					/// if(b) this.setupCanvas();
 					
-					this.GetComponentByRID("profileCont").loadTemplate("/AccountManagerService/Forms/Profile.xml");
-					this.GetComponentByRID("articleCont").loadTemplate("/AccountManagerService/Templates/RecentArticles.xml");
+					this.getComponentByRID("profileCont").loadTemplate("/AccountManagerService/Forms/Profile.xml");
+					this.getComponentByRID("articleCont").loadTemplate("/AccountManagerService/Templates/RecentArticles.xml");
 				}
 			});
 		},
 		setupCanvas : function(){
-			window.g_gallery_container = this.GetElementByRID("galleryContainer");
+			window.g_gallery_container = this.getElementByRID("galleryContainer");
 			if(!window.galleryView){
 				var sTxt = Hemi.xml.getText("/AccountManagerService/Scripts/canvasGallery.js");
 				eval(sTxt);

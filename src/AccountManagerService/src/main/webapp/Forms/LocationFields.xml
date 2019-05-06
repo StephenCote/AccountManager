@@ -37,9 +37,9 @@
 			this.getProperties().boundaryListProp = "boundaries";
 			this.getProperties().borderListProp = "borders";
 			this.getProperties().locationListProp = "childLocations";
-			this.GetComponentByRID("locationsList").setLoadHandler(this.scopeHandler("configLocationsList",0,1,1));
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("locationPickerTitle"),"Child Locations");
-			// this.GetComponentByRID("boundariesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.getComponentByRID("locationsList").setLoadHandler(this.scopeHandler("configLocationsList",0,1,1));
+			Hemi.xml.setInnerXHTML(this.getElementByRID("locationPickerTitle"),"Child Locations");
+			// this.getComponentByRID("boundariesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
 
 		},
 		updateChildLocations : function(o){
@@ -94,7 +94,7 @@
 		prepareSave : function(o){
 			
 			/*
-			this.GetElementByRID("logicalOrder").className = "rocket-text";
+			this.getElementByRID("logicalOrder").className = "rocket-text";
 			o.dependencies = [];
 			var aDependencies = this.getDependenciesList().getItems();
 			for(var i = 0; i < aDependencies.length;i++) o.dependencies.push(aDependencies[i].data);

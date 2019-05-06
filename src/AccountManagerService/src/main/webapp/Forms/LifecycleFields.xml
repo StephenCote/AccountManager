@@ -29,10 +29,10 @@
 			this.getProperties().scheduleListProp = "schedules";
 			this.getProperties().budgetListProp = "budgets";
 			this.getProperties().goalsListProp = "goals";
-			this.GetComponentByRID("goalsList").setLoadHandler(this.scopeHandler("configGoalsList",0,1,1));
-			this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
-			this.GetComponentByRID("schedulesList").setLoadHandler(this.scopeHandler("configSchedulesList",0,1,1));
-			this.GetComponentByRID("projectsList").setLoadHandler(this.scopeHandler("configProjectsList",0,1,1));
+			this.getComponentByRID("goalsList").setLoadHandler(this.scopeHandler("configGoalsList",0,1,1));
+			this.getComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
+			this.getComponentByRID("schedulesList").setLoadHandler(this.scopeHandler("configSchedulesList",0,1,1));
+			this.getComponentByRID("projectsList").setLoadHandler(this.scopeHandler("configProjectsList",0,1,1));
 			
 			var bD = 0;
 			if(o.objectId && irocket.getCommunityMode()){
@@ -42,7 +42,7 @@
 					if(iL == 0) bD = 1;
 				}
 			}
-			this.GetElementByRID("regionCont").style.display = (bD ? "block" : "none" );
+			this.getElementByRID("regionCont").style.display = (bD ? "block" : "none" );
 		},
 		configureRegions : function(){
 			
@@ -99,7 +99,7 @@
 		config5 : function(){
 			var o = this.getBean("rocketType"), oC = this;
 			this.setStatus("Configuring country data");
-			AM6Client.configureCommunityCountryData(o.objectId,this.GetElementByRID("txtCountryCodes").value.split(","),true,function(s5, v5){
+			AM6Client.configureCommunityCountryData(o.objectId,this.getElementByRID("txtCountryCodes").value.split(","),true,function(s5, v5){
 				if(v5 && v5.json) v5 = v5.json;
 				oC.setStatus((v5 ? "COMPLETED" : "FAILED") + ": Configured country data: " + (v5 ? "true" : "false"));
 			});
@@ -131,7 +131,7 @@
 			}
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("endTime").className = "rocket-text";
+			this.getElementByRID("endTime").className = "rocket-text";
 
 			this.prepareSaveGoalsList(o);
 			this.prepareSaveBudgetsList(o);

@@ -26,7 +26,7 @@
 	pickNote : function(s, v){
 		var o = this.getBean("rocketType");
 		o.note = v;
-		this.GetElementByRID("note").value = (v ? v.name : "");
+		this.getElementByRID("note").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

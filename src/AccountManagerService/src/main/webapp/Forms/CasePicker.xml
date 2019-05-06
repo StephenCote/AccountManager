@@ -46,7 +46,7 @@
 			}
 		},
 		getCasesList : function(){
-			return this.GetComponentByRID("casesList").GetWideSelect();
+			return this.getComponentByRID("casesList").GetWideSelect();
 		},
 		prepareSaveCasesList : function(o){
 			aP = this.getProperties().caseListProp;

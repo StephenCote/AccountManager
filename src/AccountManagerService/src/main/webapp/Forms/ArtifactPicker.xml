@@ -56,7 +56,7 @@
 			}
 		},
 		getArtifactsList : function(){
-			return this.GetComponentByRID("artifactsList").GetWideSelect();
+			return this.getComponentByRID("artifactsList").GetWideSelect();
 		},
 		prepareSaveArtifactsList : function(o){
 			aP = this.getProperties().artifactListProp;

@@ -45,7 +45,7 @@
 			}
 		},
 		getTasksList : function(){
-			return this.GetComponentByRID("tasksList").GetWideSelect();
+			return this.getComponentByRID("tasksList").GetWideSelect();
 		},
 		prepareSaveTasksList : function(o){
 			aP = this.getProperties().taskListProp;

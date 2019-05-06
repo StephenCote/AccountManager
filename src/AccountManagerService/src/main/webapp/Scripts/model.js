@@ -39,6 +39,7 @@ window.model = model = Hemi.newObject("AMM","1.0",true,true,{
 				o.accountId = "";
 				o.accountType = "UNKNOWN";
 				o.accountStatus = "UNKNOWN";
+				o.referenceId = 0;
 				break;
 			case "ADDRESS":
 				o.locationType = "UNKNOWN";
@@ -51,7 +52,9 @@ window.model = model = Hemi.newObject("AMM","1.0",true,true,{
 				o.state = "";
 				o.postalCode = "";
 				o.country = "";
+				o.description = "";
 				break;
+				
 			case "ARTIFACT":
 				o.description = "";
 				o.artifactType = "UNKNOWN";
@@ -106,6 +109,7 @@ window.model = model = Hemi.newObject("AMM","1.0",true,true,{
 				o.startDate = new Date();
 				o.endDate = o.startDate;
 				break;
+
 			case "FACT":
 				o.description = "";
 				o.sourceUrl = "";
@@ -272,6 +276,7 @@ window.model = model = Hemi.newObject("AMM","1.0",true,true,{
 				o.tagType = "UNKNOWN";
 				break;
 			case "TASK":
+				o.description = "";
 				o.taskStatus = "UNKNOWN";
 				o.logicalOrder = 0;
 				o.startDate = (new Date());

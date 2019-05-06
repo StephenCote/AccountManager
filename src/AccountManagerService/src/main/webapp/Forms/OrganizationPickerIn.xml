@@ -7,14 +7,14 @@
 	<input style = "display:none;" type = "text" placeholder = "/Public" class = "rocket-text rocket-text-short" rid = "organization_path" />
 	<embedded-script><![CDATA[
 		chooseOrg : function(sV){
-			if(!sV || typeof sV != "string") sV = this.GetElementByRID("organization").value;
-			else this.GetElementByRID("organization").value = sV;
-			this.GetElementByRID('organization_path').style.display = (sV == 'custom' ? 'inline' : 'none');
+			if(!sV || typeof sV != "string") sV = this.getElementByRID("organization").value;
+			else this.getElementByRID("organization").value = sV;
+			this.getElementByRID('organization_path').style.display = (sV == 'custom' ? 'inline' : 'none');
 		},
 		getOrgPath : function(){
-			var sOrg = this.GetElementByRID("organization").value;
+			var sOrg = this.getElementByRID("organization").value;
 			if(sOrg == 'custom'){
-				var op = this.GetElementByRID("organization_path");
+				var op = this.getElementByRID("organization_path");
 				sOrg = op.value;
 				if(sOrg.length == 0 && op.placeholder) sOrg = op.placeholder;
 			}

@@ -45,7 +45,7 @@
 			}
 		},
 		getGoalsList : function(){
-			return this.GetComponentByRID("goalsList").GetWideSelect();
+			return this.getComponentByRID("goalsList").GetWideSelect();
 		},
 		prepareSaveGoalsList : function(o){
 			aP = this.getProperties().goalListProp;

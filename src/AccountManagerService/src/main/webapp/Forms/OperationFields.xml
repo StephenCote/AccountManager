@@ -46,13 +46,13 @@
 		this.chooseType(1);
 	},
 	chooseType : function(b){
-		var s = this.GetElementByRID("operationType").value.match(/^(permission|function)$/gi);
-		this.GetElementByRID("operation").className = "rocket-text" + (s ? " rocket-text-short" : "");
-		this.GetElementByRID("btnFind").style.display = (s ? "" : "none");
-		if(!b) this.GetElementByRID("operation").value = "";
+		var s = this.getElementByRID("operationType").value.match(/^(permission|function)$/gi);
+		this.getElementByRID("operation").className = "rocket-text" + (s ? " rocket-text-short" : "");
+		this.getElementByRID("btnFind").style.display = (s ? "" : "none");
+		if(!b) this.getElementByRID("operation").value = "";
 	},
 		findType : function(){
-			var sFType = this.GetElementByRID("operationType").value;
+			var sFType = this.getElementByRID("operationType").value;
 			this.manageList(sFType.substring(0,1) + sFType.substring(1,sFType.length).toLowerCase(),0,"pickType");
 		},
 		pickType : function(t, o){
@@ -68,7 +68,7 @@
 				return;
 			}
 			
-			this.GetElementByRID("operation").value = oBean.urn;
+			this.getElementByRID("operation").value = oBean.urn;
 			
 		},
 	addType : function(o){

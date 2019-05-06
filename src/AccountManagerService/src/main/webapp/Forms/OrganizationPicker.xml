@@ -15,14 +15,14 @@
 	</div>
 	<embedded-script><![CDATA[
 		chooseOrg : function(sV){
-			if(!sV || typeof sV != "string") sV = this.GetElementByRID("organization").value;
-			else this.GetElementByRID("organization").value = sV;
-			this.GetElementByRID('orgPathCont').style.display = (sV == 'custom' ? 'block' : 'none');
+			if(!sV || typeof sV != "string") sV = this.getElementByRID("organization").value;
+			else this.getElementByRID("organization").value = sV;
+			this.getElementByRID('orgPathCont').style.display = (sV == 'custom' ? 'block' : 'none');
 		},
 		getOrgPath : function(){
-			var sOrg = this.GetElementByRID("organization").value;
+			var sOrg = this.getElementByRID("organization").value;
 			if(sOrg == 'custom'){
-				sOrg = this.GetElementByRID("organization_path").value;
+				sOrg = this.getElementByRID("organization_path").value;
 			}
 			return sOrg;
 		}

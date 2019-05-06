@@ -62,15 +62,15 @@
 			_s.populate = (bNoPopulate ? 0 : 1);
 			if(!_s.manualPick) _s.manualPick = (bManualPick ? 1 : 0);
 			if(_s.manualPick){
-				this.GetElementByRID("control_bar").style.display = "block";
+				this.getElementByRID("control_bar").style.display = "block";
 			}
 			if(vParent){
 				_o.parentRef = vParent;
 			}
 			
 			if(bShowSearch){
-				this.GetElementByRID("filter").style.display = "";
-				this.GetElementByRID("button_search").style.display = "";
+				this.getElementByRID("filter").style.display = "";
+				this.getElementByRID("button_search").style.display = "";
 			}
 	
 			if(!sViewTypeName) sViewTypeName = sTypeName;
@@ -82,12 +82,12 @@
 			if(bNotAGroup) _s.noGroup = 1;
 			if(!_s.noGroup || vParent){
 				var s = this.getParentPath();
-				this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : (s ? s : "~/" + sTypeName + "s"));
+				this.getElementByRID("path").placeholder = (sDefPath ? sDefPath : (s ? s : "~/" + sTypeName + "s"));
 				this.scopeHandler("input_keypress",0,0,1);
-				this.GetElementByRID("path").onkeypress = this._prehandle_input_keypress;	
+				this.getElementByRID("path").onkeypress = this._prehandle_input_keypress;	
 			}
 			else{
-				this.GetElementByRID("path").style.display = "none";
+				this.getElementByRID("path").style.display = "none";
 			}
 			if(this.setTitle) this.setTitle(sViewTypeName);
 			
@@ -98,7 +98,7 @@
 				///Hemi.log("DON'T CALL PARENT because " + _s.openerId + " : " + (o ? (typeof o.parentResolver) : ""));
 			}
 			
-			this.GetComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
+			this.getComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
 			
 		},
 		parentResolver : function(v){
@@ -107,13 +107,13 @@
 			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver) o.parentResolver(v);
 		},
 		resizeList : function(){
-			if(this.getBody) this.ResizeFrame(this.getList().getContainer());
+			if(this.getBody) this.resizeFrame(this.getList().getContainer());
 			else{
-				var iH = this.getContainer().parentNode.parentNode.offsetHeight - this.GetElementByRID("typelist").offsetTop;
+				var iH = this.getContainer().parentNode.parentNode.offsetHeight - this.getElementByRID("typelist").offsetTop;
 				this.getList().getContainer().style.height = iH + "px";
 			}
 			var iW = this.getContainer().parentNode.parentNode.offsetWidth - 200;
-			//this.GetElementByRID("path").style.width = iW + "px";
+			//this.getElementByRID("path").style.width = iW + "px";
 		},
 		embedded_init : function(){
 		
@@ -139,7 +139,7 @@
 		},
 		
 		_search : function(){
-			var filter = this.GetElementByRID("filter").value;
+			var filter = this.getElementByRID("filter").value;
 			if(this.search) this.search(filter);
 		},
 		configList : function(){
@@ -152,7 +152,7 @@
 		},
 				
 		getList : function(){
-			return this.GetComponentByRID("typelist").GetWideSelect();
+			return this.getComponentByRID("typelist").GetWideSelect();
 		},
 		getParentPath : function(){
 			var s,vParent = this.getObjects().parentRef;
@@ -163,7 +163,7 @@
 		},
 		getPath : function(){
 			if(this.getProperties().noGroup && !this.getObjects().parentRef) return 0;
-			var o = this.GetElementByRID("path"), s;
+			var o = this.getElementByRID("path"), s;
 			if(!(s = o.value).length){
 				s = o.placeholder;
 				if(!s){
@@ -175,8 +175,8 @@
 		},
 		refreshCommunity : function(s, v){
 			var sPath = uwm.getPathForType(this.getProperties().typeName,"~/" + this.getProperties().typeName + "s");
-			this.GetElementByRID("path").placeholder = sPath;
-			this.GetElementByRID("path").value = sPath;
+			this.getElementByRID("path").placeholder = sPath;
+			this.getElementByRID("path").value = sPath;
 			this.refreshList();
 		},
 		handle_list_session_refresh : function(s, v){
@@ -194,8 +194,8 @@
 		},
 
 		_handle_typelistclick : function(s, v){
-			this.EnableButton("button_delete");
-			this.EnableButton("button_open");
+			this.enableButton("button_delete");
+			this.enableButton("button_open");
 			/// TODO: deprecate handle_list_click for provideSelectItem
 			if(this.handle_list_click) this.handle_list_click(v);
 			if(this.provideSelectItem) this.provideSelectItem(v);
@@ -217,11 +217,11 @@
 		},
 		
 		showButton : function(n){
-				var o = this.GetElementByRID("button_" + n);
+				var o = this.getElementByRID("button_" + n);
 				if(o) o.style.display = "";
 		},
 		hideButton : function(n){
-				var o = this.GetElementByRID("button_" + n);
+				var o = this.getElementByRID("button_" + n);
 				if(o) o.style.display = "none";
 		},
 		_handle_exec_button : function(e){
@@ -275,8 +275,8 @@
 				case "Delete":
 					if(!oItem) return;
 					if(this.deleteItem(oItem.data)){
-						this.DisableButton("button_delete");
-						this.DisableButton("button_open");
+						this.disableButton("button_delete");
+						this.disableButton("button_open");
 						//this.refreshList();
 					}
 					break;
@@ -315,14 +315,14 @@
 			else if(o.nameType == "GROUP"){
 				if(!o.populated) o = AM6Client.get("GROUP",o.objectId);
 				this.getProperties().listGroupType = o.groupType;
-				this.GetElementByRID("path").value = o.path;
+				this.getElementByRID("path").value = o.path;
 				this.getProperties().start_record = 0;
 				this.getProperties().viewType = o;
 				this.refreshList();
 			}
 			else if(o.nameType == "ROLE" || o.nameType == "PERMISSION"){
 				this.getObjects().parentRef = o;
-				this.GetElementByRID("path").value = this.getParentPath();
+				this.getElementByRID("path").value = this.getParentPath();
 				this.getProperties().start_record = 0;
 				//this.getProperties().viewType = o;
 				this.refreshList();
@@ -411,38 +411,38 @@
 		
 		},
 		disableButtons : function(){
-			this.DisableButton("button_delete");
-			this.DisableButton("button_open");
-			this.DisableButton("button_move_first");
-			this.DisableButton("button_move_last");
-			this.DisableButton("button_move_next");
-			this.DisableButton("button_move_prev");		
+			this.disableButton("button_delete");
+			this.disableButton("button_open");
+			this.disableButton("button_move_first");
+			this.disableButton("button_move_last");
+			this.disableButton("button_move_next");
+			this.disableButton("button_move_prev");		
 		},
 
 		setTotalCount : function(i){
 			this.getProperties().total_count = i;
-			this.DisableButton("button_move_first");
-			this.DisableButton("button_move_last");
-			this.DisableButton("button_move_next");
-			this.DisableButton("button_move_prev");	
+			this.disableButton("button_move_first");
+			this.disableButton("button_move_last");
+			this.disableButton("button_move_next");
+			this.disableButton("button_move_prev");	
 			if(this.getProperties().start_record > 0){
-				this.GetElementByRID("button_move_prev").disabled = false;
-				this.GetElementByRID("button_move_first").disabled = false;
+				this.getElementByRID("button_move_prev").disabled = false;
+				this.getElementByRID("button_move_first").disabled = false;
 			}
 			
 			if((this.getProperties().start_record + this.getProperties().record_count) < this.getProperties().total_count){
-				this.GetElementByRID("button_move_next").disabled = false;
-				this.GetElementByRID("button_move_last").disabled = false;
+				this.getElementByRID("button_move_next").disabled = false;
+				this.getElementByRID("button_move_last").disabled = false;
 			}
 
-			if(this.getProperties().total_count > 0) Hemi.xml.setInnerXHTML(this.GetElementByRID("record_label"),(this.getProperties().start_record + 1) + "-" + (this.getProperties().start_record + this.getProperties().record_count) + " of " + this.getProperties().total_count);
-			else Hemi.xml.setInnerXHTML(this.GetElementByRID("record_label"),"0 of 0");
+			if(this.getProperties().total_count > 0) Hemi.xml.setInnerXHTML(this.getElementByRID("record_label"),(this.getProperties().start_record + 1) + "-" + (this.getProperties().start_record + this.getProperties().record_count) + " of " + this.getProperties().total_count);
+			else Hemi.xml.setInnerXHTML(this.getElementByRID("record_label"),"0 of 0");
 
 		},
 
 		refreshList : function(bSkipCountReset){
 			var sPath, _s = this.getProperties(), _o = this.getObjects();
-			var sFilt = this.GetElementByRID("filter").value;
+			var sFilt = this.getElementByRID("filter").value;
 			
 			if(this.provideRefresh) this.provideRefresh(bSkipCountReset);
 
@@ -513,7 +513,7 @@
 					this.setTotalCount(_s.total_count);
 				}
 				var aList = [];
-				var sFilt = this.GetElementByRID("filter").value;
+				var sFilt = this.getElementByRID("filter").value;
 				var tname = _s.typeName;
 
 				if(this.provideList) aList = this.provideList(sPath, sFilt, _s.start_record,_s.record_count);
@@ -565,7 +565,7 @@
 		
 		},
 		setStatus : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("status"),s);
 		},
 		decorateProfileIcon : function(o){
 				var _p = this.getProperties();

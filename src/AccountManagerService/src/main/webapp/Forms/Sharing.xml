@@ -91,7 +91,7 @@
 				this.initPermissionPicker();
 			},
 			refreshWhoView : function(){
-				this.GetElementByRID("shareWhoName").value = "";
+				this.getElementByRID("shareWhoName").value = "";
 				this.getProperties().whoType = 0;
 			},
 			refreshView : function(b){
@@ -102,18 +102,18 @@
 					if(this.setStatus) this.setStatus("View type is not specified");
 					return;
 				}
-				this.GetElementByRID("btnAuthZ").disabled = false;
-				this.GetElementByRID("btnUAuthZ").disabled = false;
+				this.getElementByRID("btnAuthZ").disabled = false;
+				this.getElementByRID("btnUAuthZ").disabled = false;
 				if(typeof o == "string" && b){
 				}
 				else{
-					this.GetElementByRID((b ? "shareWhoName" : "shareName")).value = o.nameType + " " + o.name + " (#" + o.id + ")";
-					this.GetElementByRID((b ? "shareWhoType" : "shareType")).value = o.nameType;
+					this.getElementByRID((b ? "shareWhoName" : "shareName")).value = o.nameType + " " + o.name + " (#" + o.id + ")";
+					this.getElementByRID((b ? "shareWhoType" : "shareType")).value = o.nameType;
 				}
-				this.GetElementByRID("systemGroupContainer").style.display = (this.getProperties().viewType.nameType == "GROUP" ? "" : "none");
+				this.getElementByRID("systemGroupContainer").style.display = (this.getProperties().viewType.nameType == "GROUP" ? "" : "none");
 			},
 		findType : function(b){
-			var sFType = this.GetElementByRID((b ? "shareWhoType":"shareType")).value;
+			var sFType = this.getElementByRID((b ? "shareWhoType":"shareType")).value;
 			if(b && !sFType.match(/(role|group|person|account|user)/gi)){
 				this.pickWhoType(0,sFType);
 			}
@@ -130,12 +130,12 @@
 			
 		},
 			authorize : function(){
-				if(!this.GetElementByRID("chkRecurseGroups").checked || confirm("Recursive is currently client-driven, and so will take a while to complete as each authorization call is made independently.  Continue?")){
+				if(!this.getElementByRID("chkRecurseGroups").checked || confirm("Recursive is currently client-driven, and so will take a while to complete as each authorization call is made independently.  Continue?")){
 					this.authorizeType();
 				}
 			},
 			unauthorize : function(){
-				if(!this.GetElementByRID("chkRecurseGroups").checked || confirm("Recursive is currently client-driven, and so will take a while to complete as each authorization call is made independently.  Continue?")){
+				if(!this.getElementByRID("chkRecurseGroups").checked || confirm("Recursive is currently client-driven, and so will take a while to complete as each authorization call is made independently.  Continue?")){
 
 					this.authorizeType(1);
 				}
@@ -148,8 +148,8 @@
 					if(this.setStatus) this.setStatus("View type is not specified");
 					return;
 				}
-				var oS = this.GetElementByRID("shareType");
-				var sW = this.GetElementByRID("shareWhoType").value;
+				var oS = this.getElementByRID("shareType");
+				var sW = this.getElementByRID("shareWhoType").value;
 				if(sW.match(/^nobody$/gi)){
 					Hemi.logError("TODO: Policy OM not yet ready to strip all rights without specifying a specific target");
 					if(this.setStatus) this.setStatus("TODO: Policy OM not yet ready to strip all rights without specifying a specific target");
@@ -177,13 +177,13 @@
 				var r = 0;
 				if(sW.match(/^(role|user)$/gi)){
 					Hemi.log("Authorize " + sT + " " + sW);
-					r = AM6Client.permitSystem(o.nameType, o.objectId, oO.nameType, oO.objectId,(b ? false : this.GetElementByRID("chkRead").checked), (b ? false : this.GetElementByRID("chkUpdate").checked), (b ? false : this.GetElementByRID("chkDelete").checked), (b ? false : this.GetElementByRID("chkAdd").checked));
+					r = AM6Client.permitSystem(o.nameType, o.objectId, oO.nameType, oO.objectId,(b ? false : this.getElementByRID("chkRead").checked), (b ? false : this.getElementByRID("chkUpdate").checked), (b ? false : this.getElementByRID("chkDelete").checked), (b ? false : this.getElementByRID("chkAdd").checked));
 					if(r && o.nameType == "GROUP" && !o.name.match(/^\.thumbnail$/)){
-						if(this.GetElementByRID("chkSystemGroups").checked){
+						if(this.getElementByRID("chkSystemGroups").checked){
 							var oT = AM6Client.make("GROUP","DATA",o.path + "/.thumbnail");
 							if(oT) this.authorizeType(b,oT);
 						}
-						if(this.GetElementByRID("chkRecurseGroups").checked){
+						if(this.getElementByRID("chkRecurseGroups").checked){
 							var aSG = AM6Client.list("GROUP",o.objectId,0,0);
 							for(var s = 0; s < aSG.length; s++){
 								this.authorizeType(b,aSG[s]);

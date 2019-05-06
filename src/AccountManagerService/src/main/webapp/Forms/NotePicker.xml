@@ -44,7 +44,7 @@
 		}
 	},
 	getNotesList : function(){
-		return this.GetComponentByRID("notesList").GetWideSelect();
+		return this.getComponentByRID("notesList").GetWideSelect();
 	},
 		prepareSaveNotesList : function(o){
 			aP = this.getProperties().noteListProp;

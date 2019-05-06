@@ -20,7 +20,7 @@
 			this.pickParent(this.getProperties().typeName,oP);
 		}
 		else{
-			this.GetElementByRID("parentPickerCont").style.display = "none";
+			this.getElementByRID("parentPickerCont").style.display = "none";
 		}
 	},
 	chooseParent : function(){
@@ -42,7 +42,7 @@
 			return;
 		}
 		o.parentId = (v ? v.id : 0);
-		this.GetElementByRID("parent").value = (v ? v.name : "");
+		this.getElementByRID("parent").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

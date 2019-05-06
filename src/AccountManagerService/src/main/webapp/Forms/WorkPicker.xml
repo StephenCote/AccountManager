@@ -44,7 +44,7 @@
 			}
 		},
 		getWorksList : function(){
-			return this.GetComponentByRID("worksList").GetWideSelect();
+			return this.getComponentByRID("worksList").GetWideSelect();
 		},
 		prepareSaveWorksList : function(o){
 			aP = this.getProperties().workListProp;

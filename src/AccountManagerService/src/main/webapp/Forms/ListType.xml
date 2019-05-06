@@ -10,9 +10,9 @@
 	<p><span rid = "status">[ ... ]</span></p>
 	<embedded-script><![CDATA[
 		initList : function(sTypeName, sDefPath){
-			this.GetElementByRID("path").placeholder = (sDefPath ? sDefPath : "~/" + sTypeName + "s");
+			this.getElementByRID("path").placeholder = (sDefPath ? sDefPath : "~/" + sTypeName + "s");
 			this.getProperties().typeName = sTypeName;
-			this.GetComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
+			this.getComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
 			if(this.setTitle) this.setTitle(sTypeName);
 		},
 		fragment_init : function(){
@@ -23,7 +23,7 @@
 			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_list_session_refresh");
 		},
 		getPath : function(){
-			var o = this.GetElementByRID("path"), s;
+			var o = this.getElementByRID("path"), s;
 			if(!(s = o.value).length){
 				s = o.placeholder;
 				if(!s) s = "~/" + this.getProperties().typeName + "s";
@@ -42,7 +42,7 @@
 			Hemi.message.service.subscribe(this, "onsessionrefresh", "handle_list_session_refresh");
 		},
 		getList : function(){
-			return this.GetComponentByRID("typelist").GetWideSelect();
+			return this.getComponentByRID("typelist").GetWideSelect();
 		},
 		refreshList : function(){
 			var sPath = this.getPath();
@@ -62,7 +62,7 @@
 		
 		},
 		setStatus : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("status"),s);
 		}
 	
 	]]></embedded-script>

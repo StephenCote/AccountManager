@@ -75,26 +75,26 @@
 				this.scopeHandler("project_picker_choose",0,0,1);
 				
 				/*
-				this.GetElementByRID("estimate-row1").onkeydown = function(e){
+				this.getElementByRID("estimate-row1").onkeydown = function(e){
 					Hemi.event.cancelEvent(e);
 					return false;
 				};
 				*/
 				//this.addStage();
 				if(!this.getProperties().defaultPath) this.getProperties().defaultPath = "~/";
-				this.GetElementByRID("path").setAttribute("placeholder",this.getProperties().defaultPath);
+				this.getElementByRID("path").setAttribute("placeholder",this.getProperties().defaultPath);
 			},
 			template_destroy : function(){
 				this._prehandle_project_picker_open = 0;
 				this._prehandle_project_picker_choose = 0;
 			},
 			getPath : function(){
-				var sP = this.GetElementByRID("path").value;
+				var sP = this.getElementByRID("path").value;
 				if(sP.length == 0) sP = this.getProperties().defaultPath;
 				return sP;
 			},
 			setupMethodology : function(){
-				var sV = this.GetElementByRID("method").value;
+				var sV = this.getElementByRID("method").value;
 				if(sV.match(/(wf|ag|custom)/gi) == false) return;
 				
 				if(sV == "wf"){
@@ -113,10 +113,10 @@
 						rocket.addMethodology("Waterfall","Waterfall project methodology",[rocket.getProcess("Waterfall",oPGroup)],0,oMGroup);
 					}
 					var oP = rocket.getProcess("Waterfall",oPGroup);
-					this.GetElementByRID("projectName").value = "Waterfall Project";
+					this.getElementByRID("projectName").value = "Waterfall Project";
 					for(var i = 0; i < oP.steps.length;i++){
 						this.addStage();
-						this.GetElementByRID(this.getStageIdPrefix(i+1) + "name").value = oP.steps[i].name;
+						this.getElementByRID(this.getStageIdPrefix(i+1) + "name").value = oP.steps[i].name;
 					}
 					/*
 					this.getObjects().methodology = oM;
@@ -132,7 +132,7 @@
 					vH[aTimes[i].name]=1;
 				}
 				
-				this.GetElementByRID("projectNameCont").style.display = "block";
+				this.getElementByRID("projectNameCont").style.display = "block";
 				
 			},
 			getStageTemplate : function(){
@@ -185,13 +185,13 @@
 					this.getObjects().taskTrash[o.id] = o;
 				}
 				this.getObjects().taskRows[i] = udef;
-				var oXForm = this.GetForm();
+				var oXForm = this.getForm();
 				var sId = this.getRowIdPrefix(s,i);
 			   	for(var i = 0; i < p.elementNames.length; i++){
 					oXForm.removeElement(oXForm.getElementByName(sId + p.elementNames[i]));
 				}
 				Hemi.log("Delete Row: " + sId);
-				var oRow = this.GetElementByRID(sId + "rowNumCell").parentNode;
+				var oRow = this.getElementByRID(sId + "rowNumCell").parentNode;
 				if(oRow){
 					/// Remove and unlink node and all framework objects;
 					Hemi.xml.removeChildren(oRow, 1);
@@ -207,7 +207,7 @@
 					this.getObjects().stageTrash[o.id] = o;
 				}
 				this.getObjects().stages[i] = udef;
-				var oXForm = this.GetForm();
+				var oXForm = this.getForm();
 				var sId = this.getRowIdPrefix(s,i);
 				alert('TODO: Delete or move tasks');
 				/*
@@ -215,7 +215,7 @@
 					oXForm.removeElement(oXForm.getElementByName(sId + p.elementNames[i]));
 				}
 				Hemi.log("Delete Row: " + sId);
-				var oRow = this.GetElementByRID(sId + "rowNumCell").parentNode;
+				var oRow = this.getElementByRID(sId + "rowNumCell").parentNode;
 				if(oRow){
 					/// Remove and unlink node and all framework objects;
 					Hemi.xml.removeChildren(oRow, 1);
@@ -239,17 +239,17 @@
 			   		alert("Invalid XML from:\n\n" + sB);
 			   		return;
 			   	}
-			   	//Hemi.xml.setInnerXHTML(this.GetElementByRID("rows"), oX.documentElement,1, 0, 0, 0, 0, this._handle_xhtml_token);
+			   	//Hemi.xml.setInnerXHTML(this.getElementByRID("rows"), oX.documentElement,1, 0, 0, 0, 0, this._handle_xhtml_token);
 			   	
 				for(var i = 0; i < oX.documentElement.childNodes.length;i++){
-   					Hemi.xml.setInnerXHTML(this.GetElementByRID("stages"), oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
+   					Hemi.xml.setInnerXHTML(this.getElementByRID("stages"), oX.documentElement.childNodes[i],1, 0, 0, 0, 0, this._handle_xhtml_token);
    				}
-   				var aC = this.GetElementByRID("stages").childNodes;
+   				var aC = this.getElementByRID("stages").childNodes;
    				// Note -extendSpaceConfiguration operates against a container, without registering the container itself
    				// therefore, the container (tr) is not registered when configured like this
 			   	// 
 			   	this.extendSpaceConfiguration(aC[aC.length-1]);
-			   	this.GetElementByRID(sId + "stageNum").value = p.stageCount;
+			   	this.getElementByRID(sId + "stageNum").value = p.stageCount;
 			   	for(var i = 0; i < 5; i++) this.addRow(p.stageCount);
 			},
 			addRow : function(iStage){
@@ -270,8 +270,8 @@
 			   		return;
 			   	}
 
-			   	//Hemi.xml.setInnerXHTML(this.GetElementByRID("rows"), oX.documentElement,1, 0, 0, 0, 0, this._handle_xhtml_token);
-			   	var xRows = this.GetElementByRID(sSid + "rows");
+			   	//Hemi.xml.setInnerXHTML(this.getElementByRID("rows"), oX.documentElement,1, 0, 0, 0, 0, this._handle_xhtml_token);
+			   	var xRows = this.getElementByRID(sSid + "rows");
 			   	if(!xRows || xRows == null){
 			   		alert("Null model reference");
 			   		return;
@@ -284,8 +284,8 @@
    				// therefore, the container (tr) is not registered when configured like this
 			   	// 
 			   	this.extendSpaceConfiguration(aC[aC.length-1]);
-			   	this.GetElementByRID(sId + "rowNum").value = p.rowCount;
-			   	this.GetElementByRID(sId + "estimate").onkeydown =  function(e){
+			   	this.getElementByRID(sId + "rowNum").value = p.rowCount;
+			   	this.getElementByRID(sId + "estimate").onkeydown =  function(e){
 					Hemi.event.cancelEvent(e);
 					return false;
 				};
@@ -393,7 +393,7 @@
 						this.pushScheduleToTasks(oItem.data,oLT.stage);
 						break;
 				}
-				this.GetElementByRID(sN).value = oItem.data.name;
+				this.getElementByRID(sN).value = oItem.data.name;
 			},
 			
 			
@@ -412,9 +412,8 @@
 					for(var k = 0; k < atr.length;k++){
 						if(atr[k]){
 							var sN = this.getRowIdPrefix(i,k) + "end";
-							var oD = this.GetElementByRID(sN);
+							var oD = this.getElementByRID(sN);
 							if(oD.value.length == 0){
-								//this.SetFormValue(sN,v.endTime);
 								oD.value = (v.endTime.getMonth() + 1) + "/" + v.endTime.getDate() + "/" + v.endTime.getFullYear();
 							}
 						}
@@ -428,7 +427,7 @@
 					return;
 				}
 				o.schedule = v;
-				this.GetElementByRID(this.getStageIdPrefix(i.stage) + "schedule").value = (v ? v.name : "");
+				this.getElementByRID(this.getStageIdPrefix(i.stage) + "schedule").value = (v ? v.name : "");
 				this.pushScheduleToTasks(v,i.stage);
 				
 			},
@@ -443,7 +442,7 @@
 					return;
 				}
 				o.estimate = v;
-				this.GetElementByRID(this.getRowIdPrefix(i.stage,i.row) + "estimate").value = (v ? v.name + " " + v.estimateType : "");
+				this.getElementByRID(this.getRowIdPrefix(i.stage,i.row) + "estimate").value = (v ? v.name + " " + v.estimateType : "");
 			},
 			openPicker : function(vSrc, sType, sListId, sFN){
 				var oProps = {openerId:this.getObjectId(),sourceId:vSrc,listType:sType,picker:1,pickFunction:sFN};
@@ -453,7 +452,7 @@
 	            		oW.resizeTo(400, 200);
 	            		
 	            		if(vSrc.ctrlId){
-	            			var o = this.GetElementByRID(vSrc.ctrlId);
+	            			var o = this.getElementByRID(vSrc.ctrlId);
 	            			var l = Hemi.css.getAbsoluteLeft(o);
 							var t = Hemi.css.getAbsoluteTop(o) + o.offsetHeight;
 							Hemi.log("Move " + vSrc.ctrlId + " to " + l + ", " + t);

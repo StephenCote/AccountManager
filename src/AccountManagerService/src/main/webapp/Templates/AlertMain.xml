@@ -87,7 +87,7 @@
 	provideSelectItem : function(o){
 		if(!o.nameType && o.data) o = o.data;
 		if(!o.nameType.match(/^(role|person)$/gi)) return;
-		var v = this.GetElementByRID("tab-" + o.id);
+		var v = this.getElementByRID("tab-" + o.id);
 		if(!v || v == null){
 			if(!o.populated) o = AM6Client.get(o.nameType, o.id);
 			this.provideOpenItem(o);
@@ -95,7 +95,7 @@
 		else this.ShowTab(v.tab_index);
 	},
 	provideOpenItem : function(o){
-		var v = this.GetElementByRID("tab-" + o.id);
+		var v = this.getElementByRID("tab-" + o.id);
 		if(v && v!=null) this.provideSelectItem(o);
 		else this.newTab(o);
 	},
@@ -103,7 +103,7 @@
 		return this.closePerson(c,o,1);
 	},
 	closePerson : function(c, o,b){
-		var v = this.GetElementByRID("tab-" + o.id);
+		var v = this.getElementByRID("tab-" + o.id);
 		/// Need to destroy the underlying XHTML component 
 		/// which isn't returned via getComponentByRID, because that's the application component
 		/// but not when it's only an XHTMLComponent
@@ -126,20 +126,20 @@
 		if(o.resizeList) o.resizeList();
 		var aH = ["button_delete","button_new","button_open","button_design","path","button_spacer_1","button_spacer_2"];
 		for(var i = 0; i < aH.length; i++){
-			c = o.GetElementByRID(aH[i]);
+			c = o.getElementByRID(aH[i]);
 			if(!c) alert("invalid: " + aH[i]);
-			else o.GetElementByRID(aH[i]).style.display = "none";
+			else o.getElementByRID(aH[i]).style.display = "none";
 		}
 	},
 	handleOpenPerson : function(o){
 		/// Hide all the fields we're not interested in using
 		///
-		if(!o.GetElementByRID) return;
+		if(!o.getElementByRID) return;
 		var aH = ["btnFact","aliasCont","suffixCont","genderCont","attributePicker","accountPicker","userPicker","personPicker","pathCont","descriptionCont","titleCont","prefixCont"],c;
 		for(var i = 0; i < aH.length; i++){
-			c = o.GetElementByRID(aH[i]);
+			c = o.getElementByRID(aH[i]);
 			if(!c) alert("invalid: " + aH[i]);
-			else o.GetElementByRID(aH[i]).style.display = "none";
+			else o.getElementByRID(aH[i]).style.display = "none";
 		}
 		/// Toggle open the contact field
 		///
@@ -149,7 +149,7 @@
 		this.getObjects().ctxObj = o;
 		var oD = document.createElement("div");
 		oD.setAttribute("rid","tab-" + o.id);
-		var oT = this.GetElementByRID("tabs");
+		var oT = this.getElementByRID("tabs");
 		oT.appendChild(oD);
 	   	this.extendSpaceConfiguration(oT.childNodes[oT.childNodes.length-1]);
 	   	this.AddTab("tab-" + o.id,o.name,this._prehandle_load_object_tab);
@@ -161,7 +161,7 @@
 		if(!ctx) return;
 		delete this.getObjects().ctxObj;
 		
-		var c = this.GetElementByRID("tab-" + ctx.id);
+		var c = this.getElementByRID("tab-" + ctx.id);
 		if(c.loaded) return;
 		c.loaded = 1;
 		
@@ -198,7 +198,7 @@
 		this.loadTab("Role",o);
 	},
 	loadTab : function(s, o){
-		var c = this.GetElementByRID(s.toLowerCase());
+		var c = this.getElementByRID(s.toLowerCase());
 		if(c.loaded) return;
 		c.loaded = 1;
 		

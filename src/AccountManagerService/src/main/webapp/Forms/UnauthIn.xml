@@ -31,7 +31,7 @@
 				});
 			}
 			else{
-				this.GetElementByRID("cntLogin").style.display = "";
+				this.getElementByRID("cntLogin").style.display = "";
 			}
 
 		},

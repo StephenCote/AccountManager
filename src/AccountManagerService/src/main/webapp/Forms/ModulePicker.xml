@@ -46,7 +46,7 @@
 			}
 		},
 		getModulesList : function(){
-			return this.GetComponentByRID("modulesList").GetWideSelect();
+			return this.getComponentByRID("modulesList").GetWideSelect();
 		},
 		prepareSaveModulesList : function(o){
 			aP = this.getProperties().moduleListProp;

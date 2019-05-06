@@ -44,7 +44,7 @@
 		}
 	},
 	getRequirementsList : function(){
-		return this.GetComponentByRID("requirementsList").GetWideSelect();
+		return this.getComponentByRID("requirementsList").GetWideSelect();
 	},
 		prepareSaveRequirementsList : function(o){
 			aP = this.getProperties().requirementListProp;

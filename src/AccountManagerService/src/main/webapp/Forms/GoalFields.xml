@@ -59,10 +59,10 @@
 			_s.scheduleProp = "schedule";
 			_s.budgetProp = "budget";
 			_s.resourceProp = "assigned";
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("resourcePickerTitle"),"Assigned To:");
-			this.GetComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
-			this.GetComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
-			this.GetComponentByRID("casesList").setLoadHandler(this.scopeHandler("configCasesList",0,1,1));
+			Hemi.xml.setInnerXHTML(this.getElementByRID("resourcePickerTitle"),"Assigned To:");
+			this.getComponentByRID("requirementsList").setLoadHandler(this.scopeHandler("configRequirementsList",0,1,1));
+			this.getComponentByRID("dependenciesList").setLoadHandler(this.scopeHandler("configDependenciesList",0,1,1));
+			this.getComponentByRID("casesList").setLoadHandler(this.scopeHandler("configCasesList",0,1,1));
 			this.pickBudget('Budget',o.budget);
 			this.pickSchedule('Schedule',o.schedule);
 			this.pickResource('Resource',o.assigned);
@@ -73,13 +73,13 @@
 			return AM6Client.update("GOAL",o);
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("text").className = "rocket-text";
+			this.getElementByRID("text").className = "rocket-text";
 			this.prepareSaveRequirementsList(o);
 			this.prepareSaveDependenciesList(o);
 			this.prepareSaveCasesList(o);
 			/*
-			if(!this.ValidateForPattern("text","not-empty")){
-				this.GetElementByRID("text").className = "rocket-text rocket-text-error";
+			if(!this.validateForPattern("text","not-empty")){
+				this.getElementByRID("text").className = "rocket-text rocket-text-error";
 				this.setStatus("Text cannot be empty");
 				return 0;
 			}

@@ -30,7 +30,7 @@
 	pickTime : function(s, v){
 		var o = this.getBean("rocketType");
 		o[this.getProperties().timeProp] = v;
-		this.GetElementByRID("time").value = (v ? v.name : "");
+		this.getElementByRID("time").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>

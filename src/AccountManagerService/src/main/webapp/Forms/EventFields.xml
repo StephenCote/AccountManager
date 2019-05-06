@@ -146,46 +146,46 @@
 			this.pickLocation("Location", o.location);
 			
 			this.getProperties().eventListProp = "childEvents";
-			this.GetComponentByRID("eventsList").setLoadHandler(this.scopeHandler("configEventsList",0,1,1));
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("eventPickerTitle"),"Child Events");
+			this.getComponentByRID("eventsList").setLoadHandler(this.scopeHandler("configEventsList",0,1,1));
+			Hemi.xml.setInnerXHTML(this.getElementByRID("eventPickerTitle"),"Child Events");
 			
 
-			this.GetElementByRID("entryTraitPicker").style.display = "block";
+			this.getElementByRID("entryTraitPicker").style.display = "block";
 			this.toggleField("entryTraitPickerToggle","entryTraitPickerContent");
 			if(!this.getProperties().entryTraitListProp) this.getProperties().entryTraitListProp = "entryTraits";
-			this.GetComponentByRID("entryTraitsList").setLoadHandler(this.scopeHandler("configEntryTraitsList",0,1,1));
+			this.getComponentByRID("entryTraitsList").setLoadHandler(this.scopeHandler("configEntryTraitsList",0,1,1));
 			
-			this.GetElementByRID("exitTraitPicker").style.display = "block";
+			this.getElementByRID("exitTraitPicker").style.display = "block";
 			this.toggleField("exitTraitPickerToggle","exitTraitPickerContent");
 			if(!this.getProperties().exitTraitListProp) this.getProperties().exitTraitListProp = "exitTraits";
-			this.GetComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configExitTraitsList",0,1,1));
+			this.getComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configExitTraitsList",0,1,1));
 						
-			this.GetElementByRID("orchestratorPicker").style.display = "block";
+			this.getElementByRID("orchestratorPicker").style.display = "block";
 			this.toggleField("orchestratorPickerToggle","orchestratorPickerContent");
 			if(!this.getProperties().orchestratorListProp) this.getProperties().orchestratorListProp = "orchestrators";
-			this.GetComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configOrchestratorsList",0,1,1));
+			this.getComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configOrchestratorsList",0,1,1));
 			
 
-			this.GetElementByRID("influencerPicker").style.display = "block";
+			this.getElementByRID("influencerPicker").style.display = "block";
 			this.toggleField("influencerPickerToggle","influencerPickerContent");
 			if(!this.getProperties().influencerListProp) this.getProperties().influencerListProp = "influencers";
-			this.GetComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configInfluencersList",0,1,1));
+			this.getComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configInfluencersList",0,1,1));
 
 
-			this.GetElementByRID("observerPicker").style.display = "block";
+			this.getElementByRID("observerPicker").style.display = "block";
 			this.toggleField("observerPickerToggle","observerPickerContent");
 			if(!this.getProperties().observerListProp) this.getProperties().observerListProp = "observers";
-			this.GetComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configObserversList",0,1,1));
+			this.getComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configObserversList",0,1,1));
 
-			this.GetElementByRID("groupPicker").style.display = "block";
+			this.getElementByRID("groupPicker").style.display = "block";
 			this.toggleField("groupPickerToggle","groupPickerContent");
 			if(!this.getProperties().groupListProp) this.getProperties().groupListProp = "groups";
-			this.GetComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configGroupsList",0,1,1));
+			this.getComponentByRID("exitTraitsList").setLoadHandler(this.scopeHandler("configGroupsList",0,1,1));
 			
 						
 			this.getProperties().dataListProp = "things";
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("dataPickerTitle"),"Things");
-			this.GetComponentByRID("dataList").setLoadHandler(this.scopeHandler("configDataList",0,1,1));
+			Hemi.xml.setInnerXHTML(this.getElementByRID("dataPickerTitle"),"Things");
+			this.getComponentByRID("dataList").setLoadHandler(this.scopeHandler("configDataList",0,1,1));
 			
 			this.getProperties().personListProp = "actors";
 			this.setPersonPickerLabel("Actors");
@@ -255,7 +255,7 @@
 			}
 		},
 		getEntryTraitsList : function(){
-			return this.GetComponentByRID("entryTraitsList").GetWideSelect();
+			return this.getComponentByRID("entryTraitsList").GetWideSelect();
 		},
 		openExitTrait : function(){
 			var oI = this.getExitTraitsList().getActiveItem();
@@ -290,7 +290,7 @@
 			}
 		},
 		getExitTraitsList : function(){
-			return this.GetComponentByRID("exitTraitsList").GetWideSelect();
+			return this.getComponentByRID("exitTraitsList").GetWideSelect();
 		},
 		
 		openOrchestrator : function(){
@@ -320,7 +320,7 @@
 			}
 		},
 		getOrchestratorsList : function(){
-			return this.GetComponentByRID("orchestratorsList").GetWideSelect();
+			return this.getComponentByRID("orchestratorsList").GetWideSelect();
 		},
 		
 		openObserver : function(){
@@ -350,7 +350,7 @@
 			}
 		},
 		getObserversList : function(){
-			return this.GetComponentByRID("observersList").GetWideSelect();
+			return this.getComponentByRID("observersList").GetWideSelect();
 		},
 		
 		openInfluencer : function(){
@@ -380,7 +380,7 @@
 			}
 		},
 		getInfluencersList : function(){
-			return this.GetComponentByRID("influencersList").GetWideSelect();
+			return this.getComponentByRID("influencersList").GetWideSelect();
 		},
 		
 			
@@ -418,7 +418,7 @@
 			}
 		},
 		getGroupsList : function(){
-			return this.GetComponentByRID("groupsList").GetWideSelect();
+			return this.getComponentByRID("groupsList").GetWideSelect();
 		},
 		
 		addType : function(o){

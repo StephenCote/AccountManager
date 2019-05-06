@@ -28,7 +28,7 @@
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
-				//this.GetElementByRID("genCont").style.display = (uwm.debugMode ? "block" : "none");
+				//this.getElementByRID("genCont").style.display = (uwm.debugMode ? "block" : "none");
 				this.AddTab("person","Persons",this.scopeHandler("loadPersonTab",0,1,1));
 				this.AddTab("application","Applications",this.scopeHandler("loadApplicationTab",0,1,1));
 				//this.AddTab("account","Accounts",this.scopeHandler("loadAccountTab",0,1,1));
@@ -66,7 +66,7 @@
 			},
 
 			loadTab : function(s, o){
-				var c = this.GetElementByRID(s.toLowerCase());
+				var c = this.getElementByRID(s.toLowerCase());
 				if(c.loaded) return;
 				c.loaded = 1;
 				

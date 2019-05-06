@@ -19,7 +19,7 @@
 		embedded_init : function(){
 			this.toggleField("dataPickerToggle","dataPickerContent");
 			if(!this.getProperties().dataListProp) this.getProperties().dataListProp = "data";
-			//this.GetComponentByRID("dataList").setLoadHandler(this.scopeHandler("configDataList",0,1,1));
+			//this.getComponentByRID("dataList").setLoadHandler(this.scopeHandler("configDataList",0,1,1));
 		},
 		openData : function(){
 			var oI = this.getDataList().getActiveItem();
@@ -66,7 +66,7 @@
 			}
 		},
 		getDataList : function(){
-			return this.GetComponentByRID("dataList").GetWideSelect();
+			return this.getComponentByRID("dataList").GetWideSelect();
 		},
 		
 		prepareSaveDatasList : function(o){

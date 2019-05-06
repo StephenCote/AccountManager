@@ -46,7 +46,7 @@
 			}
 		},
 		getBlueprintsList : function(){
-			return this.GetComponentByRID("blueprintsList").GetWideSelect();
+			return this.getComponentByRID("blueprintsList").GetWideSelect();
 		},
 		prepareSaveBlueprintsList : function(o){
 			aP = this.getProperties().blueprintListProp;

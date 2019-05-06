@@ -17,7 +17,7 @@
 		embedded_init : function(){
 			if(!this.getProperties().budgetListProp) this.getProperties().budgetListProp = "budgets";
 			this.toggleField("budgetPickerToggle","budgetPickerContent")
-			//this.GetComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
+			//this.getComponentByRID("budgetsList").setLoadHandler(this.scopeHandler("configBudgetsList",0,1,1));
 		},
 		openBudget : function(){
 			var oI = this.getBudgetsList().getActiveItem();
@@ -46,7 +46,7 @@
 			}
 		},
 		getBudgetsList : function(){
-			return this.GetComponentByRID("budgetsList").GetWideSelect();
+			return this.getComponentByRID("budgetsList").GetWideSelect();
 		},
 		prepareSaveBudgetsList : function(o){
 			aP = this.getProperties().budgetListProp;

@@ -4,11 +4,11 @@
 		embedded_init : function(){
 			if(!this.setStatus){
 				this.setStatus = this._setStatus;
-				this.GetElementByRID("statusCont").style.display = "block";
+				this.getElementByRID("statusCont").style.display = "block";
 			}
 		},
 		_setStatus : function(s){
-			Hemi.xml.setInnerXHTML(this.GetElementByRID("status"),s);
+			Hemi.xml.setInnerXHTML(this.getElementByRID("status"),s);
 		}
 ]]></embedded-script>
 </html-fragment>

@@ -31,7 +31,7 @@
 	pickOperation : function(s, v){
 		var o = this.getBean("rocketType"), _s = this.getProperties();
 		o[_s.operationProp] = (typeof v == "object" && _s.operationAttributeProp ? v[_s.operationAttributeProp] : v);
-		this.GetElementByRID("operationUrn").value = (v && typeof v == "object" ? v.urn : (v ? v : ""));
+		this.getElementByRID("operationUrn").value = (v && typeof v == "object" ? v.urn : (v ? v : ""));
 	}
 	]]></embedded-script>
 </html-fragment>

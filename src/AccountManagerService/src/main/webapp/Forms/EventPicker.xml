@@ -45,7 +45,7 @@
 			}
 		},
 		getEventsList : function(){
-			return this.GetComponentByRID("eventsList").GetWideSelect();
+			return this.getComponentByRID("eventsList").GetWideSelect();
 		},
 		prepareSaveEventsList : function(o){
 			aP = this.getProperties().eventListProp;

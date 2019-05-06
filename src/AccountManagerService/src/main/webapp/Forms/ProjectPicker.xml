@@ -45,7 +45,7 @@
 			}
 		},
 		getProjectsList : function(){
-			return this.GetComponentByRID("projectsList").GetWideSelect();
+			return this.getComponentByRID("projectsList").GetWideSelect();
 		},
 		prepareSaveProjectsList : function(o){
 			aP = this.getProperties().projectListProp;

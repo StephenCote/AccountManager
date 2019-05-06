@@ -19,7 +19,7 @@
 			this.scopeHandler("video_load",0,0,1);
 			
 			var oI = document.createElement(_s.video ? "video" : "img");
-			var oC = this.GetElementByRID("image-field");
+			var oC = this.getElementByRID("image-field");
 			if(_s.video){
 				oI.setAttribute("autoplay","true");
 				var oS = document.createElement("source");
@@ -42,7 +42,7 @@
 
 		},
 		_handle_video_load : function(e){
-			var o = this.GetElementByRID("image-field").getElementsByTagName("video")[0],_s = this.getProperties();
+			var o = this.getElementByRID("image-field").getElementsByTagName("video")[0],_s = this.getProperties();
 		    var width = this.videoWidth,
         	height = this.videoHeight;
         	Hemi.log("Start dimen: " + o.videoWidth + "X" + o.videoHeight);
@@ -64,7 +64,7 @@
 
 		},
 		_handle_imageviewer_load : function(e){
-			var o = this.GetElementByRID("image-field").getElementsByTagName("img")[0],_s = this.getProperties();
+			var o = this.getElementByRID("image-field").getElementsByTagName("img")[0],_s = this.getProperties();
 			//alert(o.nodeName);
 			// Add 40px to accomodate title and status bar
 			//

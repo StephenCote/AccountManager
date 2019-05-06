@@ -35,15 +35,15 @@
 	
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			this.GetElementByRID("credentialContainer").style.display = (this.getBean("rocketType").id ? "block":"none");
-			this.GetElementByRID("pathCont").style.display = "none";
+			this.getElementByRID("credentialContainer").style.display = (this.getBean("rocketType").id ? "block":"none");
+			this.getElementByRID("pathCont").style.display = "none";
 			this.initContactInformation();
 			var o = this.getBean("rocketType");
 			if(o.objectId){
 				var aR = AM6Client.entitlements("USER",o.objectId);
 				for(var i = 0; i < aR.length;i++){
 					if(aR[i].name.match(/^apiusers$/gi)){
-						this.GetElementByRID("apiCredentialContainer").style.display = "block";
+						this.getElementByRID("apiCredentialContainer").style.display = "block";
 						break;
 					}
 				}
@@ -79,7 +79,7 @@
 			return AM6Client.update("USER",o);
 		},
 		prepareSave : function(o){
-			this.GetElementByRID("text").className = "rocket-text";
+			this.getElementByRID("text").className = "rocket-text";
 			this.prepareSaveContactInformation(o);
 			return 1;
 		}
