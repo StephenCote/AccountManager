@@ -151,7 +151,7 @@ public class CommunityService {
 	
 	@RolesAllowed({"admin","user"})
 	@GET
-	@Path("/enroll/admin/{communityId:[0-9A-Za-z\\-]+}/{userId:[0-9A-Za-z\\-]+}")
+	@Path("/enroll/admin/{userId:[0-9A-Za-z\\-]+}/{communityId:[0-9A-Za-z\\\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response enrollAdminInCommunity(@PathParam("communityId") String communityId,@PathParam("userId") String userId, @Context HttpServletRequest request){
