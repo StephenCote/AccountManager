@@ -10,20 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.taskType();
-					o.name = "";
-					o.description = "";
-					o.ticketStatus = "UNKNOWN";
-					o.priority = "NORMAL";
-					o.severity = "LOW";
-					o.nameType = "TICKET";
-					o.id = 0;
-					o.dueDate = (new Date());
-					o.closedDate = (new Date());
-					/// o.expirationDate = (new Date());
-					o.reopenedDate = (new Date());
-					o.createdDate = (new Date());
-					o.modifiedDate = (new Date());
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

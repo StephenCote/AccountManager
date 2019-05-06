@@ -45,7 +45,7 @@
 			}
 		},
 		getLocationsList : function(){
-			return this.GetComponentByRID("locationsList").GetWideSelect();
+			return this.getComponentByRID("locationsList").GetWideSelect();
 		},
 		prepareSaveLocationsList : function(o){
 			aP = this.getProperties().locationListProp;

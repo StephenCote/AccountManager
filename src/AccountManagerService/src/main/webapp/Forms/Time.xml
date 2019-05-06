@@ -10,12 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.timeType();
-					o.name = "";
-					o.value = 0;
-					o.basisType = "DAY";
-					o.id = 0;
-					o.nameType = "TIME";
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

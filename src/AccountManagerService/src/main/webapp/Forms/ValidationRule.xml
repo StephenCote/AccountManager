@@ -15,19 +15,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.validationRuleType();
-					o.name = "";
-					o.nameType = "VALIDATIONRULE";
-					o.description = "";
-					o.isReplacementRule = false;
-					o.isRuleSet = false;
-					o.comparison = false;
-					o.expression = "";
-					o.errorMessage = "";
-					o.replacementValue = "";
-					o.allowNull = false;
-					o.validationType = "UNKNOWN";
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

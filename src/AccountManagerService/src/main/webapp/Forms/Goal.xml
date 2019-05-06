@@ -17,14 +17,7 @@
 			if(!this.getBean("rocketType")){
 				var o = _s.viewType;
 				if(!o){
-					o = new org.cote.objects.goalType();
-					o.name = "";
-					o.nameType = "GOAL";
-					o.priority = "UNKNOWN";
-					o.logicalOrder = 0;
-					o.description = "";
-					o.goalType = "UNKNOWN";
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

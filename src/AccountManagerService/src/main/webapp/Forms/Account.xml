@@ -9,14 +9,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.accountType();
-					o.name = "";
-					o.nameType = "ACCOUNT";
-					o.id = 0;
-					o.referenceId = 0;
-					o.accountId = "";
-					o.accountType = "UNKNOWN";
-					o.accountStatus = "UNKNOWN";
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

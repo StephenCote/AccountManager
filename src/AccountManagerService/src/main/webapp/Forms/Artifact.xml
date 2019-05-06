@@ -15,16 +15,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.artifactType();
-					o.name = "";
-					o.nameType = "ARTIFACT";
-					o.description = "";
-					o.artifactType = "UNKNOWN";
-					o.createdDate = new Date();
-					o.previousTransitionId = 0;
-					o.nextTransitionId = 0;
-					o.artifactDataId = 0;
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

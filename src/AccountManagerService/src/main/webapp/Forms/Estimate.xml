@@ -15,12 +15,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.estimateType();
-					o.name = "";
-					o.nameType = "ESTIMATE";
-					o.description = "";
-					o.estimateType = "UNKNOWN";
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

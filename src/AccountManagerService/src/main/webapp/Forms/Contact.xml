@@ -10,15 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.contactType();
-					o.name = "";
-					o.id = 0;
-					o.nameType = "CONTACT";
-					o.locationType = "UNKNOWN";
-					o.contactType = "UNKNOWN";
-					o.preferred = false;
-					o.description = "";
-					o.contactValue = "";
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

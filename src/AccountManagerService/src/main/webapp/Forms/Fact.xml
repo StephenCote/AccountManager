@@ -10,19 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.factType();
-					o.name = "";
-					o.nameType = "FACT";
-					o.description = "";
-					o.sourceUrl = "";
-					o.sourceUrn = "";
-					o.sourceDataType = "VARCHAR";
-					o.factData = "";
-					o.sourceType = "";
-					o.score = 0;
-					o.factType = "UNKNOWN";
-					o.factoryType = "UNKNOWN";
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

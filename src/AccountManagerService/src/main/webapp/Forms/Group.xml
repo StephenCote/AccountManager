@@ -11,11 +11,9 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.baseGroupType();
-					o.name = "";
+					o = model.primitive(this.getProperties().typeName);
 					var p = AM6Client.find("GROUP","UNKNOWN",this.getProperties().defaultPath);
 					o.parentId = (p ? p.id : 0);
-					o.nameType = "GROUP";
 					o.groupType = (this.getProperties().defaultGroupType && this.getProperties().defaultGroupType != "UNKNOWN" ? this.getProperties().defaultGroupType : "DATA");
 				}
 				else if(o.path){

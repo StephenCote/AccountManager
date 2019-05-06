@@ -10,14 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.operationType();
-					o.name = "";
-					o.score = 0;
-					o.nameType = "OPERATION";
-					o.description = "";
-					o.operation = "";
-					o.operationType = "UNKNOWN";
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

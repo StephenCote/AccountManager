@@ -10,16 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.functionType();
-					o.nameType = "FUNCTION";
-					o.name = "";
-					o.description = "";
-					o.sourceUrl = "";
-					o.sourceUrn = "";
-					o.functionType = "JAVA";
-					o.logicalOrder = 0;
-					o.score = 0;
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

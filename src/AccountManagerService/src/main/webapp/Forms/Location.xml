@@ -15,16 +15,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.artifactType();
-					o.name = "";
-					o.nameType = "LOCATION";
-					o.description = "";
-					o.id = 0;
-					o.parentId = 0;
-					o.boundaries = [];
-					o.borders = [];
-					o.geographyType = "UNKNOWN";
-					o.classification = "";
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

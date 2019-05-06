@@ -15,14 +15,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.resourceType();
-					o.name = "";
-					o.nameType = "RESOURCE";
-					o.id = 0;
-					o.resourceType = "UNKNOWN";
-					o.description = "";
-					o.utilization = 0;
-					o.resourceDataId = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

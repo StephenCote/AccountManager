@@ -15,12 +15,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.modelType();
-					o.name = "";
-					o.nameType = "MODEL";
-					o.id = 0;
-					o.modelType = "ATOMIC";
-					o.description = "";
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

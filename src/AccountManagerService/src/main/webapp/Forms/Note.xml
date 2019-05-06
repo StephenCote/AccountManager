@@ -15,14 +15,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.noteType();
-					o.name = "";
-					o.nameType = "NOTE";
-					o.text = "";
-					o.id = 0;
-					o.createdDate = new Date();
-					o.modifiedDate = o.createdDate;
-					o.childNotes = [];
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

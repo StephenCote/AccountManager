@@ -10,17 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.ruleType();
-					o.name = "";
-					o.nameType = "RULE";
-					o.score = 0;
-					o.logicalOrder = 0;
-					o.description = "";
-					o.ruleType = "PERMIT";
-					o.condition = "ALL";
-					o.rules = [];
-					o.patterns = [];
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

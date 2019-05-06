@@ -10,11 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.baseTagType();
-					o.name = "";
-					o.id = 0;
-					o.nameType = "TAG";
-					o.tagType = "UNKNOWN";
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

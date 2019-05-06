@@ -15,23 +15,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.eventType();
-					o.name = "";
-					o.description = "";
-					o.nameType = "EVENT";
-					o.eventType = "UNKNOWN";
-					o.id = 0;
-					o.parentId = 0;
-					o.actors = [];
-					o.entryTraits = [];
-					o.exitTraits = [];
-					o.groups = [];
-					o.influencers = [];
-					o.observers = [];
-					o.orchestrators = [];
-					o.things = [];
-					o.startDate = new Date();
-					o.endDate = o.startDate;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

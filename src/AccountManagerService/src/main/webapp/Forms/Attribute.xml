@@ -42,13 +42,13 @@
 		embedded_init : function(){
 			var _s = this.getProperties(), o, a;
 			o = _s.viewType;
-			if(!o) Hemi.xml.setInnerXHTML(this.GetElementByRID("objectLabel"),"Invalid object reference");
+			if(!o) Hemi.xml.setInnerXHTML(this.getElementByRID("objectLabel"),"Invalid object reference");
 			else{
 				if(!this.getProperties().valueListProp) this.getProperties().valueListProp = "values";
 				a = _s.attributeType;
-				Hemi.xml.setInnerXHTML(this.GetElementByRID("objectLabel"),(!o ? "New Object" : o.name + " (#" + o.id + ")"));
-				this.GetElementByRID("name").value = (a ? a.name : ""); 
-				this.GetComponentByRID("valuesList").setLoadHandler(this.scopeHandler("configValuesList",0,1,1));
+				Hemi.xml.setInnerXHTML(this.getElementByRID("objectLabel"),(!o ? "New Object" : o.name + " (#" + o.id + ")"));
+				this.getElementByRID("name").value = (a ? a.name : ""); 
+				this.getComponentByRID("valuesList").setLoadHandler(this.scopeHandler("configValuesList",0,1,1));
 			}
 			
 		},
@@ -57,7 +57,7 @@
 			aV = oAL.getItems();
 			this.setStatus("");
 
-			var sN = this.GetElementByRID("name").value;
+			var sN = this.getElementByRID("name").value;
 			/// If no name, then it's an error 
 			if(!sN || sN.length == 0){
 				this.setStatus("No name was specified");
@@ -136,7 +136,7 @@
 			}
 		},
 		getValuesList : function(){
-			return this.GetComponentByRID("valuesList").GetWideSelect();
+			return this.getComponentByRID("valuesList").GetWideSelect();
 		}
 	]]></embedded-script>
 </Template>

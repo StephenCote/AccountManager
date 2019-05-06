@@ -10,21 +10,8 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.addressType();
-					o.name = "";
-					o.nameType = "ADDRESS";
-					o.id = 0;
-					o.locationType = "UNKNOWN";
-					o.preferred = false;
-					o.addressLine1 = "";
-					o.addressLine2 = "";
-					o.city = "";
-					o.state = "";
-					o.region = "";
-					o.state = "";
-					o.postalCode = "";
-					o.country = "";
-					o.description = "";
+					o = model.primitive(this.getProperties().typeName);
+
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

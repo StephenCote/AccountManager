@@ -15,14 +15,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.scheduleType();
-					o.name = "";
-					o.id = 0;
-					o.nameType = "TRAIT";
-					o.description = "";
-					o.score = 0;
-					o.alignmentType = "NEUTRAL";
-					o.traitType = "UNKNOWN";
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

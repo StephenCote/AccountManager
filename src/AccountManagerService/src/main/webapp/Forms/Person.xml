@@ -10,25 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.personType();
-					o.name = "";
-					o.nameType = "PERSON";
-					o.description = "";
-					o.suffix = "";
-					o.prefix = "";
-					o.title = "";
-					o.alias = "";
-					o.firstName = "";
-					o.lastName = "";
-					o.middleName = "";
-					o.id = 0;
-					o.gender = "unknown";
-					o.birthDate = new Date();
-					o.users = [];
-					o.accounts = [];
-					o.partners = [];
-					o.dependents = [];
-					o.notes = [];
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

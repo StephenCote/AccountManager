@@ -10,12 +10,9 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.baseRoleType();
-					o.id = 0;
-					o.name = "";
+					o = model.primitive(this.getProperties().typeName);
 					o.parentId = (this.getProperties().parentRef ? this.getProperties().parentRef.id : 0);
-					o.nameType = "ROLE";
-					o.roleType = "USER";
+
 				}
 				else if(o.parentId > 0){
 					this.getProperties().defaultPath = o.parentPath;

@@ -10,20 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.policyType();
-					o.name = "";
-					o.nameType = "POLICY";
-					o.logicalOrder = 0;
-					o.score = 0;
-					o.expiresDate = new Date();
-					o.modifiedDate = new Date();
-					o.createdDate = new Date();
-					o.condition = "ALL";
-					o.enabled = false;
-					o.decisionAge = 0;
-					o.description = "";
-					o.rules = [];
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

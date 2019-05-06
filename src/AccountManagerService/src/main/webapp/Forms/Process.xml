@@ -15,13 +15,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.processType();
-					o.name = "";
-					o.nameType = "PROCESS";
-					o.description = "";
-					o.logicalOrder = 0;
-					o.iterates = false;
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

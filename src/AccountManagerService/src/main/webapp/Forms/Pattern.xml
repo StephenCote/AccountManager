@@ -10,19 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.patternType();
-					o.name = "";
-					o.score = 0;
-					o.nameType = "PATTERN";
-					o.logicalOrder = 0;
-					o.description = "";
-					o.matchUrn = "";
-					o.factUrn = "";
-					o.operationUrn = "";
-					o.comparator = "EQUALS";
-					o.patternType = "EXPRESSION";
-
-					o.id = 0;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;

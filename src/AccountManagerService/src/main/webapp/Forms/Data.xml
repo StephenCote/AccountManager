@@ -10,17 +10,7 @@
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
 				if(!o){
-					o = new org.cote.objects.dataType();
-					o.name = "";
-					o.blob = true;
-					o.nameType = "DATA";
-					o.dataBytesStore = "";
-					o.mimeType = "text/plain";
-					o.description = "";
-					o.id = 0;
-					o.createdDate = new Date();
-					o.modifiedDate = o.createdDate;
-					o.expiryDate = o.createdDate;
+					o = model.primitive(this.getProperties().typeName);
 				}
 				else if(o.groupPath){
 					this.getProperties().defaultPath = o.groupPath;
