@@ -1,5 +1,0 @@
-<Template>
-	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
-	<import-xml src = "/AccountManagerExample/Forms/DndFormFragment.xml" id = "DndFormFragment" />
-	<import-xml src = "/AccountManagerExample/Forms/StatusFrag.xml" id = "StatusFrag" />
-</Template>

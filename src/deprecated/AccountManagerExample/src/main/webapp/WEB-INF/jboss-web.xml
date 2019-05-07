@@ -1,8 +1,0 @@
-<jboss-web>
-
-    <session-config>
-       <cookie-config>
-          <path>/</path>
-       </cookie-config>
-    </session-config>
-</jboss-web>

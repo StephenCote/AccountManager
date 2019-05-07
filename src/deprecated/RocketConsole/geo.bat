@@ -1,4 +1,0 @@
-cd target
-//java -jar RocketConsole.jar -organization /Development -username RocketQAUser -password password -path "~/Locations" -geo -basePath c:\\users\\swcot\\Downloads\\location\\ -features featureCodes_en.txt
-java -jar RocketConsole.jar -organization /Development -username RocketQAUser -password password -path "~/Locations" -geo -clean -basePath c:\\users\\swcot\\Downloads\\location\\ -countryInfo countryInfo.txt
-java -jar RocketConsole.jar -organization /Development -username RocketQAUser -password password -path "~/Locations" -geo -basePath c:\\users\\swcot\\Downloads\\location\\ -admin1 admin1CodesASCII.txt
