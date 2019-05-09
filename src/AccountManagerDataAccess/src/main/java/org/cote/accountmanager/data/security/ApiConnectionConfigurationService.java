@@ -24,7 +24,9 @@
 package org.cote.accountmanager.data.security;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -61,7 +63,8 @@ public class ApiConnectionConfigurationService {
 	
 	/// Api User holds the encrypted credentials and connection settings for making API calls
 	/// 
-	private static UserType apiUser = null;
+	//private static UserType apiUser = null;
+	private static Map<Long,UserType> apiUsers = new HashMap<>();
 	private static String apiEmailConfigName = "System Email";
 	private static String apiRestConfigName = "System Rest";
 	private static String apiUserName = "ApiUser";
@@ -83,15 +86,16 @@ public class ApiConnectionConfigurationService {
 	}
 
 	public static UserType getApiUser(long organizationId) throws FactoryException, ArgumentException{
-		if(apiUser != null) return apiUser;
+		if(apiUsers.containsKey(organizationId)) return apiUsers.get(organizationId);
 		UserType chkUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(apiUserName, organizationId);
 		if(chkUser == null){
 			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "ApiConnectionConfigurationService", AuditEnumType.USER, apiUserName);
 			PersonService.createUserAsPerson(audit, apiUserName, UUID.randomUUID().toString(), "ApiUser@example.com", UserEnumType.SYSTEM,UserStatusEnumType.RESTRICTED , organizationId);
 			chkUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(apiUserName, organizationId);
 		}
-		apiUser = chkUser;
-		return apiUser;
+		if(chkUser != null) apiUsers.put(organizationId, chkUser);
+		//apiUser = chkUser;
+		return chkUser;
 	}
 	
 	public static byte[] getApiClientCredential(ApiClientConfigurationBean apiConfig, CredentialEnumType credType) throws FactoryException{
