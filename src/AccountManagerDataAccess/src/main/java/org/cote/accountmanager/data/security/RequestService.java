@@ -16,7 +16,6 @@ import org.cote.accountmanager.data.factory.ApproverFactory;
 import org.cote.accountmanager.data.factory.ControlFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.INameIdFactory;
-import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.factory.PolicyFactory;
@@ -24,8 +23,6 @@ import org.cote.accountmanager.data.factory.RequestFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
-import org.cote.accountmanager.data.query.QueryField;
-import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.ApprovalResponseEnumType;
@@ -49,13 +46,9 @@ import org.cote.accountmanager.objects.PolicyResponseEnumType;
 import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.ActionEnumType;
-import org.cote.accountmanager.objects.types.AuditEnumType;
-import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-import org.cote.accountmanager.util.JSONUtil;
 
 public class RequestService {
 	

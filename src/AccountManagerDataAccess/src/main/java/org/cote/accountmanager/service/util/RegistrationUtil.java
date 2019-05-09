@@ -48,7 +48,6 @@ import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.SessionBean;
-
 import org.cote.accountmanager.util.CalendarUtil;
 
 

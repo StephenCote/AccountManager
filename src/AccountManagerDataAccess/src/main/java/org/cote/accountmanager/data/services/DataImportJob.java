@@ -8,7 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-
+import org.cote.accountmanager.data.factory.DataFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.util.ContactParser;
@@ -17,11 +18,9 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.services.ThreadService;
-
-import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.data.factory.*;
 
 /// TODO: Still has hardcoded org references to /FirstContact
 public class DataImportJob extends ThreadService {

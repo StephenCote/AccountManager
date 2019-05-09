@@ -19,21 +19,15 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.exceptions.FactoryException;
-import org.cote.accountmanager.objects.ApprovalEnumType;
+import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.ApprovalResponseEnumType;
 import org.cote.accountmanager.objects.ApproverEnumType;
-import org.cote.accountmanager.objects.ControlActionEnumType;
-import org.cote.accountmanager.objects.ControlEnumType;
-import org.cote.accountmanager.objects.ControlType;
-import org.cote.accountmanager.objects.types.ActionEnumType;
-import org.cote.accountmanager.objects.types.ComparatorEnumType;
-import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
 
 public class RequestFactory  extends NameIdFactory {

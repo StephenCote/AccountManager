@@ -26,12 +26,7 @@ package org.cote.accountmanager.data.factory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.cote.accountmanager.data.ArgumentException;
@@ -48,11 +43,8 @@ import org.cote.accountmanager.objects.ApproverType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-import org.cote.accountmanager.objects.types.SqlDataEnumType;
-import org.cote.accountmanager.util.CalendarUtil;
 
 public class ApproverFactory extends NameIdFactory {
 

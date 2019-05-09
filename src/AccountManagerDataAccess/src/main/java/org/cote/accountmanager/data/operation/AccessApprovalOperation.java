@@ -1,9 +1,5 @@
 package org.cote.accountmanager.data.operation;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,12 +13,9 @@ import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OperationResponseEnumType;
-import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyResponseType;
-import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.JSONUtil;
 
 public class AccessApprovalOperation  implements IOperation {

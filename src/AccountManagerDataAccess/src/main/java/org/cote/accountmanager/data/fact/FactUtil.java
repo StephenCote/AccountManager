@@ -42,7 +42,6 @@ import org.cote.accountmanager.data.factory.NameIdGroupFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
-import org.cote.accountmanager.data.operation.IOperation;
 import org.cote.accountmanager.data.operation.OperationUtil;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.ScriptService;

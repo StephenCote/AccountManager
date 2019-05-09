@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 

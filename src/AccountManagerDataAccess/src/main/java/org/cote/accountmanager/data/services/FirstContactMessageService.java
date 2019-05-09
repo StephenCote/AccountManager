@@ -10,13 +10,18 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.ContactFactory;
+import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.FactoryBase;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.MessageFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.security.ApiClientConfigurationBean;
 import org.cote.accountmanager.data.security.ApiConnectionConfigurationService;
-import org.cote.accountmanager.data.services.ContactService;
-import org.cote.accountmanager.data.services.EmailService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AlertEnumType;
@@ -37,8 +42,6 @@ import org.cote.accountmanager.objects.types.LocationEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
 import org.cote.accountmanager.objects.types.SpoolStatusEnumType;
 import org.cote.accountmanager.util.DataUtil;
-
-import org.cote.accountmanager.data.factory.*;
 
 public class FirstContactMessageService {
 	

@@ -6,15 +6,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AlertEnumType;
 import org.cote.accountmanager.objects.MessageSpoolType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SpoolStatusEnumType;
 import org.cote.accountmanager.services.ThreadService;
-
-import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.data.factory.*;
-import org.cote.accountmanager.exceptions.FactoryException;
 
 
 /// TODO: Still has hardcoded org references to /FirstContact

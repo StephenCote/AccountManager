@@ -2,7 +2,6 @@ package org.cote.accountmanager.data.factory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
@@ -22,9 +20,9 @@ import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.ApprovalEnumType;
 import org.cote.accountmanager.objects.ApprovalResponseEnumType;
+import org.cote.accountmanager.objects.ApprovalType;
 import org.cote.accountmanager.objects.ApproverEnumType;
 import org.cote.accountmanager.objects.ApproverType;
-import org.cote.accountmanager.objects.ApprovalType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;

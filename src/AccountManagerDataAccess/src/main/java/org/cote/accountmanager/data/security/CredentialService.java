@@ -24,6 +24,7 @@
 package org.cote.accountmanager.data.security;
 
 import java.io.UnsupportedEncodingException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.Arrays;
@@ -42,7 +43,6 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
-
 import org.cote.accountmanager.util.SecurityUtil;
 
 public class CredentialService {

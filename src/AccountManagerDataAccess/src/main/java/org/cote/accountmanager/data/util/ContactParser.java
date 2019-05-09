@@ -18,6 +18,10 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.ContactFactory;
+import org.cote.accountmanager.data.factory.ContactInformationFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ContactInformationType;
@@ -35,8 +39,6 @@ import org.cote.parsers.excel.RowType;
 import org.cote.parsers.excel.SheetType;
 import org.cote.parsers.excel.TikaShredder;
 import org.cote.parsers.excel.WorkbookType;
-import org.cote.accountmanager.objects.types.FactoryEnumType;
-import org.cote.accountmanager.data.factory.*;
 
 public class ContactParser {
 	public static final Logger logger = LogManager.getLogger(ContactParser.class);
