@@ -556,7 +556,7 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 	applyMethodToProject : function(oP, oM){
 		return applyMethodologyToProject(oP, oM);
 	},
-	setCommunityProject : function(p,b){
+	setCommunityProject : function(p, c, b){
 		currentProject = 0;
 		contextProject = (p ? p : 0);
 		contextProjectGroup = 0;
@@ -564,9 +564,9 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 		currentRoleBucket = (contextProject ? AM6Client.communityProjectRoleBase(contextProject) : 0);
 		currentPermissionBucket = (contextProject ? AM6Client.communityProjectPermissionBase(contextProject) : 0);
 
-		lifecycleScope = (b ? true : false);
+		lifecycleScope = (c ? true : false);
 		updateBase();
-		Hemi.message.service.publish("onchangecommunity", this);
+		if(!b) Hemi.message.service.publish("onchangecommunity", this);
 	},
 	setCommunityMode : function(b){
 		communityMode = (b ? true : false);
@@ -578,13 +578,12 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 		contextProject = 0;
 		contextProjectGroup = 0;
 		currentProject = (o ? o : 0);
-		Hemi.message.service.publish("onchangecommunity", this);
 	},
 	getCurrentProject : function(){
 		if(communityMode) return;
 		return currentProject;
 	},
-	setCommunityLifecycle : function(l){
+	setCommunityLifecycle : function(l, b){
 		if(!communityMode) communityMode = (l ? true : false);
 		contextLifecycle = (l ? l : 0);
 		contextLifecycleGroup = 0;
@@ -593,7 +592,7 @@ window.irocket = irocket = Hemi.newObject("Rocket Interface","1.0",true,true,{
 		lifecycleScope = true;
 		if(contextLifecycle) contextLifecycleGroup = AM6Client.get("GROUP",contextLifecycle.groupId);
 		updateBase();
-		Hemi.message.service.publish("onchangecommunity", this);
+		if(!b) Hemi.message.service.publish("onchangecommunity", this);
 	},
 	getCommunityLifecycle : function(){return contextLifecycle;},
 	getCommunityProject : function(){return contextProject;},

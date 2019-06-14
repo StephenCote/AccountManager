@@ -38,10 +38,10 @@
 			},
 			refreshCommunity : function(s, v){
 				if(v == this || this.getProperties().blockAnnounce) return;
-				
+
 				this.getProperties().blockAnnounce = 1;
 				this.refreshLifecycleList();
-				// this.refreshProjectList();
+
 				this.getProperties().blockAnnounce = 0;
 				
 				this.getElementByRID("communityBtn").src = "/AccountManagerService/Media/Icons/" + (irocket.getCommunityMode()? "Crystal/24x24/Crystal_Clear_app_Login_Manager.png" : "user_24x24.png");
@@ -111,7 +111,7 @@
 			},
 			selectProject : function(){
 				var vS = this.getElementByRID("projects").value;
-		
+				this.getProperties().blockAnnounce = 1;
 				if(vS.match(/^\d+$/) && vS != "0"){
 					var oP = AM6Client.get("PROJECT",vS);
 					if(!irocket.getCommunityMode()) irocket.setCurrentProject(oP);
@@ -126,7 +126,8 @@
 					irocket.setCurrentProject(o);
 					this.getElementByRID("projects").selectedIndex = 0;
 				}
-				if(!this.getProperties().blockAnnounce) Hemi.message.service.publish("onchangecommunity",this);
+				this.getProperties().blockAnnounce = 0;
+				///if(!this.getProperties().blockAnnounce) Hemi.message.service.publish("onchangecommunity",this);
 				
 			},
 			_handle_session_refresh : function(s,v){
