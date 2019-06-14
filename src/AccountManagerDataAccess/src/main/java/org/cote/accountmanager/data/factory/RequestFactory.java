@@ -258,7 +258,8 @@ public class RequestFactory  extends NameIdFactory {
 		ProcessingInstructionType pi = new ProcessingInstructionType();
 		pi.setPaginate(true);
 		pi.setStartIndex(0L);
-		pi.setRecordCount(2);
+		/// left at (2) for some reason
+		pi.setRecordCount(0);
 		
 		return list(fields.toArray(new QueryField[0]), pi, organizationId);
 	}
