@@ -33,6 +33,8 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.factory.INameIdGroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
@@ -71,7 +73,8 @@ public class Rocket {
 	public static final Logger logger = LogManager.getLogger(Rocket.class);
 	
 	private static OrganizationType rocketOrganization = null;
-	private static DirectoryGroupType rocketDir = null;
+	/// private static DirectoryGroupType rocketDir = null;
+	private static Map<Long,DirectoryGroupType> rocketDirMap = new HashMap<>();
 	private static boolean isSetup = false;
 	private static String basePath = "/Rocket";
 	private static String lifecyclePath = "/Lifecycles";
@@ -483,14 +486,15 @@ public class Rocket {
 		return isConfigured;
 	}
 	public static DirectoryGroupType getRocketApplicationGroup(long organizationId){
-		if(rocketDir != null) return rocketDir;
+		if(rocketDirMap.containsKey(organizationId)) return rocketDirMap.get(organizationId);
 		try {
-			rocketDir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA,basePath, organizationId);
+			DirectoryGroupType rocketDir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA,basePath, organizationId);
+			if(rocketDir != null) rocketDirMap.put(organizationId, rocketDir);
 		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return rocketDir;
+		return rocketDirMap.get(organizationId);
 	}
 	public static void clearCache(){
 		rocketOrganization = null;
