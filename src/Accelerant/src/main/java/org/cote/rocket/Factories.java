@@ -247,7 +247,7 @@ public class Factories extends org.cote.accountmanager.data.Factories {
     }
     
     public static void prepare(){
-    	logger.info("Touch Rocket to initialize static registration");
+    	logger.debug("Touch Rocket to initialize static registration");
     	BulkFactories.prepare();
     }
 
