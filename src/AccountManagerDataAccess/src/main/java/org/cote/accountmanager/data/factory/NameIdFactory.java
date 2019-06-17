@@ -60,7 +60,6 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
-
 public abstract class NameIdFactory extends FactoryBase implements INameIdFactory{
 	public static final Logger logger = LogManager.getLogger(NameIdFactory.class);
 	private Map<Long, String> typeNameIdMap = null;
