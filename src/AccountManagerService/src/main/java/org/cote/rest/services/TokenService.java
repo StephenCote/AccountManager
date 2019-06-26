@@ -61,7 +61,6 @@ import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.AuthenticationResponseEnumType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
-import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;

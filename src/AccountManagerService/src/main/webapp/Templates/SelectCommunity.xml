@@ -94,7 +94,6 @@
 	},
 	selectProject : function(){
 		var vS = this.getElementByRID("projects").value;
-
 		if(vS.match(/^\d+$/) && vS != "0"){
 			var oP = AM6Client.get("PROJECT",vS);
 			if(!irocket.getCommunityMode()) irocket.setCurrentProject(oP);

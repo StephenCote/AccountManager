@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template>
 
-	<p>Operation Base</p>
 	<embedded-script><![CDATA[
 		template_init : function(){
 			this.getProperties().typeName = "Operation";

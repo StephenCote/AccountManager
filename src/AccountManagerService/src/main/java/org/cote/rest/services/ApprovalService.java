@@ -1,10 +1,7 @@
 package org.cote.rest.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
@@ -26,23 +23,12 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.INameIdFactory;
-import org.cote.accountmanager.data.factory.PatternFactory;
-import org.cote.accountmanager.data.factory.PolicyFactory;
 import org.cote.accountmanager.data.factory.RequestFactory;
-import org.cote.accountmanager.data.factory.RuleFactory;
-import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.security.RequestService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.OperationType;
-import org.cote.accountmanager.objects.PatternEnumType;
-import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PolicyType;
-import org.cote.accountmanager.objects.RuleEnumType;
-import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;

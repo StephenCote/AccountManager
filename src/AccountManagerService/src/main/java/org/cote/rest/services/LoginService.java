@@ -68,30 +68,7 @@ public class LoginService {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			loginSuccess = false;
 		}
-		/*
-		AccountManagerCallbackHandler callback = new AccountManagerCallbackHandler(credential);
 
-		//LoginContext lcontext = null;
-        
-	      try{
-				//request.getSession(true);
-	    	  LoginContext lc = new LoginContext("AccountManagerService", callback);
-				//LogicModule lm = new LoginModule();
-				lc.login();
-		        //RequestDispatcher requestDispatcher = request.getRequestDispatcher("/Protected");
-		         
-		       // requestDispatcher.forward(request, response);
-		        
-	         // lcontext = new LoginContext( "AccountManager",callback );
-	          //lcontext.login( );
-	      } catch (LoginException lge){
-	    	  logger.error("ERROR",lge.getMessage());
-	    	  logger.error("TRACE", lge.getStackTrace());
-	          loginSuccess = false;
-	      }
-	    
-		return Response.status(200).cookie( new NewCookie( "JSESSIONID", request.getSession().getId() + ";path=/AccountManagerService;HttpOnly")).entity(loginSuccess).build();
-		*/
 		return Response.status(200).entity(loginSuccess).build();
 	}
 	
