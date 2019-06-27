@@ -25,9 +25,12 @@ package org.cote.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ApplicationProfileType;
+import org.cote.accountmanager.objects.ApprovalType;
+import org.cote.accountmanager.objects.ApproverType;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
@@ -95,7 +98,11 @@ import org.cote.propellant.objects.WorkType;
 
 @XmlRootElement(name="EntitySchema")
 public class EntitySchema {
+	
 	private String defaultPackage = "org.cote.objects";
+	private AccessRequestType accessRequestType = null;
+	private ApproverType approverType = null;
+	private ApprovalType approvalType = null;
 	private AuthenticationRequestType authenticationRequest = null;
 	private NoteType noteType = null;
 	private LifecycleType lifecycleType = null;
@@ -167,6 +174,9 @@ public class EntitySchema {
 	private BaseSearchRequestType baseSearchRequestType = null;
 	private SortQueryType sortQueryType = null;
 	public EntitySchema(){
+		accessRequestType = new AccessRequestType();
+		approverType = new ApproverType();
+		approvalType = new ApprovalType();
 		applicationProfileType = new ApplicationProfileType();
 		sortQueryType = new SortQueryType();
 		baseSearchRequestType = new BaseSearchRequestType();
@@ -240,6 +250,42 @@ public class EntitySchema {
 	}
 
 	
+
+	public AccessRequestType getAccessRequestType() {
+		return accessRequestType;
+	}
+
+
+
+	public void setAccessRequestType(AccessRequestType accessRequestType) {
+		this.accessRequestType = accessRequestType;
+	}
+
+
+
+	public ApproverType getApproverType() {
+		return approverType;
+	}
+
+
+
+	public void setApproverType(ApproverType approverType) {
+		this.approverType = approverType;
+	}
+
+
+
+	public ApprovalType getApprovalType() {
+		return approvalType;
+	}
+
+
+
+	public void setApprovalType(ApprovalType approvalType) {
+		this.approvalType = approvalType;
+	}
+
+
 
 	public ApplicationProfileType getApplicationProfileType() {
 		return applicationProfileType;
