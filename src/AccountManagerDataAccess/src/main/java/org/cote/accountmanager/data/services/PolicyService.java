@@ -267,8 +267,8 @@ public class PolicyService {
 		RuleType useRule = null;
 		PatternType pat = null;
 		
-		String pname = "Access Approval Policy";
-		String rname = "Access Approval Rule";
+		String pname = "Owner Access Approval Policy";
+		String rname = "Owner Access Approval Rule";
 		String patName = "Owner Approval Pattern";
 		String clsAccAprClass = "org.cote.accountmanager.data.operation.AccessApprovalOperation";
 		String clsLookupOwnerClass = "org.cote.accountmanager.data.operation.LookupOwnerOperation";
