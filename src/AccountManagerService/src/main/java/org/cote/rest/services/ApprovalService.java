@@ -84,6 +84,7 @@ public class ApprovalService {
 		if(obj != null) {
 			try {
 				isReq = RequestService.isRequestable(obj);
+				logger.info(obj.getUrn() + " is " + (isReq ? "" : "NOT") + " requestable");
 			} catch (FactoryException | ArgumentException e) {
 				logger.error(e.getMessage());
 			}
