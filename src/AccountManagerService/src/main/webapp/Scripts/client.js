@@ -409,6 +409,12 @@
 		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("USER","GET","_documentcontrol_",v.json);} if(f) f(s,v);};
 	   return Hemi.xml.getJSON(sPrincipal + "/anonymous/",fc,(fH ? 1 : 0));
 	}
+	
+	function generateApplication(sCommId, sProjId, sName, bGenPerm, bGenGroups, iSeedSize, iMaxSize, dDistribution, fH){
+		/// example:generateApplication(sCommId, sProjId, "System of Record", false, true, 0, 100, 1.0)
+		///
+		return Hemi.xml.getJSON(sComm + "/generate/application/" + sCommId + "/" + sProjId + "/" + sName + "/" + bGenPerm + "/" + bGenGroups + "/" + iSeedSize + "/" + iMaxSize + "/" + dDistribution,fH,(fH ? 1 : 0));
+	}
 	function getApplicationProfile(fH){
 		var o = getFromCache("APPLICATION", "GET", "_principal_");
 		if(o){
@@ -831,6 +837,7 @@
 		member : setMember,
 		systemRoles : listSystemRoles,
 		user: getUserObject,
+		generateApplication : generateApplication,
 		application : getApplicationProfile,
 		userPerson : getUserPersonObject,
 		currentOrganization : sCurrentOrganization,
