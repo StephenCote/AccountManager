@@ -474,7 +474,7 @@ public class RocketCommunity implements ICommunityProvider {
 				admin2Loc.setGeographyType(GeographyEnumType.PHYSICAL);
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.LOCATION, admin2Loc);
 
-				if(counter++ > 0 && (counter % 1000) == 0){
+				if(counter++ > 0 && (counter % BulkFactories.bulkBatchSize) == 0){
 					BulkFactories.getBulkFactory().write(sessionId);
 					BulkFactories.getBulkFactory().close(sessionId);
 					sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -555,7 +555,7 @@ public class RocketCommunity implements ICommunityProvider {
 					if(!feature.equals("P.PPL")){
 						continue;
 					}
-					if(counter++ > 0 && (counter % 1000) == 0){
+					if(counter++ > 0 && (counter % BulkFactories.bulkBatchSize) == 0){
 						BulkFactories.getBulkFactory().write(sessionId);
 						BulkFactories.getBulkFactory().close(sessionId);
 						sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -1330,10 +1330,6 @@ public class RocketCommunity implements ICommunityProvider {
 			BasePermissionType[] permissions = (usePermissions ? DataGeneratorData.randomApplicationPermissions(seed, max) : new BasePermissionType[0]);
 			BaseGroupType[] groups = (useGroups ? DataGeneratorData.randomAccountGroups(seed, max) : new BaseGroupType[0]);
 			
-			List<PersonType> persons = BaseService.listByGroup(AuditEnumType.PERSON, "DATA", dutil.getPersonsDir().getObjectId(), 0L, 0, user);
-			int plen = persons.size();
-			logger.info("Working with " + plen + " people");
-			
 			BasePermissionType basePerm = getApplicationPermissionBase(user, proj, newDir);
 			if(basePerm == null){
 				logger.error("Invalid base permission");
@@ -1343,15 +1339,21 @@ public class RocketCommunity implements ICommunityProvider {
 			List<AccountType> accounts = new ArrayList<>();
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			
-			for(int i = 0; i < plen; i++){
-				AccountType acct = dutil.randomAccount(user, newDir);
-				acct.getAttributes().add(Factories.getAttributeFactory().newAttribute(acct, "owner", persons.get(i).getObjectId()));
-				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ACCOUNT, acct);
-				BaseParticipantType part = ((PersonParticipationFactory)Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION)).newAccountPersonParticipation(persons.get(i),acct);
-				((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
-				accounts.add(acct);
+			int count = BaseService.countByGroup(AuditEnumType.PERSON, dutil.getPersonsDir(), user);
+			for(int c = 0; c < count; c += BulkFactories.bulkQueryLimit) {
+				List<PersonType> persons = BaseService.listByGroup(AuditEnumType.PERSON, "DATA", dutil.getPersonsDir().getObjectId(), (long)c, BulkFactories.bulkQueryLimit, user);
+				int plen = persons.size();
+				logger.info("Working with " + plen + " people");
+				
+				for(int i = 0; i < plen; i++){
+					AccountType acct = dutil.randomAccount(user, newDir);
+					acct.getAttributes().add(Factories.getAttributeFactory().newAttribute(acct, "owner", persons.get(i).getObjectId()));
+					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ACCOUNT, acct);
+					BaseParticipantType part = ((PersonParticipationFactory)Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION)).newAccountPersonParticipation(persons.get(i),acct);
+					((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
+					accounts.add(acct);
+				}
 			}
-
 			for(int i = 0; i < groups.length; i++){
 				BaseGroupType g = groups[i];
 				g.setOwnerId(user.getId());
@@ -1389,7 +1391,7 @@ public class RocketCommunity implements ICommunityProvider {
 			
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
-				
+			
 			outBool = true;
 
 			
