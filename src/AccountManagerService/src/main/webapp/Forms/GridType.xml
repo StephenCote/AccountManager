@@ -12,9 +12,10 @@
 		<input type="button" style ="display:none;" rid = "button_save" class = "designer_button save_button" button-action = "Save" />
 		<input type="button" rid = "button_delete" class = "designer_button delete_button" button-action = "Delete"  />
 		<div rid = "button_spacer_1" class = "designer_button_spacer"></div>
-		<input type = "text" rid = "path" style = "margin-top: 5px; width: 100px !important; float: left;" placeholder = "~/Path" class = "rocket-text" />
+		<input type = "text" rid = "path" style = "margin-top: 5px; width: 120px !important; float: left;" placeholder = "~/Path" class = "rocket-text" />
+		<input type = "button" rid = "parentPickerBtn" value = "..." style = "margin-top:5px;float: left;" class = "designer-button" onclick = "${this}.chooseParent()" />
 		<input class = "rocket-text rocket-text-pick" style = "display:none;margin-top: 5px; width: 75px !important; float: left;" type = "text" rid = "filter" value = "" />
-		<input class = "rocket-button" type = "button" rid = "button_search" style = "display:none;margin-top: 5px; float: left;" value = "..." onclick = "${this}._search()" />
+		<input class = "rocket-button" type = "button" rid = "button_search" style = "display:none;margin-top: 5px; float: left;" value = "?" onclick = "${this}._search()" />
 		<div rid = "button_spacer_2" class = "designer_button_spacer"></div>
 		<input type="button" rid = "button_move_first" disabled = "true" class = "designer_button" button-action = "MoveFirst" value = "&lt;&lt;" />
 		<input type="button" rid = "button_move_prev" disabled = "true" class = "designer_button" button-action = "MovePrev" value = "&lt;" />
@@ -60,6 +61,7 @@
 			var _s = this.getProperties(),_o = this.getObjects(),o;
 
 			_s.populate = (bNoPopulate ? 0 : 1);
+			
 			if(!_s.manualPick) _s.manualPick = (bManualPick ? 1 : 0);
 			if(_s.manualPick){
 				this.getElementByRID("control_bar").style.display = "block";
@@ -88,6 +90,7 @@
 			}
 			else{
 				this.getElementByRID("path").style.display = "none";
+				this.getElementByRID("parentPickerBtn").style.display = "none";
 			}
 			if(this.setTitle) this.setTitle(sViewTypeName);
 			
@@ -101,6 +104,30 @@
 			this.getComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
 			
 		},
+		chooseParent : function(){
+			var sType = this.getProperties().viewTypeName;
+			if(!sType.match(/^(group|permission|role)$/gi)) sType = "Group";
+			this.manageList(sType, 0,"pickParent",uwm.getPathForType(sType),1);
+		},
+		pickParent : function(s, v){
+			if(!v || v == null) return;
+			this.getElementByRID("path").value = (v.path ? v.path : v.groupPath) + "/" + v.name;
+			this.refreshList();
+		},
+		
+		/// TODO: Refactor some of this common code into an external fragment
+		///
+		manageList : function(sType, sListId, sFN, sDefPath,bManPick){
+			var oProps = {openerId:this.getObjectId(),listType:sType,picker:1,manualPick:bManPick,pickFunction:sFN,listId:sListId,defaultPath:sDefPath,noMask:1};
+			Hemi.app.createWindow("ManageList", uwm.getApiTypeView(sType) + "/Forms/List" + sType + "s.xml", "Manager-" + Hemi.guid(), 0, 0, oProps, 0)
+			.then((oW)=>{
+	            if (oW) {
+	            	oW.resizeTo(520, 400);
+	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+	            	oW.setHideOnClose(0);
+	            }
+	           });
+		},
 		parentResolver : function(v){
 			var _s = this.getProperties();
 			if(this.resolve) this.resolve(v);
@@ -113,7 +140,6 @@
 				this.getList().getContainer().style.height = iH + "px";
 			}
 			var iW = this.getContainer().parentNode.parentNode.offsetWidth - 200;
-			//this.getElementByRID("path").style.width = iW + "px";
 		},
 		embedded_init : function(){
 		
@@ -394,7 +420,6 @@
 					handler:function(s, v){
 						if(ctl.getReadyState() != 4) return;
 						if(typeof v.json == "boolean" && v.json){
-							//ctl.log("Deleted " + oObj.name);
 							Hemi.log("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
 							ctl.setStatus("Deleted " + ctl.getProperties().typeName + " object #" + o.id);
 							ctl.refreshList();
@@ -456,7 +481,7 @@
 				uwmServiceCache.clearServiceCache(_s.typeName);
 			}
 			var vComp = {};
-			if(_s.picker){
+			if(_s.picker && !_s.noMask){
 				var oOpener = Hemi.registry.service.getObject(_s.openerId);
 				var oL2 = 0;
 				if(_s.listId){
@@ -515,7 +540,6 @@
 				var aList = [];
 				var sFilt = this.getElementByRID("filter").value;
 				var tname = _s.typeName;
-
 				if(this.provideList) aList = this.provideList(sPath, sFilt, _s.start_record,_s.record_count);
 				else if(sPath){
 					
@@ -554,13 +578,14 @@
 						var sn = (this.decorateListItemName ? this.decorateListItemName(oP) : "..");
 						oL.addItem(sn, oP);
 					}
-				}	
+				}
 				for(var i = 0; aList != null && i < aList.length;i++){
-					if(vComp[aList[i].name]) continue;
+					if(vComp[aList[i].name]){
+						continue;
+					}
 					var sn = (this.decorateListItemName ? this.decorateListItemName(aList[i]) : aList[i].name);
 					oL.addItem(sn, aList[i]);
 				}
-				//if(aList != null) this.setTotalCount(aList.length);
 			}
 		
 		},
