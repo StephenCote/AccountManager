@@ -154,6 +154,9 @@ public class RestServiceConfig extends ResourceConfig{
 			
 			logger.info("Starting Maintenance Threads");
 			String addJob = context.getInitParameter("maintenance.jobs");
+			int jobPeriod = 10000;
+			String jobPeriodStr = context.getInitParameter("maintenance.jobs.period");
+			if(jobPeriodStr != null) jobPeriod = Integer.parseInt(jobPeriodStr);
 			if(addJob != null){
 				String[] jobs = addJob.split(",");
 				for(int i = 0; i < jobs.length;i++){
@@ -161,6 +164,7 @@ public class RestServiceConfig extends ResourceConfig{
 						logger.info("Starting " + jobs[i]);
 						Class<?> cls = Class.forName(jobs[i]);
 						ThreadService f = (ThreadService)cls.newInstance();
+						f.setThreadDelay(jobPeriod);
 						maintenanceThreads.add(f);
 					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 						logger.error(FactoryException.TRACE_EXCEPTION, e);

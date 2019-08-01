@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
@@ -379,7 +380,7 @@ public class AttributeFactory extends NameIdFactory{
 				statement.setString(1, nType.toString());
 				statement.setLong(2, ids[i]);
 				statement.addBatch();
-				if((i > 0 || ids.length ==1 ) && ((i % 250 == 0) || i == ids.length - 1)){
+				if((i > 0 || ids.length ==1 ) && ((i % BulkFactories.bulkBatchSize == 0) || i == ids.length - 1)){
 					int[] del = statement.executeBatch();
 					for(int d = 0; d < del.length; d++)
 						deletedRecords += del[d];

@@ -121,7 +121,7 @@ public class DataGeneratorData {
 			streetName = dutil.getNames().get("common")[r.nextInt(dutil.getNames().get("common").length)];
 		}
 		else if(streetName == "##"){
-			streetName = "" + (r.nextInt(1000) + 1);
+			streetName = "" + (r.nextInt(DataGeneratorUtil.randomStreetSeed) + 1);
 			if(streetName.matches("1$")) streetName += "st";
 			else if(streetName.matches("2$")) streetName += "nd";
 			else if(streetName.matches("3$")) streetName += "rd";
@@ -160,7 +160,7 @@ public class DataGeneratorData {
 	
 	public static String shortGuid(){
 		Random r = new Random();
-		return TextUtil.padString(Integer.toHexString(r.nextInt(1000)).toUpperCase(),3);
+		return TextUtil.padString(Integer.toHexString(r.nextInt(DataGeneratorUtil.shortGuidSeed)).toUpperCase(),3);
 	}
 	private static Set<String> groupNames = new HashSet<>();
 	private static Set<String> permissionNames = new HashSet<>();

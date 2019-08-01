@@ -120,6 +120,7 @@ public class DataGeneratorUtil {
 	private UserType user = null;
 	private int idBase = 999999;
 	
+	
 	/// baseWordPath refers to the Princeton word dictionary location, such as: c:\\users\\swcot\\Downloads\\wn3.1.dict.tar\\dict\\
 	private String baseWordPath = null;
 	private String adjPath = null;
@@ -193,6 +194,8 @@ public class DataGeneratorUtil {
 	/// Note: if a family, should drag the whole group with them
 	///
 	private double emmigrateRate = 0.01;
+	protected static int randomStreetSeed = 1000;
+	protected static int shortGuidSeed = 1000;
 	
 	private String[] leaderPopulation = new String[]{"Political","Religious","Military","Business","Social","Trade"};
 	private Map<Long,List<PersonType>> populationCache = new HashMap<>();

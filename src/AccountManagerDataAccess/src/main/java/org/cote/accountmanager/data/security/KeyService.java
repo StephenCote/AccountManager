@@ -50,7 +50,7 @@ public class KeyService {
 	private static final Map<Long,SecurityBean> primaryUserSymmetricKeys = new HashMap<>();
 	private static final Map<Long,SecurityBean> primaryOrganizationSymmetricKeys = new HashMap<>();
 	private static final Map<String,SecurityBean> symmetricKeys = new HashMap<>();
-	private static final int maximumCacheSize = 1000;
+	private static final int maximumCacheSize = 10000;
 	private static final int maximumCacheAgeSeconds = 360;
 	private static long lastSymmetricCacheRefresh = 0L;
 	private static long lastOrgSymmetricCacheRefresh = 0L;

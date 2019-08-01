@@ -35,6 +35,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataAccessException;
@@ -527,7 +528,7 @@ public class DataFactory extends NameIdFactory {
 		{
 			if (buff.length() > 0) buff.append(",");
 			buff.append(dataIds[i]);
-			if ((i > 0 || dataIds.length == 1) && ((i % 250 == 0) || i == dataIds.length - 1))
+			if ((i > 0 || dataIds.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == dataIds.length - 1))
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
 				match.setComparator(ComparatorEnumType.IN);

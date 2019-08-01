@@ -74,6 +74,10 @@ public class BulkFactories{
 	
 	public static final Logger logger = LogManager.getLogger(BulkFactories.class);
 	
+	public static int bulkBatchSize = 2500;
+	public static int bulkQueryLimit = 1000;
+	public static double temporaryBulkIdSeed = 1000000000L;
+	
 	@SuppressWarnings("rawtypes")
 	private static Map<FactoryEnumType, Class> factoryClasses = new HashMap<>();
 	private static Map<FactoryEnumType, Object> factoryInstances = new HashMap<>();

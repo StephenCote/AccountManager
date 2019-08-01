@@ -150,7 +150,7 @@ public class EffectiveAuthorizationService {
 	private static Map<Long,AccountType> rebuildAccounts = new HashMap<>();
 	private static Map<Long,PersonType> rebuildPersons = new HashMap<>();
 
-	public static final int maximum_insert_size = 250;
+	public static final int maximum_insert_size = 2500;
 	
 	/// TODO - these individual caches coud be consolidated - though then it would be more difficult to unwind, and not sure about the perf savings
 	/// 2016/05/10 - Refactor this to use a TypeToType structure

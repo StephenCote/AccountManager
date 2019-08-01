@@ -31,6 +31,7 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
@@ -98,7 +99,7 @@ public class OrganizationFactory extends NameIdFactory {
 			logger.warn("TODO: Refactor this query to better handle tables without organization_id");
 			Statement stat = null;
 			ResultSet rset = null;
-			int delLimit = 1000;
+			int delLimit = BulkFactories.bulkBatchSize;
 			String limit1 =  (connectionType == CONNECTION_TYPE.SQL ? "SET ROWCOUNT " + delLimit + " " : "");
 			String limit2 = (connectionType == CONNECTION_TYPE.MYSQL ? " LIMIT " + delLimit + " " : "");
 			try {

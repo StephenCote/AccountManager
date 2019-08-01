@@ -851,7 +851,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		{
 			if (buff.length() > 0) buff.append(",");
 			buff.append(ids[i]);
-			if ((i > 0 || ids.length == 1) && ((i % 250 == 0) || i == ids.length - 1))
+			if ((i > 0 || ids.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == ids.length - 1))
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
 				match.setComparator(ComparatorEnumType.IN);

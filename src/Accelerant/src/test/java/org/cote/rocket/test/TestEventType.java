@@ -344,7 +344,7 @@ modification date : date of last modification in yyyy-MM-dd format
 			admin2Loc.setGeographyType(GeographyEnumType.PHYSICAL);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.LOCATION, admin2Loc);
 
-			if(counter++ > 0 && (counter % 1000) == 0){
+			if(counter++ > 0 && (counter % BulkFactories.bulkBatchSize) == 0){
 				BulkFactories.getBulkFactory().write(sessionId);
 				BulkFactories.getBulkFactory().close(sessionId);
 				sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -426,7 +426,7 @@ modification date : date of last modification in yyyy-MM-dd format
 					continue;
 				}
 				*/
-				if(counter++ > 0 && (counter % 1000) == 0){
+				if(counter++ > 0 && (counter % BulkFactories.bulkBatchSize) == 0){
 					BulkFactories.getBulkFactory().write(sessionId);
 					BulkFactories.getBulkFactory().close(sessionId);
 					sessionId = BulkFactories.getBulkFactory().newBulkSession();

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
@@ -654,7 +655,7 @@ public class RoleFactory extends NameIdFactory {
 		{
 			if (buff.length() > 0) buff.append(",");
 			buff.append(roleIds[i]);
-			if ((i > 0 || roleIds.length == 1) && ((i % 250 == 0) || i == roleIds.length - 1))
+			if ((i > 0 || roleIds.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == roleIds.length - 1))
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
 				match.setComparator(ComparatorEnumType.IN);

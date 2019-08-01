@@ -38,6 +38,7 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -534,7 +535,7 @@ public class BulkFactory {
 		updateSet.get(sessionId).get(factoryType).add(key);
 	}
 	public void createBulkEntry(String inSessionId, FactoryEnumType factoryType, NameIdType object) throws ArgumentException, FactoryException{
-		long bulkId = (long)(rand.nextDouble()*1000000000L) * -1;
+		long bulkId = (long)(rand.nextDouble()*BulkFactories.temporaryBulkIdSeed) * -1;
 		String sessionId = inSessionId;
 		
 		if(sessionId == null){
@@ -552,7 +553,7 @@ public class BulkFactory {
 		
 		/// With large datasets, the random quickly starts to repeat.  Very bad Java.  Very bad.
 		while(sessionIdMap.containsKey(bulkId)){
-			bulkId = (long)(rand.nextDouble()*1000000000L) * -1;
+			bulkId = (long)(rand.nextDouble()*BulkFactories.temporaryBulkIdSeed) * -1;
 		}
 		
 		if(object == null){

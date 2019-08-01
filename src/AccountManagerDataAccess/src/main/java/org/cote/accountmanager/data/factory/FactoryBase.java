@@ -38,6 +38,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
@@ -450,7 +451,7 @@ public abstract class FactoryBase {
 			{
 				statement.setLong(1, list[i]);
 				statement.addBatch();
-				if((i > 0 || list.length ==1 ) && ((i % 250 == 0) || i == list.length - 1)){
+				if((i > 0 || list.length ==1 ) && ((i % BulkFactories.bulkQueryLimit == 0) || i == list.length - 1)){
 					int[] del = statement.executeBatch();
 					for(int d = 0; d < del.length; d++) deletedRecords += del[d];
 				}
