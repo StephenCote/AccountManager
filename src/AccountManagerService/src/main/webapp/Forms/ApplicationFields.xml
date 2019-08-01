@@ -12,11 +12,33 @@
 	<div rid = "data">
 	</div>	
 	<import-xml src = "/AccountManagerService/Forms/DataDndPicker.xml" id = "DataDndPicker" />	
+	
+	<div rid = "genAppCont" style = "display:none;clear:both;" class = "rocket-column-2">
+		<p rid = "lblGenerate">
+			<span rid = "cfgGenerateToggle"></span> Generate Application:
+		</p>
+		<p rid = "cfgGenerateCont">
+
+			Permissions: <input rid = "chkGenPerm" type = "checkbox" />
+			<br />
+			Groups: <input rid = "chkGenGrp" type = "checkbox" />
+			<br />
+			Seed: <input rid = "txtSeedSize" type = "text" class = "rocket-text rocket-text-short" value = "0" />
+			<br />
+			Max: <input rid = "txtMaxSize" type = "text" class = "rocket-text rocket-text-short" value = "100" />
+			<br />
+			Distribution: <input rid = "txtDist" type = "text" class = "rocket-text rocket-text-short" value = "1.0" />
+			<br />
+			<input rid = "btnGenerateApplication" type = "button" class = "rocket-button" value = "Generate" onclick = "${this}.generateApplication()" />
+		</p>
+	</div>
+	
 	<embedded-script><![CDATA[
 		local_template_init : function(o){
 			var o = this.getBean("rocketType");
 			if(this.resizeTo) this.resizeTo(525, 400);
 			this.getElementByRID("pathCont").style.display = "none";
+			
 			if(o.id){
 				this.getProperties().dndDataPath = o.path;
 				this.AddTab("account","Accounts",this.scopeHandler("loadAccountTab",0,1,1));
@@ -26,6 +48,34 @@
 				this.ShowTab(0);
 				this.loadAccountTab();
 			}
+			else{
+				if(irocket.getCommunityMode() && irocket.getCommunityLifecycle() && irocket.getCommunityProject()){
+					this.getElementByRID("genAppCont").style.display = "block";
+					this.toggleField("cfgGenerateToggle","cfgGenerateCont");
+				}
+			}
+		},
+		generateApplication : function(){
+			var sName = this.getElementByRID("name").value;
+			var bPerm = this.getElementByRID("chkGenPerm").checked;
+			var bGrp = this.getElementByRID("chkGenGrp").checked;
+			var iSeedSize = this.getElementByRID("txtSeedSize").value;
+			var iMaxSize = this.getElementByRID("txtMaxSize").value;
+			var iDist = this.getElementByRID("txtDist").value;
+			
+			var oC = this;
+			oC.setStatus("Generating application ...");
+			this.getElementByRID("btnGenerateApplication").disabled = true;
+			AM6Client.generateApplication(irocket.getCommunityLifecycle().objectId, irocket.getCommunityProject().objectId, sName, bPerm, bGrp, iSeedSize, iMaxSize, iDist, function(s, v){
+				if(v && v.json) v = v.json;
+				if(v){
+					oC.setStatus("Generated application");
+				}
+				else{
+					oC.setStatus("Failed to generate application");
+					this.getElementByRID("btnGenerateApplication").disabled = false;
+				}
+			});
 		},
 		resolve : function(o){
 			var _s;
