@@ -83,20 +83,23 @@
 		pickMember : function(s, v){
 			if(v){
 				var o = this.getBean("rocketType");
-				AM6Client.member("ROLE",o.objectId,v.nameType,v.objectId,true);
-				//accountManager.setRole(v,this.getBean("rocketType"),true);
-				this.getMembersList().addItem(v.name,v);
+				var ctl = this;
+				AM6Client.member("ROLE",o.objectId,v.nameType,v.objectId,true,function(s1, v1){
+					if(v1 && v1.json) ctl.getMembersList().addItem(v.name,v);
+				});
+				
 			}
 		},
 		removeChildMember : function(){
 			var oI = this.getMembersList().getActiveItem();
 			if(oI){
 				if(oI.data){
-					//accountManager.setRole(oI.data,this.getBean("rocketType"),false);
 					var o = this.getBean("rocketType");
-					AM6Client.member("ROLE",o.objectId,v.nameType,v.objectId,false);
+					var ctl = this;
+					AM6Client.member("ROLE",o.objectId,v.nameType,v.objectId,false,function(s1, v1){
+						if(v1 && v1.json) ctl.getMembersList().clearItem(oI.index);
+					});
 				}
-				this.getMembersList().clearItem(oI.index);
 			}
 		},
 		configMembersList : function(s,v){

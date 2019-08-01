@@ -65,26 +65,24 @@
 			this.manageList((sType=="Bucket" ? "Data" : sType), this.getObjectId(),"pickMember",uwm.getPathForType(sType),1);
 		},
 		pickMember : function(s, v){
+			var ctl = this;
 			if(v){
 				var o = this.getBean("rocketType");
-				if(AM6Client.member("GROUP",o.objectId,v.nameType,v.objectId,true)){
-					this.setStatus("");
-					this.getMembersList().addItem(v.name,v);
-				}
-				else{
-					this.setStatus("Unable to set member");
-				}
+				AM6Client.member("GROUP",o.objectId,v.nameType,v.objectId,true,function(s1, v1){
+					if(v1 && v1.json) ctl.getMembersList().addItem(v.name,v);
+				});
 			}
 		},
 		removeChildMember : function(){
-			var oI = this.getMembersList().getActiveItem();
+			var oI = this.getMembersList().getActiveItem(), ctl = this;
 			if(oI){
 				if(oI.data){
 					var v = oI.data;
 					var o = this.getBean("rocketType");
-					AM6Client.member("GROUP",o.objectId,v.nameType,v.objectId,false);
+					AM6Client.member("GROUP",o.objectId,v.nameType,v.objectId,false,function(s1, v1){
+						if(v1 && v1.json) ctl.getMembersList().clearItem(oI.index);
+					});
 				}
-				this.getMembersList().clearItem(oI.index);
 			}
 		},
 		configMembersList : function(s,v){
