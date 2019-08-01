@@ -11,13 +11,13 @@ CREATE TABLE orgid(
 	OrganizationId bigint not null default 0,
 	primary key(Id)
 );
-CREATE INDEX idxorgidowner on orgid(OwnerId);
+-- CREATE INDEX idxorgidowner on orgid(OwnerId);
 
 DROP TABLE IF EXISTS objorgid CASCADE;
 CREATE TABLE objorgid(
 	ObjectId varchar(64) default uuid_generate_v4()
 ) inherits (orgid);
-CREATE UNIQUE INDEX idxnobjorgidobjectid on objorgid(ObjectId);
+-- CREATE UNIQUE INDEX idxnobjorgidobjectid on objorgid(ObjectId);
 
 DROP TABLE IF EXISTS nameid CASCADE;
 CREATE TABLE nameid (
@@ -25,20 +25,19 @@ CREATE TABLE nameid (
 	ParentId bigint not null default 0,
 	Urn text not null
 ) inherits (objorgid);
-CREATE UNIQUE INDEX idxnameidurn on nameid(Urn);
--- CREATE UNIQUE INDEX idxnameidobjectid on nameid(ObjectId);
+-- CREATE UNIQUE INDEX idxnameidurn on nameid(Urn);
 
 DROP TABLE IF EXISTS uniquenameid CASCADE;
 CREATE TABLE uniquenameid(
 ) inherits (nameid);
-CREATE UNIQUE INDEX idxnameid on uniquenameid(Name,OrganizationId);
+--CREATE UNIQUE INDEX idxnameid on uniquenameid(Name,OrganizationId);
 
 DROP TABLE IF EXISTS objectreference;
 CREATE TABLE objectreference(
 	ReferenceId bigint not null default 0,
 	ReferenceType varchar(64)
 );
-CREATE INDEX idxlogicalrefid ON objectreference(ReferenceId,ReferenceType);
+-- CREATE INDEX idxlogicalrefid ON objectreference(ReferenceId,ReferenceType);
 
 DROP TABLE IF EXISTS logicalnameid CASCADE;
 CREATE TABLE logicalnameid (
@@ -60,9 +59,9 @@ CREATE TABLE attribute (
 
 	) inherits (orgid,objectreference);
 
-CREATE UNIQUE INDEX Idxattributes on attribute(ReferenceId,ReferenceType,Name,ValueIndex,OrganizationId);
+-- CREATE UNIQUE INDEX Idxattributes on attribute(ReferenceId,ReferenceType,Name,ValueIndex,OrganizationId);
 -- OPTIONAL value index, for when performing broader queries based on attribute value
-CREATE INDEX idxattributeval on attribute(value);
+-- CREATE INDEX idxattributeval on attribute(value);
 
 DROP TABLE IF EXISTS objectlocation CASCADE;
 create table objectlocation(
@@ -115,7 +114,7 @@ CREATE TABLE symmetrickeys (
 DROP TABLE IF EXISTS uniqueparent CASCADE;
 CREATE TABLE uniqueparent (
 ) inherits (nameid);
-CREATE UNIQUE INDEX idxuniqueparentname on uniqueparent(Name,ParentId,OrganizationId);
+-- CREATE UNIQUE INDEX idxuniqueparentname on uniqueparent(Name,ParentId,OrganizationId);
 
 DROP TABLE IF EXISTS groups CASCADE;
 CREATE TABLE groups (
@@ -137,12 +136,8 @@ CREATE TABLE participation (
 
 ) inherits (orgid);
 
-CREATE INDEX participationtype_pid ON participation(ParticipationId);
-CREATE INDEX participanttype_pid ON participation(ParticipantId,ParticipantType);
--- CREATE INDEX participationtype_pid ON participation(ParticipationId,ParticipantType);
--- CREATE INDEX participation_pid ON participation(ParticipationId);
--- CREATE INDEX participant_pid ON participation(ParticipantId);
--- CREATE INDEX participanttype_pid ON participation(ParticipantType);
+-- CREATE INDEX participationtype_pid ON participation(ParticipationId);
+-- CREATE INDEX participanttype_pid ON participation(ParticipantId,ParticipantType);
 
 DROP TABLE IF EXISTS groupparticipation CASCADE;
 CREATE TABLE groupparticipation (
@@ -187,13 +182,13 @@ DROP TABLE IF EXISTS uniquenamegroup CASCADE;
 CREATE TABLE uniquenamegroup (
 
 ) inherits (namegroup);
-CREATE UNIQUE INDEX idxuniquenamegroup on uniquenamegroup(Name,GroupId,OrganizationId);
+-- CREATE UNIQUE INDEX idxuniquenamegroup on uniquenamegroup(Name,GroupId,OrganizationId);
 
 DROP TABLE IF EXISTS uniquenameparentgroup CASCADE;
 CREATE TABLE uniquenameparentgroup (
 
 ) inherits (uniquenamegroup);
-CREATE UNIQUE INDEX idxuniquenameparentgroup on uniquenameparentgroup(Name,ParentId,GroupId,OrganizationId);
+-- CREATE UNIQUE INDEX idxuniquenameparentgroup on uniquenameparentgroup(Name,ParentId,GroupId,OrganizationId);
 
 DROP TABLE IF EXISTS objectdate CASCADE;
 create table objectdate (
@@ -1669,6 +1664,7 @@ CREATE INDEX idxattributerefid_Id ON attribute(ReferenceId,ReferenceType,Organiz
 CREATE INDEX asymmetrickeys_OwnId ON asymmetrickeys(OwnerId);
 CREATE INDEX symmetrickeys_OrgId ON symmetrickeys(OwnerId);
 CREATE INDEX groups_group_name ON groups(Name,OrganizationId);
+CREATE UNIQUE INDEX groupparticipation_id ON groupparticipation(Id);
 CREATE INDEX groupparticipation_pid ON groupparticipation(ParticipationId);
 CREATE INDEX grouprolecache_id ON grouprolecache(objectId);
 CREATE INDEX grouprolecache_role_id ON grouprolecache(EffectiveRoleId);
