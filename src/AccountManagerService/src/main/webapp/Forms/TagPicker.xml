@@ -16,9 +16,12 @@
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			this.getElementByRID("tagPicker").style.display = "block";
-			this.toggleField("tagPickerToggle","tagPickerContent");
-			if(!this.getProperties().tagListProp) this.getProperties().tagListProp = "tags";
+			var _s = this.getProperties(),  o = this.getBean("rocketType");
+			if(_s.altSearch || (o && o != null && o.objectId)){
+				this.getElementByRID("tagPicker").style.display = "block";
+				this.toggleField("tagPickerToggle","tagPickerContent");
+				if(!this.getProperties().tagListProp) this.getProperties().tagListProp = "tags";
+			}
 		},
 		prepareSaveTagPicker : function(o){
 			this.prepareSaveTagsList(o);
@@ -41,11 +44,26 @@
 			if(oI && oI.data && this.openItem) this.openItem(oI.data,"Tag");
 		},
 		addTag : function(){
-			this.manageList("Tag", this.getTagsList().getObjectId());
+			this.manageList("Tag", this.getTagsList().getObjectId(), "handleAddTag");
+		},
+		handleAddTag : function(s, v){
+			var o = this.getBean("rocketType");
+			this.getTagsList().addItem(v.name, v);
+			if(!o) return;
+			AM6Client.tag(o.nameType, o.objectId, v.objectId, true);
 		},
 		removeTag : function(){
-			var oI = this.getTagsList().getActiveItem();
-			if(oI) this.getTagsList().clearItem(oI.index);
+			var oI = this.getTagsList().getActiveItem(), o = this.getBean("rocketType"), oT = this.getTagsList();
+			if(oI){
+				
+				if(o){
+					AM6Client.tag(o.nameType, o.objectId, oI.data.objectId,false,function(s,v){
+						if(v && v.json) v = v.json;
+						if(v) oT.clearItem(oI.index);
+					});
+				}
+				else oT.clearItem(oI.index);
+			}
 		},
 
 		configTagsList : function(s,v){
@@ -58,10 +76,21 @@
 			var oL = this.getTagsList(), aP = this.getProperties().tagListProp;
 			oL.clearItems();
 			var o = this.getBean("rocketType");
-			if(!o || !o || !o[aP]) return;
-			for(var i = 0; i < o[aP].length;i++){
-				oL.addItem(o[aP][i].name,o[aP][i]);
-			}
+			if(!o) return;
+			AM6Client.findTags(o.nameType, o.objectId,function(s,v){
+				if(v && v.json) v = v.json;
+				
+				v.sort(function(a,b){ 
+				    var x = a.name < b.name? -1:1; 
+				    return x; 
+				});
+				
+				for(var i = 0; i < v.length; i++){
+					oL.addItem(v[i].name, v[i]);
+				}
+				
+			});
+
 		},
 		getTagsList : function(){
 			return this.getComponentByRID("tagsList").GetWideSelect();
