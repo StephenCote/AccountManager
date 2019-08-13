@@ -1230,16 +1230,15 @@ organizationid not in (select id from organizations)
 ;
 
 create or replace view orphanTagParticipations as
-select id from TagParticipation GP1
-where (participanttype = 'USER' and participantid not in (select id from Users U1))
-OR (participanttype = 'PERSON' and participantid not in (select id from Persons P1))
-OR (participanttype = 'ACCOUNT' and participantid not in (select id from Accounts A1))
-OR (participanttype = 'ROLE' and participantid not in (select id from Roles R1))
-OR (participanttype = 'GROUP' and participantid not in (select id from Groups G1))
-OR (participanttype = 'DATA' and participantid not in (select id from Data D1))
-OR (participationid not in (select id from Tags))
-or
-organizationid not in (select id from organizations)
+select GP1.id from TagParticipation GP1
+left join Data D1 on D1.id = GP1.participantid AND GP1.participanttype = 'DATA'
+left join Accounts A1 on A1.id = GP1.participantid AND GP1.participanttype = 'ACCOUNT'
+left join Groups G1 on G1.id = GP1.participantid AND GP1.participanttype = 'GROUP'
+left join Persons P1 on G1.id = GP1.participantid AND GP1.participanttype = 'PERSON'
+left join Roles R1 on R1.id = GP1.participantid AND GP1.participanttype = 'ROLE'
+left join Users U1 on U1.id = GP1.participantid AND GP1.participanttype = 'USER'
+WHERE
+D1.id IS NULL AND A1.id IS NULL AND G1.id IS NULL AND P1.id IS NULL AND R1.id IS NULL AND U1.id IS NULL
 ;
 
 create or replace view orphanContactInformationParticipations as
