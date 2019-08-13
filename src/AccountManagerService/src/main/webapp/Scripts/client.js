@@ -398,7 +398,9 @@
 	function define(sObjectId, fH){
 	   return Hemi.xml.getJSON(sPol + "/define/" + sObjectId,fH,(fH ? 1 : 0));
 	}
-	
+	function tag(sType, sObjectId, sTagId, bEnable, fH){
+		   return Hemi.xml.getJSON(sResource + "/" + sType + "/tag/" + sObjectId + "/" + sTagId + "/" + bEnable,fH,(fH ? 1 : 0));
+	}
 	function getDocumentControl(fH){
 		var o = getFromCache("USER", "GET", "_documentcontrol_");
 		if(o){
@@ -786,6 +788,7 @@
 	window.AM6Client = {
 		dotPath : getDotPath,
 		define : define,
+		tag : tag,
 		evaluate : evaluate,
 		find : find,
 		ownerApprovalPolicy : getOwnerApprovalPolicy,
