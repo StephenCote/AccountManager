@@ -400,8 +400,14 @@
 						//itemIcon:"48px-Crystal_Clear_action_filenew.png",
 						//itemIcon:"Crystal_Clear_action_filenew.png",
 						itemIcon : "Crystal_Clear_mimetype_misc.png",
-						itemIconImg : "Crystal_Clear_mimetype_image.png"
+						itemIconImg : "Crystal_Clear_mimetype_image.png",
+						itemTag : "Crystal_Clear_app_filetypes.png"
 					});
+					
+					var hS = Hemi.storage.getStorageProvider();
+					v2.getObjects().cachedTags = JSON.parse(hS.getItem(AM6Client.currentOrganization + "-tagCache"));
+					if(!v2.getObjects().cachedTags) v2.getObjects().cachedTags = [];
+					
 					v3 = v.panel("controlPanel",{
 						width:"boxWidth-100",
 						height:"boxHeight-50",
@@ -432,10 +438,11 @@
 						actions:[
 						    {action:"navBack",small:1,slot:0,icon:"48px-Crystal_Clear_action_back.png"},
 							{action:"navNext",small:1,slot:1,icon:"48px-Crystal_Clear_action_forward.png"},
-							{action:"itemBack",small:1,slot:"mid-3",icon:"48px-Crystal_Clear_action_back.png"},
-							{action:"bucketItem",small:1,slot:"mid-1",icon:"48px-Crystal_Clear_filesystem_folder_yellow.png"},
-							{action:"controlPanel",small:1,slot:"mid+1",icon:"48px-Crystal_Clear_app_ksysguard.png"},
-							{action:"itemNext",small:1,slot:"mid+3",icon:"48px-Crystal_Clear_action_forward.png"},
+							{action:"itemBack",small:1,slot:"mid-4",icon:"48px-Crystal_Clear_action_back.png"},
+							{action:"bucketItem",small:1,slot:"mid-2",icon:"48px-Crystal_Clear_filesystem_folder_yellow.png"},
+							{action:"bucketTag",small:1,slot:"mid",icon:"48px-Crystal_Clear_action_bookmark_Silver.png"},
+							{action:"controlPanel",small:1,slot:"mid+2",icon:"48px-Crystal_Clear_app_ksysguard.png"},
+							{action:"itemNext",small:1,slot:"mid+4",icon:"48px-Crystal_Clear_action_forward.png"},
 							{action:"deleteObject",small:1,slot:"slots - 3",icon:"48px-Crystal_Clear_filesystem_trashcan_empty.png"},
 							{action:"logout",small:1,slot:"slots - 2",icon:"48px-Crystal_Clear_app_logout.png"},
 							{action:"exit",small:1,slot:"slots - 1",icon:"48px-Crystal_Clear_app_shutdown.png"}
@@ -483,7 +490,7 @@
 				if(oS && oS.nodeName && oS.nodeName.match(/^(input|textarea|select)/gi)){
 					return;
 				}
-				var bN = 0,bA = 0,bC = 0,bU = 0,bBuck = 0, bGo = 0, bHome = 0, bLast = 0;
+				var bN = 0,bA = 0,bC = 0,bU = 0,bBuck = 0, bGo = 0, bHome = 0, bLast = 0, bTag = 0, iT = 0;
 				switch(e.keyCode){
 					case 39:
 						bN = 1;
@@ -502,6 +509,30 @@
 					case 27:
 						closeImage();
 						bC = 1;
+						break;
+					/// 0
+					case 48:
+					/// 1
+					case 49:
+					/// 2
+					case 50:
+					/// 3
+					case 51:
+					/// 4
+					case 52:
+					/// 5
+					case 53:
+					/// 6
+					case 54:
+					/// 7
+					case 55:
+					/// 8
+					case 56:
+					/// 9
+					case 57:
+						if(!this.getProperties().tagMode) return;
+						bTag = 1;
+						iT = e.keyCode - 48;
 						break;
 					/// T
 					case 84:
@@ -529,7 +560,7 @@
 						break;
 				}
 				
-				if((!bLast && !bN && !bU && !bBuck && !bGo && !bHome) || bC){
+				if((!bTag && !bLast && !bN && !bU && !bBuck && !bGo && !bHome) || bC){
 					Hemi.logDebug("Unhandled combination");
 					return 0;
 				}
@@ -542,6 +573,9 @@
 					if(bBuck){
 						Hemi.log("Bucket object " + oShape.referenceType + " / " + oShape.referenceId);
 						bucketObject(oPanel, oShape.referenceType, oShape.referenceId, oShape);
+					}
+					else if(bTag){
+						tagObject(oPanel, oShape.referenceType, oShape.referenceId, oShape, iT);
 					}
 					else{
 						gestureMatteImage(oPanel, oShape.referenceType, oShape.referenceId, oShape,bN,bA);
@@ -653,6 +687,64 @@
 				}
 					
 			},
+			bucketTag : function(){
+				var p = this.getCurrentViewPanel("content"), v = galleryView.getCurrentView(),oCvs = ctl.getCanvas();
+				var _p = p.getObjects(), _s = p.getProperties(), oA, aTags = [], sIcoBase = v.getProperties().iconLargeBase;
+				if(_p.cachedTags) aTags = _p.cachedTags;
+				
+				oCvs.setTemporaryContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
+				oCvs.setContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
+				
+				if(galleryView.isShowingControlPanel()){
+					galleryView.controlPanel();
+				}
+				clearPanel(p);
+				
+				_s.currentCount = 0;
+				_s.visible = 1;
+				_s.rasterTotal = 0;
+				_s.rasterCount = 0;
+				
+				var iSlots = Math.floor(p.width() / _s.thumbWidth);
+				var iMid = Math.floor(iSlots/2);
+				var iVSlots = Math.floor(p.height() / _s.thumbHeight);
+				var iVMid = Math.floor(iVSlots/2);		
+				
+				for(var i = 0; i < aTags.length;i++){
+					oA = aTags[i];
+
+					var sIco = sIcoBase + p.getProperties().itemTag;
+					var iMaxX = parseInt(p.width() / (_s.thumbWidth + 10));
+					var iMaxY = parseInt(p.height() / (_s.thumbHeight + 10));
+					var slotX = p.left() + (_s.currentCount % iMaxX)*(_s.thumbWidth+10);
+					var slotY = parseInt(_s.currentCount / iMaxX)*(_s.thumbHeight+10);
+				
+					
+					var oR = new org.cote.objects.dataTagSearchRequest();
+					oR.tags = [aTags[i]];
+					oR.startRecord = 0;
+					oR.recordCount = 1;
+					oR.paginate = true;
+					oR.populateGroup = true;
+					var aTI =  AM6Client.findByTag("DATA",oR);
+					if(aTI.length > 0){
+						var oD = aTI[0];
+						var oG = AM6Client.get("GROUP",oD.groupId);
+						sIco = "/AccountManagerService/thumbnail/" + AM6Client.dotPath(oD.organizationPath) + "/Data" + oG.path + "/" + oD.name + "/128x128";
+					}
+					
+					
+					
+					/// paintPanelObject(p, 0, a, i, sIcoSrc, 0,-1,"CTL",a.action,slotX,p.top() + 1, 0, 1,0);
+					paintPanelObject(p,0, a, i, sIco, i + ") " + aTags[i].name,-1,'CTL',"tagFind",slotX, slotY, 1,1,0);
+					
+				}
+				//_s.rasterTotal += aTags.length;
+
+				//checkRaster(p);
+				//if(!b) _s.visible = 1;
+			},
+
 			bucketItem : function(sType, sId){
 				bucketObject(0,sType, sId, 0);
 			},
@@ -686,7 +778,7 @@
 				});
 			},
 			tagSearch: function(){
-				var oProps = {altSearch:1,openerId:this.getObjectId(),searchHandler:"doTagSearch"};
+				var oProps = {altSearch:1,openerId:this.getObjectId(),searchHandler:"doTagSearch",cachedTags:this.getCurrentViewPanel("content").getObjects().cachedTags,cacheTags:"cacheWorkTags"};
 				Hemi.app.createWindow('Tag Search','/AccountManagerService/Forms/TagSearch.xml','TagSearch',0,0,oProps)
 				.then((oW)=>{
 					if(!oW) return;
@@ -694,6 +786,20 @@
 					oW.setHideOnClose(0);
 					Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});
 				});
+			},
+			cacheWorkTags : function(aT){
+				var _p = this.getCurrentViewPanel("content").getObjects();
+				_p.cachedTags = aT.slice(0,10);
+				_p.cachedTags.sort(function(a,b){ 
+				    var x = a.name < b.name? -1:1; 
+				    return x; 
+				});
+				var hS = Hemi.storage.getStorageProvider();
+				hS.setItem(AM6Client.currentOrganization + "-tagCache",JSON.stringify(_p.cachedTags));
+			},
+			tagFind : function(){
+				window.dbgArguments = arguments;
+				alert(arguments.length);
 			},
 			doTagSearch : function(aT){
 				var oP = this.getCurrentViewPanel("content"),oP2 = this.getCurrentViewPanel("nav");
@@ -1113,9 +1219,21 @@
 				if(galleryView.getProperties().tagMode){
 					
 					var aT = AM6Client.findTags(o.nameType, o.objectId);
+					aT.sort(function(a,b){ 
+					    var x = a.name < b.name? -1:1; 
+					    return x; 
+					});
+					_o.appliedTags = aT;
 					for(var i = 0; i < aT.length;i++){
-						oG.Text(aT[i].name, 5, 10 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
+						oG.Text(aT[i].name, 5, 20 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
 					}
+					
+					aT = _o.cachedTags;
+					for(var i = 0; i < aT.length; i++){
+						var bCurrent = (_o.appliedTags.filter(tag => (tag.urn === aT[i].urn)).length > 0);
+						oG.Text(i + ") " + aT[i].name, iMaxWidth - 100,20 + (25*i), (bCurrent ? "#00FF00" : "#FFFFFF"),"#FFFFFF","12pt","Arial");
+					}
+					
 				}
 
 			}
@@ -1672,7 +1790,41 @@
 			*/
 			
 		}
-		
+		function tagObject(oTargPanel,sType, sId, oShape, iT){
+			var oG = ctl.getCanvas();
+			oTargPanel2 = galleryView.getCurrentViewPanel("content");
+			var oPanel = galleryView.getCurrentViewPanel("nav");
+			var aCT = oTargPanel2.getObjects().cachedTags;
+			var aAT = oTargPanel2.getObjects().appliedTags;
+			var iMaxWidth = oTargPanel.width();
+			if(iT >= aCT.length) return;
+			var oT = aCT[iT];
+			if(oShape && oT){
+				var o = getObjectById(oTargPanel2,sType, sId, oShape);
+				if(!o || o == null){
+					Hemi.logError("Null object for " + sType + " " + sId);
+					return;
+				}
+				var bCurrent = (aAT.filter(tag => (tag.urn === oT.urn)).length > 0);
+				if(AM6Client.tag(o.nameType, o.objectId, oT.objectId,!bCurrent)){
+					if(bCurrent) aAT = aAT.filter(i => (i.name != oT.name)).sort(function(a,b){ 
+					    var x = a.name < b.name? -1:1; 
+					    return x; 
+					});
+					else aAT.push(oT);
+					
+					for(var i = 0; i < aAT.length;i++){
+						oG.Text(aAT[i].name, 5, 20 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
+					}
+					for(var i = 0; i < aCT.length; i++){
+						bCurrent = (aAT.filter(tag => (tag.urn === aCT[i].urn)).length > 0);
+						oG.Text(i + ") " + aCT[i].name, iMaxWidth - 100,20 + (25*i), (bCurrent ? "#00FF00" : "#FFFFFF"),"#FFFFFF","12pt","Arial");
+					}
+				}
+				//oTargPanel.repaint();
+			}
+			
+		}
 		function bucketObject(oTargPanel,sType, sId, oShape){
 			
 			oTargPanel = galleryView.getCurrentViewPanel("content");
