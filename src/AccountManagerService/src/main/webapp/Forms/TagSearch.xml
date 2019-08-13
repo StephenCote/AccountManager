@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Template>
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
-	<import-xml src = "/AccountManagerService/Forms/TagPicker.xml" />
+	<import-xml src = "/AccountManagerService/Forms/TagPicker.xml" id = "TagPicker" />
 	<p style = "clear:both;"><input type = "button" value = "Search" onclick = "${this}.search()" /></p>
-	
+	<p rid = "btnCacheButton" style = "clear:both;display:none;"><input type = "button" value = "Copy" onclick = "${this}.copy()" /><input type = "button" value = "Cache" onclick = "${this}.cache()" /></p>
 	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
 	
 	<embedded-script><![CDATA[
@@ -22,6 +22,11 @@
 				this.getElementByRID("buttons-bar").style.display = "none";
 				this.getElementByRID("typelist").style.display = "none";
 			}
+			
+			if(_s.cacheTags){
+				this.getElementByRID("btnCacheButton").style.display = "";
+			}
+			
 			this.getElementByRID("path").style.display = "none";
 			
 		},
@@ -53,7 +58,11 @@
 			return oL;
 						
 		},
-		search : function(){
+		cache : function(){
+			this.search(1);
+			this.Close();
+		},
+		search : function(bCache){
 			var _s = this.getProperties();
 			_s.providedCount = 0;
 			_s.start_record = 0;
@@ -64,7 +73,15 @@
 			}
 			else{
 				var o = Hemi.registry.service.getObject(_s.openerId);
-				o[_s.searchHandler](this.getCurrentTags());
+				o[(bCache ? _s.cacheTags : _s.searchHandler)](this.getCurrentTags());
+			}
+		},
+		copy : function(){
+			var aC = this.getProperties().cachedTags;
+			if(aC && aC.length){
+				for(var i = 0; i < aC.length; i++){
+					this.getTagsList().addItem(aC[i].name, aC[i]);
+				}
 			}
 		},
 		getCurrentTags : function(){
