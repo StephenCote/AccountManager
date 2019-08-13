@@ -28,6 +28,7 @@
 	
 	<import-xml src = "${property.viewBase}/Forms/${property.typeName}Fields.xml" id = "${property.typeName}Fields" />
 	<import-xml src = "/AccountManagerService/Forms/AttributePicker.xml" id = "AttributePicker" />
+	<import-xml src = "/AccountManagerService/Forms/TagPicker.xml" id = "TagPicker" />
 	<div rid = "debugCont" style = "display:none;clear:both;" class = "rocket-column-2">
 		<p rid = "lblDebug">
 			Debug:
@@ -71,6 +72,7 @@
 				}
 			}
 			this.initAttributePicker();
+			this.initTagPicker();
 			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver){
 				o.parentResolver(this);
 			}
