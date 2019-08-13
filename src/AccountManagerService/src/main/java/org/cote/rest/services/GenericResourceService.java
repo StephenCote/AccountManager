@@ -45,9 +45,13 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.services.TagService;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
@@ -156,6 +160,30 @@ public class GenericResourceService {
 		}
 		return Response.status(200).entity(obj).build();
 	}
+	
+	/// Specifically to allow for the variation where a factory is clustered by both group and parent
+	/// To retrieve an object using a parent id vs. the group id
+	///
+	@RolesAllowed({"user"})
+	@GET
+	@Path("/tag/{objectId:[0-9A-Za-z\\-]+}/{tagId:[0-9A-Za-z\\\\-]+}/{tag:(true|false)}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response tagObject(@PathParam("type") String type, @PathParam("objectId") String objectId,@PathParam("tagId") String tagId,@PathParam("tag") boolean enableTag,@Context HttpServletRequest request){
+		boolean outBool = false;
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		UserType user = ServiceUtil.getUserFromSession(request);
+		try{
+			NameIdType obj = BaseService.readByObjectId(auditType, objectId, user);
+			BaseTagType tag = BaseService.readByObjectId(AuditEnumType.TAG, tagId, user);
+			outBool = TagService.applyTag(user, tag, obj, enableTag);
+		}
+	
+		catch(FactoryException | ArgumentException | DataAccessException f){
+			logger.error(f);
+		}
+		return Response.status(200).entity(outBool).build();
+	}
+
 	
 	/// Specifically to allow for the variation where a factory is clustered by both group and parent
 	/// To retrieve an object using a parent id vs. the group id
