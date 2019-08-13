@@ -22,7 +22,30 @@ import org.cote.accountmanager.service.rest.BaseService;
 
 public class TagService {
 	public static final Logger logger = LogManager.getLogger(UserService.class);
-	
+	public static boolean applyTag(UserType user, BaseTagType tag, NameIdType object, boolean enabled) throws FactoryException, ArgumentException, DataAccessException {
+		boolean outBool = false;
+		TagParticipationFactory pFact = Factories.getFactory(FactoryEnumType.TAGPARTICIPATION);
+		if(tag == null || object == null) {
+			logger.warn("Tag or object is null");
+			return false;
+		}
+		if(
+			BaseService.canChangeType(AuditEnumType.valueOf(object.getNameType().toString()), user, object)
+			&&
+			BaseService.canViewType(AuditEnumType.valueOf(tag.getNameType().toString()), user, tag)
+		) {
+			BaseParticipantType bpt = pFact.getParticipant(tag, object, ParticipantEnumType.valueOf(object.getNameType().toString()));
+			if(bpt != null && !enabled) {
+				outBool = pFact.delete(bpt);
+			}
+			else if(bpt == null && enabled) {
+				bpt = pFact.newTagParticipation(tag, object);
+				outBool = pFact.add(bpt);
+			}
+
+		}
+		return outBool;
+	}
 	public static void applyTags(UserType user, BaseTagType[] tags, NameIdType[] objects) throws ArgumentException, FactoryException, DataAccessException{
 		List<BaseTagType> authTags = new ArrayList<>();
 		List<NameIdType> authObjs = new ArrayList<>();
