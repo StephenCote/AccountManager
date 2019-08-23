@@ -18,10 +18,13 @@
 		embedded_init : function(){
 			var _s = this.getProperties(),  o = this.getBean("rocketType");
 			if(_s.altSearch || (o && o != null && o.objectId)){
-				this.getElementByRID("tagPicker").style.display = "block";
-				this.toggleField("tagPickerToggle","tagPickerContent");
-				if(!this.getProperties().tagListProp) this.getProperties().tagListProp = "tags";
+				this.enableTagPicker();
 			}
+		},
+		enableTagPicker : function(){
+			this.getElementByRID("tagPicker").style.display = "block";
+			this.toggleField("tagPickerToggle","tagPickerContent");
+			if(!this.getProperties().tagListProp) this.getProperties().tagListProp = "tags";
 		},
 		prepareSaveTagPicker : function(o){
 			this.prepareSaveTagsList(o);
