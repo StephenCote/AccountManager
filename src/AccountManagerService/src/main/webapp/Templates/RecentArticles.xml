@@ -5,7 +5,10 @@
 	template_init : function(){
 		var ctl = this;
 		uwm.rule("IsLoggedIn").then((b)=>{ 
-			if(!b) return;
+			if(!b){
+			    Hemi.logWarning("Don't attempt to load articles for unauthenticated principle.");
+				return;
+			}
 			var oS = new org.cote.objects.baseSearchRequestType();
 			oS.sort = new org.cote.objects.sortQueryType();
 			oS.sort.sortOrder = "DESCENDING";
@@ -17,7 +20,7 @@
 			oS.recordCount = 3;
 	
 			AM6Client.find("GROUP","DATA","~/Articles",function(s,v){
-				var oG = (v && v.json ? v.json : 0)
+				var oG = (v && v.json ? v.json : v)
 				if(!oG) return;
 				AM6Client.findBy("DATA", oG.objectId, oS,function(s, v){
 						if(v && v.json && v.json.length){
