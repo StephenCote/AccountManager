@@ -118,10 +118,7 @@ public class ApplicationImportService extends ThreadService {
 					
 					svc.importApplicationData(svc.getAdminUser(), lc, proj, dir, art.getImports().toArray(new IdentityDataImportType[0]));
 				}
-				catch(FactoryException e){
-					logger.error(e.getMessage());
-					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-				} catch (ArgumentException e) {
+				catch(FactoryException | ArgumentException e) {
 					logger.error(e.getMessage());
 					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 				}
