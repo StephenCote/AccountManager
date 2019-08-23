@@ -48,15 +48,7 @@ public class IdentityServiceFactory {
 				logger.info("Configuring organization for Rocket");
 				try {
 					Rocket.configureApplicationEnvironment(org.getId(), adminCredential);
-				} catch (FactoryException e) {
-					
-					logger.error(e.getMessage());
-					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-				} catch (DataAccessException e) {
-					
-					logger.error(e.getMessage());
-					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-				} catch (ArgumentException e) {
+				} catch (FactoryException | DataAccessException | ArgumentException e) {
 					
 					logger.error(e.getMessage());
 					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
