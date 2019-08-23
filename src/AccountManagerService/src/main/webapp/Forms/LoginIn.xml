@@ -2,7 +2,7 @@
 <Template>
 <import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 <div rid = "cntLogin" style = "display:none;">
-
+<img valign = "middle" rid = "btnLogin" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/user-auth.png" onclick = "${this}.doLogin()" width = "24" height = "24" alt = "Crystal SVG Icon - User Auth" />
 <select onchange = "${this}.toggleChoose()" rid = "organization_path" class = "rocket-select rocket-select-shorter">
 <option value = "_choose_">Specify ...</option>
 <option value = "/Development">Development</option>
@@ -15,7 +15,6 @@
 </span>
 <input type = "text" class = "rocket-text rocket-text-shorter" rid = "user_name" />
 <input type = "password" class = "rocket-text rocket-text-shorter" rid = "password" />
-<img valign = "middle" rid = "btnLogin" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/user-auth.png" onclick = "${this}.doLogin()" width = "24" height = "24" alt = "Crystal SVG Icon - User Auth" />
 </div>
 	<embedded-script>
 		<![CDATA[
@@ -76,7 +75,7 @@
 			this.getElementByRID("btnLogin").disabled = true;
 			this.setFormValue("password","");
 			this.getProperties().userName = sName; 
-
+			/// Hemi.message.service.unsubscribe(this, "onsessionrefresh",this._prehandle_session_refresh);
 			window.uwm.operation("Authenticate", {opener:this.getObjectId(),user_name : sName, password : sPassword, organization: sOrg});		
 		},
 
