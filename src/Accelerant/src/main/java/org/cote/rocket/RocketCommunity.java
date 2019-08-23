@@ -1336,24 +1336,71 @@ public class RocketCommunity implements ICommunityProvider {
 				return false;
 			}
 			
-			List<AccountType> accounts = new ArrayList<>();
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			
+			/// Stub out the groups
+			for(BaseGroupType g : groups){
+				g.setOwnerId(user.getId());
+				g.setParentId(newDir.getId());
+				g.setOrganizationId(proj.getOrganizationId());
+				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, g);
+			}
+			
+			/// Stub out the permissions
+			for(BasePermissionType p : permissions){
+				p.setOwnerId(user.getId());
+				p.setParentId(basePerm.getId());
+				p.setOrganizationId(proj.getOrganizationId());
+				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERMISSION, p);
+				/// associate permissions to groups if both groups and permissions are specified
+				/// alternately, if only permissions are specified they are directly assigned to accounts
+				if(groups.length > 0){
+					for(int a = 0; a < groups.length;a++){
+						if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+						GroupParticipantType part = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newGroupGroupParticipation(newDir, groups[a], p, AffectEnumType.GRANT_PERMISSION);
+						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, part);
+					}
+				}
+			}
+			
+
+			BulkFactories.getBulkFactory().write(sessionId);
+			BulkFactories.getBulkFactory().close(sessionId);
+			
 			int count = BaseService.countByGroup(AuditEnumType.PERSON, dutil.getPersonsDir(), user);
+			
 			for(int c = 0; c < count; c += BulkFactories.bulkQueryLimit) {
+				sessionId = BulkFactories.getBulkFactory().newBulkSession();
 				List<PersonType> persons = BaseService.listByGroup(AuditEnumType.PERSON, "DATA", dutil.getPersonsDir().getObjectId(), (long)c, BulkFactories.bulkQueryLimit, user);
 				int plen = persons.size();
 				logger.info("Working with " + plen + " people");
 				
-				for(int i = 0; i < plen; i++){
+				for(PersonType p : persons){
 					AccountType acct = dutil.randomAccount(user, newDir);
-					acct.getAttributes().add(Factories.getAttributeFactory().newAttribute(acct, "owner", persons.get(i).getObjectId()));
+					acct.getAttributes().add(Factories.getAttributeFactory().newAttribute(acct, "owner", p.getObjectId()));
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ACCOUNT, acct);
-					BaseParticipantType part = ((PersonParticipationFactory)Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION)).newAccountPersonParticipation(persons.get(i),acct);
+					BaseParticipantType part = ((PersonParticipationFactory)Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION)).newAccountPersonParticipation(p,acct);
 					((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
-					accounts.add(acct);
+					
+					for(BaseGroupType g : groups){
+						if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+						AccountParticipantType aPart = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(g, acct);
+						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, aPart);
+					}
+					
+					if(groups.length == 0) {
+						for(BasePermissionType pe : permissions){
+							if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+							AccountParticipantType pPart = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(newDir, acct, pe, AffectEnumType.GRANT_PERMISSION);
+							BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, pPart);
+						}
+					}
 				}
+				BulkFactories.getBulkFactory().write(sessionId);
+				BulkFactories.getBulkFactory().close(sessionId);
 			}
+			
+			/*
 			for(int i = 0; i < groups.length; i++){
 				BaseGroupType g = groups[i];
 				g.setOwnerId(user.getId());
@@ -1391,7 +1438,7 @@ public class RocketCommunity implements ICommunityProvider {
 			
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
-			
+			*/
 			outBool = true;
 
 			
