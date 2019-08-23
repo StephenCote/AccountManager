@@ -1097,80 +1097,76 @@ CREATE OR REPLACE FUNCTION cache_roles()
 
 
 create or replace view groupRights as
-	select distinct referenceid,referencetype,groupid,affecttype,affectid,organizationid from (
 	select personid as referenceid,'PERSON' as referencetype,groupid,affecttype,affectid,organizationid
 	FROM groupPersonRights GPR
-	UNION ALL
+	UNION
 	select personid as referenceid,'PERSON',groupid,affecttype,affectid,organizationid
 	FROM effectiveGroupPersonRoleRights GPR
-	UNION ALL
+	UNION
 	select userid as referenceid,'USER' as referencetype,groupid,affecttype,affectid,organizationid
 	FROM groupUserRights GUR
-	UNION ALL
+	UNION
 	select userid as referenceid,'USER',groupid,affecttype,affectid,organizationid
 	FROM effectiveGroupUserRoleRights GRR
-	UNION ALL
+	UNION
 	select accountid as referenceid,'ACCOUNT' as referencetype,groupid,affecttype,affectid,organizationid
 	FROM groupAccountRights GUR
-	UNION ALL
+	UNION
 	select accountid as referenceid,'ACCOUNT',groupid,affecttype,affectid,organizationid
 	FROM effectiveGroupAccountRoleRights GRR
-	UNION ALL
+	UNION
 	select AGP.participantid as referenceid,'GROUP',AG.id as groupid,AGP.affecttype,AGP.affectid,AG.organizationid
 	FROM groups AG
 	inner join groupparticipation AGP on AGP.participantType = 'GROUP' AND AGP.participationId = AG.id
 --	Role rights are not included in this view since the role member privileges are also reflected
---	UNION ALL
+--	UNION
 --	select roleid as referenceid,'ROLE',groupid,affecttype,affectid,organizationid
 --	FROM effectiveGroupRoleRights GRR
-	) 
-	as AM;
+;
+
 create or replace view dataRights as
-	select distinct referenceid,referencetype,dataid,affecttype,affectid,organizationid from (
 	select personid as referenceid,'PERSON' as referencetype,dataid,affecttype,affectid,organizationid
 	FROM dataPersonRights GUR
-	UNION ALL
+	UNION
 	select personid as referenceid,'PERSON' as referencetype,dataid,affecttype,affectid,organizationid
 	FROM effectiveDataPersonRoleRights GRR
-	UNION ALL
+	UNION
 	select userid as referenceid,'USER' as referencetype,dataid,affecttype,affectid,organizationid
 	FROM dataUserRights GUR
-	UNION ALL
+	UNION
 	select userid as referenceid,'USER' as referencetype,dataid,affecttype,affectid,organizationid
 	FROM effectiveDataUserRoleRights GRR
-	UNION ALL
+	UNION
 	select accountid as referenceid,'ACCOUNT' as referencetype,dataid,affecttype,affectid,organizationid
 	FROM dataAccountRights GUR
-	UNION ALL
+	UNION
 	select accountid as referenceid,'ACCOUNT' as referencetype,dataid,affecttype,affectid,organizationid
 	FROM effectiveDataAccountRoleRights GRR	
-	UNION ALL
+	UNION
 	select AGP.participantid as referenceid,'GROUP' as referencetype,AGP.participationid as dataid,AGP.affecttype,AGP.affectid,AG.organizationid
 	FROM groups AG
 	inner join dataparticipation AGP on AGP.participantType = 'GROUP' AND AGP.participantId = AG.id
-
-) as AM;
+;
 
 create or replace view roleRights as
-	select distinct referenceid,referencetype,roleid,affecttype,affectid,organizationid from (
 	select personid as referenceid,'PERSON' as referencetype,roleid,affecttype,affectid,organizationid
 	FROM rolePersonRights GUR
-	UNION ALL
+	UNION
 	select personid as referenceid,'PERSON' as referencetype,sourceroleid as roleid,affecttype,affectid,organizationid
 	FROM effectiveRolePersonRoleRights GRR
-	UNION ALL
+	UNION
 	select userid as referenceid,'USER' as referencetype,roleid,affecttype,affectid,organizationid
 	FROM roleUserRights GUR
-	UNION ALL
+	UNION
 	select userid as referenceid,'USER' as referencetype,sourceroleid as roleid,affecttype,affectid,organizationid
 	FROM effectiveRoleUserRoleRights GRR
-	UNION ALL
+	UNION
 	select accountid as referenceid,'ACCOUNT' as referencetype,roleid,affecttype,affectid,organizationid
 	FROM roleAccountRights GUR
-	UNION ALL
+	UNION
 	select accountid as referenceid,'ACCOUNT' as referencetype,sourceroleid as roleid,affecttype,affectid,organizationid
 	FROM effectiveRoleAccountRoleRights GRR
-) as AM;
+;
 
 create or replace view orphanCredentials as
 select id from credential
