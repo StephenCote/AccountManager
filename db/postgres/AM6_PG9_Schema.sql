@@ -61,7 +61,6 @@ CREATE TABLE attribute (
 
 -- CREATE UNIQUE INDEX Idxattributes on attribute(ReferenceId,ReferenceType,Name,ValueIndex,OrganizationId);
 -- OPTIONAL value index, for when performing broader queries based on attribute value
--- CREATE INDEX idxattributeval on attribute(value);
 
 DROP TABLE IF EXISTS objectlocation CASCADE;
 create table objectlocation(
@@ -1660,11 +1659,13 @@ CREATE UNIQUE INDEX IdxApprovalObjId ON approval(ObjectId);
 
 
 CREATE INDEX idxattributerefid_Id ON attribute(ReferenceId,ReferenceType,OrganizationId);
+CREATE INDEX idxattributeval on attribute(value);
 CREATE INDEX asymmetrickeys_OwnId ON asymmetrickeys(OwnerId);
 CREATE INDEX symmetrickeys_OrgId ON symmetrickeys(OwnerId);
 CREATE INDEX groups_group_name ON groups(Name,OrganizationId);
 CREATE UNIQUE INDEX groupparticipation_id ON groupparticipation(Id);
 CREATE INDEX groupparticipation_pid ON groupparticipation(ParticipationId);
+CREATE UNIQUE INDEX IdxgroupparticipationCbo on groupparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
 CREATE INDEX grouprolecache_id ON grouprolecache(objectId);
 CREATE INDEX grouprolecache_role_id ON grouprolecache(EffectiveRoleId);
 CREATE INDEX grouprolecache_aff_id ON grouprolecache(AffectType,AffectId);
