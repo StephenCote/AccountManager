@@ -19,21 +19,21 @@
 		var o = this.getBean("rocketType");
 		if(!this.getProperties().hideGroup){
 			var oP;
-			if(o.GroupId > 0) oP = AM6Client.get(this.getProperties().typeName.toUpperCase(),o.GroupId);
-			this.pickGroup(this.getProperties().typeName,oP);
+			if(o.groupId > 0) oP = AM6Client.get(this.getProperties().typeName.toUpperCase(),o.groupId);
+			this.pickGroup("Group",oP);
 		}
 		else{
 			this.getElementByRID("GroupPickerCont").style.display = "none";
 		}
 	},
 	chooseGroup : function(){
-		this.manageList( this.getProperties().typeName, this.getObjectId(),"pickGroup");
+		this.manageList( "Group", this.getObjectId(),"pickGroup");
 	},
 
 		openGroup : function(){
 			var o = this.getBean("rocketType"),oP;
-			if(o && o.GroupId && this.openItem){
-				oP = AM6Client.get(this.getProperties().typeName.toUpperCase(),o.GroupId);
+			if(o && o.groupId && this.openItem){
+				oP = AM6Client.get("GROUP",o.groupId);
 				this.openItem(oP,this.getProperties().typeName);
 			}
 		},
@@ -44,8 +44,8 @@
 			if(this.setStatus) this.setStatus("Object #" + o.id + " cannot be set to its own Group");
 			return;
 		}
-		o.GroupId = (v ? v.id : 0);
-		this.getElementByRID("Group").value = (v ? v.name : "");
+		o.groupId = (v ? v.id : 0);
+		this.getElementByRID("group").value = (v ? v.name : "");
 	}
 	]]></embedded-script>
 </html-fragment>
