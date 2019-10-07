@@ -284,6 +284,7 @@
 					if(typeof this.refreshList == "function") this.refreshList(1);
 					break;
 				case "Refresh":
+					AM6Client.clearCache(this.getProperties().typeName.toUpperCase(),1);
 					this.refreshList();
 					break;
 				case "Open":
