@@ -74,8 +74,14 @@ public class BulkFactories{
 	
 	public static final Logger logger = LogManager.getLogger(BulkFactories.class);
 	
-	public static int bulkBatchSize = 2500;
-	public static int bulkQueryLimit = 1000;
+	/// The maximum size to use for batch insert operations per bulk session
+	///
+	public static int bulkBatchSize = 5000;
+	
+	/// The maximum query size to use for read operations to feed into a batch
+	/// Note the size is by default 50% of the batch size since multiple object instantiation may be likely
+	/// Refer to RocketCommunity.generateCommunityProjectApplication for an example
+	public static int bulkQueryLimit = 2500;
 	public static double temporaryBulkIdSeed = 1000000000L;
 	
 	@SuppressWarnings("rawtypes")
