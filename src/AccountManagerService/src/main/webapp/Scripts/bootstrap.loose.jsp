@@ -16,7 +16,7 @@ response.setCharacterEncoding("UTF-8");
 	if(!window.g_application_path) window.g_application_path = "/AccountManagerService/";
 	if(!window.HemiConfig){
 		window.HemiConfig = {
-			dependencies : ["hemi.json.rpc","hemi.json.rpc.cache","hemi.css","hemi.app","hemi.app.comp","hemi.app.module","hemi.app.module.test","hemi.ui.wideselect","hemi.graphics.canvas","hemi.app.dwac","hemi.data.io"]
+			dependencies : ["hemi.json.rpc","hemi.json.rpc.cache","hemi.css","hemi.app","hemi.app.comp","hemi.app.module","hemi.app.module.test","hemi.ui.wideselect","hemi.graphics.canvas","hemi.app.dwac","hemi.data.io","hemi.storage","hemi.storage.dom"]
 		};
 	}
 	if(!window.HemiConfig.hemi_base) window.HemiConfig.hemi_base= "/HemiFramework/Hemi/";
