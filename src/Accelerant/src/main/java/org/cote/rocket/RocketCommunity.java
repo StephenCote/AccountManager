@@ -533,12 +533,13 @@ public class RocketCommunity implements ICommunityProvider {
 			String[] countryList = codes.split(",");
 			
 			for(int c = 0; c < countryList.length; c++){
-				logger.info("Reading country data ... " + countryList[c]);
-				String path = locationPath + countryList[c] + ".txt";
+				String countryCode = countryList[c].trim();
+				logger.info("Reading country data ... " + countryCode);
+				String path = locationPath + countryCode + ".txt";
 
-				LocationType countryLoc = findLocationByAdminCode(null, locDir,"iso", countryList[c], user.getOrganizationId());
+				LocationType countryLoc = findLocationByAdminCode(null, locDir,"iso", countryCode, user.getOrganizationId());
 				if(countryLoc == null){
-					logger.error("Failed to find parent country for " + countryList[c]);
+					logger.error("Failed to find parent country for " + countryCode);
 					continue;
 				}
 				bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
@@ -569,12 +570,12 @@ public class RocketCommunity implements ICommunityProvider {
 						logger.error("No admin code defined for '" + name + "'");
 						continue;
 					}
-					String regionLocationCode = countryList[c] + "." + adminCode1 + (adminCode2 != null && adminCode2.length() > 0 ? "." + adminCode2 : "");
+					String regionLocationCode = countryCode + "." + adminCode1 + (adminCode2 != null && adminCode2.length() > 0 ? "." + adminCode2 : "");
 					LocationType regionLocation = findLocationByAdminCode(null, locDir,"code", regionLocationCode, user.getOrganizationId());
 					if(regionLocation == null){
 						logger.debug("Failed to find region location for " + geoid + " with code: '" + regionLocationCode + "' in group " + locDir.getUrn());
 						if(regionLocation == null && adminCode2 != null){
-							regionLocation = findLocationByAdminCode(null, locDir, "code", countryList[c] + "." + adminCode1, user.getOrganizationId());
+							regionLocation = findLocationByAdminCode(null, locDir, "code", countryCode + "." + adminCode1, user.getOrganizationId());
 						}
 						if(regionLocation == null){
 							logger.error("Failed to find region location for " + geoid);
