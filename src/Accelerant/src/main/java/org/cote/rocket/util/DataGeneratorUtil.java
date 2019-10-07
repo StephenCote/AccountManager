@@ -1196,6 +1196,9 @@ public class DataGeneratorUtil {
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, bpt);
 					parentEvent.getActors().add(baby);
 					newAdditions.add(baby);
+					
+					addressPerson(baby,parentEvent.getLocation(), sessionId);
+					
 					EventType birth = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).newEvent(user, parentEvent);
 					birth.setName("Birth of " + baby.getName());
 					birth.setEventType(EventEnumType.INGRESS);
@@ -1203,6 +1206,7 @@ public class DataGeneratorUtil {
 					if(partner != null) birth.getInfluencers().add(partner);
 					birth.getActors().add(baby);
 					birth.setLocation(parentEvent.getLocation());
+
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.EVENT, birth);
 				}
 				if(rulePersonDeath(eventAlignment, population, person, age)){
