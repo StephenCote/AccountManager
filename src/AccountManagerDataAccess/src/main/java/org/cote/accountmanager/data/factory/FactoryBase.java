@@ -152,7 +152,7 @@ public abstract class FactoryBase {
 	public void writeSpool(String tableName)
 	{
 		DataTable table = getDataTable(tableName);
-		if (table.getBulkInsert())
+		if (table != null && table.getBulkInsert())
 		{
 			synchronized(table){
 				if(!BulkInsertUtil.insertBulk(table,batchSize)){
