@@ -5,29 +5,35 @@
 		<![CDATA[
 			template_init: function(){
 				var oUp = 0;
-				
+				var _s = this.getProperties();
 				/// The link is specifically for the master person/user at the organization level
 				///
 				var sLinkProfId = 0;
-				
-				if(this.getProperties().viewType && this.getProperties().listType){
-					oUp = Promise.resolve(this.getProperties().viewType);
-					this.getProperties().profileType = this.getProperties().listType;
+				var oT = _s.viewType;
+				if(oT && _s.listType){
+					oUp = (oT instanceof Promise ? oT : Promise.resolve(oT));
+					_s.profileType = _s.listType;
 				}
 				else oUp = uwm.getUser();
 				
 				oUp.then((oU)=>{
-					if(!oU || oU == null) return;
-					
+					if(!oU || oU == null){
+						if(_s.listType && _s.listType.match(/^person$/gi)){
+							_s.profileType = _s.listType = "User";
+							oU = _s.viewType = _s.user;
+						
+						}
+						if(!oU || oU == null) return;
+					}
 					if(oU.nameType == "USER"){
 						AM6Client.userPerson(oU.objectId).then((oP)=>{
 							if(oP){
 								sLinkProfId = oU.objectId;
 								oU = oP;
-								this.getProperties().profileType = "Person";
+								_s.profileType = "Person";
 							}
 							else{
-								this.getProperties().profileType = "User";
+								_s.profileType = "User";
 							}
 							this.completeConfig(oU, sLinkProfId);
 						});
