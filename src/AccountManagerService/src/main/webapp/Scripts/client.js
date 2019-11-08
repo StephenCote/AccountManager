@@ -222,13 +222,9 @@
 					/// A person object will exist for users created via registration or the console
 					///
 					var oP = AM6Client.userPerson(oType.objectId);
-					var sType = "User";
-					if(oP){
-						sType = 'Person';
-						oType = oP;
-					}
+					var sType = "Person";
 					var sViewType = "Profile";
-					var oProps = {listType:sType,viewType:oType};
+					var oProps = {listType:sType,user:oType,viewType:oP};
 					Hemi.app.createWindow(oType.name, uwm.getApiTypeView(sType) + "/Forms/" + sViewType + ".xml", "View-" + sType + "-" + oType.id , 0, 0, oProps, 0)
 					.then((oW)=>{
 			            if (oW) {
@@ -239,6 +235,7 @@
 			            	oW.setHideOnClose(0);
 			            }
 					});
+					return oType;
 				});
 	            
 			},
