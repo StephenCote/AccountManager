@@ -1248,7 +1248,8 @@
 			oW.setTitle("Drag-n-Drop");
 			oW.resizeTo(290,350);
 			var oP = galleryView.getCurrentViewPanel("nav");
-			oW.getElementByRID("path").value = oP.getObjects().currentDirectory.path;
+			oW.getElementByRID("dndPath").value = oP.getObjects().currentDirectory.path;
+			
 		}
 		function showDataForm(oW){
 			if(!oW.getElementByRID) return;
