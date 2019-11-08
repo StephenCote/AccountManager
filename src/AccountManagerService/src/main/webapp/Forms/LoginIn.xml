@@ -75,7 +75,8 @@
 			this.getElementByRID("btnLogin").disabled = true;
 			this.setFormValue("password","");
 			this.getProperties().userName = sName; 
-			/// Hemi.message.service.unsubscribe(this, "onsessionrefresh",this._prehandle_session_refresh);
+			
+			Hemi.message.service.unsubscribe(this, "onsessionrefresh",this._prehandle_session_refresh);
 			window.uwm.operation("Authenticate", {opener:this.getObjectId(),user_name : sName, password : sPassword, organization: sOrg});		
 		},
 
