@@ -80,15 +80,18 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 					
 				}
 			},
+			promise : function(){
+				return this.getObjects().promise;
+			},
 			define : function(){
 				return AM6Client.define(this.getPolicy().objectId);
 			},
 			getPolicy : function(){ return this.getObjects().policy; },
+			object : function(){ return this.getPolicy(); },
 			modify : function(v){
-				var p = this.getPolicy();
-				for(var i in v) p[i] = v[i];
-				return AM6Client.update("POLICY",p);
+				return azn.modify("POLICY", this, v);
 			},
+
 			getChildRule : function(s){
 				var p = this.getPolicy(),o,i=0;
 				for(;i < p.rules.length;i++){
@@ -101,17 +104,36 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 				
 			},
 			rule : function(s){
-				var r = azn.rule(s),p = this.getPolicy();
-				if(!r || !r.getObjects().rule) return 0;
-//				if(!p.populated) p = accountManagerRule.populatePolicy(p);
-				if(!this.getChildRule(s)){
-					if(p.rules == null || !p.rules) p.rules = [];
-					p.rules.push(r.getRule());
-					AM6Client.update("POLICY",p);
-				}
-				//r.getObjects().policy = this;
-				return r;
+				var sRuleName = s;
+				var oR = azn.rule(s);
+				var oP = this;
+				var oRP = oR.promise();
+				var oCP = this.promise();
+				this.getObjects().promise = new Promise((res,rej)=>{
+					/// Policy create / lookup
+					oCP.then(()=>{
+						window.dbgPol = oP;
+						var p = oP.getPolicy();
+						/// Rule create / lookup
+						oRP.then(() => {
+							/// Add rule association
+							if(!oP.getChildRule(sRuleName)){
+								if(p.rules == null || !p.rules) p.rules = [];
+								p.rules.push(oR.getRule());
+								AM6Client.update("POLICY",p, function(xs,xv){
+									if(xv && xv.json) res(oR);
+									else rej(oR);
+								});
+							}
+							else{
+								res(oR);
+							}
+						});
+					})
+				});
+				return oR;
 			},
+
 			delete : function(){
 				var _o = this.getObjects(), b=0;
 				if(_o.policy){
@@ -155,12 +177,15 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 					}
 				}
 			},
-			getRule : function(){ return this.getObjects().rule; },
-			modify : function(v){
-				var p = this.getRule();
-				for(var i in v) p[i] = v[i];
-				return AM6Client.update("RULE",p);
+			promise : function(){
+				return this.getObjects().promise;
 			},
+			getRule : function(){ return this.getObjects().rule; },
+			object : function(){ return this.getRule(); },
+			modify : function(v){
+				return azn.modify("RULE", this, v);
+			},
+
 			getChildPattern : function(s){
 				var p = this.getRule(),o,i=0;
 				for(;i < p.patterns.length;i++){
@@ -181,17 +206,35 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 				this.destroy();
 				return b;
 			},
+
 			pattern : function(s){
-				var r = azn.pattern(s),p = this.getRule();
-				if(!r || !r.getObjects().pattern) return 0;
-//				if(!p.populated) p = accountManagerRule.populateRule(p);
-				if(!this.getChildPattern(s)){
-					if(p.patterns == null || !p.patterns) p.patterns = [];
-					p.patterns.push(r.getPattern());
-					AM6Client.update("RULE",p);
-				}
-				//r.getObjects().rule = this;
-				return r;
+				var sPatternName = s;
+				var oP = azn.pattern(s);
+				var oR = this;
+				var oPP = oP.promise();
+				var oRP = this.promise();
+				this.getObjects().promise = new Promise((res,rej)=>{
+					/// Rule create / lookup
+					oRP.then(()=>{
+						var p = oR.getRule();
+						/// Pattern create / lookup
+						oPP.then(() => {
+							/// Add pattern association
+							if(!oR.getChildPattern(sPatternName)){
+								if(p.patterns == null || !p.patterns) p.patterns = [];
+								p.patterns.push(oP.getPattern());
+								AM6Client.update("RULE",p, function(xs,xv){
+									if(xv && xv.json) res(oP);
+									else rej(oP);
+								});
+							}
+							else{
+								res(oP);
+							}
+						});
+					})
+				});
+				return oP;
 			}
 		});
 		this.addNewRule(v,s);
@@ -223,32 +266,47 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 					}
 				}
 			},
+			promise : function(){
+				return this.getObjects().promise;
+			},
 			getPattern : function(){ return this.getObjects().pattern; },
+			object : function(){ return this.getPattern(); },
 			modify : function(v){
-				var p = this.getPattern();
-				for(var i in v) p[i] = v[i];
-				return AM6Client.update("PATTERN", p);
+				return azn.modify("PATTERN", this, v);
+			},
+			citeUrn : function(s, sP){
+				var oF = azn.fact(s),oP = this;
+				var oFP = r.promise();
+				var oPP = p.promise();
+				this.getObjects().promise = new Promise((res,rej)=>{
+					oPP.then(()=>{
+						var p = oP.getPattern();
+						oFP.then(()=>{
+							var r = oF.getFact();
+							if(!r) rej(oF);
+							if(p[sP] != r.urn){
+								p[sP] = r.urn;
+								AM6Client.update("PATTERN", p, function(hs, hv){
+									if(hv && hv.json) res(oF);
+									else rej(oF);
+								});;
+							}
+							else{
+								res(oF);
+							}
+						});
+					});
+				});
+
+				return oF;
 			},
 			fact : function(s){
-				var r = azn.fact(s),p = this.getPattern();
-				if(!r || !r.getObjects().fact) return 0;
-				if(p.factUrn != r.getFact().urn){
-					p.factUrn = r.getFact().urn;
-					AM6Client.update("PATTERN", p);
-				}
-
-				return r;
+				return this.citeUrn(s, "factUrn");
 			},
 			match : function(s){
-				var r = azn.fact(s),p = this.getPattern();
-				if(!r || !r.getObjects().fact) return 0;
-				if(p.matchUrn != r.getFact().urn){
-					p.matchUrn = r.getFact().urn;
-					AM6Client.update("PATTERN", p);
-				}
-
-				return r;
+				return this.citeUrn(s, "matchUrn");
 			},
+
 			delete : function(){
 				var _o = this.getObjects(), b=0;
 				if(_o.pattern){
@@ -291,12 +349,16 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 					}
 				}
 			},
+			
 			getFact : function(){ return this.getObjects().fact; },
-			modify : function(v){
-				var p = this.getFact();
-				for(var i in v) p[i] = v[i];
-				return AM6Client.update("FACT", p);
+			promise : function(){
+				return this.getObjects().promise;
 			},
+			object : function(){ return this.getFact(); },
+			modify : function(v){
+				return azn.modify("FACT", this, v);
+			},
+
 			delete : function(){
 				var _o = this.getObjects(), b=0;
 				if(_o.fact){
@@ -328,7 +390,23 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 			}
 		}
 		return r;
+	},
+	modify : function(t, o, v){
+		var oCP = o.getObjects().promise;
+		o.getObjects().promise = new Promise((res,rej)=>{
+			oCP.then(()=>{
+				var p = o.object();
+				for(var i in v) p[i] = v[i];
+				AM6Client.update(t, p, function(hs, hv){
+					if(hs && hs.json) res(oP);
+					else rej(oP);
+				});
+				return o;
+			});
+		});
+		return this;
 	}
+
 
 });
 }());
