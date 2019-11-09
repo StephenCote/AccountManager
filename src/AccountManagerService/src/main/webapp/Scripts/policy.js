@@ -84,7 +84,16 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 				return this.getObjects().promise;
 			},
 			define : function(){
-				return AM6Client.define(this.getPolicy().objectId);
+				var oPolicy = this;
+				return new Promise((res,rej)=>{
+					oPolicy.promise().then(()=>{
+						var oPolicyObj = oPolicy.getPolicy();
+						AM6Client.define(oPolicyObj.objectId,function(s,v){
+							if(v && v.json) res(v.json);
+							rej(null);
+						});
+					});
+				});
 			},
 			getPolicy : function(){ return this.getObjects().policy; },
 			object : function(){ return this.getPolicy(); },
@@ -276,8 +285,8 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 			},
 			citeUrn : function(s, sP){
 				var oF = azn.fact(s),oP = this;
-				var oFP = r.promise();
-				var oPP = p.promise();
+				var oFP = oF.promise();
+				var oPP = oP.promise();
 				this.getObjects().promise = new Promise((res,rej)=>{
 					oPP.then(()=>{
 						var p = oP.getPattern();
@@ -372,6 +381,10 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 		this.addNewFact(v,s);
 		return v;
 	},
+	define : function(s){
+		var oPolicy = azn.policy(s);
+		return oPolicy.define();
+	},
 	createPolicyRequest : function(d, s){
 		if(!d){
 			Hemi.logError("Missing policy definition");
@@ -398,13 +411,15 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 				var p = o.object();
 				for(var i in v) p[i] = v[i];
 				AM6Client.update(t, p, function(hs, hv){
-					if(hs && hs.json) res(oP);
-					else rej(oP);
+					if(hv && hv.json) res(o);
+					else{
+						rej(o);
+					}
 				});
 				return o;
 			});
 		});
-		return this;
+		return o;
 	}
 
 
