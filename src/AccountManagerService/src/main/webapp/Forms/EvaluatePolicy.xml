@@ -20,7 +20,7 @@
 			<input type = "button" class = "rocket-text" value = "Evaluate" onclick = "${this}.evaluatePolicyRequest()" />
 		</p>
 	</div>
-	<p rid = "statusContainer"><span rid = "status">[ ... ]</span></p>
+	<p rid = "statusContainer" style = "clear:both;"><span rid = "status">[ ... ]</span></p>
 <embedded-script><![CDATA[
 	template_init : function(){
 		var oP = this.getProperties().policy;
@@ -35,11 +35,11 @@
 		var sPR = this.getElementByRID("policyRequestType").value;
 		var oP = azn.createPolicyRequest(this.getProperties().policyDef, sPR);
 		
-		for(var i = 0; oP.parameters && i < oP.parameters.length; i++){
-			var sU = oP.parameters[i].urn;
-			oP.parameters[i].factData = this.getElementByRID(sU).value;
+		for(var i = 0; oP.facts && i < oP.facts.length; i++){
+			var sU = oP.facts[i].urn;
+			oP.facts[i].factData = this.getElementByRID(sU).value;
 		}
-		window.policyRequest = oP;
+	
 		var ctl = this;
 		AM6Client.evaluate(oP,function(s,v){
 			if(v && v.json) v = v.json;
@@ -65,7 +65,6 @@
 			oI.appendChild(oIn);
 			oD.appendChild(oL);
 			oD.appendChild(oI);
-			//oP.appendChild(oD);
 			Hemi.xml.setInnerXHTML(oP,oD,1);
 		}
    		this.extendSpaceConfiguration(oP);

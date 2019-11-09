@@ -5,7 +5,6 @@
 
 		window.amc = ctl = Hemi.newObject("Console","1.0",true,true,{
 			object_create : function(){
-				/// window.amc = ctl = this;
 				var _s = this.getProperties(), _o = this.getObjects();
 				_s.iconView = 1;
 				_s.maximize = 1;

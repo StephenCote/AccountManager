@@ -8,14 +8,11 @@ this.DoOperation = function(){
 	if(this.getProperties().opener){
 		
 		var o = Hemi.registry.service.getObject(this.getProperties().opener);
-		window.dbgComp = o;
-		window.dbgCompPath = sForm;
 		o.loadTemplate(g_application_path + sForm);
 	}
 	else{
 		window.uwm.createContent("oMain",g_application_path + sForm);
 	}
-	//window.uwm.createContent("oMain",g_application_path + (window.uwm.altLogin ? window.uwm.altLogin.form : "Forms/LoginIn.xml"));
 }
 this.SetRule = function(sRule){
 	this.ruleName = sRule;

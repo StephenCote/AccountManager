@@ -81,7 +81,6 @@
 						res(bOut);
 					}, g_application_path + "Rules/");
 
-					window.testP = oTestP;
 					oTestP.then((oTest)=>{
 						var bOut = 0;
 						Hemi.logDebug("START RULE: " + sName);
@@ -95,7 +94,6 @@
 						return oTest;
 					});
 				});
-				window.ruleP = oRuleP;
 				return oRuleP;
 			},
 			operation : function(sName, vParams, oNode, sRule){
