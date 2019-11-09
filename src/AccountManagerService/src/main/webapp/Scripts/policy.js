@@ -95,6 +95,9 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 					});
 				});
 			},
+			view : function(){
+				return azn.view("Policy", this);
+			},
 			getPolicy : function(){ return this.getObjects().policy; },
 			object : function(){ return this.getPolicy(); },
 			modify : function(v){
@@ -121,7 +124,6 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 				this.getObjects().promise = new Promise((res,rej)=>{
 					/// Policy create / lookup
 					oCP.then(()=>{
-						window.dbgPol = oP;
 						var p = oP.getPolicy();
 						/// Rule create / lookup
 						oRP.then(() => {
@@ -188,6 +190,9 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 			},
 			promise : function(){
 				return this.getObjects().promise;
+			},
+			view : function(){
+				return azn.view("Rule", this);
 			},
 			getRule : function(){ return this.getObjects().rule; },
 			object : function(){ return this.getRule(); },
@@ -278,6 +283,10 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 			promise : function(){
 				return this.getObjects().promise;
 			},
+			view : function(){
+				return azn.view("Pattern", this);
+			},
+
 			getPattern : function(){ return this.getObjects().pattern; },
 			object : function(){ return this.getPattern(); },
 			modify : function(v){
@@ -360,6 +369,10 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 			},
 			
 			getFact : function(){ return this.getObjects().fact; },
+			view : function(){
+				return azn.view("Fact", this);
+			},
+
 			promise : function(){
 				return this.getObjects().promise;
 			},
@@ -420,6 +433,23 @@ window.azn = azn = Hemi.newObject("AZN","1.0",true,true,{
 			});
 		});
 		return o;
+	},
+	view : function(sType, oObj){
+		return new Promise((res,rej)=>{
+			oObj.promise().then(()=>{
+				var o = oObj.object();
+				var oProps = {parentRef:0,defaultPath:0,openerId:0,listType:sType,picker:0,viewType:o,listId:0};
+				Hemi.app.createWindow(o.name , uwm.getApiTypeView(sType) + "/Forms/" + sType  + ".xml", "View-" + o.id, 0, 0, oProps)
+				.then((oW)=>{
+		            if (oW) {
+		            	oW.resizeTo((v ? 700 : 475), (v ? 500 : 400));
+		            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+		            	oW.setHideOnClose(0);
+		            	res(oW);
+		            }
+		        });
+			});
+		});
 	}
 
 
