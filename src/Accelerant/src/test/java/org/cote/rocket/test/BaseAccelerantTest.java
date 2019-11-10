@@ -1188,26 +1188,20 @@ public class BaseAccelerantTest{
 			if(lc == null){
 				lc = Rocket.createLifecycle(user, name);
 			}
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (DataAccessException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 
 		return lc;
 	}
-	public UserType addBulkUser(String sessionId, String user_name, String password){
+	public UserType addBulkUser(String sessionId, String userName, String password){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
 		
 		UserType user = null;
 		try {
 
-			user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,testOrganization.getId());
+			user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(userName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,testOrganization.getId());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
 			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, password.getBytes("UTF-8"), true,true,false);
 		} catch (ArgumentException | UnsupportedEncodingException | FactoryException e) {
@@ -1215,25 +1209,25 @@ public class BaseAccelerantTest{
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return user;
-	}	
-	public UserType getUser(String user_name, String password){
+	}
+	public UserType getUser(String userName, String password){
+		return getUser(userName, password, testOrganization.getId());
+	}
+	public UserType getUser(String userName, String password,long organizationId){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
 		
 		UserType user = null;
 		try {
-			user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(user_name,testOrganization.getId());
+			user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(userName,organizationId);
 			if(user == null){
-				user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,testOrganization.getId());
+				user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(userName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,organizationId);
 				Factories.getNameIdFactory(FactoryEnumType.USER).add(user);
-				user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(user_name,testOrganization.getId());
-				CredentialService.newHashedPasswordCredential(user, user, "password", true,false);
+				user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(userName,organizationId);
+				CredentialService.newHashedPasswordCredential(user, user, password, true,false);
 
 			}
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
