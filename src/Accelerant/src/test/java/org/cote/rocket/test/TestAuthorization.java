@@ -27,25 +27,47 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.factory.RoleParticipationFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
+import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.BasePermissionType;
+import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.CredentialType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserRoleType;
+import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.UserEnumType;
+import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.ProjectType;
 import org.cote.rocket.Factories;
 import org.cote.rocket.RocketSecurity;
 import org.junit.Test;
+import org.cote.accountmanager.util.JSONUtil;
+import org.cote.accountmanager.util.SecurityUtil;
+
 public class TestAuthorization extends BaseAccelerantTest{
 	public static final Logger logger = LogManager.getLogger(TestAuthorization.class);
 
@@ -124,7 +146,7 @@ public class TestAuthorization extends BaseAccelerantTest{
 		
 	}
 	
-	/*
+	
 	@Test
 	public void TestRocketLifecycleAuthorization(){
 		LifecycleType lc = getTestLifecycle(testUser,"QA Lifecycle");
@@ -151,25 +173,28 @@ public class TestAuthorization extends BaseAccelerantTest{
 	@Test
 	public void TestGetDefaultValues(){
 		boolean check = false;
+		String testUserName = "QA User 1";
 		try{
 
 			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization("/Accelerant/Rocket");
-			UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", org);
-			BaseRoleType rocketRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName("RocketRoles", org);
+			UserType user = this.getUser(testUserName, "password1", org.getId());
+			UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", org.getId());
+			BaseRoleType rocketRole = RocketSecurity.getRocketRoles(org.getId());
+					//((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName("RocketRoles", org.getId());
 			assertNotNull("Role is null",rocketRole);
-			BaseRoleType adminRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName("AdminRole", rocketRole, org);
+			BaseRoleType adminRole = RocketSecurity.getAdminRole(org.getId());
+					//((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoleByName("AdminRole", rocketRole, org.getId());
 			assertNotNull("Role is null",adminRole);
-			UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("steve", org);
-			DirectoryGroupType group = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user,"/Rocket", user.getOrganizationId());
+			DirectoryGroupType group = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA,"/Rocket", user.getOrganizationId());
 			assertNotNull("Group is null",group);
 			
-			boolean switched = AuthorizationService.switchGroup(admin, adminRole, group, AuthorizationService.getViewGroupPermission(org), true);
+			boolean switched = AuthorizationService.authorize(admin, adminRole, group, AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP, org.getId()), true);
 			logger.info("Switched permission: " + switched);
 			check = AuthorizationService.canView(user, group);
 			logger.info("User is authorized = " + check);
 			check = AuthorizationService.canView(adminRole, group);
 			logger.info("Role is authorized = " + check);
-			logger.info("Check role group permission = " + (AuthorizationService.checkGroupPermissions(adminRole, group, new BasePermissionType[] { AuthorizationService.getViewGroupPermission(group.getOrganizationId()) })));			
+			logger.info("Check role group permission = " + (AuthorizationService.isAuthorized(adminRole, group, AuthorizationService.PERMISSION_VIEW,new BasePermissionType[] { AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP,group.getOrganizationId()) })));			
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -184,10 +209,10 @@ public class TestAuthorization extends BaseAccelerantTest{
 		assertTrue("User can't view group",check);
 	}
 	
-	*/
+
 	
 	
-	/*
+
 	@Test
 	public void TestRoles(){
 
@@ -197,22 +222,24 @@ public class TestAuthorization extends BaseAccelerantTest{
 		String testUserName = "QA User 1";
 		try {
 			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization("/Accelerant/Rocket");
-			//Rocket.configureApplicationEnvironment(org, SecurityUtil.getSaltedDigest("password1"));
 			try{
-				testUser = SessionSecurity.login(sessionId, testUserName, SecurityUtil.getSaltedDigest("password1"), org);
+				testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,"password1", org.getId());
 			}
-			catch(FactoryException fe2){
-				///
+			catch(FactoryException | ArgumentException fe2){
+				/// intentionally sink
 			}
 			if(testUser == null){
-				UserType new_user = Factories.getNameIdFactory(FactoryEnumType.USER).newUser(testUserName, SecurityUtil.getSaltedDigest("password1"), UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org);
-				if(Factories.getNameIdFactory(FactoryEnumType.USER).addUser(new_user,  true)){
-					testUser = SessionSecurity.login(sessionId, testUserName, SecurityUtil.getSaltedDigest("password1"), org);
+				UserType new_user = ((UserFactory)(Factories.getNameIdFactory(FactoryEnumType.USER))).newUser(testUserName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org.getId());
+				if(((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).add(new_user)){
+					new_user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(testUserName, org.getId());
+					CredentialType cred = CredentialService.newHashedPasswordCredential(new_user, new_user,"password1", true,false);
+					assertNotNull("Cred is null",cred);
+					testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD, "password1", org.getId());
 				}
 			}
-			UserRoleType rocketUserRole = RocketSecurity.getUserRole(org);
-			UserRoleType userReaderRole = RoleService.getAccountUsersReaderUserRole(org);
-			UserRoleType roleReaderRole = RoleService.getRoleReaderUserRole(org);
+			UserRoleType rocketUserRole = RocketSecurity.getUserRole(org.getId());
+			UserRoleType userReaderRole = RoleService.getAccountUsersReaderUserRole(org.getId());
+			UserRoleType roleReaderRole = RoleService.getRoleReaderUserRole(org.getId());
 			assertNotNull("Rocket role is null", rocketUserRole);
 			assertNotNull("User reader role is null", userReaderRole);
 			assertNotNull("Role reader role is null", roleReaderRole);
@@ -227,7 +254,8 @@ public class TestAuthorization extends BaseAccelerantTest{
 			assertTrue("Failed to add user to role",RoleService.addUserToRole(testUser, rocketUserRole));
 			assertTrue("Failed to add user to role",RoleService.addUserToRole(testUser, userReaderRole));
 			assertTrue("Failed to add user to role",RoleService.addUserToRole(testUser, roleReaderRole));
-			boolean isAuth = AuthorizationService.isAccountReaderInOrganization(testUser, org);
+			boolean isAuth = RoleService.isFactoryReader(testUser, Factories.getFactory(FactoryEnumType.ACCOUNT),testUser.getOrganizationId());
+					//AuthorizationService.isAccountReaderInOrganization(testUser, org);
 			
 			List<UserRoleType> roles = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUserRoles(testUser);
 			assertTrue("Roles list is empty",roles.size() > 0);
@@ -249,6 +277,6 @@ public class TestAuthorization extends BaseAccelerantTest{
 		}
 
 	}
-	*/
+	
 	
 }
