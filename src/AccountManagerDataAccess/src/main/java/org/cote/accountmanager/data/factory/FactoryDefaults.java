@@ -113,11 +113,15 @@ public class FactoryDefaults {
 		if(rootAccount == null){
 			rootAccount = aFact.newAccount(null,ROOT_USER_NAME, AccountEnumType.SYSTEM, AccountStatusEnumType.RESTRICTED, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()).getId(),Factories.getSystemOrganization().getId());
 			if (!aFact.add(rootAccount)) throw new FactoryException("Unable to add root account");
-	
+			rootAccount = aFact.getAccountByName(ROOT_USER_NAME, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
+			
 			UserType rootUser = uFact.newUserForAccount(ROOT_USER_NAME, rootAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 			if (!uFact.add(rootUser)) throw new FactoryException("Unable to add root user");
 			rootUser = uFact.getByName(ROOT_USER_NAME, rootAccount.getOrganizationId());
 			if (rootUser == null) throw new FactoryException("Failed to retrieve to add root user");
+			
+			rootAccount.setOwnerId(rootUser.getId());
+			if(!aFact.update(rootAccount)) throw new FactoryException("Failed to update root account");
 			/// 2015/06/23 - New Credential System
 			/// I intentionally left the credential operation decoupled from object creation
 			///
@@ -159,6 +163,10 @@ public class FactoryDefaults {
 		UserType adminUser = uFact.newUserForAccount(ADMIN_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (!uFact.add(adminUser)) throw new FactoryException("Unable to add admin user");
 		adminUser = uFact.getByName(ADMIN_USER_NAME, organization.getId());
+		
+		adminAccount.setOwnerId(adminUser.getId());
+		if(!aFact.update(adminAccount)) throw new FactoryException("Failed to update admin account");
+		
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
 		///
@@ -208,32 +216,31 @@ public class FactoryDefaults {
 			return false;
 		}
 		
-		
 		// Create default permission sets
 		//
 		for (int i = 0; i < DEFAULT_ACCOUNT_PERMISSIONS.length; i++)
 		{
 			pFact.add(
-				pFact.newPermission(DEFAULT_ACCOUNT_PERMISSIONS[i], PermissionEnumType.ACCOUNT, organization.getId())
+				pFact.newPermission(adminUser, DEFAULT_ACCOUNT_PERMISSIONS[i], PermissionEnumType.ACCOUNT, null, organization.getId())
 			);
 		}
 
 		for (int i = 0; i < DEFAULT_OBJECT_PERMISSIONS.length; i++)
 		{
 			pFact.add(
-					pFact.newPermission(DEFAULT_OBJECT_PERMISSIONS[i], PermissionEnumType.OBJECT, organization.getId())
+					pFact.newPermission(adminUser, DEFAULT_OBJECT_PERMISSIONS[i], PermissionEnumType.OBJECT, null, organization.getId())
 			);
 		}
 		for (int i = 0; i < DEFAULT_APPLICATION_PERMISSIONS.length; i++)
 		{
 			pFact.add(
-					pFact.newPermission(DEFAULT_APPLICATION_PERMISSIONS[i], PermissionEnumType.APPLICATION, organization.getId())
+					pFact.newPermission(adminUser, DEFAULT_APPLICATION_PERMISSIONS[i], PermissionEnumType.APPLICATION, null, organization.getId())
 			);
 		}
 		/// 2016/05/18 - Moved default permission construction into the Participation Factories
 		/// Account is left out at the moment
 		///
-		createPermissionsForAuthorizationFactories(organization.getId());
+		createPermissionsForAuthorizationFactories(adminUser, organization.getId());
 
 		// Request the person roles to create them
 		//
@@ -247,7 +254,7 @@ public class FactoryDefaults {
 		}
 		// Add admin account and root account to Administrators and Users account roles
 		//
-		AccountType rootAccount = aFact.getAccountByName("Root",((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
+		AccountType rootAccount = aFact.getAccountByName(ROOT_USER_NAME,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
 		AccountRoleType accountAdminRole = RoleService.getAccountAdministratorAccountRole(adminUser);
 		AccountRoleType dataAdminRole = RoleService.getDataAdministratorAccountRole(adminUser);
 		AccountRoleType objectAdminRole = RoleService.getObjectAdministratorAccountRole(adminUser);
@@ -267,7 +274,7 @@ public class FactoryDefaults {
 		
 		// Add admin user and root user to Administrators and Users user roles
 		//
-		UserType rootUser = uFact.getByName("Root",Factories.getSystemOrganization().getId());
+		UserType rootUser = uFact.getByName(ROOT_USER_NAME,Factories.getSystemOrganization().getId());
 		UserRoleType userAdminRole = RoleService.getAccountAdministratorUserRole(adminUser);
 		UserRoleType userDataAdminRole = RoleService.getDataAdministratorUserRole(adminUser);
 		UserRoleType userObjectAdminRole = RoleService.getObjectAdministratorUserRole(adminUser);
@@ -336,7 +343,7 @@ public class FactoryDefaults {
 		return true;
 	}
 	
-	public static void createPermissionsForAuthorizationFactories(long organizationId) throws FactoryException{
+	public static void createPermissionsForAuthorizationFactories(UserType owner, long organizationId) throws FactoryException{
 		Map<FactoryEnumType, FactoryEnumType> factories = AuthorizationService.getAuthorizationFactories();
 		if(factories.keySet().isEmpty()){
 			logger.error("No factories registered with authorization service");
@@ -350,7 +357,7 @@ public class FactoryDefaults {
 			{
 				try{
 					pfact.add(
-						pfact.newPermission(permissionNames[i], fact.getDefaultPermissionType(), organizationId)
+						pfact.newPermission(owner, permissionNames[i], fact.getDefaultPermissionType(), null, organizationId)
 				);
 				logger.info("Added permission " + permissionNames[i] + " to organization #" + organizationId);
 				}
