@@ -52,7 +52,7 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class PermissionFactory extends NameIdFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PERMISSION, PermissionFactory.class); }
+
 	public PermissionFactory(){
 		super();
 		this.clusterByParent = true;
@@ -230,11 +230,11 @@ public class PermissionFactory extends NameIdFactory {
 	}
 	
 	public <T> T getRootPermission(PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
-		return getCreatePermission(null,"Root",type,null,organizationId);
+		return getCreatePermission(Factories.getAdminUser(organizationId),"Root",type,null,organizationId);
 	}
 	@SuppressWarnings("unchecked")
 	public <T> T getHomePermission(PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
-		return getCreatePermission(null,"Home",type,(T)getRootPermission(type,organizationId),organizationId);
+		return getCreatePermission(Factories.getAdminUser(organizationId),"Home",type,(T)getRootPermission(type,organizationId),organizationId);
 	}
 	@SuppressWarnings("unchecked")
 	public <T> T getUserPermission(UserType user,PermissionEnumType type, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
@@ -328,20 +328,21 @@ public class PermissionFactory extends NameIdFactory {
 		return new_perm;
 	}
 	
-	public BasePermissionType newPermission(String permission_name, PermissionEnumType type, BasePermissionType parent, long organizationId)
+	private BasePermissionType newPermission(String permission_name, PermissionEnumType type, BasePermissionType parent, long organizationId)
 	{
 		BasePermissionType new_perm = newPermission(permission_name, type, organizationId);
 		new_perm.setParentId((parent != null ? parent.getId() : 0L));
 		return new_perm;
 	}
 	
-	public BasePermissionType newPermission(String permission_name, PermissionEnumType type, long organizationId)
+	private BasePermissionType newPermission(String permission_name, PermissionEnumType type, long organizationId)
 	{
 		BasePermissionType new_perm = newPermission(type);
 		new_perm.setOrganizationId(organizationId);
 		new_perm.setName(permission_name);
 		return new_perm;
 	}
+	
 	protected BasePermissionType newPermission(PermissionEnumType Type)
 	{
 		BasePermissionType new_perm = null;
