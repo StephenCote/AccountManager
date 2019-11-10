@@ -1242,6 +1242,8 @@ where (participanttype = 'CONTACT' and participantid not in (select id from Cont
 or
 (participanttype = 'ADDRESS' and participantid not in (select id from Addresses A1))
 or
+ownerId not in(select id from Users U)
+or
 organizationid not in (select id from organizations)
 ;
 
@@ -1249,6 +1251,8 @@ create or replace view orphanGroups as
 select id, name, parentid from Groups G1
 where (parentid not in (select id from Groups G2)
 and G1.parentid > 0)
+or
+ownerId not in(select id from Users U)
 or
 organizationid not in (select id from organizations)
 ;
@@ -1259,6 +1263,8 @@ where
 (parentid not in (select id from Roles R2)
 and R1.parentid > 0)
 or
+ownerId not in(select id from Users U)
+or
 organizationid not in (select id from organizations)
 ;
 
@@ -1266,12 +1272,16 @@ create or replace view orphanData as
 select id, name, groupid from Data G1
 where groupid not in (select id from Groups G2)
 or
+ownerId not in(select id from Users U)
+or
 organizationid not in (select id from organizations)
 ;
 
 create or replace view orphanAccounts as
 select id, name, groupid from Accounts G1
 where groupid not in (select id from Groups G2)
+or
+ownerId not in(select id from Users U)
 or
 organizationid not in (select id from organizations)
 ;
@@ -1302,6 +1312,8 @@ select id, name, groupid from contacts R1
 where (groupid not in (select id from Groups G1)
 and R1.groupid > 0)
 or
+ownerId not in(select id from Users U)
+or
 organizationid not in (select id from organizations)
 ;
 
@@ -1310,6 +1322,8 @@ select id, name, groupid from addresses R1
 where (groupid not in (select id from Groups G1)
 and R1.groupid > 0)
 or
+ownerId not in(select id from Users U)
+or
 organizationid not in (select id from organizations)
 ;
 
@@ -1317,6 +1331,8 @@ create or replace view orphanPermissions as
 select id, name, parentId from permissions R1
 where (parentid not in (select id from Permissions G1)
 and R1.parentid > 0)
+or
+ownerId not in(select id from Users U)
 or
 organizationid not in (select id from organizations)
 ;
