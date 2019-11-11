@@ -29,12 +29,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
+				<version>3.8.0</version>
 				<configuration>
         <meminitial>512m</meminitial>
         <maxmem>2048m</maxmem>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>13</source>
+					<target>13</target>
 					<fork>true</fork>
 				</configuration>
 			</plugin>
@@ -53,7 +53,7 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>false</skipTests>
+  					<skipTests>true</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine>  
 
   					<includes>

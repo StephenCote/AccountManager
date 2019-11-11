@@ -30,10 +30,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
+				<version>3.8.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>13</source>
+					<target>13</target>
 				</configuration>
 			</plugin>
 <plugin>
@@ -51,18 +51,19 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>true</skipTests>
+  					<skipTests>false</skipTests>
  					<argLine>-Xms512m -Xmx2048m</argLine> 
   					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
 						<!-- 
+<exclude>**/TestAuthorization.java</exclude>
 
-<exclude>**/TestCommunities.java</exclude>
 						-->
+						<exclude>**/TestCommunities.java</exclude>
 <exclude>**/TestIdentityService.java</exclude>
-						<exclude>**/TestAuthorization.java</exclude>
+						
 						<exclude>**/TestFormElementValue.java</exclude>
 
 							
