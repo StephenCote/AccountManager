@@ -113,9 +113,9 @@ public class TestImportContacts extends BaseDataAccessTest{
 	*/
 	@Test
 	public void importRoleSourceData(){
-		String content = TikaShredder.getExcelAsString("/Users/Steve/Downloads/Roles_20130905.xlsx");
+		String content = TikaShredder.getExcelAsString("testData/roles.xlsx");
 		WorkbookType wb = TikaShredder.shredTikaContent(content,true);
-		SheetType sheet = wb.getSheets().get(1);
+		SheetType sheet = wb.getSheets().get(0);
 		logger.info(sheet.getSheetName());
 		DirectoryGroupType dir = null;
 		BaseRoleType parentRole = null;
