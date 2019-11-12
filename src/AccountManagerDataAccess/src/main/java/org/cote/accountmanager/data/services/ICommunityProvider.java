@@ -46,6 +46,7 @@ public interface ICommunityProvider {
 	public boolean createCommunity(UserType adminUser, String communityName);
 	public boolean createCommunityProject(UserType adminUser, String communityId, String projectName);
 	public List<BaseRoleType> getCommunitiesRoles(UserType user);
+	public List<BaseRoleType> getCommunityRoles(UserType authorizedUser);
 	public List<BaseRoleType> getCommunityRoles(UserType user, String communityId);
 	public List<BaseRoleType> getCommunityProjectRoles(UserType user, String projectId);
 	public <T> T getCommunity(UserType user, String name);
