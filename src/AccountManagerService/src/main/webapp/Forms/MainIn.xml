@@ -61,8 +61,27 @@
 				});
 			},
 			toggleCommunity : function(){
-				irocket.setCommunityMode(!irocket.getCommunityMode());
-				this.refreshCommunity();
+				if(!AM6Client.isCommunityConfigured()){
+					var ctl = this;
+					AM6Client.application().then((oX)=>{
+						if(oX.userRoles.filter(r => r.name.match(/^systemadministrators$/gi))){
+							if(confirm("Organization " + AM6Client.currentOrganization + " is not configured for community mode.  Configure it now?")){
+								AM6Client.configureCommunity(function(s,v){
+									if(v && v.json) ctl.toggleCommunity();
+									else alert("Unable to configure community");
+								});
+							}
+						}
+						else{
+							alert("Organization " + AM6Client.currentOrganization + " is not configured for community mode.  Contact the system administrator for this organization to configure it.");
+						
+						}
+					});
+				}
+				else{
+					irocket.setCommunityMode(!irocket.getCommunityMode());
+					this.refreshCommunity();
+				}
 			},
 			refreshLifecycleList : function(bNoUp){
 				var oSel1 = this.getElementByRID("lifecycles");
