@@ -68,6 +68,8 @@ import org.junit.Test;
 
 public class TestDataTags extends BaseDataAccessTest {
 	
+	private static String testTagUser1 = "Tag User 1"; 
+	private static String testTagUser2 = "Tag User 2"; 
 
 	@Test
 	public void testCreateDataTag(){
@@ -347,8 +349,8 @@ public class TestDataTags extends BaseDataAccessTest {
 	
 	public void testDataTags(){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
-		UserType user1 = getUser("testuser1","password1");
-		UserType user2 = getUser("testuser2","password1");
+		UserType user1 = getUser(testTagUser1,"password1");
+		UserType user2 = getUser(testTagUser2,"password1");
 		DataType data1 = getData(user1, "testdata1");
 		DataType data2 = getData(user1, "testdata2");
 		DataType data3 = getData(user2, "testdata3");
