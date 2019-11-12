@@ -416,11 +416,16 @@
 		var o = getFromCache("APPLICATION", "GET", "_principal_");
 		if(o){
 			if(fH) fH("",o);
-			return o;
+			return Promise.resolve(o);
 		}
 		var f = fH;
 		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("APPLICATION","GET","_principal_",v.json);} if(f) f(s,v);};
-	   return Hemi.xml.getJSON(sPrincipal + "/application",fc,(fH ? 1 : 0));
+	   return new Promise((res, rej) => {
+		   Hemi.xml.promiseJSON(sPrincipal + "/application",0, 0).then((x)=>{
+			   fc("",x);
+			   res(x);
+		   });
+	   });
 	}
 	function getPrincipal(fH){
 		var o = getFromCache("USER", "GET", "_principal_");
@@ -430,7 +435,6 @@
 		}
 		var f = fH;
 		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache("USER","GET","_principal_",v.json);} if(f) f(s,v);};
-		/// return Hemi.xml.getJSON(sPrincipal + "/",fc,(fH ? 1 : 0));
 		return new Promise((res,rej)=>{
 			Hemi.xml.promiseJSON(sPrincipal + "/","GET",0,0).then((x)=>{
 				fc("",x);
@@ -505,6 +509,32 @@
 			aU.push("/" + sCid);
 		}
 		return Hemi.xml.getJSON(aU.join(""),fH,(fH ? 1 : 0));
+	}
+	function listCommunityRoles(fH){
+		var sK = sCurrentOrganization + " CommunityRoles";
+		var sType = "ROLE";
+		var o = getFromCache(sType, "GET", sK);
+		if(o){
+			if(fH) fH("",o);
+			return o;
+		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sK,v.json);} if(f) f(s,v);};
+
+	   return Hemi.xml.getJSON(sComm + "/communityRoles",fc,(fH ? 1 : 0));
+	}
+	function listUserCommunityRoles(sUid, fH){
+		var sK = sCurrentOrganization + " UserCommunityRoles " + sUid;
+		var sType = "ROLE";
+		var o = getFromCache(sType, "GET", sK);
+		if(o){
+			if(fH) fH("",o);
+			return o;
+		}
+		var f = fH;
+		var fc = function(s,v){if(typeof v != "undefined" && v != null){addToCache(sType,"GET",sK,v.json);} if(f) f(s,v);};
+
+	   return Hemi.xml.getJSON(sComm + "/userRoles",fc,(fH ? 1 : 0));
 	}
 	function getCommunityProjectRoleBase(oP, fH){
 		var sType = "ROLE";
@@ -833,6 +863,8 @@
 		permitSystem : permitSystem,
 		members : listMembers,
 		member : setMember,
+		userCommunityRoles : listUserCommunityRoles,
+		communityRoles : listCommunityRoles,
 		systemRoles : listSystemRoles,
 		user: getUserObject,
 		generateApplication : generateApplication,
