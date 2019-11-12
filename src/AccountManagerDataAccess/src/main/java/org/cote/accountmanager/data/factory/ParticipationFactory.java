@@ -428,6 +428,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 	{
 		T out_participant = null;
 		if (participation == null || participant == null || participation.getId().compareTo(0L)==0 || participant.getId().compareTo(0L)==0 || participantType == ParticipantEnumType.UNKNOWN){
+				
 				throw new ArgumentException("getParticipant: Invalid parameters.  "
 					+ (participation == null ? " Null Participation." : "") + (participant == null ? " Null participant." : "") + (participantType == ParticipantEnumType.UNKNOWN ? " UNKNOWN Participant Type":"")
 					+ (participation != null && participation.getId().compareTo(0L)==0 ? " Participation id is 0." : "")
