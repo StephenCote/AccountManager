@@ -375,7 +375,7 @@ public class AuthorizationService {
 			/// These updates won't be processed until the rebuildPending method is called
 			///
 			/// TODO: clearing the actor won't clear it off the object authZ cache - clearing the object cache nukes all authZ checks
-			/// obviously, this won't scale, sothe cache cleanup needs to be revised
+			/// obviously, this isn't optimal for scale, so the cache cleanup should be revised
 			///
 			EffectiveAuthorizationService.clearCache(actor);
 			EffectiveAuthorizationService.clearCache(object);
@@ -400,14 +400,7 @@ public class AuthorizationService {
 			logger.error("Actor type " + actor.getNameType() + " is not registered for authorization");
 			return outBool;
 		}
-		/*
-		IParticipationFactory partFactory =  getRegisteredProvider(factoryProviders.get(actor.getNameType()));
-		if(partFactory == null){
-			logger.error(String.format(FactoryException.PARTICIPATION_FACTORY_REGISTRATION_EXCEPTION, factoryProviders.get(actor.getNameType()).toString()));
-			return false;
-		}
-		String permissionPrefix =partFactory.getPermissionPrefix();
-		*/
+
 		BasePermissionType viewPermission = getPermission(actor,(NameIdType)object,PERMISSION_VIEW);
 		BasePermissionType editPermission = getPermission(actor,(NameIdType)object,PERMISSION_EDIT);
 		BasePermissionType delPermission = getPermission(actor,(NameIdType)object,PERMISSION_DELETE);
@@ -540,21 +533,6 @@ public class AuthorizationService {
 	}
 	
 
-	/*
-	 * GENERAL REFACTOR
-	 *    Pattern - canViewType
-	 *    Rule
-	 *       (actor == TypeRole)
-	 *       AND
-	 *       	(actorRole == TypeAdminRole)
-	 *       	OR
-	 *       	(actorRole == TypeReaderRole)
-	 *       	OR
-	 *       	(actorRole HAS ViewType permission ON TypeObject Container)
-	 *       	OR
-	 *      	(actorRole HAS ViewType permission ON TypeObject)
-	 *    
-	 */
 	public static BasePermissionType getPermission(NameIdType actor, NameIdType object, String permissionBase) throws ArgumentException, FactoryException{
 		if(actor == null || object == null || permissionBase == null){
 			logger.warn(FactoryException.ARGUMENT_NULL);
@@ -569,6 +547,7 @@ public class AuthorizationService {
 		FactoryEnumType factType = (object.getNameType() != NameEnumType.PERMISSION ? factoryProviders.get(object.getNameType())  : FactoryEnumType.PERMISSION);
 		return getPermission(factType, permissionBase,object.getOrganizationId());
 	}
+	
 	public static BasePermissionType getPermission(FactoryEnumType factType, String permissionBase, long organizationId) throws ArgumentException, FactoryException{
 
 		if(factType == FactoryEnumType.PERMISSION){
@@ -614,23 +593,6 @@ public class AuthorizationService {
 		return canDo(actor, object, PERMISSION_EDIT, true);
 	}
    
-    /*
-     * GENERAL REFACTOR
-     * Pattern - canViewType (Combine with previous)
-     * Rule
-     *    (actorType == TypeUser)
-     *    AND
-     *       (actor == TypeObject Owner)
-     *       OR
-     *       (actor == TypeReaderRole member)
-     *       OR
-     *       (actor == TypeAdminRole member)
-     *       OR
-     *       (actor HAS ViewType permission ON TypeObject container)
-     *       OR
-     *       (actor HAS ViewType permission ON TypeObject)
-     */
-  
 	public static boolean switchParticipant(UserType admin, NameIdType actor, NameIdType object, boolean enable) throws FactoryException, ArgumentException, DataAccessException
 	{
 		if (!canChange(admin, object)){
