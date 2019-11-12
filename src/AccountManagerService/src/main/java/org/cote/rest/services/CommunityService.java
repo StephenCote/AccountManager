@@ -125,6 +125,19 @@ public class CommunityService {
 	
 	@RolesAllowed({"admin","user"})
 	@GET
+	@Path("/communityRoles")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getCommunityRoles(@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		List<BaseRoleType> roles = new ArrayList<>();
+		ICommunityProvider cp = getProvider();
+		if(cp != null) roles = cp.getCommunityRoles(user);
+		return Response.status(200).entity(roles).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
 	@Path("/enroll/reader/{userId:[0-9A-Za-z\\-]+}/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -290,14 +303,15 @@ public class CommunityService {
 	
 	@RolesAllowed({"admin","user"})
 	@GET
-	@Path("/roles/")
+	@Path("/userRoles/{userId:[0-9A-Za-z\\\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response getCommunityRoles(@Context HttpServletRequest request){
+	public Response getUserCommunityRoles(@PathParam("userId") String userId, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
+		UserType targUser = BaseService.readByObjectId(AuditEnumType.USER, userId, user);
 		ICommunityProvider cp = getProvider();
 		List<BaseRoleType> roles = new ArrayList<>();
-		if(cp != null) roles = cp.getCommunitiesRoles(user);
+		if(targUser != null && cp != null) roles = cp.getCommunitiesRoles(targUser);
 		return Response.status(200).entity(roles).build();
 	}
 	
