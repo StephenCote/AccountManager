@@ -29,6 +29,7 @@
                                 <pluginExecutionFilter>
                                     <groupId>org.codehaus.mojo</groupId>
                                     <artifactId>jaxb2-maven-plugin</artifactId>
+                                    <version>0.14.0</version>
                                     <versionRange>[1.3,)</versionRange>
                                     <goals>
                                         <goal>xjc</goal>
@@ -62,7 +63,7 @@
 
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
 				<artifactId>maven-jaxb2-plugin</artifactId>
-
+				<version>0.14.0</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>
