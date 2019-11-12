@@ -23,41 +23,97 @@
  *******************************************************************************/
 package org.cote.accountmanager.data;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.BasePermissionType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
+import org.cote.accountmanager.util.JSONUtil;
+import org.junit.Test;
+
 public class TestGroupAuthorization extends BaseDataAccessTest {
-	/*
-	 * This test largely depends on a pre-populated dataset that isn't being setup in the test
+	
+	
+	private static String testAuthUser1 = "Auth User 1"; 
+	private static String testAuthUser2 = "Auth User 2"; 
+	private static String testAuthUser3 = "Auth User 3"; 
+	// private static String testAuthUser4 = "Auth User 4"; 
+	// private static String testAuthRole1 = "Auth Role 1";
+	// private static String testAuthRole2 = "Auth Role 2";
+	private static String testAuthGroup1 = "Auth Group 1";
+	private static String testAuthGroup2 = "Auth Group 2";
+	
+	
 	@Test
-	public void testEncryptedData(){
-		OrganizationType org = null;
-		UserType user = null;
-		UserType user2 = null;
+	public void testUserReadGroupEntitlementAccessLongForm(){
+		UserType user1 = this.getUser(testAuthUser1, "password1");
+		UserType user2 = this.getUser(testAuthUser2, "password1");
+		UserType user3 = this.getUser(testAuthUser3, "password1");
+		assertNotNull("User 1 is null", user1);
+		assertNotNull("User 2 is null", user2);
+		DirectoryGroupType group1 = this.getGroup(user1, testAuthGroup1, GroupEnumType.DATA, user1.getHomeDirectory());
+		DirectoryGroupType group2 = this.getGroup(user2, testAuthGroup2, GroupEnumType.DATA, user2.getHomeDirectory());
+		//DirectoryGroupType group3 = this.getGroup(user3, testAuthGroup3, GroupEnumType.DATA, user3.getHomeDirectory());
+		assertNotNull("Group 1 is null", group1);
+		assertNotNull("Group 2 is null", group2);
+		
+		//AuthorizationService.authorize(admin, actor, object, permission, enable)
+		boolean setAuthZ = false;
+		boolean deAuthZ = false;
+		boolean notAuthZ = false;
+		boolean isAuthZ = false;
 		try {
-			org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization("/Accelerant/Rocket");
-			assertNotNull("Organization is null");
-			user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("TestUser1", org.getId());
-			user2 = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("TestUser2", org.getId());
-			assertNotNull("User 1 is null",user);
-			assertNotNull("User 2 is null",user2);
-			
-			List<BasePermissionType> permissions = new ArrayList<BasePermissionType>();
-			permissions.add(AuthorizationService.getViewGroupPermission(org.getId()));
-			List<Long> ids = AuthorizationService.getAuthorizedGroups(user, permissions.toArray(new BasePermissionType[0]), org.getId());
-			assertTrue("Invalid group count",ids.size() > 0);
-			List<Long> ids2 = AuthorizationService.getAuthorizedGroups(user2, permissions.toArray(new BasePermissionType[0]), org.getId());
-			assertTrue("Invalid group count",ids2.size() > 0);
-			assertTrue("Unexpected group count.  User 1 has more rights than User 2, so should have access to more groups",ids.size() != ids2.size());
-			
-			logger.info("Id count #1 = " + ids.size());
-			logger.info("Id count #2 = " + ids2.size());
-		} catch (FactoryException | ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+			setAuthZ = AuthorizationService.authorize(user1, user2, group1, AuthorizationService.getViewPermissionForMapType(group1.getNameType(), group1.getOrganizationId()), true);
+			isAuthZ = AuthorizationService.isAuthorized(user2, group1, AuthorizationService.PERMISSION_VIEW, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(group1.getNameType(), group1.getOrganizationId())});
+			deAuthZ = AuthorizationService.authorize(user1, user2, group1, AuthorizationService.getViewPermissionForMapType(group1.getNameType(), group1.getOrganizationId()), false);
+			notAuthZ = AuthorizationService.isAuthorized(user2,group1, AuthorizationService.PERMISSION_VIEW, new BasePermissionType[]{AuthorizationService.getViewPermissionForMapType(group1.getNameType(), group1.getOrganizationId())});
+
+		} catch (FactoryException | DataAccessException | ArgumentException e) {
+			logger.error(e);
 		}
-		
-		
-		
-		
+		assertTrue("Failed to set authorization bit", setAuthZ);
+		assertTrue("User2 unable to view group1",isAuthZ);
+		assertTrue("Failed to unset authorization bit", deAuthZ);
+		assertFalse("User2 still able to view group1",notAuthZ);
 		
 	}
-	*/
+	
+	
+	@Test
+	public void testUserReadGroupEntitlementAccessShortForm(){
+		UserType user1 = this.getUser(testAuthUser1, "password1");
+		UserType user2 = this.getUser(testAuthUser2, "password1");
+		/// UserType user3 = this.getUser(testAuthUser3, "password1");
+		assertNotNull("User 1 is null", user1);
+		assertNotNull("User 2 is null", user2);
+		DirectoryGroupType group1 = this.getGroup(user1, testAuthGroup1, GroupEnumType.DATA, user1.getHomeDirectory());
+		DirectoryGroupType group2 = this.getGroup(user2, testAuthGroup2, GroupEnumType.DATA, user2.getHomeDirectory());
+		assertNotNull("Group 1 is null", group1);
+		assertNotNull("Group 2 is null", group2);
+		
+		boolean setAuthZ = false;
+		boolean deAuthZ = false;
+		boolean notAuthZ = false;
+		boolean isAuthZ = false;
+		try {
+			setAuthZ = AuthorizationService.authorizeType(user1, user2, group1, true, false, false, false);
+			isAuthZ = AuthorizationService.canView(user2, group1);
+			deAuthZ = AuthorizationService.authorizeType(user1, user2, group1, false, false, false, false);
+			notAuthZ = AuthorizationService.canView(user2, group1);
+
+		} catch (FactoryException | DataAccessException | ArgumentException e) {
+			logger.error(e);
+		}
+		assertTrue("Failed to set authorization bit", setAuthZ);
+		assertTrue("User2 unable to view group1",isAuthZ);
+		assertTrue("Failed to unset authorization bit", deAuthZ);
+		assertFalse("User2 still able to view group1",notAuthZ);
+		
+	}
+	
 }
