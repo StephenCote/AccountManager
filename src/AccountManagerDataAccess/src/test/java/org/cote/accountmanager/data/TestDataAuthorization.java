@@ -48,14 +48,14 @@ import org.cote.accountmanager.util.DataUtil;
 import org.junit.Test;
 public class TestDataAuthorization extends BaseDataAccessTest {
 	
-	
-	
+	private static String testAuthUser1 = "Auth User 1"; 
+	private static String testAuthUser2 = "Auth User 2"; 
 	@Test
 	public void testEncryptedData(){
-		UserType user = getUser("testuser1","password");
+		UserType user = getUser(testAuthUser1,"password1");
 		
 		SecurityBean bean = KeyService.getPrimarySymmetricKey(Factories.getDevelopmentOrganization().getId());
-		//logger.info("Security Bean: " + JSONUtil.exportObject((SecurityType)bean));
+
 		try{
 			DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateUserDirectory(user, "CryptoData");
 			DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, dir.getId());
@@ -239,8 +239,8 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 	@Test
 	public void testDataPermissions(){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
-		UserType user1 = getUser("testuser1","password1");
-		UserType user2 = getUser("testuser2","password1");
+		UserType user1 = getUser(testAuthUser1,"password1");
+		UserType user2 = getUser(testAuthUser2,"password1");
 		DataType data1 = getData(user1, "testdata1");
 		DataType data2 = getData(user1, "testdata2");
 		DataType data3 = getData(user2, "testdata3");
