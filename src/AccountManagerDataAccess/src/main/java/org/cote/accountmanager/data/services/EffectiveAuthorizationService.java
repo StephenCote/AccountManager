@@ -254,7 +254,9 @@ public class EffectiveAuthorizationService {
 			return;
 		}
 
-		logger.warn("OLD PEND SYSTEM " + map.getNameType() + " #" + map.getId());
+		if(map.getNameType().equals(NameEnumType.GROUP) || map.getNameType().equals(NameEnumType.DATA)) {
+			logger.warn("OLD PEND SYSTEM " + map.getNameType() + " #" + map.getId());
+		}
 		switch(map.getNameType()){
 			case ACCOUNT: pendAccountUpdate((AccountType)map); break;
 			case USER: pendUserUpdate((UserType)map); break;
@@ -514,6 +516,9 @@ public class EffectiveAuthorizationService {
 		return null;
 	}
 	
+	public static boolean hasAuthorizationMap(NameEnumType objectType, NameEnumType actorType) {
+		return (getAuthorizationMap(objectType, actorType) != null);
+	}
 	protected static AuthorizationMapType getAuthorizationMap(NameEnumType objectType, NameEnumType actorType){
 		if(objectMap.containsKey(objectType) && objectMap.get(objectType).containsKey(actorType)){
 			return objectMap.get(objectType).get(actorType);
@@ -1260,7 +1265,7 @@ public class EffectiveAuthorizationService {
 				outBool = true;
 			}
 			else{
-				logger.warn("Did not match " + actor.getNameType() + " " + actor.getName() + " (" + actor.getId() + ") with role " + role.getName() + " (" + role.getId() + ") in organization (" + role.getOrganizationId() + ")");
+				logger.debug("Did not match " + actor.getNameType() + " " + actor.getName() + " (" + actor.getId() + ") with role " + role.getName() + " (" + role.getId() + ") in organization (" + role.getOrganizationId() + ")");
 			}
 
 			addToCache(actor,role,outBool);
