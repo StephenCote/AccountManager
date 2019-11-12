@@ -5,6 +5,7 @@
 	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
 	<p rid = "systemRoles">
 		<input type = "button" value = "System Roles" onclick = "${this}.showSystemRoles()" />
+		<input type = "button" value = "Community Roles" onclick = "${this}.showCommunityRoles()" />
 	</p>
 	<embedded-script>
 		<![CDATA[
@@ -18,17 +19,40 @@
 			
 		},
 		showSystemRoles : function(){
-			var aS = AM6Client.application().systemRoles;
-			var oL = this.getList();
+			var ctl = this;
+			var oL = ctl.getList();
 			oL.clearItems();
-			var iI = 0;
-			for(var i = 0; i < aS.length; i++){
-				if(aS[i].roleType == "USER"){
-					oL.addItem(aS[i].roleType + " " + aS[i].name, aS[i]);
-					iI++;
+			
+			AM6Client.application().then((oX)=>{
+				var aS= oX.systemRoles;
+
+				var iI = 0;
+				for(var i = 0; i < aS.length; i++){
+					if(aS[i].roleType == "USER"){
+						oL.addItem(aS[i].roleType + " " + aS[i].name, aS[i]);
+						iI++;
+					}
 				}
-			}
-			this.setTotalCount(iI);
+				ctl.setTotalCount(iI);
+			});
+		},
+		showCommunityRoles : function(){
+			var ctl = this;
+			var oL = ctl.getList();
+			oL.clearItems();
+			AM6Client.communityRoles(function(s,v){
+				if(!v || !v.json) return;
+				
+				var aS = v.json;
+				var iI = 0;
+				for(var i = 0; i < aS.length; i++){
+					if(aS[i].roleType == "USER"){
+						oL.addItem(aS[i].roleType + " " + aS[i].name, aS[i]);
+						iI++;
+					}
+				}
+				ctl.setTotalCount(iI);
+			});
 		},
 		decorateListItemName : function(o){
 			if(this.getObjects().parentRef && this.getObjects().parentRef.parentId == o.id) return "..";
