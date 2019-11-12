@@ -46,6 +46,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
+import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
@@ -125,6 +126,7 @@ public class RocketCommunity implements ICommunityProvider {
 	protected static final String LOCATION_FEATURES = "Location Features";
 	protected static final String ERROR_PERMISSION_DENIED = "Permission denied";
 	protected static final String ERROR_NULL_COMMUNITY = "Null community object";
+	protected static final String ERROR_COMMUNITY_CONFIGURATION = "Community is not configured";
 	protected static final String ERROR_COMMUNITY_AUTHORIZATION = "User is not authorized to change lifecycle";
 	protected static final String ROLE_AUTHORIZATION = "Authorized to view roles";
 	protected static final String ERROR_ROLE_AUTHORIZATION = "Not authorized to view roles";
@@ -832,7 +834,7 @@ public class RocketCommunity implements ICommunityProvider {
 	public List<BaseRoleType> getCommunityRoles(UserType user, String communityId){
 		List<BaseRoleType> roles = new ArrayList<>();
 		LifecycleType outLc = null;
-		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Get Roles",AuditEnumType.USER, user.getUrn());
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "Get Roles",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LIFECYCLE, Rocket.getBasePath() + "/Lifecycles");
 		try {
 			outLc = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getByObjectId(communityId, user.getOrganizationId());
@@ -860,8 +862,46 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		return roles;
 	}
+	public List<BaseRoleType> getCommunityRoles(UserType authorizedUser){
+		boolean isAuth = false;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "Get Community Roles",AuditEnumType.USER, authorizedUser.getUrn());
+		AuditService.targetAudit(audit, AuditEnumType.ORGANIZATION, authorizedUser.getOrganizationPath());
+		List<BaseRoleType> roles = new ArrayList<>();
+		try {
+			isAuth = (
+					RoleService.isFactoryAdministrator(authorizedUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)))
+					||
+					RoleService.isFactoryReader(authorizedUser, ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)))
+				);
+			if(isAuth) {
+				if(isCommunityConfigured(authorizedUser.getOrganizationId())) {
+					roles.add(RocketSecurity.getUserRole(authorizedUser.getOrganizationId()));
+					roles.add(RocketSecurity.getAdminRole(authorizedUser.getOrganizationId()));
+					roles.add(RocketSecurity.getAuditRole(authorizedUser.getOrganizationId()));
+					AuditService.permitResult(audit, ROLE_AUTHORIZATION);
+				}
+				else {
+					AuditService.denyResult(audit, ERROR_COMMUNITY_CONFIGURATION);
+				}
+			}
+			else{
+				AuditService.denyResult(audit, ERROR_ROLE_AUTHORIZATION);
+			}
+		} catch (ArgumentException | FactoryException e) {
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
+		
+		
+		
+
+		return roles;
+	}
 	public List<BaseRoleType> getCommunitiesRoles(UserType user){
 		List<BaseRoleType> roles = new ArrayList<>();
+		if(!isCommunityConfigured(user.getOrganizationId())) {
+			return roles;
+		}
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Get Community Roles",AuditEnumType.USER,user.getUrn());
 
 		try {
