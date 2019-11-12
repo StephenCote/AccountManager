@@ -64,7 +64,7 @@ import org.cote.accountmanager.util.StreamUtil;
 
 public class MediaUtil {
 	public static final Logger logger = LogManager.getLogger(MediaUtil.class);
-	private static Pattern recPattern = Pattern.compile("^\\/([A-Za-z0-9\\.]+)\\/([\\w]+)([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static Pattern recPattern = Pattern.compile("^\\/([\\sA-Za-z0-9\\.]+)\\/([\\w]+)([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static Pattern dimPattern = Pattern.compile("(\\/\\d+x\\d+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static final VaultService vaultService = new VaultService();
 	private static int maximumImageWidth = -1;

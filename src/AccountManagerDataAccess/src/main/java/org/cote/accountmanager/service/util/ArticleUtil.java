@@ -66,7 +66,7 @@ import org.cote.accountmanager.util.StreamUtil;
 
 public class ArticleUtil {
 	public static final Logger logger = LogManager.getLogger(ArticleUtil.class);
-	private static final Pattern articlePattern = Pattern.compile("^\\/([A-Za-z0-9\\.]+)\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static final Pattern articlePattern = Pattern.compile("^\\/([\\sA-Za-z0-9\\.]+)\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 			//Pattern.compile("^\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static final Pattern headerLinkPattern = Pattern.compile("\\<h1(?:\\s*)\\>((.|\\n|\\r)*?)\\</h1(?:\\s*)\\>");
 	private static String articleTemplate = null;
