@@ -41,7 +41,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.security.UserPrincipal;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.UserService;
@@ -118,7 +120,17 @@ public class PrincipalService {
 	public Response getApplicationProfile(@Context HttpServletRequest request){
 		ApplicationProfileType app = new ApplicationProfileType();
 		UserType user = (UserType)getSelf(request).getEntity();
-		app.getSystemRoles().addAll(RoleService.getSystemRoles(user.getOrganizationId()));
+		try {
+			if(
+					RoleService.isFactoryAdministrator(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)))
+					||
+					RoleService.isFactoryReader(user, ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)))
+			) {
+				app.getSystemRoles().addAll(RoleService.getSystemRoles(user.getOrganizationId()));
+			}
+		} catch (ArgumentException | FactoryException e1) {
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
+		}
 		app.setUser(user);
 		app.setPerson((PersonType)getOtherPerson(user.getObjectId(),request).getEntity());
 		try {
