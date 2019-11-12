@@ -60,11 +60,18 @@
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-								
-								<!-- 
-									<exclude>**/TestAccessApproval.java</exclude>
-								 -->
-								 <exclude>**/TestImportContacts.java</exclude>
+						<!-- 		
+						
+						
+						-->	
+						<exclude>**/TestGroupAuthorization.java</exclude>
+						<exclude>**/TestDataAuthorization.java</exclude>
+						<exclude>**/TestPermissions.java</exclude>						 
+							
+						
+							<exclude>**/TestAccessApproval.java</exclude>
+						
+						 <exclude>**/TestImportContacts.java</exclude>
 					
 						<exclude>**/TestControlFactory.java</exclude>
 						<exclude>**/TestVaultService.java</exclude>
@@ -80,9 +87,7 @@
 						<exclude>**/TestFunctionFactory.java</exclude>	
 						<exclude>**/TestFactoryInterfaces.java</exclude>												
 						<exclude>**/TestDataFactory.java</exclude>
-						<exclude>**/TestGroupAuthorization.java</exclude>
-						<exclude>**/TestDataAuthorization.java</exclude>	
-						<exclude>**/TestPermissions.java</exclude>							
+						
 						
 						
 						<exclude>**/TestFactoryCache.java</exclude>
