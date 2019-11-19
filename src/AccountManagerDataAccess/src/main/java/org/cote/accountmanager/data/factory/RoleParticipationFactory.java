@@ -85,17 +85,6 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		List<RoleParticipantType> list = getRoleRoleParticipants(child_role);
 
 		if (list.isEmpty()) return new ArrayList<BaseRoleType>();
-/*
-		StringBuilder buff = new StringBuilder();
-		for (int i = 0; i < list.size(); i++)
-		{
-			if (i > 0) buff.append(",");
-			buff.append(list.get(i).getParticipationId());
-		}
-
-		QueryField match = new QueryField(SqlDataEnumType.INTEGER, "id", buff.toString());
-		match.setComparator(ComparatorEnumType.IN);
-*/
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new RoleParticipantType[0]));
 		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoles(match, child_role.getOrganizationId());
 	}
