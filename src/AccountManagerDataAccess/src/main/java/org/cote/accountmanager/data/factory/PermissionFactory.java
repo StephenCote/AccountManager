@@ -34,6 +34,8 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountPermissionType;
 import org.cote.accountmanager.objects.ApplicationPermissionType;
@@ -53,6 +55,15 @@ import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 public class PermissionFactory extends NameIdFactory {
 
+	@Override
+	public void registerProvider(){
+		AuthorizationService.registerAuthorizationProviders(
+				FactoryEnumType.PERMISSION,
+				NameEnumType.PERMISSION,
+				FactoryEnumType.PERMISSIONPARTICIPATION
+			);
+	}
+	
 	public PermissionFactory(){
 		super();
 		this.clusterByParent = true;
@@ -64,6 +75,8 @@ public class PermissionFactory extends NameIdFactory {
 		this.hasUrn = true;
 		this.tableNames.add("permissions");
 		this.factoryType = FactoryEnumType.PERMISSION;
+		systemRoleNameReader = RoleService.ROLE_PERMISSION_READERS;
+		systemRoleNameAdministrator = RoleService.ROLE_PERMISSION_ADMINISTRATORS;
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
