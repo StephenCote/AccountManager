@@ -338,6 +338,15 @@ create table permissions (
 ) inherits (nameid);
 CREATE UNIQUE INDEX IdxpermissionsName on permissions(Name,PermissionType,ParentId,OrganizationId);
 
+DROP TABLE IF EXISTS permissionparticipation CASCADE;
+CREATE TABLE permissionparticipation (
+) inherits (participation);
+
+DROP TABLE IF EXISTS permissionrolecache CASCADE;
+CREATE TABLE permissionrolecache (
+) inherits (rolecache);
+
+
 DROP TABLE IF EXISTS tags CASCADE;
 CREATE TABLE tags (
 	TagType varchar(16) not null
@@ -565,6 +574,18 @@ create table approval (
 
 
 
+create or replace view permissionPersonRights as
+select U.id as personid,P.id as permissionid, P.name as PermissionName2, P.ownerid as permissionownerid,P.organizationid,
+	P2.name as permissionname,
+        RP.affecttype,RP.affectid
+	from Permissions P
+	join permissionparticipation RP on RP.participationid = P.id
+	join Persons U on RP.participantid = U.id
+	join permissions P2 on RP.affectid = P2.id
+	where
+	RP.id > 0
+	 AND RP.participanttype = 'PERSON'
+	 AND RP.affectid > 0;
 
 
 create or replace view rolePersonRights as
@@ -609,6 +630,20 @@ select U.id as personid,D.id as dataid, D.name as DataName, D.ownerid as dataown
 	 AND DP.affectid > 0;
 
 
+create or replace view permissionUserRights as
+select U.id as userid,P.id as permissionid, P.name as PermissionName2, P.ownerid as permissionownerid,P.organizationid,
+	P2.name as permissionname,
+        RP.affecttype,RP.affectid
+	from Permissions P
+	join permissionparticipation RP on RP.participationid = P.id
+	join users U on RP.participantid = U.id
+	join permissions P2 on RP.affectid = P2.id
+	where
+	RP.id > 0
+	 AND RP.participanttype = 'USER'
+	 AND RP.affectid > 0;
+
+
 create or replace view roleUserRights as
 select U.id as userid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
 	P.name as permissionname,
@@ -649,6 +684,20 @@ select U.id as userid,D.id as dataid, D.name as DataName, D.ownerid as dataowner
 	DP.id > 0
 	 AND DP.participanttype = 'USER'
 	 AND DP.affectid > 0;
+
+create or replace view permissionAccountRights as
+select U.id as accountid,P.id as permissionid, P.name as PermissionName2, P.ownerid as permissionownerid,P.organizationid,
+	P2.name as permissionname,
+        RP.affecttype,RP.affectid
+	from Permissions P
+	join permissionparticipation RP on RP.participationid = P.id
+	join accounts U on RP.participantid = U.id
+	join permissions P2 on RP.affectid = P2.id
+	where
+	RP.id > 0
+	 AND RP.participanttype = 'ACCOUNT'
+	 AND RP.affectid > 0;
+
 
 create or replace view roleAccountRights as
 select U.id as accountid,R.id as roleid, R.name as RoleName, R.ownerid as roleownerid,R.organizationid,
@@ -820,6 +869,17 @@ CREATE OR REPLACE FUNCTION group_membership(IN root_id bigint)
 	select * from group_membership;
 	$$ LANGUAGE 'sql';
 
+DROP VIEW IF EXISTS effectivePermissionRoles CASCADE;
+create or replace view effectivePermissionRoles as
+WITH result AS(
+select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
+FROM roles R  WHERE roletype = 'USER' OR roletype = 'ACCOUNT' OR roletype = 'PERSON'
+)
+select PP.participationid as permissionid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,PP.affectType,PP.affectId,R.organizationid from result R
+JOIN permissionparticipation PP ON PP.participantid = (R.ats).leafid and PP.participanttype = 'ROLE'
+;
+
+
 DROP VIEW IF EXISTS effectiveDataRoles CASCADE;
 create or replace view effectiveDataRoles as
 WITH result AS(
@@ -958,6 +1018,29 @@ CREATE OR REPLACE FUNCTION cache_all_account_roles(orgId BIGINT)
 
         $BODY$ LANGUAGE 'plpgsql';
 
+CREATE OR REPLACE FUNCTION cache_all_permission_roles(orgId BIGINT) 
+        RETURNS BOOLEAN
+        AS $BODY$
+        DECLARE ids BIGINT[] = ARRAY(SELECT id FROM permissions WHERE organizationid = $1);
+        BEGIN
+	DELETE FROM permissionrolecache WHERE objectid = ANY(ids);
+	INSERT INTO permissionrolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectivePermissionRoles where permissionid=ANY(ids);
+	RETURN true;
+	END
+
+        $BODY$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION cache_permission_roles(permission_id BIGINT[],organizationid BIGINT) 
+        RETURNS BOOLEAN
+        AS $$
+        BEGIN
+	DELETE FROM permissionrolecache where objectid = ANY($1);
+	INSERT INTO permissionrolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectivePermissionRoles where permissionid=ANY($1);
+	RETURN true;
+	END
+        $$ LANGUAGE 'plpgsql';
+
+
 CREATE OR REPLACE FUNCTION cache_all_data_roles(orgId BIGINT) 
         RETURNS BOOLEAN
         AS $BODY$
@@ -1028,9 +1111,20 @@ CREATE OR REPLACE FUNCTION cache_group_roles(group_id BIGINT[],organizationid BI
 --select distinct GC.groupid,GC.affectId,GC.affectType,GC.effectiveRoleId as roleid,GC.organizationid from grouprolecache GC
 --;
 
+create or replace view effectivePermissionPersonRoleRights as
+select distinct PC.objectid as permissionid,PC.affectId,PC.affectType,ER.objectid as personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER
+join permissionRoleCache PC on PC.effectiveRoleId=ER.effectiveRoleId 
+;
+
+
 create or replace view effectiveGroupPersonRoleRights as
 select distinct GC.objectid as groupid,GC.affectId,GC.affectType,ER.objectid as personid,ER.effectiveRoleId as roleid,ER.organizationid from personrolecache ER
 join groupRoleCache GC on GC.effectiveRoleId=ER.effectiveRoleId 
+;
+
+create or replace view effectivePermissionUserRoleRights as
+select distinct PC.objectid as permissionid,PC.affectId,PC.affectType,ER.objectid as userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
+join permissionRoleCache PC on PC.effectiveRoleId=ER.effectiveRoleId 
 ;
 
 
@@ -1038,6 +1132,12 @@ create or replace view effectiveGroupUserRoleRights as
 select distinct GC.objectid as groupid,GC.affectId,GC.affectType,ER.objectid as userid,ER.effectiveRoleId as roleid,ER.organizationid from userrolecache ER
 join groupRoleCache GC on GC.effectiveRoleId=ER.effectiveRoleId 
 ;
+
+create or replace view effectivePermissionAccountRoleRights as
+select distinct PC.objectid as permissionid,PC.affectId,PC.affectType,ER.objectid as accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
+join permissionRoleCache PC on PC.effectiveRoleId=ER.effectiveRoleId 
+;
+
 
 create or replace view effectiveGroupAccountRoleRights as
 select distinct GC.objectid as groupid,GC.affectId,GC.affectType,ER.objectid as accountid,ER.effectiveRoleId as roleid,ER.organizationid from accountrolecache ER
@@ -1166,7 +1266,37 @@ create or replace view roleRights as
 	UNION
 	select accountid as referenceid,'ACCOUNT' as referencetype,sourceroleid as roleid,affecttype,affectid,organizationid
 	FROM effectiveRoleAccountRoleRights GRR
+	UNION
+	select AGP.participantid as referenceid,'GROUP' as referencetype,AGP.participationid as dataid,AGP.affecttype,AGP.affectid,AG.organizationid
+	FROM roles AG
+	inner join roleparticipation AGP on AGP.participantType = 'GROUP' AND AGP.participantId = AG.id
+
 ;
+
+create or replace view permissionRights as
+	select personid as referenceid,'PERSON' as referencetype,permissionid,affecttype,affectid,organizationid
+	FROM permissionPersonRights GUR
+	UNION
+	select personid as referenceid,'PERSON' as referencetype,permissionid,affecttype,affectid,organizationid
+	FROM effectivePermissionPersonRoleRights GRR
+	UNION
+	select userid as referenceid,'USER' as referencetype,permissionid,affecttype,affectid,organizationid
+	FROM permissionUserRights GUR
+	UNION
+	select userid as referenceid,'USER' as referencetype,permissionid,affecttype,affectid,organizationid
+	FROM effectivePermissionUserRoleRights GRR
+	UNION
+	select accountid as referenceid,'ACCOUNT' as referencetype,permissionid,affecttype,affectid,organizationid
+	FROM permissionAccountRights GUR
+	UNION
+	select accountid as referenceid,'ACCOUNT' as referencetype,permissionid,affecttype,affectid,organizationid
+	FROM effectivePermissionAccountRoleRights GRR
+	UNION
+	select AGP.participantid as referenceid,'GROUP' as referencetype,AGP.participationid as permissionid,AGP.affecttype,AGP.affectid,AG.organizationid
+	FROM permissions AG
+	inner join permissionparticipation AGP on AGP.participantType = 'GROUP' AND AGP.participantId = AG.id
+;
+
 
 create or replace view orphanCredentials as
 select id from credential
@@ -1199,6 +1329,19 @@ OR (participationid not in (select id from Data D1))
 or
 organizationid not in (select id from organizations)
 ;
+
+create or replace view orphanPermissionParticipations as
+select id from PermissionParticipation RP1
+where (participanttype = 'USER' and participantid not in (select id from Users U1))
+OR (participanttype = 'PERSON' and participantid not in (select id from Persons P1))
+OR (participanttype = 'ACCOUNT' and participantid not in (select id from Accounts A1))
+OR (participanttype = 'ROLE' and participantid not in (select id from Roles R1))
+OR (participanttype = 'GROUP' and participantid not in (select id from Groups G1))
+OR (participationid not in (select id from Permissions R1))
+or
+organizationid not in (select id from organizations)
+;
+
 
 create or replace view orphanRoleParticipations as
 select id from RoleParticipation RP1
@@ -1363,6 +1506,7 @@ CREATE OR REPLACE FUNCTION cleanup_orphans()
 	delete from contactinformationparticipation where id in (select id from orphanContactInformationParticipations);
 
 	delete from dataparticipation where id in (select id from orphanDataParticipations);
+	delete from permissionparticipation where id in (select id from orphanPermissionParticipations);
 	delete from roleparticipation where id in (select id from orphanRoleParticipations);
 	delete from groupparticipation where id in (select id from orphanGroupParticipations);
 	delete from personparticipation where id in (select id from orphanPersonParticipations);
