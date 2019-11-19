@@ -53,6 +53,7 @@ import org.cote.accountmanager.data.factory.bulk.BulkGroupParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkOperationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkPatternFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkPermissionFactory;
+import org.cote.accountmanager.data.factory.bulk.BulkPermissionParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkPersonFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkPersonParticipationFactory;
 import org.cote.accountmanager.data.factory.bulk.BulkPolicyFactory;
@@ -108,6 +109,7 @@ public class BulkFactories{
 	    BulkFactories.registerClass(FactoryEnumType.OPERATION, BulkOperationFactory.class); 
 	    BulkFactories.registerClass(FactoryEnumType.PATTERN, BulkPatternFactory.class); 
 	    BulkFactories.registerClass(FactoryEnumType.PERMISSION, BulkPermissionFactory.class); 
+	    BulkFactories.registerClass(FactoryEnumType.PERMISSIONPARTICIPATION, BulkPermissionParticipationFactory.class); 
 	    BulkFactories.registerClass(FactoryEnumType.PERSON, BulkPersonFactory.class); 
 	    BulkFactories.registerClass(FactoryEnumType.PERSONPARTICIPATION, BulkPersonParticipationFactory.class); 
 	    BulkFactories.registerClass(FactoryEnumType.POLICY, BulkPolicyFactory.class); 
