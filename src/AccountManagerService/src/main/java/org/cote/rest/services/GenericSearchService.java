@@ -133,7 +133,7 @@ public class GenericSearchService {
 	@Path("/{objectType:[A-Za-z]+}/{path:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findObject(@PathParam("type") String type, @PathParam("objectType") String objectType, @PathParam("path") String path, @Context HttpServletRequest request){
-		logger.info("Request to find object from: " + type + " " + path);
+
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
 		if(path.startsWith("B64-")) path = BinaryUtil.fromBase64Str(path.substring(4,path.length())).replaceAll("%3D", "=");
 		else if(path.startsWith("~") == false && path.startsWith(".") == false){
@@ -147,6 +147,7 @@ public class GenericSearchService {
 			logger.info("Alt path: " + path);
 		}
 		
+		logger.info("Request to find object from: " + type + " " + path);
 		
 		Object obj = null;
 		if(auditType.equals(AuditEnumType.ORGANIZATION)){
