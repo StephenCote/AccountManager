@@ -286,7 +286,7 @@ public class PermissionFactory extends NameIdFactory {
 	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException
 	{
 		try {
-			return (T)findPermission(PermissionEnumType.valueOf(type),path,organizationId);
+			return (T)makePath(user,PermissionEnumType.valueOf(type),path,organizationId);
 		} catch (DataAccessException e) {
 			logger.error(FactoryException.TRACE_EXCEPTION, e);
 		}
