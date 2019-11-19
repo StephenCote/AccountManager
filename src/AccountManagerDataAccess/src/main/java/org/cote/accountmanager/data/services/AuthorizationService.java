@@ -261,7 +261,7 @@ public class AuthorizationService {
 		/// GRANT_ALL to PERMISSION for USER if USER has PermissionReader Role
 		/// TODO: Change this to permission admin
 		///
-		else if(object.getNameType() == NameEnumType.PERMISSION && actor.getNameType() == NameEnumType.USER){
+		else if(permissionBase.equals(PERMISSION_VIEW) && object.getNameType() == NameEnumType.PERMISSION && actor.getNameType() == NameEnumType.USER){
 			outBool = RoleService.getIsUserInEffectiveRole(RoleService.getPermissionReaderUserRole(actor.getOrganizationId()),(UserType)actor);
 		}
 
@@ -407,6 +407,7 @@ public class AuthorizationService {
 		BasePermissionType createPermission = getPermission(actor,(NameIdType)object,PERMISSION_CREATE);
 		if(viewPermission == null || editPermission == null || delPermission == null || createPermission == null){
 			logger.error("One or more expected permissions were null");
+			/// : " + viewPermission + " / " + editPermission + " / " + delPermission + " / " + createPermission);
 			return false;
 		}
 
@@ -538,21 +539,18 @@ public class AuthorizationService {
 			logger.warn(FactoryException.ARGUMENT_NULL);
 			return null;
 		}
-		if(object.getNameType() != NameEnumType.PERMISSION  && !factoryProviders.containsKey(object.getNameType())){
-			//// throw new ArgumentException(object.getNameType() + " is not from a registered authorization provider");
+		/// object.getNameType() != NameEnumType.PERMISSION  && 
+		if(!factoryProviders.containsKey(object.getNameType())){
 			logger.info(object.getNameType() + " is not from a registered authorization provider");
 			return null;
 		}
 
-		FactoryEnumType factType = (object.getNameType() != NameEnumType.PERMISSION ? factoryProviders.get(object.getNameType())  : FactoryEnumType.PERMISSION);
+		/// FactoryEnumType factType = (object.getNameType() != NameEnumType.PERMISSION ? factoryProviders.get(object.getNameType())  : FactoryEnumType.PERMISSION);
+		FactoryEnumType factType = factoryProviders.get(object.getNameType());
 		return getPermission(factType, permissionBase,object.getOrganizationId());
 	}
 	
 	public static BasePermissionType getPermission(FactoryEnumType factType, String permissionBase, long organizationId) throws ArgumentException, FactoryException{
-
-		if(factType == FactoryEnumType.PERMISSION){
-			return null;
-		}
 
 		if(!partFactories.containsKey(factType)){
 			throw new ArgumentException(String.format(FactoryException.PARTICIPATION_FACTORY_REGISTRATION_EXCEPTION,factType.toString()));
