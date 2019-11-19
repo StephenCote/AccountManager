@@ -664,6 +664,25 @@ public class BaseDataAccessTest{
 		}
 		return dir;
 	}
+	public <T> T getPermission(UserType owner, String name, PermissionEnumType type, BasePermissionType parent){
+		T dir = null;
+		try {
+			dir = (T)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName(name, type, parent, parent.getOrganizationId());
+			if(dir == null){
+				dir = (T)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).newPermission(owner, name, type, parent, parent.getOrganizationId());
+				if(((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).add((BasePermissionType)dir)){
+					dir = (T)((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getPermissionByName(name, type, parent, parent.getOrganizationId());
+				}
+			}
+		} catch (FactoryException e) {
+			
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		} catch (ArgumentException e) {
+			
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
+		return dir;
+	}
 	public <T> T getGroup(UserType owner, String name, GroupEnumType type, BaseGroupType parent){
 		T dir = null;
 		try {
