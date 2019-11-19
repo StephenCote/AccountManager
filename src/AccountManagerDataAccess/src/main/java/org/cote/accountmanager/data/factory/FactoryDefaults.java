@@ -69,13 +69,15 @@ public class FactoryDefaults {
 		"ApplicationView",
 		"ApplicationEdit",
 		"ApplicationDelete",
-		"ApplicationCreate"
+		"ApplicationCreate",
+		"ApplicationExecute"
 	};
 	protected static final String[] DEFAULT_OBJECT_PERMISSIONS = new String[]{
 		"ObjectView",
 		"ObjectEdit",
 		"ObjectDelete",
-		"ObjectCreate"
+		"ObjectCreate",
+		"ObjectExecute"
 	};
 	protected static final String[] DEFAULT_ACCOUNT_PERMISSIONS = new String[]{
 		"AccountView",
@@ -286,6 +288,7 @@ public class FactoryDefaults {
 
 		RoleService.getAccountUsersReaderAccountRole(adminUser);
 		RoleService.getPermissionReaderAccountRole(adminUser);
+		RoleService.getPermissionAdministratorAccountRole(adminUser);
 		RoleService.getRoleReaderAccountRole(adminUser);
 		RoleService.getDataReaderAccountRole(adminUser);
 		RoleService.getGroupReaderAccountRole(adminUser);
@@ -295,6 +298,7 @@ public class FactoryDefaults {
 		RoleService.getArticleAuthorUserRole(adminUser);
 		RoleService.getRoleReaderUserRole(adminUser);
 		RoleService.getPermissionReaderUserRole(adminUser);
+		RoleService.getPermissionAdministratorUserRole(adminUser);
 		RoleService.getDataReaderUserRole(adminUser);
 		RoleService.getGroupReaderUserRole(adminUser);
 		RoleService.getObjectReaderUserRole(adminUser);
