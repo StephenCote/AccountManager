@@ -30,6 +30,14 @@
 		<input class = "rocket-button" type = "button" value = "Pick" rid = "button_pickone" onclick = "${this}.pickItem()" />
 		<input class = "rocket-button" type = "button" value = "Cancel" rid = "button_cancelpick" onclick = "${this}.cancelPickItem()" />
 	</div>
+	<div rid = "debugCont" style = "display:none;clear:both;" class = "rocket-column-2">
+		<p rid = "lblDebug">
+			Debug:
+		</p>
+		<p>
+			<input rid = "btnDebug" type = "button" class = "rocket-button" value = "Debug" onclick = "${this}.sendToDebug()" />
+		</p>
+	</div>
 	<p><span rid = "status">[ ... ]</span></p>
 	<!--
 	Members:
@@ -59,7 +67,10 @@
 		initGrid : function(sTypeName, sDefPath, sViewTypeName, bNotAGroup, bNoPopulate,vParent,bManualPick,bShowSearch){
 
 			var _s = this.getProperties(),_o = this.getObjects(),o;
-
+			
+			this.scopeHandler("profiler_loaded", 0, 0, 1);
+			this.getElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
+			
 			_s.populate = (bNoPopulate ? 0 : 1);
 			
 			if(!_s.manualPick) _s.manualPick = (bManualPick ? 1 : 0);
@@ -104,6 +115,36 @@
 			this.getComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
 			
 		},
+		sendToDebug : function(o){
+        	this.getObjects().debugObject = o; 
+        	Hemi.app.createWindow('Framework Profiler','Templates/FrameworkProfiler.xml','Profiler',0,0,0,this._prehandle_profiler_loaded);
+        },
+        _handle_profiler_loaded : function(oW){
+        	if(typeof oW.ShowTab == "function" && typeof ActiveSource == "object"){
+				oW.ShowTab("Active Source");
+				var oSource = oW.getElementByRID("oSource");
+				var oEval = oW.getElementByRID("oEval");
+				var sCont = "";
+				ActiveObjects.valContainer = 0;
+				ActiveObjects.valReference = 0;
+				ActiveObjects.valBridge = 0;
+				ActiveObjects.valComponent = 0;
+				var oBean = (this.getObjects().debugObject ? this.getObjects().debugObject : this.getBean("rocketType"));
+				delete this.getObjects().debugObject;
+				oEval.value = "ActiveObjects.val";
+				ActiveObjects.val = (oBean ? oBean : this);
+
+				if(oBean){
+					oW.Reflect();
+				}
+				else{
+					oSource.value = 
+						"Active Template"
+					;
+				}
+			}
+			      	
+        },
 		chooseParent : function(){
 			var sType = this.getProperties().viewTypeName;
 			if(!sType.match(/^(group|permission|role)$/gi)) sType = "Group";
@@ -147,11 +188,16 @@
 		embedded_destroy : function(){
 			Hemi.message.service.unsubscribe(this, "onsessionrefresh", "handle_list_session_refresh");
 			Hemi.message.service.unsubscribe(this, "onchangecommunity", "refreshCommunity");
+			this._prehandle_profiler_loaded = 0;
 			this._prehandle_input_keypress = null;
 		},
 		_handle_input_keypress : function(e){
 			e = Hemi.event.getEvent(e);
-			if(e.keyCode == 13) this.refreshList();
+			
+			if(e.keyCode == 13){
+				if(this.getProperties().noGroup) this.getObjects().parentRef = AM6Client.find(this.getProperties().typeName.toUpperCase(),"UNKNOWN",this.getPath());
+				this.refreshList();
+			}
 		},
 		closeToFocus : function(){
 			var o;
@@ -183,7 +229,7 @@
 		getParentPath : function(){
 			var s,vParent = this.getObjects().parentRef;
 			if(vParent && (vParent.nameType.match(/^ROLE$/) || vParent.nameType.match(/^PERMISSION$/))){
-				s = vParent.parentPath;
+				s = vParent.parentPath + "/" + vParent.name;
 			}
 			return s; 
 		},
@@ -472,8 +518,9 @@
 			
 			if(this.provideRefresh) this.provideRefresh(bSkipCountReset);
 
-			if(!_s.noGroup) sPath = this.getPath();
-			
+			if(!_s.noGroup){
+				sPath = this.getPath();
+			}
 			var oL = this.getList();
 			oL.clearItems();
 			this.setStatus("");
@@ -510,11 +557,9 @@
 				if(!bSkipCountReset){
 					var count = 0;
 
-					//alert(_o.parentRef);
 					if(this.provideCount) count = this.provideCount(sPath, sFilt);
 					else if(sPath && !_s.noGroup){
 						var sT = "GROUP";
-						/// var sTO = "DATA";
 						var sTO = "UNKNOWN";
 						if(_s.typeName.match(/^(permission|role)$/gi)){
 							sT = _s.typeName.toUpperCase();
