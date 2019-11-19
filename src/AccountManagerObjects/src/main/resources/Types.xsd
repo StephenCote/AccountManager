@@ -84,6 +84,7 @@
     		<enumeration value="DATA"></enumeration>
     		<enumeration value="GROUP"></enumeration>
     		<enumeration value="ROLE"></enumeration>
+    		<enumeration value="PERMISSION"></enumeration>
     		<enumeration value="ACCOUNT"></enumeration>
     		<enumeration value="USER"></enumeration>
     		<enumeration value="PERSON"></enumeration>
@@ -574,6 +575,7 @@
     		<enumeration value="PERMISSION"></enumeration>
     		<enumeration value="ROLE"></enumeration>
     		<enumeration value="ROLEPARTICIPATION"></enumeration>
+    		<enumeration value="PERMISSIONPARTICIPATION"></enumeration>
     		<enumeration value="TAG"></enumeration>
     		<enumeration value="TAGPARTICIPATION"></enumeration>
     		<enumeration value="USER"></enumeration>
