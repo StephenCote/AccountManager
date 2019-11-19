@@ -195,7 +195,9 @@
 			e = Hemi.event.getEvent(e);
 			
 			if(e.keyCode == 13){
-				if(this.getProperties().noGroup) this.getObjects().parentRef = AM6Client.find(this.getProperties().typeName.toUpperCase(),"UNKNOWN",this.getPath());
+				var sP = this.getElementByRID("path").value;
+				if(!sP.length) sP = this.getElementByRID("path").placeholder;
+				if(this.getProperties().noGroup) this.getObjects().parentRef = AM6Client.find(this.getProperties().typeName.toUpperCase(),"UNKNOWN",sP);
 				this.refreshList();
 			}
 		},
@@ -568,7 +570,7 @@
 						var oP = AM6Client.find(sT,sTO,sPath);
 						if(oP && oP != null){
 							if(this.preparePathChange) this.preparePathChange(oP, sFilt);
-							if(oP.groupType.match(/^bucket$/gi)){
+							if(oP.groupType && oP.groupType.match(/^bucket$/gi)){
 								
 								if(this.provideMemberCount) count = this.provideMemberCount();
 							}
@@ -599,7 +601,7 @@
 						}
 						var oObj = AM6Client.find(sT, sTO, sPath);
 						if(oObj && oObj != null){
-							if(oObj.groupType.match(/^bucket$/gi)){
+							if(oObj.groupType && oObj.groupType.match(/^bucket$/gi)){
 								if(this.provideMemberList) aList = this.provideMemberList(oObj, sFilt, _s.start_record,_s.record_count);
 							}
 							else{
