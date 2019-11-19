@@ -10,11 +10,13 @@ import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -29,6 +31,7 @@ public class TestPermissionAuthorization extends BaseDataAccessTest {
 	private static String testAuthUser1 = "Auth User 1"; 
 	private static String testAuthUser2 = "Auth User 2"; 
 	private static String testAuthUser3 = "Auth User 3"; 
+	private static String testAuthUser4 = "Auth User 4"; 
 	
 	@Test
 	public void testAuthorizePermissions(){
@@ -37,7 +40,8 @@ public class TestPermissionAuthorization extends BaseDataAccessTest {
 		UserType user = getUser(testAuthUser1,"password1");
 		UserType user2 = getUser(testAuthUser2,"password1");
 		UserType user3 = getUser(testAuthUser3,"password1");
-		// BaseGroupType userGroup = getGroup(user, "Friends", GroupEnumType.USER, user.getHomeDirectory());
+		UserType user4 = getUser(testAuthUser4,"password1");
+		UserGroupType userGroup = getGroup(user, "Friends", GroupEnumType.USER, user.getHomeDirectory());
 		BaseRoleType userHomeRole = null;
 		BasePermissionType userHomePerm = null;
 		BasePermissionType userPerm = null;
@@ -46,6 +50,7 @@ public class TestPermissionAuthorization extends BaseDataAccessTest {
 		UserRoleType userRole = null;
 		boolean inRole = false;
 		boolean inRole2 = false;
+		boolean inGroup = false;
 		try {
 			userHomePerm = ((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).getUserPermission(user, PermissionEnumType.USER, user.getOrganizationId());
 			userHomeRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(user, RoleEnumType.USER, user.getOrganizationId());
@@ -57,13 +62,14 @@ public class TestPermissionAuthorization extends BaseDataAccessTest {
 			
 			RoleService.removeUserFromRole(brt, user);
 			RoleService.removeUserFromRole(prt, user3);
+			GroupService.removeUserFromGroup(userGroup, user4);
 			
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
 			
 			inRole = RoleService.getIsUserInRole(brt, user);
-			assertFalse("User shouldn't be in reader role", inRole);
+			//assertFalse("User shouldn't be in reader role", inRole);
 			if(!inRole && RoleService.addUserToRole(user, brt)) {
-				logger.info("Reset role membership");
+				/// logger.info("Reset role membership");
 				EffectiveAuthorizationService.rebuildPendingRoleCache();
 				inRole = RoleService.getIsUserInRole(brt, user);
 				
@@ -72,10 +78,16 @@ public class TestPermissionAuthorization extends BaseDataAccessTest {
 			inRole2 = RoleService.getIsUserInRole(prt, user3);
 			assertFalse("User 3 shouldn't be in permission reader role", inRole2);
 			if(!inRole2 && RoleService.addUserToRole(user3, prt)) {
-				logger.info("Reset role membership");
+				/// logger.info("Reset role membership");
 				EffectiveAuthorizationService.rebuildPendingRoleCache();
 				inRole2 = RoleService.getIsUserInRole(prt, user3);
 				
+			}
+			
+			inGroup = GroupService.getIsUserInGroup(userGroup, user4);
+			assertFalse("User 4 shouldn't be in user group", inGroup);
+			if(!inGroup && GroupService.addUserToGroup(user4, userGroup)) {
+				GroupService.getIsUserInGroup(userGroup, user4);
 			}
 
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
@@ -91,13 +103,16 @@ public class TestPermissionAuthorization extends BaseDataAccessTest {
 		setMem = BaseService.setMember(user, AuditEnumType.ROLE, userRole.getObjectId(), AuditEnumType.USER, user2.getObjectId(), true);
 		assertTrue("Failed to set user member to role", setMem);
 
-	
+		setMem =  BaseService.setMember(user, AuditEnumType.ROLE, userRole.getObjectId(), AuditEnumType.GROUP, userGroup.getObjectId(), false);
+		setMem = BaseService.setMember(user, AuditEnumType.ROLE, userRole.getObjectId(), AuditEnumType.GROUP, userGroup.getObjectId(), true);
+		assertTrue("Failed to set user group to role", setMem);
+
+		
 		assertNotNull("User perm is null", userPerm);
 		
 		boolean roleAuthZ = BaseService.authorizeRole(AuditEnumType.PERMISSION, user.getOrganizationId(), userRole.getId(), userPerm, true, true, false, false,user);
 		assertTrue("Failed to authorize role to view permission", roleAuthZ);
-
-	
+		
 		logger.info("Check that User #1 has full control over permission object");
 		boolean canView = false;
 		boolean canExec = false;
