@@ -50,6 +50,7 @@ import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
+import org.cote.accountmanager.data.factory.ParticipationFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -248,14 +249,17 @@ public class EffectiveAuthorizationService {
 		if(rebuildMap.containsKey(map.getNameType())){
 			RebuildMap rMap = rebuildMap.get(map.getNameType());
 			if(!rMap.getMap().contains(map.getId())){
-				logger.debug("Pending update for " + map.getNameType().toString() + " #" + map.getId());
+				logger.debug("Pending object update for " + map.getNameType().toString() + " #" + map.getId());
 				rMap.getMap().add(map.getId());
 			}
 			return;
 		}
 
-		if(map.getNameType().equals(NameEnumType.GROUP) || map.getNameType().equals(NameEnumType.DATA)) {
+		if(map.getNameType().equals(NameEnumType.ROLE) || map.getNameType().equals(NameEnumType.GROUP) || map.getNameType().equals(NameEnumType.DATA)) {
 			logger.warn("OLD PEND SYSTEM " + map.getNameType() + " #" + map.getId());
+		}
+		else {
+			logger.debug("Pending actor update for " + map.getNameType().toString() + " #" + map.getId());
 		}
 		switch(map.getNameType()){
 			case ACCOUNT: pendAccountUpdate((AccountType)map); break;
@@ -1381,6 +1385,38 @@ public class EffectiveAuthorizationService {
 		BaseRoleType role = null;
 		BaseGroupType group = null;
 		synchronized(lockObject){
+			
+
+			for(NameEnumType ntype : rebuildMap.keySet().toArray(new NameEnumType[0])) {
+				RebuildMap rb = rebuildMap.get(ntype);
+
+				FactoryEnumType factType = FactoryEnumType.fromValue(ntype.toString());
+				if(!AuthorizationService.getAuthorizationFactories().containsKey(factType)) {
+					logger.error("Factory type '" + ntype.toString()  + "' is not registered for authorization");
+					continue;
+				}
+				
+				// ParticipationFactory pFact = Factories.getFactory(AuthorizationService.getAuthorizationFactories().get(factType));
+				// pFact.getParticipants(participation, participant, participantType, permission, affectType)
+				
+				List<NameIdType> ids = new ArrayList<>();
+				for(Long l : rb.getMap()) {
+					NameIdType nt = new NameIdType();
+					nt.setNameType(ntype);
+					nt.setId(l);
+					ids.add(nt);
+				}
+				if(ids.size() > 0) {
+					/// logger.info("***** NEW PEND REBUILD: " + ntype.toString() + " : " + rb.getMap().size());
+					String funcName = "cache_" + ntype.toString().toLowerCase() + "_roles";
+					/// logger.info("Rebuild with " + funcName);
+					rebuildRoleCache(funcName,ids,0L);
+				}
+			}
+			
+			logger.debug("***** LEGACY PEND REBUILD");
+			
+			
 			List<BaseRoleType> roles = Arrays.asList(rebuildRoles.values().toArray(new BaseRoleType[0]));
 			for(int i = 0; i < roles.size();i++){
 				role =roles.get(i);
@@ -1419,8 +1455,9 @@ public class EffectiveAuthorizationService {
 				}
 				clearCache(roles.get(i));
 			}
-			logger.info("Rebuilding role cache for " + roles.size() + " roles");
+			
 			if(!roles.isEmpty()){
+				logger.info("Rebuilding role cache for " + roles.size() + " roles");
 				rebuildRoleRoleCache(roles,roles.get(0).getOrganizationId());
 				rebuildRoles.clear();
 			}
@@ -1461,37 +1498,40 @@ public class EffectiveAuthorizationService {
 
 				clearCache(groups.get(i));
 			}
-			logger.info("Rebuilding role cache for " + groups.size() + " groups");
+			
 			if(!groups.isEmpty()){
-				rebuildGroupRoleCache(groups,groups.get(0).getOrganizationId());
+				logger.info("Rebuilding role cache for " + groups.size() + " groups");
+				outBool = rebuildGroupRoleCache(groups,groups.get(0).getOrganizationId());
 				rebuildGroups.clear();
 			}
 				
 			
 			List<UserType> users = Arrays.asList(rebuildUsers.values().toArray(new UserType[0]));
-			logger.info("Rebuilding role cache for " + users.size() + " users");
+			
 			if(!users.isEmpty()){
+				logger.info("Rebuilding role cache for " + users.size() + " users");
 				outBool = rebuildUserRoleCache(users,users.get(0).getOrganizationId());
 				rebuildUsers.clear();
 			}
 			
 			List<AccountType> accounts = Arrays.asList(rebuildAccounts.values().toArray(new AccountType[0]));
-			logger.info("Rebuilding role cache for " + accounts.size() + " accounts");
+			
 			if(!accounts.isEmpty()){
+				logger.info("Rebuilding role cache for " + accounts.size() + " accounts");
 				outBool = rebuildAccountRoleCache(accounts,accounts.get(0).getOrganizationId());
 				rebuildAccounts.clear();
 			}
 
 			List<PersonType> persons = Arrays.asList(rebuildPersons.values().toArray(new PersonType[0]));
-			logger.info("Rebuilding role cache for " + persons.size() + " persons");
 			if(!persons.isEmpty()){
+				logger.info("Rebuilding role cache for " + persons.size() + " persons");
 				outBool = rebuildPersonRoleCache(persons,persons.get(0).getOrganizationId());
 				rebuildPersons.clear();
 			}
 			
 			List<DataType> data = Arrays.asList(rebuildData.values().toArray(new DataType[0]));
-			logger.info("Rebuilding role cache for " + data.size() + " data");
 			if(!data.isEmpty()){
+				logger.info("Rebuilding role cache for " + data.size() + " data");
 				outBool = rebuildDataRoleCache(data,data.get(0).getOrganizationId());
 				rebuildData.clear();
 			}
@@ -1570,8 +1610,9 @@ public class EffectiveAuthorizationService {
 		StringBuilder uBuff = new StringBuilder();
 		NameIdType object = null;
 		for(int i = 0; i < objects.size();i++){
-			
+
 			object = (NameIdType)objects.get(i);
+
 			/// negative id indicates possible bulk entry
 			/// 
 			if(object.getId() < 0){
@@ -1619,7 +1660,7 @@ public class EffectiveAuthorizationService {
 				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
 		}
-		logger.info("Rebuilt role cache with " + updated + " operations");
+		logger.debug("Rebuilt role cache with " + updated + " operations");
 		return (updated > 0);
 	}
 	public static boolean rebuildGroupRoleCache(long organizationId){
