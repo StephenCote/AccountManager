@@ -74,12 +74,13 @@ public class RoleService {
 	public static final String ROLE_PERMISSION_READERS = "PermissionReaders";
 	public static final String ROLE_ROLE_READERS = "RoleReaders";
 	public static final String ROLE_ROLE_ADMINISTRATORS = "RoleAdministrators";
+	public static final String ROLE_PERMISSION_ADMINISTRATORS = "PermissionAdministrators";
 	public static final String ROLE_GROUP_READERS = "GroupReaders";
 
 	
 	protected static final String[] SYSTEM_ROLE_NAMES = new String[]{
 		ROLE_SYSTEM_ADMINISTRATOR, ROLE_DATA_ADMINISTRATOR, ROLE_DATA_READERS,ROLE_ARTICLE_AUTHORS,
-		ROLE_ACCOUNT_ADMINISTRATOR, ROLE_ACCOUNT_DEVELOPERS, ROLE_ACCOUNT_USERS, ROLE_ACCOUNT_USERS_READERS, ROLE_API_USERS,
+		ROLE_ACCOUNT_ADMINISTRATOR, ROLE_ACCOUNT_DEVELOPERS, ROLE_ACCOUNT_USERS, ROLE_ACCOUNT_USERS_READERS, ROLE_API_USERS,ROLE_PERMISSION_ADMINISTRATORS,
 		ROLE_PERMISSION_READERS, ROLE_ROLE_READERS, ROLE_ROLE_ADMINISTRATORS, ROLE_GROUP_READERS, ROLE_OBJECT_READERS, ROLE_OBJECT_ADMINISTRATOR
 	};
 	
@@ -109,6 +110,7 @@ public class RoleService {
 		
 					RoleService.getAccountUsersReaderAccountRole(organizationId),
 					RoleService.getPermissionReaderAccountRole(organizationId),
+					RoleService.getPermissionAdministratorAccountRole(organizationId),
 					RoleService.getRoleReaderAccountRole(organizationId),
 					RoleService.getDataReaderAccountRole(organizationId),
 					RoleService.getGroupReaderAccountRole(organizationId),
@@ -117,6 +119,7 @@ public class RoleService {
 					RoleService.getAccountUsersReaderUserRole(organizationId),
 					RoleService.getRoleReaderUserRole(organizationId),
 					RoleService.getPermissionReaderUserRole(organizationId),
+					RoleService.getPermissionAdministratorUserRole(organizationId),
 					RoleService.getDataReaderUserRole(organizationId),
 					RoleService.getGroupReaderUserRole(organizationId),
 					RoleService.getObjectReaderUserRole(organizationId),
@@ -619,6 +622,16 @@ public class RoleService {
 		{
 			return getUserRole(ROLE_PERMISSION_READERS, null,organizationId);
 		}
+		
+		public static UserRoleType getPermissionAdministratorUserRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateUserRole(roleOwner, ROLE_PERMISSION_ADMINISTRATORS,null);
+		}
+		public static UserRoleType getPermissionAdministratorUserRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getUserRole(ROLE_PERMISSION_ADMINISTRATORS, null, organizationId);
+		}
+		
 		public static UserRoleType getGroupReaderUserRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
 		{
 			return getCreateUserRole(roleOwner, ROLE_GROUP_READERS, null);
@@ -683,6 +696,16 @@ public class RoleService {
 		{
 			return getAccountRole(ROLE_PERMISSION_READERS, null,organizationId);
 		}
+		
+		public static AccountRoleType getPermissionAdministratorAccountRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateAccountRole(roleOwner, ROLE_PERMISSION_ADMINISTRATORS,null);
+		}
+		public static AccountRoleType getPermissionAdministratorAccountRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getAccountRole(ROLE_PERMISSION_ADMINISTRATORS, null, organizationId);
+		}
+		
 		public static AccountRoleType getGroupReaderAccountRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
 		{
 			return getCreateAccountRole(roleOwner, ROLE_GROUP_READERS, null);
