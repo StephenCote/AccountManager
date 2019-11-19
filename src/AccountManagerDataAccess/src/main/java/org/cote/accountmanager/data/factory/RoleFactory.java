@@ -52,6 +52,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
@@ -680,6 +681,19 @@ public class RoleFactory extends NameIdFactory {
 		path = path + "/" + role.getName();
 		return path;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException
+	{
+		try {
+			return (T)makePath(user,RoleEnumType.valueOf(type),path,organizationId);
+		} catch (DataAccessException e) {
+			logger.error(FactoryException.TRACE_EXCEPTION, e);
+		}
+		return null;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T find(String type, String path, long organizationId) throws FactoryException, ArgumentException
@@ -691,6 +705,7 @@ public class RoleFactory extends NameIdFactory {
 		}
 		return null;
 	}
+	
 	public <T> T findRole(RoleEnumType type, String pathBase, long organizationId) throws FactoryException, ArgumentException, DataAccessException{
 		return makePath(null, type, pathBase,organizationId);
 	}
