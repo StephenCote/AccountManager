@@ -1186,12 +1186,15 @@ CREATE OR REPLACE FUNCTION cache_roles()
 	insert into rolerolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveRoleRoles;
 	truncate groupRoleCache;
 	insert into grouprolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectiveGroupRoles;
+	truncate permissionRoleCache;
+	INSERT INTO permissionrolecache (objectid,effectiveroleid,baseroleid,affecttype,affectid,organizationid) select * from effectivePermissionRoles;
 	truncate personRoleCache;
 	INSERT INTO personrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectivePersonRoles where personid > 0;
 	truncate userRoleCache;
 	INSERT INTO userrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectiveUserRoles where userid > 0;
 	truncate accountRoleCache;
 	INSERT INTO accountrolecache (objectid,effectiveroleid,baseroleid,organizationid) select * from effectiveAccountRoles where accountid > 0;
+
 	SELECT true;
         $$ LANGUAGE 'sql';
 
@@ -1833,6 +1836,11 @@ CREATE INDEX datarolecache_id ON datarolecache(objectId);
 CREATE INDEX datarolecache_role_id ON datarolecache(EffectiveRoleId);
 CREATE INDEX datarolecache_aff_id ON datarolecache(AffectType,AffectId);
 CREATE INDEX datarolecache_dorg ON datarolecache(objectId,OrganizationId);
+CREATE INDEX permissionrolecache_id ON permissionrolecache(objectId);
+CREATE INDEX permissionrolecache_role_id ON permissionrolecache(EffectiveRoleId);
+CREATE INDEX permissionrolecache_aff_id ON permissionrolecache(AffectType,AffectId);
+CREATE INDEX permissionrolecache_dorg ON permissionrolecache(objectId,OrganizationId);
+
 CREATE INDEX accounts_org_id ON accounts(OrganizationId);
 CREATE INDEX accountrolecache_id ON accountrolecache(ObjectId);
 CREATE INDEX accountrolecache_role_id ON accountrolecache(EffectiveRoleId);
