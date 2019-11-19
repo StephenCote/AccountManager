@@ -61,6 +61,7 @@ import org.cote.accountmanager.data.factory.OperationFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.PatternFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
+import org.cote.accountmanager.data.factory.PermissionParticipationFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.factory.PersonParticipationFactory;
 import org.cote.accountmanager.data.factory.PolicyFactory;
@@ -150,6 +151,7 @@ public class Factories {
 	    Factories.registerClass(FactoryEnumType.ORGANIZATION, OrganizationFactory.class); 
 	    Factories.registerClass(FactoryEnumType.PATTERN, PatternFactory.class); 
 	    Factories.registerClass(FactoryEnumType.PERMISSION, PermissionFactory.class); 
+	    Factories.registerClass(FactoryEnumType.PERMISSIONPARTICIPATION, PermissionParticipationFactory.class); 
 	    Factories.registerClass(FactoryEnumType.PERSON, PersonFactory.class); 
 	    Factories.registerClass(FactoryEnumType.PERSONPARTICIPATION, PersonParticipationFactory.class); 
 	    Factories.registerClass(FactoryEnumType.POLICY, PolicyFactory.class); 
@@ -191,6 +193,7 @@ public class Factories {
 	    Factories.registerTypeClass(FactoryEnumType.ORGANIZATION, OrganizationType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.PATTERN, PatternType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.PERMISSION, BasePermissionType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.PERMISSIONPARTICIPATION, BaseParticipantType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.PERSON, PersonType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.PERSONPARTICIPATION, BaseParticipantType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.POLICY, PolicyType.class); 
