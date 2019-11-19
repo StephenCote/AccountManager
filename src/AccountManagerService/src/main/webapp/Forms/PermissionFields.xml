@@ -20,6 +20,8 @@
 		</p>
 	</div>
 	
+	<import-xml src = "/AccountManagerService/Forms/Fragments/SharingFrag.xml" id = "SharingFragment" />
+	
 	<div class = "rocket-column-2" rid = "permissionPicker" style = "display:none;">
 		<p rid = "permissionPickerTitle">
 			<span rid = "permissionPickerToggle"></span> <span rid="permissionPickerLabel">Permissions</span>:
@@ -91,5 +93,6 @@
 
 			return 1;
 		}
+	
 	]]></embedded-script>
 </html-fragment>

@@ -27,6 +27,8 @@
 		</p>
 		<p>
 			<select rid = "shareType">
+				<option value = "ROLE">Role</option>
+				<option value = "PERMISSION">Permission</option>
 				<option value = "DATA">Data</option>
 				<option value = "GROUP">Group</option>
 			</select>

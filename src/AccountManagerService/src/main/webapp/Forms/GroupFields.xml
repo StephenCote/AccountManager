@@ -16,14 +16,8 @@
 		</p>
 	</div>
 
-	<div class = "rocket-column-2" rid = "shareContainer" style = "display:none;">
-		<p>
-			Sharing:
-		</p>
-		<p>
-			<input type = "button" class = "rocket-button" value = "Authorization" onclick = "${this}.openShare()" />
-		</p>
-	</div>
+	<import-xml src = "/AccountManagerService/Forms/Fragments/SharingFrag.xml" id = "SharingFragment" />
+	
 	<div class = "rocket-column-2" rid = "memberPicker" style = "display:none;">
 		<p rid = "memberPickerTitle">
 			<span rid = "memberPickerToggle"></span> <span rid="memberPickerLabel">Members</span>:
@@ -44,7 +38,7 @@
 		embedded_init : function(o){
 			var o = this.getBean("rocketType");
 			this.getElementByRID("groupType").disabled = (o.id ? true : false);
-			this.getElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
+
 			if(o.id && o.groupType.match(/^(person|account|user|bucket)$/gi)){
 				this.toggleField("memberPickerToggle","memberPickerContent");
 				this.getElementByRID("memberPicker").style.display = "block";
@@ -108,20 +102,7 @@
 		getMembersList : function(){
 			return this.getComponentByRID("membersList").GetWideSelect();
 		},
-		openShare : function(){
-			var o = this.getBean("rocketType");
-			var oProps = {viewType:o};
-			Hemi.app.createWindow('Sharing','/AccountManagerService/Forms/Sharing.xml','Sharing-' + o.id,0,0,oProps)
-			.then((oW)=>{
-				if(oW){
-					oW.setCanMinimize(0);
-					oW.setCanMaximize(0);
-			    	oW.resizeTo(475, 400);
-			    	oW.setHideOnClose(0);
-			    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
-				}
-			});
-		},
+
 		addType : function(o){
 			Hemi.log("Add group type: " + o.name + ":" + o.mimeType);
 

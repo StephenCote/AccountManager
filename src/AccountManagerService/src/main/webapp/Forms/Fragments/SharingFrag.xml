@@ -1,0 +1,31 @@
+<html-fragment>
+<div class = "rocket-column-2" rid = "shareContainer" style = "display:none;">
+	<p>
+		Sharing:
+	</p>
+	<p>
+		<input type = "button" class = "rocket-button" value = "Configure Authorization" onclick = "${this}.openShare()" />
+	</p>
+</div>
+
+<embedded-script><![CDATA[
+	embedded_init : function(){
+		var o = this.getBean("rocketType");
+		this.getElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
+	},
+	openShare : function(){
+		var o = this.getBean("rocketType");
+		var oProps = {viewType:o};
+		Hemi.app.createWindow('Sharing','/AccountManagerService/Forms/Sharing.xml','Sharing-' + o.id,0,0,oProps)
+		.then((oW)=>{
+			if(oW){
+				oW.setCanMinimize(0);
+				oW.setCanMaximize(0);
+		    	oW.resizeTo(475, 400);
+		    	oW.setHideOnClose(0);
+		    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+			}
+		});
+	}
+]]></embedded-script>
+</html-fragment>

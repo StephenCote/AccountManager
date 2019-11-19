@@ -8,14 +8,7 @@
 			<input type = "button" class = "rocket-button" value = "..." onclick = "window.open(${this}.getElementByRID('urlText').value)" />
 		</p>
 	</div>
-	<div class = "rocket-column-2" rid = "shareContainer" style = "display:none;">
-		<p>
-			Sharing:
-		</p>
-		<p>
-			<input type = "button" class = "rocket-button" value = "Configure Authorization" onclick = "${this}.openShare()" />
-		</p>
-	</div>
+
 	<div class = "rocket-column-2">
 		<p>
 			Description:
@@ -36,6 +29,7 @@
 			</select>
 		</p>
 	</div>
+	<import-xml src = "/AccountManagerService/Forms/Fragments/SharingFrag.xml" id = "SharingFragment" />
 	<div rid = "detailsOnlyContainer" class = "rocket-column-2">
 		<p>Details:</p>
 		<p>
@@ -129,20 +123,7 @@
 			this.getElementByRID("textDataFloat").style.display = "none";
 			this.getElementByRID("textData").value = this.getElementByRID("textDataFloat").value;
 		},
-			openShare : function(){
-				var o = this.getBean("rocketType");
-				var oProps = {viewType:o};
-				Hemi.app.createWindow('Sharing','/AccountManagerService/Forms/Sharing.xml','Sharing-' + o.id,0,0,oProps)
-				.then((oW)=>{
-					if(oW){
-						oW.setCanMinimize(0);
-						oW.setCanMaximize(0);
-				    	oW.resizeTo(475, 400);
-				    	oW.setHideOnClose(0);
-				    	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
-					}
-				});
-			},
+
 		updateURL : function(){
 			var o = this.getBean("rocketType");
 			var b = "none";
@@ -168,7 +149,6 @@
 		},
 		displayData : function(){
 			var o = this.getBean("rocketType");
-			this.getElementByRID("shareContainer").style.display = (o.id ? "block" : "none");
 			if(o.id && o.detailsOnly) return;
 			
 			this.getElementByRID("textData").value = "";
