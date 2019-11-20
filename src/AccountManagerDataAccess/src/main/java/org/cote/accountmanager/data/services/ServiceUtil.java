@@ -82,8 +82,8 @@ public class ServiceUtil {
 				logger.info("Root " + root.getId() + " Has Role " + adminRole.getId() + " = " + rootHasRole);
 				logger.info("Doc " + doc.getId() + " Has Role " + dataRole.getId() + " = " + docHasRole);
 				logger.warn("Attempting to rebuild role cache.");
-				EffectiveAuthorizationService.rebuildUserRoleCache(Factories.getPublicOrganization().getId());
-				EffectiveAuthorizationService.rebuildUserRoleCache(Factories.getSystemOrganization().getId());
+				EffectiveAuthorizationService.rebuildRoleCache(Factories.getPublicOrganization().getId());
+				EffectiveAuthorizationService.rebuildRoleCache(Factories.getSystemOrganization().getId());
 				
 				/// 2014/07/14 - Removed check for doc control in data admin role per prior authorization changes where doc control is delegated permission instead of receiving carte blanche data admin rigths
 				///  || RoleService.getIsUserInRole(dataRole, doc) == false
