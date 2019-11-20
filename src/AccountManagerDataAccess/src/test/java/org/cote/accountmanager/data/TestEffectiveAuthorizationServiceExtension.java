@@ -30,7 +30,13 @@ package org.cote.accountmanager.data;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
+import org.cote.accountmanager.data.factory.PolicyFactory;
+import org.cote.accountmanager.data.factory.RuleFactory;
+import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
+import org.cote.accountmanager.data.policy.PolicyEvaluator;
+import org.cote.accountmanager.data.factory.PatternFactory;
+import org.cote.accountmanager.data.factory.FactFactory;
+import org.cote.accountmanager.data.factory.OperationFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
@@ -43,21 +49,35 @@ import org.cote.accountmanager.objects.AccountRoleType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.FactEnumType;
+import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.OperationEnumType;
+import org.cote.accountmanager.objects.OperationType;
+import org.cote.accountmanager.objects.PatternEnumType;
+import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.PolicyDefinitionType;
+import org.cote.accountmanager.objects.PolicyRequestType;
+import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
+import org.cote.accountmanager.objects.RuleEnumType;
+import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
+import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTest {
 	
 	
-	/*
+	
 	@Test
 	public void TestPolicyBasedAuthorization(){
 		// FactoryDefaults.createPermissionsForAuthorizationFactories(testUser.getOrganizationId());
@@ -72,8 +92,6 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 		RuleType roleRule1 = null;
 		RuleType roleRule2 = null;
 		
-		RuleType roleRule1 = null;
-		RuleType roleRule2 = null;
 		RuleType roleRule3 = null;
 		RuleType roleRule4 = null;
 		
@@ -121,7 +139,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				oper1.setOperationType(OperationEnumType.INTERNAL);
 				oper1.setOperation("org.cote.accountmanager.data.operation.CompareNameTypeOperation");
 				oper1.setName(operationName);
-				((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).addOperation(oper1);
+				((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).add(oper1);
 				oper1 = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).getByNameInGroup(operationName, odir);
 			}
 			
@@ -131,14 +149,14 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				oper2.setOperationType(OperationEnumType.INTERNAL);
 				oper2.setOperation("org.cote.accountmanager.data.operation.MatchSystemRoleOperation");
 				oper2.setName(operationName2);
-				((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).addOperation(oper2);
+				((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).add(oper2);
 				oper2 = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).getByNameInGroup(operationName2, odir);
 			}
 			
 			
 			fact1 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact1Name,fdir);
 			if(cleanup && fact1 != null){
-				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).deleteFact(fact1);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).delete(fact1);
 				fact1 = null;
 			}
 			if(fact1 == null){
@@ -147,13 +165,13 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				fact1.setFactoryType(FactoryEnumType.UNKNOWN);
 				fact1.setName(fact1Name);
 				fact1.setDescription("ActorType");
-				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).addFact(fact1);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(fact1);
 				fact1 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact1Name,fdir);
 			}
 			
 			fact2 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact2Name,fdir);
 			if(cleanup && fact2 != null){
-				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).deleteFact(fact2);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).delete(fact2);
 				fact2 = null;
 			}
 			if(fact2 == null){
@@ -161,12 +179,12 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				fact2.setFactType(FactEnumType.ROLE);
 				fact2.setFactoryType(FactoryEnumType.ROLE);
 				fact2.setName(fact2Name);
-				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).addFact(fact2);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(fact2);
 				fact2 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact2Name,fdir);
 			}
 			fact3 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact3Name,fdir);
 			if(cleanup && fact3 != null){
-				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).deleteFact(fact3);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).delete(fact3);
 				fact3 = null;
 			}
 			if(fact3 == null){
@@ -175,13 +193,13 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				fact3.setFactoryType(FactoryEnumType.UNKNOWN);
 				fact3.setSourceUrn("DataAdministrators");
 				fact3.setName(fact3Name);
-				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).addFact(fact3);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(fact3);
 				fact3 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact3Name,fdir);
 			}
 			
 			fact5 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact5Name,fdir);
 			if(cleanup && fact5 != null){
-				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).deleteFact(fact5);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).delete(fact5);
 				fact5 = null;
 			}
 			if(fact5 == null){
@@ -190,13 +208,13 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				fact5.setFactoryType(FactoryEnumType.UNKNOWN);
 				fact5.setSourceUrn("DataReaders");
 				fact5.setName(fact5Name);
-				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).addFact(fact5);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(fact5);
 				fact5 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact5Name,fdir);
 			}
 			
 			fact4 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact4Name,fdir);
 			if(cleanup && fact4 != null){
-				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).deleteFact(fact4);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).delete(fact4);
 				fact4 = null;
 			}
 			if(fact4 == null){
@@ -205,12 +223,12 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				fact4.setFactoryType(FactoryEnumType.UNKNOWN);
 				fact4.setName(fact4Name);
 				fact4.setDescription("ObjectType");
-				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).addFact(fact4);
+				((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).add(fact4);
 				fact4 = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).getByNameInGroup(fact4Name,fdir);
 			}
 			pattern1 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern1Name, padir);
 			if(cleanup && pattern1 != null){
-				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).deletePattern(pattern1);
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).delete(pattern1);
 				pattern1 = null;
 			}
 			if(pattern1 == null){
@@ -222,14 +240,14 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				pattern1.setFactUrn(fact1.getUrn());
 				pattern1.setMatchUrn(fact2.getUrn());
 				pattern1.setLogicalOrder(1);
-				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).addPattern(pattern1);
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).add(pattern1);
 				pattern1 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern1Name, padir);	
 
 			}
 			
 			pattern2 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern2Name, padir);
 			if(cleanup && pattern2 != null){
-				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).deletePattern(pattern2);
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).delete(pattern2);
 				pattern2 = null;
 			}
 			if(pattern2 == null){
@@ -241,14 +259,14 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				pattern2.setFactUrn(fact1.getUrn());
 				pattern2.setMatchUrn(fact3.getUrn());
 				pattern2.setLogicalOrder(2);
-				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).addPattern(pattern2);
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).add(pattern2);
 				pattern2 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern2Name, padir);	
 
 			}
 			
 			pattern3 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern3Name, padir);
 			if(cleanup && pattern3 != null){
-				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).deletePattern(pattern3);
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).delete(pattern3);
 				pattern3 = null;
 			}
 			if(pattern3 == null){
@@ -260,14 +278,14 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				pattern3.setFactUrn(fact1.getUrn());
 				pattern3.setMatchUrn(fact5.getUrn());
 				pattern3.setLogicalOrder(3);
-				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).addPattern(pattern3);
+				((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).add(pattern3);
 				pattern3 = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).getByNameInGroup(pattern3Name, padir);	
 
 			}
 			
 			roleRule1 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRule1Name, rdir);
 			if(cleanup && roleRule1 != null){
-				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).deleteRule(roleRule1);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).delete(roleRule1);
 				roleRule1 = null;
 			}
 			if(roleRule1 == null){
@@ -277,14 +295,14 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				roleRule1.setName(roleRule1Name);
 				roleRule1.setLogicalOrder(1);
 				roleRule1.setRuleType(RuleEnumType.PERMIT);
-				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).addRule(roleRule1);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).add(roleRule1);
 				roleRule1 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRule1Name, rdir);	
 			}
 			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(roleRule1);
 
 			roleRule2 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRule2Name, rdir);
 			if(cleanup && roleRule2 != null){
-				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).deleteRule(roleRule2);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).delete(roleRule2);
 				roleRule2 = null;
 			}
 			if(roleRule2 == null){
@@ -295,14 +313,14 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				roleRule2.setName(roleRule2Name);
 				roleRule2.setLogicalOrder(2);
 				roleRule2.setRuleType(RuleEnumType.PERMIT);
-				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).addRule(roleRule2);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).add(roleRule2);
 				roleRule2 = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRule2Name, rdir);	
 			}
 			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(roleRule2);
 			
 			roleRule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRuleName, rdir);
 			if(cleanup && roleRule != null){
-				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).deleteRule(roleRule);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).delete(roleRule);
 				roleRule = null;
 			}
 
@@ -313,7 +331,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				roleRule.setRuleType(RuleEnumType.PERMIT);
 				roleRule.setCondition(ConditionEnumType.ALL);
 				roleRule.setName(roleRuleName);
-				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).addRule(roleRule);
+				((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).add(roleRule);
 				roleRule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).getByNameInGroup(roleRuleName, rdir);
 			}
 			((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).populate(roleRule);
@@ -321,7 +339,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			
 			policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getByNameInGroup(policyName, pdir);
 			if(cleanup && policy != null){
-				((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).deletePolicy(policy);
+				((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).delete(policy);
 				policy = null;
 			}
 
@@ -332,7 +350,7 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 				policy.setName(policyName);
 				policy.getRules().add(roleRule);
 				//policy.getRules().add(roleRule1);
-				((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).addPolicy(policy);
+				((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).add(policy);
 				policy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).getByNameInGroup(policyName, pdir);
 			}
 			((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).populate(policy);
@@ -383,13 +401,13 @@ public class TestEffectiveAuthorizationServiceExtension extends BaseDataAccessTe
 			//assertNotNull("Base role is null", baseRole);
 			//acctRole1 = getRole(testUser,"Account Role 1",RoleEnumType.ACCOUNT,baseRole);
 			perRole1 = getRole(testUser,"Person Role 1",RoleEnumType.PERSON,baseRole);
-		} catch (FactoryException | ArgumentException | DataAccessException e2) {
+		} catch (FactoryException | ArgumentException e2) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e2);
 		}
 		return perRole1;
 	}
-	*/
+	
 	
 	@Test
 	public void TestExtensionService(){
