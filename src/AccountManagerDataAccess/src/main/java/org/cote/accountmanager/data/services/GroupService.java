@@ -149,7 +149,7 @@ public class GroupService{
 			GroupParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newGroupGroupParticipation(group, member);
 			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
 			{
-				EffectiveAuthorizationService.pendGroupUpdate(member);
+				EffectiveAuthorizationService.pendUpdate(member);
 				return true;
 			}
 		}
@@ -160,7 +160,7 @@ public class GroupService{
 
 		if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteGroupGroupParticipants(group, member))
 		{
-			EffectiveAuthorizationService.pendGroupUpdate(member);
+			EffectiveAuthorizationService.pendUpdate(member);
 			return true;
 		}
 		return false;
@@ -300,7 +300,7 @@ public class GroupService{
 			DataParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newDataGroupParticipation(group, data);
 			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
 			{
-				EffectiveAuthorizationService.pendDataUpdate(data);
+				EffectiveAuthorizationService.pendUpdate(data);
 				return true;
 			}
 		}
@@ -312,7 +312,7 @@ public class GroupService{
 	{
 		if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deleteDataGroupParticipants(group, data))
 		{
-			EffectiveAuthorizationService.pendDataUpdate(data);
+			EffectiveAuthorizationService.pendUpdate(data);
 			return true;
 		}
 		return false;
@@ -357,7 +357,7 @@ public class GroupService{
 			PersonParticipantType ap = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newPersonGroupParticipation(group, account);
 			if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(ap))
 			{
-				EffectiveAuthorizationService.pendPersonUpdate(account);
+				EffectiveAuthorizationService.pendUpdate(account);
 				return true;
 			}
 		}
@@ -368,7 +368,7 @@ public class GroupService{
 	{
 		if (((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).deletePersonGroupParticipants(group, account))
 		{
-			EffectiveAuthorizationService.pendPersonUpdate(account);
+			EffectiveAuthorizationService.pendUpdate(account);
 			return true;
 		}
 		return false;
