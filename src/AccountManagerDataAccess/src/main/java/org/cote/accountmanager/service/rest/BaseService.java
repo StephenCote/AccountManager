@@ -1443,6 +1443,7 @@ public class BaseService {
 				AuditService.denyResult(audit, "User not permitted to change " + container.getUrn());
 				return false;
 			}
+
 			switch(containerType){
 				case GROUP:
 					BaseGroupType group = (BaseGroupType)container;
