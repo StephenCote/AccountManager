@@ -463,10 +463,10 @@ public class Rocket {
 		
 		RocketSecurity.setupRolesToReadContainer(adminUser,rocketRoles,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},applicationDirectory);
 		RocketSecurity.setupRolesToEditContainer(adminUser,rocketRoles,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},applicationDirectory);
-		EffectiveAuthorizationService.pendGroupUpdate(applicationDirectory);
+		EffectiveAuthorizationService.pendUpdate(applicationDirectory);
 		RocketSecurity.setupRolesToReadContainer(adminUser,rocketRoles,new String[]{"UserRole","AuditRole","ManagerRole","TesterRole","AuthorRole","EditorRole"},lDir);
 		RocketSecurity.setupRolesToEditContainer(adminUser,rocketRoles,new String[]{"AdminRole","ArchitectRole","DeveloperRole"},lDir);
-		EffectiveAuthorizationService.pendGroupUpdate(lDir);
+		EffectiveAuthorizationService.pendUpdate(lDir);
 		EffectiveAuthorizationService.rebuildPendingRoleCache();
 		return true;
 	}
