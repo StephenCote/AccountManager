@@ -438,7 +438,7 @@ public class AuthorizationService {
 			return false;
 		}
 		if(test_owner.getNameType() != NameEnumType.USER){
-			logger.warn("Invalid test owner object with type " + test_owner.getNameType().toString());
+			logger.debug("Invalid test owner object with type " + test_owner.getNameType().toString());
 			return false;
 		}
 		/// Exception to allow for a user object to 'own' itself because it most likely is owned by the admin who created it
@@ -541,7 +541,7 @@ public class AuthorizationService {
 		}
 		/// object.getNameType() != NameEnumType.PERMISSION  && 
 		if(!factoryProviders.containsKey(object.getNameType())){
-			logger.info(object.getNameType() + " is not from a registered authorization provider");
+			logger.debug(object.getNameType() + " is not from a registered authorization provider");
 			return null;
 		}
 
