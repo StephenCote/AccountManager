@@ -370,7 +370,7 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id
 		///
 		if(role.getId() < 0L ) return true;
-		return EffectiveAuthorizationService.getIsUserInEffectiveRole(role, user, permission, affectType);
+		return EffectiveAuthorizationService.getIsActorInEffectiveRole(role, user, permission, affectType);
 	}
 	
 	public static boolean getIsUserInRole(BaseRoleType role, UserType user) throws ArgumentException, FactoryException{
@@ -394,7 +394,7 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id
 		///
 		if(role.getId() < 0L ) return true;
-		return EffectiveAuthorizationService.getIsUserInEffectiveRole(role, user,permission,affectType);
+		return EffectiveAuthorizationService.getIsActorInEffectiveRole(role, user,permission,affectType);
 	}
 	public static boolean addUserToRole(UserType user, UserRoleType role) throws ArgumentException, DataAccessException, FactoryException
 	{
@@ -460,7 +460,7 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id
 		///
 		if(role.getId() < 0L ) return true;
-		return EffectiveAuthorizationService.getIsPersonInEffectiveRole(role, user, permission, affectType);
+		return EffectiveAuthorizationService.getIsActorInEffectiveRole(role, user, permission, affectType);
 	}
 	public static boolean getIsPersonInRole(BaseRoleType role, PersonType person) throws ArgumentException, FactoryException{
 		return getIsPersonInRole(role, person, null, AffectEnumType.UNKNOWN);
@@ -513,7 +513,7 @@ public class RoleService {
 		/// accommodate bulk inserts with a negative id
 		///
 		if(role.getId() < 0L ) return true;
-		return EffectiveAuthorizationService.getIsAccountInEffectiveRole(role, user, permission, affectType);
+		return EffectiveAuthorizationService.getIsActorInEffectiveRole(role, user, permission, affectType);
 	}
 	public static boolean getIsAccountInRole(BaseRoleType role, AccountType account) throws ArgumentException, FactoryException{
 		return getIsAccountInRole(role, account, null, AffectEnumType.UNKNOWN);
@@ -579,7 +579,7 @@ public class RoleService {
 			PersonParticipantType ap = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).newPersonRoleParticipation(role, person);
 			if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).add(ap))
 			{
-				EffectiveAuthorizationService.pendPersonUpdate(person);
+				EffectiveAuthorizationService.pendUpdate(person);
 				return true;
 			}
 		}
@@ -589,7 +589,7 @@ public class RoleService {
 	{
 		if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deletePersonRoleParticipants(role, person))
 		{
-			EffectiveAuthorizationService.pendPersonUpdate(person);
+			EffectiveAuthorizationService.pendUpdate(person);
 			return true;
 		}
 		return false;
