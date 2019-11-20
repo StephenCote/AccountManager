@@ -120,7 +120,7 @@ public class TestBulkAccount extends BaseDataAccessTest{
 			boolean canUser1Read = AuthorizationService.canView(qaAccount1,dir);
 			boolean canUser1Write = AuthorizationService.canChange(qaAccount1,dir);
 			boolean canUser1Delete = AuthorizationService.canDelete(qaAccount1,dir);
-			boolean isUser1InReaderRole = EffectiveAuthorizationService.getIsAccountInEffectiveRole(readerRole, qaAccount1);
+			boolean isUser1InReaderRole = EffectiveAuthorizationService.getIsActorInEffectiveRole(readerRole, qaAccount1);
 			
 			logger.info("#1 Can Role View (should be true): " + canReaderRoleRead);
 			logger.info("#1 Can Role Write (should be false): " + canReaderRoleWrite);
@@ -134,7 +134,7 @@ public class TestBulkAccount extends BaseDataAccessTest{
 			boolean canUser2Read = AuthorizationService.canView(qaAccount2,dir);
 			boolean canUser2Write = AuthorizationService.canChange(qaAccount2,dir);
 			boolean canUser2Delete = AuthorizationService.canDelete(qaAccount2,dir);
-			boolean isUser2InReaderRole = EffectiveAuthorizationService.getIsAccountInEffectiveRole(readerRole, qaAccount2);
+			boolean isUser2InReaderRole = EffectiveAuthorizationService.getIsActorInEffectiveRole(readerRole, qaAccount2);
 			boolean canWriterRoleDelete =  AuthorizationService.canDelete(writerRole, dir);
 			
 			logger.info("#2 Can Role View: (should be true): " + canWriterRoleRead);
@@ -152,7 +152,7 @@ public class TestBulkAccount extends BaseDataAccessTest{
 			boolean canUser3Write = AuthorizationService.canChange(qaAccount3,dir);
 
 			boolean canUser3Delete = AuthorizationService.canDelete(qaAccount3,dir);
-			boolean isUser3InReaderRole = EffectiveAuthorizationService.getIsAccountInEffectiveRole(readerRole, qaAccount3);
+			boolean isUser3InReaderRole = EffectiveAuthorizationService.getIsActorInEffectiveRole(readerRole, qaAccount3);
 
 			logger.info("#3 Can Role View: (should be true): " + canDeleterRoleRead);
 			logger.info("#3 Can Role Write (should be true): " + canDeleterRoleWrite);
