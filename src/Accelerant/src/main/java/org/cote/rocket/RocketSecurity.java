@@ -125,7 +125,7 @@ public class RocketSecurity {
 		for(int i = 0; i < roles.length;i++){
 			BaseRoleType role = getRole(roles[i], parentRole, parentRole.getOrganizationId());
 			if(role == null) throw new FactoryException("Role '" + roles[i] + "' in parentRole '" + parentRole.getName() + " #(" + parentRole.getId() + ") is null");
-			EffectiveAuthorizationService.pendRoleUpdate((UserRoleType)role);
+			EffectiveAuthorizationService.pendUpdate((UserRoleType)role);
 			for(int p = 0; p < bpt.length; p++){
 				BaseParticipantType bp = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newRoleGroupParticipation((BaseGroupType)bucket, role, bpt[p], AffectEnumType.GRANT_PERMISSION);
 				((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(bp);
@@ -142,7 +142,7 @@ public class RocketSecurity {
 		};
 		for(int i = 0; i < roles.length;i++){
 			BaseRoleType role = getRole(roles[i], parentRole, parentRole.getOrganizationId());
-			EffectiveAuthorizationService.pendRoleUpdate((UserRoleType)role);
+			EffectiveAuthorizationService.pendUpdate((UserRoleType)role);
 			for(int p = 0; p < bpt.length; p++){
 				BaseParticipantType bp = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newRoleGroupParticipation((BaseGroupType)bucket, role, bpt[p], AffectEnumType.GRANT_PERMISSION);
 				((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).add(bp);
@@ -220,7 +220,7 @@ public class RocketSecurity {
 			
 			/// Because the bulk operation in this implementation directly manipulates the participation table, it's necessary to tell the authorizaton service that it needs to update the related object
 			///
-			EffectiveAuthorizationService.pendGroupUpdate(dir);
+			EffectiveAuthorizationService.pendUpdate(dir);
 			
 			for(int i = 0; i < directoryGroups.length; i++){
 					dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(adminUser, directoryGroups[i], pjDir, proj.getOrganizationId());
@@ -249,7 +249,7 @@ public class RocketSecurity {
 		setupRolesToEditContainer(adminUser,projectRole,writerRoles,dir);
 		setupRolesToReadContainer(adminUser,lifecycleRole,readerRoles,dir);
 		setupRolesToEditContainer(adminUser,lifecycleRole,writerRoles,dir);
-		EffectiveAuthorizationService.pendGroupUpdate(dir);
+		EffectiveAuthorizationService.pendUpdate(dir);
 	}
 	
 	public static boolean setupBulkLifecycleStructure(String sessionId, LifecycleType lc, UserType adminUser) throws DataAccessException, FactoryException, ArgumentException{
@@ -287,7 +287,7 @@ public class RocketSecurity {
 
 		/// Because the bulk operation in this implementation directly manipulates the participation table, it's necessary to tell the authorizaton service that it needs to update the related object
 		///
-		EffectiveAuthorizationService.pendGroupUpdate(lcDir);
+		EffectiveAuthorizationService.pendUpdate(lcDir);
 		
 		/// apply rocket-level roles on project directory
 		setupRolesToReadContainer(adminUser,rRole,readerRoles,dir);
@@ -297,7 +297,7 @@ public class RocketSecurity {
 		setupRolesToReadContainer(adminUser,bRole,readerRoles,dir);
 		setupRolesToEditContainer(adminUser,bRole,writerRoles,dir);
 
-		EffectiveAuthorizationService.pendGroupUpdate(dir);
+		EffectiveAuthorizationService.pendUpdate(dir);
 
 		for(int i = 0; i < directoryGroups.length; i++){
 				dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).newDirectoryGroup(adminUser, directoryGroups[i], lcDir, lc.getOrganizationId());
@@ -306,7 +306,7 @@ public class RocketSecurity {
 				setupRolesToEditContainer(adminUser,rRole,writerRoles,dir);
 				setupRolesToReadContainer(adminUser,bRole,readerRoles,dir);
 				setupRolesToEditContainer(adminUser,bRole,writerRoles,dir);
-				EffectiveAuthorizationService.pendGroupUpdate(dir);
+				EffectiveAuthorizationService.pendUpdate(dir);
 		}
 
 		return true;
