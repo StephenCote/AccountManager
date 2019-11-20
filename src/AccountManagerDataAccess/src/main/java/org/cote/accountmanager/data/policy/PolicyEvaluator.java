@@ -360,13 +360,9 @@ public class PolicyEvaluator {
 		if(targ.getNameType() == NameEnumType.ROLE){
 			switch(src.getNameType()){
 				case USER:
-					authZ = EffectiveAuthorizationService.getIsUserInEffectiveRole(role, (UserType)src);
-					break;
 				case PERSON:
-					authZ = EffectiveAuthorizationService.getIsPersonInEffectiveRole(role, (PersonType)src);
-					break;
 				case ACCOUNT:
-					authZ = EffectiveAuthorizationService.getIsAccountInEffectiveRole(role, (AccountType)src);
+					authZ = EffectiveAuthorizationService.getIsActorInEffectiveRole(role, src);
 					break;
 				default:
 					logger.error("Unexpected source type: " + src.getNameType());
@@ -388,16 +384,10 @@ public class PolicyEvaluator {
 			BaseGroupType group = (BaseGroupType)targ;
 			switch(src.getNameType()){
 				case USER:
-					authZ = EffectiveAuthorizationService.getGroupAuthorization((UserType)src, group, new BasePermissionType[]{permission});
-					break;
 				case PERSON:
-					authZ = EffectiveAuthorizationService.getGroupAuthorization((PersonType)src, group, new BasePermissionType[]{permission});
-					break;
 				case ROLE:
-					authZ = EffectiveAuthorizationService.getGroupAuthorization((BaseRoleType)src, group, new BasePermissionType[]{permission});
-					break;
 				case ACCOUNT:
-					authZ = EffectiveAuthorizationService.getGroupAuthorization((AccountType)src, group, new BasePermissionType[]{permission});
+					authZ = EffectiveAuthorizationService.getAuthorization(src, group,  new BasePermissionType[] {permission});
 					break;
 				default:
 					logger.error("Unexpected source type: " + src.getNameType());
@@ -408,16 +398,10 @@ public class PolicyEvaluator {
 			DataType data = (DataType)targ;
 			switch(src.getNameType()){
 				case USER:
-					authZ = EffectiveAuthorizationService.getDataAuthorization((UserType)src, data, new BasePermissionType[]{permission});
-					break;
 				case PERSON:
-					authZ = EffectiveAuthorizationService.getDataAuthorization((PersonType)src, data, new BasePermissionType[]{permission});
-					break;
 				case ROLE:
-					authZ = EffectiveAuthorizationService.getDataAuthorization((BaseRoleType)src, data, new BasePermissionType[]{permission});
-					break;
 				case ACCOUNT:
-					authZ = EffectiveAuthorizationService.getDataAuthorization((AccountType)src, data, new BasePermissionType[]{permission});
+					authZ = EffectiveAuthorizationService.getAuthorization(src, data,  new BasePermissionType[] {permission});
 					break;
 				default:
 					logger.error("Unexpected source type: " + src.getNameType());
@@ -428,16 +412,10 @@ public class PolicyEvaluator {
 			BaseRoleType role = (BaseRoleType)targ;
 			switch(src.getNameType()){
 				case USER:
-					authZ = EffectiveAuthorizationService.getRoleAuthorization((UserType)src, role, new BasePermissionType[]{permission});
-					break;
 				case PERSON:
-					authZ = EffectiveAuthorizationService.getRoleAuthorization((PersonType)src, role, new BasePermissionType[]{permission});
-					break;
 				case ROLE:
-					authZ = EffectiveAuthorizationService.getRoleAuthorization((BaseRoleType)src, role, new BasePermissionType[]{permission});
-					break;
 				case ACCOUNT:
-					authZ = EffectiveAuthorizationService.getRoleAuthorization((AccountType)src, role, new BasePermissionType[]{permission});
+					authZ = EffectiveAuthorizationService.getAuthorization(src, role,  new BasePermissionType[] {permission});
 					break;
 				default:
 					logger.error("Unexpected source type: " + src.getNameType());
