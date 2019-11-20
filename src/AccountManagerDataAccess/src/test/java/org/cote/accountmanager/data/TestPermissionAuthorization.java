@@ -62,6 +62,7 @@ public class TestPermissionAuthorization extends BaseDataAccessTest {
 			
 			RoleService.removeUserFromRole(brt, user);
 			RoleService.removeUserFromRole(prt, user3);
+			
 			GroupService.removeUserFromGroup(userGroup, user4);
 			
 			EffectiveAuthorizationService.rebuildPendingRoleCache();
@@ -97,15 +98,25 @@ public class TestPermissionAuthorization extends BaseDataAccessTest {
 		assertTrue("User 1 not in user readers role", inRole);
 		assertTrue("User 3 not in permission readers role", inRole2);
 
-		logger.info("Reset group membership");
-
+		
+		logger.info("Reset role membership");
+		boolean inRole3 = false;
+		try {
+			inRole3 = RoleService.getIsUserInRole(userRole, user2);
+		} catch (ArgumentException | FactoryException e1) {
+			logger.error(e1);
+		}
+		logger.info("User #2 starting in role: " + inRole3);
 		boolean setMem =  BaseService.setMember(user, AuditEnumType.ROLE, userRole.getObjectId(), AuditEnumType.USER, user2.getObjectId(), false);
+		logger.info("User #2 removed from role: " + setMem);
 		setMem = BaseService.setMember(user, AuditEnumType.ROLE, userRole.getObjectId(), AuditEnumType.USER, user2.getObjectId(), true);
-		assertTrue("Failed to set user member to role", setMem);
-
+		assertTrue("Failed to set user " + user2.getUrn()  + " member to role " + userRole.getUrn(), setMem);
+		
+		logger.info("Reset group membership");
+		
 		setMem =  BaseService.setMember(user, AuditEnumType.ROLE, userRole.getObjectId(), AuditEnumType.GROUP, userGroup.getObjectId(), false);
 		setMem = BaseService.setMember(user, AuditEnumType.ROLE, userRole.getObjectId(), AuditEnumType.GROUP, userGroup.getObjectId(), true);
-		assertTrue("Failed to set user group to role", setMem);
+		assertTrue("Failed to set user group " + userGroup.getUrn() + " to role " + userRole.getUrn(), setMem);
 
 		
 		assertNotNull("User perm is null", userPerm);
