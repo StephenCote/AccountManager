@@ -140,40 +140,40 @@ public class TestPermissions extends BaseDataAccessTest{
 			assertTrue("User can't view the permission", AuthorizationService.canView(testUser,per1));
 			AuthorizationService.authorize(testUser, acct1, app1, per1, true);
 			EffectiveAuthorizationService.rebuildCache();
-			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct1,app1, new BasePermissionType[] { per1 } );
+			havePerm = EffectiveAuthorizationService.getAuthorization(acct1,app1, new BasePermissionType[] { per1 } );
 			assertTrue("Person #1 should have the permission",havePerm);
-			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct2,app1, new BasePermissionType[] { per1 } );
+			havePerm = EffectiveAuthorizationService.getAuthorization(acct2,app1, new BasePermissionType[] { per1 } );
 			assertFalse("Person #2 should not have the permission", havePerm);
 			AuthorizationService.authorize(testUser, roleP, app1, per2, true);
 			RoleService.addPersonToRole(acct3, roleP);
 			EffectiveAuthorizationService.rebuildCache();
-			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct3,app1, new BasePermissionType[] { per1 } );
+			havePerm = EffectiveAuthorizationService.getAuthorization(acct3,app1, new BasePermissionType[] { per1 } );
 			assertFalse("Person #3 should not have the permission", havePerm);
-			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct3,app1, new BasePermissionType[] { per2 } );
+			havePerm = EffectiveAuthorizationService.getAuthorization(acct3,app1, new BasePermissionType[] { per2 } );
 			assertTrue("Person #3 should have the permission", havePerm);
 			
 			AuthorizationService.authorize(testUser, pacct4, app1, per3, true);
 			EffectiveAuthorizationService.rebuildCache();
-			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct4,app1, new BasePermissionType[] { per3 } );
+			havePerm = EffectiveAuthorizationService.getAuthorization(acct4,app1, new BasePermissionType[] { per3 } );
 			assertTrue("Person #4 should have the permission because their account has the permission",havePerm);
 			
 			AuthorizationService.authorize(testUser, roleP2, app1, per4, true);
 			RoleService.addAccountToRole(pacct5, roleP2);
 			EffectiveAuthorizationService.rebuildCache();
 			
-			havePerm = EffectiveAuthorizationService.getIsAccountInEffectiveRole(roleP2, pacct5);
+			havePerm = EffectiveAuthorizationService.getIsActorInEffectiveRole(roleP2, pacct5);
 			assertTrue("Person #5 should be in role " + roleP2.getName(),havePerm);
 			
-			havePerm = EffectiveAuthorizationService.getIsPersonInEffectiveRole(roleP2, acct5);
+			havePerm = EffectiveAuthorizationService.getIsActorInEffectiveRole(roleP2, acct5);
 			assertTrue("PENDING: Person #5 should be in role " + roleP2.getName() + " because their account is in that role",havePerm);
 			
-			havePerm = EffectiveAuthorizationService.getIsPersonInEffectiveRole(roleP, acct3);
+			havePerm = EffectiveAuthorizationService.getIsActorInEffectiveRole(roleP, acct3);
 			assertTrue("Person #3 should be in role " + roleP.getName(),havePerm);
 
-			havePerm = EffectiveAuthorizationService.getIsPersonInEffectiveRole(roleP, acct1);
+			havePerm = EffectiveAuthorizationService.getIsActorInEffectiveRole(roleP, acct1);
 			assertFalse("Person #1 should not be in role " + roleP.getName(),havePerm);
 			
-			havePerm = EffectiveAuthorizationService.getIsPersonInEffectiveRole(roleP, acct2);
+			havePerm = EffectiveAuthorizationService.getIsActorInEffectiveRole(roleP, acct2);
 			assertFalse("Person #2 should not be in role " + roleP.getName(),havePerm);
 			
 			
@@ -208,16 +208,16 @@ public class TestPermissions extends BaseDataAccessTest{
 		try {
 			AuthorizationService.authorize(testUser, acct1, app1, per1, true);
 			EffectiveAuthorizationService.rebuildCache();
-			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct1,app1, new BasePermissionType[] { per1 } );
+			havePerm = EffectiveAuthorizationService.getAuthorization(acct1,app1, new BasePermissionType[] { per1 } );
 			assertTrue("Account #1 should have the permission",havePerm);
-			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct2,app1, new BasePermissionType[] { per1 } );
+			havePerm = EffectiveAuthorizationService.getAuthorization(acct2,app1, new BasePermissionType[] { per1 } );
 			assertFalse("Account #2 should not have the permission", havePerm);
 			AuthorizationService.authorize(testUser, roleP, app1, per2, true);
 			RoleService.addAccountToRole(acct3, roleP);
 			EffectiveAuthorizationService.rebuildCache();
-			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct3,app1, new BasePermissionType[] { per1 } );
+			havePerm = EffectiveAuthorizationService.getAuthorization(acct3,app1, new BasePermissionType[] { per1 } );
 			assertFalse("Account #3 should not have the permission", havePerm);
-			havePerm = EffectiveAuthorizationService.getGroupAuthorization(acct3,app1, new BasePermissionType[] { per2 } );
+			havePerm = EffectiveAuthorizationService.getAuthorization(acct3,app1, new BasePermissionType[] { per2 } );
 			assertTrue("Account #3 should have the permission", havePerm);
 		} catch (FactoryException e) {
 			
