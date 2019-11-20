@@ -134,7 +134,7 @@ public class PrincipalService {
 		app.setUser(user);
 		app.setPerson((PersonType)getOtherPerson(user.getObjectId(),request).getEntity());
 		try {
-			app.getUserRoles().addAll(EffectiveAuthorizationService.getEffectiveRolesForUser(user));
+			app.getUserRoles().addAll(EffectiveAuthorizationService.getEffectiveRoles(user));
 		} catch (ArgumentException | FactoryException e) {
 			logger.error(e);
 		}
