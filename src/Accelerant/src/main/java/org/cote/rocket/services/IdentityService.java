@@ -802,7 +802,7 @@ public class IdentityService {
 			for(int r = 0; r < roles.size(); r++){
 				BaseRoleType role = roles.get(r);
 				((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteRoleParticipations(role);
-				EffectiveAuthorizationService.pendRoleUpdate(role);
+				EffectiveAuthorizationService.pendUpdate(role);
 			}
 		}
 		EffectiveAuthorizationService.rebuildPendingRoleCache();
