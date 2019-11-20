@@ -256,7 +256,7 @@ public class TestDataAuthorization extends BaseDataAccessTest {
 			 /// Cleanup any leftover permission checks
 			
 			AuthorizationService.authorize(user2, user1, data3, AuthorizationService.getEditPermissionForMapType(NameEnumType.DATA, data3.getOrganizationId()), false);
-			EffectiveAuthorizationService.rebuildUserRoleCache(Arrays.asList(new UserType[]{user1,user2}), user1.getOrganizationId());
+			EffectiveAuthorizationService.rebuildRoleCache(Arrays.asList(new UserType[]{user1,user2}), user1.getOrganizationId());
 			logger.info("Check default permissions - only owner and data admin can change data in a given org");
 			assertTrue(AuthorizationService.canChange(user1, data1));
 			assertTrue(AuthorizationService.canChange(user2, data3));
