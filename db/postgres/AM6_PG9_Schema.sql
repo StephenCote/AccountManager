@@ -741,25 +741,8 @@ select U.id as accountid,D.id as dataid, D.name as DataName, D.ownerid as dataow
 	 AND DP.affectid > 0;
 
 
---- Accumulate permissions moving up from the leaf 
---- this is actually coded reverse of what 'from-leaf' might imply - it looks DOWN from root_id
---- Note: The views must reference roles -> roleid and participation -> leafed
-CREATE OR REPLACE FUNCTION roles_from_leaf(root_id BIGINT,organizationid BIGINT) 
-        RETURNS TABLE (leafid BIGINT,roleid BIGINT, parentid BIGINT, organizationid BIGINT)
-        AS $$
-	WITH RECURSIVE role_tree(leafid,roleid, parentid, organizationid) AS (
-	   SELECT $1 as leafid, R.id as roleid, R.parentid, R.organizationid
-	      FROM roles R WHERE R.id = $1 AND R.organizationid = $2
-	   UNION ALL
-	   SELECT $1 as leafid, P.id, P.parentid, P.organizationid
-	      FROM role_tree RT, roles P
-	      WHERE RT.roleid = P.parentid AND RT.organizationid = $2
-	)
-	select * from role_tree;
-        $$ LANGUAGE 'sql';
-
--- this is actually coded reverse of what 'from-leaf' might imply - it looks DOWN from root_id
--- I reused this logic below for rolling up groups given a branch
+--- Create a role path starting from the specified root and moving up
+--- Note: The views must reference roles -> roleid and participation -> leafid
 ---
 CREATE OR REPLACE FUNCTION roles_from_leaf(IN root_id bigint)
 	RETURNS TABLE(leafid bigint, roleid bigint, parentid bigint, organizationid bigint)
@@ -819,19 +802,18 @@ CREATE OR REPLACE FUNCTION leveled_roles_from_leaf(root_id BIGINT,organizationid
 	select * from role_tree;
         $$ LANGUAGE 'sql';
 
---- Accumulate permissions for roles moving down from the leaf/trunk (reverse rbac)
---- this is actually coded reverse of what 'to-leaf' might imply - it looks UP from root_id
---- Note: The views must reference roles -> roleid and participation -> leafed
-CREATE OR REPLACE FUNCTION roles_to_leaf(root_id BIGINT,organizationid BIGINT) 
+--- Create a role tree starting from the specified root and moving down to each leaf
+--- Note: The views must reference roles -> roleid and participation -> leafid
+CREATE OR REPLACE FUNCTION roles_to_leaf(root_id BIGINT) 
         RETURNS TABLE (leafid BIGINT,roleid BIGINT, parentid BIGINT, organizationid BIGINT)
         AS $$
 	WITH RECURSIVE role_tree(leafid,roleid, parentid, organizationid) AS (
 	   SELECT $1 as leafid, R.id as roleid, R.parentid, R.organizationid
-	      FROM roles R WHERE R.id = $1 AND R.organizationid = $2
+	      FROM roles R WHERE R.id = $1
 	   UNION ALL
 	   SELECT $1 as leafid, P.id, P.parentid, P.organizationid
 	      FROM role_tree RT, roles P
-	      WHERE RT.parentid = P.id AND RT.organizationid = $2
+	      WHERE RT.parentid = P.id
 	)
 	select * from role_tree;
         $$ LANGUAGE 'sql';
@@ -872,7 +854,7 @@ CREATE OR REPLACE FUNCTION group_membership(IN root_id bigint)
 DROP VIEW IF EXISTS effectivePermissionRoles CASCADE;
 create or replace view effectivePermissionRoles as
 WITH result AS(
-select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
+select R.id,R.parentid,roles_to_leaf(R.id) ats,R.organizationid
 FROM roles R  WHERE roletype = 'USER' OR roletype = 'ACCOUNT' OR roletype = 'PERSON'
 )
 select PP.participationid as permissionid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,PP.affectType,PP.affectId,R.organizationid from result R
@@ -883,7 +865,7 @@ JOIN permissionparticipation PP ON PP.participantid = (R.ats).leafid and PP.part
 DROP VIEW IF EXISTS effectiveDataRoles CASCADE;
 create or replace view effectiveDataRoles as
 WITH result AS(
-select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
+select R.id,R.parentid,roles_to_leaf(R.id) ats,R.organizationid
 FROM roles R  WHERE roletype = 'USER' OR roletype = 'ACCOUNT' OR roletype = 'PERSON'
 )
 select DP.participationid as dataid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,DP.affectType,DP.affectId,R.organizationid from result R
@@ -893,7 +875,7 @@ JOIN dataparticipation DP ON DP.participantid = (R.ats).leafid and DP.participan
 DROP VIEW IF EXISTS effectiveGroupRoles CASCADE;
 create or replace view effectiveGroupRoles as
 WITH result AS(
-select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
+select R.id,R.parentid,roles_to_leaf(R.id) ats,R.organizationid
 FROM roles R  WHERE roletype = 'USER' OR roletype = 'ACCOUNT' OR roletype = 'PERSON' 
 )
 select GP.participationid as groupid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,GP.affectType, GP.affectId, R.organizationid from result R
@@ -903,7 +885,7 @@ JOIN groupparticipation GP ON GP.participantid = (R.ats).leafid and GP.participa
 DROP VIEW IF EXISTS effectiveRoleRoles CASCADE;
 create or replace view effectiveRoleRoles as
 WITH result AS(
-select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
+select R.id,R.parentid,roles_to_leaf(R.id) ats,R.organizationid
 FROM roles R  WHERE roletype = 'USER' OR roletype = 'ACCOUNT' OR roletype = 'PERSON'
 )
 select RP.participationid as roleid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,RP.affectType, RP.affectId,R.organizationid from result R
@@ -913,7 +895,7 @@ JOIN roleparticipation RP ON RP.participantid = (R.ats).leafid and RP.participan
 DROP VIEW IF EXISTS effectivePersonRoles CASCADE;
 create or replace view effectivePersonRoles as
 WITH result AS(
-select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
+select R.id,R.parentid,roles_to_leaf(R.id) ats,R.organizationid
 FROM roles R  WHERE roletype = 'PERSON'
 )
 select CASE WHEN RP.participanttype = 'PERSON' THEN U1.id WHEN RP.participanttype = 'GROUP' AND U2.id > 0 THEN U2.id ELSE -1 END as personid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
@@ -925,7 +907,7 @@ LEFT JOIN persons U2 on U2.id = gp2.participantid AND U2.organizationid = gp2.or
 DROP VIEW IF EXISTS effectiveUserRoles CASCADE;
 create or replace view effectiveUserRoles as
 WITH result AS(
-select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
+select R.id,R.parentid,roles_to_leaf(R.id) ats,R.organizationid
 FROM roles R  WHERE roletype = 'USER'
 )
 select CASE WHEN RP.participanttype = 'USER' THEN U1.id WHEN RP.participanttype = 'GROUP' AND U2.id > 0 THEN U2.id ELSE -1 END as userid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
