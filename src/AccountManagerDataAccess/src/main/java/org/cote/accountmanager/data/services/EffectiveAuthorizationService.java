@@ -272,18 +272,24 @@ public class EffectiveAuthorizationService {
 		for(NameEnumType key : actorMap.keySet()){
 			actorMap.get(key).clear();
 		}
-		rebuildMap.clear();
+		for(NameEnumType key : rebuildMap.keySet()){
+			rebuildMap.put(key, new RebuildMap(key));
+		}
+
 		rebuildAccounts.clear();
 		rebuildUsers.clear();
 
 	}
 	
 	public static void clearCache(NameIdType object) throws ArgumentException{
-
+		if(object == null) {
+			logger.error("Object is null");
+			return;
+		}
 		if(objectMap.containsKey(object.getNameType())){
 			for(AuthorizationMapType aMap : objectMap.get(object.getNameType()).values()){
-				clearPerCache(aMap.getMap(),object);
 				rebuildMap.get(object.getNameType()).getMap().remove(object.getId());
+				clearPerCache(aMap.getMap(),object);
 			}
 			return;
 		}
