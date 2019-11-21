@@ -378,9 +378,9 @@ public class RoleService {
 			logger.error(String.format(FactoryException.OBJECT_NULL_TYPE,  NameEnumType.ROLE.toString()));
 			return false;
 		}
+		
 		/// accommodate bulk inserts with a negative id; don't check the DB for the negative value
 		///
-		
 		if(role.getId() < 0L ) return true;
 		return getIsUserInRole(role, user, null, AffectEnumType.UNKNOWN);
 	}
@@ -401,26 +401,28 @@ public class RoleService {
 		return addUserToRole(user, role, null, AffectEnumType.UNKNOWN);
 	}
 
-	public static boolean addUserToRole(UserType account, UserRoleType role, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean addUserToRole(UserType user, UserRoleType role, BasePermissionType permission, AffectEnumType affectType) throws ArgumentException, DataAccessException, FactoryException
 	{
 		/// accommodate bulk inserts with a negative id - skip the check for the getUserInRole, which will return true for bulk jobs
 		///
-		if (role.getId() < 0L || getIsUserInRole(role, account) == false)
+		if (role.getId() < 0L || getIsUserInRole(role, user) == false)
 		{
-			UserParticipantType ap = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).newUserRoleParticipation(role, account);
+			UserParticipantType ap = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).newUserRoleParticipation(role, user);
 			if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).add(ap))
 			{
-				EffectiveAuthorizationService.pendUserUpdate(account);
+				/// EffectiveAuthorizationService.pendUpdate(Arrays.asList(role,user));
+				EffectiveAuthorizationService.pendUserUpdate(user);
 				return true;
 			}
 		}
 		return false;
 	}
-	public static boolean removeUserFromRole(UserRoleType role, UserType account) throws FactoryException, ArgumentException
+	public static boolean removeUserFromRole(UserRoleType role, UserType user) throws FactoryException, ArgumentException
 	{
-		if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteUserRoleParticipants(role, account))
+		if (((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).deleteUserRoleParticipants(role, user))
 		{
-			EffectiveAuthorizationService.pendUserUpdate(account);
+			/// EffectiveAuthorizationService.pendUpdate(Arrays.asList(user,role));
+			EffectiveAuthorizationService.pendUserUpdate(user);
 			return true;
 		}
 		return false;
