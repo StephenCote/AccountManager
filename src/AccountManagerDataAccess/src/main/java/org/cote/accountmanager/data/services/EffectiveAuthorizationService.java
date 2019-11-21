@@ -221,7 +221,9 @@ public class EffectiveAuthorizationService {
 		
 	}
 	
-	
+	public static void pendUpdate(List<NameIdType> map){
+		for(NameIdType obj : map) pendUpdate(obj);
+	}
 	public static void pendUpdate(NameIdType map){
 		if(rebuildMap.containsKey(map.getNameType())){
 			RebuildMap rMap = rebuildMap.get(map.getNameType());
