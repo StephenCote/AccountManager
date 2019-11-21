@@ -172,7 +172,7 @@ public class GenerateAction {
 		String initUC = lowName.substring(0, 1).toUpperCase() + lowName.substring(1,lowName.length());
 		return "create or replace view effective" + initUC + "Roles as" + System.lineSeparator()
 		+ "WITH result AS(" + System.lineSeparator()
-		+ "select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid" + System.lineSeparator()
+		+ "select R.id,R.parentid,roles_to_leaf(R.id) ats,R.organizationid" + System.lineSeparator()
 		+ "FROM roles R  WHERE roletype = 'USER' OR roletype = 'ACCOUNT' OR roletype = 'PERSON'" + System.lineSeparator()
 		+ ")" + System.lineSeparator()
 		+ "select DP.participationid as " + lowName + "id,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,DP.affectType,DP.affectId,R.organizationid from result R" + System.lineSeparator()
