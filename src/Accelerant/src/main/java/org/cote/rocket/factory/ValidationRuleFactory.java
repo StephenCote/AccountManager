@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2002, 2017 Stephen Cote Enterprises, LLC. All rights reserved.
+ * Copyright (C) 2002, 2020 Stephen Cote Enterprises, LLC. All rights reserved.
  * Redistribution without modification is permitted provided the following conditions are met:
  *
  *    1. Redistribution may not deviate from the original distribution,
