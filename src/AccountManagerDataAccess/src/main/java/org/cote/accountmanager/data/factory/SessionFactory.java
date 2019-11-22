@@ -592,7 +592,7 @@ public class SessionFactory extends FactoryBase {
 	}
 	
 	public void updateSessionToCache(UserSessionType session){
-		logger.info("Updating Session To Cache: " + session.getSessionId() + " / Remove: " + (haveCacheId(session.getSessionId()) ? "true":"false"));
+		logger.debug("Updating Session To Cache: " + session.getSessionId() + " / Remove: " + (haveCacheId(session.getSessionId()) ? "true":"false"));
 		if(this.haveCacheId(session.getSessionId())) removeFromCache(session.getSessionId());
 		addToCache(session);
 	}
