@@ -81,6 +81,8 @@ import org.cote.accountmanager.util.JSONUtil;
 /*
  
  Updates
+ 
+ 	2019/11/20 - Stripped out the legacy caching implementation and redundant method signatures, refactored how the cache is cleaned up
    
     2016/05/10 - Introduced more generic mechanism for handling object level entitlements, rather than hard coding the maps into this class
  
@@ -101,29 +103,16 @@ import org.cote.accountmanager.util.JSONUtil;
  * There may be more views than described here
  * 
  The Effective Authorization Service leverages the indirect maps and caches created or stored in the following database tables, views, and functions:
- view groupUserRights - direct group<-user permission assignments
- view dataUserRights - direct data<-user permission assignments
- function roles_from_leaf(id,orgId) - computes a role hierarchy up from a given node.  Permissions accumulate up (per RBAC spec)
- ALT: function roles_to_leaf(id,organizationId) - computes a role hierarchy down from a given node. Permissions accumulate down (inverse spec)
- view effectiveUserRoles - computed permission<->role distribution, following the role hierarchy and mapping to users or groups of users
- function cache_user_roles(id,orgId) - caches the result of effectiveUserRoles for a specified user into the userrolecache table
- view effectiveGroupRoleRights - maps userrolecache to groupparticipation to yield all effective permissions by group id by user
- view effectiveDataRoleRights - maps userrolecache to dataparticipation to yield all effective permissions by data id by user
- view groupRights - Union of effectiveGroupRoleRights and groupUserRights.  Can be pretty efficient when used with a userid and organization id
- view dataRights - Union of effectiveDataRoleRights and dataUserRights.  Can be pretty efficient when used with a userid and organization id
+ function roles_from_leaf(id) - computes a role path up from a given node.
+ function roles_to_leaf(id) - computes a role path down from a given node.
+ view effective{Actor}Roles - computed permission<->role distribution for {Actor}, following the role path and mapping to actor or actor groups
+ function cache_{actor}_roles(id) - caches the result of effective{Actor}Roles for a specified actor into the {actor}rolecache table
+ view effectiveGroupRoleRights - maps {actor}rolecache to groupparticipation to yield all effective permissions by group id by user
+ view effectiveDataRoleRights - maps {actor}rolecache to dataparticipation to yield all effective permissions by data id by user
+ view groupRights - Union of effectiveGroupRoleRights and group{Actor}Rights.
+ view dataRights - Union of effectiveDataRoleRights and data{Actor}Rights.
  
- THESE HAVE BEEN DEPRECATED
- DEP: view groupRoleTrace - maps permissions<->roles<->users - not as efficient
- DEP: view groupRoleGroupRights
- DEP: view groupRoleRights
- DEP: view dataRoleTrace - maps permissions<->roles<->users - not as efficient
- DEP: view dataRoleGroupRights
- DEP: view dataRoleRights
- DEP: cache_roles - maps all group and data rights by role id into the data and group cache tables.  Not as efficient
-  
-  
-  
- When making changes to authorization, such as adding/removing role participants, groups, or data permissions, even if done through AuthorizationUtil, it is necessary to:
+  When making changes to authorization, such as adding/removing role participants, groups, or data permissions, even if done through AuthorizationUtil, it is necessary to:
  1) Rebuild the corresponding cache if making indirect changes, such as group or roles,
  2) And/or, clear the memory cache for the specified object(s) if making direct permission changes.  While the underlying factory participations will be reset, the authorization service creates denormalized permission assertions, and won't clear any local cache until explicitly instructed to for bulk/perf reasons. 
     a) Note: In memory cache is per node.  Therefore, managing permissions from a distributed setup requires a cache reset across nodes once the permissions change 
@@ -135,49 +124,22 @@ public class EffectiveAuthorizationService {
 	
 	public static final Logger logger = LogManager.getLogger(EffectiveAuthorizationService.class);
 
-	/// 2014/09/14 - in progress - creating generic cache mechanism
-	
-	/// rebuildType == id :: object relationship by type
-	///
-
-	/// typeTypeMap == Type to type1 id to map of type2 id to permit/denied bit
-	///
-	
 	/// This big ugly construct is used to hash the previous cache hashes against the object types for quick look-up and to avoid code duplication
+	/// {ActorType}->{AuthorizableFactoryType}->{ActorId}->{ObjectId}->{PermissionId}->{Value}
 	///
 	private static Map<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>> actorMap = new HashMap<>();
+	private static Map<NameEnumType,Map<NameEnumType,AuthorizationMapType>> objectMap = new HashMap<>();
 	
+	private static Map<NameEnumType,RebuildMap> rebuildMap = new HashMap<>();
 
+	
+	/// rebuildUsers and rebuildAccounts are currently not handled with rebuildMap as that map is predicated on registering an authorization provider for a factory, and users and accounts do not have one.
 	private static Map<Long,NameIdType> rebuildUsers = new HashMap<>();
 	private static Map<Long,NameIdType> rebuildAccounts = new HashMap<>();
 
 	public static final int maximum_insert_size = 2500;
 	
-	/// TODO - these individual caches coud be consolidated - though then it would be more difficult to unwind, and not sure about the perf savings
-	/// 2016/05/10 - Refactor this to use a TypeToType structure
-	/// Let the factories base register these types in
-	/// eg: TypeMapClass::instance{
-	///   xActor[NameIdType]
-	///   yObject[NameIdType]
-	///   Map<> map = ...
-	/// eg: RebuildMapType::instance
-	///   xObject[NameIdType]
-	///   Long[] ids
-	/// userRoleMap - caches users who participate in a role
-	
-	
-	/// 2016/05/11 - Refactor for generalized type - there's an implication here that the corresponding database functions and views will exist
-	/// DB Requirements
-	///   - cache_all_{objectType}_roles functions (there are 2)
-	///   - {objectType}rolecache table
-	///   - effective{objectType}Roles view
-	///   - effective{objectType}{actorType}RoleRights
-	///   - {objectType}rights
-	///   - {objectType}{actorType}Rights
-	///   - {
-	///
-	private static Map<NameEnumType,Map<NameEnumType,AuthorizationMapType>> objectMap = new HashMap<>();
-	private static Map<NameEnumType,RebuildMap> rebuildMap = new HashMap<>();
+
 	
 	private static Object lockObject = new Object();
 	
@@ -234,7 +196,7 @@ public class EffectiveAuthorizationService {
 			return;
 		}
 
-		logger.warn("OLD PEND SYSTEM " + map.getNameType() + " #" + map.getId());
+		logger.debug("OLD PEND SYSTEM " + map.getNameType() + " #" + map.getId());
 		switch(map.getNameType()){
 			case ACCOUNT: pendAccountUpdate((AccountType)map); break;
 			case USER: pendUserUpdate((UserType)map); break;
@@ -252,15 +214,26 @@ public class EffectiveAuthorizationService {
 	public static void pendAccountUpdate(AccountType account){
 		rebuildAccounts.put(account.getId(), account);
 	}
-	
+	public static  Map<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>> getActorMap(){
+		return actorMap;
+	}
+	public static Map<NameEnumType,Map<NameEnumType,AuthorizationMapType>> getObjectMap(){
+		return objectMap;
+	}
 	public static String reportCacheSize(){
 		StringBuilder buff = new StringBuilder(); 
 		buff.append("Effective Authorization Cache Report\n");
+		buff.append("Object Map\n");
 		for(NameEnumType key : objectMap.keySet()){
 			for(AuthorizationMapType aMap : objectMap.get(key).values()){
 				buff.append(key.toString() + " " + aMap.getActor().toString() + "\t" + aMap.getMap().keySet().size() + "\n");
 			}
-
+		}
+		buff.append("Actor Map\n");
+		for(NameEnumType key : actorMap.keySet()) {
+			for(NameEnumType key2 : actorMap.get(key).keySet()) {
+				buff.append(key.toString() + " " +key2.toString() + "\t" + actorMap.get(key).get(key2).keySet().size() + "\n");
+			}
 		}
 		return buff.toString();
 	}
@@ -272,7 +245,9 @@ public class EffectiveAuthorizationService {
 			}
 		}
 		for(NameEnumType key : actorMap.keySet()){
-			actorMap.get(key).clear();
+			for(NameEnumType key2 : actorMap.get(key).keySet()) {
+				actorMap.get(key).get(key2).clear();
+			}
 		}
 		for(NameEnumType key : rebuildMap.keySet()){
 			rebuildMap.put(key, new RebuildMap(key));
@@ -288,39 +263,51 @@ public class EffectiveAuthorizationService {
 			logger.error("Object is null");
 			return;
 		}
+		for(NameEnumType key : objectMap.keySet()) {
+			if(objectMap.get(key).containsKey(object.getNameType())) {
+				AuthorizationMapType aMap = objectMap.get(key).get(object.getNameType());
+				clearPerCache(aMap.getMap(),key, object.getNameType(),object);
+			}
+		}
 		if(objectMap.containsKey(object.getNameType())){
 			for(AuthorizationMapType aMap : objectMap.get(object.getNameType()).values()){
-				rebuildMap.get(object.getNameType()).getMap().remove(object.getId());
-				clearPerCache(aMap.getMap(),object);
+				clearPerCache(aMap.getMap(),object.getNameType(),aMap.getObject(), object);
 			}
-			return;
 		}
 		
-		logger.debug("OLD CACHE SYSTEM: " + object.getNameType());
+		if(rebuildMap.containsKey(object.getNameType())) rebuildMap.get(object.getNameType()).getMap().remove(object.getId());
+		
+		/// logger.debug("OLD CACHE SYSTEM: " + object.getNameType());
 
 		switch(object.getNameType()){
 			case USER:
-				UserType user = (UserType)object;
-				if(actorMap.containsKey(NameEnumType.USER) && actorMap.get(NameEnumType.USER).containsKey(NameEnumType.ROLE)) actorMap.get(NameEnumType.USER).get(NameEnumType.ROLE).keySet().remove(user.getId());
-				rebuildUsers.remove(user.getId());
+				rebuildUsers.remove(object.getId());
 				break;
 			case ACCOUNT:
-				AccountType account = (AccountType)object;
-				if(actorMap.containsKey(NameEnumType.ACCOUNT) && actorMap.get(NameEnumType.ACCOUNT).containsKey(NameEnumType.ROLE)) actorMap.get(NameEnumType.ACCOUNT).get(NameEnumType.ROLE).remove(account.getId());
-				rebuildAccounts.remove(account.getId());
+				rebuildAccounts.remove(object.getId());
 				break;
-
 			default:
-				throw new ArgumentException("Invalid name type " + object.getNameType() + " for object " + object.getName() + " (" + object.getId() + ")");
+				/// throw new ArgumentException("Invalid name type " + object.getNameType() + " for object " + object.getName() + " (" + object.getId() + ")");
+				break;
 		}
 		
 	}
 
-	private static void clearPerCache(Map<Long,Map<Long,Map<Long,Boolean>>> map,NameIdType obj){
-		Iterator<Map<Long,Map<Long,Boolean>>> iter = map.values().iterator();
-		while(iter.hasNext()){
-			iter.next().keySet().remove(obj.getId());
-		}		
+	private static void clearPerCache(Map<Long,Map<Long,Map<Long,Boolean>>> map,NameEnumType actorType, NameEnumType objectType, NameIdType obj){
+		
+		if(actorType.equals(obj.getNameType())) {
+			/// logger.info("Remove actor " + actorType + " " + obj.getId() + " " + map.containsKey(obj.getId()));
+			map.remove(obj.getId());
+			
+		}
+		if(objectType.equals(obj.getNameType())) {
+			Iterator<Map<Long,Map<Long,Boolean>>> iter = map.values().iterator();
+			while(iter.hasNext()){
+				Map<Long,Map<Long,Boolean>> iMap = iter.next();
+				/// logger.info("Remove object " + objectType + " " + obj.getId() + " " + iMap.containsKey(obj.getId()));
+				iMap.remove(obj.getId());
+			}		
+		}
 	}
 	
 	/*
@@ -438,8 +425,8 @@ public class EffectiveAuthorizationService {
 	}
 	private static boolean getPerCacheValue(Map<Long,Map<Long,Map<Long,Boolean>>> map, NameIdType actor, NameIdType obj, BasePermissionType[] permissions){
 		boolean outBool = false;
-		if(map.containsKey(actor.getId()) && map.get(actor.getId()).containsKey(obj.getId())){
-			Map<Long,Boolean> pmap = map.get(actor.getId()).get(obj.getId());
+		Map<Long,Boolean> pmap = getPerCache(map, actor, obj);
+		if(pmap != null){
 			for(int p = 0; p < permissions.length;p++){
 				if(permissions[p] == null) continue;
 				if(pmap.containsKey(permissions[p].getId())){
@@ -452,6 +439,13 @@ public class EffectiveAuthorizationService {
 			}
 		}
 		return outBool;		
+	}
+	private static Map<Long,Boolean> getPerCache(Map<Long,Map<Long,Map<Long,Boolean>>> map, NameIdType actor, NameIdType obj){
+		Map<Long,Boolean> outMap = null;
+		if(map.containsKey(actor.getId()) && map.get(actor.getId()).containsKey(obj.getId())){
+			outMap = map.get(actor.getId()).get(obj.getId());
+		}
+		return outMap;		
 	}
 	private static boolean hasPerCache(Map<Long,Map<Long,Map<Long,Boolean>>> map, NameIdType actor, NameIdType obj, BasePermissionType[] permissions){
 		boolean outBool = false;
@@ -521,12 +515,12 @@ public class EffectiveAuthorizationService {
 	}
 	public static String getEntitlementCheckString(NameIdType object, NameIdType member, BasePermissionType[] permissions){
 		StringBuilder buff = new StringBuilder();
-		buff.append(member.getNameType().toString() + " " + member.getName() + " (");
+		buff.append(member.getNameType().toString() + " " + member.getUrn() + " #" + member.getId() + " (");
 		for(int i = 0; i < permissions.length;i++){
 			if(i > 0) buff.append(", ");
-			buff.append((permissions[i] == null ? "Null" : permissions[i].getName()));
+			buff.append((permissions[i] == null ? "Null" : permissions[i].getName() + " #" + permissions[i].getId()));
 		}
-		buff.append(") " + object.getNameType().toString() + " " + object.getName());
+		buff.append(") " + object.getNameType().toString() + " " + object.getUrn() + " #" +object.getId());
 		return buff.toString();
 	}
 	public static boolean getEntitlementsGrantAccess(NameIdType object, NameIdType member, BasePermissionType[] permissions){
@@ -550,7 +544,7 @@ public class EffectiveAuthorizationService {
 		}
 		
 		List<EntitlementType> ents = getEffectiveMemberEntitlements(object, member, permissions,false);
-
+		logger.info(entChkStr + " " + ents.size());
 		if(!ents.isEmpty()){
 			outBool = true;
 		}
@@ -573,6 +567,7 @@ public class EffectiveAuthorizationService {
 			}
 		}
 		if(cache){
+			logger.debug("*** CACHING AUTHORIZATION: " + entChkStr + " == " + outBool);
 			addToPerCache(member,object,permissions,outBool);
 		}
 		return outBool;
@@ -663,6 +658,7 @@ public class EffectiveAuthorizationService {
 			if(i > 0) buff.append(", ");
 			buff.append(Long.toString(permissionIds[i]));
 		}
+		/// logger.info(buff.toString() + "\n" + sqlQuery);
 		PreparedStatement statement = null;
 		ResultSet rset = null;
 		/*
@@ -1168,6 +1164,7 @@ public class EffectiveAuthorizationService {
 				logger.info("Rebuilding role cache for " + users.size() + " users");
 				outBool = rebuildRoleCache(users,users.get(0).getOrganizationId());
 				rebuildUsers.clear();
+				for(UserType u2 : users) clearCache(u2);
 			}
 			
 			List<AccountType> accounts = Arrays.asList(rebuildAccounts.values().toArray(new AccountType[0]));
@@ -1176,6 +1173,7 @@ public class EffectiveAuthorizationService {
 				logger.info("Rebuilding role cache for " + accounts.size() + " accounts");
 				outBool = rebuildRoleCache(accounts,accounts.get(0).getOrganizationId());
 				rebuildAccounts.clear();
+				for(AccountType a2 : accounts) clearCache(a2);
 			}
 
 			List<PersonType> persons = Arrays.asList(rebuildPersons.values().toArray(new PersonType[0]));
@@ -1183,6 +1181,7 @@ public class EffectiveAuthorizationService {
 				logger.info("Rebuilding role cache for " + persons.size() + " persons");
 				outBool = rebuildRoleCache(persons,persons.get(0).getOrganizationId());
 				rebuildPersons.clear();
+				for(PersonType p2 : persons) clearCache(p2);
 			}
 			
 			List<DataType> data = Arrays.asList(rebuildData.values().toArray(new DataType[0]));
@@ -1190,6 +1189,7 @@ public class EffectiveAuthorizationService {
 				logger.info("Rebuilding role cache for " + data.size() + " data");
 				outBool = rebuildRoleCache(data,data.get(0).getOrganizationId());
 				rebuildData.clear();
+				for(DataType d2 : data) clearCache(d2);
 			}
 		}
 		long stop = System.currentTimeMillis();
