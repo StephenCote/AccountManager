@@ -574,7 +574,7 @@ public class BaseDataAccessTest{
 		DataType bsh = null;
 		try{
 			bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,false,dir);
-			DirectoryGroupType ddir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganizationId());
+			/// DirectoryGroupType ddir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Data", user.getHomeDirectory(), user.getOrganizationId());
 			
 			if(bsh != null){
 				String cv = DataUtil.getValueString(bsh);
@@ -588,13 +588,13 @@ public class BaseDataAccessTest{
 			}
 			
 			if(bsh == null){
-				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, ddir.getId());
+				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, dir.getId());
 				bsh.setName(name);
 				bsh.setMimeType("text/plain");
 				//DataUtil.setValueString(bsh,script);
 				DataUtil.setValue(bsh, script.getBytes());
 				((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(bsh);
-				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,false,ddir);
+				bsh = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name,false,dir);
 			}
 		}
 		catch(FactoryException | ArgumentException | DataException e) {
