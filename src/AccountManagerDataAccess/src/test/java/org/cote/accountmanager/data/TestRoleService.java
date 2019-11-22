@@ -26,16 +26,25 @@ package org.cote.accountmanager.data;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
+import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 
 public class TestRoleService extends BaseDataAccessTest{
@@ -66,6 +75,9 @@ public class TestRoleService extends BaseDataAccessTest{
 		UserType user2 = getUser(testAuthUser2,"password1");
 		UserType user3 = getUser(testAuthUser3,"password1");
 		UserType user4 = getUser(testAuthUser4,"password1");
+		
+
+		
 		UserRoleType userHomeRole = null;
 		UserRoleType roleRoot = null;
 		UserRoleType branch1 = null;
@@ -74,7 +86,12 @@ public class TestRoleService extends BaseDataAccessTest{
 		UserRoleType leaf2 = null;
 		UserRoleType leaf3 = null;
 		UserRoleType leaf4 = null;
+		
+		DirectoryGroupType authGroup = this.getGroup(user4, "Auth Data", GroupEnumType.DATA, user.getHomeDirectory());
+		DataType authData = this.getCreateTextData(user, "Auth Data 1", "Demo data", authGroup);
 		try {
+			EffectiveAuthorizationService.pendUpdate(Arrays.asList(user,user2,user3,user4));
+			EffectiveAuthorizationService.rebuildPendingRoleCache();
 			userHomeRole = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(user, RoleEnumType.USER, user.getOrganizationId());
 			roleRoot = getRole(user, "Root", RoleEnumType.USER, userHomeRole);
 			branch1 = getRole(user, "Branch 1", RoleEnumType.USER, roleRoot);
@@ -84,22 +101,72 @@ public class TestRoleService extends BaseDataAccessTest{
 			leaf3 = getRole(user, "Leaf 3", RoleEnumType.USER, branch2);
 			leaf4 = getRole(user, "Leaf 4", RoleEnumType.USER, branch2);
 			
+			AuthorizationService.authorizeType(user, leaf1, authGroup, true, false, false, false);
+			AuthorizationService.authorizeType(user, leaf2, authGroup, true, true, false, false);
+			
+			AuthorizationService.authorizeType(user, leaf3, authData, true, false, false, false);
+			AuthorizationService.authorizeType(user, leaf4, authData, true, true, false, false);
+			
 			resetRoleMembership(branch1,user2, true);
 			resetRoleMembership(branch2,user3, true);
 			resetRoleMembership(leaf4,user4, true);
-
+			
 			testEffectiveRoleMembership(branch1,user2, true);
 			testEffectiveRoleMembership(leaf1,user2, true);
 			testEffectiveRoleMembership(leaf2,user2, true);
 			testEffectiveRoleMembership(branch2,user3, true);
+			testEffectiveRoleMembership(leaf3,user3, true);
+			testEffectiveRoleMembership(leaf4,user3, true);
 			testEffectiveRoleMembership(leaf4,user4, true);
 			
+			/// user 2 can view and edit group and data
+			/// user 3 can view and edit data but not view/edit group
+			/// user 4 can edit data, but not view/edit group
 			
-		} catch (ArgumentException | FactoryException e) {
+			testAuthorization(user2, authGroup, true, true, false, false);
+			testAuthorization(user2, authData, true, true, false, false);
+			testAuthorization(user3, authData, true, true, false, false);
+			testAuthorization(user3, authGroup, false, false, false, false);
+			testAuthorization(user4, authData, true, true, false, false);
+			testAuthorization(user4, authGroup, false, false, false, false);
+			
+			resetRoleMembership(branch1,user2, false);
+			resetRoleMembership(branch2,user3, false);
+			resetRoleMembership(leaf4,user4, false);
+			
+			testEffectiveRoleMembership(branch1,user2, false);
+			testEffectiveRoleMembership(leaf1,user2, false);
+			testEffectiveRoleMembership(leaf2,user2, false);
+			testEffectiveRoleMembership(branch2,user3, false);
+			testEffectiveRoleMembership(leaf3,user3, false);
+			testEffectiveRoleMembership(leaf4,user3, false);
+			testEffectiveRoleMembership(leaf4,user4, false);
+			
+		} catch (ArgumentException | FactoryException | DataAccessException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		//assertFalse("User should not be a data admin",isDataAdmin);
+	}
+	
+	private void testAuthorization(NameIdType actor, NameIdType object, boolean canView, boolean canEdit, boolean canDelete, boolean canCreate) {
+
+		String errStr = "Failed to authorize " + actor.getUrn() + " (#" + actor.getId() + ") access to " + object.getUrn() + " (#" + object.getId() + ") to ";
+		boolean error = false;
+		try {
+			/// EffectiveAuthorizationService.clearCache();
+			/// logger.info(JSONUtil.exportObject(EffectiveAuthorizationService.getObjectMap()));
+			/// logger.info("Cache Report: " + EffectiveAuthorizationService.reportCacheSize());
+			if(canView) assertTrue(errStr + "view",AuthorizationService.canView(actor, object));
+			if(canEdit) assertTrue(errStr + "view",AuthorizationService.canChange(actor, object));
+			if(canDelete) assertTrue(errStr + "view",AuthorizationService.canDelete(actor, object));
+			if(canCreate) assertTrue(errStr + "view",AuthorizationService.canCreate(actor, object));
+		}
+		catch(FactoryException | ArgumentException e) {
+			logger.error(e);
+			error = true;
+		}
+		assertFalse("A logical error occurred", error);
 	}
 	
 	private boolean testEffectiveRoleMembership(UserRoleType role, UserType user, boolean active) {
