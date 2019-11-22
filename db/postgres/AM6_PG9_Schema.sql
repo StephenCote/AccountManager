@@ -823,6 +823,41 @@ CREATE OR REPLACE FUNCTION role_membership(IN root_id bigint)
 	RETURNS TABLE(pid bigint,branchid bigint, roleid bigint, parentid bigint, referencetype text,referenceid bigint,organizationid bigint)
 	AS $$
 	WITH RECURSIVE role_membership(pid,branchid,roleid, parentid, referencetype,referenceid,organizationid) AS (
+	   SELECT CAST(0 as bigint),$1 as branchid, R.id as roleid, R.parentid, CASE WHEN P.participanttype <> '' THEN P.participanttype ELSE CAST('' as text) END, CASE WHEN P.participantid > 0 THEN P.participantid ELSE CAST(0 as bigint) END,R.organizationid
+	      FROM roles R
+		  LEFT JOIN roleparticipation P ON P.participationid = R.id
+		  
+	      WHERE R.id = $1
+	   UNION
+	   SELECT P.id as pid,$1 as branchid, P.participationid, RT.roleid, P.participanttype as referencetype,P.participantid as referenceid,P.organizationid
+	      FROM role_membership RT, roleparticipation P
+	      WHERE RT.parentid = P.participationid
+	      --and R.participanttype = 'ROLE'
+	)
+	select * from role_membership;
+	$$ LANGUAGE 'sql';
+
+CREATE OR REPLACE FUNCTION group_membership(IN root_id bigint)
+	RETURNS TABLE(pid bigint,branchid bigint, groupid bigint, parentid bigint, referencetype text,referenceid bigint, organizationid bigint)
+	AS $$
+	WITH RECURSIVE group_membership(pid,branchid,groupid, parentid, referencetype,referenceid, organizationid) AS (
+	   SELECT CAST(0 as bigint),$1 as branchid, G.id as groupid, G.parentid, CASE WHEN P.participanttype <> '' THEN P.participanttype ELSE CAST('' as text) END, CASE WHEN P.participantid > 0 THEN P.participantid ELSE CAST(0 as bigint) END,G.organizationid
+	      FROM groups G
+		LEFT JOIN groupparticipation P on P.participationid = G.id
+	      WHERE G.id = $1
+	   UNION ALL
+	   SELECT P.id as pid,$1 as branchid, P.participationid, RT.groupid, P.participanttype as referencetype,P.participantid as referenceid, P.organizationid
+	      FROM group_membership RT, groupparticipation P
+	      WHERE RT.groupid = P.participationid
+	)
+	select * from group_membership;
+	$$ LANGUAGE 'sql';
+
+
+CREATE OR REPLACE FUNCTION role_membership_up(IN root_id bigint)
+	RETURNS TABLE(pid bigint,branchid bigint, roleid bigint, parentid bigint, referencetype text,referenceid bigint,organizationid bigint)
+	AS $$
+	WITH RECURSIVE role_membership(pid,branchid,roleid, parentid, referencetype,referenceid,organizationid) AS (
 	   SELECT CAST(0 as bigint),$1 as branchid, R.id as roleid, R.parentid, CAST('' as text), CAST(0 as bigint),R.organizationid
 	      FROM roles R
 	      WHERE R.id = $1
@@ -835,7 +870,7 @@ CREATE OR REPLACE FUNCTION role_membership(IN root_id bigint)
 	select * from role_membership;
 	$$ LANGUAGE 'sql';
 
-CREATE OR REPLACE FUNCTION group_membership(IN root_id bigint)
+CREATE OR REPLACE FUNCTION group_membership_up(IN root_id bigint)
 	RETURNS TABLE(pid bigint,branchid bigint, groupid bigint, parentid bigint, referencetype text,referenceid bigint, organizationid bigint)
 	AS $$
 	WITH RECURSIVE group_membership(pid,branchid,groupid, parentid, referencetype,referenceid, organizationid) AS (
