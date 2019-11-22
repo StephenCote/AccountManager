@@ -845,7 +845,7 @@ CREATE OR REPLACE FUNCTION group_membership(IN root_id bigint)
 	      FROM groups G
 		LEFT JOIN groupparticipation P on P.participationid = G.id
 	      WHERE G.id = $1
-	   UNION ALL
+	   UNION
 	   SELECT P.id as pid,$1 as branchid, P.participationid, RT.groupid, P.participanttype as referencetype,P.participantid as referenceid, P.organizationid
 	      FROM group_membership RT, groupparticipation P
 	      WHERE RT.groupid = P.participationid
