@@ -150,7 +150,7 @@ public class AuthorizationService {
         	return true;
         }
         else{
-        	logger.warn("Is Not Authorize By Entitlement: " + authStr);
+        	logger.warn("Is Not Authorized By Entitlement: " + authStr);
         }
 	       
         return false;
