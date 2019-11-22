@@ -61,8 +61,8 @@
 					</includes>
 					<excludes>
 						<!-- 		
+						<exclude>**/TestRoleService.java</exclude>
 						<exclude>**/TestPermissionAuthorization.java</exclude>
-						-->	
 						<exclude>**/TestDataAuthorization.java</exclude>
 						<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 						<exclude>**/TestKnowledgeBasedVerification.java</exclude>
@@ -70,15 +70,25 @@
 						<exclude>**/TestGroupAuthorization.java</exclude>
 						<exclude>**/TestSoD.java</exclude>	
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
+						-->	
+
+						
+						
+						
+						<exclude>**/TestFactoryCache.java</exclude>
+						<exclude>**/TestCachePerformance.java</exclude>							
+						
+
+						
 						<exclude>**/TestBaseService.java</exclude>
 						<exclude>**/TestAccessApproval.java</exclude>
 						<exclude>**/TestImportContacts.java</exclude>
 						<exclude>**/TestControlFactory.java</exclude>
 						<exclude>**/TestVaultService.java</exclude>
-							<exclude>**/TestBulkUser.java</exclude>
-							<exclude>**/TestBulkDelete.java</exclude>	
-							<exclude>**/TestBulkUpdate.java</exclude>
-							<exclude>**/TestBulkPerson.java</exclude>
+						<exclude>**/TestBulkUser.java</exclude>
+						<exclude>**/TestBulkDelete.java</exclude>	
+						<exclude>**/TestBulkUpdate.java</exclude>
+						<exclude>**/TestBulkPerson.java</exclude>
 						
 						<exclude>**/TestOrganizationFactory.java</exclude>
 						
@@ -87,18 +97,13 @@
 						<exclude>**/TestFunctionFactory.java</exclude>	
 						<exclude>**/TestFactoryInterfaces.java</exclude>												
 						<exclude>**/TestDataFactory.java</exclude>
-						
-						
-						
-						<exclude>**/TestFactoryCache.java</exclude>
-							
-						<exclude>**/TestCachePerformance.java</exclude>		
+	
 						
 						<exclude>**/TestTokenService.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>
 						<exclude>**/TestPolicyService.java</exclude>
 						
-						<exclude>**/TestRoleService.java</exclude>
+						
 						
 						<exclude>**/TestAttributes.java</exclude>
 						<exclude>**/TestAuditFactory.java</exclude>						
