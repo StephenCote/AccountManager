@@ -125,9 +125,9 @@ public class BulkFactory {
 
 	}
 	public void write(String sessionId) throws ArgumentException, FactoryException, DataAccessException{
-		write(sessionId, 1, 0);
+		write(sessionId, 1, 0/*, new HashMap<FactoryEnumType,Integer>()*/);
 	}
-	protected void write(String sessionId, int pass, int offset) throws ArgumentException, FactoryException, DataAccessException{
+	protected void write(String sessionId, int pass, int offset/*, Map<FactoryEnumType,Integer> bulkReport*/) throws ArgumentException, FactoryException, DataAccessException{
 		long start = System.currentTimeMillis();
 		if(sessionId == null || sessionId.length() == 0){
 			logger.error(BULK_SESSIONID_NULL);
@@ -144,6 +144,7 @@ public class BulkFactory {
 		}
 		
 		Map<FactoryEnumType,List<Long>> factoryIds = new HashMap<>();
+
 		int eLen = 0;
 
 		synchronized(session){
@@ -152,20 +153,26 @@ public class BulkFactory {
 			
 			for(int i = offset; i < eLen; i++){
 				BulkEntryType entry = session.getBulkEntries().get(i);
+				FactoryEnumType entryType = entry.getFactoryType();
 				if(entry.getPersisted()){
 					logger.warn("Skipping persisted entry " + entry.getObject().getName());
 					continue;
 				}
-				if(!factoryIds.containsKey(entry.getFactoryType())){
+				/*
+				if(!bulkReport.containsKey(entryType)) bulkReport.put(entryType, 0);
+				bulkReport.put(entryType, bulkReport.get(entryType) + 1);
+				*/
+				if(!factoryIds.containsKey(entryType)){
 					long startFact = System.currentTimeMillis();
-					factoryIds.put(entry.getFactoryType(), getFactoryIds(sessionId,entry.getFactoryType()));
-					logger.debug("Retrieved factory ids for " + entry.getFactoryType().toString() + " in " + (System.currentTimeMillis() - startFact) + "ms");
+					factoryIds.put(entryType, getFactoryIds(sessionId,entryType));
+					logger.debug("Retrieved factory ids for " + entryType.toString() + " in " + (System.currentTimeMillis() - startFact) + "ms");
 				}
-				List<Long> ids = factoryIds.get(entry.getFactoryType());
+				List<Long> ids = factoryIds.get(entryType);
 				long id = ids.remove(ids.size()-1);
 
 				entry.setPersistentId(id);
 				entry.setPersisted(true);
+				
 				/// don't set id until the cache is cleared for this object
 
 				/// 2013/06/26 - moved up from writeObject
@@ -174,7 +181,7 @@ public class BulkFactory {
 				/// allows for object with participant dependencies
 				/// to be written out of any particular order
 				///
-				NameIdFactory factory = getFactory(entry.getFactoryType());
+				NameIdFactory factory = getFactory(entryType);
 				factory.removeFromCache(entry.getObject(),factory.getCacheKeyName(entry.getObject()));
 				entry.getObject().setId(entry.getPersistentId());
 				idMap.put(entry.getTemporaryId(), entry.getPersistentId());
@@ -204,14 +211,11 @@ public class BulkFactory {
 					totalAttrs += entry.getObject().getAttributes().size();
 					attrDump.add(entry.getObject());
 				}
-				/// 2013/06/26 - Second pass, map ids
-				///
 				if(!entry.getPersisted()){
 					logger.warn("Skipping unpersisted entry " + entry.getObject().getName());
 					continue;
 				}
 				writeObject(session, entry);
-				/// 2014/01/11  - need to update attributes, but in one bulk pass
 			}
 
 			logger.debug("Writing " + totalAttrs + " attributes for " + attrDump.size() + " objects");
@@ -225,8 +229,8 @@ public class BulkFactory {
 					writeSpool(factoryType);
 				}
 				
-				/// A dirty write is when a factory adds an object to be bulk written
-				/// But that object was not created as a bulk entry.  Participations are examples of dirty writes.
+				/// A dirty write is when a factory adds an object to the global bulk session
+				/// Participations are examples of dirty writes.
 				///
 				if(!dirtyWrite.isEmpty()){
 					FactoryEnumType[] fTypes = dirtyWrite.toArray(new FactoryEnumType[0]);
@@ -248,13 +252,19 @@ public class BulkFactory {
 				for (Entry<FactoryEnumType,List<NameIdType>> entry : deleteCache.get(sessionId).entrySet()) {
 					FactoryEnumType factoryType = entry.getKey();
 					List<NameIdType> objs = entry.getValue();
+					/*
+					if(!bulkReport.containsKey(factoryType)) bulkReport.put(factoryType, 0);
+					bulkReport.put(factoryType, bulkReport.get(factoryType) + objs.size());
+					*/
 					logger.debug("Processing delete cache for " + factoryType.toString() + " having " + objs.size() + " objects");
 					deleteSpool(factoryType,objs);
 					NameIdFactory factory = getBulkFactory(factoryType);
 					logger.debug("Processing bulk modifications for " + factoryType.toString());
 					factory.deleteBulk(objs,null);
+					
 					logger.debug("Processing bulk attribute modifications cache for " + factoryType.toString());
 					Factories.getAttributeFactory().deleteAttributesForObjects(objs.toArray(new NameIdType[0]));
+					
 					count += objs.size();
 					
 				}
@@ -276,11 +286,16 @@ public class BulkFactory {
 				for (Entry<FactoryEnumType,List<NameIdType>> entry : updateCache.get(sessionId).entrySet()) {
 					FactoryEnumType factoryType = entry.getKey();
 					List<NameIdType> objs = entry.getValue();
+					/*
+					if(!bulkReport.containsKey(factoryType)) bulkReport.put(factoryType, 0);
+					bulkReport.put(factoryType, bulkReport.get(factoryType) + objs.size());
+					*/
 					logger.debug("Processing modification cache for " + factoryType.toString() + " having " + objs.size() + " objects");
 					updateSpool(factoryType,objs);
 					NameIdFactory factory = getBulkFactory(factoryType);
 					logger.debug("Processing bulk modifications for " + factoryType.toString());
 					factory.updateBulk(objs,null);
+
 					logger.debug("Processing bulk attribute modifications cache for " + factoryType.toString());
 					Factories.getAttributeFactory().updateAttributes(objs.toArray(new NameIdType[0]));
 					count += objs.size();
@@ -309,7 +324,7 @@ public class BulkFactory {
 		if(session.getBulkEntries().size() != eLen){
 			if(pass < maximumWritePasses){
 				logger.debug("Bulk Session is dirty with " + (session.getBulkEntries().size() - eLen) + " entries.  Attempting pass #" + (pass + 1));
-				write(sessionId, pass+1,eLen);
+				write(sessionId, pass+1,eLen/*,bulkReport*/);
 			}
 			else{
 				logger.error("Bulk Session is still dirty with " + (session.getBulkEntries().size() - eLen) + " entries.  Halting attempts after " + pass + " passes");
@@ -318,7 +333,12 @@ public class BulkFactory {
 		long stop = System.currentTimeMillis();
 		if(pass == 1){
 			session.setPersisted(true);
-			logger.info("Wrote Bulk Session " + sessionId + " in " + (stop - start) + "ms");
+			logger.info("Wrote Bulk Session " + sessionId + " pass #" + pass + " with " + eLen + " objects in " + (stop - start) + "ms");
+			/*
+			for(FactoryEnumType fType : bulkReport.keySet()) {
+				logger.info("Bulk Entries - " + fType.toString() + " - " + bulkReport.get(fType));
+			}
+			*/
 		}
 		
 		
