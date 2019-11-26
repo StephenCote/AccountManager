@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -16,15 +17,15 @@
 	</properties>
 
 	<build>
-		  <pluginManagement>
-    <plugins>
-      <plugin>
-        <groupId>org.sonarsource.scanner.maven</groupId>
-        <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.6.0.1398</version>
-      </plugin>
-    </plugins>
-  </pluginManagement>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>3.6.0.1398</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 
 			<plugin>
@@ -36,105 +37,98 @@
 					<target>13</target>
 				</configuration>
 			</plugin>
-<plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.19</version>
-    			<dependencies>
+				<dependencies>
 
-      				<dependency>
-        				<groupId>org.apache.maven.surefire</groupId>
-        				<artifactId>surefire-junit47</artifactId>
-       					<version>2.19</version>
-      				</dependency>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit47</artifactId>
+						<version>2.19</version>
+					</dependency>
 
-    			</dependencies>
+				</dependencies>
 
-  				<configuration>
-  					<skipTests>true</skipTests>
- 					<argLine>-Xms512m -Xmx2048m</argLine> 
-  					<includes>
+				<configuration>
+					<skipTests>true</skipTests>
+					<argLine>-Xms512m -Xmx2048m</argLine>
+					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-						<!-- 
-<exclude>**/TestAuthorization.java</exclude>
-
-						-->
+						<!-- <exclude>**/TestAuthorization.java</exclude> -->
 						<exclude>**/TestCommunities.java</exclude>
-<exclude>**/TestIdentityService.java</exclude>
-						
+						<exclude>**/TestIdentityService.java</exclude>
+
 						<exclude>**/TestFormElementValue.java</exclude>
 
-							
+
 						<exclude>**/TestBulkFactory.java</exclude>
 						<exclude>**/TestCapabilities.java</exclude>
-						
+
 						<exclude>**/TestFactoryInterfaces.java</exclude>
-						
-						
-				
+
+
+
 						<exclude>**/TestTraitType.java</exclude>
 						<exclude>**/TestEventType.java</exclude>
-						
+
 						<!-- REGRESSED -->
 						<exclude>**/TestBulkUpdate.java</exclude>
-						
-<exclude>**/TestRocket.java</exclude>
-						
-						<!--  RETEST -->
-						
-						
+
+						<exclude>**/TestRocket.java</exclude>
+
+						<!-- RETEST -->
+
+
 						<exclude>**/TestFormFactory.java</exclude>
-						
-						
-						
+
+
+
 						<exclude>**/TestAccelerantSetup.java</exclude>
-						
+
 						<exclude>**/TestDataSpeed.java</exclude>
 
 						<exclude>**/TestAccelerantInit.java</exclude>
 						<exclude>**/TestTicketFactory.java</exclude>
-						
+
 						<exclude>**/TestStageFactory.java</exclude>
-							<exclude>**/TestMethodologyFactory.java</exclude>
-							<exclude>**/TestMethodologyParticipationFactory.java</exclude>
-							<exclude>**/TestWorkFactory.java</exclude>
-							<exclude>**/TestWorkParticipationFactory.java</exclude>
-							
-							<exclude>**/TestTaskParticipationFactory.java</exclude>
-					
-							<exclude>**/TestTaskFactory.java</exclude>
-							<exclude>**/TestModelFactory.java</exclude>
-							<exclude>**/TestModelParticipationFactory.java</exclude>
+						<exclude>**/TestMethodologyFactory.java</exclude>
+						<exclude>**/TestMethodologyParticipationFactory.java</exclude>
+						<exclude>**/TestWorkFactory.java</exclude>
+						<exclude>**/TestWorkParticipationFactory.java</exclude>
+
+						<exclude>**/TestTaskParticipationFactory.java</exclude>
+
+						<exclude>**/TestTaskFactory.java</exclude>
+						<exclude>**/TestModelFactory.java</exclude>
+						<exclude>**/TestModelParticipationFactory.java</exclude>
 						<exclude>**/TestArtifactFactory.java</exclude>
-						
+
 						<exclude>**/TestLifecycleParticipationFactory.java</exclude>
 						<exclude>**/TestLifecycleFactory.java</exclude>
-						
+
 					</excludes>
-					<!-- 
-					<systemPropertyVariables>
-      					<log4j.configuration>${project.build.directory}/test-classes/logging.properties</log4j.configuration>
-    				</systemPropertyVariables>
-    				-->
-    				    				<systemProperties>
-    				          <property>
-            					<name>log4j.configurationFile</name>
-            					<value>log4j2-AccelerantLogging.xml</value>
-          					</property>
-          				</systemProperties>
-    				
-    			</configuration>
+
+					<systemProperties>
+						<property>
+							<name>log4j.configurationFile</name>
+							<value>log4j2-AccelerantLogging.xml</value>
+						</property>
+					</systemProperties>
+
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.1</version>
-    </dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -162,27 +156,38 @@
 			<artifactId>propellant</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>            
+		<dependency>
 			<groupId>net.sourceforge</groupId>
 			<artifactId>mpxj</artifactId>
 			<version>4.3.0</version>
 		</dependency>
-	<dependency>
-	      <groupId>org.apache.commons</groupId>
-	      <artifactId>commons-csv</artifactId>
-	      <version>1.0</version>
-	</dependency>
-		  <dependency>
-    <groupId>javax</groupId>
-    <artifactId>javaee-web-api</artifactId>
-    <version>7.0</version>
-    <scope>provided</scope>
-  </dependency>
-  		<dependency>  
-  <groupId>javax.servlet</groupId>
-  <artifactId>javax.servlet-api</artifactId>
-  <version>3.0.1</version>
-  <scope>provided</scope>
-</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-web-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>2.7.0</version>
+		</dependency>
 	</dependencies>
 </project>

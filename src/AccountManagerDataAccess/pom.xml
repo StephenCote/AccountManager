@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -16,158 +17,124 @@
 	</properties>
 
 	<build>
-		  <pluginManagement>
-    <plugins>
-      <plugin>
-        <groupId>org.sonarsource.scanner.maven</groupId>
-        <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.6.0.1398</version>
-      </plugin>
-    </plugins>
-  </pluginManagement>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>3.6.0.1398</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
-        <meminitial>512m</meminitial>
-        <maxmem>2048m</maxmem>
+					<meminitial>512m</meminitial>
+					<maxmem>2048m</maxmem>
 					<source>13</source>
 					<target>13</target>
 					<fork>true</fork>
 				</configuration>
 			</plugin>
-      	<plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.19</version>
-    			<dependencies>
+				<dependencies>
 
-      				<dependency>
-        				<groupId>org.apache.maven.surefire</groupId>
-        				<artifactId>surefire-junit47</artifactId>
-       					<version>2.19</version>
-      				</dependency>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit47</artifactId>
+						<version>2.19</version>
+					</dependency>
 
-    			</dependencies>
+				</dependencies>
 
-  				<configuration>
-  					<skipTests>true</skipTests>
- 					<argLine>-Xms512m -Xmx2048m</argLine>  
+				<configuration>
+					<skipTests>false</skipTests>
+					<argLine>-Xms512m -Xmx2048m</argLine>
 
-  					<includes>
+					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-						<!-- 		
+						<!-- <exclude>**/TestDBStress.java</exclude> -->
+						<exclude>**/TestCachePerformance.java</exclude>
 						<exclude>**/TestRoleService.java</exclude>
 						<exclude>**/TestPermissionAuthorization.java</exclude>
 						<exclude>**/TestDataAuthorization.java</exclude>
 						<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 						<exclude>**/TestKnowledgeBasedVerification.java</exclude>
-						<exclude>**/TestPermissions.java</exclude>	
+						<exclude>**/TestPermissions.java</exclude>
 						<exclude>**/TestGroupAuthorization.java</exclude>
-						<exclude>**/TestSoD.java</exclude>	
+						<exclude>**/TestSoD.java</exclude>
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
-						-->	
-
-						
-						
-						
+						<exclude>**/TestOrganizationFactory.java</exclude>
+						<exclude>**/TestFunctionFactPolicy.java</exclude>
+						<exclude>**/TestFunctionFactory.java</exclude>
+						<exclude>**/TestFactoryInterfaces.java</exclude>
+						<exclude>**/TestDataFactory.java</exclude>
 						<exclude>**/TestFactoryCache.java</exclude>
-						<exclude>**/TestCachePerformance.java</exclude>							
-						
 
-						
 						<exclude>**/TestBaseService.java</exclude>
 						<exclude>**/TestAccessApproval.java</exclude>
 						<exclude>**/TestImportContacts.java</exclude>
 						<exclude>**/TestControlFactory.java</exclude>
 						<exclude>**/TestVaultService.java</exclude>
 						<exclude>**/TestBulkUser.java</exclude>
-						<exclude>**/TestBulkDelete.java</exclude>	
+						<exclude>**/TestBulkDelete.java</exclude>
 						<exclude>**/TestBulkUpdate.java</exclude>
 						<exclude>**/TestBulkPerson.java</exclude>
-						
-						<exclude>**/TestOrganizationFactory.java</exclude>
-						
-						<exclude>**/TestFunctionFactPolicy.java</exclude>
-								
-						<exclude>**/TestFunctionFactory.java</exclude>	
-						<exclude>**/TestFactoryInterfaces.java</exclude>												
-						<exclude>**/TestDataFactory.java</exclude>
-	
-						
 						<exclude>**/TestTokenService.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>
 						<exclude>**/TestPolicyService.java</exclude>
-						
-						
-						
 						<exclude>**/TestAttributes.java</exclude>
-						<exclude>**/TestAuditFactory.java</exclude>						
+						<exclude>**/TestAuditFactory.java</exclude>
 						<exclude>**/TestUserRegistration.java</exclude>
 						<exclude>**/TestBulkSession.java</exclude>
-						
 						<exclude>**/TestSpoolFactory.java</exclude>
 						<exclude>**/TestFindOrganization.java</exclude>
 						<exclude>**/TestAggregateCount.java</exclude>
-
 						<exclude>**/TestMessageSpool.java</exclude>
 						<exclude>**/TestCredentialFactory.java</exclude>
 						<exclude>**/TestPerson.java</exclude>
 						<exclude>**/TestSecuritySpool.java</exclude>
-						<exclude>**/TestDBStress.java</exclude>
-						<exclude>**/TestDataRow.java</exclude>	
+						<exclude>**/TestDataRow.java</exclude>
 						<exclude>**/TestBulkAccount.java</exclude>
 						<exclude>**/TestDataTags.java</exclude>
 
-						<!-- 
-
-							
-						-->
-					
-
-						
-						
-						<!--  RETEST BAR -->
-							
-						<!-- REFACTOR/RETEST BAR -->
+						<!-- NOTE: The following tests have contextual/ordering errors that 
+							need to be resolved -->
 						<exclude>**/TestUserLogin.java</exclude>
-						<!--  NOTE: The following tests are circumstantial to various migration efforts and need to be refactored -->
-						
-						
-						<!--  NOTE: The following tests have contextual/ordering errors that need to be resolved -->
 						<exclude>**/TestUserSession.java</exclude>
 						<exclude>**/TestUserFactory.java</exclude>
 						<exclude>**/TestGroupFactory.java</exclude>
 						<exclude>**/TestContactInformationFactory.java</exclude>
-						<!--  NOTE: The following tests are underlying infrastructure tests and include hard coded values -->
+						<!-- NOTE: The following tests are underlying infrastructure tests 
+							and include hard coded values -->
 						<exclude>**/TestDataAccess.java</exclude>
-						<!--  WARNING: TestFactorySetup WILL ERASE EVERYTHING IN THE DATABASE -->
-						
+						<!-- WARNING: TestFactorySetup WILL ERASE EVERYTHING IN THE DATABASE -->
+
 						<exclude>**/TestFactorySetup.java</exclude>
 					</excludes>
-					<!--
-					<systemPropertyVariables>
-      					<log4j.configuration>${project.build.directory}/test-classes/logging.properties</log4j.configuration>
-    				</systemPropertyVariables>
-    				-->
-    				<systemProperties>
-    				          <property>
-            					<name>log4j.configurationFile</name>
-            					<value>log4j2-AccountManagerDataAccessLogging.xml</value>
-          					</property>
-          				</systemProperties>
-    			</configuration>
+
+					<systemProperties>
+						<property>
+							<name>log4j.configurationFile</name>
+							<value>log4j2-AccountManagerDataAccessLogging.xml</value>
+						</property>
+					</systemProperties>
+				</configuration>
 			</plugin>
 		</plugins>
-			<testResources>
-        <testResource>
-            <directory>${project.basedir}/src/test/resources</directory>
-        </testResource>
-    </testResources>
+		<testResources>
+			<testResource>
+				<directory>${project.basedir}/src/test/resources</directory>
+			</testResource>
+		</testResources>
 	</build>
 	<dependencies>
 		<dependency>
@@ -185,12 +152,12 @@
 			<groupId>org.cote.accountmanager</groupId>
 			<artifactId>util</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-						<exclusions>
-			       <exclusion>
-        <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        </exclusion>
-        </exclusions>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -199,8 +166,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
- <groupId>org.apache.commons</groupId>
-  <artifactId>commons-lang3</artifactId>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>
 		</dependency>
 		<dependency>
@@ -214,84 +181,75 @@
 			<version>1.54</version>
 			<scope>provided</scope>
 		</dependency>
-  <dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-api</artifactId>
-    <version>2.12.1</version>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-core</artifactId>
-    <version>2.12.1</version>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-web</artifactId>
-    <version>2.12.1</version>
-  </dependency>
-
-<dependency>
-	<groupId>org.postgresql</groupId>
-	<artifactId>postgresql</artifactId>
-	<version>42.2.2</version>
-</dependency>
-<dependency>
-	<groupId>org.beanshell</groupId>
-	<artifactId>bsh</artifactId>
-	<version>2.0b5</version>
-</dependency>
-	<dependency>
-	<groupId>javax.mail</groupId>
-	<artifactId>javax.mail-api</artifactId>
-	<version>1.5.4</version>
-</dependency>
-<dependency>
-	<groupId>com.sun.mail</groupId>
-	<artifactId>smtp</artifactId>
-	<version>1.5.4</version>
-</dependency>
-<dependency>
-	<groupId>com.sun.mail</groupId>
-	<artifactId>javax.mail</artifactId>
-	<version>1.5.1</version>
-</dependency>
-<!-- 
-			        <dependency>
-			            <groupId>xalan</groupId>
-			            <artifactId>xalan</artifactId>
-			            <version>2.7.1</version>
-			            <scope>test</scope>
-			        </dependency>
- -->
-				<dependency>
-					<groupId>org.jboss.spec</groupId>
-					<artifactId>jboss-javaee-7.0</artifactId>
-					<version>1.0.3.Final</version>
-					<scope>test</scope>
-					<type>pom</type>
-				</dependency>
-
-		  <dependency>
-    <groupId>javax</groupId>
-    <artifactId>javaee-web-api</artifactId>
-    <version>7.0</version>
-    <scope>provided</scope>
-  </dependency>
-  <!-- 
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>6.0</version>
-            
-        </dependency>
-        -->
-  <!-- 
 		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.12.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.12.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-web</artifactId>
+			<version>2.12.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.beanshell</groupId>
+			<artifactId>bsh</artifactId>
+			<version>2.0b5</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>smtp</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.5.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.spec</groupId>
+			<artifactId>jboss-javaee-7.0</artifactId>
+			<version>1.0.3.Final</version>
+			<scope>test</scope>
+			<type>pom</type>
+		</dependency>
+
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-web-api</artifactId>
+			<version>7.0</version>
 			<scope>provided</scope>
 		</dependency>
-		-->
+
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-pool2</artifactId>
+		    <version>2.7.0</version>
+		</dependency>
+
 	</dependencies>
 </project>
