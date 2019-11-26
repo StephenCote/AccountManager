@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="DEBUG">
+<Configuration status="info">
 <Properties>
 <Property name="log-path">./logs</Property>
 </Properties>
@@ -27,13 +27,11 @@ filePattern="${log-path}/accelerant-error-%d{yyyy-MM-dd}.log">
 </RollingFile>
 </Appenders>
 <Loggers>
-<Logger name="org.cote.rest.log4j2" level="debug" additivity="false">
-<appender-ref ref="trace-log" level="debug"/>
+
+<Root level="all" additivity="true">
+<appender-ref ref="trace-log" level="info"/>
 <appender-ref ref="error-log" level="error"/>
-<appender-ref ref="console-log" level="debug"/>
-</Logger>
-<Root level="info" additivity="false">
-<AppenderRef ref="console-log"/>
+<appender-ref ref="console-log" level="info"/>
 </Root>
 </Loggers>
 </Configuration>
