@@ -142,7 +142,7 @@ public class ApiConnectionConfigurationService {
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(owner, apiDirectoryName, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(owner),owner.getOrganizationId());
 			DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, false, dir);
 			if(data == null){
-				logger.error("API Config '" + dataName + "' doesn't exists");
+				logger.error("API Config '" + dataName + "' doesn't exist");
 				return null;
 			}
 			SecurityBean cipher = KeyService.getSymmetricKeyByObjectId(data.getKeyId(), data.getOrganizationId());
