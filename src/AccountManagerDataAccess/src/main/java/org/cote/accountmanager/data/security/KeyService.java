@@ -368,11 +368,9 @@ public class KeyService {
 		sec.setPrimaryKey(primaryKey);
 		SecurityType lastPrimary = null;
 		if(primaryKey){
-			//logger.info("Checking for existing primary key");
 			if(owner !=null) lastPrimary = getPrimaryAsymmetricKey(owner);
 			else if(organizationKey) lastPrimary = getPrimaryAsymmetricKey(organizationId);
 			if(lastPrimary != null) sec.setPreviousKeyId(lastPrimary.getId());
-			//else logger.info("No existing primary key found");
 		}
 		/*
 		if(symmetricKey != null){
@@ -411,15 +409,10 @@ public class KeyService {
 				}
 			}
 		}
-		catch(FactoryException e){
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
+		catch(FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
-		//if(sec != null) sec.setPublicKey(null);
 		return sec;
 	}
 }
