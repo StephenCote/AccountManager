@@ -108,7 +108,7 @@ public class GroupFactory  extends NameIdFactory {
 	}
 	protected void addDefaultDirectoryGroups(long organizationId) throws FactoryException, ArgumentException
 	{
-		logger.info("Adding default groups to organization " + organizationId);
+		logger.debug("Adding default groups to organization " + organizationId);
 		if(organizationId == 0L) throw new FactoryException("Invalid organization");
 		DirectoryGroupType rootDir = newDirectoryGroup("Root", null, organizationId);
 		
