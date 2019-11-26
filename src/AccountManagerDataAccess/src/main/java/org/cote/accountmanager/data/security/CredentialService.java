@@ -216,6 +216,10 @@ public class CredentialService {
 	///
 	///
 	public static CredentialType newCredential(CredentialEnumType credType, String bulkSessionId, UserType owner, NameIdType targetObject, byte[] credBytes, boolean primary, boolean encrypted, boolean vaulted){
+		return newCredential(credType, bulkSessionId, owner, targetObject, credBytes, primary, true, encrypted, vaulted);
+	}
+	public static CredentialType newCredential(CredentialEnumType credType, String bulkSessionId, UserType owner, NameIdType targetObject, byte[] credBytes, boolean primary, boolean unsetPrimary, boolean encrypted, boolean vaulted){
+
 		CredentialType cred = null;
 		CredentialType lastPrimary = null;
 		byte[] useCredBytes = credBytes;
@@ -223,7 +227,7 @@ public class CredentialService {
 
 			cred = ((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).newCredential(owner, targetObject);
 			cred.setPrimary(primary);
-			if(primary){
+			if(primary && unsetPrimary){
 				lastPrimary = ((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).getPrimaryCredential(targetObject,credType,false);
 				if(lastPrimary != null){
 					cred.setPreviousCredentialId(lastPrimary.getId());
