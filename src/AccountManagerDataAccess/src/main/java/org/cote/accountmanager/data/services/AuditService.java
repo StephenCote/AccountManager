@@ -39,7 +39,7 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public class AuditService {
 	public static final Logger logger = LogManager.getLogger(AuditService.class);
-	public static final int maximumAuditSpoolSize = 1000;
+	public static final int maximumAuditSpoolSize = 5000;
 	public static String getAuditString(AuditType audit){
 		return audit.getAuditResultType() + " (" + audit.getAuditResultData() + ") "
 				+ audit.getAuditSourceType() + " (" + audit.getAuditSourceData() + ") "
@@ -61,7 +61,7 @@ public class AuditService {
 				Factories.getAuditFactory().flushSpool();
 			}
 			String auditStr = getAuditString(audit);
-			logger.info("*** Audit *** " + auditStr);
+			logger.debug("*** Audit *** " + auditStr);
 		} catch (FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
