@@ -35,6 +35,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -57,6 +58,7 @@ public class ConnectionFactory {
 	public enum CONNECTION_TYPE{
 		UNKNOWN,
 		DS,
+		POOL,
 		SINGLE
 	};
 	
@@ -68,12 +70,25 @@ public class ConnectionFactory {
 	}
 	
 	public static void setupConnectionFactory(Properties props){
+		String connType = props.getProperty("db.connectionType");
+		String dsName = props.getProperty("db.dsName");
 		ConnectionFactory cf = ConnectionFactory.getInstance();
 		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
+
+
 		cf.setDriverClassName(props.getProperty("db.driver"));
 		cf.setUserName(props.getProperty("db.user"));
 		cf.setUserPassword(props.getProperty("db.password"));
 		cf.setUrl(props.getProperty("db.url"));
+		
+		if(connType != null) {
+			cf.setConnectionType(CONNECTION_TYPE.valueOf(connType));
+			if(cf.getConnectionType() == CONNECTION_TYPE.DS && dsName != null) {
+				cf.setJndiDataSource(dsName);
+			}
+		}
+		
+		
 		  try
 		    {
 		        Class.forName("org.postgresql.Driver");
@@ -99,6 +114,7 @@ public class ConnectionFactory {
 	public Connection getConnection(){
 		if(connectionType == CONNECTION_TYPE.SINGLE) return getConnection(url, userName, userPassword, driverClassName);
 		else if(connectionType == CONNECTION_TYPE.DS) return getDSConnection(jndiDataSource, driverClassName);
+		else if(connectionType == CONNECTION_TYPE.POOL) return getPoolConnection(url, userName, userPassword, driverClassName);
 		return null;
 	}
 	public String getJndiDataSource() {
@@ -186,6 +202,42 @@ public class ConnectionFactory {
 		}
 		return connection;
 	}
+	
+	public static Connection getPoolConnection(String url, String userName, String password, String driverClassName)  {   
+		Connection connection = null;
+		if(ds == null) {
+			if(!tryDriver(driverClassName)){
+				return null;
+			}
+
+	        BasicDataSource bds = new BasicDataSource();
+	        bds.setDriverClassName(driverClassName);
+	        bds.setUsername(userName);
+	        bds.setPassword(password);
+	        bds.setUrl(url);
+	       
+	        bds.setMinIdle(5);
+	        bds.setMaxIdle(20);
+	        bds.setMaxOpenPreparedStatements(180);
+	        ds = bds;
+
+		}
+		if(ds == null){
+			logger.error("DataSource is null.  Check that the database server is started and accessible.");
+			return null;
+		}
+		try{
+			connection = ds.getConnection();
+
+		}
+		catch(SQLException sqe){
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
+		}
+		return connection;
+	}
+	
+
+
 	public static Connection getDSConnection(String jndiDS, String driverClassName)  {   
 		Connection outConnection = null;
 		if(ds == null){
