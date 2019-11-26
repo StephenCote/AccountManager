@@ -356,14 +356,14 @@ public class FactoryDefaults {
 		for(FactoryEnumType factType : factories.keySet()){
 			IParticipationFactory fact = Factories.getFactory(factories.get(factType));
 			String[] permissionNames = fact.getDefaultPermissions();
-			logger.info("Processing " + permissionNames.length + " for " + fact.getFactoryType().toString() + " Factory");
+			logger.debug("Processing " + permissionNames.length + " for " + fact.getFactoryType().toString() + " Factory");
 			for (int i = 0; i < permissionNames.length; i++)
 			{
 				try{
 					pfact.add(
 						pfact.newPermission(owner, permissionNames[i], fact.getDefaultPermissionType(), null, organizationId)
 				);
-				logger.info("Added permission " + permissionNames[i] + " to organization #" + organizationId);
+				logger.debug("Added permission " + permissionNames[i] + " to organization #" + organizationId);
 				}
 				catch(FactoryException | ArgumentException e){
 					logger.error(e.getMessage());
