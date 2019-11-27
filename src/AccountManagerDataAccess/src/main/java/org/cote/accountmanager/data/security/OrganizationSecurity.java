@@ -240,7 +240,7 @@ public class OrganizationSecurity {
 		sf.generateSecretKey(securityBean);
 
 		
-		/// get DES Key and IV encrypted with RSA key 
+		/// get Key and IV encrypted with RSA key 
 		byte[] encrypted_des_key = securityBean.getEncryptedCipherKey();
 		byte[] encrypted_des_iv = securityBean.getEncryptedCipherIV();
 
