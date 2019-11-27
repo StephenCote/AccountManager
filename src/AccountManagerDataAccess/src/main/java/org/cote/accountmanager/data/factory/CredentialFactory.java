@@ -50,6 +50,7 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
+import org.cote.accountmanager.util.JSONUtil;
 
 
 public class CredentialFactory extends NameIdFactory {
@@ -119,7 +120,7 @@ public class CredentialFactory extends NameIdFactory {
 		cred.setOwnerId(owner.getId());
 		cred.setReferenceType(FactoryEnumType.valueOf(targetObject.getNameType().toString()));
 		cred.setReferenceId(targetObject.getId());
-		cred.setOrganizationId(targetObject.getOrganizationId());
+		cred.setOrganizationId((targetObject.getNameType() == NameEnumType.ORGANIZATION ? targetObject.getId() : targetObject.getOrganizationId()));
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(new Date());
 	    
@@ -257,6 +258,7 @@ public class CredentialFactory extends NameIdFactory {
 		pi.setRecordCount(1);
 		if(credType != CredentialEnumType.UNKNOWN) fields.add(QueryFields.getFieldCredentialType(credType));
 		CredentialType outsec = null;
+		/// logger.info(JSONUtil.exportObject(fields));
 		List<NameIdType> recs = this.getByField(fields.toArray(new QueryField[0]), obj.getOrganizationId());
 		if(!recs.isEmpty()) outsec = (CredentialType)recs.get(0);
 		return outsec;
