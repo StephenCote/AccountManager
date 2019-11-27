@@ -308,22 +308,22 @@ public class BaseDataAccessTest{
 	}
 	
 	public UserType getUser(String user_name, String password){
+		return getUser(user_name, password, Factories.getDevelopmentOrganization());
+	}
+	public UserType getUser(String user_name, String password, OrganizationType org){
 		assertTrue("Account Manager Service is not setup correctly",ServiceUtil.isFactorySetup());
 		
 		UserType user = null;
 		try {
-			user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(user_name, Factories.getDevelopmentOrganization().getId());
+			user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(user_name, org.getId());
 			if(user == null){
-				user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, Factories.getDevelopmentOrganization().getId());
+				user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org.getId());
 				((UserFactory)Factories.getFactory(FactoryEnumType.USER)).add(user);
-				user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(user_name, Factories.getDevelopmentOrganization().getId());
+				user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(user_name, org.getId());
 				CredentialService.newHashedPasswordCredential(user, user, password, true,false);
 			}
 			((UserFactory)Factories.getFactory(FactoryEnumType.USER)).populate(user);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
