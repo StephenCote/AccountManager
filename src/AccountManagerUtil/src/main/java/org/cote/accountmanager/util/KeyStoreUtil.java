@@ -58,7 +58,9 @@ public class KeyStoreUtil {
 	
 	public static final Logger logger = LogManager.getLogger(KeyStoreUtil.class);
 
-	public static final String PREFERRED_KEYSTORE_PROVIDER = "JKS";
+	public static final String KEYSTORE_PROVIDER_JKS = "JKS";
+	public static final String KEYSTORE_PROVIDER_P12 = "PKCS12";
+	public static final String PREFERRED_KEYSTORE_PROVIDER = KEYSTORE_PROVIDER_P12;
 
 
 	public static byte[] getKeyStoreBytes(KeyStore store, char[] password) {
