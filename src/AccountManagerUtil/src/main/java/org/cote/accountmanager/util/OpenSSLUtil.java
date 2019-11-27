@@ -106,8 +106,8 @@ public class OpenSSLUtil {
 			openSSL,"rsa",
 			"-passin","pass:" + String.valueOf(password),
 			"-passout","pass:" + String.valueOf(password),
-			"-in",KEY_PRIVATE_PATH + "/" + alias + ".pem",
-			"-out",KEY_PRIVATE_PATH + "/" + alias + ".key"
+			"-in",sslPath + KEY_PRIVATE_PATH + "/" + alias + ".pem",
+			"-out",sslPath + KEY_PRIVATE_PATH + "/" + alias + ".key"
 		};
 		
 		ProcessUtil.runProcess(sslPath,commands);
@@ -129,8 +129,8 @@ public class OpenSSLUtil {
 			"-passin","pass:" + String.valueOf(password),
 			"-passout","pass:" + String.valueOf(password),
 			"-pubout","-outform","DER",
-			"-in",KEY_PRIVATE_PATH + "/" + alias + ".pem",
-			"-out",KEY_PUBLIC_PATH + "/" + alias + ".der"
+			"-in",sslPath + KEY_PRIVATE_PATH + "/" + alias + ".pem",
+			"-out",sslPath + KEY_PUBLIC_PATH + "/" + alias + ".der"
 		};
 		
 		ProcessUtil.runProcess(sslPath,commands);
@@ -169,8 +169,8 @@ public class OpenSSLUtil {
 			"-nokeys","-export",
 			"-passin","pass:" + String.valueOf(password),
 			"-passout","pass:" + String.valueOf(password),
-			"-in",CERTIFICATE_SIGNED_PATH + "/" + alias + ".cert",
-			"-out",CERTIFICATE_SIGNED_PATH + "/" + alias + ".p12",
+			"-in",sslPath + CERTIFICATE_SIGNED_PATH + "/" + alias + ".cert",
+			"-out",sslPath + CERTIFICATE_SIGNED_PATH + "/" + alias + ".p12",
 			"-name",alias
 		};
 		
@@ -223,11 +223,11 @@ public class OpenSSLUtil {
 		commands.add("-passout");
 		commands.add("pass:" + String.valueOf(password));
 		commands.add("-inkey");
-		commands.add(KEY_PRIVATE_PATH + "/" + alias + ".key");
+		commands.add(sslPath + KEY_PRIVATE_PATH + "/" + alias + ".key");
 		commands.add("-in");
-		commands.add(CERTIFICATE_SIGNED_PATH + "/" + alias + ".cert");
+		commands.add(sslPath + CERTIFICATE_SIGNED_PATH + "/" + alias + ".cert");
 		commands.add("-out");
-		commands.add(CERTIFICATE_PRIVATE_PATH + "/" + alias + ".p12");
+		commands.add(sslPath + CERTIFICATE_PRIVATE_PATH + "/" + alias + ".p12");
 		commands.add("-descert");
 		commands.add("-name");
 		commands.add(alias);
@@ -251,10 +251,10 @@ public class OpenSSLUtil {
 		String[] commands = new String[]{
 				openSSL,"req","-new",
 				"-config",OPENSSL_CONFIG,
-				"-key",KEY_PRIVATE_PATH + "/" + alias + ".key",
+				"-key",sslPath + KEY_PRIVATE_PATH + "/" + alias + ".key",
 				"-days",Integer.toString(expiryDays),"-nodes",
 				"-subj",dn,
-				"-out",CERTIFICATE_REQUEST_PATH + "/" + alias + ".csr"
+				"-out",sslPath + CERTIFICATE_REQUEST_PATH + "/" + alias + ".csr"
 			};
 			
 			ProcessUtil.runProcess(sslPath,commands);
@@ -274,11 +274,11 @@ public class OpenSSLUtil {
 				openSSL,"x509","-req",
 //				"-config",OPENSSL_CONFIG,
 				"-extensions","v3_ca",String.join(",", signOptions),
-				"-in",CERTIFICATE_REQUEST_PATH + "/" + requestAlias + ".csr",
-				"-CA",CERTIFICATE_SIGNED_PATH + "/" + signerAlias + ".cert",
-				"-CAkey",KEY_PRIVATE_PATH + "/" + signerAlias + ".key",
+				"-in",sslPath + CERTIFICATE_REQUEST_PATH + "/" + requestAlias + ".csr",
+				"-CA",sslPath + CERTIFICATE_SIGNED_PATH + "/" + signerAlias + ".cert",
+				"-CAkey",sslPath + KEY_PRIVATE_PATH + "/" + signerAlias + ".key",
 				"-days",Integer.toString(expiryDays),
-				"-out",CERTIFICATE_SIGNED_PATH + "/" + requestAlias + ".cert",
+				"-out",sslPath + CERTIFICATE_SIGNED_PATH + "/" + requestAlias + ".cert",
 				"-CAcreateserial"
 			};
 			
@@ -307,10 +307,10 @@ public class OpenSSLUtil {
 			"-config",OPENSSL_CONFIG,
 			"-extensions","v3_ca",
 			"-passin","pass:" + String.valueOf(password),
-			"-key",KEY_PRIVATE_PATH + "/" + alias + ".key",
+			"-key",sslPath + KEY_PRIVATE_PATH + "/" + alias + ".key",
 			"-days",Integer.toString(expiryDays),"-nodes",
 			"-subj",dn,
-			"-out",CERTIFICATE_ROOT_PATH + "/" + alias + ".cert"
+			"-out",sslPath + CERTIFICATE_ROOT_PATH + "/" + alias + ".cert"
 		};
 		
 		boolean outBool = false;
@@ -341,7 +341,7 @@ public class OpenSSLUtil {
 		commands.add("-passout");
 		commands.add("pass:" + String.valueOf(password));
 		commands.add("-out");
-		commands.add(KEY_PRIVATE_PATH + "/" + alias + ".pem");
+		commands.add(sslPath + KEY_PRIVATE_PATH + "/" + alias + ".pem");
 		ProcessUtil.runProcess(sslPath,commands.toArray(new String[0]));
 		File checkFile = new File(checkFilePath);
 		return checkFile.exists();
