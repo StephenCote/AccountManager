@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
+import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.KeyStoreUtil;
 
 public class OrganizationCommand {
@@ -65,7 +66,10 @@ public class OrganizationCommand {
 			//logger.debug("Bug: Organization objects don't have an organization, only parents, which breaks);
 			OpenSSLAction sslAction = new OpenSSLAction(null,sslPath);
 			byte[] pubCertificate = sslAction.getCertificate(alias, false);
-
+			if(pubCertificate.length == 0) {
+				logger.error("Failed to obtain public certificate for: " + alias);
+				return outBool;
+			}
 			CredentialType pubCred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, org, pubCertificate, true, false, false);
 			if(pubCred == null){
 				logger.error("Failed to create public certificate credential");
@@ -73,6 +77,10 @@ public class OrganizationCommand {
 			}
 			
 			byte[] privCertificate = sslAction.getCertificate(alias, true);
+			if(privCertificate.length == 0) {
+				logger.error("Failed to obtain private certificate for: " + alias);
+				return outBool;
+			}
 			CredentialType cred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, pubCred, privCertificate, true, false, false);
 			if(cred == null){
 				logger.error("Failed to create certificate credential");
@@ -117,16 +125,23 @@ public class OrganizationCommand {
 			if(aliasAttr == null || aliasAttr.getValues().isEmpty()) alias = "1";
 			else alias = aliasAttr.getValues().get(0);
 			
-			CredentialType cred = CredentialService.getPrimaryCredential(org, CredentialEnumType.CERTIFICATE, true);
-			if(cred == null){
-				logger.error("Failed to retrieve certificate");
+			CredentialType pubCred = CredentialService.getPrimaryCredential(org, CredentialEnumType.CERTIFICATE, true);
+			if(pubCred == null){
+				logger.error("Failed to retrieve public certificate");
 				return false;
 			}
+			CredentialType cred = CredentialService.getPrimaryCredential(pubCred, CredentialEnumType.CERTIFICATE, true);
+			if(cred == null){
+				logger.error("Failed to retrieve private certificate");
+				return false;
+			}
+
 			CredentialType cred2 = CredentialService.getPrimaryCredential(cred, CredentialEnumType.ENCRYPTED_PASSWORD, true);
 			if(cred2 == null){
 				logger.error("Failed to retrieve certificate password");
 				return false;
 			}
+
 			byte[] p12 = (cred.getEnciphered() ? CredentialService.decryptCredential(cred) : cred.getCredential());
 			char[] p12pass = (new String((cred2.getEnciphered() ? CredentialService.decryptCredential(cred2) : cred2.getCredential()))).toCharArray();
 
