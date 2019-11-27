@@ -172,7 +172,7 @@ public class VaultService
 	public CredentialType loadProtectedCredential(String filePath){
 		String fileDat = FileUtil.getFileAsString(filePath);
 		if(fileDat == null || fileDat.length() == 0){
-			logger.warn("File not found: " + filePath);
+			logger.debug("File not found: " + filePath);
 			return null;
 		}
 		CredentialType outCred = JSONUtil.importObject(FileUtil.getFileAsString(filePath), CredentialType.class);
@@ -212,10 +212,7 @@ public class VaultService
 		cred.setCredential(SecurityUtil.encipher(bean,credential));
 		cred.setKeyId(bean.getObjectId());
 		
-		if(FileUtil.emitFile(filePath, JSONUtil.exportObject(cred))){
-			logger.info("Created credential file '" + filePath + "'");
-		}
-		else{
+		if(!FileUtil.emitFile(filePath, JSONUtil.exportObject(cred))){
 			logger.error("Failed to create credential file at '" + filePath + "'");
 			return false;
 		}
@@ -242,7 +239,7 @@ public class VaultService
 			logger.error("Restored credential does not match the submitted credential.");
 			return false;
 		}
-		logger.info("Created credential at " + filePath);
+		logger.debug("Created credential at " + filePath);
 		return true;
 	}
 	
@@ -251,7 +248,7 @@ public class VaultService
 		String path = vaultBasePath + File.separator + Hex.encodeHexString(SecurityUtil.getDigest(vaultName.getBytes(),new byte[0])) + "-" + chkV.getKeyPrefix() + (isProtected ? chkV.getKeyProtectedPrefix() : "") + chkV.getKeyExtension();
 		File f = new File(path);
 		if(!f.exists()){
-			logger.warn("Vault file is not accessible: '" + path + "'");
+			logger.debug("Vault file is not accessible: '" + path + "'");
 			return null;
 		}
 		String content = FileUtil.getFileAsString(f);
@@ -439,7 +436,7 @@ public class VaultService
 		}
 		Factories.getNameIdFactory(FactoryEnumType.GROUP).populate(imp_dir);
 		
-		// Create a new group directory for storing DES keys that are vaulted for a specified vault
+		// Create a new group directory for storing keys that are vaulted for a specified vault
 		// The name is the same as the vault data name
 		//
 		DirectoryGroupType local_imp_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vault.getServiceUser(), vault.getVaultName(), imp_dir, vault.getServiceUser().getOrganizationId());
@@ -764,7 +761,7 @@ public class VaultService
 			return false;
 		}
 
-		// Import the key, and specify that the DES key is encrypted
+		// Import the key, and specify that the key is encrypted
 		//
 		SecurityBean sm = SecurityFactory.getSecurityFactory().createSecurityBean(pubVault.getCredential().getCredential(), true);
 		if (sm == null){
@@ -903,7 +900,7 @@ public class VaultService
 			return vault.getSymmetricKeyMap().get(keyId);
 		}
 
-		// Get the encrypted DES keys for this data item.
+		// Get the encrypted keys for this data object.
 		//
 		DataType key = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(keyId, getVaultInstanceGroup(vault));
 		if (key == null){
@@ -1105,7 +1102,9 @@ public class VaultService
 		cacheByUrn.put(data.getUrn(), vault);
 		return vault;
 	}
-	
+	public static void clearCache() {
+		cacheByUrn.clear();
+	}
 	public static String reportCacheSize(){
 		return "VaultService Cache Report\ncacheByUrn\t" + cacheByUrn.keySet().size() + "\n";
 	}
