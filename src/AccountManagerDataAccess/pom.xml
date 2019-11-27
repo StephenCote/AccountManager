@@ -54,7 +54,7 @@
 				</dependencies>
 
 				<configuration>
-					<skipTests>false</skipTests>
+					<skipTests>true</skipTests>
 					<argLine>-Xms512m -Xmx2048m</argLine>
 
 					<includes>
