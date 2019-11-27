@@ -95,6 +95,7 @@ public class ConsoleMain {
 		Options options = new Options();
 		options.addOption("generate",false,"Generate DAL classes and schema for a particular type");
 		options.addOption("type",true,"Type of factory to generate");
+		options.addOption("help",false,"Display syntax assistance");
 		options.addOption("organization",true,"AccountManager Organization Path");
 		options.addOption("username", true, "AccountManager user name");
 		options.addOption("password",true,"AccountManager password");
@@ -255,6 +256,7 @@ public class ConsoleMain {
 				if(cmd.hasOption("request") && cmd.hasOption("name") && cmd.hasOption("password") && cmd.hasOption("expiry")){
 					sslAction.generateCertificateRequest(cmd.getOptionValue("name"),cmd.getOptionValue("dn"),cmd.getOptionValue("password").toCharArray(),Integer.parseInt(cmd.getOptionValue("expiry")));
 				}
+				
 				if(cmd.hasOption("sign") && cmd.hasOption("signer") && cmd.hasOption("expiry")){
 					sslAction.signCertificate(cmd.getOptionValue("name"), cmd.getOptionValue("signer"), Integer.parseInt(cmd.getOptionValue("expiry")));
 				}
@@ -264,7 +266,9 @@ public class ConsoleMain {
 				}
 
 			}
-			else if(cmd.hasOption("store")){
+			/// Allow for fall-through with openssl to store on same argument line
+			///
+			if(cmd.hasOption("store")){
 				//String storeName, char[] storePassword, boolean isTrust, String alias, char[] password, boolean isPrivate
 				String keytoolBinary = props.getProperty("keytool.binary");
 				String localPath = props.getProperty("ssl.ca.path");
@@ -279,6 +283,7 @@ public class ConsoleMain {
 			
 			}
 			else if(cmd.hasOption("setCertificate") && cmd.hasOption("organization") && cmd.hasOption("name") && cmd.hasOption("password") && cmd.hasOption("adminPassword")){
+				prepareFactories(props);
 				OrganizationCommand.setOrganizationCertificate(cmd.getOptionValue("organization"),  props.getProperty("ssl.ca.path"), cmd.getOptionValue("name"), cmd.getOptionValue("password").toCharArray(), cmd.getOptionValue("adminPassword"));
 			}
 			else if(cmd.hasOption("testCertificate") && cmd.hasOption("organization")  && cmd.hasOption("adminPassword")){
@@ -343,7 +348,7 @@ public class ConsoleMain {
 			else if(cmd.hasOption("generate") && cmd.hasOption("type")){
 				GenerateAction.generate(NameEnumType.valueOf(cmd.getOptionValue("type")),cmd.hasOption("execute"), cmd.hasOption("export"),cmd.getOptionValue("path"));
 			}
-			else{
+			if(cmd.hasOption("help")){
 				logger.info("Syntax");
 				logger.info("Setup: -setup -rootPassword password -schema ../AM4_PG9_Schema.txt");
 				
