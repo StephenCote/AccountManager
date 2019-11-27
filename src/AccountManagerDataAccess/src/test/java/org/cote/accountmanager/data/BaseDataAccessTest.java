@@ -154,10 +154,7 @@ public class BaseDataAccessTest{
 		try{
 			testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,testUserPassword, Factories.getDevelopmentOrganization().getId());
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-		}
-		catch(ArgumentException fe){
+		catch(FactoryException | ArgumentException fe){
 			logger.error(fe.getMessage());
 		}
 		if(testUser == null){
@@ -173,10 +170,7 @@ public class BaseDataAccessTest{
 		try{
 			testUser2 = SessionSecurity.login(sessionId2, testUserName2, CredentialEnumType.HASHED_PASSWORD,testUserPassword, Factories.getDevelopmentOrganization().getId());
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-		}
-		catch(ArgumentException fe){
+		catch(FactoryException | ArgumentException fe){
 			logger.error(fe.getMessage());
 		}
 		if(testUser2 == null){

@@ -72,7 +72,7 @@ public class PersonService {
 			}
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			
-			createUserAsPerson(audit, sessionId, userName, password, email, userType, userStatus, organizationId);
+			created = createUserAsPerson(audit, sessionId, userName, password, email, userType, userStatus, organizationId);
 			
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
