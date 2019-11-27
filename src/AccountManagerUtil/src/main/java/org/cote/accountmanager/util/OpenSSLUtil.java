@@ -96,6 +96,7 @@ public class OpenSSLUtil {
 		return outBool;
 	}
 	public boolean exportPrivateKey(String alias, char[] password){
+		logger.debug("Exporting private key");
 		String checkFilePath = sslPath + KEY_PRIVATE_PATH + "/" + alias + ".pem";
 		File checkFile = new File(checkFilePath);
 		if(checkFile.exists() == false){
@@ -118,6 +119,7 @@ public class OpenSSLUtil {
 
 	}
 	public boolean exportPublicKey(String alias, char[] password){
+		logger.debug("Exporting public key");
 		String checkFilePath = sslPath + KEY_PRIVATE_PATH + "/" + alias + ".pem";
 		File checkFile = new File(checkFilePath);
 		if(checkFile.exists() == false){
@@ -194,11 +196,11 @@ public class OpenSSLUtil {
 		
 		String chainFile = null;
 		if(signerAlias != null){
-			chainFile = CERTIFICATE_SIGNED_PATH + "/" + signerAlias + ".chain.cert";
-			File checkChain = new File(sslPath + chainFile);
+			chainFile = sslPath + CERTIFICATE_SIGNED_PATH + "/" + signerAlias + ".chain.cert";
+			File checkChain = new File(chainFile);
 			if(checkChain.exists() == false){
-				chainFile = CERTIFICATE_SIGNED_PATH + "/" + signerAlias + ".cert";
-				checkChain = new File(sslPath + chainFile);
+				chainFile = sslPath + CERTIFICATE_SIGNED_PATH + "/" + signerAlias + ".cert";
+				checkChain = new File(chainFile);
 				if(checkChain.exists() == false){
 					logger.error("Certificate chain not found for " + signerAlias);
 					return false;
@@ -252,7 +254,8 @@ public class OpenSSLUtil {
 				openSSL,"req","-new",
 				"-config",OPENSSL_CONFIG,
 				"-key",sslPath + KEY_PRIVATE_PATH + "/" + alias + ".key",
-				"-days",Integer.toString(expiryDays),"-nodes",
+				/// "-days",Integer.toString(expiryDays),
+				"-nodes",
 				"-subj",dn,
 				"-out",sslPath + CERTIFICATE_REQUEST_PATH + "/" + alias + ".csr"
 			};
@@ -272,8 +275,9 @@ public class OpenSSLUtil {
 
 		String[] commands = new String[]{
 				openSSL,"x509","-req",
-//				"-config",OPENSSL_CONFIG,
-				"-extensions","v3_ca",String.join(",", signOptions),
+				"-extfile",OPENSSL_CONFIG,
+				"-extensions","v3_ca",
+				String.join(",", signOptions),
 				"-in",sslPath + CERTIFICATE_REQUEST_PATH + "/" + requestAlias + ".csr",
 				"-CA",sslPath + CERTIFICATE_SIGNED_PATH + "/" + signerAlias + ".cert",
 				"-CAkey",sslPath + KEY_PRIVATE_PATH + "/" + signerAlias + ".key",
@@ -332,6 +336,8 @@ public class OpenSSLUtil {
 	}
 	public boolean generateKeyPair(String alias, char[] password){
 
+		logger.debug("Generating key pair");
+		
 		String checkFilePath = sslPath + KEY_PRIVATE_PATH + "/" + alias + ".pem";
 		
 		List<String> commands = new ArrayList<String>();
