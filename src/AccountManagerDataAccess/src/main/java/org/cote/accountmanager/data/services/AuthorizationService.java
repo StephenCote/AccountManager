@@ -241,7 +241,7 @@ public class AuthorizationService {
 			BasePermissionType perm = getPermission(actor, group, permissionBase);
 
 			if(perm != null && EffectiveAuthorizationService.getEntitlementsGrantAccess(group,actor, new BasePermissionType[] { perm })){
-				logger.warn("Authorized " + actor.getUrn() + " for " + object.getUrn() + " with group edit privileges");
+				logger.info("Authorized " + actor.getUrn() + " for " + object.getUrn() + " with group edit privileges");
 				outBool = true;				
 			}
 			else{
