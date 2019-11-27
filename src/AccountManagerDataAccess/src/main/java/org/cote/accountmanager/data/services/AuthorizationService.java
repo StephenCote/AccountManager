@@ -135,7 +135,7 @@ public class AuthorizationService {
 		String authStr = EffectiveAuthorizationService.getEntitlementCheckString(object, actor, permissions);
 		
 		if(isAuthorizedByInternalDefaultPolicy(actor, object, permissionBase, permissions, noParent)){
-			logger.info("Is Authorized By Internal Policy: " + authStr);
+			logger.debug("Is Authorized By Internal Policy: " + authStr);
 			return true;
 		}
 
@@ -145,7 +145,7 @@ public class AuthorizationService {
         	&&
         	EffectiveAuthorizationService.getEntitlementsGrantAccess(object,actor, permissions)
         ){
-        	logger.info("Is Authorized By Entitlement: " + authStr);
+        	logger.debug("Is Authorized By Entitlement: " + authStr);
 
         	return true;
         }

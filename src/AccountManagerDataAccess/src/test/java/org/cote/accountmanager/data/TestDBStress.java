@@ -58,7 +58,9 @@ public class TestDBStress extends BaseDataAccessTest{
 
 	@Test
 	public void testOrgLoad(){
+		int bukOrganizations = 5;
 		int bulkUserCount = 1000;
+		
 		String testOrgAdminPassword = "password";
 		logger.info("Creating bulk test organization");
 		OrganizationType bulkOrg = getCreateOrganization(Factories.getDevelopmentOrganization(), "Stress Organization", testOrgAdminPassword);
@@ -66,7 +68,7 @@ public class TestDBStress extends BaseDataAccessTest{
 		logger.info("Creating unit test group org");
 		OrganizationType groupOrg = getCreateOrganization(bulkOrg, "Stress Organization - " + System.currentTimeMillis(), testOrgAdminPassword);
 		assertNotNull("Org is null", groupOrg);
-		for(int i = 0; i < 1; i++) {
+		for(int i = 0; i < bukOrganizations; i++) {
 			logger.info("Creating unit test org");
 			OrganizationType instanceOrg = getCreateOrganization(bulkOrg, "Instance Organization " + (i + 1), testOrgAdminPassword);
 
