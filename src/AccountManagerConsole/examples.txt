@@ -1,6 +1,20 @@
 REM Create a vault for a given user.  Note: the name is only helpful for the file name.  Otherwise, the urn value is what is required for use
-REM java -jar AccountManagerConsole.jar -organization /Development -username TokenUser -password password -vault -action create -name tokens -path "c:/projects/vault" -credential "c:/projects/vault/credentials/tokens.credential.json"
+java -jar AccountManagerConsole.jar -organization /Development -username TokenUser -password password -vault -action create -name tokens -path "c:/projects/vault" -credential "c:/projects/vault/credentials/tokens.credential.json"
 
 REM List vaults for a given user
-REM java -jar AccountManagerConsole.jar -organization /Development -username TokenUser -password password -vault -action list
+java -jar AccountManagerConsole.jar -organization /Development -username TokenUser -password password -vault -action list
 REM Example output: tokens (am:data:development:data:home.tokenuser..vault:dg9rzw5z) - the value between the parenthesis (...) is the urn
+
+REM Add a root certificate, from which all other organization-bound certificates will be issued
+java -jar AccountManagerConsole.jar -openssl -root -name development -password password -expiry 720
+
+REM Store the private root certificate in a keystore, but keep it separate from the remainder (labelled trust store)
+REM java -jar AccountManagerConsole.jar -store am5root -storePassword password -name development -password password -private -trust
+
+REM Request a new certificate, sign it with the specified signatory, and export it to PKCS 12 (needed for the subsequent keystore operations)
+java -jar AccountManagerConsole.jar -openssl -request -sign -signer development -name whitefrost -password password -expiry 720
+
+REM Store the publig/private certificate in a truststore using a different name than the root keystore
+java -jar AccountManagerConsole.jar -store am5 -storePassword password -name whitefrost -password password -private
+
+
