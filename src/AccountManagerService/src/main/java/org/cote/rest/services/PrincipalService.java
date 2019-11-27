@@ -167,7 +167,7 @@ public class PrincipalService {
 			}
 		}
 		else{
-			logger.info("Don't know what: " + (principal == null ? "Null" : "Uknown") + " principal");
+			logger.debug("Don't know what: " + (principal == null ? "Null" : "Uknown") + " principal");
 		}
 		return Response.status(200).entity(outUser).build();
 	}

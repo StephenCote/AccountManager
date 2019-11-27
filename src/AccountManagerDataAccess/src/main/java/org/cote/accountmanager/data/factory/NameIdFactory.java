@@ -789,7 +789,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 				pi2.setOrderClause(instruction.getOrderClause());
 			}
 			objs = listByIds(ArrayUtils.toPrimitive(ids.toArray(new Long[0])),pi2,organizationId);
-			logger.info("Retrieved " + objs.size() + " from " + ids.size() + " ids");
+			logger.debug("Retrieved " + objs.size() + " from " + ids.size() + " ids");
 		}
 		catch(SQLException | FactoryException | ArgumentException e) {
 			

@@ -124,7 +124,7 @@ public class MediaUtil {
 			response.sendError(404);
 			return;
 		}
-		logger.info("Media path: " + path);
+		logger.debug("Media path: " + path);
 		Matcher m = recPattern.matcher(path);
 		if(!m.find() || m.groupCount() != 3){
 			AuditService.denyResult(audit, "Unexpected path construct");

@@ -99,7 +99,7 @@ public class GenericResourceService {
 	@Path("/{objectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getObject(@PathParam("type") String type, @PathParam("objectId") String objectId,@Context HttpServletRequest request){
-		logger.info("Request for object: " + type + " " + objectId);
+		logger.debug("Request for object: " + type + " " + objectId);
 		Object obj = BaseService.readByObjectId(AuditEnumType.valueOf(type), objectId, request);
 		return Response.status(200).entity(obj).build();
 	}
@@ -109,7 +109,7 @@ public class GenericResourceService {
 	@Path("/{objectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteObject(@PathParam("type") String type, @PathParam("objectId") String objectId,@Context HttpServletRequest request){
-		logger.info("Request for object: " + type + " " + objectId);
+		logger.debug("Request for object: " + type + " " + objectId);
 		Object obj = BaseService.readByObjectId(AuditEnumType.valueOf(type), objectId, request);
 		boolean outBool = false;
 		if(obj != null){
@@ -123,7 +123,7 @@ public class GenericResourceService {
 	@Path("/{id:[0-9]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getObjectById(@PathParam("type") String type, @PathParam("id") long id,@Context HttpServletRequest request){
-		logger.info("Request for object: " + type + " " + id);
+		logger.debug("Request for object: " + type + " " + id);
 		Object obj = BaseService.readById(AuditEnumType.valueOf(type), id, request);
 		return Response.status(200).entity(obj).build();
 	}
@@ -138,19 +138,19 @@ public class GenericResourceService {
 		try{
 			INameIdFactory iFact = BaseService.getFactory(auditType);
 			if(iFact.isClusterByParent() && !iFact.isClusterByGroup()){
-				logger.info("Request to get " + type + " object by parent in " + type + " " + parentId);
+				logger.debug("Request to get " + type + " object by parent in " + type + " " + parentId);
 				NameIdType parentObj = (NameIdType)getObject(type,parentId,request).getEntity();
 				if(parentObj != null){
 					obj = BaseService.readByNameInParent(auditType, parentObj, name, "UNKNOWN", request);
 				}
 			}
 			else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup()){
-				logger.info("Request to get " + type + " object by name in GROUP " + parentId);
+				logger.debug("Request to get " + type + " object by name in GROUP " + parentId);
 				DirectoryGroupType dir = (DirectoryGroupType)getObject("GROUP",parentId,request).getEntity();
 				if(dir != null) obj = BaseService.readByName(auditType, dir, name, request);
 			}
 			else{
-				logger.info("Request to get " + type + " object by name in organization");
+				logger.debug("Request to get " + type + " object by name in organization");
 				UserType user = ServiceUtil.getUserFromSession(request);
 				obj = BaseService.readByNameInOrganization(auditType, user.getOrganizationId(), name, request);
 			}

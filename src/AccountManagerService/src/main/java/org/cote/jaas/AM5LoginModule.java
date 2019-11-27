@@ -36,7 +36,6 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
@@ -60,27 +59,19 @@ public class AM5LoginModule implements LoginModule {
 
 	private static final Logger logger = LogManager.getLogger(AM5LoginModule.class);
 	
-    // initial state
-    protected Subject _subject;
-    protected CallbackHandler _callbackHandler;
-    protected Map _sharedState;
-    protected Map _options;
- 
-    // configuration options
-    protected boolean _debug; 
- 
-    // the authentication status
-    protected boolean _succeeded;
-    protected boolean _commitSucceeded;
- 
-    // username
-    protected String _name;
+    protected Subject subject;
+    protected CallbackHandler callbackHandler;
+    protected Map sharedState;
+    protected Map options;
+    protected boolean debug; 
+    protected boolean succeeded;
+    protected boolean commitSucceeded;
+    protected String name;
     protected String orgPath;
- 
-    protected Principal[] _authPrincipals;
- 
-    protected static Map<String, String> _roleMap = null;
+    protected Principal[] authPrincipals;
+    protected static Map<String, String> roleMap = null;
     protected static String authenticatedRole = null;
+
     public static void setAuthenticatedRole(String s){
     	authenticatedRole = s;
     }
@@ -88,39 +79,22 @@ public class AM5LoginModule implements LoginModule {
     /// NOTE: RoleMap set in RestServiceConfig
     ///
     public static Map<String, String> getRoleMap(){
-    	if(_roleMap != null) return _roleMap;
-    	_roleMap = new HashMap<>();
-    	return _roleMap;
+    	if(roleMap != null) return roleMap;
+    	roleMap = new HashMap<>();
+    	return roleMap;
     }
     
     public static void setRoleMap(Map<String,String> map){
-    	_roleMap = map;
+    	roleMap = map;
     }
-    /**
-     * Initialize this <code>LoginModule</code>.
-     * <p/>
-     * <p/>
-     *
-     * @param subject         the <code>Subject</code> to be authenticated. <p>
-     * @param callbackHandler a <code>CallbackHandler</code> for communicating
-     *                        with the end user (prompting for usernames and
-     *                        passwords, for example). <p>
-     * @param sharedState     shared <code>LoginModule</code> state. <p>
-     * @param options         options specified in the login
-     *                        <code>Configuration</code> for this particular
-     *                        <code>LoginModule</code>.
-     */
-    public void initialize(Subject subject,
-                           CallbackHandler callbackHandler,
-                           Map sharedState,
-                           Map options) {
-        this._subject = subject;
-        this._callbackHandler = callbackHandler;
-        this._sharedState = sharedState;
-        this._options = options;
- 
-        // initialize any configured options
-        _debug = "true".equalsIgnoreCase((String) _options.get("debug"));
+
+    public void initialize(Subject sub, CallbackHandler handler, Map state, Map opts) {
+        this.subject = sub;
+        this.callbackHandler = handler;
+        this.sharedState = state;
+        this.options = opts;
+
+        debug = "true".equalsIgnoreCase((String) options.get("debug"));
  
         if (debug()) {
             printConfiguration(this);
@@ -129,61 +103,33 @@ public class AM5LoginModule implements LoginModule {
  
  
     final public boolean debug() {
-        return _debug;
+        return debug;
     }
  
  
     protected Principal[] getAuthPrincipals() {
-        return _authPrincipals;
+        return authPrincipals;
     }
  
- 
-    /**
-     * Authenticate the user by prompting for a username and password.
-     * <p/>
-     * <p/>
-     *
-     * @return true if the authentication succeeded, or false if this
-     *         <code>LoginModule</code> should be ignored.
-     * @throws FailedLoginException if the authentication fails. <p>
-     * @throws LoginException       if this <code>LoginModule</code>
-     *                              is unable to perform the authentication.
-     */
     public boolean login() throws LoginException {
         if (debug())
-            logger.info("\t\t[AM5LoginModule] login");
+            logger.debug("Begin login");
  
-        if (_callbackHandler == null)
-            throw new LoginException("Error: no CallbackHandler available " +
-                    "to garner authentication information from the user");
-
-        // Setup default callback handlers.
+        if (callbackHandler == null) {
+            throw new LoginException("Error: no CallbackHandler available to garner authentication information from the user");
+        }
         Callback[] callbacks = new Callback[] {
-        	//new TextInputCallback("Organization: ","/Public"),
             new NameCallback("Username: "),
             new PasswordCallback("Password: ", false)
-            
         };
  
         try {
-            _callbackHandler.handle(callbacks);
+            callbackHandler.handle(callbacks);
         } catch (Exception e) {
-            _succeeded = false;
+            succeeded = false;
             throw new LoginException(e.getMessage());
         }
- 
-        //HttpServletRequest request = null;
-        /*
-        //HttpServletResponse response = null;
-        try {
-			request = (HttpServletRequest) PolicyContext.getContext("javax.servlet.http.HttpServletRequest");
-		} catch (PolicyContextException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			throw new LoginException("Unable to obtain request context");
-		}
-        */
-        
+
         String username = ((NameCallback)callbacks[0]).getName();
         String password = new String(((PasswordCallback)callbacks[1]).getPassword());
         String orgPath = null;
@@ -194,7 +140,7 @@ public class AM5LoginModule implements LoginModule {
         else{
         	orgPath = "/Public";
         }
-        //request.getParameter("j_organizationpath");
+
         if(orgPath == null || orgPath.length() == 0){
         	throw new LoginException("Null organization path");
         }
@@ -208,9 +154,6 @@ public class AM5LoginModule implements LoginModule {
 	        	throw new LoginException("Organization is null for path: '" + orgPath);
 	        }
 			user = SessionSecurity.login(username, CredentialEnumType.HASHED_PASSWORD,password, orgType.getId());
-
-					//SessionSecurity.login(ServiceUtil.getSessionId(request),username, CredentialEnumType.HASHED_PASSWORD,password, orgType.getId());
-
 		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -218,13 +161,13 @@ public class AM5LoginModule implements LoginModule {
 
         if (debug())
         {
-            logger.info("\t\t[AM5LoginModule] username : " + username);
+            logger.info("Username : " + username);
         }
         if(user != null){
-        	_succeeded = true;
-        	_name = username;
-        	_authPrincipals = new UserPrincipal[1];
-        	_authPrincipals[0] = new UserPrincipal(user.getId(), username, orgPath);
+        	succeeded = true;
+        	name = username;
+        	authPrincipals = new UserPrincipal[1];
+        	authPrincipals[0] = new UserPrincipal(user.getId(), username, orgPath);
         }
  
         ((PasswordCallback)callbacks[1]).clearPassword();
@@ -233,79 +176,49 @@ public class AM5LoginModule implements LoginModule {
  
         if (debug())
         {
-            logger.info("\t\t[AM5LoginModule] success : " + _succeeded);
+            logger.info("Success : " + succeeded);
         }
  
-        if (!_succeeded)
-            throw new LoginException
-                            ("Authentication failed: Password does not match");
+        if (!succeeded)
+            throw new LoginException("Authentication failed: Password does not match");
  
         return true; 
     }
  
- 
-    /**
-     * <p> This method is called if the LoginContext's
-     * overall authentication succeeded
-     * (the relevant REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL LoginModules
-     * succeeded).
-     * <p/>
-     * <p> If this LoginModule's own authentication attempt
-     * succeeded (checked by retrieving the private state saved by the
-     * <code>login</code> method), then this method associates a
-     * <code>Principal</code>
-     * with the <code>Subject</code> located in the
-     * <code>LoginModule</code>.  If this LoginModule's own
-     * authentication attempted failed, then this method removes
-     * any state that was originally saved.
-     * <p/>
-     * <p/>
-     *
-     * @return true if this LoginModule's own login and commit
-     *         attempts succeeded, or false otherwise.
-     * @throws LoginException if the commit fails.
-     */
-    public boolean commit()
-            throws LoginException {
+    public boolean commit() throws LoginException {
         try {
  
-            if (_succeeded == false) {
+            if (succeeded == false) {
                 return false;
             }
  
-            if (_subject.isReadOnly()) {
+            if (subject.isReadOnly()) {
                 throw new LoginException("Subject is ReadOnly");
             }
- 
-            // add authenticated principals to the Subject
-
             if (getAuthPrincipals() != null) {
                 for (int i = 0; i < getAuthPrincipals().length; i++) {
-                    if(!_subject.getPrincipals().contains(getAuthPrincipals()[i])){
-                    	logger.info("Adding principle to subject: '" + getAuthPrincipals()[i].getName());
-                  
-                        _subject.getPrincipals().add(getAuthPrincipals()[i]);
-                        /// debug test
-                        _subject.getPrincipals().addAll(getRoleSets((UserPrincipal)getAuthPrincipals()[0]));
+                    if(!subject.getPrincipals().contains(getAuthPrincipals()[i])){
+                    	logger.debug("Adding principle to subject: '" + getAuthPrincipals()[i].getName());
+                        subject.getPrincipals().add(getAuthPrincipals()[i]);
+                        subject.getPrincipals().addAll(getRoleSets((UserPrincipal)getAuthPrincipals()[0]));
                     }
                     else{
-                    	logger.info("Don't add principle to subject: '" + getAuthPrincipals()[i].getName());
+                    	logger.debug("Don't add principle to subject: '" + getAuthPrincipals()[i].getName());
                     }
                 }
             }
- 
-            // in any case, clean out state
+
             cleanup();
             if (debug()) {
-                printSubject(_subject);
+                printSubject(subject);
             }
  
-            _commitSucceeded = true;
+            commitSucceeded = true;
             return true;
  
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             if (debug()) {
-                logger.info(t.getMessage());
                 logger.error(FactoryException.LOGICAL_EXCEPTION,t);
             }
             throw new LoginException(t.toString());
@@ -315,61 +228,37 @@ public class AM5LoginModule implements LoginModule {
 
     public static List<RolePrincipal> getRoleSets(UserPrincipal uprince) throws LoginException, FactoryException, ArgumentException
     {
-            //String[] roles = new String[]{"admin"};
-            //Group[] groups = {new AccountManagerGroup("Roles")};
-    		Map<String,String> map = getRoleMap();
-    		List<RolePrincipal> oroles = new ArrayList<>();
-    		List<UserRoleType> roles = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUserRoles(uprince);
-    		logger.info("Retrieved " + roles.size() + " roles");
-            for(BaseRoleType brole : roles) {
-            	if(map.containsKey(brole.getName())){
-            		RolePrincipal role = new RolePrincipal(map.get(brole.getName()));
-            		oroles.add(role);
-            	}
-                //groups[0].addMember(role);
-            }
-            if(authenticatedRole != null && map.containsKey(authenticatedRole)){
-            	oroles.add(new RolePrincipal(map.get(authenticatedRole)));
-            }
-            //if(true) throw new LoginException("Whatever");
-            logger.info("Returning " + oroles.size() + " roles mapped against " + _roleMap.size());
-            return oroles;
-            //.toArray(new RolePrincipal[0]);
+		Map<String,String> map = getRoleMap();
+		List<RolePrincipal> oroles = new ArrayList<>();
+		List<UserRoleType> roles = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUserRoles(uprince);
+		logger.debug("Retrieved " + roles.size() + " roles");
+        for(BaseRoleType brole : roles) {
+        	if(map.containsKey(brole.getName())){
+        		RolePrincipal role = new RolePrincipal(map.get(brole.getName()));
+        		oroles.add(role);
+        	}
+        }
+        if(authenticatedRole != null && map.containsKey(authenticatedRole)){
+        	oroles.add(new RolePrincipal(map.get(authenticatedRole)));
+        }
+        logger.debug("Returning " + oroles.size() + " roles mapped against " + roleMap.size());
+        return oroles;
     }
 
-    /**
-     * <p> This method is called if the LoginContext's
-     * overall authentication failed.
-     * (the relevant REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL LoginModules
-     * did not succeed).
-     * <p/>
-     * <p> If this LoginModule's own authentication attempt
-     * succeeded (checked by retrieving the private state saved by the
-     * <code>login</code> and <code>commit</code> methods),
-     * then this method cleans up any state that was originally saved.
-     * <p/>
-     * <p/>
-     *
-     * @return false if this LoginModule's own login and/or commit attempts
-     *         failed, and true otherwise.
-     * @throws LoginException if the abort fails.
-     */
-    public boolean abort() throws LoginException {
+     public boolean abort() throws LoginException {
         if (debug()) {
-            logger.info
-                     ("\t\t[AM5LoginModule] aborted authentication attempt.");
+            logger.info("Aborted authentication attempt.");
         }
- 
-        if (_succeeded == false) {
+        if (succeeded == false) {
             cleanup();
             return false;
-        } else if (_succeeded && _commitSucceeded == false) {
-            // login succeeded but overall authentication failed
-            _succeeded = false;
+        } else if (succeeded && commitSucceeded == false) {
+            // Login succeeded but authentication failed
+            succeeded = false;
             cleanup();
         } else {
-            // overall authentication succeeded and commit succeeded,
-            // but someone else's commit failed
+            // Authentication succeeded and commit succeeded,
+            // but a commit failed
             logout();
         }
         return true;
@@ -377,15 +266,7 @@ public class AM5LoginModule implements LoginModule {
  
  
     protected void cleanup() {
-        _name = null;
-        /*
-        if (_password != null) {
-            for (int i = 0; i < _password.length; i++) {
-                _password[i] = ' ';
-            }
-            _password = null;
-        }
-        */
+        name = null;
     }
  
  
@@ -394,40 +275,25 @@ public class AM5LoginModule implements LoginModule {
  
         if (getAuthPrincipals() != null) {
             for (int i = 0; i < getAuthPrincipals().length; i++) {
-                _subject.getPrincipals().remove(getAuthPrincipals()[i]);
+                subject.getPrincipals().remove(getAuthPrincipals()[i]);
             }
         }
     }
  
- 
-    /**
-     * Logout the user.
-     * <p/>
-     * <p> This method removes the <code>Principal</code>
-     * that was added by the <code>commit</code> method.
-     * <p/>
-     * <p/>
-     *
-     * @return true in all cases since this <code>LoginModule</code>
-     *         should not be ignored.
-     * @throws LoginException if the logout fails.
-     */
     public boolean logout() throws LoginException {
-        _succeeded = false;
-        _commitSucceeded = false;
+        succeeded = false;
+        commitSucceeded = false;
         cleanupAll();
         return true;
     }
- 
-    // helper methods //
  
     protected static void printConfiguration(AM5LoginModule slm) {
         if (slm == null) {
             return;
         }
-        logger.info("\t\t[AM5LoginModule] configuration options:");
+        logger.info("Configuration options:");
         if (slm.debug()) {
-            logger.info("\t\t\tdebug = " + slm.debug());
+            logger.info("debug = " + slm.debug());
         }
     }
  

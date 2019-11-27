@@ -90,16 +90,16 @@ public class GenericListService {
 		try{
 			INameIdFactory iFact = BaseService.getFactory(auditType);
 			if(iFact.isClusterByParent() && !iFact.isClusterByGroup()){
-				logger.info("Request to list " + type + " objects by parent in " + type + " " + objectId);
+				logger.debug("Request to list " + type + " objects by parent in " + type + " " + objectId);
 				objs = BaseService.listByParentObjectId(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
 			}
 			else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup() || iFact.isClusterByParent()){
-				logger.info("Request to list " + type + " objects by GROUP " + objectId);
+				logger.debug("Request to list " + type + " objects by GROUP " + objectId);
 				objs = BaseService.listByGroup(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
 			}
 			else{
 				UserType user = ServiceUtil.getUserFromSession(request);
-				logger.info("Request to list " + type + " objects by ORGANIZATION " + user.getOrganizationId());
+				logger.debug("Request to list " + type + " objects by ORGANIZATION " + user.getOrganizationId());
 				objs = BaseService.listByOrganization(auditType, startIndex, recordCount, request);
 				
 			}
@@ -123,14 +123,14 @@ public class GenericListService {
 			if(iFact.isClusterByParent() && !iFact.isClusterByGroup()){
 				NameIdType parent = (NameIdType)BaseService.readByObjectId(auditType, objectId, request);
 				if(parent != null){
-					logger.info("Counting " + type + " objects in parent " + parent.getUrn());
+					logger.debug("Counting " + type + " objects in parent " + parent.getUrn());
 					count = BaseService.countInParent(auditType, parent, request);
 				}
 			}
 			else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup() || iFact.isClusterByParent()){
 				BaseGroupType group = (BaseGroupType)BaseService.readByObjectId(AuditEnumType.GROUP, objectId, request);
 				if(group != null){
-					logger.info("Counting " + type + " objects in GROUP " + group.getUrn());
+					logger.debug("Counting " + type + " objects in GROUP " + group.getUrn());
 					count = BaseService.countByGroup(auditType, group, request);
 				}
 			}

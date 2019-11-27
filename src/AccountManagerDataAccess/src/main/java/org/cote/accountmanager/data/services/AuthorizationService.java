@@ -245,7 +245,7 @@ public class AuthorizationService {
 				outBool = true;				
 			}
 			else{
-				logger.info("Trying to authorize " + actor.getUrn() + " for " + object.getName() + " with group privileges");
+				logger.debug("Trying to authorize " + actor.getUrn() + " for " + object.getName() + " with group privileges");
 				return isAuthorized(actor, group, permissionBase, new BasePermissionType[]{perm}, true);
 			}
 		}
