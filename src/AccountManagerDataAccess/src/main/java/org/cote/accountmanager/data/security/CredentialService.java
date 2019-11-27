@@ -63,10 +63,7 @@ public class CredentialService {
 		try {
 			cred = ((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).getPrimaryCredential(obj,credType,requireActive);
 
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
