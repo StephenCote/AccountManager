@@ -60,8 +60,10 @@ public class ConsoleMain {
 	/// This is to recover admin passwords lost to key rotations or, in this case
 	/// sweeping credential changes such as with the AM5.1 CredentialType system
 	///
-	public static boolean enableUnauthenticatedResets = true;
-	
+	private static boolean enableUnauthenticatedResets = true;
+	private static boolean dbPrep = false;
+	private static boolean factoryPrep = false;
+	private static AuditDataMaintenance auditThread = null;
 	private static final String defaultSchema = "../../db/postgres/AM6_PG9_Schema.sql";
 	private static final String defaultRocketSchema = "../../db/postgres/Rocket_PG9_Schema.sql";
 	
@@ -89,7 +91,6 @@ public class ConsoleMain {
 		}
 		
 		logger.info("AccountManagerConsole");
-		logger.debug("\tNote: Slow startup time due in part to cryptographic libraries being loaded and initialized");
 		
 		Options options = new Options();
 		options.addOption("generate",false,"Generate DAL classes and schema for a particular type");
@@ -168,18 +169,13 @@ public class ConsoleMain {
 		options.addOption("path",true,"AccountManager directory group");
 		// options.addOption("test",false,"Run Tests");
 		
-
 		
-		
-		AuditDataMaintenance auditThread = null;
 		CommandLineParser parser = new PosixParser();
 		try {
 			CommandLine cmd = parser.parse( options, args);
 					
-			logger.debug("Setting up connection factory");
-			ConnectionFactory.setupConnectionFactory(props);
-			
 			if(cmd.hasOption("testConnection")){
+				prepareDB(props);
 				logger.info("Testing database connection");
 				Connection c = ConnectionFactory.getInstance().getConnection(); 
 				if(c == null){
@@ -196,15 +192,7 @@ public class ConsoleMain {
 				return;
 			}
 			
-			logger.debug("Warming up factories");
-			long startWarmUp = System.currentTimeMillis();
-			org.cote.rocket.Factories.prepare();
-			Factories.warmUp();
-			long stopWarmUp = System.currentTimeMillis();
-			logger.debug("Completed warm up in " + (stopWarmUp - startWarmUp) + "ms");
-			auditThread = new AuditDataMaintenance();
-			;
-			
+		
 			String schemaPath = (cmd.hasOption("schema") ? cmd.getOptionValue("schema") : defaultSchema);
 			String rocketSchemaPath = (cmd.hasOption("rocketSchema") ? cmd.getOptionValue("rocketSchema") : defaultRocketSchema);
 			
@@ -213,6 +201,7 @@ public class ConsoleMain {
 
 			}
 			else if(cmd.hasOption("setup") && cmd.hasOption("rootPassword")){
+				prepareFactories(props);
 				if(cmd.hasOption("confirm") == false){
 					logger.warn("Setting up Account Manager will completely replace the Account Manager schema.  Any data will be lost.  If you are sure, add the -confirm parameter and try again.");
 				}
@@ -238,37 +227,23 @@ public class ConsoleMain {
 				}
 			}
 			else if(cmd.hasOption("deleteOrganization") && cmd.hasOption("organization") && cmd.hasOption("name") && cmd.hasOption("adminPassword")){
+				prepareFactories(props);
 				OrganizationCommand.deleteOrganization(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"),enableUnauthenticatedResets);
 			}
 			else if(cmd.hasOption("addOrganization") && cmd.hasOption("password") && cmd.hasOption("organization") && cmd.hasOption("adminPassword") && cmd.hasOption("name")){
+				prepareFactories(props);
 				OrganizationCommand.addOrganization(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("password"),enableUnauthenticatedResets);
 			}
 			else if(cmd.hasOption("addUser") && cmd.hasOption("password") && cmd.hasOption("organization") && cmd.hasOption("adminPassword") && cmd.hasOption("name")){
+				prepareFactories(props);
 				UserCommand.addUser(cmd.getOptionValue("organization"), cmd.getOptionValue("name"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("password"), cmd.getOptionValue("email"));
 			}
 			else if(cmd.hasOption("configureApi") && cmd.hasOption("organization") && cmd.hasOption("file") && cmd.hasOption("identity")&& cmd.hasOption("credential")  && cmd.hasOption("adminPassword")){
-				//logger.info("Configure API");
+				prepareFactories(props);
 				ApiConfigAction.configureApi(cmd.getOptionValue("organization"),cmd.getOptionValue("adminPassword"),cmd.getOptionValue("file"),cmd.getOptionValue("identity"),cmd.getOptionValue("credential"));
 			}
-			/*
-			else if(cmd.hasOption("organization") && cmd.hasOption("vault") && cmd.hasOption("name") && cmd.hasOption("path")){
-
-				if(cmd.hasOption("delete")){
-					VaultAction.deleteVault(cmd.getOptionValue("organization"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("name"), cmd.getOptionValue("path"));
-				}
-				else if(cmd.hasOption("create")){
-					if(cmd.hasOption("credential") && cmd.hasOption("file")){
-						VaultAction.configureVaultCredential(cmd.getOptionValue("organization"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("file"), cmd.getOptionValue("credential"));
-					}
-					VaultAction.createVault(cmd.getOptionValue("organization"), cmd.getOptionValue("adminPassword"), cmd.getOptionValue("name"), cmd.getOptionValue("path"),cmd.getOptionValue("file"));
-				}
-				else{
-					logger.info("Specify create or delete option");
-				}
-
-			}
-			*/
 			else if (cmd.hasOption("openssl")){
+				logger.info("OpenSSL Utility");
 				String sslBinary = props.getProperty("ssl.binary");
 				String localPath = props.getProperty("ssl.ca.path");
 				OpenSSLAction sslAction = new OpenSSLAction(sslBinary, localPath);
@@ -293,7 +268,7 @@ public class ConsoleMain {
 				//String storeName, char[] storePassword, boolean isTrust, String alias, char[] password, boolean isPrivate
 				String keytoolBinary = props.getProperty("keytool.binary");
 				String localPath = props.getProperty("ssl.ca.path");
-
+				logger.info("Keystore Utility");
 				KeyStoreAction keyAct = new KeyStoreAction(keytoolBinary, localPath);
 				if(cmd.hasOption("storePassword") && cmd.hasOption("password") && cmd.hasOption("private") && cmd.hasOption("name")){
 					keyAct.importPKCS12(cmd.getOptionValue("store"), cmd.getOptionValue("storePassword").toCharArray(), cmd.hasOption("trust"), cmd.getOptionValue("name"), cmd.getOptionValue("password").toCharArray(), cmd.hasOption("private"));
@@ -307,9 +282,11 @@ public class ConsoleMain {
 				OrganizationCommand.setOrganizationCertificate(cmd.getOptionValue("organization"),  props.getProperty("ssl.ca.path"), cmd.getOptionValue("name"), cmd.getOptionValue("password").toCharArray(), cmd.getOptionValue("adminPassword"));
 			}
 			else if(cmd.hasOption("testCertificate") && cmd.hasOption("organization")  && cmd.hasOption("adminPassword")){
+				prepareFactories(props);
 				OrganizationCommand.testOrganizationCertificate(cmd.getOptionValue("organization"),  props.getProperty("ssl.ca.path"), cmd.getOptionValue("adminPassword"));
 			}
 			else if(cmd.hasOption("organization") && cmd.hasOption("username") && cmd.hasOption("password")){
+				prepareFactories(props);
 				logger.debug("Authenticating user");
 				try{
 					logger.debug("Finding organization");
@@ -375,44 +352,40 @@ public class ConsoleMain {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
+		coolFactories();
+		
+	}
+	private static void coolFactories() {
+		if(!factoryPrep) return;
+		
 		if(auditThread != null){
 			auditThread.requestStop();
 			auditThread = null;
 		}
 		Factories.getAuditFactory().flushSpool();
 		
+		factoryPrep = false;
 	}
-	/*
-	public static void runTests(UserType user){
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		try{
-			DirectoryGroupType tDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, "Tasks",user.getHomeDirectory(), user.getOrganization());
-			long start = System.currentTimeMillis();
-			String random = UUID.randomUUID().toString();
-			for(int i = 0; i < 100;i++){
-				try {
-					TaskType t = ((TaskFactory)Factories.getFactory(FactoryEnumType.TASK)).newTask(user, tDir);
-					t.setName(random + "-" + i);
-					((TaskFactory)Factories.getFactory(FactoryEnumType.TASK)).addTask(t);
-				} catch (ArgumentException e) {
-					
-					logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-				}
-				
-			}
-			long stop = System.currentTimeMillis();
-			logger.info("Connection speed: " + (stop - start) + "ms");
-		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
+	private static void prepareFactories(Properties props) throws FactoryException {
+		if(factoryPrep) return;
+		prepareDB(props);
+		logger.debug("Warming up factories");
+		long startWarmUp = System.currentTimeMillis();
+		org.cote.rocket.Factories.prepare();
+		Factories.warmUp();
+		long stopWarmUp = System.currentTimeMillis();
+		logger.debug("Completed warm up in " + (stopWarmUp - startWarmUp) + "ms");
+		auditThread = new AuditDataMaintenance();
+		
+		factoryPrep = true;
 	}
-	*/
-
+	private static void prepareDB(Properties props) {
+		if(dbPrep) return;
+		logger.debug("Setting up connection factory");
+		ConnectionFactory.setupConnectionFactory(props);
+		dbPrep = true;
+	}
+	
 	public static void processAction(UserType user, CommandLine cmd){
 		if(cmd.hasOption("geo") && cmd.hasOption("path")){
 			GeoAction.processGeoAction(user, cmd);
@@ -458,17 +431,8 @@ public class ConsoleMain {
 						break;
 				}
 			}
-			//cmd.hasOption("vault") && cmd.hasOption("name") && cmd.hasOption("path")
 		}
-		/*
-		if(cmd.hasOption("importProject") && cmd.hasOption("projectName") && cmd.hasOption("lifecycleName")){
-			logger.error("Project import being moved.  Refer to RocketConsole for console implementation");
-			/// ProjectAction.importProjectFile(user, cmd.getOptionValue("lifecycleName"), cmd.getOptionValue("projectName"), cmd.getOptionValue("importProject"));
-		}
-		if(cmd.hasOption("test")){
-			runTests(user);
-		}
-		*/
+
 	}
 	public static Properties getLogProps(){
 		Properties logProps = new Properties();
