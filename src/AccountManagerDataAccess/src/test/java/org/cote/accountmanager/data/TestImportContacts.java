@@ -64,53 +64,7 @@ import org.cote.parsers.excel.WorkbookType;
 import org.junit.Test;
 
 public class TestImportContacts extends BaseDataAccessTest{
-	/*
-	@Test
-	public void TestDataFile(){
-		String content = TikaShredder.getExcelAsString("/Users/Steve/Desktop/Address.xlsx");
-		assertNotNull("Content is null",content);
-		assertTrue("Content is empty",content.length() > 0);
-		WorkbookType wb = TikaShredder.shredTikaContent(content,true);
-		assertNotNull("Workbook is null",wb);
-		assertTrue("There are no sheets",wb.getSheets().size() > 0);
-		logger.info("Working with " + wb.getSheets().size() + " sheets");
-		SheetType sheet = wb.getSheets().get(0);
-		assertTrue("There are no rows",sheet.getRows().size() > 0);
-		
-		RowType row = sheet.getRows().get(0);
-		assertTrue("There are no cells",row.getCells().size() > 0);
-		
-		DirectoryGroupType pDir = null;
-		try{
-			pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Persons-" + UUID.randomUUID().toString(), testUser.getHomeDirectory(), testUser.getOrganizationId());
-			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
-			for(int i = 0; i < sheet.getRows().size();i++){
-				importPersonRow(sessionId,pDir,sheet.getRows().get(i));	
-			}
-				
-		
-			BulkFactories.getBulkFactory().write(sessionId);
-			BulkFactories.getBulkFactory().close(sessionId);
 
-		
-		}
-		catch(FactoryException fe){
-			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-		}  catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (DataAccessException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		catch(Exception e){
-			logger.error("Unknown Exception: " + e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		
-		
-	}
-	*/
 	@Test
 	public void importRoleSourceData(){
 		String content = TikaShredder.getExcelAsString("testData/roles.xlsx");

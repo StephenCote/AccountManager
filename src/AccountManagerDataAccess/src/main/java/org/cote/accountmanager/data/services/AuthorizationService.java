@@ -354,7 +354,7 @@ public class AuthorizationService {
 			logger.warn("User " + admin.getName() + " (#" + admin.getId() + ")" + " is not authorized to change object " + object.getName() + " (#" + object.getId() + ")");
 			return false;
 		}
-		logger.info((enable ? "A" : "Dea") + "uthorizing " + partFactory.getFactoryType().toString() + " " + EffectiveAuthorizationService.getEntitlementCheckString(object, actor, new BasePermissionType[]{permission}));
+		logger.debug((enable ? "A" : "Dea") + "uthorizing " + partFactory.getFactoryType().toString() + " " + EffectiveAuthorizationService.getEntitlementCheckString(object, actor, new BasePermissionType[]{permission}));
 		ParticipantEnumType part_type = ParticipantEnumType.valueOf(actor.getNameType().toString());
 		BaseParticipantType bp = partFactory.getParticipant(object, actor, part_type, permission, AffectEnumType.GRANT_PERMISSION);
 		

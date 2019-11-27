@@ -55,11 +55,7 @@ public class TestVaultService extends BaseDataAccessTest{
 	public static final Logger logger = LogManager.getLogger(TestVaultService.class);
 
 	private boolean resetVault = true;
-	/*
-	private VaultBean getCreateVault(UserType owner, String vaultName, CredentialType protectionCredential){
-		return getCreateVault(owner, vaultName, "./target/VaultExp", protectionCredential);
-	}
-	*/
+
 	private VaultBean getCreateVault(UserType owner, String vaultPath, String vaultName, CredentialType protectionCredential, String credPath){
 		VaultService service = new VaultService(testProperties.getProperty("ssl.binary"),testProperties.getProperty("ssl.ca.path"));
 		VaultBean vault =  service.loadVault(vaultPath, vaultName, (protectionCredential != null ? true : false));

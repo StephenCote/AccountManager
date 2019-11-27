@@ -54,7 +54,7 @@ public abstract class ThreadService implements Runnable {
 			execute();
 		}
 		catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error(e);
 		}
 		
 	}

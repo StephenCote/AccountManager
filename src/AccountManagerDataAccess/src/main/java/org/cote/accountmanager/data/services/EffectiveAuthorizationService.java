@@ -149,7 +149,7 @@ public class EffectiveAuthorizationService {
 			objectMap.put(objectType, new HashMap<>());
 		}
 		if(objectMap.get(objectType).containsKey(actorType)){
-			logger.warn("Actor " + actorType + " already registered for " + objectType);
+			logger.debug("Actor " + actorType + " already registered for " + objectType);
 			return false;
 		}
 		
@@ -1109,7 +1109,7 @@ public class EffectiveAuthorizationService {
 			}
 			
 			if(!roles.isEmpty()){
-				logger.info("Rebuilding role cache for " + roles.size() + " roles");
+				logger.debug("Rebuilding role cache for " + roles.size() + " roles");
 				rebuildRoleCache(roles,roles.get(0).getOrganizationId());
 				rebuildRoles.clear();
 			}
@@ -1152,7 +1152,7 @@ public class EffectiveAuthorizationService {
 			}
 			
 			if(!groups.isEmpty()){
-				logger.info("Rebuilding role cache for " + groups.size() + " groups");
+				logger.debug("Rebuilding role cache for " + groups.size() + " groups");
 				outBool = rebuildRoleCache(groups,groups.get(0).getOrganizationId());
 				rebuildGroups.clear();
 			}
@@ -1161,7 +1161,7 @@ public class EffectiveAuthorizationService {
 			List<UserType> users = Arrays.asList(rebuildUsers.values().toArray(new UserType[0]));
 			
 			if(!users.isEmpty()){
-				logger.info("Rebuilding role cache for " + users.size() + " users");
+				logger.debug("Rebuilding role cache for " + users.size() + " users");
 				outBool = rebuildRoleCache(users,users.get(0).getOrganizationId());
 				rebuildUsers.clear();
 				for(UserType u2 : users) clearCache(u2);
@@ -1170,7 +1170,7 @@ public class EffectiveAuthorizationService {
 			List<AccountType> accounts = Arrays.asList(rebuildAccounts.values().toArray(new AccountType[0]));
 			
 			if(!accounts.isEmpty()){
-				logger.info("Rebuilding role cache for " + accounts.size() + " accounts");
+				logger.debug("Rebuilding role cache for " + accounts.size() + " accounts");
 				outBool = rebuildRoleCache(accounts,accounts.get(0).getOrganizationId());
 				rebuildAccounts.clear();
 				for(AccountType a2 : accounts) clearCache(a2);
@@ -1178,7 +1178,7 @@ public class EffectiveAuthorizationService {
 
 			List<PersonType> persons = Arrays.asList(rebuildPersons.values().toArray(new PersonType[0]));
 			if(!persons.isEmpty()){
-				logger.info("Rebuilding role cache for " + persons.size() + " persons");
+				logger.debug("Rebuilding role cache for " + persons.size() + " persons");
 				outBool = rebuildRoleCache(persons,persons.get(0).getOrganizationId());
 				rebuildPersons.clear();
 				for(PersonType p2 : persons) clearCache(p2);
@@ -1186,15 +1186,15 @@ public class EffectiveAuthorizationService {
 			
 			List<DataType> data = Arrays.asList(rebuildData.values().toArray(new DataType[0]));
 			if(!data.isEmpty()){
-				logger.info("Rebuilding role cache for " + data.size() + " data");
+				logger.debug("Rebuilding role cache for " + data.size() + " data");
 				outBool = rebuildRoleCache(data,data.get(0).getOrganizationId());
 				rebuildData.clear();
 				for(DataType d2 : data) clearCache(d2);
 			}
 		}
 		long stop = System.currentTimeMillis();
-		if(outBool) logger.info("Time to rebuild cache: " + (stop - start) + " ms");
-		else logger.info("Did not rebuild cache: " + (stop - start) + " ms");
+		if(outBool) logger.info("Rebuilt role cache in " + (stop - start) + " ms");
+		else logger.info("Did not rebuild role cache in " + (stop - start) + " ms");
 		return outBool;
 		
 	}
