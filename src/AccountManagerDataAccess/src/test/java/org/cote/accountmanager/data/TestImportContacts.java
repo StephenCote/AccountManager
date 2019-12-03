@@ -104,7 +104,7 @@ public class TestImportContacts extends BaseDataAccessTest{
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, person);
 					user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, testUser.getOrganizationId());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
-					CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, "password".getBytes("UTF-8"), true, true, false);
+					CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, "password".getBytes("UTF-8"), true, true);
 
 					person.getUsers().add(user);
 				}

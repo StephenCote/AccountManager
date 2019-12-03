@@ -232,7 +232,7 @@ public class TestAuthorization extends BaseAccelerantTest{
 				UserType new_user = ((UserFactory)(Factories.getNameIdFactory(FactoryEnumType.USER))).newUser(testUserName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org.getId());
 				if(((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).add(new_user)){
 					new_user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(testUserName, org.getId());
-					CredentialType cred = CredentialService.newHashedPasswordCredential(new_user, new_user,"password1", true,false);
+					CredentialType cred = CredentialService.newHashedPasswordCredential(new_user, new_user,"password1", true);
 					assertNotNull("Cred is null",cred);
 					testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD, "password1", org.getId());
 				}

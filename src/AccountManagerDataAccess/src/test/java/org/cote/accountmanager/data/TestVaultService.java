@@ -81,10 +81,10 @@ public class TestVaultService extends BaseDataAccessTest{
 		DirectoryGroupType dir = getGroup(vaultUser, "Data", GroupEnumType.DATA, vaultUser.getHomeDirectory());
 		DataType data = this.newTextData(testVaultName + " Demo Data", "The demo data", vaultUser, dir);
 		
-		CredentialType cred2 = CredentialService.newHashedPasswordCredential(vaultUser, data, "password", true, true);
-
-		logger.info("Vaulting credential " + cred2.getObjectId() + " attached to " + data.getUrn());
-		
+		CredentialType cred2 = CredentialService.newHashedPasswordCredential(vaultUser, data, "password", true, vault.getVaultDataUrn());
+		//logger.info(JSONUtil.exportObject(cred2));
+		logger.info("Vaulting credential " + cred2.getObjectId() + " against " + vault.getVaultDataUrn() + " attached to data " + data.getUrn());
+		assertTrue("Failed to validate vaulted credential",CredentialService.validatePasswordCredential(data, cred2, "password"));
 	}
 	
 	@Test

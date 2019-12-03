@@ -29,11 +29,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.Arrays;
 import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.CredentialFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.data.services.VaultService;
+import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.CredentialEnumType;
@@ -47,7 +51,7 @@ import org.cote.accountmanager.util.SecurityUtil;
 
 public class CredentialService {
 	public static final Logger logger = LogManager.getLogger(CredentialService.class);
-	
+	private static final VaultService vaultService = new VaultService();
 	private CredentialService(){
 		
 	}
@@ -124,11 +128,31 @@ public class CredentialService {
 
 		byte[] outBytes = new byte[0];
 		byte[] cred = credential.getCredential();
-		if(cred.length == 0){
-			logger.error("Credential value is empty");
-			return outBytes;
+		if(credential.getVaulted()) {
+			UserType owner = null;
+			try {
+				owner = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getById(credential.getOwnerId(), credential.getOrganizationId());
+				if(owner == null) {
+					logger.error("Credential owner is invalid");
+					return outBytes;
+				}
+				VaultBean vault = vaultService.getVaultByUrn(owner, credential.getVaultId());
+				if(vault == null) {
+					logger.error("Vault " + credential.getVaultId() + " is invalid");
+					return outBytes;
+				}
+				outBytes = vaultService.extractVaultData(vault, credential);
+			} catch (FactoryException | ArgumentException | DataException e) {
+				logger.error("Error extracting credential value: " + e.getMessage());
+			}
+
 		}
-		if(credential.getEnciphered()){
+		else if(credential.getEnciphered()){
+
+			if(cred.length == 0){
+				logger.error("Credential value is empty");
+				return outBytes;
+			}
 			if(credential.getKeyId() == null){
 				logger.error("Enciphered credential does not define a key");
 				return outBytes;
@@ -179,10 +203,14 @@ public class CredentialService {
 		}
 		return outBool;
 	}
-	public static CredentialType newHashedPasswordCredential(UserType owner, NameIdType targetObject, String password, boolean primary, boolean vaulted){
-		return newHashedPasswordCredential(null,owner,targetObject,password,primary, vaulted);
+	public static CredentialType newHashedPasswordCredential(UserType owner, NameIdType targetObject, String password, boolean primary){
+		return newHashedPasswordCredential(null,owner,targetObject,password,primary, null);
 	}
-	public static CredentialType newHashedPasswordCredential(String bulkSessionId, UserType owner, NameIdType targetObject, String password, boolean primary, boolean vaulted){
+
+	public static CredentialType newHashedPasswordCredential(UserType owner, NameIdType targetObject, String password, boolean primary, String vaultId){
+		return newHashedPasswordCredential(null,owner,targetObject,password,primary, vaultId);
+	}
+	public static CredentialType newHashedPasswordCredential(String bulkSessionId, UserType owner, NameIdType targetObject, String password, boolean primary, String vaultId){
 
 		byte[] pwdBytes = new byte[0];
 		try {
@@ -191,7 +219,7 @@ public class CredentialService {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return newCredential(CredentialEnumType.HASHED_PASSWORD, bulkSessionId, owner, targetObject, pwdBytes, primary, true, vaulted);
+		return newCredential(CredentialEnumType.HASHED_PASSWORD, bulkSessionId, owner, targetObject, pwdBytes, primary, true, vaultId);
 	}
 	
 	public static CredentialType newTokenCredential(UserType owner, NameIdType targetObject, String token, boolean primary){
@@ -206,16 +234,20 @@ public class CredentialService {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		return newCredential(CredentialEnumType.TOKEN, bulkSessionId, owner, targetObject, pwdBytes, primary, true, false);
+		return newCredential(CredentialEnumType.TOKEN, bulkSessionId, owner, targetObject, pwdBytes, primary, true, null);
 	}
 	
 	/// TODO: At the moment, a bulk credential requires a synchronous key insertion
 	///
 	///
-	public static CredentialType newCredential(CredentialEnumType credType, String bulkSessionId, UserType owner, NameIdType targetObject, byte[] credBytes, boolean primary, boolean encrypted, boolean vaulted){
-		return newCredential(credType, bulkSessionId, owner, targetObject, credBytes, primary, true, encrypted, vaulted);
+	public static CredentialType newCredential(CredentialEnumType credType, String bulkSessionId, UserType owner, NameIdType targetObject, byte[] credBytes, boolean primary, boolean encrypted){
+		return newCredential(credType, bulkSessionId, owner, targetObject, credBytes, primary, true, encrypted, null);
 	}
-	public static CredentialType newCredential(CredentialEnumType credType, String bulkSessionId, UserType owner, NameIdType targetObject, byte[] credBytes, boolean primary, boolean unsetPrimary, boolean encrypted, boolean vaulted){
+
+	public static CredentialType newCredential(CredentialEnumType credType, String bulkSessionId, UserType owner, NameIdType targetObject, byte[] credBytes, boolean primary, boolean encrypted, String vaultId){
+		return newCredential(credType, bulkSessionId, owner, targetObject, credBytes, primary, true, encrypted, vaultId);
+	}
+	public static CredentialType newCredential(CredentialEnumType credType, String bulkSessionId, UserType owner, NameIdType targetObject, byte[] credBytes, boolean primary, boolean unsetPrimary, boolean encrypted, String vaultId){
 
 		CredentialType cred = null;
 		CredentialType lastPrimary = null;
@@ -238,17 +270,31 @@ public class CredentialService {
 				useCredBytes = SecurityUtil.getDigest(useCredBytes, cred.getSalt());
 				if(useCredBytes.length == 0) throw new FactoryException("Invalid hashed credential");
 			}
-			if(encrypted){
+			
+			/// NOTE: 'keyId' can be used for either being enciphered or vaulted, but not both
+			/// By comparison, DataType has various key reference support while CredentialType just has Key and Vault, and Vault uses both
+			///
+			if(vaultId != null) {
+				VaultBean vault = vaultService.getVaultByUrn(owner, vaultId);
+				if(vault == null) {
+					logger.error("Vault " + vaultId + " could not be accessed");
+					return null;
+				}
+				vaultService.setVaultBytes(vault, cred, useCredBytes);
+			}
+			else if(encrypted){
 				SecurityBean bean = KeyService.newPersonalAsymmetricKey(bulkSessionId,null,owner, false);
 				cred.setKeyId(bean.getObjectId());
 				//logger.info("Bean has bytes: " + (bean.getPublicKeyBytes() != null) + " / and key = " + (bean.getPublicKey() != null));
 				useCredBytes = SecurityUtil.encrypt(bean, useCredBytes);
+
 				if(useCredBytes.length == 0) throw new FactoryException("Invalid encrypted credential");
 				cred.setEnciphered(true);
 			}
-			
-			cred.setCredential(useCredBytes);
-			
+
+			else {
+				cred.setCredential(useCredBytes);
+			}
 			if(bulkSessionId != null) BulkFactories.getBulkFactory().createBulkEntry(bulkSessionId, FactoryEnumType.CREDENTIAL, cred);
 			else if(((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).add(cred)){
 				cred = ((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).getByObjectId(cred.getObjectId(),cred.getOrganizationId());
@@ -261,7 +307,7 @@ public class CredentialService {
 				((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).update(lastPrimary);
 			}
 
-		} catch (ArgumentException | FactoryException e) {
+		} catch (ArgumentException | FactoryException | UnsupportedEncodingException | DataException e) {
 			logger.error(e.getMessage());
 		} 
 		

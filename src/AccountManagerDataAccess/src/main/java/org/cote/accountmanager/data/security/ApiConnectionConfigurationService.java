@@ -204,9 +204,9 @@ public class ApiConnectionConfigurationService {
 			DataUtil.setValue(newData, conf);
 			if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(newData)){
 				newData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, true, dir);
-				if(CredentialService.newCredential(CredentialEnumType.ENCRYPTED_IDENTITY, null, owner, newData, identity, true, true, false) != null
+				if(CredentialService.newCredential(CredentialEnumType.ENCRYPTED_IDENTITY, null, owner, newData, identity, true, true) != null
 					&&
-					CredentialService.newCredential(CredentialEnumType.ENCRYPTED_PASSWORD, null, owner, newData, credential, true, true, false) != null
+					CredentialService.newCredential(CredentialEnumType.ENCRYPTED_PASSWORD, null, owner, newData, credential, true, true) != null
 				){
 					logger.info("Created API Configuration " + name);
 					outConfig = apiConfig;

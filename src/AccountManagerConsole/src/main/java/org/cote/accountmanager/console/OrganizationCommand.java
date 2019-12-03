@@ -70,7 +70,7 @@ public class OrganizationCommand {
 				logger.error("Failed to obtain public certificate for: " + alias);
 				return outBool;
 			}
-			CredentialType pubCred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, org, pubCertificate, true, false, false);
+			CredentialType pubCred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, org, pubCertificate, true, false);
 			if(pubCred == null){
 				logger.error("Failed to create public certificate credential");
 				return outBool;
@@ -81,13 +81,13 @@ public class OrganizationCommand {
 				logger.error("Failed to obtain private certificate for: " + alias);
 				return outBool;
 			}
-			CredentialType cred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, pubCred, privCertificate, true, false, false);
+			CredentialType cred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, adminUser, pubCred, privCertificate, true, false);
 			if(cred == null){
 				logger.error("Failed to create certificate credential");
 				return outBool;
 			}
 
-			CredentialType cred2 = CredentialService.newCredential(CredentialEnumType.ENCRYPTED_PASSWORD, null, adminUser, cred, (new String(password)).getBytes(), true, true, false);
+			CredentialType cred2 = CredentialService.newCredential(CredentialEnumType.ENCRYPTED_PASSWORD, null, adminUser, cred, (new String(password)).getBytes(), true, true);
 			if(cred2 == null){
 				logger.error("Failed to create encrypted credential for certificate password");
 				return outBool;

@@ -314,7 +314,7 @@ public class BaseDataAccessTest{
 				user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).newUser(user_name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, org.getId());
 				((UserFactory)Factories.getFactory(FactoryEnumType.USER)).add(user);
 				user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByName(user_name, org.getId());
-				CredentialService.newHashedPasswordCredential(user, user, password, true,false);
+				CredentialService.newHashedPasswordCredential(user, user, password, true);
 			}
 			((UserFactory)Factories.getFactory(FactoryEnumType.USER)).populate(user);
 		} catch (FactoryException | ArgumentException e) {

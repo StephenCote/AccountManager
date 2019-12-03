@@ -61,7 +61,10 @@
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-						<!-- <exclude>**/TestDBStress.java</exclude> -->
+						<!-- 
+						<exclude>**/TestVaultService.java</exclude>
+						 -->
+						<exclude>**/TestDBStress.java</exclude>
 						<exclude>**/TestCachePerformance.java</exclude>
 						<exclude>**/TestRoleService.java</exclude>
 						<exclude>**/TestPermissionAuthorization.java</exclude>
@@ -83,7 +86,7 @@
 						<exclude>**/TestAccessApproval.java</exclude>
 						<exclude>**/TestImportContacts.java</exclude>
 						<exclude>**/TestControlFactory.java</exclude>
-						<exclude>**/TestVaultService.java</exclude>
+						
 						<exclude>**/TestBulkUser.java</exclude>
 						<exclude>**/TestBulkDelete.java</exclude>
 						<exclude>**/TestBulkUpdate.java</exclude>

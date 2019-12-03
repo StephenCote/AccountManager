@@ -308,7 +308,7 @@ public class ConsoleMain {
 								if(user != null){
 									if(password != null && password.length() > 5){
 										logger.info("Creating new primary credential");
-										CredentialType cred = CredentialService.newHashedPasswordCredential(user, user, password, true, false);
+										CredentialType cred = CredentialService.newHashedPasswordCredential(user, user, password, true);
 									}
 									else{
 										logger.warn("Invalid password");

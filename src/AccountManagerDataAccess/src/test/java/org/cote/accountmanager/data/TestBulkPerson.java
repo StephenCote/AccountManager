@@ -130,7 +130,7 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			
 			UserType user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(new_person.getName(), UserEnumType.DEVELOPMENT, UserStatusEnumType.RESTRICTED, new_person.getOrganizationId());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
-			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId, user, user, "password1".getBytes("UTF-8"), true,true,false);
+			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId, user, user, "password1".getBytes("UTF-8"), true,true);
 
 			
 			//new_person.getUsers().add(user);

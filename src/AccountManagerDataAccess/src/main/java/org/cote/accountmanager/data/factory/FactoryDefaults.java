@@ -127,7 +127,7 @@ public class FactoryDefaults {
 			/// 2015/06/23 - New Credential System
 			/// I intentionally left the credential operation decoupled from object creation
 			///
-			CredentialType cred = CredentialService.newHashedPasswordCredential(rootUser, rootUser, rootPassword, true,false);
+			CredentialType cred = CredentialService.newHashedPasswordCredential(rootUser, rootUser, rootPassword, true);
 			if(cred == null) throw new FactoryException("Failed to persist root credential");
 		}
 		setupOrganization(Factories.getDevelopmentOrganization(), rootPassword);
@@ -172,7 +172,7 @@ public class FactoryDefaults {
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
 		///
-		CredentialType cred = CredentialService.newHashedPasswordCredential(adminUser, adminUser, admin_password, true, false);
+		CredentialType cred = CredentialService.newHashedPasswordCredential(adminUser, adminUser, admin_password, true);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
 
 		// Create the document control user
@@ -184,7 +184,7 @@ public class FactoryDefaults {
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
 		///
-		cred = CredentialService.newHashedPasswordCredential(dcUser, dcUser, UUID.randomUUID().toString(), true, false);
+		cred = CredentialService.newHashedPasswordCredential(dcUser, dcUser, UUID.randomUUID().toString(), true);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
 		
 		if(dcUser.getId() <= 0 || adminUser.getId() <= 0){
@@ -199,7 +199,7 @@ public class FactoryDefaults {
 		UserType fbUser = uFact.newUserForAccount(FEEDBACK_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (!uFact.add(fbUser)) return false;
 		fbUser = uFact.getByName(FEEDBACK_USER_NAME, organization.getId());
-		cred = CredentialService.newHashedPasswordCredential(fbUser, fbUser, UUID.randomUUID().toString(), true, false);
+		cred = CredentialService.newHashedPasswordCredential(fbUser, fbUser, UUID.randomUUID().toString(), true);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
 		if(fbUser.getId() <= 0 || adminUser.getId() <= 0){
 			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");
@@ -211,7 +211,7 @@ public class FactoryDefaults {
 		UserType vlUser = uFact.newUserForAccount(VAULT_USER_NAME, adminAccount, UserEnumType.SYSTEM, UserStatusEnumType.RESTRICTED);
 		if (!uFact.add(vlUser)) return false;
 		vlUser = uFact.getByName(VAULT_USER_NAME, organization.getId());
-		cred = CredentialService.newHashedPasswordCredential(vlUser, vlUser, UUID.randomUUID().toString(), true, false);
+		cred = CredentialService.newHashedPasswordCredential(vlUser, vlUser, UUID.randomUUID().toString(), true);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
 		if(vlUser.getId() <= 0 || adminUser.getId() <= 0){
 			logger.error("Cache error.  A temporary object was returned when a persisted object was expected");

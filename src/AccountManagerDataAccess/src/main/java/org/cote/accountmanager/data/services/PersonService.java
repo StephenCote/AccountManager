@@ -114,7 +114,7 @@ public class PersonService {
 			/// I intentionally left the credential operation decoupled from object creation
 			///
 			if(password != null){
-				CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,newUser, newUser, password.getBytes("UTF-8"), true,true,false);
+				CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,newUser, newUser, password.getBytes("UTF-8"), true,true);
 			}
 
 			PersonType newPerson = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(newUser,pDir.getId());

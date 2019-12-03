@@ -111,7 +111,7 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 	@Test
 	public void TestCredentialCRUD(){
 		UserType qaUser = getUser("QA Vault User", "password");
-		CredentialType cred = CredentialService.newHashedPasswordCredential(qaUser, qaUser, "password1", true,false);
+		CredentialType cred = CredentialService.newHashedPasswordCredential(qaUser, qaUser, "password1", true);
 		assertNotNull("New credential is null",cred);
 		assertTrue("Credential was invalid",CredentialService.comparePasswordCredential(cred, "password1"));
 		assertFalse("Credential should be invalid",CredentialService.comparePasswordCredential(cred, "BadPassword"));

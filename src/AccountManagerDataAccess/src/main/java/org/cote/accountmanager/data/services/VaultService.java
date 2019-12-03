@@ -85,6 +85,7 @@ import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.VaultType;
@@ -442,7 +443,7 @@ public class VaultService
 		DirectoryGroupType local_imp_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vault.getServiceUser(), vault.getVaultName(), imp_dir, vault.getServiceUser().getOrganizationId());
 		
 		//imp_
-		CredentialType credSalt = CredentialService.newCredential(CredentialEnumType.SALT, null, vault.getServiceUser(), local_imp_dir, new byte[0], true, false,false);
+		CredentialType credSalt = CredentialService.newCredential(CredentialEnumType.SALT, null, vault.getServiceUser(), local_imp_dir, new byte[0], true, false, null);
 		if(credSalt == null || credSalt.getSalt().length == 0){
 			logger.info("Failed to create salt");
 			return false;
@@ -516,14 +517,14 @@ public class VaultService
 				throw new ArgumentException("Failed to generate new certificates for vault");
 			}
 			byte[] pubCertificate = getCertificate(vault, false);
-			CredentialType pubCred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, vault.getServiceUser(), imp_data, pubCertificate, true, false, false);
+			CredentialType pubCred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, vault.getServiceUser(), imp_data, pubCertificate, true, false, null);
 			if(pubCred == null){
 				logger.error("Failed to create public certificate credential");
 				return false;
 			}
 			
 			byte[] privCertificate = getCertificate(vault, true);
-			CredentialType cred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, vault.getServiceUser(), pubCred, privCertificate, true, false, false);
+			CredentialType cred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, vault.getServiceUser(), pubCred, privCertificate, true, false, null);
 			if(cred == null){
 				logger.error("Failed to create certificate credential");
 				return false;
@@ -917,8 +918,19 @@ public class VaultService
 		return v_sm;
 	}
 	
-	
-	public void setVaultBytes(VaultBean vault, DataType data, byte[] inData) throws DataException, FactoryException, UnsupportedEncodingException, ArgumentException
+	public static boolean canVault(NameIdType obj) {
+		boolean outBool = false;
+		switch(obj.getNameType()) {
+			case DATA:
+			case CREDENTIAL:
+				outBool = true;
+				break;
+			default:
+				break;
+		}
+		return outBool;
+	}
+	public void setVaultBytes(VaultBean vault, NameIdType obj, byte[] inData) throws DataException, FactoryException, UnsupportedEncodingException, ArgumentException
 	{
 		if (vault.getActiveKey() == null || vault.getActiveKeyId() == null){
 			if(!newActiveKey(vault)){
@@ -929,60 +941,107 @@ public class VaultService
 				throw new FactoryException("Active key is null");
 			}
 		}
-
-		data.setCompressed(false);
-		data.setDataHash(SecurityUtil.getDigestAsString(inData,new byte[0]));
-
-		if (inData.length > 512 && DataUtil.tryCompress(data))
-		{
-			inData = ZipUtil.gzipBytes(inData);
-			data.setCompressed(true);
-			data.setCompressionType(CompressionEnumType.GZIP);
+		if(obj.getNameType() == NameEnumType.CREDENTIAL) {
+			CredentialType cred = (CredentialType)obj;
+			cred.setCredential(SecurityUtil.encipher(vault.getActiveKeyBean(), inData));
+			cred.setKeyId(vault.getActiveKeyId());
+			cred.setVaultId(vault.getVaultDataUrn());
+			cred.setVaulted(true);
 		}
-		data.setVaulted(true);
-		DataUtil.setValue(data,SecurityUtil.encipher(vault.getActiveKeyBean(), inData));
-		data.setKeyId(vault.getActiveKeyId());
-		data.setVaultId(vault.getVaultDataUrn());
+		else if(obj.getNameType() == NameEnumType.DATA) {
+			DataType data = (DataType)obj;
+			data.setCompressed(false);
+			data.setDataHash(SecurityUtil.getDigestAsString(inData,new byte[0]));
+	
+			if (inData.length > 512 && DataUtil.tryCompress(data))
+			{
+				inData = ZipUtil.gzipBytes(inData);
+				data.setCompressed(true);
+				data.setCompressionType(CompressionEnumType.GZIP);
+			}
+			data.setVaulted(true);
+			DataUtil.setValue(data,SecurityUtil.encipher(vault.getActiveKeyBean(), inData));
+			data.setKeyId(vault.getActiveKeyId());
+			data.setVaultId(vault.getVaultDataUrn());
+		}
 
 	}
-	public byte[] extractVaultData(VaultBean vault, DataType inData) throws FactoryException, ArgumentException, DataException
+	public byte[] extractVaultData(VaultBean vault, NameIdType obj) throws FactoryException, ArgumentException, DataException
 	{
 		byte[] outBytes = new byte[0];
 		if(vault == null){
 			logger.error("Vault reference is null");
 			return outBytes;
 		}
-		if (vault.getHaveVaultKey() == false || inData.getVaulted() == false){
-			logger.warn("Data is not vaulted or the vault key is not specified");
+		boolean isVaulted = false;
+		String vaultId = null;
+		String keyId = null;
+		
+		/// TODO: Refactor object type to inherit from a common interface that cites VaultId and KeyId versus switching
+		///
+		switch(obj.getNameType()){
+		
+			case DATA:
+				isVaulted = ((DataType)obj).getVaulted();
+				vaultId = ((DataType)obj).getVaultId();
+				keyId = ((DataType)obj).getKeyId();
+				break;
+		
+			case CREDENTIAL:
+				isVaulted = ((CredentialType)obj).getVaulted();
+				vaultId = ((CredentialType)obj).getVaultId();
+				keyId = ((CredentialType)obj).getKeyId();
+				break;
+		
+			default:
+				break;
+		}
+		if (vault.getHaveVaultKey() == false){
+			logger.warn("Vault key is not specified");
 			return outBytes;
 		}
-
+		
 		// If the data vault id isn't the same as this vault name, then it can't be decrypted.
 		//
-		if (vault.getVaultDataUrn().equals(inData.getVaultId()) == false){
-			logger.error("Data vault id '" + inData.getVaultId() + "' does not match the specified vault name '" + vault.getVaultDataUrn() + "'.  This is a precautionary/secondary check, probably due to changing the persisted vault configuration name");
+		if (vault.getVaultDataUrn().equals(vaultId) == false){
+			logger.error("Object vault id '" + vaultId + "' does not match the specified vault name '" + vault.getVaultDataUrn() + "'.  This is a precautionary/secondary check, probably due to changing the persisted vault configuration name");
 			return outBytes;
 		}
 
-		return getVaultBytes(vault,inData, getVaultCipher(vault,inData.getKeyId()));
+		return getVaultBytes(vault,obj, getVaultCipher(vault,keyId));
 
 	}
-	public static byte[] getVaultBytes(VaultBean vault, DataType data, SecurityBean bean) throws DataException
+	public static byte[] getVaultBytes(VaultBean vault, NameIdType obj, SecurityBean bean) throws DataException
 	{
 		
 		if(bean == null){
-			logger.error("Vault cipher for " + data.getKeyId() + " is null");
+			logger.error("Vault cipher for " + obj.getUrn() + " is null");
 			return new byte[0];
 		}
-		byte[] ret = SecurityUtil.decipher(bean,DataUtil.getValue(data));
-		if (data.getCompressed() && ret.length > 0)
-		{
-			ret = ZipUtil.gunzipBytes(ret);
+		
+		
+		byte[] ret = new byte[0];
+		switch(obj.getNameType()) {
+			case DATA:
+				DataType data = (DataType)obj;
+				ret = SecurityUtil.decipher(bean,DataUtil.getValue(data));
+				if (data.getCompressed() && ret.length > 0)
+				{
+					ret = ZipUtil.gunzipBytes(ret);
+				}
+				if (data.getPointer())
+				{
+					ret = FileUtil.getFile(new String(ret));
+				}
+				break;
+			case CREDENTIAL:
+				ret = SecurityUtil.decipher(bean,((CredentialType)obj).getCredential());
+				break;
+			default:
+				logger.error("Unhandled object type: " + obj.getNameType());
+				break;
 		}
-		if (data.getPointer())
-		{
-			ret = FileUtil.getFile(new String(ret));
-		}
+
 		return ret;
 	}
 	/// Use this method with BaseService.add

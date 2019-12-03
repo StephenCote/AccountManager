@@ -208,7 +208,7 @@ public class BaseAccelerantTest{
 			UserType new_user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(testUserName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,testOrganization.getId());
 			if(((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).add(new_user,  true)){
 				new_user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(testUserName, testOrganization.getId());
-				CredentialService.newHashedPasswordCredential(new_user, new_user, "password", true,false);
+				CredentialService.newHashedPasswordCredential(new_user, new_user, "password", true);
 
 				testUser = SessionSecurity.login(sessionId, testUserName, CredentialEnumType.HASHED_PASSWORD,"password",testOrganization.getId());
 			}
@@ -230,7 +230,7 @@ public class BaseAccelerantTest{
 			UserType new_user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(testUserName2, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,testOrganization.getId());
 			if(((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).add(new_user,  true)){
 				new_user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(testUserName2, testOrganization.getId());
-				CredentialService.newHashedPasswordCredential(new_user, new_user, "password", true,false);
+				CredentialService.newHashedPasswordCredential(new_user, new_user, "password", true);
 
 				testUser2 = SessionSecurity.login(sessionId2, testUserName2, CredentialEnumType.HASHED_PASSWORD,"password",testOrganization.getId());
 			}
@@ -251,7 +251,7 @@ public class BaseAccelerantTest{
 			UserType new_user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(testUserName3, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,testOrganization.getId());
 			if(((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).add(new_user,  true)){
 				new_user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(testUserName3, testOrganization.getId());
-				CredentialService.newHashedPasswordCredential(new_user, new_user, "password", true,false);
+				CredentialService.newHashedPasswordCredential(new_user, new_user, "password", true);
 
 				testUser3 = SessionSecurity.login(sessionId3, testUserName3, CredentialEnumType.HASHED_PASSWORD,"password",testOrganization.getId());
 			}
@@ -1203,7 +1203,7 @@ public class BaseAccelerantTest{
 
 			user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(userName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,testOrganization.getId());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
-			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, password.getBytes("UTF-8"), true,true,false);
+			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, password.getBytes("UTF-8"), true,true);
 		} catch (ArgumentException | UnsupportedEncodingException | FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -1223,7 +1223,7 @@ public class BaseAccelerantTest{
 				user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(userName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,organizationId);
 				Factories.getNameIdFactory(FactoryEnumType.USER).add(user);
 				user = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(userName,organizationId);
-				CredentialService.newHashedPasswordCredential(user, user, password, true,false);
+				CredentialService.newHashedPasswordCredential(user, user, password, true);
 
 			}
 			Factories.getNameIdFactory(FactoryEnumType.USER).populate(user);

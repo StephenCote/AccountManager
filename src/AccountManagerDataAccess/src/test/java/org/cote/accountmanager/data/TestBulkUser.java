@@ -56,7 +56,7 @@ public class TestBulkUser extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, new_user);
 			//SecurityType asymKey = KeyService.newPersonalAsymmetricKey(sessionId,null,new_user,false);
 			//SecurityType symKey = KeyService.newPersonalSymmetricKey(sessionId,null,new_user,false);
-			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,new_user, new_user, "password1".getBytes("UTF-8"), true, true,false);
+			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,new_user, new_user, "password1".getBytes("UTF-8"), true, true);
 
 			logger.info("Retrieving Bulk User");
 			UserType check = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("BulkUser-" + guid, new_user.getOrganizationId());

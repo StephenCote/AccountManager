@@ -137,7 +137,7 @@ public class CredentialService {
 			 * To create an object credential,
 			 * the current user must be a data administrator
 			 * Or the object owner
-			 * Or have access to update the object and supply current password must be supplied
+			 * Or have access to update the object and current password must be supplied
 			 */
 			else if(type == AuditEnumType.GROUP){
 				BaseGroupType updateGroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getByUrn(authReq.getSubject());
@@ -168,10 +168,7 @@ public class CredentialService {
 			}
 			/// Create a new primary credential for target user
 			byte[] credByte = (new String(authReq.getCredential())).trim().getBytes("UTF-8");
-			newCred =
-					//CredentialService.newHashedPasswordCredential(owner, targetObject, new String(authReq.getCredential(),"UTF-8"), true, false);
-					
-					org.cote.accountmanager.data.security.CredentialService.newCredential(authReq.getCredentialType(), null, owner, targetObject, credByte, true, true, false);
+			newCred = org.cote.accountmanager.data.security.CredentialService.newCredential(authReq.getCredentialType(), null, owner, targetObject, credByte, true, true);
 		}
 		catch(FactoryException | ArgumentException | UnsupportedEncodingException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);

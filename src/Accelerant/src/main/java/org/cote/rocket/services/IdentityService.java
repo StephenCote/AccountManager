@@ -355,7 +355,7 @@ public class IdentityService {
 					return false;
 				}
 				chkUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(lifecycleAdmin, productOrganization.getId());
-				CredentialService.newHashedPasswordCredential(chkUser, chkUser,new String(lifecycleAdminCredential.getCredential()), true,false);
+				CredentialService.newHashedPasswordCredential(chkUser, chkUser,new String(lifecycleAdminCredential.getCredential()), true);
 			}
 			adminUser = chkUser;
 			
