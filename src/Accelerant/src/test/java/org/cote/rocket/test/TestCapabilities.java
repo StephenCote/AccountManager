@@ -44,7 +44,6 @@ import org.cote.propellant.objects.types.ElementEnumType;
 import org.cote.rocket.Factories;
 import org.cote.rocket.factory.FormElementFactory;
 import org.cote.rocket.factory.LifecycleFactory;
-
 import org.junit.Test;
 
 public class TestCapabilities extends BaseAccelerantTest {

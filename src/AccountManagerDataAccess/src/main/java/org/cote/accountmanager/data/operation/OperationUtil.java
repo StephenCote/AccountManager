@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.operation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,10 +48,10 @@ public class OperationUtil {
 		
 		if(operationInst.containsKey(className)) return operationInst.get(className);
 		try {
-			oper = (IOperation)cls.newInstance();
+			oper = (IOperation)cls.getDeclaredConstructor().newInstance();
 			operationInst.put(className, oper);
 
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}

@@ -973,6 +973,10 @@ public class VaultService
 			logger.error("Vault reference is null");
 			return outBytes;
 		}
+		if (vault.getHaveVaultKey() == false){
+			logger.warn("Vault key is not specified");
+			return outBytes;
+		}
 		boolean isVaulted = false;
 		String vaultId = null;
 		String keyId = null;
@@ -996,8 +1000,9 @@ public class VaultService
 			default:
 				break;
 		}
-		if (vault.getHaveVaultKey() == false){
-			logger.warn("Vault key is not specified");
+
+		if(!isVaulted || vaultId == null || keyId == null) {
+			logger.error("Object is not vaulted");
 			return outBytes;
 		}
 		

@@ -33,7 +33,6 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
-import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
 
 public class TestGroupAuthorization extends BaseDataAccessTest {

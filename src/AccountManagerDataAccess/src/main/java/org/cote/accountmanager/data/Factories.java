@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -277,11 +278,11 @@ public class Factories {
 
 
 		try {
-			sanObj = (ITypeSanitizer)cls.newInstance();
+			sanObj = (ITypeSanitizer)cls.getDeclaredConstructor().newInstance();
 			if(sanObj != null){
 				nameTypeSanitizerInstances.put(name, sanObj);
 			}
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			sanObj = null;
 		}
@@ -323,12 +324,12 @@ public class Factories {
 		}
 		if(factoryInstances.containsKey(ftype)) return (T)factoryInstances.get(ftype);
 		try {
-			newObj = (T)factoryClasses.get(ftype).newInstance();
+			newObj = (T)factoryClasses.get(ftype).getDeclaredConstructor().newInstance();
 			if(newObj != null){
 				initializeFactory((FactoryBase)newObj);
 				factoryInstances.put(ftype, newObj);
 			}
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			throw new FactoryException(e.getMessage());
 		}

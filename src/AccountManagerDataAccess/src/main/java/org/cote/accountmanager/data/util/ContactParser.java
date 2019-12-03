@@ -129,9 +129,9 @@ public class ContactParser {
 		CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(new String[]{"First Name","Middle Name","Last Name","Birthdate","Home E-Mail","Home Phone Number","Cell Phone Number","Work E-Mail","Work Phone Number","Relationship"});
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(DataUtil.getValue(data))));
 		CSVParser csvFileParser = new CSVParser(reader, csvFileFormat);
-		List csvRecords = csvFileParser.getRecords(); 
+		List<CSVRecord> csvRecords = csvFileParser.getRecords(); 
 		for (int i = 1; i < csvRecords.size(); i++) {
-			CSVRecord record = (CSVRecord) csvRecords.get(i);
+			CSVRecord record = csvRecords.get(i);
 			String firstName = record.get("First Name");
 			String middleName = record.get("Middle Name");
 			String lastName = record.get("Last Name");
@@ -217,6 +217,7 @@ public class ContactParser {
 			persons.add(person);
 			
 		}
+		csvFileParser.close();
 		return persons;
 	}
 	private static List<PersonType> parseSheet(UserType user, Map<String,Integer> map,SheetType sheet, int startRow ) throws ArgumentException, FactoryException{

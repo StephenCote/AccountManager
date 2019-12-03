@@ -469,13 +469,14 @@ public class EffectiveAuthorizationService {
 		return outBool;		
 	}
 	
+	/*
 	private static boolean hasCache(Map<Long,Map<Long,Boolean>> map, NameIdType actor, NameIdType obj){
 		if(map.containsKey(actor.getId()) && map.get(actor.getId()).containsKey(obj.getId())){
 			return true;
 		}
 		return false;		
 	}
-
+	*/
 
 	protected static void addToPerCache(NameIdType actor, NameIdType object, BasePermissionType[] permissions, boolean val){
 		if(objectMap.containsKey(object.getNameType())){
@@ -1043,8 +1044,7 @@ public class EffectiveAuthorizationService {
 					continue;
 				}
 				
-				ParticipationFactory pFact = Factories.getFactory(AuthorizationService.getAuthorizationFactories().get(factType));
-				//pFact.getpart
+				/// ParticipationFactory pFact = Factories.getFactory(AuthorizationService.getAuthorizationFactories().get(factType));
 				
 				if(ntype.equals(NameEnumType.ROLE)) rebuildRoles = rb.getMap();
 				else if(ntype.equals(NameEnumType.USER)) rebuildUsers.putAll(rb.getMap());

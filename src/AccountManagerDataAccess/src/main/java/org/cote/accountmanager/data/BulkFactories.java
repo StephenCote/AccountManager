@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -162,12 +163,12 @@ public class BulkFactories{
 		}
 		if(factoryInstances.containsKey(ftype)) return (T)factoryInstances.get(ftype);
 		try {
-			newObj = (T)factoryClasses.get(ftype).newInstance();
+			newObj = (T)factoryClasses.get(ftype).getDeclaredConstructor().newInstance();
 			if(newObj != null){
 				Factories.initializeFactory((FactoryBase)newObj);
 				factoryInstances.put(ftype, newObj);
 			}
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new FactoryException(e.getMessage());
 		}
 		if(newObj == null) throw new FactoryException(String.format(FactoryException.TYPE_NOT_REGISTERED, ftype.toString()));

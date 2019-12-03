@@ -7,24 +7,16 @@ import java.util.UUID;
 
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.ICommunityProvider;
-import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.FactoryException;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
-import org.cote.accountmanager.service.rest.BaseService;
-import org.cote.accountmanager.util.JSONUtil;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.ProjectType;
-import org.cote.rocket.Rocket;
-import org.cote.rocket.util.CommunityProjectUtil;
 import org.junit.Test;
 
 public class TestCommunities extends BaseAccelerantTest {

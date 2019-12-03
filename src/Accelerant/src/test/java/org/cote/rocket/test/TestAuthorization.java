@@ -36,7 +36,6 @@ import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
-import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
@@ -65,8 +64,6 @@ import org.cote.propellant.objects.ProjectType;
 import org.cote.rocket.Factories;
 import org.cote.rocket.RocketSecurity;
 import org.junit.Test;
-import org.cote.accountmanager.util.JSONUtil;
-import org.cote.accountmanager.util.SecurityUtil;
 
 public class TestAuthorization extends BaseAccelerantTest{
 	public static final Logger logger = LogManager.getLogger(TestAuthorization.class);
