@@ -50,8 +50,6 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
-import org.cote.accountmanager.util.JSONUtil;
-
 
 public class CredentialFactory extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
