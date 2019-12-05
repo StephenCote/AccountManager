@@ -1197,6 +1197,7 @@ public class DataGeneratorUtil {
 					parentEvent.getActors().add(baby);
 					newAdditions.add(baby);
 					
+					/// Disable while checking a bug
 					addressPerson(baby,parentEvent.getLocation(), sessionId);
 					
 					EventType birth = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).newEvent(user, parentEvent);
