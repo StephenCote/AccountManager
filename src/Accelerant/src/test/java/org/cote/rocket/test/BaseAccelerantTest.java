@@ -58,10 +58,13 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.SecurityUtil;
 import org.cote.propellant.objects.ArtifactType;
@@ -100,10 +103,12 @@ import org.cote.propellant.objects.types.TaskStatusEnumType;
 import org.cote.propellant.objects.types.TimeEnumType;
 import org.cote.rocket.Factories;
 import org.cote.rocket.Rocket;
+import org.cote.rocket.RocketSecurity;
 import org.cote.rocket.factory.ArtifactFactory;
 import org.cote.rocket.factory.BudgetFactory;
 import org.cote.rocket.factory.CostFactory;
 import org.cote.rocket.factory.EstimateFactory;
+import org.cote.rocket.factory.EventFactory;
 import org.cote.rocket.factory.FormElementFactory;
 import org.cote.rocket.factory.FormElementValueFactory;
 import org.cote.rocket.factory.FormFactory;
@@ -1264,6 +1269,108 @@ public class BaseAccelerantTest{
 		}
 		
 		return provider;
+	}
+	
+	protected ProjectType getProviderCommunityProject(UserType user, LifecycleType community, String projectName,boolean cleanup){
+		ProjectType proj = null;
+		UserType admin = getAdminUser(user.getOrganizationId());
+		proj = getProvider().getCommunityProject(admin, community.getName(), projectName);
+		//logger.info(JSONUtil.exportObject(user));
+		if(proj != null && cleanup){
+			getProvider().deleteCommunityProject(admin, proj.getObjectId());
+			proj = null;
+		}
+		if(proj == null){
+			assertTrue("Failed to create community",getProvider().createCommunityProject(admin, community.getObjectId(), projectName));
+			proj = getProvider().getCommunityProject(admin, community.getName(), projectName);
+			assertNotNull("Community project is null",proj);
+		}
+		return proj;
+	}
+	
+	protected LifecycleType getProviderCommunity(UserType user, String communityName, boolean cleanup){
+		LifecycleType lf = null;
+		UserType admin = getAdminUser(user.getOrganizationId());
+		lf = getProvider().getCommunity(admin, communityName);
+		//logger.info(JSONUtil.exportObject(user));
+		if(lf != null && cleanup){
+			getProvider().deleteCommunity(admin, lf.getObjectId());
+			lf = null;
+		}
+		if(lf == null){
+			assertTrue("Failed to create community",getProvider().createCommunity(admin, communityName));
+			lf = getProvider().getCommunity(admin, communityName);
+			assertNotNull("Community is null",lf);
+			assertTrue("Failed to enroll admin",getProvider().enrollAdminInCommunity(admin,lf.getObjectId(), user.getObjectId()));
+		}
+		return lf;
+	}
+	
+	protected boolean reloadTraits(UserType user, LifecycleType lf){
+		boolean outBool = false;
+		UserType admin = getAdminUser(user.getOrganizationId());
+		DirectoryGroupType tdir = BaseService.findGroup(admin, GroupEnumType.DATA, lf.getGroupPath() + "/Traits");
+		assertNotNull("Directory is null", tdir);
+		int ct = BaseService.countByGroup(AuditEnumType.TRAIT, tdir, user);
+		if(ct == 0){
+			outBool = getProvider().importLocationTraits(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "featureCodes_en.txt");
+		}
+		else{
+			outBool = true;
+		}
+		return outBool;
+	}
+	protected boolean loadProjectRegion(UserType user, LifecycleType lf, ProjectType proj, int locationCount, int populationSize){
+
+		boolean outBool = false;
+		UserType admin = getAdminUser(user.getOrganizationId());
+		DirectoryGroupType tdir = BaseService.findGroup(admin, GroupEnumType.DATA, proj.getGroupPath() + "/Persons");
+		assertNotNull("Directory is null", tdir);
+		int ct = BaseService.countByGroup(AuditEnumType.PERSON, tdir, user);
+		if(ct == 0){
+			logger.info("Loading project region and person seed data.");
+			outBool = (
+					getProvider().generateCommunityProjectRegion(admin, lf.getObjectId(), proj.getObjectId(), locationCount, populationSize, testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names"))
+				);
+		}
+		else{
+			outBool = true;
+		}
+		return outBool;
+	}
+	protected boolean evolveProjectRegion(UserType user, LifecycleType lf, ProjectType proj, int epochSize, int epochEvolutions){
+		
+		boolean outBool = false;
+		try {
+			int count = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).countInGroup(RocketSecurity.getProjectDirectory(user, proj, "Events"));
+			logger.info("Evolving project region and person seed data to " + (count + epochSize));
+			outBool = getProvider().evolveCommunityProjectRegion(user, lf.getObjectId(), proj.getObjectId(), epochSize + count, epochEvolutions, testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names"));
+		} catch (FactoryException e) {
+			logger.error(e);
+		}
+
+		return outBool;
+	}
+	protected boolean reloadCountryInfo(UserType user, LifecycleType lf){
+
+		boolean outBool = false;
+		UserType admin = getAdminUser(user.getOrganizationId());
+		DirectoryGroupType tdir = BaseService.findGroup(admin, GroupEnumType.DATA, lf.getGroupPath() + "/Locations");
+		assertNotNull("Directory is null", tdir);
+		int ct = BaseService.countByGroup(AuditEnumType.LOCATION, tdir, user);
+		if(ct == 0){
+			logger.info("Loading community location data.  Note: This may take a while.");
+			outBool = (
+				getProvider().importLocationCountryInfo(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "countryInfo.txt")
+				&& getProvider().importLocationAdmin1Codes(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "admin1CodesASCII.txt")
+				&& getProvider().importLocationAdmin2Codes(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"),  "admin2Codes.txt")
+				&& getProvider().importLocationCountryData(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), testProperties.getProperty("country.list"),"alternateNames.txt")
+			);
+		}
+		else{
+			outBool = true;
+		}
+		return outBool;
 	}
 	
 }

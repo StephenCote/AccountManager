@@ -49,100 +49,8 @@ import org.junit.Test;
  */
 public class TestIdentityService extends BaseAccelerantTest{
 	public static final Logger logger = LogManager.getLogger(TestIdentityService.class);
-
-	
-	
-
-	
-	private ProjectType getProviderCommunityProject(UserType user, LifecycleType community, String projectName,boolean cleanup){
-		ProjectType proj = null;
-		UserType admin = getAdminUser(user.getOrganizationId());
-		proj = getProvider().getCommunityProject(admin, community.getName(), projectName);
-		//logger.info(JSONUtil.exportObject(user));
-		if(proj != null && cleanup){
-			getProvider().deleteCommunityProject(admin, proj.getObjectId());
-			proj = null;
-		}
-		if(proj == null){
-			assertTrue("Failed to create community",getProvider().createCommunityProject(admin, community.getObjectId(), projectName));
-			proj = getProvider().getCommunityProject(admin, community.getName(), projectName);
-			assertNotNull("Community project is null",proj);
-		}
-		return proj;
-	}
-	
-	private LifecycleType getProviderCommunity(UserType user, String communityName, boolean cleanup){
-		LifecycleType lf = null;
-		UserType admin = getAdminUser(user.getOrganizationId());
-		lf = getProvider().getCommunity(admin, communityName);
-		//logger.info(JSONUtil.exportObject(user));
-		if(lf != null && cleanup){
-			getProvider().deleteCommunity(admin, lf.getObjectId());
-			lf = null;
-		}
-		if(lf == null){
-			assertTrue("Failed to create community",getProvider().createCommunity(admin, communityName));
-			lf = getProvider().getCommunity(admin, communityName);
-			assertNotNull("Community is null",lf);
-			assertTrue("Failed to enroll admin",getProvider().enrollAdminInCommunity(admin,lf.getObjectId(), user.getObjectId()));
-		}
-		return lf;
-	}
-	
-	private boolean reloadTraits(UserType user, LifecycleType lf){
-		ICommunityProvider provider = getProvider();
-		boolean outBool = false;
-		UserType admin = getAdminUser(user.getOrganizationId());
-		DirectoryGroupType tdir = BaseService.findGroup(admin, GroupEnumType.DATA, lf.getGroupPath() + "/Traits");
-		assertNotNull("Directory is null", tdir);
-		int ct = BaseService.countByGroup(AuditEnumType.TRAIT, tdir, user);
-		if(ct == 0){
-			outBool = getProvider().importLocationTraits(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "featureCodes_en.txt");
-		}
-		else{
-			outBool = true;
-		}
-		return outBool;
-	}
-	private boolean loadProjectRegion(UserType user, LifecycleType lf, ProjectType proj, int locationCount, int populationSize){
-		ICommunityProvider provider = getProvider();
-		boolean outBool = false;
-		UserType admin = getAdminUser(user.getOrganizationId());
-		DirectoryGroupType tdir = BaseService.findGroup(admin, GroupEnumType.DATA, proj.getGroupPath() + "/Persons");
-		assertNotNull("Directory is null", tdir);
-		int ct = BaseService.countByGroup(AuditEnumType.PERSON, tdir, user);
-		if(ct == 0){
-			logger.info("Loading project region and person seed data.");
-			outBool = (
-					getProvider().generateCommunityProjectRegion(admin, lf.getObjectId(), proj.getObjectId(), locationCount, populationSize, testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names"))
-				);
-		}
-		else{
-			outBool = true;
-		}
-		return outBool;
-	}
-	private boolean reloadCountryInfo(UserType user, LifecycleType lf){
-		ICommunityProvider provider = getProvider();
-		boolean outBool = false;
-		UserType admin = getAdminUser(user.getOrganizationId());
-		DirectoryGroupType tdir = BaseService.findGroup(admin, GroupEnumType.DATA, lf.getGroupPath() + "/Locations");
-		assertNotNull("Directory is null", tdir);
-		int ct = BaseService.countByGroup(AuditEnumType.LOCATION, tdir, user);
-		if(ct == 0){
-			logger.info("Loading community location data.  Note: This may take a while.");
-			outBool = (
-				getProvider().importLocationCountryInfo(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "countryInfo.txt")
-				&& getProvider().importLocationAdmin1Codes(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "admin1CodesASCII.txt")
-				&& getProvider().importLocationAdmin2Codes(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"),  "admin2Codes.txt")
-				&& getProvider().importLocationCountryData(admin, AuditEnumType.LIFECYCLE,lf.getObjectId(),testProperties.getProperty("data.generator.location"), "US,CA,MX","alternateNames.txt")
-			);
-		}
-		else{
-			outBool = true;
-		}
-		return outBool;
-	}
+	private static String communityName =  "Data Generator Q1";
+	private static String projectName = "Data Project Q2";
 	
 	@Test
 	public void TestDataGenerator(){
@@ -150,57 +58,25 @@ public class TestIdentityService extends BaseAccelerantTest{
  
 		int locationSize = 3;
 		int seedSize = 1000;
-		String communityName =  "Data Generator Q1";
-		String projectName = "Data Project Q1";
+
 		LifecycleType lf = getProviderCommunity(testUser, communityName,false);
 		
 		assertNotNull("Community is null",lf);
-		/*
-		try {
-			//EffectiveAuthorizationService.rebuildEntitlementsCache();
-			assertTrue("Test User is not authorized to change object",AuthorizationService.canChange(testUser, lf));
-		} catch (ArgumentException | FactoryException e) {
-			logger.error("Failed authorization check");
-		}
-		*/
 		assertTrue("Failed to reload traits",reloadTraits(testUser,lf));
 		assertTrue("Failed to reload cinfo",reloadCountryInfo(testUser,lf));
-		//getProvider().generateCommunityProjectRegion(testUser, lf.getObjectId(), projectId, locationSize, seedSize, dictionaryPath, namesPath)
 		
 		ProjectType p1 = getProviderCommunityProject(testUser, lf, projectName,true);
 		
 		assertNotNull("Project is null",p1);
 		
 		assertTrue("Failed to load project region",loadProjectRegion(testUser, lf, p1, locationSize, seedSize));
+
+		assertTrue("Failed to load project region",evolveProjectRegion(testUser, lf, p1, 1, 12));
 		
 		assertTrue("Failed to generate project application",getProvider().generateCommunityProjectApplication(testUser, lf.getObjectId(), p1.getObjectId(), "Application - " + UUID.randomUUID().toString(), true, true, 25, 25, 1.0, testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names")));
 		
 		BasePermissionType[] permTest = DataGeneratorData.randomApplicationPermissions(25, 25);
 		assertTrue("Expected exact number of permissions, but received " + permTest.length,permTest.length == 25);
-		
-		/*
-		AuditType audit = AuditService.beginAudit(ActionEnumType.EXECUTE, "Unit Test",AuditEnumType.USER, testUser.getUrn());
-
-		
-		
-		DataGeneratorUtil dutil = getGenerator(audit, testUser, lf.getName(), p1.getName(), lf.getGroupPath() + "/Locations", lf.getGroupPath() + "/Traits", testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names"));
-		boolean init = false;
-		try {
-			init = dutil.initialize();
-		} catch (FactoryException | ArgumentException e) {
-			logger.error(e);
-		}
-		assertTrue("Failed to init generator", init);
-		
-		DirectoryGroupType ldir = BaseService.findGroup(testUser, GroupEnumType.DATA, lf.getGroupPath() + "/Locations");
-		assertNotNull("Locations path is null", ldir);
-		List<LocationType> locations = dutil.getRandomType(testUser, FactoryEnumType.LOCATION, ldir, 2);
-		assertTrue("Expected at least one location",locations.size() > 0);
-		AddressType addr1 = dutil.randomAddress(locations.get(0));
-		assertNotNull("Address is null",addr1);
-		logger.info(JSONUtil.exportObject(addr1));
-		*/
-		//getProvider().generateCommunityProjectRegion(testUser, communityId, projectId, locationSize, seedSize, testProperties.getProperty("data.generator.dictionary"), testProperties.getProperty("data.generator.names"));
 	}
 	/*
 	@Test

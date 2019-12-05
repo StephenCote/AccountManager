@@ -54,8 +54,8 @@ public class TestTraitType extends BaseAccelerantTest {
 	private int testEpochEvolutions = 10;
 	private int testEpochCount = 15;
 	
-	private boolean resetLifecycle = false;
-	private boolean resetProject = false;
+	private boolean resetLifecycle = true;
+	private boolean resetProject = true;
 	
 	@Test
 	public void TestCDATA(){
@@ -65,8 +65,8 @@ public class TestTraitType extends BaseAccelerantTest {
 			testProjectNamePrefix + "1",
 			"~/Locations",
 			"~/Traits",
-			"/Users/Steve/Downloads/wn3.1.dict/dict/",
-			"/Users/Steve/Projects/workspace/RocketWeb/src/main/webapp/Scripts/"
+			testProperties.getProperty("data.generator.dictionary"),
+			testProperties.getProperty("data.generator.names")
 			//"c:/Users/swcot/Downloads/wn3.1.dict.tar/dict/",
 			//"c:/Users/swcot/workspace/RocketWeb/src/main/webapp/Scripts/"
 		);
@@ -76,6 +76,7 @@ public class TestTraitType extends BaseAccelerantTest {
 		try {
 			if(resetLifecycle) dutil.deleteLifecycle();
 			else if(resetProject) dutil.deleteProject();
+			Factories.cleanupOrphans();
 			
 			assertTrue("Failed to initialize",dutil.initialize());
 			assertNotNull("Project is null", dutil.getProject());
