@@ -1440,46 +1440,7 @@ public class RocketCommunity implements ICommunityProvider {
 				BulkFactories.getBulkFactory().write(sessionId);
 				BulkFactories.getBulkFactory().close(sessionId);
 			}
-			
-			/*
-			for(int i = 0; i < groups.length; i++){
-				BaseGroupType g = groups[i];
-				g.setOwnerId(user.getId());
-				g.setParentId(newDir.getId());
-				g.setOrganizationId(proj.getOrganizationId());
-				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUP, g);
-				for(int a = 0; a < accounts.size();a++){
-					if(distribution < 1.0 && r.nextDouble() > distribution) continue;
-					AccountParticipantType part = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(g, accounts.get(a));
-					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, part);
-				}
-			}
-			
-			for(int i = 0; i < permissions.length; i++){
-				BasePermissionType p = permissions[i];
-				p.setOwnerId(user.getId());
-				p.setParentId(basePerm.getId());
-				p.setOrganizationId(proj.getOrganizationId());
-				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERMISSION, p);
-				if(groups.length > 0){
-					for(int a = 0; a < groups.length;a++){
-						if(distribution < 1.0 && r.nextDouble() > distribution) continue;
-						GroupParticipantType part = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newGroupGroupParticipation(newDir, groups[a], p, AffectEnumType.GRANT_PERMISSION);
-						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, part);
-					}
-				}
-				else{
-					for(int a = 0; a < accounts.size();a++){
-						if(distribution < 1.0 && r.nextDouble() > distribution) continue;
-						AccountParticipantType part = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(newDir, accounts.get(a), p, AffectEnumType.GRANT_PERMISSION);
-						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, part);
-					}
-				}
-			}
-			
-			BulkFactories.getBulkFactory().write(sessionId);
-			BulkFactories.getBulkFactory().close(sessionId);
-			*/
+
 			outBool = true;
 
 			
