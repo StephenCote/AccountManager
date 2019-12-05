@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
@@ -39,19 +42,26 @@ import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.data.security.KeyService;
+import org.cote.accountmanager.data.services.VaultService;
+import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
+import org.cote.accountmanager.util.BinaryUtil;
+import org.cote.accountmanager.util.SecurityUtil;
 
 
 public class AttributeFactory extends NameIdFactory{
 
 	private int maximumInsBatch = 2000;
+	private VaultService vaultService = null;
 	public AttributeFactory(){
 		super();
+		this.vaultService = new VaultService();
 		this.scopeToOrganization = true;
 		this.hasParentId = false;
 		this.hasOwnerId = false;
@@ -59,6 +69,58 @@ public class AttributeFactory extends NameIdFactory{
 		this.primaryTableName = "attribute";
 		this.tableNames.add(primaryTableName);
 		this.bulkMode = false;
+	}
+	public String[] getEncipheredValues(AttributeType attr) throws ArgumentException, FactoryException, UnsupportedEncodingException {
+		if(attr.getEnciphered() == false || attr.getKeyId() == null) throw new ArgumentException("Attribute is not enciphered or is missing a key id");
+		SecurityBean bean = KeyService.getSymmetricKeyByObjectId(attr.getKeyId(), attr.getOrganizationId());
+		return getEncipheredValues(attr, bean);
+	}
+	public String[] getEncipheredValues(AttributeType attr, SecurityBean bean) throws ArgumentException, FactoryException, UnsupportedEncodingException {
+		List<String> vals = new ArrayList<>();
+		if(bean == null) throw new FactoryException("Failed to retrieve symmetric key with id " + attr.getKeyId());
+		for(String val : attr.getValues()) {
+			vals.add(
+				new String(
+						SecurityUtil.decipher(bean, BinaryUtil.fromBase64(val.getBytes("UTF-8")))
+				,"UTF-8")
+			);
+		}
+		return vals.toArray(new String[0]);
+
+	}
+
+	public AttributeType newEncipheredAttribute(NameIdType obj, SecurityBean cipher, String name, String val){
+		AttributeType attr = newAttribute(obj);
+		attr.setName(name);
+		if(setEncipheredAttributeValues(attr, cipher, new String[] {val})) {
+			attr.setKeyId(cipher.getObjectId());
+			attr.setEnciphered(true);
+		}
+		return attr;
+	}
+	public boolean setEncipheredAttributeValues(NameIdType obj, String attrName, String[] values) throws FactoryException, ArgumentException {
+		AttributeType attr = this.getAttributeByName(obj, attrName);
+		if(attr == null) return false;
+		return setEncipheredAttributeValues(attr, values);
+	}
+	public boolean setEncipheredAttributeValues(AttributeType attr, String[] values) throws FactoryException, ArgumentException {
+		if(attr.getKeyId() == null) throw new ArgumentException("Cannot encipher attribute without a key id");
+		SecurityBean bean = KeyService.getSymmetricKeyByObjectId(attr.getKeyId(), attr.getOrganizationId());
+		if(bean == null) throw new FactoryException("Failed to retrieve symmetric key with id " + attr.getKeyId());
+		return setEncipheredAttributeValues(attr, bean, values);
+	}
+	public boolean setEncipheredAttributeValues(AttributeType attr, SecurityBean cipher, String[] values) {
+		attr.getValues().clear();
+		boolean outBool = false;
+		try {
+			for(String val : values) {
+				attr.getValues().add(BinaryUtil.toBase64Str(SecurityUtil.encipher(cipher, val.getBytes("UTF-8"))));
+			}
+			outBool = true;
+		} catch (UnsupportedEncodingException e) {
+			logger.error(e);
+		}
+		return outBool;
 	}
 	
 	public AttributeType newAttribute(NameIdType obj, String name, String val){
@@ -124,9 +186,38 @@ public class AttributeFactory extends NameIdFactory{
 		AttributeType attr = getAttributeByName(attrs, name);
 		if(attr == null || attr.getValues().isEmpty())
 			return null;
+		if(attr.getEnciphered()) {
+			String[] vals = new String[0];
+			try {
+				vals = getEncipheredValues(attr);
+			} catch (UnsupportedEncodingException | ArgumentException | FactoryException e) {
+				logger.error(e);
+			}
+			if(vals.length > 0) return vals[0];
+			return null;
+		}
 		return attr.getValues().get(0);
 	}
 
+	public String getVaultAttributeValueByName(VaultBean vault, NameIdType obj, String name){
+		return getVaultAttributeValueByName(vault, obj.getAttributes(), name);
+	}
+	public String getVaultAttributeValueByName(VaultBean vault, List<AttributeType> attrs, String name){
+		AttributeType attr = getAttributeByName(attrs, name);
+		if(attr == null || attr.getValues().isEmpty())
+			return null;
+		if(!attr.getVaulted()) return null;
+		
+		String[] vals = new String[0];
+		try {
+			vals = vaultService.extractVaultAttributeValues(vault, attr);
+		} catch (UnsupportedEncodingException | ArgumentException | FactoryException | DataException e) {
+			logger.error(e);
+		}
+		if(vals.length > 0) return vals[0];
+		return null;
+	}
+	
 	public AttributeType getAttributeByName(NameIdType obj, String name){
 		return getAttributeByName(obj.getAttributes(), name);
 	}
@@ -195,7 +286,7 @@ public class AttributeFactory extends NameIdFactory{
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(connectionType);
 
-		String sql = String.format("INSERT INTO attribute (referenceid, referencetype, name, datatype, valueindex, value, organizationid) VALUES (%s,%s,%s,%s,%s,%s,%s);",token,token,token,token,token,token,token);
+		String sql = String.format("INSERT INTO attribute (referenceid, referencetype, name, datatype, valueindex, value, isenciphered, keyid, isvaulted, vaultid, organizationid) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);",token,token,token,token,token,token,token,token,token,token,token);
 		PreparedStatement psa = null;
 		try{
 			psa = connection.prepareStatement(sql);
@@ -209,7 +300,11 @@ public class AttributeFactory extends NameIdFactory{
 						psa.setString(4, attr.getDataType().toString());
 						psa.setInt(5, v);
 						psa.setString(6,attr.getValues().get(v));
-						psa.setLong(7,obj.getOrganizationId());
+						psa.setBoolean(7,attr.getEnciphered());
+						psa.setString(8,attr.getKeyId());
+						psa.setBoolean(9,attr.getVaulted());
+						psa.setString(10,attr.getVaultId());
+						psa.setLong(11,obj.getOrganizationId());
 						psa.addBatch();
 						if(aiter++ >= maximumInsBatch){
 							psa.executeBatch();
@@ -230,6 +325,7 @@ public class AttributeFactory extends NameIdFactory{
 			
 			logger.error(e.getMessage());
 			if(e.getNextException() != null) logger.error(e.getNextException().getMessage());
+			outBool = false;
 		}
 		finally{
 			try{
@@ -281,6 +377,10 @@ public class AttributeFactory extends NameIdFactory{
 					currentAttribute.setReferenceType(NameEnumType.valueOf(rset.getString("referencetype")));
 					currentAttribute.setOrganizationId(rset.getLong("organizationid"));
 					currentAttribute.setReferenceId(rset.getLong("referenceid"));
+					currentAttribute.setVaultId(rset.getString("vaultid"));
+					currentAttribute.setKeyId(rset.getString("keyid"));
+					currentAttribute.setVaulted(rset.getBoolean("isvaulted"));
+					currentAttribute.setEnciphered(rset.getBoolean("isenciphered"));
 					attributes.add(currentAttribute);
 				}
 				currentAttribute.getValues().add(rset.getString("value"));

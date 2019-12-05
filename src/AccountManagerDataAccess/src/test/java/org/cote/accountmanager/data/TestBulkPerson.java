@@ -26,6 +26,7 @@ package org.cote.accountmanager.data;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import org.cote.accountmanager.data.factory.AddressFactory;
@@ -88,6 +89,40 @@ public class TestBulkPerson extends BaseDataAccessTest{
 	}
 	*/
 	
+	private void addressPerson(UserType owner, DirectoryGroupType pDir, PersonType person, String sessionId) throws FactoryException, ArgumentException, UnsupportedEncodingException {
+		ContactInformationType cit = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(person);
+		cit.setOwnerId(owner.getId());
+
+		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
+		
+		person.setContactInformation(cit);
+		
+		AddressType addr = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).newAddress(owner,pDir.getId());
+		addr.setName(person.getName());
+		addr.setPreferred(true);
+		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ADDRESS, addr);
+		cit.getAddresses().add(addr);
+		
+		addr = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).newAddress(owner,pDir.getId());
+		addr.setName(person.getName() + "-2");
+		addr.setPreferred(false);
+		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ADDRESS, addr);
+		cit.getAddresses().add(addr);
+		
+		ContactType ct = ((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).newContact(owner, pDir.getId());
+		ct.setName(person.getName());
+		ct.setPreferred(true);
+		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT, ct);
+
+		
+		cit.getContacts().add(ct);
+		
+		UserType user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(person.getName(), UserEnumType.DEVELOPMENT, UserStatusEnumType.RESTRICTED, person.getOrganizationId());
+		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
+		CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId, user, user, "password1".getBytes("UTF-8"), true,true);
+
+	}
+	
 	@Test
 	public void TestBulkPersonWithInfo(){
 		boolean success = false;
@@ -97,42 +132,21 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(testUser, "Persons", testUser.getHomeDirectory(), testUser.getOrganizationId());
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			String guid = UUID.randomUUID().toString();
+			
 			PersonType new_person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(testUser,pDir.getId());
 			new_person.setName("BulkPerson-" + guid);
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, new_person);
-			
-			ContactInformationType cit = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(new_person);
-			cit.setOwnerId(testUser.getId());
+			addressPerson(testUser, pDir, new_person, sessionId);
 
-			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACTINFORMATION, cit);
+			PersonType new_baby = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(testUser,pDir.getId());
+			new_baby.setName("BulkPerson-Baby-" + guid);
+			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, new_baby);
+			addressPerson(testUser, pDir, new_baby, sessionId);
 			
-			new_person.setContactInformation(cit);
-			
-			AddressType addr = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).newAddress(testUser,pDir.getId());
-			addr.setName(new_person.getName());
-			addr.setPreferred(true);
-			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ADDRESS, addr);
-			cit.getAddresses().add(addr);
-			
-			addr = ((AddressFactory)Factories.getFactory(FactoryEnumType.ADDRESS)).newAddress(testUser,pDir.getId());
-			addr.setName(new_person.getName() + "-2");
-			addr.setPreferred(false);
-			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.ADDRESS, addr);
-			cit.getAddresses().add(addr);
-			
-			ContactType ct = ((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).newContact(testUser, pDir.getId());
-			ct.setName(new_person.getName());
-			ct.setPreferred(true);
-			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT, ct);
-
-			
-			cit.getContacts().add(ct);
-			
-			UserType user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(new_person.getName(), UserEnumType.DEVELOPMENT, UserStatusEnumType.RESTRICTED, new_person.getOrganizationId());
-			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
-			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId, user, user, "password1".getBytes("UTF-8"), true,true);
-
-			
+			/*
+			new_person.getDependents().add(new_baby);
+			BulkFactories.getBulkFactory().modifyBulkEntry(sessionId, FactoryEnumType.PERSON, new_person);
+			*/
 			//new_person.getUsers().add(user);
 			
 			

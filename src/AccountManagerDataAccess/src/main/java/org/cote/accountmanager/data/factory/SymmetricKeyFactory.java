@@ -54,7 +54,7 @@ public class SymmetricKeyFactory extends NameIdFactory {
 		this.aggressiveKeyFlush = false;
 		this.useThreadSafeCollections = false;
 		this.scopeToOrganization = true;
-
+		this.isVaulted = true;
 		this.tableNames.add("symmetrickeys");
 
 		factoryType = FactoryEnumType.SYMMETRICKEY;

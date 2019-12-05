@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -33,14 +34,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.beans.VaultBean;
+import org.cote.accountmanager.data.factory.AttributeFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataType;
@@ -68,6 +72,70 @@ public class TestVaultService extends BaseDataAccessTest{
 	private String vaultUserName2 = "QA Vault User 2";
 	private int keyRotations = 10;
 	
+	@Test
+	public void TestVaultAttributes() {
+		UserType vaultUser = getUser(vaultUserName, "password");
+		VaultService vs = getVaultService();
+		String testVaultName = getTestVaultName();
+		String credPath = testProperties.getProperty("vault.credentialPath") + "/" + testVaultName + ".json";
+		CredentialType cred = getProtectedCredential(vaultUser, credPath, "password");
+		VaultBean vault = getCreateVault(vaultUser, testProperties.getProperty("vault.path"),testVaultName, cred,credPath);
+		DirectoryGroupType dir = getGroup(vaultUser, "Data", GroupEnumType.DATA, vaultUser.getHomeDirectory());
+		DataType data = this.newTextData(testVaultName + " Demo Data", "The demo data", vaultUser, dir);
+		boolean error = false;
+		try {
+			SecurityBean cipher = KeyService.newPersonalSymmetricKey(vaultUser,false);
+			AttributeFactory af = Factories.getAttributeFactory();
+			data.getAttributes().add(af.newAttribute(data,"plainText","Plain text value"));
+			data.getAttributes().add(af.newEncipheredAttribute(data,cipher,"cipherText","Cipher text value"));
+			AttributeType vAttr = af.newAttribute(data,"vaultText","Vaulted text value");
+			vs.setVaultAttributeValues(vault, vAttr);
+			data.getAttributes().add(vAttr);
+			
+			logger.info("Updating mixed attributes: " + data.getAttributes().size());
+			assertTrue("Failed to update attributes",af.updateAttributes(data));
+			
+			data = this.newTextData(testVaultName + " Demo Data", "The demo data", vaultUser, dir);
+			af.populateAttributes(data);
+			
+			String testVal1 = af.getAttributeValueByName(data, "plainText");
+			String testEncVal1 = af.getAttributeValueByName(data, "cipherText");
+			
+			String testVaultVal1 = af.getVaultAttributeValueByName(vault, data, "vaultText");
+			
+			assertNotNull("Plain text value is null", testVal1);
+			assertNotNull("Enciphered text value is null",testEncVal1);
+			assertNotNull("Vaulted text value is null",testVaultVal1);
+			logger.info("Plain text val: " + testVal1);
+			logger.info("Cipher text val: " + testEncVal1);
+			logger.info("Vault text val: " + testVaultVal1);
+			
+			af.setEncipheredAttributeValues(data, "cipherText",new String[] {"New cipher text value"});
+
+			vs.setVaultAttributeValues(vault, vAttr, new String[] {"New vault text value"});
+			assertTrue("Failed to update attributes",af.updateAttributes(data));
+			
+			data = this.newTextData(testVaultName + " Demo Data", "The demo data", vaultUser, dir);
+			af.populateAttributes(data);
+			
+			testEncVal1 = af.getAttributeValueByName(data, "cipherText");
+			assertNotNull("Enciphered text value is null",testEncVal1);
+
+			testVaultVal1 = af.getVaultAttributeValueByName(vault, data, "vaultText");
+
+			assertNotNull("Vault attribute was null",testVaultVal1);
+			
+			logger.info("Cipher text val: " + testEncVal1);
+			logger.info("Vault text val: " + testVaultVal1);
+			
+		} catch (ArgumentException | FactoryException | UnsupportedEncodingException | DataException | NullPointerException e) {
+			logger.error(e);
+			e.printStackTrace();
+			error = true;
+		}
+		assertFalse("An error occurred",error);
+
+	}
 	
 	@Test
 	public void TestVaultCredential(){

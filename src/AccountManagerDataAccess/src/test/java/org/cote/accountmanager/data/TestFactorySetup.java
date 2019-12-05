@@ -35,10 +35,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +57,7 @@ import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.StreamUtil;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,17 +66,28 @@ public class TestFactorySetup {
 
 	private static String testAdminPassword = "password1";
 	private static boolean tearDown = true;
+	private static Properties testProperties = null;
 	
 	@Before
 	public void setUp() throws Exception {
 
-		ConnectionFactory cf = ConnectionFactory.getInstance();
-		cf.setConnectionType(CONNECTION_TYPE.SINGLE);
-		cf.setDriverClassName("org.postgresql.Driver");
-		cf.setUserName("devuser");
-		cf.setUserPassword("password");
-		cf.setUrl("jdbc:postgresql://127.0.0.1:5432/devdb");
-		logger.info("Setup");
+		if(testProperties == null){
+			testProperties = new Properties();
+		
+			try {
+				InputStream fis = ClassLoader.getSystemResourceAsStream("./resource.properties"); 
+						//new FileInputStream("./resource.properties");
+				
+				testProperties.load(fis);
+				fis.close();
+			} catch (IOException e) {
+				
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+				return;
+			}
+		}
+		ConnectionFactory.setupConnectionFactory(testProperties);
+	
 	}
 
 	@After
@@ -80,16 +95,24 @@ public class TestFactorySetup {
 	}
 	
 	@Test
-	public void testFactoryTearDown(){
+	public void testFactorySetup() {
+		testFactoryTearDown();
+		testSetupAccountManager();
+		testDefaultUsers();
+	}
+	private void testFactoryTearDown(){
 		if(tearDown == false) return;
 		
-		String sqlFile = "/Users/Steve/Projects/Source/db/AM6_PG9_Schema.sql";
+		String sqlFile = testProperties.getProperty("am6.schemaPath");
+		String sqlFile2 = testProperties.getProperty("rocket.schemaPath");
 		String sql = new String(StreamUtil.fileToBytes(sqlFile));
+		String sql2 = new String(StreamUtil.fileToBytes(sqlFile2));
 		boolean error = false;
 		try{
 			Connection connection = ConnectionFactory.getInstance().getConnection();
 			Statement statement = connection.createStatement();
 			statement.executeUpdate(sql);
+			statement.executeUpdate(sql2);
 			connection.close();
 		}
 		catch(SQLException sqe){
@@ -101,13 +124,13 @@ public class TestFactorySetup {
 		
 	}
 	
-	@Test
-	public void testSetupAccountManager(){
+	private void testSetupAccountManager(){
 		if(tearDown == false) return;
 		
 		boolean setup = false;
 		boolean error = false;
 		try {
+			Factories.recycleFactories();
 			setup = FactoryDefaults.setupAccountManager("password1");
 		} catch (NullPointerException | ArgumentException | DataAccessException | FactoryException e) {
 			
@@ -118,8 +141,7 @@ public class TestFactorySetup {
 		assertTrue("Account manager not setup", setup);
 	}
 	
-	@Test
-	public void testDefaultUsers(){
+	private void testDefaultUsers(){
 		AccountType rootAcct = null;
 		AccountType adminAcct = null;
 		UserType root = null;

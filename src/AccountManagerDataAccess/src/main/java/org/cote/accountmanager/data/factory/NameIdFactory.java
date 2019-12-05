@@ -77,7 +77,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	protected boolean clusterByGroup = false;
 	protected boolean clusterByParent = false;
 	protected boolean isParticipation = false;
-	
+	protected boolean isVaulted = false;
 	/// 2016/05/31 - Switching the default of aggressive flush to 'false' until the reproduction is identified again
 	/// The cleanup routine wasn't actually doing anything for all the time it wasted.
 	/// If enabled, the performance hit is drastic on large collections.
@@ -106,6 +106,16 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 
 	}
 	
+
+	public boolean isVaulted() {
+		return isVaulted;
+	}
+
+
+	public void setVaulted(boolean isVaulted) {
+		this.isVaulted = isVaulted;
+	}
+
 
 	public boolean isClusterByGroup() {
 		return clusterByGroup;
@@ -499,6 +509,12 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 			if(hasName) fields.add(QueryFields.getFieldName(map));
 			if(hasOwnerId) fields.add(QueryFields.getFieldOwner(map));
 			if(hasParentId) fields.add(QueryFields.getFieldParent(map));
+			if(isVaulted) {
+				fields.add(QueryFields.getFieldKeyId(map.getKeyId()));
+				fields.add(QueryFields.getFieldVaultId(map.getVaultId()));
+				fields.add(QueryFields.getFieldVaulted(map.getVaulted()));
+				fields.add(QueryFields.getFieldEnciphered(map.getEnciphered()));
+			}
 			if(hasUrn){
 				map.setUrn(UrnUtil.getUrn(map));
 				if(map.getUrn() == null){
@@ -537,6 +553,12 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 			if(hasParentId) row.setCellValue("parentid",obj.getParentId());
 			if(hasOwnerId) row.setCellValue("ownerid",obj.getOwnerId());
 			if (scopeToOrganization) row.setCellValue("organizationid", obj.getOrganizationId());
+			if(isVaulted) {
+				row.setCellValue("vaultid",obj.getVaultId());
+				row.setCellValue("keyid", obj.getKeyId());
+				row.setCellValue("isvaulted", obj.getVaulted());
+				row.setCellValue("isenciphered", obj.getEnciphered());
+			}
 		}
 		catch(DataAccessException dae){
 			logger.error(this.factoryType.toString() + ": " + dae.getMessage());
@@ -679,6 +701,12 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 			long org_id = rset.getLong("organizationid");
 			obj.setOrganizationId(org_id);
 			obj.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(obj.getOrganizationId()));
+		}
+		if(isVaulted) {
+			obj.setVaultId(rset.getString("vaultid"));
+			obj.setKeyId(rset.getString("keyid"));
+			obj.setVaulted(rset.getBoolean("isvaulted"));
+			obj.setEnciphered(rset.getBoolean("isenciphered"));
 		}
 		if(hasUrn && usePersistedUrn){
 			obj.setUrn(rset.getString("urn"));

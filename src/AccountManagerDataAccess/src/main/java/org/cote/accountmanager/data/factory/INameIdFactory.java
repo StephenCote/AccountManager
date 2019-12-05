@@ -46,6 +46,7 @@ public interface INameIdFactory {
 	public void setBatchSize(int batchSize);
 	public boolean getBulkMode();
 	public void registerProvider();
+	public boolean isVaulted();
 	public boolean isClusterByGroup();
 	public boolean isClusterByParent();
 	public boolean isParticipation();

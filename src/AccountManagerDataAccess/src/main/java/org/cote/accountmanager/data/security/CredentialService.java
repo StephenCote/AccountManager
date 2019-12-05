@@ -47,6 +47,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.SecurityUtil;
 
 public class CredentialService {
@@ -274,6 +275,7 @@ public class CredentialService {
 			/// NOTE: 'keyId' can be used for either being enciphered or vaulted, but not both
 			/// By comparison, DataType has various key reference support while CredentialType just has Key and Vault, and Vault uses both
 			///
+
 			if(vaultId != null) {
 				VaultBean vault = vaultService.getVaultByUrn(owner, vaultId);
 				if(vault == null) {
@@ -282,19 +284,20 @@ public class CredentialService {
 				}
 				vaultService.setVaultBytes(vault, cred, useCredBytes);
 			}
-			else if(encrypted){
-				SecurityBean bean = KeyService.newPersonalAsymmetricKey(bulkSessionId,null,owner, false);
-				cred.setKeyId(bean.getObjectId());
-				//logger.info("Bean has bytes: " + (bean.getPublicKeyBytes() != null) + " / and key = " + (bean.getPublicKey() != null));
-				useCredBytes = SecurityUtil.encrypt(bean, useCredBytes);
-
-				if(useCredBytes.length == 0) throw new FactoryException("Invalid encrypted credential");
-				cred.setEnciphered(true);
-			}
-
-			else {
+			else{
+				if(encrypted){
+			
+					SecurityBean bean = KeyService.newPersonalAsymmetricKey(bulkSessionId,null,owner, false);
+					cred.setKeyId(bean.getObjectId());
+					//logger.info("Bean has bytes: " + (bean.getPublicKeyBytes() != null) + " / and key = " + (bean.getPublicKey() != null));
+					useCredBytes = SecurityUtil.encrypt(bean, useCredBytes);
+	
+					if(useCredBytes.length == 0) throw new FactoryException("Invalid encrypted credential");
+					cred.setEnciphered(true);
+				}
 				cred.setCredential(useCredBytes);
 			}
+
 			if(bulkSessionId != null) BulkFactories.getBulkFactory().createBulkEntry(bulkSessionId, FactoryEnumType.CREDENTIAL, cred);
 			else if(((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).add(cred)){
 				cred = ((CredentialFactory)Factories.getFactory(FactoryEnumType.CREDENTIAL)).getByObjectId(cred.getObjectId(),cred.getOrganizationId());

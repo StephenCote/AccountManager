@@ -63,6 +63,7 @@ public class CredentialFactory extends NameIdFactory {
 		this.aggressiveKeyFlush = false;
 		this.useThreadSafeCollections = false;
 		this.scopeToOrganization = true;
+		this.isVaulted = true;
 		this.primaryTableName = "credential";
 		this.tableNames.add(primaryTableName);
 
@@ -145,10 +146,6 @@ public class CredentialFactory extends NameIdFactory {
 			row.setCellValue("referenceid",obj.getReferenceId());
 			row.setCellValue("previouscredentialid",obj.getPreviousCredentialId());
 			row.setCellValue("nextcredentialid",obj.getNextCredentialId());
-			row.setCellValue("vaultid",obj.getVaultId());
-			row.setCellValue("keyid", obj.getKeyId());
-			row.setCellValue("isvaulted", obj.getVaulted());
-			row.setCellValue("isenciphered", obj.getEnciphered());
 			row.setCellValue("createddate", obj.getCreatedDate());
 			row.setCellValue("modifieddate", obj.getModifiedDate());
 			row.setCellValue("expirationdate", obj.getExpiryDate());
@@ -178,10 +175,6 @@ public class CredentialFactory extends NameIdFactory {
 		newCred.setReferenceId(rset.getLong("referenceid"));
 		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
 		newCred.setCredentialType(CredentialEnumType.fromValue(rset.getString("credentialtype")));
-		newCred.setVaultId(rset.getString("vaultid"));
-		newCred.setKeyId(rset.getString("keyid"));
-		newCred.setVaulted(rset.getBoolean("isvaulted"));
-		newCred.setEnciphered(rset.getBoolean("isenciphered"));
 		newCred.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
 		newCred.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
 		newCred.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
@@ -204,10 +197,6 @@ public class CredentialFactory extends NameIdFactory {
 		fields.add(QueryFields.getFieldReferenceId(useMap.getReferenceId()));
 		fields.add(QueryFields.getFieldReferenceType(useMap.getReferenceType()));
 		fields.add(QueryFields.getFieldCredentialType(useMap.getCredentialType()));
-		fields.add(QueryFields.getFieldKeyId(useMap.getKeyId()));
-		fields.add(QueryFields.getFieldVaultId(useMap.getVaultId()));
-		fields.add(QueryFields.getFieldVaulted(useMap.getVaulted()));
-		fields.add(QueryFields.getFieldEnciphered(useMap.getEnciphered()));
 
 		fields.add(QueryFields.getFieldSalt(useMap.getSalt()));
 		fields.add(QueryFields.getFieldCredential(useMap.getCredential()));

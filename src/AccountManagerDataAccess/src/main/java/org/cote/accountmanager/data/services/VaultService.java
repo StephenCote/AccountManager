@@ -71,8 +71,10 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.AttributeFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
@@ -80,6 +82,7 @@ import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
+import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
@@ -918,17 +921,53 @@ public class VaultService
 		return v_sm;
 	}
 	
-	public static boolean canVault(NameIdType obj) {
-		boolean outBool = false;
-		switch(obj.getNameType()) {
-			case DATA:
-			case CREDENTIAL:
-				outBool = true;
-				break;
-			default:
-				break;
+	public static boolean canVault(NameIdType obj) throws FactoryException {
+		INameIdFactory fact = Factories.getFactory(FactoryEnumType.valueOf(obj.getNameType().toString()));
+		return fact.isVaulted();
+	}
+	public String[] extractVaultAttributeValues(VaultBean vault, AttributeType attr) throws UnsupportedEncodingException, ArgumentException, FactoryException, DataException {
+		String[] outVals = new String[0];
+		AttributeFactory af = Factories.getAttributeFactory();
+		if(vault == null){
+			logger.error("Vault reference is null");
+			return outVals;
 		}
-		return outBool;
+		if (vault.getHaveVaultKey() == false){
+			logger.warn("Vault key is not specified");
+			return outVals;
+		}
+		if (vault.getVaultDataUrn().equals(attr.getVaultId()) == false){
+			logger.error("Attribute vault id '" + attr.getVaultId() + "' does not match the specified vault name '" + vault.getVaultDataUrn() + "'.  This is a precautionary/secondary check, probably due to changing the persisted vault configuration name");
+			return outVals;
+		}
+		return af.getEncipheredValues(attr, getVaultCipher(vault,attr.getKeyId()));
+	}
+	public void setVaultAttributeValues(VaultBean vault, AttributeType attr) throws DataException, FactoryException, UnsupportedEncodingException, ArgumentException
+	{
+		if(attr.getVaulted()) {
+			logger.warn("Vaulting existing attribute values runs the risk of accidentally enciphering multiple times");
+		}
+		setVaultAttributeValues(vault,attr,attr.getValues().toArray(new String[0]));
+	}
+	public void setVaultAttributeValues(VaultBean vault, AttributeType attr, String[] values) throws DataException, FactoryException, UnsupportedEncodingException, ArgumentException
+	{
+		if (vault.getActiveKey() == null || vault.getActiveKeyId() == null){
+			if(!newActiveKey(vault)){
+				throw new FactoryException("Failed to establish active key");
+			}
+			if (vault.getActiveKey() == null)
+			{
+				throw new FactoryException("Active key is null");
+			}
+		}
+		
+		if(attr.getEnciphered()) throw new ArgumentException("Cannot vault an enciphered attribute");
+		AttributeFactory af = Factories.getAttributeFactory();
+		attr.setVaulted(true);
+		attr.setKeyId(vault.getActiveKeyId());
+		attr.setVaultId(vault.getVaultDataUrn());
+		attr.getValues().clear();
+		af.setEncipheredAttributeValues(attr, vault.getActiveKeyBean(), values);
 	}
 	public void setVaultBytes(VaultBean vault, NameIdType obj, byte[] inData) throws DataException, FactoryException, UnsupportedEncodingException, ArgumentException
 	{
@@ -941,12 +980,17 @@ public class VaultService
 				throw new FactoryException("Active key is null");
 			}
 		}
+		INameIdFactory fact = Factories.getFactory(FactoryEnumType.valueOf(obj.getNameType().toString()));
+		if(fact.isVaulted() == false) throw new ArgumentException("Object factory does not support vaulted protection");
+		
+		obj.setKeyId(vault.getActiveKeyId());
+		obj.setVaultId(vault.getVaultDataUrn());
+		obj.setVaulted(true);
+		
 		if(obj.getNameType() == NameEnumType.CREDENTIAL) {
 			CredentialType cred = (CredentialType)obj;
 			cred.setCredential(SecurityUtil.encipher(vault.getActiveKeyBean(), inData));
-			cred.setKeyId(vault.getActiveKeyId());
-			cred.setVaultId(vault.getVaultDataUrn());
-			cred.setVaulted(true);
+
 		}
 		else if(obj.getNameType() == NameEnumType.DATA) {
 			DataType data = (DataType)obj;
@@ -959,10 +1003,7 @@ public class VaultService
 				data.setCompressed(true);
 				data.setCompressionType(CompressionEnumType.GZIP);
 			}
-			data.setVaulted(true);
 			DataUtil.setValue(data,SecurityUtil.encipher(vault.getActiveKeyBean(), inData));
-			data.setKeyId(vault.getActiveKeyId());
-			data.setVaultId(vault.getVaultDataUrn());
 		}
 
 	}
@@ -977,30 +1018,13 @@ public class VaultService
 			logger.warn("Vault key is not specified");
 			return outBytes;
 		}
-		boolean isVaulted = false;
-		String vaultId = null;
-		String keyId = null;
-		
-		/// TODO: Refactor object type to inherit from a common interface that cites VaultId and KeyId versus switching
-		///
-		switch(obj.getNameType()){
-		
-			case DATA:
-				isVaulted = ((DataType)obj).getVaulted();
-				vaultId = ((DataType)obj).getVaultId();
-				keyId = ((DataType)obj).getKeyId();
-				break;
-		
-			case CREDENTIAL:
-				isVaulted = ((CredentialType)obj).getVaulted();
-				vaultId = ((CredentialType)obj).getVaultId();
-				keyId = ((CredentialType)obj).getKeyId();
-				break;
-		
-			default:
-				break;
-		}
+		INameIdFactory fact = Factories.getFactory(FactoryEnumType.valueOf(obj.getNameType().toString()));
+		if(fact.isVaulted() == false) throw new ArgumentException("Object factory does not support vaulted protection");
 
+		boolean isVaulted = obj.getVaulted();
+		String vaultId = obj.getVaultId();
+		String keyId = obj.getKeyId();
+		
 		if(!isVaulted || vaultId == null || keyId == null) {
 			logger.error("Object is not vaulted");
 			return outBytes;
@@ -1016,7 +1040,7 @@ public class VaultService
 		return getVaultBytes(vault,obj, getVaultCipher(vault,keyId));
 
 	}
-	public static byte[] getVaultBytes(VaultBean vault, NameIdType obj, SecurityBean bean) throws DataException
+	public static byte[] getVaultBytes(VaultBean vault, NameIdType obj, SecurityBean bean) throws DataException, FactoryException, ArgumentException
 	{
 		
 		if(bean == null){
@@ -1024,6 +1048,8 @@ public class VaultService
 			return new byte[0];
 		}
 		
+		INameIdFactory fact = Factories.getFactory(FactoryEnumType.valueOf(obj.getNameType().toString()));
+		if(fact.isVaulted() == false) throw new ArgumentException("Object factory does not support vaulted protection");
 		
 		byte[] ret = new byte[0];
 		switch(obj.getNameType()) {

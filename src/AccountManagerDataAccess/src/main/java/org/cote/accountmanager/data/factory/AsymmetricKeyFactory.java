@@ -58,7 +58,7 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 		this.scopeToOrganization = true;
 		this.primaryTableName = "asymmetrickeys";
 		this.tableNames.add(primaryTableName);
-
+		this.isVaulted = true;
 		factoryType = FactoryEnumType.ASYMMETRICKEY;
 	}
 

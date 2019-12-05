@@ -92,6 +92,7 @@ public class DataFactory extends NameIdFactory {
 		this.hasOwnerId = true;
 		this.hasObjectId = true;
 		this.hasUrn = true;
+		this.isVaulted = true;
 		this.primaryTableName = "data";
 		this.tableNames.add(this.primaryTableName);
 		factoryType = FactoryEnumType.DATA;
@@ -256,11 +257,10 @@ public class DataFactory extends NameIdFactory {
 		try{
 			row.setCellValue("description",newData.getDescription());
 			row.setCellValue("mimetype", newData.getMimeType());
-			row.setCellValue("vaultid",newData.getVaultId());
+			
 			row.setCellValue("groupid", newData.getGroupId());
-			row.setCellValue("keyid", newData.getKeyId());
-			row.setCellValue("isvaulted", newData.getVaulted());
-			row.setCellValue("isenciphered", newData.getEnciphered());
+
+			
 			row.setCellValue("ispasswordprotected", newData.getPasswordProtected());
 			row.setCellValue("iscompressed",newData.getCompressed());
 			row.setCellValue("compressiontype", newData.getCompressionType().toString());
@@ -378,16 +378,8 @@ public class DataFactory extends NameIdFactory {
 		newData.setDetailsOnly((instruction != null && instruction.getAlternateQuery()));
 		newData.setPopulated(!newData.getDetailsOnly());
 		newData.setMimeType(rset.getString("mimetype"));
-		newData.setVaultId(rset.getString("vaultid"));
-		newData.setKeyId(rset.getString("keyid"));
-		newData.setVaulted(rset.getBoolean("isvaulted"));
 		
-		// Make a note that if the data is marked as being encrypted, then the internal data buffer is coming in encrypted.
-		// This bit is unset when the data is accessed and decrypted
-		//
-		newData.setEnciphered(rset.getBoolean("isenciphered"));
 		newData.setPasswordProtected(rset.getBoolean("ispasswordprotected"));
-		
 		newData.setCompressed(rset.getBoolean("iscompressed"));
 		newData.setCompressionType(CompressionEnumType.valueOf(rset.getString("compressiontype")));
 		newData.setDescription(rset.getString("description"));
@@ -442,10 +434,6 @@ public class DataFactory extends NameIdFactory {
 		DataType useMap = (DataType)map;
 		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
 		fields.add(QueryFields.getFieldMimeType(useMap.getMimeType()));
-		fields.add(QueryFields.getFieldKeyId(useMap.getKeyId()));
-		fields.add(QueryFields.getFieldVaultId(useMap.getVaultId()));
-		fields.add(QueryFields.getFieldVaulted(useMap.getVaulted()));
-		fields.add(QueryFields.getFieldEnciphered(useMap.getEnciphered()));
 		fields.add(QueryFields.getFieldPasswordProtected(useMap.getPasswordProtected()));
 		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 		fields.add(QueryFields.getFieldCompressed(useMap.getCompressed()));

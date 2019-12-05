@@ -546,7 +546,7 @@ public class BulkFactory {
 		}
 		
 		if(updateSet.get(sessionId).get(factoryType).contains(key)){
-			logger.warn(factoryType.toString() + " update set for session " + sessionId + " already includes " + key);
+			logger.debug(factoryType.toString() + " update set for session " + sessionId + " already includes " + key);
 			return;
 		}
 
