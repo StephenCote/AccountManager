@@ -14,6 +14,10 @@
     	<attribute name="referenceType" type="Q1:NameEnumType"></attribute>
     	<attribute name="referenceId" type="long"></attribute>
     	<attribute name="organizationId" type="long"></attribute>
+    	<attribute name="keyId" type="string"></attribute>
+    	<attribute name="vaultId" type="string"></attribute>
+    	<attribute name="vaulted" type="boolean" default="false"></attribute>
+    	<attribute name="enciphered" type="boolean" default="false"></attribute>
     </complexType>
-    	
+
 </schema>

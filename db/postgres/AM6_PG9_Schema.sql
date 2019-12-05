@@ -50,6 +50,14 @@ CREATE TABLE organizations (
 	OrganizationType varchar(16) not null
 ) inherits (logicalnameid);
 
+DROP TABLE IF EXISTS vaultkey CASCADE;
+CREATE TABLE vaultkey(
+	KeyId varchar(64),
+	VaultId text,
+	IsVaulted boolean not null default false,
+	IsEnciphered boolean not null default false
+);
+
 DROP TABLE IF EXISTS attribute CASCADE;
 CREATE TABLE attribute (
 	Name varchar(512) not null,
@@ -57,7 +65,7 @@ CREATE TABLE attribute (
 	ValueIndex int not null default 0,
 	Value text not null
 
-	) inherits (orgid,objectreference);
+	) inherits (orgid,vaultkey,objectreference);
 
 -- CREATE UNIQUE INDEX Idxattributes on attribute(ReferenceId,ReferenceType,Name,ValueIndex,OrganizationId);
 -- OPTIONAL value index, for when performing broader queries based on attribute value
@@ -90,7 +98,7 @@ CREATE TABLE asymmetrickeys (
 	PublicKey bytea,
 	PrivateKey bytea,
 	SymmetricKeyId bigint not null default 0
-) inherits (objorgid);
+) inherits (objorgid,vaultkey);
 
 
 DROP TABLE IF EXISTS symmetrickeys CASCADE;
@@ -108,7 +116,7 @@ CREATE TABLE symmetrickeys (
 	CipherKey bytea,
 	CipherIV bytea,
 	AsymmetricKeyId bigint not null default 0
-) inherits (objorgid);
+) inherits (objorgid,vaultkey);
 
 DROP TABLE IF EXISTS uniqueparent CASCADE;
 CREATE TABLE uniqueparent (
@@ -162,15 +170,6 @@ DROP TABLE IF EXISTS grouprolecache CASCADE;
 CREATE TABLE grouprolecache (
 
 ) inherits (rolecache);
-
-DROP TABLE IF EXISTS vaultkey CASCADE;
-CREATE TABLE vaultkey(
-	KeyId varchar(64),
-	VaultId text,
-	IsVaulted boolean not null default false,
-	IsEnciphered boolean not null default false
-
-);
 
 DROP TABLE IF EXISTS namegroup CASCADE;
 CREATE TABLE namegroup (

@@ -50,18 +50,10 @@
 				</attribute>
 				<attribute name="passwordProtect" type="boolean"
 					default="false">
-				</attribute>
-				<attribute name="enciphered" type="boolean"
-					default="false">
-				</attribute>
+				</attribute>
 				<attribute name="encipher" type="boolean"
 					default="false">
-				</attribute>
-				<attribute name="vaulted" type="boolean"
-					default="false">
-				</attribute>
-				<attribute name="vaultId" type="string"></attribute>
-				<attribute name="keyId" type="string"></attribute>
+				</attribute>
 				<attribute name="readDataBytes" type="boolean"
 					default="false">
 				</attribute>
