@@ -625,7 +625,7 @@ public class DataGeneratorUtil {
 				logger.info("Populating '" + popCount + '"');
 				for(int i = 0; i < len; i++){
 					PersonType person = randomPerson(user, personsDir);
-					person.setContactInformation(null);
+					/// person.setContactInformation(null);
 					int alignment = DataGeneratorData.getAlignmentScore(person);
 					long years = Math.abs(CalendarUtil.getTimeSpanFromNow(person.getBirthDate())) / YEAR;
 					totalAge += years;
@@ -1189,6 +1189,7 @@ public class DataGeneratorUtil {
 					baby.setBirthDate(parentEvent.getStartDate());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, baby);
 					person.getDependents().add(baby);
+
 					if(partner != null){
 						partner.getDependents().add(baby);
 					}
@@ -1197,7 +1198,9 @@ public class DataGeneratorUtil {
 					parentEvent.getActors().add(baby);
 					newAdditions.add(baby);
 					
-					/// Disable while checking a bug
+					/// Note: When dealing with bulk sessions that involve complex object types, consistency within the session is necessary because the objects may result in dirty write operations, where a transitive dependency (aka the dirty entry) is introduced within the bulk session.
+					/// So if, for example, a person is added with contact information here, but without it later, such as in immigration, and the person factory adds it by default, that default entry becomes dirty.  The dirty entry can cause a bulk schema difference on the operation, which results in a null identifier.
+					///
 					addressPerson(baby,parentEvent.getLocation(), sessionId);
 					
 					EventType birth = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).newEvent(user, parentEvent);
@@ -1291,6 +1294,11 @@ public class DataGeneratorUtil {
 			for(PersonType person : immigration){
 
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, person);
+				
+				/// Note: When dealing with bulk sessions that involve complex object types, consistency within the session is necessary because the objects may result in dirty write operations, where a transitive dependency (aka the dirty entry) is introduced within the bulk session.
+				/// So if, for example, a person is added with contact information here, but without it later, such as in immigration, and the person factory adds it by default, that default entry becomes dirty.  The dirty entry can cause a bulk schema difference on the operation, which results in a null identifier.
+				///
+				addressPerson(person,parentEvent.getLocation(),sessionId);
 				BaseParticipantType bpt = ((GroupParticipationFactory)Factories.getBulkFactory(FactoryEnumType.GROUPPARTICIPATION)).newPersonGroupParticipation(population, person);
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, bpt);
 
