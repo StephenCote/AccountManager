@@ -275,8 +275,10 @@ public class IdentityService {
 				if(deleteEntireProject){
 					Rocket.deleteProject(project);
 				}
-				logger.info("Cleaning up orphaned data references");
-				Factories.cleanupOrphans();
+				if(deleteEntireProject || deleteConfiguration) {
+					logger.info("Cleaning up orphaned data references");
+					Factories.cleanupOrphans();
+				}
 				
 				outBool = true;
 			} catch (FactoryException | ArgumentException | DataAccessException e) {
