@@ -50,14 +50,15 @@ import org.junit.Test;
 public class TestIdentityService extends BaseAccelerantTest{
 	public static final Logger logger = LogManager.getLogger(TestIdentityService.class);
 	private static String communityName =  "Data Generator Q1";
-	private static String projectName = "Data Project Q2";
+	private static String projectName = "Data Project Q3";
+	private static boolean cleanupProject = false;
 	
 	@Test
 	public void TestDataGenerator(){
 		ICommunityProvider provider = getProvider();
  
 		int locationSize = 3;
-		int seedSize = 1000;
+		int seedSize = 2500;
 
 		LifecycleType lf = getProviderCommunity(testUser, communityName,false);
 		
@@ -65,7 +66,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 		assertTrue("Failed to reload traits",reloadTraits(testUser,lf));
 		assertTrue("Failed to reload cinfo",reloadCountryInfo(testUser,lf));
 		
-		ProjectType p1 = getProviderCommunityProject(testUser, lf, projectName,true);
+		ProjectType p1 = getProviderCommunityProject(testUser, lf, projectName,cleanupProject);
 		
 		assertNotNull("Project is null",p1);
 		
@@ -73,10 +74,10 @@ public class TestIdentityService extends BaseAccelerantTest{
 
 		assertTrue("Failed to load project region",evolveProjectRegion(testUser, lf, p1, 1, 12));
 		
-		assertTrue("Failed to generate project application",getProvider().generateCommunityProjectApplication(testUser, lf.getObjectId(), p1.getObjectId(), "Application - " + UUID.randomUUID().toString(), true, true, 25, 25, 1.0, testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names")));
+		/// assertTrue("Failed to generate project application",getProvider().generateCommunityProjectApplication(testUser, lf.getObjectId(), p1.getObjectId(), "Application - " + UUID.randomUUID().toString(), true, true, 25, 25, 1.0, testProperties.getProperty("data.generator.dictionary"),testProperties.getProperty("data.generator.names")));
 		
-		BasePermissionType[] permTest = DataGeneratorData.randomApplicationPermissions(25, 25);
-		assertTrue("Expected exact number of permissions, but received " + permTest.length,permTest.length == 25);
+		/// BasePermissionType[] permTest = DataGeneratorData.randomApplicationPermissions(25, 25);
+		/// assertTrue("Expected exact number of permissions, but received " + permTest.length,permTest.length == 25);
 	}
 	/*
 	@Test

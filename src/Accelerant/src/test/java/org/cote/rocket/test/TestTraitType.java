@@ -49,8 +49,8 @@ public class TestTraitType extends BaseAccelerantTest {
 	private String testLifecycleName = "Event Type Lifecycle";
 	private String testProjectNamePrefix = "Event Project ";
 	//private int testProjectNameCounter = 1;
-	private int testLocSize = 3;
-	private int testPerSeed = 250;
+	private int testLocSize = 1;
+	private int testPerSeed = 50;
 	private int testEpochEvolutions = 10;
 	private int testEpochCount = 15;
 	
