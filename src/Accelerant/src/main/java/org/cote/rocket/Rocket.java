@@ -308,6 +308,7 @@ public class Rocket {
 	
 	public static boolean deleteProject(ProjectType proj){
 		boolean outBool = false;
+		logger.debug("Deleting community project " + proj.getUrn());
 		try {
 			((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(RocketSecurity.getProjectPermissionBucket(proj));
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).delete(RocketSecurity.getProjectRoleBucket(proj));
@@ -326,6 +327,7 @@ public class Rocket {
 	}
 	public static boolean deleteLifecycle(LifecycleType lc){
 		boolean outBool = false;
+		logger.debug("Deleting community lifecycle " + lc.getUrn());
 		try {
 			((PermissionFactory)Factories.getFactory(FactoryEnumType.PERMISSION)).delete(RocketSecurity.getLifecyclePermissionBucket(lc));
 			((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).delete(RocketSecurity.getLifecycleRoleBucket(lc));
