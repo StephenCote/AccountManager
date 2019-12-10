@@ -91,7 +91,7 @@ public class PolicyDefinitionUtil {
 	}
 	private static void copyParameters(PolicyDefinitionType pdt, PolicyType pol) throws FactoryException, ArgumentException{
 		Factories.getNameIdFactory(FactoryEnumType.POLICY).populate(pol);
-		logger.info("Processing " + pol.getRules().size() + " rules");
+		logger.debug("Processing " + pol.getRules().size() + " rules");
 		for(int i = 0;i < pol.getRules().size();i++){
 			copyParameters(pdt,pol.getRules().get(i));
 		}
@@ -99,11 +99,11 @@ public class PolicyDefinitionUtil {
 	}
 	private static void copyParameters(PolicyDefinitionType pdt, RuleType rule) throws FactoryException, ArgumentException{
 		Factories.getNameIdFactory(FactoryEnumType.RULE).populate(rule);
-		logger.info("Processing " + rule.getPatterns().size() + " patterns");
+		logger.debug("Processing " + rule.getPatterns().size() + " patterns");
 		for(int i = 0; i < rule.getPatterns().size();i++){
 			copyParameters(pdt,rule.getPatterns().get(i));
 		}
-		logger.info("Processing " + rule.getRules().size() + " child rules");
+		logger.debug("Processing " + rule.getRules().size() + " child rules");
 		for(int i = 0; i < rule.getRules().size();i++){
 			copyParameters(pdt,rule.getRules().get(i));
 		}
@@ -123,12 +123,12 @@ public class PolicyDefinitionUtil {
 	private static void copyParameters(PolicyDefinitionType pdt, PatternType pattern) throws FactoryException, ArgumentException{
 		Factories.getNameIdFactory(FactoryEnumType.PATTERN).populate(pattern);
 		if(pattern.getFact() != null && pattern.getFact().getFactType() == FactEnumType.PARAMETER){
-			logger.info("Processing Parameter");
+			logger.debug("Processing Parameter");
 			if(haveParameter(pdt,pattern.getFact())){
 				logger.info("Skipping duplicate parameter");
 				return;
 			}
-			logger.info(pdt.getUrn() + " Parameter " + pattern.getFactUrn());
+			logger.debug(pdt.getUrn() + " Parameter " + pattern.getFactUrn());
 			FactType parmFact = new FactType();
 			parmFact.setName(pattern.getFact().getName());
 			parmFact.setNameType(NameEnumType.FACT);
