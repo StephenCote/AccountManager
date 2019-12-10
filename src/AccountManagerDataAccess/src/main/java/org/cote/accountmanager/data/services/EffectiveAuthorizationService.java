@@ -544,7 +544,7 @@ public class EffectiveAuthorizationService {
 		}
 		
 		List<EntitlementType> ents = getEffectiveMemberEntitlements(object, member, permissions,false);
-		logger.info(entChkStr + " " + ents.size());
+		logger.debug(entChkStr + " " + ents.size());
 		if(!ents.isEmpty()){
 			outBool = true;
 		}
