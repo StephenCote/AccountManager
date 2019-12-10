@@ -19,7 +19,7 @@ public class LookupOwnerOperation  implements IOperation {
 		return FactUtil.factoryRead(sourceFact, referenceFact);
 	}
 	public OperationResponseEnumType operate(final PolicyRequestType prt,PolicyResponseType prr, final PatternType pattern, FactType sourceFact,final FactType referenceFact){
-		logger.info("Lookup owner....");
+		logger.debug("Lookup owner....");
 		if(sourceFact.getFactType() != FactEnumType.PARAMETER || sourceFact.getFactReference() == null){
 			logger.error("Invalid argument.  Expecting a parameter fact populated with a fact reference.");
 			return OperationResponseEnumType.ERROR;
