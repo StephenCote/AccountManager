@@ -333,7 +333,7 @@ public class BulkFactory {
 		long stop = System.currentTimeMillis();
 		if(pass == 1){
 			session.setPersisted(true);
-			logger.info("Wrote Bulk Session " + sessionId + " pass #" + pass + " with " + eLen + " objects in " + (stop - start) + "ms");
+			logger.debug("Wrote Bulk Session " + sessionId + " pass #" + pass + " with " + eLen + " objects in " + (stop - start) + "ms");
 			/*
 			for(FactoryEnumType fType : bulkReport.keySet()) {
 				logger.info("Bulk Entries - " + fType.toString() + " - " + bulkReport.get(fType));
