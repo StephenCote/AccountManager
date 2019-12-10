@@ -55,15 +55,20 @@
 
 				<configuration>
 					<skipTests>true</skipTests>
-					<argLine>-Xms512m -Xmx2048m</argLine>
+					<argLine>-Xmx4096m</argLine>
 
 					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
 						<!-- 
-						<exclude>**/TestVaultService.java</exclude>
+						<exclude>**/TestAccessApproval.java</exclude>
 						 -->
+						<exclude>**/TestBulkPerson.java</exclude>
+						<exclude>**/TestBulkUser.java</exclude>
+						<exclude>**/TestBulkDelete.java</exclude>
+						<exclude>**/TestBulkUpdate.java</exclude>
+						<exclude>**/TestVaultService.java</exclude> 
 						<exclude>**/TestDBStress.java</exclude>
 						<exclude>**/TestCachePerformance.java</exclude>
 						<exclude>**/TestRoleService.java</exclude>
@@ -83,14 +88,11 @@
 						<exclude>**/TestFactoryCache.java</exclude>
 
 						<exclude>**/TestBaseService.java</exclude>
-						<exclude>**/TestAccessApproval.java</exclude>
+						
 						<exclude>**/TestImportContacts.java</exclude>
 						<exclude>**/TestControlFactory.java</exclude>
 						
-						<exclude>**/TestBulkUser.java</exclude>
-						<exclude>**/TestBulkDelete.java</exclude>
-						<exclude>**/TestBulkUpdate.java</exclude>
-						<exclude>**/TestBulkPerson.java</exclude>
+
 						<exclude>**/TestTokenService.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>
 						<exclude>**/TestPolicyService.java</exclude>
@@ -120,8 +122,8 @@
 							and include hard coded values -->
 						<exclude>**/TestDataAccess.java</exclude>
 						<!-- WARNING: TestFactorySetup WILL ERASE EVERYTHING IN THE DATABASE -->
-
 						<exclude>**/TestFactorySetup.java</exclude>
+						
 					</excludes>
 
 					<systemProperties>

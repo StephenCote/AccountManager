@@ -53,14 +53,18 @@
 
 				<configuration>
 					<skipTests>true</skipTests>
-					<argLine>-Xms512m -Xmx2048m</argLine>
+					<argLine>-Xmx4096m</argLine>
 					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-						<!-- <exclude>**/TestAuthorization.java</exclude> -->
-						<exclude>**/TestCommunities.java</exclude>
+						<!-- 
 						<exclude>**/TestIdentityService.java</exclude>
+						-->
+						<exclude>**/TestCommunities.java</exclude>
+						<exclude>**/TestAuthorization.java</exclude> 
+						<exclude>**/TestTraitType.java</exclude>
+						
 
 						<exclude>**/TestFormElementValue.java</exclude>
 
@@ -69,10 +73,6 @@
 						<exclude>**/TestCapabilities.java</exclude>
 
 						<exclude>**/TestFactoryInterfaces.java</exclude>
-
-
-
-						<exclude>**/TestTraitType.java</exclude>
 						<exclude>**/TestEventType.java</exclude>
 
 						<!-- REGRESSED -->
