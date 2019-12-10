@@ -202,7 +202,7 @@ public class BulkFactories{
 			if(factoryInstances.containsKey(f) || f.equals(FactoryEnumType.ORGANIZATION)) continue;
 			getInstance(f);
 		}
-		logger.debug("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
+		logger.debug("Warmed up bulk factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
 	}
 	
 	public static void coolDown(){
