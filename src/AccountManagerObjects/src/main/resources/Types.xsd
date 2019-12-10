@@ -342,6 +342,7 @@
     		<enumeration value="DATA"></enumeration>
 
     		<enumeration value="REQUEST"></enumeration>
+    		<enumeration value="ACCESS"></enumeration>
     	</restriction>
     </simpleType>
     <simpleType name="SpoolStatusEnumType">

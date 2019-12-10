@@ -27,6 +27,7 @@
 			<xsd:enumeration value="PERMISSION"></xsd:enumeration>
 			<xsd:enumeration value="ACCOUNT"></xsd:enumeration>
 			<xsd:enumeration value="USER"></xsd:enumeration>
+			<xsd:enumeration value="ROLE"></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -130,7 +131,7 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="approvalId" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="approvalId" type="xsd:long"></xsd:attribute>
 				<xsd:attribute name="requestId" type="xsd:string"></xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
