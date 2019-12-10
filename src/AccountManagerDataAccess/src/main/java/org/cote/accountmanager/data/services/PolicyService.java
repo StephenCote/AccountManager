@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.ControlFactory;
 import org.cote.accountmanager.data.factory.FactFactory;
@@ -38,6 +39,7 @@ import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.RuleEnumType;
 import org.cote.accountmanager.objects.RuleType;
+import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -219,7 +221,7 @@ public class PolicyService {
 	}	
 	
 	private static List<ControlType> getControls(NameIdType object, ControlActionEnumType controlActionType, boolean includeGlobal, boolean onlyGlobal) throws FactoryException, ArgumentException{
-		return ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).getControlsForType(object, ControlEnumType.POLICY, controlActionType, includeGlobal, onlyGlobal);
+		return ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).getControlsForType(object, ControlEnumType.POLICY, 0L, controlActionType, includeGlobal, onlyGlobal);
 	}
 	
 	public static List<PolicyType> getRequestPolicies(AccessRequestType art){
@@ -250,54 +252,121 @@ public class PolicyService {
 		PolicyType policy = null;
 		try {
 			polUser = getPolicyUser(organizationId);
+			enablePublicReadOnPolicy(polUser);
 			policy = getOwnerApprovalPolicy(polUser);
-		} catch (FactoryException | ArgumentException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			logger.error(e.getMessage());
 		}
 		return policy;
 		
 	}
+	
 	public static PolicyType getOwnerApprovalPolicy(UserType user){
-		DirectoryGroupType pdir = null;
-		DirectoryGroupType rdir = null;
-		DirectoryGroupType podir = null;
-		DirectoryGroupType odir = null;
-		DirectoryGroupType fdir = null;
-		PolicyType pol = null;
-		RuleType useRule = null;
-		PatternType pat = null;
-		
-		String pname = "Owner Access Approval Policy";
-		String rname = "Owner Access Approval Rule";
-		String patName = "Owner Approval Pattern";
-		String clsAccAprClass = "org.cote.accountmanager.data.operation.AccessApprovalOperation";
-		String clsLookupOwnerClass = "org.cote.accountmanager.data.operation.LookupOwnerOperation";
+		return getCreateOperationPolicy(
+			user,
+			"Owner Access Approval Policy",
+			"Owner Access Approval Rule",
+			"Owner Approval Pattern",
+			"Access Approval Operation",
+			"org.cote.accountmanager.data.operation.AccessApprovalOperation",
+			"Lookup Owner Operation",
+			"org.cote.accountmanager.data.operation.LookupOwnerOperation",
+			"Entitlement Parameter",
+			"Entitlement Owner"
+		);
+	}
+	
+	public static PolicyType getPrincipalApprovalPolicy(long organizationId) {
+		UserType polUser = null;
+		PolicyType policy = null;
 		try {
-			rdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Rules", user);
-			pdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Patterns", user);
-			fdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Facts", user);
-			podir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Policies", user);
-			odir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Operations", user);
+			polUser = getPolicyUser(organizationId);
+			enablePublicReadOnPolicy(polUser);
+			policy = getPrincipalApprovalPolicy(polUser);
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
+			logger.error(e.getMessage());
+		}
+		return policy;
+		
+	}
+	
+	public static PolicyType getPrincipalApprovalPolicy(UserType user){
+		return getCreateOperationPolicy(
+			user,
+			"Principal Access Approval Policy",
+			"Principal Access Approval Rule",
+			"Principal Approval Pattern",
+			"Access Approval Operation",
+			"org.cote.accountmanager.data.operation.AccessApprovalOperation",
+			"Lookup Access Operation",
+			"org.cote.accountmanager.data.operation.LookupAccessOperation",
+			"Entitlement Parameter",
+			"Entitlement Approver"
+		);
+	}
+	
+	public static void enablePublicReadOnPolicy(UserType owner) throws DataAccessException, FactoryException, ArgumentException {
+		UserRoleType acctUsers = RoleService.getAccountUsersRole(owner.getOrganizationId());
+		DirectoryGroupType rdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Rules", owner);
+		DirectoryGroupType pdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Patterns", owner);
+		DirectoryGroupType fdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Facts", owner);
+		DirectoryGroupType podir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Policies", owner);
+		DirectoryGroupType odir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Operations", owner);
+		if(!AuthorizationService.canView(acctUsers, rdir)) {
+			AuthorizationService.authorizeType(owner, acctUsers, rdir, true, false, false, false);
+			AuthorizationService.authorizeType(owner, acctUsers, pdir, true, false, false, false);
+			AuthorizationService.authorizeType(owner, acctUsers, fdir, true, false, false, false);
+			AuthorizationService.authorizeType(owner, acctUsers, podir, true, false, false, false);
+			AuthorizationService.authorizeType(owner, acctUsers, odir, true, false, false, false);
+		}
+		
+	}
+	
+	private static PolicyType getCreateOperationPolicy(
+			UserType owner,
+			String policyName,
+			String ruleName,
+			String patternName,
+			String patternOperationName,
+			String patternOperationClass,
+			String factOperationName,
+			String factOperationClass,
+			String parameterFactName,
+			String matchFactName
+		){
+
+		PolicyType pol = null;
+
+		try {
+
+			DirectoryGroupType rdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Rules", owner);
+			DirectoryGroupType pdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Patterns", owner);
+			DirectoryGroupType fdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Facts", owner);
+			DirectoryGroupType podir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Policies", owner);
+			DirectoryGroupType odir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", "~/Operations", owner);
+
+			/// Access Approval Operation is an operation used at the Pattern-level
+			/// 
+			OperationType rgOp = getCreateOperation(owner,patternOperationName,patternOperationClass,odir);
+
+			/// Lookup Owner Operation is an operation used at the Fact-level
+			OperationType rgOp2 = getCreateOperation(owner,factOperationName,factOperationClass,odir);
 			
-			OperationType rgOp = org.cote.accountmanager.data.services.PolicyService.getCreateOperation(user,"Access Approval Operation",clsAccAprClass,odir);
-			OperationType rgOp2 = org.cote.accountmanager.data.services.PolicyService.getCreateOperation(user,"Lookup Owner Operation",clsLookupOwnerClass,odir);
-			
-			if(rgOp2 == null) {
+			if(rgOp == null || rgOp2 == null) {
 				logger.warn("Failed to obtain operation object");
 				return null;
 			}
 			
-			FactType approveEntitlementParamFact = org.cote.accountmanager.data.services.PolicyService.getCreateEntitlementParamFact(user,"Entitlement Parameter",fdir);
-			
-			FactType ownerEntitlementFact = org.cote.accountmanager.data.services.PolicyService.getCreateOperationFact(user,"Entitlement Owner",rgOp2.getUrn(),fdir);
+			FactType approveEntitlementParamFact = org.cote.accountmanager.data.services.PolicyService.getCreateEntitlementParamFact(owner,parameterFactName,fdir);
+			FactType ownerEntitlementFact = org.cote.accountmanager.data.services.PolicyService.getCreateOperationFact(owner,matchFactName,rgOp2.getUrn(),fdir);
 
-			pol = org.cote.accountmanager.data.services.PolicyService.getCreatePolicy(user,pname,podir);
+			pol = getCreatePolicy(owner,policyName,podir);
 			pol.setEnabled(true);
-			useRule = org.cote.accountmanager.data.services.PolicyService.getCreateRule(user,rname,rdir);
+			RuleType useRule = getCreateRule(owner,ruleName,rdir);
 
 			useRule.setRuleType(RuleEnumType.PERMIT);
 
-			pat = org.cote.accountmanager.data.services.PolicyService.getCreatePattern(user,patName,approveEntitlementParamFact.getUrn(),ownerEntitlementFact.getUrn(),pdir);
+			PatternType pat = org.cote.accountmanager.data.services.PolicyService.getCreatePattern(owner,patternName,approveEntitlementParamFact.getUrn(),ownerEntitlementFact.getUrn(),pdir);
 			pat.setPatternType(PatternEnumType.APPROVAL);
 			pat.setPatternType(PatternEnumType.OPERATION);
 			pat.setOperationUrn(rgOp.getUrn());
