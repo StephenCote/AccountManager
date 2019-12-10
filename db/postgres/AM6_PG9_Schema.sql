@@ -564,6 +564,7 @@ create table approval (
 	ApprovalId varchar(64),
 	RequestId varchar(64),
 	Signature bytea,
+	ApprovalType varchar(64) not null,
 	ApproverType varchar(64) not null,
 	ApproverId bigint not null default 0,
 	ApproverLevel int not null default 0
@@ -1820,7 +1821,7 @@ CREATE UNIQUE INDEX IdxruleNameGroup on rule(Name,GroupId,OrganizationId);
 CREATE UNIQUE INDEX IdxruleUrnGroup on rule(Urn);
 CREATE UNIQUE INDEX IdxruleparticipationCbo on ruleparticipation(ParticipationId,ParticipantId,ParticipantType,AffectId,OrganizationId);
 CREATE UNIQUE INDEX IdxCredentialObjId ON credential(ObjectId);
-CREATE UNIQUE INDEX IdxControlReference on control(ControlType,ControlAction,ReferenceId,ReferenceType);
+CREATE UNIQUE INDEX IdxControlReference on control(ControlType,ControlId,ControlAction,ReferenceId,ReferenceType);
 CREATE UNIQUE INDEX IdxControlObjId ON control(ObjectId);
 CREATE UNIQUE INDEX IdxApproverEntReference on approver(ApproverId, ApproverType, ApprovalType, ReferenceId,ReferenceType,EntitlementId,EntitlementType);
 CREATE UNIQUE INDEX IdxApproverObjId ON approver(ObjectId);
@@ -1831,7 +1832,7 @@ CREATE UNIQUE INDEX IdxRequestObjId ON request(ObjectId);
 CREATE INDEX IdxApprovalReference on approval(ApproverId, ApproverType);
 CREATE INDEX IdxApprovalRequest on approval(Response, RequestId);
 CREATE UNIQUE INDEX IdxApprovalObjId ON approval(ObjectId);
-
+CREATE UNIQUE INDEX IdxApprovalReqId ON approval(RequestId, ApprovalType, ApproverType, ApproverId, ApproverLevel);
 
 CREATE INDEX idxattributerefid_Id ON attribute(ReferenceId,ReferenceType,OrganizationId);
 CREATE INDEX idxattributeval on attribute(value);
