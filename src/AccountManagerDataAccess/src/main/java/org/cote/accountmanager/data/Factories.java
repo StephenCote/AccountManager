@@ -105,7 +105,7 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.FunctionFactType;
 import org.cote.accountmanager.objects.FunctionType;
-import org.cote.accountmanager.objects.MessageType;
+import org.cote.accountmanager.objects.MessageSpoolType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PatternType;
@@ -189,7 +189,7 @@ public class Factories {
 	    Factories.registerTypeClass(FactoryEnumType.FUNCTIONPARTICIPATION, BaseParticipantType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.GROUP, BaseGroupType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.GROUPPARTICIPATION, BaseParticipantType.class); 
-	    Factories.registerTypeClass(FactoryEnumType.MESSAGE, MessageType.class); 
+	    Factories.registerTypeClass(FactoryEnumType.MESSAGE, MessageSpoolType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.OPERATION, OperationType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.ORGANIZATION, OrganizationType.class); 
 	    Factories.registerTypeClass(FactoryEnumType.PATTERN, PatternType.class); 
@@ -610,7 +610,7 @@ public class Factories {
 			if(bFact != null) bFact.registerProvider();
 		}
 		BulkFactories.warmUp();
-		logger.info("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
+		logger.debug("Warmed up factories in " + (System.currentTimeMillis() - startWarmUp) + "ms");
 	}
 	public static boolean cleanupOrphans(){
 		boolean outBool = false;
