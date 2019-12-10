@@ -2,6 +2,7 @@ package org.cote.accountmanager.data.factory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -28,6 +29,8 @@ import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.util.CalendarUtil;
+import org.cote.accountmanager.util.JSONUtil;
 
 public class ApprovalFactory  extends NameIdFactory {
 	private DatatypeFactory dtFactory = null;
@@ -99,6 +102,9 @@ public class ApprovalFactory  extends NameIdFactory {
 		approval.setApprovalType(ApprovalEnumType.ACCESS);
 		approval.setApproverId(approver.getApproverId());
 		approval.setApproverType(approver.getApproverType());
+		approval.setApprovalType(approver.getApprovalType());
+		approval.setApproverLevel(approver.getApproverLevel());
+		approval.setOwnerId(approver.getOwnerId());
 		
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(new Date());
@@ -110,8 +116,9 @@ public class ApprovalFactory  extends NameIdFactory {
 		approval.setEntitlementType(request.getEntitlementType());
 		approval.setEntitlementId(request.getEntitlementId());
 		approval.setRequestId(request.getObjectId());
-		approval.setResponse(ApprovalResponseEnumType.UNKNOWN);
-		
+		approval.setResponse(ApprovalResponseEnumType.PENDING);
+		approval.setOrganizationId(approver.getOrganizationId());
+
 		return approval;
 	}
 	public ApprovalType newApproval(UserType owner, NameIdType targetObject, NameIdType entitlement, NameIdType approver, ApprovalEnumType approvalType, int level) throws ArgumentException
@@ -155,10 +162,15 @@ public class ApprovalFactory  extends NameIdFactory {
 
 			row.setCellValue("referencetype",obj.getReferenceType().toString());
 			row.setCellValue("referenceid",obj.getReferenceId());
+			row.setCellValue("approvaltype",obj.getApprovalType().toString());
 			row.setCellValue("approvertype",obj.getApproverType().toString());
 			row.setCellValue("approverid",obj.getApproverId());
 			row.setCellValue("approvalid",obj.getApproverId());
 			row.setCellValue("approverlevel",obj.getApproverLevel());
+			
+			row.setCellValue("createddate", obj.getCreatedDate());
+			row.setCellValue("modifieddate", obj.getModifiedDate());
+			row.setCellValue("expirationdate", obj.getExpiryDate());
 		
 			if(insertRow(row)) return true;
 		}
@@ -171,23 +183,27 @@ public class ApprovalFactory  extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		ApprovalType newCred = new ApprovalType();
-		newCred.setNameType(NameEnumType.APPROVAL);
-		super.read(rset, newCred);
-		newCred.setRequestId(rset.getString("requestid"));
-		newCred.setSignature(rset.getBytes("signature"));
-		newCred.setSignerId(rset.getString("signerid"));
-		newCred.setValidationId(rset.getString("validationid"));
-		newCred.setResponseMessage(rset.getString("responsemessage"));
-		newCred.setResponse(ApprovalResponseEnumType.valueOf(rset.getString("response")));
-		newCred.setReferenceId(rset.getLong("referenceid"));
-		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
-		newCred.setApproverId(rset.getLong("approverid"));
-		newCred.setApproverType(ApproverEnumType.fromValue(rset.getString("approvertype")));
-		newCred.setApprovalType(ApprovalEnumType.fromValue(rset.getString("approvaltype")));
-		newCred.setApproverLevel(rset.getInt("approverlevel"));
+		ApprovalType newAppr = new ApprovalType();
+		newAppr.setNameType(NameEnumType.APPROVAL);
+		super.read(rset, newAppr);
+		newAppr.setRequestId(rset.getString("requestid"));
+		newAppr.setSignature(rset.getBytes("signature"));
+		newAppr.setSignerId(rset.getString("signerid"));
+		newAppr.setValidationId(rset.getString("validationid"));
+		newAppr.setResponseMessage(rset.getString("responsemessage"));
+		newAppr.setResponse(ApprovalResponseEnumType.valueOf(rset.getString("response")));
+		newAppr.setReferenceId(rset.getLong("referenceid"));
+		newAppr.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
+		newAppr.setApproverId(rset.getLong("approverid"));
+		newAppr.setApproverType(ApproverEnumType.fromValue(rset.getString("approvertype")));
+		newAppr.setApprovalType(ApprovalEnumType.fromValue(rset.getString("approvaltype")));
+		newAppr.setApprovalId(rset.getLong("approvalid"));
+		newAppr.setApproverLevel(rset.getInt("approverlevel"));
+		newAppr.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		newAppr.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
+		newAppr.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
 		
-		return newCred;
+		return newAppr;
 	}
 	
 	@Override
@@ -205,8 +221,12 @@ public class ApprovalFactory  extends NameIdFactory {
 		fields.add(QueryFields.getFieldReferenceType(useMap.getReferenceType()));
 		fields.add(QueryFields.getFieldApproverId(useMap.getApproverId()));
 		fields.add(QueryFields.getFieldApprovalType(useMap.getApprovalType()));
-		fields.add(QueryFields.getFieldApprovalType(useMap.getApprovalType()));
+		fields.add(QueryFields.getFieldApprovalId(useMap.getApprovalId()));
 		fields.add(QueryFields.getFieldApproverLevel(useMap.getApproverLevel()));
+		
+		fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
+		fields.add(QueryFields.getFieldExpirationDate(useMap.getExpiryDate()));
+		fields.add(QueryFields.getFieldCreatedDate(useMap.getCreatedDate()));
 	}
 	public ApprovalType getApproverByObjectId(String id, long organizationId) throws FactoryException, ArgumentException{
 		List<NameIdType> sec = getByObjectId(id, organizationId);
@@ -219,6 +239,20 @@ public class ApprovalFactory  extends NameIdFactory {
 		ApprovalType data = (ApprovalType)object;
 		removeFromCache(data);
 		return super.update(data, null);
+	}
+	public <T> List<T> listApprovalsForRequest(AccessRequestType request) throws FactoryException, ArgumentException{
+		List<QueryField> fields = new ArrayList<>();
+
+		fields.add(QueryFields.getFieldRequestId(request.getObjectId()));
+		
+		ProcessingInstructionType pi = new ProcessingInstructionType();
+		pi.setPaginate(true);
+		pi.setStartIndex(0L);
+		pi.setRecordCount(0);
+		pi.setOrderClause("approverlevel ASC");
+		
+		return list(fields.toArray(new QueryField[0]), pi, request.getOrganizationId());
+
 	}
 	/*
 	public List<ApprovalType> getApproversForType(NameIdType obj, NameIdType entitlement, int level, ApprovalEnumType approvalType) throws FactoryException, ArgumentException{
