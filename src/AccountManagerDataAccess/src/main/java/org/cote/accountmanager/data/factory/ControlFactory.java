@@ -207,14 +207,15 @@ public class ControlFactory extends NameIdFactory {
 	}
 	
 	public List<ControlType> getControlsForType(NameIdType obj,boolean includeGlobal,boolean onlyGlobal) throws FactoryException, ArgumentException{
-		return getControlsForType(obj,ControlEnumType.UNKNOWN, ControlActionEnumType.UNKNOWN, includeGlobal, onlyGlobal);
+		return getControlsForType(obj,ControlEnumType.UNKNOWN, 0L, ControlActionEnumType.UNKNOWN, includeGlobal, onlyGlobal);
 	}
-	public List<ControlType> getControlsForType(NameIdType obj,ControlEnumType controlType, ControlActionEnumType controlActionType, boolean includeGlobal,boolean onlyGlobal) throws FactoryException, ArgumentException{
+	public List<ControlType> getControlsForType(NameIdType obj,ControlEnumType controlType, long controlId, ControlActionEnumType controlActionType, boolean includeGlobal,boolean onlyGlobal) throws FactoryException, ArgumentException{
 		List<QueryField> fields = new ArrayList<>();
 		// allow id of 0 for global control checks
 		if(obj == null || obj.getNameType() == NameEnumType.UNKNOWN || obj.getOrganizationId() == null) throw new ArgumentException("Invalid object reference");
 		fields.add(QueryFields.getFieldReferenceType(obj.getNameType()));
 		if(controlType != ControlEnumType.UNKNOWN) fields.add(QueryFields.getFieldControlType(controlType));
+		if(controlId > 0L) fields.add(QueryFields.getFieldControlId(controlId));
 		if(controlActionType != ControlActionEnumType.UNKNOWN) fields.add(QueryFields.getFieldControlAction(controlActionType));
 		QueryField referenceIdFilters = new QueryField(SqlDataEnumType.NULL,"referenceid",null);
 		referenceIdFilters.setComparator(ComparatorEnumType.GROUP_OR);
