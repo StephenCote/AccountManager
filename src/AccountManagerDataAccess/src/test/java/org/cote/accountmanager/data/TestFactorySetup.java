@@ -45,7 +45,6 @@ import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.data.ConnectionFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.factory.GroupFactory;
@@ -57,7 +56,6 @@ import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.StreamUtil;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
