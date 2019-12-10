@@ -31,9 +31,8 @@ public class AccessApprovalOperation  implements IOperation {
 	}
 	public OperationResponseEnumType operate(final PolicyRequestType prt,PolicyResponseType prr, final PatternType pattern, FactType sourceFact,final FactType referenceFact){
 		
-		logger.info("*** OPERATION Access Approval ***");
-//		logger.info(JSONUtil.exportObject(sourceFact));
-//		logger.info(JSONUtil.exportObject(referenceFact));
+		logger.debug("Operation Access Approval");
+
 		if(sourceFact.getFactData() == null){
 			logger.error("Null source fact data.");
 			return OperationResponseEnumType.ERROR;
