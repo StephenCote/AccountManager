@@ -346,6 +346,14 @@ public class QueryFields {
 	{
 		return getBigIntField("approverid", id);
 	}
+	public static QueryField getFieldApprovalId(NameIdType obj)
+	{
+		return getBigIntField("approvalid", (obj != null ? obj.getId() : 0));
+	}
+	public static QueryField getFieldApprovalId(long id)
+	{
+		return getBigIntField("approvalid", id);
+	}
 	public static QueryField getFieldResponse(ApprovalResponseEnumType art)
 	{
 		return getStringField("response", art.toString());
