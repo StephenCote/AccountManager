@@ -150,7 +150,7 @@ public class AuthorizationService {
         	return true;
         }
         else{
-        	logger.warn("Is Not Authorized By Entitlement: " + authStr);
+        	logger.debug("Is Not Authorized By Entitlement: " + authStr);
         }
 	       
         return false;
@@ -273,7 +273,11 @@ public class AuthorizationService {
 			checkPer = getPermissionForMapType(objectType, organizationId, PERMISSION_VIEW);
 		}
 		if(checkPer == null){
-			logger.error("Null view permission");
+			logger.debug("Object type " + objectType + " does not define a view permission");
+			/*
+			StackTraceElement[] ste = Thread.currentThread().getStackTrace();
+			if(ste.length > 0) logger.error(ste[0]);
+			*/
 			return false;
 		}
 		return containsPermission(permissions, checkPer);
@@ -287,7 +291,7 @@ public class AuthorizationService {
 		if(checkPer != null){
 			return containsPermission(permissions, checkPer);
 		}
-		logger.warn("Legacy isCreateAuthZ Check");
+		logger.debug("Legacy isCreateAuthZ Check");
 
 		if(
 			containsPermission(permissions,getCreateApplicationPermission(organizationId))
