@@ -165,6 +165,39 @@ public class MessageFactory extends SpoolFactory {
 		return convertList(messages);
 	}
 
+	public List<MessageSpoolType> getMessages(
+			UserType owner,
+			SpoolBucketEnumType spoolBucket,
+			SpoolNameEnumType spoolType,
+			SpoolStatusEnumType spoolStatus,
+			DirectoryGroupType spoolGroup,
+			String name,
+			FactoryEnumType referenceType,
+			long referenceId,
+			FactoryEnumType recipientType,
+			long recipientId,
+			FactoryEnumType transportType,
+			long transportId,
+			long organizationId
+	) throws FactoryException, ArgumentException{
+		
+		List<QueryField> fields = new ArrayList<>();
+		if(spoolBucket != SpoolBucketEnumType.UNKNOWN) fields.add(QueryFields.getFieldSpoolBucketType(spoolBucket));
+		if(spoolType != SpoolNameEnumType.UNKNOWN) fields.add(QueryFields.getFieldSpoolBucketName(spoolType));
+		if(spoolStatus != SpoolStatusEnumType.UNKNOWN) fields.add(QueryFields.getFieldSpoolStatus(spoolStatus));
+		if(referenceType != FactoryEnumType.UNKNOWN) fields.add(QueryFields.getFieldReferenceType(referenceType));
+		if(referenceId != 0L) fields.add(QueryFields.getFieldReferenceId(referenceId));
+		if(recipientType != FactoryEnumType.UNKNOWN) fields.add(QueryFields.getFieldRecipientType(recipientType));
+		if(recipientId != 0L) fields.add(QueryFields.getFieldRecipientId(recipientId));
+		if(transportType != FactoryEnumType.UNKNOWN) fields.add(QueryFields.getFieldTransportType(transportType));
+		if(transportId != 0L) fields.add(QueryFields.getFieldTransportId(transportId));
+		if(owner != null) fields.add(QueryFields.getFieldOwner(owner.getId()));
+		if(name != null) fields.add(QueryFields.getFieldName(name));
+		if(spoolStatus != SpoolStatusEnumType.UNKNOWN) fields.add(QueryFields.getFieldSpoolStatus(spoolStatus));
+		if(spoolGroup != null) fields.add(QueryFields.getFieldGroup(spoolGroup.getId()));
+		return getMessages(fields.toArray(new QueryField[0]), 0, organizationId);
+	}
+	
 	@Override
 	protected BaseSpoolType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{

@@ -201,7 +201,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	{
 		return deleteByField(new QueryField[] {  }, organizationId);
 	}
-	
+
 	public int deleteByOwner(UserType owner) throws FactoryException, ArgumentException
 	{
 		return deleteByField(new QueryField[] { QueryFields.getFieldOwner(owner.getId()) }, owner.getOrganizationId());
