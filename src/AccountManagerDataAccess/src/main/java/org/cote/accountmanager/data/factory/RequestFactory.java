@@ -20,6 +20,7 @@ import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
+import org.cote.accountmanager.objects.ApprovalEnumType;
 import org.cote.accountmanager.objects.ApprovalResponseEnumType;
 import org.cote.accountmanager.objects.ApproverEnumType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -97,7 +98,21 @@ public class RequestFactory  extends NameIdFactory {
 		int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		return (deleted > 0);
 	}
-	
+	public int deleteByRequestor(NameIdType requestor, ApprovalResponseEnumType apprStatus, long organizationId) throws FactoryException, ArgumentException
+	{
+		List<QueryField> fields = new ArrayList<>();
+		fields.add(QueryFields.getFieldRequestorType(ApproverEnumType.valueOf(requestor.getNameType().toString())));
+		fields.add(QueryFields.getFieldRequestorId(requestor.getId()));
+		if(apprStatus != ApprovalResponseEnumType.UNKNOWN) fields.add(QueryFields.getFieldApprovalStatus(apprStatus));
+		return deleteByField(fields.toArray(new QueryField[0]), organizationId);
+	}
+	public int deleteByStatus(UserType owner, ApprovalResponseEnumType apprStatus, long organizationId) throws FactoryException, ArgumentException
+	{
+		List<QueryField> fields = new ArrayList<>();
+		fields.add(QueryFields.getFieldApprovalStatus(apprStatus));
+		if(owner != null) fields.add(QueryFields.getFieldOwner(owner));
+		return deleteByField(fields.toArray(new QueryField[0]), organizationId);
+	}
 	public AccessRequestType newAccessRequest(UserType owner, ActionEnumType action, NameIdType requestor, NameIdType delegate, NameIdType targetObject, NameIdType entitlement, long parentId) throws ArgumentException
 	{
 		if (owner == null || owner.getId().compareTo(0L)==0) throw new ArgumentException("Invalid owner");
@@ -203,7 +218,7 @@ public class RequestFactory  extends NameIdFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		AccessRequestType useMap = (AccessRequestType)map;
-		logger.info("Set status to " + useMap.getApprovalStatus().toString());
+		/// logger.debug("Set status to " + useMap.getApprovalStatus().toString());
 		fields.add(QueryFields.getFieldApprovalStatus(useMap.getApprovalStatus()));
 		fields.add(QueryFields.getFieldRequestorId(useMap.getRequestorId()));
 		fields.add(QueryFields.getFieldRequestorType(useMap.getRequestorType()));
