@@ -51,13 +51,8 @@ ORDER BY len, str
 CREATE TEMP TABLE tempPermArr AS
 select len as length, idx as rowid, str as permArr from tempPermArrView;
 
-CREATE TEMP VIEW tempPermArrMap AS
-SELECT TAP.accountname,array_agg(groupname) acctMap FROM tempAcctPerm TAP
-GROUP BY TAP.accountname
-;
-
 select count(TPAM.accountName),array_length(TPA.permArr,1) len,TPA.permArr from tempPermArr TPA
-inner join (select accountname,array_length(acctMap,1) len,acctMap from tempPermArrMap WHERE array_length(acctMap,1) > 1 limit 20) TPAM on TPA.permArr <@ TPAM.acctMap
+inner join (select accountname,array_length(permlist,1) len,permlist from tempPermSet WHERE array_length(permlist,1) > 1 limit 20) TPAM on TPA.permArr <@ TPAM.permlist
 where array_length(TPA.permArr,1) > 1
 GROUP BY tpa.permarr
 order by count(TPAM.accountName) DESC,len desc;
