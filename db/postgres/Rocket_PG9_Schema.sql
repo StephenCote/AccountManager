@@ -1029,7 +1029,7 @@ join Groups G2 on G2.parentid = G.id
 join Accounts A on A.groupid = G2.id
 ;
 create or replace view identityServiceApplicationAccountsGroups as
-select ISA.projectname, ISA.projectid, ISA.applicationname, ISA.applicationid, ISA.accountname, ISA.accountid, G.id as groupid from identityserviceapplicationaccounts ISA
+select ISA.projectname, ISA.projectid, ISA.applicationname, ISA.applicationid, ISA.accountname, ISA.accountid, G.name as groupname,G.id as groupid from identityserviceapplicationaccounts ISA
 INNER JOIN Accounts A on A.id = ISA.accountid
 LEFT JOIN groupparticipation GP on GP.participantid = A.id AND gp.participanttype = 'ACCOUNT'
 LEFT JOIN groups G on G.id=GP.participationid
