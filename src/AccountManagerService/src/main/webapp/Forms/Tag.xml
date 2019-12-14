@@ -4,7 +4,7 @@
 	<embedded-script><![CDATA[
 		template_init : function(){
 			this.getProperties().typeName = "Tag";
-			this.getProperties().defaultPath = "~/Tags";
+			this.getProperties().defaultPath = uwm.getPathForType(this.getProperties().typeName);;
 			this.getProperties().viewBase = uwm.getApiTypeView(this.getProperties().typeName);
 			if(!this.getBean("rocketType")){
 				var o = this.getProperties().viewType;
