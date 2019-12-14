@@ -61,8 +61,10 @@ public class AM5LoginModule implements LoginModule {
 	
     protected Subject subject;
     protected CallbackHandler callbackHandler;
-    protected Map sharedState;
-    protected Map options;
+    @SuppressWarnings("rawtypes")
+	protected Map sharedState;
+    @SuppressWarnings("rawtypes")
+	protected Map options;
     protected boolean debug; 
     protected boolean succeeded;
     protected boolean commitSucceeded;
@@ -88,7 +90,8 @@ public class AM5LoginModule implements LoginModule {
     	roleMap = map;
     }
 
-    public void initialize(Subject sub, CallbackHandler handler, Map state, Map opts) {
+    @SuppressWarnings("rawtypes")
+	public void initialize(Subject sub, CallbackHandler handler, Map state, Map opts) {
         this.subject = sub;
         this.callbackHandler = handler;
         this.sharedState = state;
@@ -298,7 +301,8 @@ public class AM5LoginModule implements LoginModule {
     }
  
  
-    protected static void printSet(Set s) {
+    @SuppressWarnings("rawtypes")
+	protected static void printSet(Set s) {
         try {
             Iterator principalIterator = s.iterator();
             while (principalIterator.hasNext()) {
@@ -310,7 +314,8 @@ public class AM5LoginModule implements LoginModule {
     }
  
  
-    protected static void printSubject(Subject subject) {
+    @SuppressWarnings("rawtypes")
+	protected static void printSubject(Subject subject) {
         try {
             if (subject == null) {
                 return;

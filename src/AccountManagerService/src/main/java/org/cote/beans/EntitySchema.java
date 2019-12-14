@@ -42,6 +42,7 @@ import org.cote.accountmanager.objects.BaseSearchRequestType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.ContactInformationType;
 import org.cote.accountmanager.objects.ContactType;
+import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.DataTagSearchRequest;
 import org.cote.accountmanager.objects.DataType;
@@ -147,6 +148,7 @@ public class EntitySchema {
 	private DirectoryGroupType directoryGroupType = null;
 	private BaseGroupType baseGroupType = null;
 	private UserGroupType userGroupType = null;
+	private ControlType controlType = null;
 	private ContactInformationType contactInformationType = null;
 	private PersonType personType = null;
 	private ContactType contactType = null;
@@ -174,6 +176,7 @@ public class EntitySchema {
 	private BaseSearchRequestType baseSearchRequestType = null;
 	private SortQueryType sortQueryType = null;
 	public EntitySchema(){
+		controlType = new ControlType();
 		accessRequestType = new AccessRequestType();
 		approverType = new ApproverType();
 		approvalType = new ApprovalType();
@@ -250,6 +253,18 @@ public class EntitySchema {
 	}
 
 	
+
+	public ControlType getControlType() {
+		return controlType;
+	}
+
+
+
+	public void setControlType(ControlType controlType) {
+		this.controlType = controlType;
+	}
+
+
 
 	public AccessRequestType getAccessRequestType() {
 		return accessRequestType;

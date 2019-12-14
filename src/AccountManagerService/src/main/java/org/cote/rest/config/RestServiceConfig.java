@@ -25,6 +25,7 @@ package org.cote.rest.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -129,11 +130,11 @@ public class RestServiceConfig extends ResourceConfig{
 					try {
 						logger.info("Priming " + facts[0]);
 						Class<?> cls = Class.forName(facts[i]);
-						cls.newInstance();
+						cls.getDeclaredConstructor().newInstance();
 						logger.warn("Refactor to an interface - this is only preparing the base service");
 
 						if(facts[i].equals("org.cote.rocket.Factories")) org.cote.rocket.Factories.prepare();
-					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 						logger.error(FactoryException.TRACE_EXCEPTION, e);
 					}
 					
@@ -163,10 +164,10 @@ public class RestServiceConfig extends ResourceConfig{
 					try {
 						logger.info("Starting " + jobs[i]);
 						Class<?> cls = Class.forName(jobs[i]);
-						ThreadService f = (ThreadService)cls.newInstance();
+						ThreadService f = (ThreadService)cls.getDeclaredConstructor().newInstance();
 						f.setThreadDelay(jobPeriod);
 						maintenanceThreads.add(f);
-					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 						logger.error(FactoryException.TRACE_EXCEPTION, e);
 					}
 					

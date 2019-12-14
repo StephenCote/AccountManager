@@ -54,6 +54,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+
 public class ServletRequestMock implements HttpServletRequest {
 	public static final Logger logger = LogManager.getLogger(ServletRequestMock.class);
 	HttpSessionMock session = null;

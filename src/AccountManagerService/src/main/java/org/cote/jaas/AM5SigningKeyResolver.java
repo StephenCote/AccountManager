@@ -40,6 +40,7 @@ import io.jsonwebtoken.SigningKeyResolver;
 
 public class AM5SigningKeyResolver implements SigningKeyResolver{
 	public static final Logger logger = LogManager.getLogger(AM5SigningKeyResolver.class);
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Key resolveSigningKey(JwsHeader arg0, Claims arg1) {
 		String urn = arg1.getId();
@@ -64,6 +65,7 @@ public class AM5SigningKeyResolver implements SigningKeyResolver{
 		return key;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Key resolveSigningKey(JwsHeader arg0, String arg1) {
 		return null;

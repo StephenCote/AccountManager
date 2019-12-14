@@ -162,10 +162,9 @@ public class ApprovalService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response getOwnerApprovalPolicy(@Context HttpServletRequest request){
 		PolicyType pol = null;
-		UserType polUser = null;
+
 		UserType user = ServiceUtil.getUserFromSession(request);
 		if(user != null) {
-
 			pol = org.cote.accountmanager.data.services.PolicyService.getOwnerApprovalPolicy(user.getOrganizationId());
 		}
 		return Response.status(200).entity(pol).build();	
