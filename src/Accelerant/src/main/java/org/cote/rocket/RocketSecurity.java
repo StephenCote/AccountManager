@@ -83,7 +83,7 @@ public class RocketSecurity {
 		"Estimates","Cases","Data","Times","Costs","Requirements","Methodologies","Processes","ProcessSteps","ValidationRules",
 		"Forms","FormTemplates","FormElements","Work","Stages","Artifacts","Dependencies","Tasks","Tickets","Stories","Resources","Notes","Modules","Models","Accounts","Persons",
 		"Policies","Facts","Patterns","Functions","FunctionFacts","Operations","Rules","Applications","Contacts","Addresses",
-		"Locations","Traits","Events","Populations","DWAC"
+		"Locations","Traits","Events","Populations","DWAC","Tags"
 	};
 	
 	public static String[] getRoleNames(){
