@@ -14,6 +14,7 @@ import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.ControlFactory;
 import org.cote.accountmanager.data.factory.FactFactory;
+import org.cote.accountmanager.data.factory.INameIdGroupFactory;
 import org.cote.accountmanager.data.factory.OperationFactory;
 import org.cote.accountmanager.data.factory.PatternFactory;
 import org.cote.accountmanager.data.factory.PolicyFactory;
@@ -247,6 +248,34 @@ public class PolicyService {
 		return ((ControlFactory)Factories.getFactory(FactoryEnumType.CONTROL)).add(control);
 	}
 	
+	public static List<PolicyType> getSystemPolicies(long organizationId) {
+		return getSystemObjects(FactoryEnumType.POLICY, "~/Policies", organizationId);
+	}
+	public static List<RuleType> getSystemRules(long organizationId) {
+		return getSystemObjects(FactoryEnumType.RULE, "~/Rules", organizationId);
+	}
+	public static List<PolicyType> getSystemPatterns(long organizationId) {
+		return getSystemObjects(FactoryEnumType.PATTERN, "~/Patterns", organizationId);
+	}
+	public static List<PolicyType> getSystemFacts(long organizationId) {
+		return getSystemObjects(FactoryEnumType.FACT, "~/Facts", organizationId);
+	}
+	public static List<PolicyType> getSystemOperations(long organizationId) {
+		return getSystemObjects(FactoryEnumType.OPERATION, "~/Operations", organizationId);
+	}
+	protected static <T> List<T> getSystemObjects(FactoryEnumType fType, String path, long organizationId) {
+		UserType polUser = null;
+		List<T> objs = new ArrayList<>();
+		try {
+			polUser = getPolicyUser(organizationId);
+			DirectoryGroupType podir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", path, polUser);
+			INameIdGroupFactory iFact = (INameIdGroupFactory)Factories.getFactory(fType);
+			objs = iFact.listInGroup(podir, 0L, 0, organizationId);
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		return objs;
+	}
 	public static PolicyType getOwnerApprovalPolicy(long organizationId) {
 		UserType polUser = null;
 		PolicyType policy = null;

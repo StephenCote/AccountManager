@@ -36,6 +36,7 @@ import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.data.services.PolicyService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountRoleType;
@@ -344,6 +345,12 @@ public class FactoryDefaults {
 		if(apiUser == null){
 			logger.error("Failed to retrieve API user");
 		}
+		
+		/// Invoke call to get approval policies to create the principal user and the default policies and objects for the organization
+		///
+		PolicyService.getOwnerApprovalPolicy(organization.getId());
+		PolicyService.getPrincipalApprovalPolicy(organization.getId());
+		
 		return true;
 	}
 	

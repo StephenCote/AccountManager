@@ -23,6 +23,9 @@
  *******************************************************************************/
 package org.cote.rest.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.security.DeclareRoles;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -33,6 +36,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -118,7 +122,49 @@ public class PolicyService {
 	
 		return def;
 	}
+	
+	@GET
+	@Path("/system/policies")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response listSystemPolicies(@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return Response.status(200).entity(org.cote.accountmanager.data.services.PolicyService.getSystemPolicies(user.getOrganizationId())).build();
+	}
+	
+	@GET
+	@Path("/system/patterns")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response listSystemPatterns(@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return Response.status(200).entity(org.cote.accountmanager.data.services.PolicyService.getSystemPatterns(user.getOrganizationId())).build();
+	}
 
+	@GET
+	@Path("/system/rules")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response listSystemRules(@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return Response.status(200).entity(org.cote.accountmanager.data.services.PolicyService.getSystemRules(user.getOrganizationId())).build();
+	}
+	@GET
+	@Path("/system/operations")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response listSystemOperations(@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return Response.status(200).entity(org.cote.accountmanager.data.services.PolicyService.getSystemOperations(user.getOrganizationId())).build();
+	}
+	@GET
+	@Path("/system/facts")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response listSystemFacts(@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		return Response.status(200).entity(org.cote.accountmanager.data.services.PolicyService.getSystemFacts(user.getOrganizationId())).build();
+	}
 	@GET
 	@Path("/contextPolicy/{type:[\\S]+]}/{id: [0-9]+}")
 	@Produces(MediaType.APPLICATION_JSON)

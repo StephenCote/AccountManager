@@ -43,6 +43,10 @@ WITH RECURSIVE xtab AS (
                 , array_cat(t1.str,tc.str)::varchar(512)[] AS str
         FROM xtab t1
         JOIN no_cte tc ON tc.idx > t1.idx
+--	  limit recursion to this depth
+	  WHERE 
+--           array_cat(t1.str,tc.str)::varchar(512)[] <@ 
+		array_length(t1.str,1) <= 3
         )
 SELECT * FROM xtab
 ORDER BY len, str
