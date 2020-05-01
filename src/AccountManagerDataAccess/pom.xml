@@ -34,8 +34,8 @@
 				<configuration>
 					<meminitial>512m</meminitial>
 					<maxmem>2048m</maxmem>
-					<source>13</source>
-					<target>13</target>
+					<source>14</source>
+					<target>14</target>
 					<fork>true</fork>
 				</configuration>
 			</plugin>
