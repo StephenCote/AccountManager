@@ -60,7 +60,7 @@ public class ConsoleMain {
 	/// This is to recover admin passwords lost to key rotations or, in this case
 	/// sweeping credential changes such as with the AM5.1 CredentialType system
 	///
-	private static boolean enableUnauthenticatedResets = true;
+	private static boolean enableUnauthenticatedResets = false;
 	private static boolean dbPrep = false;
 	private static boolean factoryPrep = false;
 	private static AuditDataMaintenance auditThread = null;
