@@ -25,7 +25,7 @@
 	
 	if(!window.uwm){
 		window.uwm = {
-			developerMode : 0,	
+			developerMode : 1,	
 			debugMode : 1,
 			createContent : function(i, u, f){
 				var o = document.getElementById(i);
@@ -946,21 +946,27 @@
 				);
 
 
-
-			Hemi.message.service.subscribe("onspaceconfigload", function (s, v){
-		
-				if(!v.is_primary) return;
-				var oSpace = Hemi.app.space.service.getPrimarySpace();
-				
-				getPrincipal(function(s,v){
-					principal = 0;
-					AM6Client.currentOrganization = sCurrentOrganization = 0;
-					if(v && v != null){
-						principal = v;
-						AM6Client.currentOrganization = sCurrentOrganization = principal.organizationPath;
-					}
-					uwm.processLoadHandlers();
+			var oSpace = Hemi.app.space.service.getPrimarySpace();
+			if(!oSpace || oSpace.space_state < 4){
+				Hemi.message.service.subscribe("onspaceconfigload", function (s, v){
+					if(!v.is_primary) return;
+					completeSpaceLoad();
 				});
+			}
+			else if(oSpace && oSpace.space_state == 4){
+				completeSpaceLoad();
+			}
+		}
+		
+		function completeSpaceLoad(){
+			getPrincipal(function(s,v){
+				principal = 0;
+				AM6Client.currentOrganization = sCurrentOrganization = 0;
+				if(v && v != null){
+					principal = v;
+					AM6Client.currentOrganization = sCurrentOrganization = principal.organizationPath;
+				}
+				uwm.processLoadHandlers();
 			});
 		}
 //	}
