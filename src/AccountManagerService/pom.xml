@@ -42,7 +42,7 @@
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<jersey2.version>2.29.1</jersey2.version>
+		<jersey2.version>2.30.1</jersey2.version>
 		<jaxrs.version>2.1.1</jaxrs.version>
 
 	</properties>
