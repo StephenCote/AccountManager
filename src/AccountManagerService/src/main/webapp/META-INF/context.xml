@@ -39,6 +39,8 @@
     
     <Manager className="org.apache.catalina.session.PersistentManager" maxIdleBackup="1">
    <Store className="org.apache.catalina.session.FileStore" directory="c:/Projects/Sessions"/>
+   <CookieProcessor sameSiteCookies="strict" />
+
 </Manager>
     
 </Context>
