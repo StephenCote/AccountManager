@@ -945,8 +945,8 @@
 					,true
 				);
 
-
-			var oSpace = Hemi.app.space.service.getPrimarySpace();
+			var oSpaceSvc = Hemi.lookup("Hemi.app.space.service");
+			var oSpace = (oSpaceSvc ? oSpaceSvc.getPrimarySpace() : 0);
 			if(!oSpace || oSpace.space_state < 4){
 				Hemi.message.service.subscribe("onspaceconfigload", function (s, v){
 					if(!v.is_primary) return;
