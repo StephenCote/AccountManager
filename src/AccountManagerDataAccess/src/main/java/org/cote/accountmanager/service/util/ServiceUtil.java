@@ -107,15 +107,7 @@ public class ServiceUtil {
 					if(orgId > 0) org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(orgId);
 				}
 			}
-			catch(NumberFormatException nfe){
-				
-				logger.error(nfe.getMessage());
-				logger.error(FactoryException.LOGICAL_EXCEPTION,nfe);
-			} catch (FactoryException e) {
-				
-				logger.error(e.getMessage());
-				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			} catch (ArgumentException e) {
+			catch(NumberFormatException | FactoryException | ArgumentException e) {
 				
 				logger.error(e.getMessage());
 				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
