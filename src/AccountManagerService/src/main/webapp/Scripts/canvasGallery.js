@@ -173,6 +173,7 @@
 					/// No shape drag
 					return;
 				}
+
 				oCanvas.ClearTempCanvas();
 				/// Paint over the current position
 				///
@@ -468,8 +469,7 @@
 						},
 						actions:[]
 					});
-					//this.view("tasks",{scaleHeight:1,scaleWidth:1}).panel("nav",{width:100}).panel("content",{left:100}).panel("control",{row:2,top:0,height:100}).panel("footer",{row:3,height:50,width:"33%"}).panel("footer2",{row:3,height:50,width:"33%"}).panel("footer3",{row:3,height:50,width:"33%"});
-					//initializeVC(this);
+
 					Promise.all([v1.getObjects().promise,v2.getObjects().promise,v3.getObjects().promise,v4.getObjects().promise,v5.getObjects().promise]).then(()=>{
 						var gc = ctl.getObjects().galleryContainer;
 						this.getCanvasController().getCanvasContainer().style.cssText = "position:absolute;top:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteTop(gc)) + "px;left:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteLeft(gc)) + "px;";
@@ -554,6 +554,10 @@
 					/// L
 					case 76:
 						bLast = 1;
+						break;
+				    /// M
+					case 77:
+						this.getProperties().maxMode = !this.getProperties().maxMode; 
 						break;
 					default:
 						Hemi.logDebug("Unhandled key code: " + e.keyCode);
@@ -876,7 +880,7 @@
 				o.groupType = sType;
 				
 				var b = AM6Client.update("GROUP", o);
-				//var b = AM6Client.make("GROUP","DATA",d.path + "/" + s);
+
 				if(b){
 					AM6Client.clearCache("GROUP");
 					this.getCurrentViewPanel("nav").repaint();
@@ -886,23 +890,13 @@
 			createBucket : function(s){
 				return this.createGroup(s, "BUCKET");
 			},
-			/*
-			createStory : function(sName){
-	
-				var b = accountManager.addTask(sName, "", "UNKNOWN", 0,(new Date()),(new Date()),0,0, 0, 0, 0, 0, 0, 0, 0, this.getCurrentViewPanel("nav").getObjects().currentDirectory);
-				if(b){
-					this.getCurrentViewPanel("nav").repaint();
-				}
-				this.logDebug("Create story: " + sName + " " + (b ? true : false));
-			},
-			*/
+
 			newImage : function(){
 				var oP = this.getCurrentViewPanel("nav");
 				openWindow(oP, "Data", 0, showDataForm);
 			},
 			dndUpload : function(){
 				var oP = this.getCurrentViewPanel("nav");
-				//openWindow(oP, "DataDnd", 0, showDNDForm);
 				var vProps = {openerId:this.getObjectId()};
 				Hemi.app.createWindow("DataDnD", "/AccountManagerService/Forms/DataDnd.xml", "DataDnD", 0, 0, vProps, showDNDForm);
 			},
@@ -916,10 +910,6 @@
 				gestureMatteImage(oP, sType, sId, oShape);
 			},
 			logout : function(){
-				/*
-				window.uwm.logout();
-				window.uwm.operation("ContinueWorkflow");
-				*/
 				if(typeof doLogout == "function") doLogout();
 				this.destroy();
 			},
@@ -1104,18 +1094,25 @@
 			_s.showImage = 1;
 			_s.showImageId = sId;
 			_s.showImageIndex = iViewIndex;
+			/// Alternate display for gifs to allow for animation
+			/// This may later use one of the libraries that can paint directly to canvas but at the moment no need to overcomplicate it
+			var bGif = (o.mimeType && o.mimeType.match(/gif$/i));
 			var bVid = (o.mimeType && o.mimeType.match(/^video/i));
 			var vCont = galleryView.getCanvasController().getObjects().galleryContainer;
 			if(_o.video){
 				vCont.removeChild(_o.video);
 				delete _o.video;
 			}
-			
+			if(_o.gif){
+				vCont.removeChild(_o.gif);
+				delete _o.gif;
+			}
 			//_s.showControlPanel = 0;
 			//this.clearView(1);
 			
 			/// Handle Video ....
 			var img, sH;
+
 			if(bVid){
 				var oV = document.createElement("video");
 			    oV.setAttribute("style","position: absolute;");
@@ -1127,24 +1124,19 @@
 				oS.setAttribute("src","/AccountManagerService/media/" + AM6Client.dotPath(o.organizationPath) + "/Data" + o.groupPath + "/" + o.name);
 				oS.setAttribute("type", o.mimeType);
 				sH = "onloadedmetadata";
-				//sH = "loadeddata";
 				oV.appendChild(oS);
 				vCont.appendChild(oV);
 				_o.video = oV;
 				img = oV;
-				/*
-				var ctx = this.getCanvas().getTemporaryContext();
-				var cvs = this.getCanvas().getObjects().temp_canvas;
-				cvs.style.width = cvs.clientWidth + "px";
-				cvs.style.height = cvs.clientHeight + "px";
-			    var cw = Math.floor(cvs.clientWidth / 100);
-			    var ch = Math.floor(cvs.clientHeight / 100);
-			    cvs.width = cw;
-			    cvs.height = ch;
-			    oV.addEventListener('play', function(){
-					ctl.drawVideo(this, ctx, cw, ch);
-			    },false);
-			    */
+			}
+			else if(bGif){
+				var oV = document.createElement("img");
+			    oV.setAttribute("style","position: absolute;");
+				//oV.setAttribute("src","/AccountManagerService/media/" + AM6Client.dotPath(o.organizationPath) + "/Data" + o.groupPath + "/" + o.name);
+				sH = "onload";
+				vCont.appendChild(oV);
+				_o.gif = oV;
+				img = oV;
 			}
 			else{
 				img = new Image();
@@ -1154,17 +1146,23 @@
 			
 			var oG = ctl.getCanvas();
 			var oPanel = oContentPanel;
-			
-			//oG.Rect(0, 0, mP.width(), mP.height(), "#000000","#000000");
 	
 			img[sH] = function(){
 	
 				var iMaxWidth = mP.width();
 				var iMaxHeight = mP.height();
+				
 				var iW = (bVid ? img.videoWidth : img.width);
 				var iH = (bVid ? img.videoHeight : img.height);
+				/*
+				if(ctl.getProperties().maxMode){
+					iW = iMaxWidth*(img.width/img.height);
+					iH = iMaxHeight*(img.width/img.height);
+				}
+				*/
 				var iSW = iW;
 				var iSH = iH;
+				
 				if(iW > iMaxWidth || iH > iMaxHeight){
 					var iS1 = (iMaxWidth / iW);
 					var iS2 = (iMaxHeight / iH);
@@ -1179,7 +1177,7 @@
 				}
 				var iX = (iMaxWidth - iSW) / 2;
 				var iY = (iMaxHeight - iSH) / 2; 
-				if(bVid){
+				if(bVid || bGif){
 					img.style.top = iY + "px";
 					img.style.left = iX + "px";
 					img.style.width = iSW + "px";
@@ -1262,6 +1260,7 @@
 		
 		
 		function refreshGroupType(o,sType,sPath, bSkipDraw){
+
 			var _o = o.getObjects(), _s = o.getProperties(), oM, _no = o.getObjects().view.panel("nav").getObjects(),iter = 0;
 			if(!_no.currentDirectory) _no.currentDirectory = AM6Client.make("GROUP","DATA",sPath);
 			if(!_no.baseGroup) _no.baseGroup = _no.currentDirectory;
@@ -1441,10 +1440,16 @@
 				}
 			}
 			aPS.length = 0;
+			if(_o.gif){
+				galleryView.getCanvasController().getObjects().galleryContainer.removeChild(_o.gif);
+				delete _o.gif;
+			}
+			
 			if(_o.video){
 				galleryView.getCanvasController().getObjects().galleryContainer.removeChild(_o.video);
 				delete _o.video;
 			}
+
 			ctl.getCanvas().ClearTempCanvas();
 			
 			oCvs.setTemporaryContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
@@ -1509,7 +1514,6 @@
 				_s.rasterTotal += _o.actions.length;
 			}
 			if(_s.itemType && _s.itemPath){
-				//_o.view.getProperties().basePath + _s.itemPath
 				refreshGroupType(p,_s.itemType,_o.view.getProperties().basePath + _s.itemPath,b);
 			}
 			checkRaster(p);
@@ -1626,6 +1630,7 @@
 				//ctl.log("Paint Object: " + sAct + " " + sLbl + " " + sRef + " "  + bText + ":" + bHover + ":" + bDrag);
 			};
 			img.onerror = function(){
+
 				if(!bRepaint){
 					sIco = oPanel.getObjects().view.getProperties()["icon" + (_s.smallIcon ? "Small" : "Large")+ "Base"];
 					paintPanelObject(oPanel, oObj, oAct, iIndex, sIco, sLbl, iRefId, sRef, sAct, iX, iY, bText, bHover, bDrag, 1);

@@ -216,10 +216,7 @@ public class MediaUtil {
 		try{
 			dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, GroupEnumType.DATA, objPath, org.getId());
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException e) {
 			
 			logger.error(e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
