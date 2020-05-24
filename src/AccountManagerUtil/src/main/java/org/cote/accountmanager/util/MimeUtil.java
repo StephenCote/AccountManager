@@ -47,6 +47,7 @@ public class MimeUtil {
 		types = new HashMap<String,String>();
 		types.put("weba", "audio/weba");
 		types.put("webm", "video/webm");
+		types.put("webp", "video/webp");
 		types.put("wmv", "video/x-ms-wmv");
 		types.put("flv", "video/x-flv");
 		types.put("mp4", "video/mp4");
