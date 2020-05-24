@@ -621,23 +621,11 @@
 			},
 			_handle_hash_change : function(){
 				this.log("New Hash: " + location.hash);
-				//this.switchView("gallery",["nav","content","commands"]);
 			},
 			_handle_window_resize : function(){
-				/*
-				var v = this.getCurrentView(),aP;
-				scaleView(v);
-				aP = v.panels();
-				for(var i = 0; i < aP.length;i++){
-					if(aP[i].getProperties().visible){
-						aP[i].repaint();
-					}
-				}
-				*/
 				var _s = this.getProperties();
 				if(_s.resizing) window.clearTimeout(_s.resizing);
 				_s.resizing = window.setTimeout(resetGalleryDimensions, 250);
-		
 			},
 			clearViewPanels : function(v){
 				for(var i = 0; i < v.getPanels().length;i++) clearPanel(v.getPanels()[i]);
@@ -645,18 +633,11 @@
 			switchView : function(sName,aP){
 				var v = this.view(sName),_s = this.getProperties();
 				ctl.getCanvas().Clear();
-				///this.clearViewPanels(v);
 				scaleView(v);
-				//this.logDebug("Panels: " + v.panels().length);
 				_s.currentView = sName;
 				for(var i = 0; i < aP.length;i++){
-					v.panel(aP[i]).repaint();
+					v.panel(aP[i]).repaint((i==0));
 				}
-				/*
-				v.panels()[0].repaint();
-				v.panels()[1].repaint();
-				v.panels()[3].repaint();
-				*/
 			},
 			getCurrentView : function(){
 				return this.view(this.getProperties().currentView);
@@ -941,7 +922,7 @@
 		
 		function resetGalleryDimensions(){
 			
-			var v = galleryView.getCurrentView(),_s = galleryView.getProperties(),aP;
+			var v = galleryView.getCurrentView(),_s = galleryView.getProperties(),aP, e=0;
 			
 			var gc = ctl.getObjects().galleryContainer;
 			var sCss = "position:absolute;top:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteTop(gc)) + "px;left:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteLeft(gc)) + "px;";
@@ -952,7 +933,8 @@
 			aP = v.panels();
 			for(var i = 0; i < aP.length;i++){
 				if(aP[i].getProperties().visible){
-					aP[i].repaint();
+					aP[i].repaint((e==0));
+					e++;
 				}
 			}
 			_s.resizing = 0;
@@ -1107,9 +1089,7 @@
 				vCont.removeChild(_o.gif);
 				delete _o.gif;
 			}
-			//_s.showControlPanel = 0;
-			//this.clearView(1);
-			
+
 			/// Handle Video ....
 			var img, sH;
 
@@ -1400,13 +1380,7 @@
 		function next(p, b){
 			var _s = p.getProperties(), iCount;
 			iCount = _s.suggestedCount  - (_s.suggestedCountOffset ? _s.suggestedCountOffset : 0);
-			/*
-			if(_s.totalCount > 0 && (_s.startIndex + iCount) < _s.totalCount){
-				_s.startIndex += iCount;
-				repaintPanel(p,b);
-			}
-			*/
-			
+
 			_s.startIndex += iCount;
 			if(_s.totalCount > 0 && _s.startIndex >= _s.totalCount){
 				_s.startIndex = _s.totalCount - iCount;
@@ -1425,12 +1399,12 @@
 			repaintPanel(p, b);
 		}
 		
-		function repaintPanel(p,b){
-			if(!b) clearPanel(p);
+		function repaintPanel(p, b, c){
+			if(!b) clearPanel(p, c);
 			paintPanel(p,b);
 		}
 		
-		function clearPanel(p){
+		function clearPanel(p, c){
 			var _o = p.getObjects(), _s = p.getProperties(), oM,aPS=p.getShapes(),oCvs = ctl.getCanvas();
 			_o.view.getObjects().controller.logDebug("Clear Panel " + _s.left + ", " + _s.top + " X " + _s.width + ", " + _s.height + " with " + aPS.length + " shapes");
 			for(var i = 0; i < aPS.length;i++){
@@ -1450,7 +1424,7 @@
 				delete _o.video;
 			}
 
-			ctl.getCanvas().ClearTempCanvas();
+			if(!c) ctl.getCanvas().ClearTempCanvas();
 			
 			oCvs.setTemporaryContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
 			oCvs.setContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
@@ -1770,15 +1744,10 @@
 			else{
 				s.groupId = t.id;
 			}
-			//accountManager["update" + s.nameType.substring(0,1) + s.nameType.substring(1,s.nameType.length).toLowerCase()](s);
 			Hemi.xml.postJSON(g_application_path + "rest/resource/" + s.nameType,s);
-			/*
-			uwmServiceCache.clearCache(s.nameType);
-			uwmServiceCache.clearCache(t.nameType);
-			*/
 			galleryView.getCurrentView().panel("nav").repaint();
 			galleryView.getCurrentView().panel("content").repaint();
-			//repaintPanel(oPanel);
+
 		}
 		function getObjectType(oPanel){
 			var _s = oPanel.getProperties();
@@ -1991,14 +1960,14 @@
 							panel : function(s,v){
 								return this.getObjects().view.panel(s,v);
 							},
-							clear : function(){
-								clearPanel(this);
+							clear : function(c){
+								clearPanel(this, c);
 							},
 							paint : function(){
 								paintPanel(this);
 							},
-							repaint : function(){
-								repaintPanel(this);
+							repaint : function(c){
+								repaintPanel(this,0,c);
 							},
 							/// API hook for the HTML forms
 							///
