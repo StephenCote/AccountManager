@@ -30,3 +30,4 @@ if(!window.HemiEngine) window.HemiEngine=window.Hemi;
 <%@include file="bbscript.js" %>
 <%@include file="3rdParty/base64.js" %>
 <%@include file="3rdParty/Aes.complete.js" %>
+<%@include file="3rdParty/gif.js" %>
