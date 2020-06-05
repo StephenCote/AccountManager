@@ -1,5 +1,5 @@
 LICENSE FOR "Account Manager" (AKA Account Manager v5.2) 
-Copyright (C) 2002 - 2018 Stephen Cote Enterprises, LLC. All rights reserved. Redistribution without modification is permitted provided the following conditions are met:
+Copyright (C) 2002 - 2020 Stephen Cote Enterprises, LLC. All rights reserved. Redistribution without modification is permitted provided the following conditions are met:
 
    1. Redistribution may not deviate from the original distribution, and must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
    2. Products may be derived from this software.
