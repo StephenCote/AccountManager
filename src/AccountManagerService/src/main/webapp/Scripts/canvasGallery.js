@@ -636,7 +636,7 @@
 				scaleView(v);
 				_s.currentView = sName;
 				for(var i = 0; i < aP.length;i++){
-					v.panel(aP[i]).repaint((i==0));
+					v.panel(aP[i]).repaint((i>0));
 				}
 			},
 			getCurrentView : function(){
@@ -926,14 +926,13 @@
 			
 			var gc = ctl.getObjects().galleryContainer;
 			var sCss = "position:absolute;top:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteTop(gc)) + "px;left:" + (gc == document.body ? "0" : Hemi.css.getAbsoluteLeft(gc)) + "px;";
-			Hemi.log('CSS=' + sCss);
 			galleryView.getCanvasController().getCanvasContainer().style.cssText = sCss;
 
 			scaleView(v);
 			aP = v.panels();
 			for(var i = 0; i < aP.length;i++){
 				if(aP[i].getProperties().visible){
-					aP[i].repaint((e==0));
+					aP[i].repaint((e>0));
 					e++;
 				}
 			}
@@ -1001,17 +1000,13 @@
 			_cs = oContentPanel.getProperties();
 			_cp = oContentPanel.getObjects();
 			vM = _s.matteConfig;
+
 			/// Left Pane
 			ctl.logDebug("Gesture idx " + oMatte.referenceIndex + " at " + iML + ", " + iMT + " within " + oMattePanel.width() + "x" + oMattePanel.height());
-			//ctl.log("Panel: " + oMattePanel.getObjectId() + " <> " + oMatte.panelId);
 			iTI = oMatte.referenceIndex;
 			
-			//_s.iconStartIndex >= _s.totalIconCount
 			if((bKeyAdvance && !bNext) || (!bKeyAdvance && iML <= vM.left)){
-	
 				if((iTI-1) < 0 && _cs.startIndex > 0){
-					//_s.showImage = 0;
-					//this.imageBack(true);
 					ctl.log("Paginate back");
 					back(oContentPanel, 1);
 					iTI = _cp.currentList.length - 1;
@@ -1027,9 +1022,7 @@
 			else if( (bKeyAdvance && bNext) || (!bKeyAdvance && iML >= (oMattePanel.width() - vM.right))){
 				
 				if((iTI+1) >= _cp.currentList.length && (iTI+1) < _cs.totalCount){
-					//_s.showImage = 0;
 					ctl.log("Paginate Forward");
-					// because " + (iTI+1) + " >= " + _cp.currentList.length + " && " + (iTI+1) + " < " + _cs.totalCount);
 					next(oContentPanel,1);
 					iTI = 0;
 					bP = 1;
@@ -1078,8 +1071,8 @@
 			_s.showImageIndex = iViewIndex;
 			/// Alternate display for gifs to allow for animation
 			/// This may later use one of the libraries that can paint directly to canvas but at the moment no need to overcomplicate it
-			var bGif = (o.mimeType && o.mimeType.match(/gif$/i));
-			var bVid = (o.mimeType && o.mimeType.match(/^video/i));
+			var bGif = (o.mimeType && o.mimeType.match(/(webp|gif)$/i));
+			var bVid = (!bGif && o.mimeType && o.mimeType.match(/^video/i));
 			var vCont = galleryView.getCanvasController().getObjects().galleryContainer;
 			if(_o.video){
 				vCont.removeChild(_o.video);
@@ -1371,7 +1364,7 @@
 					oP.getProperties().startIndex = (oP.getObjects().groupState[o.path] ? oP.getObjects().groupState[o.path] : 0);;
 					oP.getProperties().totalCount = 0;
 					oP.getProperties().currentCount = 0;
-					oP.repaint();
+					oP.repaint(1);
 				}
 			}
 			Hemi.message.service.publish("onchangedirectory", galleryView);
@@ -1746,7 +1739,7 @@
 			}
 			Hemi.xml.postJSON(g_application_path + "rest/resource/" + s.nameType,s);
 			galleryView.getCurrentView().panel("nav").repaint();
-			galleryView.getCurrentView().panel("content").repaint();
+			galleryView.getCurrentView().panel("content").repaint(1);
 
 		}
 		function getObjectType(oPanel){
