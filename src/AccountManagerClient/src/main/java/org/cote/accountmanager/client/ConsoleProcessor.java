@@ -39,7 +39,7 @@ public class ConsoleProcessor {
 			}
 			String line = "";
 			
-			while (line.equalsIgnoreCase("quit") == false && line.equalsIgnoreCase("exit") == false) {
+			while (line != null && line.equalsIgnoreCase("quit") == false && line.equalsIgnoreCase("exit") == false) {
 				System.out.print(prompt);
 				line = is.readLine();
 				String[] linePar = parseLine(line);
@@ -96,7 +96,7 @@ public class ConsoleProcessor {
 	}
 	private String[] parseLine(String line){
 		List<String> matchList = new ArrayList<String>();
-		
+		if(line==null) return new String[0];
 		Matcher regexMatcher = consoleLine.matcher(line);
 		while (regexMatcher.find()) {
 		    if (regexMatcher.group(1) != null) {

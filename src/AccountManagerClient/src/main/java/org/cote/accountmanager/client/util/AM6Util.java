@@ -38,11 +38,4 @@ public class AM6Util {
 		}
 		return out_obj;
 	}
-	/*
-	public static <T> T getObject(String objectId, Class cls){
-		T obj = null;
-		
-		return obj;
-	}
-	*/
 }

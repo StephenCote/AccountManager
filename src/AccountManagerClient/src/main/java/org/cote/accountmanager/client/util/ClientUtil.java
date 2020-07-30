@@ -18,12 +18,13 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.client.ClientContext;
+
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaMethod;
 import org.cote.accountmanager.service.rest.ServiceSchemaMethodParameter;
+
 import org.glassfish.jersey.client.ClientConfig;
 
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -87,6 +88,7 @@ public class ClientUtil {
 
 		return client;
 	}
+	
 	public static SchemaBean getSchema(String app, String service){
 		if(schemas.containsKey(app + service)) return schemas.get(app + service);
 		Response response = getResponse(ClientUtil.getServer() + app + service + "/smd");
@@ -97,6 +99,7 @@ public class ClientUtil {
 		}
 		return bean;
 	}
+	
 	public static WebTarget getResource(String path){
 		WebTarget resource = getClient().target(path);
 
@@ -145,4 +148,5 @@ public class ClientUtil {
 		}
 		return outSchema;
 	}
+	
 }
