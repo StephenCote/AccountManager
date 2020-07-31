@@ -25,7 +25,7 @@ package org.cote.accountmanager.data.factory;
 
 import java.util.List;
 
-import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;

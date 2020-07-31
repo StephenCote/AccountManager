@@ -43,7 +43,7 @@ public class JSONUtil {
 			TypeFactory t = TypeFactory.defaultInstance();
 			map = mapper.readValue(data, t.constructMapType(Map.class, keyClass, mapClass));
 		} catch (IOException e) {
-			
+			logger.error(FactoryException.LOGICAL_EXCEPTION, "Error with " + keyClass.getName());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return map;

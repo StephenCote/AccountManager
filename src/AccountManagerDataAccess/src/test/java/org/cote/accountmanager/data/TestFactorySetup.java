@@ -50,6 +50,7 @@ import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.UserRoleType;

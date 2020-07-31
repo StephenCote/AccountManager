@@ -32,9 +32,9 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.security.RolePrincipal;
 import org.cote.accountmanager.data.security.UserPrincipal;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.UserType;
 

@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.UserType;

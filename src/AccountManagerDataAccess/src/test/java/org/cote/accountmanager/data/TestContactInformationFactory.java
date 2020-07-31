@@ -35,6 +35,7 @@ import org.cote.accountmanager.data.factory.AddressFactory;
 import org.cote.accountmanager.data.factory.ContactInformationFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;

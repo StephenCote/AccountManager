@@ -23,7 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
-import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.UserType;

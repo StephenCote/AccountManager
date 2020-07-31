@@ -35,6 +35,7 @@ import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.PersonService;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.OrganizationType;

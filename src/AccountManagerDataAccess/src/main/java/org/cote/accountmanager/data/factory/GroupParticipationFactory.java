@@ -25,9 +25,9 @@ package org.cote.accountmanager.data.factory;
 
 import java.util.List;
 
-import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountParticipantType;

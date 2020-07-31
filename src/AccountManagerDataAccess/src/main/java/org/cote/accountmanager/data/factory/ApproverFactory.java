@@ -29,13 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.EnumUtils;
-import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ApprovalEnumType;
 import org.cote.accountmanager.objects.ApproverEnumType;

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;

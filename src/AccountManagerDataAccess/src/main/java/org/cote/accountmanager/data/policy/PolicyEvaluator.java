@@ -34,7 +34,6 @@ import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.fact.FactUtil;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
@@ -44,6 +43,7 @@ import org.cote.accountmanager.data.rule.RuleUtil;
 import org.cote.accountmanager.data.services.BshService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.sod.SoDPolicyUtil;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;

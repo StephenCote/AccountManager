@@ -21,7 +21,7 @@
  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
-package org.cote.accountmanager.data;
+package org.cote.accountmanager.exceptions;
 
 public class ArgumentException extends Exception {
 	private static final long serialVersionUID = 1L;

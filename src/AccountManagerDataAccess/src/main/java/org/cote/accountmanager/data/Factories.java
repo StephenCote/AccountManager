@@ -86,6 +86,7 @@ import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.TypeSanitizer;
 import org.cote.accountmanager.data.services.VaultService;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.AccountType;

@@ -5,10 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
-import org.cote.accountmanager.data.ArgumentException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.services.ICommunityProvider;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.UserType;

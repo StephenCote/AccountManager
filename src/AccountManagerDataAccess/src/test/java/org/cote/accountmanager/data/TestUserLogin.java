@@ -33,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.services.DataMaintenance;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.UserSessionType;

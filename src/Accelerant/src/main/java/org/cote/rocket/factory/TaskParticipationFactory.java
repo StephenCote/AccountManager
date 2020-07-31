@@ -26,7 +26,7 @@ package org.cote.rocket.factory;
 
 import java.util.List;
 
-import org.cote.accountmanager.data.ArgumentException;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;

@@ -37,6 +37,7 @@ import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.security.CredentialService;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ContactInformationType;

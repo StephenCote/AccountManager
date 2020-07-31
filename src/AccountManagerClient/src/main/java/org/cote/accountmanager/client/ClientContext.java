@@ -112,7 +112,7 @@ public class ClientContext {
 
 	public static void applyContext(UserType usr){
 		user = usr;
-		logger.info(JSONUtil.exportObject(usr));
+		/// logger.info(JSONUtil.exportObject(usr));
 		organizationPath = usr.getOrganizationPath();
 		if(user.getHomeDirectory() != null){
 			homeDirectory = user.getHomeDirectory();

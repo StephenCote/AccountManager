@@ -28,6 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.security.TokenService;
+import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
