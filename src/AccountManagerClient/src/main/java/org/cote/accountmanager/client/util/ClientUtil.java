@@ -19,9 +19,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.client.ClientContext;
 
-import org.cote.accountmanager.service.rest.SchemaBean;
-import org.cote.accountmanager.service.rest.ServiceSchemaMethod;
-import org.cote.accountmanager.service.rest.ServiceSchemaMethodParameter;
+import org.cote.accountmanager.client.services.rest.SchemaBean;
+import org.cote.accountmanager.client.services.rest.ServiceSchemaMethod;
+import org.cote.accountmanager.client.services.rest.ServiceSchemaMethodParameter;
 
 import org.glassfish.jersey.client.ClientConfig;
 

@@ -1,0 +1,156 @@
+/*******************************************************************************
+ * Copyright (C) 2002, 2020 Stephen Cote Enterprises, LLC. All rights reserved.
+ * Redistribution without modification is permitted provided the following conditions are met:
+ *
+ *    1. Redistribution may not deviate from the original distribution,
+ *        and must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials
+ *        provided with the distribution.
+ *    2. Products may be derived from this software.
+ *    3. Redistributions of any form whatsoever must retain the following acknowledgment:
+ *        "This product includes software developed by Stephen Cote Enterprises, LLC"
+ *
+ * THIS SOFTWARE IS PROVIDED BY STEPHEN COTE ENTERPRISES, LLC ``AS IS''
+ * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THIS PROJECT OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *******************************************************************************/
+package org.cote.accountmanager.client.services;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.exceptions.ArgumentException;
+import org.cote.accountmanager.exceptions.DataException;
+import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.DataType;
+import org.cote.accountmanager.objects.FunctionEnumType;
+import org.cote.accountmanager.objects.FunctionType;
+import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.util.DataUtil;
+
+@SuppressWarnings("restriction")
+public class ScriptService {
+	public static final Logger logger = LogManager.getLogger(ScriptService.class);
+	@SuppressWarnings("unused")
+	private static final String scriptEngineJavaScript = "javascript";
+	private static final String scriptEngineNashorn = "nashorn";
+	private static final String scriptEngineGraal = "graal.js";
+	private static String scriptEngineName = scriptEngineGraal;
+	private static ScriptEngine jsEngine = null;
+	public static void setScriptEngineName(String s){
+		scriptEngineName = s;
+	}
+	private static Map<String,CompiledScript> jsCompiled = new HashMap<>();
+	
+	public static ScriptEngine getJavaScriptEngine(){
+		if(jsEngine == null){
+			if(scriptEngineName.equals(scriptEngineNashorn)){
+				logger.error("Not supported");
+			}
+			else{
+				jsEngine = new ScriptEngineManager().getEngineByName(scriptEngineName);
+			}
+		}
+		return jsEngine;
+	}
+	public static Object run(UserType user,Map<String,Object> params,FunctionType func) throws FactoryException,ArgumentException{
+
+		if(func.getFunctionType() != FunctionEnumType.JAVASCRIPT) throw new ArgumentException("FunctionType '" + func.getFunctionType().toString() + "' is not applicable");
+		DataType data = func.getFunctionData();
+		if(data == null && func.getSourceUrn() != null){
+			/// data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(func.getSourceUrn());
+			throw new FactoryException("TODO: Add getByUrn");
+		}
+		if(data == null) throw new ArgumentException("Function '" + func.getName() + "' data is null");
+		else if(data.getDetailsOnly()) throw new ArgumentException("Function data is not properly loaded");
+
+		return run(user,params,data);
+	}
+	public static Object run(UserType user,Map<String,Object> params,DataType data) throws ArgumentException{
+		String value = null;
+		try {
+			value = DataUtil.getValueString(data);
+		} catch (DataException e) {
+			
+			logger.error(e.getMessage());
+		}
+		return run(user,data.getUrn(),value,params);
+	}
+	public static Object run(UserType user,String name, String script,Map<String,Object> params) throws ArgumentException{
+		CompiledScript compScr = compileScript(name, script);
+
+		if(compScr == null) throw new ArgumentException("Compiled script for '" + name + "' is null");
+
+		return run(user, name, params);
+
+	}
+	public static Map<String, Object> getCommonParameterMap(UserType user){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("logger", logger);
+		params.put("user", user);
+		if(user != null) params.put("organizationPath", user.getOrganizationPath());
+		return params;
+	}
+	public static String processTokens(UserType user, String scriptText){
+		String out_str = scriptText.replaceAll("\\$\\{userUrn\\}", user.getUrn());
+		return out_str;
+	}
+	public static Object run(UserType user,String name,Map<String,Object> params) throws ArgumentException{
+		CompiledScript compScr = jsCompiled.get(name);
+		Object resp = null;
+		if(compScr != null){
+			Bindings bd = compScr.getEngine().createBindings();
+			bd.putAll(params);
+			try{
+				resp = compScr.eval(bd);
+			} catch (ScriptException e) {
+				
+				logger.error(e.getMessage());
+			}
+		}
+		else{
+			throw new ArgumentException("Compiled script for '" + name + "' is null");
+		}
+		return resp;
+	}
+	public static CompiledScript compileScript(String name, String script){
+		ScriptEngine jse = getJavaScriptEngine();
+		CompiledScript out_scr = null;
+	  if (jse instanceof Compilable)
+	    {
+	        Compilable compEngine = (Compilable)jse;
+			try {
+				//logger.debug("Compiling: " + name);
+				out_scr = compEngine.compile(script);
+				jsCompiled.put(name, out_scr);
+			} catch (ScriptException e) {
+				
+				logger.error(e.getMessage());
+			}
+
+	    }
+	    else{
+	    	
+	    	logger.error("Script engine is not compilable");
+	    }
+
+	    return out_scr;
+	}
+}

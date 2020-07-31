@@ -106,7 +106,7 @@ public class AuthenticationUtil {
 				//ClientUtil.setCookies(response.getCookies());
 				authResp = response.readEntity(AuthenticationResponseType.class);
 				if(authResp != null){
-					logger.info("Authentication Response: " + authResp.getResponse().toString());
+					//logger.info("Authentication Response: " + authResp.getResponse().toString());
 					if(authResp.getResponse().equals(AuthenticationResponseEnumType.AUTHENTICATED)){
 						if(token == null && authResp.getMessage() != null){
 							logger.info("Caching token");
@@ -128,8 +128,8 @@ public class AuthenticationUtil {
 							}
 						}
 						ClientContext.applyContext(user);
-
-						logger.info("User - " + (user == null ? "No" : "Yes"));
+						authResp.setUser(user);
+						// logger.info("User - " + (user == null ? "No" : "Yes"));
 						/*
 
 						*/

@@ -21,60 +21,49 @@
  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
-package org.cote.accountmanager.service.rest;
+package org.cote.accountmanager.client.services.rest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
-
-
-@XmlRootElement(name="SchemaBean")
-public class SchemaBean {
-	private String serviceType = "JSON-REST";
-	private String serviceURL = null;
-	private List<ServiceSchemaMethod> methods = new ArrayList<ServiceSchemaMethod>();
-
-	public SchemaBean(){
-		//this.methods = new ArrayList<String>();
+public class ServiceSchemaMethod {
+	private String name = null;
+	private String httpMethod = "GET";
+	private List<ServiceSchemaMethodParameter> parameters = null;
+	private ServiceSchemaMethodParameter returnValue = null;
+	public ServiceSchemaMethod(){
+		parameters = new ArrayList<ServiceSchemaMethodParameter>();
+	}
+	public ServiceSchemaMethod(String name, List<ServiceSchemaMethodParameter> parameters){
+		this.name = name;
+		this.parameters = parameters;
 	}
 	
-
-
-	public String getServiceURL() {
-		return serviceURL;
+	public String getHttpMethod() {
+		return httpMethod;
 	}
-
-
-
-	public void setServiceURL(String serviceURL) {
-		this.serviceURL = serviceURL;
+	public void setHttpMethod(String httpMethod) {
+		this.httpMethod = httpMethod;
 	}
-
-
-
-	public List<ServiceSchemaMethod> getMethods() {
-		return methods;
+	public String getName() {
+		return name;
 	}
-
-
-	public void setMethods(List<ServiceSchemaMethod> methods) {
-		this.methods = methods;
+	public void setName(String name) {
+		this.name = name;
 	}
-
-
-	public void setServiceType(String serviceType) {
-		this.serviceType = serviceType;
+	public List<ServiceSchemaMethodParameter> getParameters() {
+		return parameters;
 	}
-
-
-	public String getServiceType() {
-		return serviceType;
+	public void setParameters(List<ServiceSchemaMethodParameter> parameters) {
+		this.parameters = parameters;
+	}
+	public ServiceSchemaMethodParameter getReturnValue() {
+		return returnValue;
+	}
+	public void setReturnValue(ServiceSchemaMethodParameter returnValue) {
+		this.returnValue = returnValue;
 	}
 	
-
+	
+	
 }
