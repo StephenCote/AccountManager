@@ -27,6 +27,7 @@ package org.cote.accountmanager.client.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,12 +37,18 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.client.ClientContext;
+import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.client.util.AuthenticationUtil;
 import org.cote.accountmanager.client.util.CacheUtil;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ApiClientConfigurationType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.util.StreamUtil;
 import org.junit.After;
 import org.junit.Before;
 public class BaseClientTest{
@@ -50,11 +57,13 @@ public class BaseClientTest{
 	private static String testUserOrganization = null;
 	private static String testUserPassword = null;
 	protected static UserType testUser = null;
+	protected static ClientContext testUserContext = null;
 	private static String sessionId = null;
 	protected static String serviceUrl = null;
 	protected static String serviceName = null;
 	private static Properties testProperties = null;
 	
+
 	@Before
 	public void setUp() throws Exception {
 		
@@ -80,13 +89,14 @@ public class BaseClientTest{
 		testUserOrganization = testProperties.getProperty("test.user1.organization");
 		testUserName = testProperties.getProperty("test.user1.name");
 		testUserPassword = testProperties.getProperty("test.user1.password");
+		testUserContext = new ClientContext();
 		serviceUrl = testProperties.getProperty("service.url");
 		serviceName = testProperties.getProperty("service.name");
 		
 		ApiClientConfigurationType api = AuthenticationUtil.getApiConfiguration(serviceUrl);
 		CacheUtil.cache(serviceName, api);
 		
-		AuthenticationResponseType art = AuthenticationUtil.authenticate(serviceName, testUserOrganization, testUserName, testUserPassword);
+		AuthenticationResponseType art = AuthenticationUtil.authenticate(testUserContext, serviceName, testUserOrganization, testUserName, testUserPassword);
 		if(art != null) {
 			testUser = art.getUser();
 			assertNotNull("Test user is null",testUser);
@@ -99,6 +109,40 @@ public class BaseClientTest{
 
 		/// SessionSecurity.logout(sessionId, testOrganization.getId());
 	}
+	
+	protected DirectoryGroupType getCreateDirectory(ClientContext context, DirectoryGroupType parent, String name) {
+		DirectoryGroupType dir = null;
+		if(parent == null) {
+			
+		}
+		String testDataName = "Test Data 1";
+		DirectoryGroupType homeDirectory = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", "~");
+		assertNotNull("Couldn't Find Home Directory",homeDirectory);
+		String testPath = AM6Util.getEncodedPath("~/TestData");
 
+		DirectoryGroupType subDirectory = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", testPath);
+
+		if(subDirectory == null) {
+			subDirectory = new DirectoryGroupType();
+			subDirectory.setNameType(NameEnumType.GROUP);
+			subDirectory.setGroupType(GroupEnumType.DATA);
+			subDirectory.setName("TestData");
+			subDirectory.setParentId(homeDirectory.getId());
+			assertTrue("Failed to add directory",AM6Util.updateObject(context, Boolean.class, subDirectory));
+			subDirectory = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", testPath);
+		}
+		return dir;
+	}
+
+	public String getTestScript(String fileName) {
+		String data = null;
+		try {
+			BufferedInputStream fis = new BufferedInputStream(ClassLoader.getSystemResourceAsStream("./" + fileName)); 
+			data = StreamUtil.streamToString(fis);
+		} catch (IOException e) {
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
+		return data;
+	}
 	
 }

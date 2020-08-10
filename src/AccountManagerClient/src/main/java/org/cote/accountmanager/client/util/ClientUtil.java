@@ -105,14 +105,14 @@ public class ClientUtil {
 
 		return resource;
 	}
-	public static Builder getRequestBuilder(WebTarget resource){
+	public static Builder getRequestBuilder(ClientContext context, WebTarget resource){
 		Builder b = resource.request();
 		for(NewCookie ck : cookies){
 			//logger.info("Send Cookie: " + ck.getName() + "=" + ck.getValue());
 			b.cookie(ck.getName(),ck.getValue());
 		}
-		if(ClientContext.getAuthenticationCredential() != null){
-			b.header("Authorization", "Bearer " + new String(ClientContext.getAuthenticationCredential().getCredential()));
+		if(context.getAuthenticationCredential() != null){
+			b.header("Authorization", "Bearer " + new String(context.getAuthenticationCredential().getCredential()));
 		}
 		return b;
 	}

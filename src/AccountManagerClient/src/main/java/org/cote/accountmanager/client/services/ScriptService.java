@@ -36,6 +36,8 @@ import javax.script.ScriptException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.client.ClientContext;
+import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -44,33 +46,49 @@ import org.cote.accountmanager.objects.FunctionEnumType;
 import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.util.DataUtil;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Engine;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.PolyglotAccess;
+import org.graalvm.polyglot.Value;
 
-@SuppressWarnings("restriction")
 public class ScriptService {
 	public static final Logger logger = LogManager.getLogger(ScriptService.class);
-	@SuppressWarnings("unused")
+
 	private static final String scriptEngineJavaScript = "javascript";
 	private static final String scriptEngineNashorn = "nashorn";
 	private static final String scriptEngineGraal = "graal.js";
+
 	private static String scriptEngineName = scriptEngineGraal;
-	private static ScriptEngine jsEngine = null;
+	private static Context jsEngine = null;
 	public static void setScriptEngineName(String s){
 		scriptEngineName = s;
 	}
 	private static Map<String,CompiledScript> jsCompiled = new HashMap<>();
 	
-	public static ScriptEngine getJavaScriptEngine(){
+	public static Context getJavaScriptEngine(){
 		if(jsEngine == null){
 			if(scriptEngineName.equals(scriptEngineNashorn)){
 				logger.error("Not supported");
 			}
+			else if(scriptEngineName.contentEquals(scriptEngineGraal)) {
+			    Context context = Context.newBuilder("js")
+			    	.allowIO(true)
+			    	//.allowPolyglotAccess(PolyglotAccess.ALL)
+			    	.allowHostAccess(HostAccess.ALL)
+			    	.allowHostClassLookup(className -> true)
+			    	.build();
+			    context.getBindings("js").putMember("ScriptResolver", new ScriptResolver());
+			    jsEngine = context;
+			}
 			else{
-				jsEngine = new ScriptEngineManager().getEngineByName(scriptEngineName);
+				// jsEngine = new ScriptEngineManager().getEngineByName(scriptEngineName);
+				logger.error("Not supported");
 			}
 		}
 		return jsEngine;
 	}
-	public static Object run(UserType user,Map<String,Object> params,FunctionType func) throws FactoryException,ArgumentException{
+	public static Object run(Map<String,Object> params,FunctionType func) throws FactoryException,ArgumentException{
 
 		if(func.getFunctionType() != FunctionEnumType.JAVASCRIPT) throw new ArgumentException("FunctionType '" + func.getFunctionType().toString() + "' is not applicable");
 		DataType data = func.getFunctionData();
@@ -81,9 +99,10 @@ public class ScriptService {
 		if(data == null) throw new ArgumentException("Function '" + func.getName() + "' data is null");
 		else if(data.getDetailsOnly()) throw new ArgumentException("Function data is not properly loaded");
 
-		return run(user,params,data);
+		return run(params,data);
 	}
-	public static Object run(UserType user,Map<String,Object> params,DataType data) throws ArgumentException{
+	public static Value run(Map<String,Object> params,DataType data) throws ArgumentException{
+
 		String value = null;
 		try {
 			value = DataUtil.getValueString(data);
@@ -91,47 +110,57 @@ public class ScriptService {
 			
 			logger.error(e.getMessage());
 		}
-		return run(user,data.getUrn(),value,params);
+		return run(value,params);
+		/*
+		return run(data.getUrn(),value,params);
+		*/
 	}
-	public static Object run(UserType user,String name, String script,Map<String,Object> params) throws ArgumentException{
+	/*
+	public static Object run(String name, String script,Map<String,Object> params) throws ArgumentException{
 		CompiledScript compScr = compileScript(name, script);
 
 		if(compScr == null) throw new ArgumentException("Compiled script for '" + name + "' is null");
 
-		return run(user, name, params);
+		return run(name, params);
 
 	}
-	public static Map<String, Object> getCommonParameterMap(UserType user){
+	*/
+	public static Map<String, Object> getCommonParameterMap(ClientContext context){
 		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("logger", logger);
-		params.put("user", user);
-		if(user != null) params.put("organizationPath", user.getOrganizationPath());
+		if(context != null) {
+			params.put("user", context.getUser());
+			if(context.getUser() != null) params.put("organizationPath", context.getUser().getOrganizationPath());
+			params.put("clientContext", context);
+		}
+		
+
 		return params;
 	}
 	public static String processTokens(UserType user, String scriptText){
 		String out_str = scriptText.replaceAll("\\$\\{userUrn\\}", user.getUrn());
 		return out_str;
 	}
-	public static Object run(UserType user,String name,Map<String,Object> params) throws ArgumentException{
-		CompiledScript compScr = jsCompiled.get(name);
-		Object resp = null;
-		if(compScr != null){
-			Bindings bd = compScr.getEngine().createBindings();
-			bd.putAll(params);
-			try{
-				resp = compScr.eval(bd);
-			} catch (ScriptException e) {
-				
-				logger.error(e.getMessage());
+	public static Value run(String script,Map<String,Object> params) throws ArgumentException{
+		//CompiledScript compScr = jsCompiled.get(name);
+		Context context = getJavaScriptEngine();
+		Value resp = null;
+		if(context != null){
+			for(String key : params.keySet()){
+				logger.info("Binding: " + key);
+				context.getBindings("js").putMember(key, params.get(key));
 			}
+			resp = context.eval("js",script);
 		}
 		else{
-			throw new ArgumentException("Compiled script for '" + name + "' is null");
+			throw new ArgumentException("Script context is null");
 		}
 		return resp;
 	}
+	/*
 	public static CompiledScript compileScript(String name, String script){
 		ScriptEngine jse = getJavaScriptEngine();
+	
 		CompiledScript out_scr = null;
 	  if (jse instanceof Compilable)
 	    {
@@ -153,4 +182,12 @@ public class ScriptService {
 
 	    return out_scr;
 	}
+	*/
+	public static class ScriptResolver {
+		public String contextPath() {
+			return System.getProperty("user.dir").replace("\\", "/");
+		}
+	}
 }
+
+

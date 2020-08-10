@@ -34,8 +34,14 @@ public class ClientContext {
 	//private static String sessionId = null;
 	//private static SessionStatusEnumType sessionStatus = SessionStatusEnumType.UNKNOWN;
 	//private static OrganizationType currentOrganization = null;
-	private static Map<NameEnumType,Map<String,Integer>> countMap = new HashMap<NameEnumType,Map<String,Integer>>();
-	public static void clearContext(){
+	private Map<NameEnumType,Map<String,Integer>> countMap = new HashMap<NameEnumType,Map<String,Integer>>();
+	public ClientContext() {
+		
+	}
+	public ClientContext(UserType usr) {
+		this.applyContext(usr);
+	}
+	public void clearContext(){
 		user = null;
 		//sessionId = null;
 		//organizationId = 0L;
@@ -46,71 +52,71 @@ public class ClientContext {
 		homeDirectory = null;
 	}
 
-	public static String getOrganizationPath() {
+	public String getOrganizationPath() {
 		return organizationPath;
 	}
 
-	public static void setOrganizationPath(String organizationPath) {
+	public void setOrganizationPath(String organizationPath) {
 		ClientContext.organizationPath = organizationPath;
 	}
 
-	public static ApiClientConfigurationType getApiConfiguration() {
+	public ApiClientConfigurationType getApiConfiguration() {
 		return apiConfiguration;
 	}
 
-	public static void setApiConfiguration(ApiClientConfigurationType apiConfiguration) {
+	public void setApiConfiguration(ApiClientConfigurationType apiConfiguration) {
 		ClientContext.apiConfiguration = apiConfiguration;
 	}
 
-	public static AuthenticationResponseEnumType getAuthenticationStatus() {
+	public AuthenticationResponseEnumType getAuthenticationStatus() {
 		return authenticationStatus;
 	}
 
-	public static void setAuthenticationStatus(AuthenticationResponseEnumType authenticationStatus) {
+	public void setAuthenticationStatus(AuthenticationResponseEnumType authenticationStatus) {
 		ClientContext.authenticationStatus = authenticationStatus;
 	}
 
-	public static CredentialType getAuthenticationCredential() {
+	public CredentialType getAuthenticationCredential() {
 		return authenticationCredential;
 	}
 
-	public static void setAuthenticationCredential(CredentialType authenticationCredential) {
+	public void setAuthenticationCredential(CredentialType authenticationCredential) {
 		ClientContext.authenticationCredential = authenticationCredential;
 	}
 
-	public static void setCount(NameEnumType type, String path, int count){
+	public void setCount(NameEnumType type, String path, int count){
 		if(countMap.containsKey(type) == false) countMap.put(type, new HashMap<String,Integer>());
 		countMap.get(type).put(path, count);
 	}
-	public static int getCount(NameEnumType type, String path){
+	public int getCount(NameEnumType type, String path){
 		if(haveCount(type,path)) return countMap.get(type).get(path);
 		return 0;
 	}
-	public static boolean haveCount(NameEnumType type, String path){
+	public boolean haveCount(NameEnumType type, String path){
 		if(countMap.containsKey(type) && countMap.get(type).containsKey(path)) return true;
 		return false;
 	}
 
-	public static NameEnumType getContextObjectType() {
+	public NameEnumType getContextObjectType() {
 		return contextObjectType;
 	}
 
 
-	public static void setContextObjectType(NameEnumType contextObjectType) {
+	public void setContextObjectType(NameEnumType contextObjectType) {
 		ClientContext.contextObjectType = contextObjectType;
 	}
 
 
-	public static DirectoryGroupType getHomeDirectory() {
+	public DirectoryGroupType getHomeDirectory() {
 		return homeDirectory;
 	}
 
-	public static void setHomeDirectory(DirectoryGroupType homeDirectory) {
+	public void setHomeDirectory(DirectoryGroupType homeDirectory) {
 		ClientContext.homeDirectory = homeDirectory;
 	}
 
 
-	public static void applyContext(UserType usr){
+	public void applyContext(UserType usr){
 		user = usr;
 		/// logger.info(JSONUtil.exportObject(usr));
 		organizationPath = usr.getOrganizationPath();
@@ -118,7 +124,7 @@ public class ClientContext {
 			homeDirectory = user.getHomeDirectory();
 		}
 		else{
-			homeDirectory = AM6Util.findObject(DirectoryGroupType.class, NameEnumType.GROUP, "DATA", "~");
+			homeDirectory = AM6Util.findObject(this, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", "~");
 		}
 		currentDirectory = homeDirectory;
 			//organizationId = usr.getOrganizationId();
@@ -146,16 +152,16 @@ public class ClientContext {
 
 	}
 	*/
-	public static UserType getUser() {
+	public UserType getUser() {
 		return user;
 	}
-	public static void setUser(UserType user) {
+	public void setUser(UserType user) {
 		ClientContext.user = user;
 	}
-	public static DirectoryGroupType getCurrentDirectory() {
+	public DirectoryGroupType getCurrentDirectory() {
 		return currentDirectory;
 	}
-	public static void setCurrentDirectory(DirectoryGroupType currentDirectory) {
+	public void setCurrentDirectory(DirectoryGroupType currentDirectory) {
 		ClientContext.currentDirectory = currentDirectory;
 	}
 

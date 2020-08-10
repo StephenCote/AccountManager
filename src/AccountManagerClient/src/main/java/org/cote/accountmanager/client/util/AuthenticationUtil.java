@@ -30,10 +30,10 @@ import io.jsonwebtoken.Jwts;
 public class AuthenticationUtil {
 	//private static Map<String,String> sessionMap = new HashMap<String,String>();
 	public static final Logger logger = LogManager.getLogger(AuthenticationUtil.class);
-	public static String accessToken(){
-		ClientContext.clearContext();
+	public static String accessToken(ClientContext context){
+		context.clearContext();
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + "/crypto/accessToken");
-		Response response = ClientUtil.getRequestBuilder(webResource).accept(MediaType.APPLICATION_JSON_TYPE).get(Response.class);
+		Response response = ClientUtil.getRequestBuilder(context, webResource).accept(MediaType.APPLICATION_JSON_TYPE).get(Response.class);
 		if(response.getStatus() == 200){
 			return response.readEntity(String.class);
 		}
@@ -48,19 +48,19 @@ public class AuthenticationUtil {
 		return cfg;
 	}
 	
-	public static boolean logout(){
-		ClientContext.clearContext();
+	public static boolean logout(ClientContext context){
+		context.clearContext();
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + "/user/logout");
-		Response response = ClientUtil.getRequestBuilder(webResource).accept(MediaType.APPLICATION_JSON_TYPE).get(Response.class);
+		Response response = ClientUtil.getRequestBuilder(context, webResource).accept(MediaType.APPLICATION_JSON_TYPE).get(Response.class);
 		if(response.getStatus() == 200){
 			return true;
 		}
 		return false;
 	}
 
-	public static AuthenticationResponseType authenticate(String server, String orgPath, String name, String password){
+	public static AuthenticationResponseType authenticate(ClientContext context, String server, String orgPath, String name, String password){
 		AuthenticationResponseType authResp = null;
-		ClientContext.clearContext();
+		context.clearContext();
 		String cacheKey = "Token::" + server + "::" + orgPath + "::" + name;
 		String userKey = "User::" + server + "::" + orgPath + "::" + name;
 		ApiClientConfigurationType api = CacheUtil.readCache(server, ApiClientConfigurationType.class);
@@ -116,18 +116,18 @@ public class AuthenticationUtil {
 							CacheUtil.cache(cacheKey, token);
 						}
 						
-						ClientContext.setAuthenticationCredential(token);
-						ClientContext.setAuthenticationStatus(authResp.getResponse());
-						ClientContext.setApiConfiguration(api);
+						context.setAuthenticationCredential(token);
+						context.setAuthenticationStatus(authResp.getResponse());
+						context.setApiConfiguration(api);
 						
 						UserType user = CacheUtil.readCache(userKey, UserType.class);
 						if(user == null){
-							user = AM6Util.getPrincipal();
+							user = AM6Util.getPrincipal(context);
 							if(user == null){
 								logger.error("User object is null");
 							}
 						}
-						ClientContext.applyContext(user);
+						context.applyContext(user);
 						authResp.setUser(user);
 						// logger.info("User - " + (user == null ? "No" : "Yes"));
 						/*

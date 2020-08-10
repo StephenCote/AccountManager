@@ -30,7 +30,7 @@ public class ClientMain {
 		options.addOption("url",true,"A url value");
 		options.addOption("console",false,"Start console mode");
 		CommandLineParser parser = new PosixParser();
-
+		ClientContext context = new ClientContext();
 		try {
 			CommandLine cmd = parser.parse( options, args);
 			if(cmd.hasOption("server") && cmd.hasOption("url")){
@@ -38,14 +38,14 @@ public class ClientMain {
 				CacheUtil.cache(cmd.getOptionValue("server"), api);
 				logger.info("Saved " + cmd.getOptionValue("server") + " configuration");
 			}
-			else if(cmd.hasOption("username") && cmd.hasOption("organization")){
-				AuthenticationResponseType authResp = AuthenticationUtil.authenticate(cmd.getOptionValue("server"),cmd.getOptionValue("organization"),cmd.getOptionValue("username"),cmd.getOptionValue("password"));
+			if(cmd.hasOption("server") && cmd.hasOption("username") && cmd.hasOption("organization")){
+				AuthenticationResponseType authResp = AuthenticationUtil.authenticate(context, cmd.getOptionValue("server"),cmd.getOptionValue("organization"),cmd.getOptionValue("username"),cmd.getOptionValue("password"));
 				if(authResp != null){
 					if(options.hasOption("console")){
 						ConsoleProcessor console = new ConsoleProcessor();
-						console.runConsole();
+						console.runConsole(context);
 					}
-					logger.info("Logging out: " + AuthenticationUtil.logout());	
+					logger.info("Logging out: " + AuthenticationUtil.logout(context));	
 				}
 				else{
 					logger.error("Failed to authenticate");

@@ -19,10 +19,10 @@ public class TestScriptEngine extends BaseClientTest {
 	public void TestScriptSetup() {
 		DataType scriptData = new DataType();
 		try {
-			Map<String,Object> params = ScriptService.getCommonParameterMap(testUser);
-			DataUtil.setValue(scriptData, getDataScript().getBytes());
+			Map<String,Object> params = ScriptService.getCommonParameterMap(testUserContext);
+			DataUtil.setValue(scriptData, getTestScript("testScriptApiBasic.js").getBytes());
 			scriptData.setUrn("debug");
-			ScriptService.run(testUser, params, scriptData);
+			ScriptService.run(params, scriptData);
 
 		} catch (DataException | ArgumentException e) {
 			logger.error(e);
@@ -31,7 +31,4 @@ public class TestScriptEngine extends BaseClientTest {
 
 	}
 	
-	private String getDataScript() {
-		return "console.log(\"Script Test\"); console.log(\"User: \" + user);";
-	}
 }

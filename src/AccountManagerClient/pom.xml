@@ -268,9 +268,9 @@
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-						<!-- 
-						<exclude>**/TestIdentityService.java</exclude>
-						-->
+						
+						<exclude>**/TestApi.java</exclude>
+						
 					</excludes>
 					<systemProperties>
 						<property>

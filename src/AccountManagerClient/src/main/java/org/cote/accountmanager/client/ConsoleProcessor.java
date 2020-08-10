@@ -30,12 +30,12 @@ public class ConsoleProcessor {
 	public static final Logger logger = LogManager.getLogger(ConsoleProcessor.class);
 	private CommandLineParser parser = new PosixParser();
 	
-	public void runConsole(){
+	public void runConsole(ClientContext context){
 		BufferedReader is = new BufferedReader(new InputStreamReader(System.in));
 		try{
 
 			if(prompt == null){
-				setPrompt();
+				setPrompt(context);
 			}
 			String line = "";
 			
@@ -112,10 +112,10 @@ public class ConsoleProcessor {
 		} 
 		return matchList.toArray(new String[0]);
 	}
-	public void setPrompt(){
+	public void setPrompt(ClientContext context){
 		String objName = "";
-		if(ClientContext.getCurrentDirectory() != null) objName = ClientContext.getCurrentDirectory().getPath();
-		prompt = "[" + ClientContext.getOrganizationPath() + "/" + ClientContext.getUser().getName() + "]:" + objName + " " + (ClientContext.getContextObjectType() != NameEnumType.UNKNOWN ? "{" + ClientContext.getContextObjectType().toString() + "}" : "") + "$ ";
+		if(context.getCurrentDirectory() != null) objName = context.getCurrentDirectory().getPath();
+		prompt = "[" + context.getOrganizationPath() + "/" + context.getUser().getName() + "]:" + objName + " " + (context.getContextObjectType() != NameEnumType.UNKNOWN ? "{" + context.getContextObjectType().toString() + "}" : "") + "$ ";
 	}
 
 }
