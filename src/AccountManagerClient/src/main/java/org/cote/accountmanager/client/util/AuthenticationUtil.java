@@ -21,12 +21,6 @@ import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.UserType;
 
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.Jwts;
-
-
-
-
 public class AuthenticationUtil {
 	//private static Map<String,String> sessionMap = new HashMap<String,String>();
 	public static final Logger logger = LogManager.getLogger(AuthenticationUtil.class);
@@ -61,14 +55,15 @@ public class AuthenticationUtil {
 	public static AuthenticationResponseType authenticate(ClientContext context, String server, String orgPath, String name, String password){
 		AuthenticationResponseType authResp = null;
 		context.clearContext();
+		ClientContext defaultContext = new ClientContext();
 		String cacheKey = "Token::" + server + "::" + orgPath + "::" + name;
 		String userKey = "User::" + server + "::" + orgPath + "::" + name;
-		ApiClientConfigurationType api = CacheUtil.readCache(server, ApiClientConfigurationType.class);
+		ApiClientConfigurationType api = CacheUtil.readCache(defaultContext, server, ApiClientConfigurationType.class);
 		if(api == null){
 			logger.error("API configuration does not exist.");
 			return null;
 		}
-		CredentialType token = CacheUtil.readCache(cacheKey, CredentialType.class);
+		CredentialType token = CacheUtil.readCache(defaultContext, cacheKey, CredentialType.class);
 		if(token == null && password == null){
 			logger.error("Credential or access token not defined");
 			return null;
@@ -113,14 +108,14 @@ public class AuthenticationUtil {
 							token = new CredentialType();
 							token.setCredential(authResp.getMessage().getBytes());
 							token.setCredentialType(CredentialEnumType.TOKEN);
-							CacheUtil.cache(cacheKey, token);
+							CacheUtil.cache(defaultContext, cacheKey, token);
 						}
 						
 						context.setAuthenticationCredential(token);
 						context.setAuthenticationStatus(authResp.getResponse());
 						context.setApiConfiguration(api);
 						
-						UserType user = CacheUtil.readCache(userKey, UserType.class);
+						UserType user = CacheUtil.readCache(defaultContext, userKey, UserType.class);
 						if(user == null){
 							user = AM6Util.getPrincipal(context);
 							if(user == null){

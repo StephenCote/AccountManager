@@ -81,7 +81,7 @@ public class AM6Util {
 	}
 	public static <T> T getObjectByName(ClientContext context, Class<T> cls, NameEnumType nameType, String objectId, String name, boolean useObjectParent){
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + resourceUri + "/" + nameType.toString() + (useObjectParent  ? "/parent" : "") + "/" +  objectId + "/" + name.replace(" ", "%20"));
-		/// logger.info("Get Resource: " + webResource.getUri());
+		logger.info("Get Resource: " + webResource.getUri());
 		return getEntity(context, cls,webResource);
 	}
 	public static <T> T getEntity(ClientContext context, Class<T> cls, WebTarget resource){
@@ -91,12 +91,22 @@ public class AM6Util {
 		Response response = ClientUtil.getRequestBuilder(context, resource).accept(responseType).get(Response.class);
 
 		T out_obj = null;
+		/// logger.info("Received status: " + response.getStatus());
 		if(response.getStatus() == successStatus){
-			out_obj = response.readEntity(cls);
+			try {
+				out_obj = response.readEntity(cls);
+			}
+			catch(Exception e) {
+				/// currently passing nulls back as a 200 status since, so the response shows success but the entity is null
+				/// at the moment, sinking the error
+				/// logger.debug(e.getMessage());
+				/// logger.error("Trace: " + e.getStackTrace());
+			}
 		}
 		else {
 			logger.warn("Received response: " + response.getStatus());
 		}
+		/// logger.info("Received entity: " + out_obj);
 		return out_obj;
 	}
 	

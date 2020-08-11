@@ -31,11 +31,12 @@ public class ClientMain {
 		options.addOption("console",false,"Start console mode");
 		CommandLineParser parser = new PosixParser();
 		ClientContext context = new ClientContext();
+		ClientContext defaultContext = new ClientContext();
 		try {
 			CommandLine cmd = parser.parse( options, args);
 			if(cmd.hasOption("server") && cmd.hasOption("url")){
 				ApiClientConfigurationType api = AuthenticationUtil.getApiConfiguration(cmd.getOptionValue("url"));
-				CacheUtil.cache(cmd.getOptionValue("server"), api);
+				CacheUtil.cache(defaultContext, cmd.getOptionValue("server"), api);
 				logger.info("Saved " + cmd.getOptionValue("server") + " configuration");
 			}
 			if(cmd.hasOption("server") && cmd.hasOption("username") && cmd.hasOption("organization")){

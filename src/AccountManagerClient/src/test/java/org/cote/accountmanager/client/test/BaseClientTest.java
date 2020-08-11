@@ -57,6 +57,7 @@ public class BaseClientTest{
 	private static String testUserOrganization = null;
 	private static String testUserPassword = null;
 	protected static UserType testUser = null;
+	protected static ClientContext defaultContext = new ClientContext();
 	protected static ClientContext testUserContext = null;
 	private static String sessionId = null;
 	protected static String serviceUrl = null;
@@ -94,7 +95,7 @@ public class BaseClientTest{
 		serviceName = testProperties.getProperty("service.name");
 		
 		ApiClientConfigurationType api = AuthenticationUtil.getApiConfiguration(serviceUrl);
-		CacheUtil.cache(serviceName, api);
+		CacheUtil.cache(defaultContext, serviceName, api);
 		
 		AuthenticationResponseType art = AuthenticationUtil.authenticate(testUserContext, serviceName, testUserOrganization, testUserName, testUserPassword);
 		if(art != null) {
@@ -111,27 +112,30 @@ public class BaseClientTest{
 	}
 	
 	protected DirectoryGroupType getCreateDirectory(ClientContext context, DirectoryGroupType parent, String name) {
-		DirectoryGroupType dir = null;
+
 		if(parent == null) {
-			
+			parent = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", "~");
 		}
-		String testDataName = "Test Data 1";
-		DirectoryGroupType homeDirectory = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", "~");
-		assertNotNull("Couldn't Find Home Directory",homeDirectory);
-		String testPath = AM6Util.getEncodedPath("~/TestData");
+		assertNotNull("Parent directory is null",parent);
+		//String testPath = AM6Util.getEncodedPath("~/TestData");
 
-		DirectoryGroupType subDirectory = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", testPath);
-
+		logger.info("Attempt to find dir");
+		DirectoryGroupType subDirectory = AM6Util.getObjectByName(context, DirectoryGroupType.class, NameEnumType.GROUP, parent.getObjectId(), name, false);
+				//AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", testPath);
+		
 		if(subDirectory == null) {
 			subDirectory = new DirectoryGroupType();
 			subDirectory.setNameType(NameEnumType.GROUP);
 			subDirectory.setGroupType(GroupEnumType.DATA);
-			subDirectory.setName("TestData");
-			subDirectory.setParentId(homeDirectory.getId());
+			subDirectory.setName(name);
+			subDirectory.setParentId(parent.getId());
+			logger.info("Attempt to add dir");
 			assertTrue("Failed to add directory",AM6Util.updateObject(context, Boolean.class, subDirectory));
-			subDirectory = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", testPath);
+			
+			subDirectory = AM6Util.getObjectByName(context, DirectoryGroupType.class, NameEnumType.GROUP, parent.getObjectId(), name, false);
+			//subDirectory = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", testPath);
 		}
-		return dir;
+		return subDirectory;
 	}
 
 	public String getTestScript(String fileName) {
