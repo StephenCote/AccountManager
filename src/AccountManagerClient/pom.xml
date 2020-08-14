@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.cote.accountmanager</groupId>
-	<artifactId>AccountManagerClient</artifactId>
+	<artifactId>client</artifactId>
 	<packaging>jar</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 
@@ -147,6 +147,14 @@
 			<version>3.1</version>
 		</dependency>
 
+<!-- 
+<dependency>
+  <groupId>org.hyperledger.fabric</groupId>
+  <artifactId>fabric-gateway-java</artifactId>
+  <version>2.2.0</version>
+</dependency>
+-->
+
 		<!-- test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -261,8 +269,11 @@
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
+					<!-- 
+						<exclude>**/TestCache.java</exclude>
 						<exclude>**/TestApi.java</exclude>
 						<exclude>**/TestScriptEngine.java</exclude>
+					-->
 					</excludes>
 					<systemProperties>
 						<property>

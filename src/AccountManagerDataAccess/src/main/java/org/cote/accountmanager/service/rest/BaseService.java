@@ -138,7 +138,7 @@ public class BaseService {
 			throw new ArgumentException("Invalid object: A NameType was not specified");
 		}
 		if(user != null && obj.getOrganizationPath() == null){
-			logger.warn("Organization path not specified. Using context user's organization");
+			logger.debug("Organization path not specified. Using context user's organization");
 			obj.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(user.getOrganizationId()));
 		}
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(obj.getNameType().toString()));
@@ -324,7 +324,7 @@ public class BaseService {
 		else if(type.equals(AuditEnumType.DATA)){
 			outObj = (T)((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, group);
 			if(outObj == null){
-				logger.error("Data '" + name + "' is null");
+				logger.debug("Data '" + name + "' is null");
 				return outObj;
 			}
 			outObj = postFetchObject(type, user, outObj);
@@ -572,7 +572,10 @@ public class BaseService {
 	public static <T> boolean update(AuditEnumType type, T bean,HttpServletRequest request){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "update",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
-		if(user==null) return false;
+		if(user==null) {
+			logger.error("User is null for session ");
+			return false;
+		}
 		return update(type, bean, user);
 	}
 	public static <T> boolean update(AuditEnumType type, T bean,UserType user){
@@ -583,6 +586,7 @@ public class BaseService {
 		AuditService.targetAudit(audit, type, (dirBean == null ? "null" : UrnUtil.getUrn(dirBean)));
 		
 		if(dirBean == null){
+			logger.error("Object to update is null");
 			AuditService.denyResult(audit, "Null value");
 			return false;
 		}

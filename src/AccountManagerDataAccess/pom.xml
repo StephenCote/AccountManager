@@ -62,10 +62,10 @@
 					</includes>
 					<excludes>
 						<!-- 
-						<exclude>**/TestAccessApproval.java</exclude>
-						<exclude>**/TestSoD.java</exclude>
+						<exclude>**/TestDataService.java</exclude>
 						 -->
-						
+						<exclude>**/TestAccessApproval.java</exclude>
+						<exclude>**/TestSoD.java</exclude>						
 						<exclude>**/TestBulkPerson.java</exclude>
 						<exclude>**/TestBulkUser.java</exclude>
 						<exclude>**/TestBulkDelete.java</exclude>

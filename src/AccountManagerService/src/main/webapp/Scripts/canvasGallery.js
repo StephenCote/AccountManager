@@ -1737,7 +1737,13 @@
 			else{
 				s.groupId = t.id;
 			}
-			Hemi.xml.postJSON(g_application_path + "rest/resource/" + s.nameType,s);
+			var b = AM6Client.update(s.nameType, s);
+
+			if(b){
+				AM6Client.clearCache(s.nameType);
+				if(!s.nameType.match(/^GROUP$/)) AM6Client.clearCache("GROUP");
+			}
+			/// Hemi.xml.postJSON(g_application_path + "rest/resource/" + s.nameType,s);
 			galleryView.getCurrentView().panel("nav").repaint();
 			galleryView.getCurrentView().panel("content").repaint(1);
 

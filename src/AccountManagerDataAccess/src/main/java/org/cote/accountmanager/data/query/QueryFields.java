@@ -56,6 +56,7 @@ import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
+import org.cote.accountmanager.objects.types.CompressionEnumType;
 import org.cote.accountmanager.objects.types.ContactEnumType;
 import org.cote.accountmanager.objects.types.ContactInformationEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -254,6 +255,9 @@ public class QueryFields {
 	public static QueryField getFieldDimensions(String val)
 	{
 		return getStringField("dimensions", val);
+	}
+	public static QueryField getFieldCompressionType(CompressionEnumType ctype) {
+		return getStringField("compressiontype",ctype.toString());
 	}
 	public static QueryField getFieldCompressed(boolean val)
 	{

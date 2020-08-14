@@ -59,6 +59,8 @@
 				var o = this.getElementByRID("droptarget");
 				o.style.borderColor = "#505050";
 				this.setStatus("Finished");
+				AM6Client.clearCache("GROUP");
+				AM6Client.clearCache("DATA");
 				if(op && op.getProperties().dndHandler) op[op.getProperties().dndHandler](this,this.getObjects().files);	
 			}
 		    

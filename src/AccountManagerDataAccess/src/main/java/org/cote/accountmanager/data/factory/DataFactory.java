@@ -209,7 +209,7 @@ public class DataFactory extends NameIdFactory {
 			for (int c = 0; c < table.getColumnSize(); c++)
 			{
 				DataColumnType column = table.getColumns().get(c);
-				if(column.getColumnName().equals("datastring") || column.getColumnName().equals("datablob")) continue;
+				if(column.getColumnName().equals("compressiontype") || column.getColumnName().equals("iscompressed") || column.getColumnName().equals("datastring") || column.getColumnName().equals("datablob")) continue;
 				
 				if (table.getCanSelectColumn(column.getColumnName()))
 				{
@@ -436,7 +436,7 @@ public class DataFactory extends NameIdFactory {
 		fields.add(QueryFields.getFieldMimeType(useMap.getMimeType()));
 		fields.add(QueryFields.getFieldPasswordProtected(useMap.getPasswordProtected()));
 		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
-		fields.add(QueryFields.getFieldCompressed(useMap.getCompressed()));
+
 		fields.add(QueryFields.getFieldDimensions(useMap.getDimensions()));
 		fields.add(QueryFields.getFieldSize(useMap.getSize()));
 		fields.add(QueryFields.getFieldRating(useMap.getRating()));
@@ -447,6 +447,8 @@ public class DataFactory extends NameIdFactory {
 		fields.add(QueryFields.getFieldExpirationDate(useMap.getExpiryDate()));
 		fields.add(QueryFields.getFieldBlob(useMap.getBlob()));
 		if(instruction == null || !instruction.getAlternateQuery()){
+			fields.add(QueryFields.getFieldCompressed(useMap.getCompressed()));
+			fields.add(QueryFields.getFieldCompressionType(useMap.getCompressionType()));
 			if(useMap.getBlob()){
 				fields.add(QueryFields.getFieldDataBlob(useMap.getDataBytesStore()));
 				fields.add(QueryFields.getFieldDataString(null));

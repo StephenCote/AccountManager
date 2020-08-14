@@ -104,7 +104,7 @@ public class TypeSanitizer implements ITypeSanitizer{
 	
 	private boolean updateVaultData(UserType user, DataType data) throws ArgumentException{
 		boolean outBool = false;
-		if(data.getVaulted() && data.getVaultId() != null){
+		if(data.getDetailsOnly() == false && data.getVaulted() && data.getVaultId() != null){
 			data.setVaulted(false);
 			VaultBean vaultBean = vaultService.getVaultByUrn(user, data.getVaultId());
 			if(vaultBean == null) throw new ArgumentException("Vault '" + data.getVaultId() + "' does not exist");
@@ -126,7 +126,7 @@ public class TypeSanitizer implements ITypeSanitizer{
 				INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 				DataType data = (DataType)object;
 
-				if(data.getVaulted() && data.getVaultId() != null && !updateVaultData(owner,data)){
+				if(data.getDetailsOnly() == false && data.getVaulted() && data.getVaultId() != null && !updateVaultData(owner,data)){
 					logger.error("Failed to encipher vault data");
 					return false;
 				}
