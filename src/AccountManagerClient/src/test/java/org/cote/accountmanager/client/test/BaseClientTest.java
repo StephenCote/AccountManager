@@ -43,19 +43,34 @@ import org.cote.accountmanager.client.util.AuthenticationUtil;
 import org.cote.accountmanager.client.util.CacheUtil;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ApiClientConfigurationType;
+import org.cote.accountmanager.objects.AuthenticationRequestType;
+import org.cote.accountmanager.objects.AuthenticationResponseEnumType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
+import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.UserEnumType;
+import org.cote.accountmanager.objects.types.UserStatusEnumType;
+import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.StreamUtil;
+import org.cote.propellant.objects.LifecycleType;
+import org.cote.propellant.objects.ProjectType;
 import org.junit.After;
 import org.junit.Before;
 public class BaseClientTest{
 	public static final Logger logger = LogManager.getLogger(BaseClientTest.class);
+	private static String testAdminName = "Admin";
+	private static String testAdminPassword = null;
 	private static String testUserName = null;
 	private static String testUserOrganization = null;
 	private static String testUserPassword = null;
+	protected static String testCommunityName = null;
+	protected static String testProjectName = null;
+	protected static UserType adminUser = null;
+	protected static ClientContext testAdminContext = null;
 	protected static UserType testUser = null;
 	protected static ClientContext defaultContext = new ClientContext();
 	protected static ClientContext testUserContext = null;
@@ -90,17 +105,49 @@ public class BaseClientTest{
 		testUserOrganization = testProperties.getProperty("test.user1.organization");
 		testUserName = testProperties.getProperty("test.user1.name");
 		testUserPassword = testProperties.getProperty("test.user1.password");
+		testAdminPassword = testProperties.getProperty("test.admin.password");
+		testCommunityName = testProperties.getProperty("test.community.name");
+		testProjectName = testProperties.getProperty("test.project.name");
 		testUserContext = new ClientContext();
+		testAdminContext = new ClientContext();
 		serviceUrl = testProperties.getProperty("service.url");
 		serviceName = testProperties.getProperty("service.name");
 		
 		ApiClientConfigurationType api = AuthenticationUtil.getApiConfiguration(serviceUrl);
 		CacheUtil.cache(defaultContext, serviceName, api);
 		
-		AuthenticationResponseType art = AuthenticationUtil.authenticate(testUserContext, serviceName, testUserOrganization, testUserName, testUserPassword);
+		// logger.info("Names: " + testAdminName + ", " + testUserName);
+		
+		AuthenticationResponseType art = AuthenticationUtil.authenticate(testAdminContext, serviceName, testUserOrganization, testAdminName, testAdminPassword);
+		if(art != null) {
+			adminUser = art.getUser();
+			assertNotNull("Test admin is null",adminUser);
+		}
+
+		assertTrue("Community is not configured",configureCommunity(testAdminContext));
+		art = AuthenticationUtil.authenticate(testUserContext, serviceName, testUserOrganization, testUserName, testUserPassword);
+		assertNotNull("3 Admin token is null", testAdminContext.getAuthenticationCredential());
+
+//		logger.info(JSONUtil.exportObject(testAdminContext));
+		try {
+			if(art == null || !art.getResponse().equals(AuthenticationResponseEnumType.AUTHENTICATED)) {
+				UserType user = getCreateUser(testAdminContext, testUserName);
+				assertNotNull("Test user object is null", user);
+				if(addCredential(testAdminContext, user, testUserPassword)) {
+					art = AuthenticationUtil.authenticate(testUserContext, serviceName, testUserOrganization, testUserName, testUserPassword);
+				}
+			}
+			else {
+				logger.debug("Art isn't null: " + JSONUtil.exportObject(art));
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		if(art != null) {
 			testUser = art.getUser();
-			assertNotNull("Test user is null",testUser);
+			assertNotNull("Authentication user is null",testUser);
 			//logger.info("TestUser = " + (testUser == null ? " null " : " not null "));
 		}
 	}
@@ -109,6 +156,38 @@ public class BaseClientTest{
 	public void tearDown() throws Exception{
 
 		/// SessionSecurity.logout(sessionId, testOrganization.getId());
+	}
+	protected boolean addCredential(ClientContext context, NameIdType object, String passwordCredential) {
+		boolean added = false;
+		AuthenticationRequestType art = new AuthenticationRequestType();
+		art.setCredential(passwordCredential.getBytes());
+		art.setCredentialType(CredentialEnumType.HASHED_PASSWORD);
+		art.setSubject((object.getNameType().equals(NameEnumType.USER) ? object.getName() : object.getUrn()));
+		added = AM6Util.addCredential(context, Boolean.class, object.getNameType(), object.getObjectId(), art);
+		logger.info("Adding credential for object " + object.getUrn() + " : " + added);
+		return added;
+	}
+	protected UserType getCreateUser(ClientContext adminContext, String name) {
+		UserType checkUser = AM6Util.getObjectByName(adminContext, UserType.class,NameEnumType.USER, null, name, false);
+		if(checkUser == null) {
+			logger.info("User " + name + " is null.  Attempting to create");
+			checkUser = new UserType();
+			checkUser.setOrganizationPath(adminContext.getOrganizationPath());
+			checkUser.setNameType(NameEnumType.USER);
+			checkUser.setName(name);
+			checkUser.setUserStatus(UserStatusEnumType.NORMAL);
+			checkUser.setUserType(UserEnumType.DEVELOPMENT);
+			checkUser.setAccountId(0L);
+			//logger.info(JSONUtil.exportObject(checkUser));
+			if(AM6Util.updateObject(adminContext, Boolean.class, checkUser)) {
+				logger.info("Created user object");
+				checkUser = AM6Util.getObjectByName(adminContext, UserType.class,NameEnumType.USER, null, name, false);
+			}
+			else {
+				logger.error("Failed to create user object");
+			}
+		}
+		return checkUser;
 	}
 	
 	protected DirectoryGroupType getCreateDirectory(ClientContext context, DirectoryGroupType parent, String name) {
@@ -136,6 +215,32 @@ public class BaseClientTest{
 			//subDirectory = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", testPath);
 		}
 		return subDirectory;
+	}
+	protected boolean configureCommunity(ClientContext context) {
+		boolean configured = AM6Util.configureCommunity(context, Boolean.class);
+		assertTrue("Community is configured",configured);
+		return configured;
+	}
+	protected LifecycleType getCreateCommunity(ClientContext context, String name) {
+
+		LifecycleType lt = AM6Util.findCommunity(context, LifecycleType.class, name);
+		if(lt == null && AM6Util.addCommunity(testAdminContext, Boolean.class, name)){
+			lt = AM6Util.findCommunity(testAdminContext, LifecycleType.class, name);
+			
+		}
+		assertNotNull("Community is null", lt);
+		return lt;
+	}
+	
+	protected ProjectType getCreateCommunityProject(ClientContext context, String communityId, String communityName, String name) {
+
+		ProjectType lt = AM6Util.findCommunityProject(context, ProjectType.class, communityName, name);
+		if(lt == null && AM6Util.addCommunityProject(testAdminContext, Boolean.class, communityId, name)){
+			lt = AM6Util.findCommunityProject(testAdminContext, ProjectType.class, communityName, name);
+			
+		}
+		assertNotNull("Community project is null", lt);
+		return lt;
 	}
 
 	public String getTestScript(String fileName) {

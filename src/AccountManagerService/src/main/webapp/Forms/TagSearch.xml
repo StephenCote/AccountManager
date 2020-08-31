@@ -2,8 +2,30 @@
 <Template>
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 	<import-xml src = "/AccountManagerService/Forms/TagPicker.xml" id = "TagPicker" />
+	
+	
+	<div class = "rocket-column-2">
+		<p>
+			Search
+		</p>
+		<p>
+			<input type = "button" value = "Search" class = "rocket-button" onclick = "${this}.search()" />
+		</p>
+	</div>
+	<div id = "btnCacheButton" class = "rocket-column-2">
+		<p>
+			Use Tag List
+		</p>
+		<p>
+			<input type = "button" value = "Use List" class = "rocket-button" onclick = "${this}.cache()" />
+			<input type = "button" value = "List" class = "rocket-button" onclick = "${this}.copy()" />
+		</p>
+	</div>
+	<!--
 	<p style = "clear:both;"><input type = "button" value = "Search" onclick = "${this}.search()" /></p>
+	
 	<p rid = "btnCacheButton" style = "clear:both;display:none;"><input type = "button" value = "Copy" onclick = "${this}.copy()" /><input type = "button" value = "Cache" onclick = "${this}.cache()" /></p>
+	-->
 	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
 	
 	<embedded-script><![CDATA[

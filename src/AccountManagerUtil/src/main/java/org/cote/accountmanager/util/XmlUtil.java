@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
+/// import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -67,6 +68,8 @@ public class XmlUtil {
 	private static TransformerFactory getTransformerFactory(){
 		if(transFactory == null){
 			transFactory = TransformerFactory.newInstance();
+			/// transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			/// transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
 		}
 		return transFactory;
 		
@@ -171,7 +174,8 @@ public class XmlUtil {
 
 	    
 		try {
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			Transformer transformer = getTransformerFactory().newTransformer();
+
 			transformer.transform(new DOMSource(d.getDocumentElement()), new StreamResult(output));
 		} catch (TransformerFactoryConfigurationError | TransformerException e) {
 			logger.error(e.getMessage());
@@ -186,21 +190,18 @@ public class XmlUtil {
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
+		/// dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		/// dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+		
 		DocumentBuilder db = null;
 		Document doc = null;
-		java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(data);
+		ByteArrayInputStream bais = new ByteArrayInputStream(data);
 		try {
 			db = dbf.newDocumentBuilder();
 
 			doc = db.parse(bais);
 		}
-		catch (ParserConfigurationException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-		} catch (SAXException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-		} catch (IOException e) {
+		catch (ParserConfigurationException | SAXException | IOException e) {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}

@@ -269,11 +269,13 @@
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-					<!-- 
+						<!-- 
+
+						<exclude>**/TestGameSetup.java</exclude>
+						 -->
 						<exclude>**/TestCache.java</exclude>
-						<exclude>**/TestApi.java</exclude>
+						<exclude>**/TestApi.java</exclude>						
 						<exclude>**/TestScriptEngine.java</exclude>
-					-->
 					</excludes>
 					<systemProperties>
 						<property>
@@ -290,7 +292,7 @@
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.0.1</version>
+		<version>3.7.0.1746</version>
       </plugin>
     
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->

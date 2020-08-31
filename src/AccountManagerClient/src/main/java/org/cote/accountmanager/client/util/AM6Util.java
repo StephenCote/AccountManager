@@ -8,10 +8,12 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.client.ClientContext;
+import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
+import org.cote.accountmanager.util.JSONUtil;
 
 public class AM6Util {
 	public static final Logger logger = LogManager.getLogger(AM6Util.class);
@@ -58,8 +60,9 @@ public class AM6Util {
 	}
 	
 	public static <T> T updateObject(ClientContext context, Class<T> cls, NameIdType object){
-		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + resourceUri + "/" + object.getNameType().toString() + "/");
-		/// logger.info("Update URI: " + ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + resourceUri + "/" + object.getNameType().toString() + "/");
+		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + resourceUri + "/" + object.getNameType().toString());
+		logger.info("Update URI: " + ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + resourceUri + "/" + object.getNameType().toString());
+		// logger.info(JSONUtil.exportObject(context));
 		return postEntity(context, cls,webResource,object);
 	}
 	
@@ -99,7 +102,7 @@ public class AM6Util {
 			catch(Exception e) {
 				/// currently passing nulls back as a 200 status since, so the response shows success but the entity is null
 				/// at the moment, sinking the error
-				/// logger.debug(e.getMessage());
+				logger.warn(e.getMessage());
 				/// logger.error("Trace: " + e.getStackTrace());
 			}
 		}
@@ -107,21 +110,27 @@ public class AM6Util {
 			logger.warn("Received response: " + response.getStatus());
 		}
 		/// logger.info("Received entity: " + out_obj);
+		if(out_obj == null && cls.equals(Boolean.class)) out_obj = (T)Boolean.FALSE;
 		return out_obj;
 	}
 	
-	public static <T,U> T postEntity(ClientContext context, Class<T> cls, WebTarget resource, NameIdType object){
+	public static <T,U> T postEntity(ClientContext context, Class<T> cls, WebTarget resource, Object object){
 		return postEntity(context, cls, resource, object, MediaType.APPLICATION_JSON_TYPE, 200);
 	}
-	public static <T> T postEntity(ClientContext context, Class<T> cls, WebTarget resource, NameIdType object, MediaType responseType, int successStatus){
+	public static <T> T postEntity(ClientContext context, Class<T> cls, WebTarget resource, Object object, MediaType responseType, int successStatus){
 		Response response = ClientUtil.getRequestBuilder(context, resource).accept(responseType).post(Entity.entity(object, MediaType.APPLICATION_JSON_TYPE));
 
 		T out_obj = null;
-		if(response.getStatus() == successStatus){
-			out_obj = response.readEntity(cls);
+		if(response != null) {
+			if(response.getStatus() == successStatus){
+				out_obj = response.readEntity(cls);
+			}
+			else {
+				logger.warn("Received response: " + response.getStatus());
+			}
 		}
 		else {
-			logger.warn("Received response: " + response.getStatus());
+			logger.warn("Null response");
 		}
 		return out_obj;
 	}
@@ -140,6 +149,60 @@ public class AM6Util {
 			logger.warn("Received response: " + response.getStatus());
 		}
 		return out_obj;
+	}
+	public static <T> T addCredential(ClientContext context, Class<T> cls, NameEnumType objectType, String objectId, AuthenticationRequestType art) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + credUri + "/" + objectType.toString() + "/" + objectId);
+		return postEntity(context, cls, resource, art);
+	}
+	public static <T> T deleteCommunity(ClientContext context, Class<T> cls, String communityId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/" + communityId);
+		return deleteEntity(context, cls, resource);
+	}
+	public static <T> T deleteCommunityProject(ClientContext context, Class<T> cls, String projectId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/project/" + projectId);
+		return deleteEntity(context, cls, resource);
+	}
+	public static <T> T findCommunityProject(ClientContext context, Class<T> cls, String communityName, String name) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/find/" + communityName.replace(" ", "%20") + "/" + name.replace(" ", "%20"));
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T addCommunityProject(ClientContext context, Class<T> cls, String communityId, String name) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/new/" + communityId + "/" + name.replace(" ", "%20"));
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T findCommunity(ClientContext context, Class<T> cls, String name) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/find/" + name.replace(" ", "%20"));
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T addCommunity(ClientContext context, Class<T> cls, String name) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/new/" + name.replace(" ", "%20"));
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T configureCommunity(ClientContext context, Class<T> cls) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/configure");
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T enrollCommunityAdmin(ClientContext context, Class<T> cls, String communityId, String userId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/enroll/admin/" + communityId + "/" + userId);
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T configureCommunityTraits(ClientContext context, Class<T> cls, String communityId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/geo/traits/LIFECYCLE/" + communityId);
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T configureCommunityCountryInfo(ClientContext context, Class<T> cls, String communityId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/geo/countryInfo/LIFECYCLE/" + communityId);
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T configureAdmin1Codes(ClientContext context, Class<T> cls, String communityId) {
+		// http://127.0.0.1:8080/AccountManagerService/rest/community/geo/admin1Codes/LIFECYCLE/$objectId"
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/geo/admin1Codes/LIFECYCLE/" + communityId);
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T configureAdmin2Codes(ClientContext context, Class<T> cls, String communityId) {
+		// http://127.0.0.1:8080/AccountManagerService/rest/community/geo/admin1Codes/LIFECYCLE/$objectId"
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/geo/admin2Codes/LIFECYCLE/" + communityId);
+		return getEntity(context, cls, resource);
 	}
 	
 	public static String getEncodedPath(String path) {

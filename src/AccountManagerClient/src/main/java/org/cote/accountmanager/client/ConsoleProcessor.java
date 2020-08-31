@@ -3,6 +3,7 @@ package org.cote.accountmanager.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -65,21 +66,15 @@ public class ConsoleProcessor {
 			ClassLoader classLoader = ConsoleProcessor.class.getClassLoader();	
 			try {
 				Class aClass = classLoader.loadClass(className);
-				IClientAction action = (IClientAction)aClass.newInstance();
+				IClientAction action = (IClientAction)aClass.getDeclaredConstructor().newInstance();
 				actions.put(className, action);
-			} catch (ClassNotFoundException e) {
-				
-				logger.error(e.getMessage());
-			} catch (InstantiationException e) {
-				
-				logger.error(e.getMessage());
-			} catch (IllegalAccessException e) {
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				
 				logger.error(e.getMessage());
 			}
 		}
 		if(actions.containsKey(className) == false){
-			logger.error("Command " + linePar[0] + " not found.");
+			logger.error("Command {0} not found", linePar[0]);
 			return;
 		}
 		CommandLine command = null;

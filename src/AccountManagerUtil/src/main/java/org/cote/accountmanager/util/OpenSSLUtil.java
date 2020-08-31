@@ -259,7 +259,7 @@ public class OpenSSLUtil {
 				"-subj",dn,
 				"-out",sslPath + CERTIFICATE_REQUEST_PATH + "/" + alias + ".csr"
 			};
-			
+			logger.info("Generating '" + dn + "'");
 			ProcessUtil.runProcess(sslPath,commands);
 			return (new File(sslPath + CERTIFICATE_REQUEST_PATH + "/" + alias + ".csr")).exists();
 	}

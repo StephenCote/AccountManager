@@ -20,6 +20,7 @@ import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.util.JSONUtil;
 
 public class AuthenticationUtil {
 	//private static Map<String,String> sessionMap = new HashMap<String,String>();
@@ -63,7 +64,8 @@ public class AuthenticationUtil {
 			logger.error("API configuration does not exist.");
 			return null;
 		}
-		CredentialType token = CacheUtil.readCache(defaultContext, cacheKey, CredentialType.class);
+
+		CredentialType token = CacheUtil.readCache(context, cacheKey, CredentialType.class);
 		if(token == null && password == null){
 			logger.error("Credential or access token not defined");
 			return null;
@@ -93,7 +95,7 @@ public class AuthenticationUtil {
 				path += "/authenticate";
 			}
 			WebTarget webResource = ClientUtil.getResource(path);
-
+			/// logger.info("Authentication Url: " + path + "\n" + JSONUtil.exportObject(req));
 			
 			Response response = webResource.request().accept(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(req, MediaType.APPLICATION_JSON_TYPE),Response.class);
 	
@@ -101,26 +103,28 @@ public class AuthenticationUtil {
 				//ClientUtil.setCookies(response.getCookies());
 				authResp = response.readEntity(AuthenticationResponseType.class);
 				if(authResp != null){
-					//logger.info("Authentication Response: " + authResp.getResponse().toString());
+					// logger.info("Authentication Response: " + JSONUtil.exportObject(authResp));
 					if(authResp.getResponse().equals(AuthenticationResponseEnumType.AUTHENTICATED)){
 						if(token == null && authResp.getMessage() != null){
 							logger.info("Caching token");
 							token = new CredentialType();
 							token.setCredential(authResp.getMessage().getBytes());
 							token.setCredentialType(CredentialEnumType.TOKEN);
-							CacheUtil.cache(defaultContext, cacheKey, token);
+							CacheUtil.cache(context, cacheKey, token);
 						}
 						
 						context.setAuthenticationCredential(token);
 						context.setAuthenticationStatus(authResp.getResponse());
 						context.setApiConfiguration(api);
-						
-						UserType user = CacheUtil.readCache(defaultContext, userKey, UserType.class);
+						UserType user = CacheUtil.readCache(context, userKey, UserType.class);
 						if(user == null){
 							user = AM6Util.getPrincipal(context);
 							if(user == null){
-								logger.error("User object is null");
+								logger.error("Authenticated user object with key '" + userKey + "' is null");
 							}
+						}
+						else {
+							logger.debug("Reading principle from cache for " + userKey);
 						}
 						context.applyContext(user);
 						authResp.setUser(user);
@@ -145,12 +149,12 @@ public class AuthenticationUtil {
 				//logger.info(response.getType());
 			}
 			else{
-				logger.error("Response is " + response.getStatus());
+				logger.error("Authentication response is " + response.getStatus());
 			}
 		}
 		catch (UnsupportedEncodingException e) {
 			
-			logger.error("Error",e);
+			logger.error("Authentication Error",e);
 		}
 		return authResp;
 	}

@@ -173,13 +173,13 @@
     <context-param>
     <description>Maximum Image Width</description>
     <param-name>image.maximum.width</param-name>
-    <param-value>1024</param-value>
+    <param-value>2048</param-value>
   </context-param>
 
   <context-param>
     <description>Maximum Image Height</description>
     <param-name>image.maximum.height</param-name>
-    <param-value>1024</param-value>
+    <param-value>2048</param-value>
   </context-param>
   
   

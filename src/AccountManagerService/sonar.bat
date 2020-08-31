@@ -1,1 +1,1 @@
-mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.4.0.905:sonar
+mvn sonar:sonar

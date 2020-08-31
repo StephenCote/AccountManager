@@ -161,6 +161,9 @@ public class PrincipalService {
 						Factories.getAttributeFactory().populateAttributes(outUser);
 					}
 				}
+				else {
+					logger.warn("User is null for " + userp.getId() + " in " + org.getId());
+				}
 			} catch (FactoryException | ArgumentException e) {
 				
 				logger.error(FactoryException.LOGICAL_EXCEPTION,e);

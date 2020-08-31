@@ -23,14 +23,14 @@ import org.cote.accountmanager.util.JSONUtil;
 
 public class ClientContext {
 	public static final Logger logger = LogManager.getLogger(ClientContext.class);
-	private static NameEnumType contextObjectType = NameEnumType.UNKNOWN;
-	private static UserType user = null;
-	private static DirectoryGroupType currentDirectory = null;
-	private static DirectoryGroupType homeDirectory = null;
-	private static AuthenticationResponseEnumType authenticationStatus = AuthenticationResponseEnumType.UNKNOWN;
-	private static CredentialType authenticationCredential = null;
-	private static ApiClientConfigurationType apiConfiguration = null;
-	private static String organizationPath = null;
+	private NameEnumType contextObjectType = NameEnumType.UNKNOWN;
+	private UserType user = null;
+	private DirectoryGroupType currentDirectory = null;
+	private DirectoryGroupType homeDirectory = null;
+	private AuthenticationResponseEnumType authenticationStatus = AuthenticationResponseEnumType.UNKNOWN;
+	private CredentialType authenticationCredential = null;
+	private ApiClientConfigurationType apiConfiguration = null;
+	private String organizationPath = null;
 	//private static long organizationId = 0L;
 	//private static String sessionId = null;
 	//private static SessionStatusEnumType sessionStatus = SessionStatusEnumType.UNKNOWN;
@@ -56,6 +56,24 @@ public class ClientContext {
 		homeDirectory = null;
 		contextId = defaultContextId;
 	}
+	public void setContextObjectType(NameEnumType contextObjectType) {
+		this.contextObjectType = contextObjectType;
+	}
+	public void setUser(UserType user) {
+		this.user = user;
+	}
+	public void setCurrentDirectory(DirectoryGroupType currentDirectory) {
+		this.currentDirectory = currentDirectory;
+	}
+	public void setHomeDirectory(DirectoryGroupType homeDirectory) {
+		this.homeDirectory = homeDirectory;
+	}
+	public void setOrganizationPath(String organizationPath) {
+		this.organizationPath = organizationPath;
+	}
+	public void setContextId(String contextId) {
+		this.contextId = contextId;
+	}
 	public String getContextId() {
 		return contextId;
 	}
@@ -63,16 +81,13 @@ public class ClientContext {
 		return organizationPath;
 	}
 
-	public void setOrganizationPath(String organizationPath) {
-		ClientContext.organizationPath = organizationPath;
-	}
 
 	public ApiClientConfigurationType getApiConfiguration() {
 		return apiConfiguration;
 	}
 
 	public void setApiConfiguration(ApiClientConfigurationType apiConfiguration) {
-		ClientContext.apiConfiguration = apiConfiguration;
+		apiConfiguration = apiConfiguration;
 	}
 
 	public AuthenticationResponseEnumType getAuthenticationStatus() {
@@ -80,17 +95,18 @@ public class ClientContext {
 	}
 
 	public void setAuthenticationStatus(AuthenticationResponseEnumType authenticationStatus) {
-		ClientContext.authenticationStatus = authenticationStatus;
+		authenticationStatus = authenticationStatus;
 	}
 
 	public CredentialType getAuthenticationCredential() {
 		return authenticationCredential;
 	}
 
-	public void setAuthenticationCredential(CredentialType authenticationCredential) {
-		ClientContext.authenticationCredential = authenticationCredential;
-	}
 
+
+	public void setAuthenticationCredential(CredentialType authenticationCredential) {
+		this.authenticationCredential = authenticationCredential;
+	}
 	public void setCount(NameEnumType type, String path, int count){
 		if(countMap.containsKey(type) == false) countMap.put(type, new HashMap<String,Integer>());
 		countMap.get(type).put(path, count);
@@ -109,17 +125,8 @@ public class ClientContext {
 	}
 
 
-	public void setContextObjectType(NameEnumType contextObjectType) {
-		ClientContext.contextObjectType = contextObjectType;
-	}
-
-
 	public DirectoryGroupType getHomeDirectory() {
 		return homeDirectory;
-	}
-
-	public void setHomeDirectory(DirectoryGroupType homeDirectory) {
-		ClientContext.homeDirectory = homeDirectory;
 	}
 
 
@@ -167,14 +174,9 @@ public class ClientContext {
 	public UserType getUser() {
 		return user;
 	}
-	public void setUser(UserType user) {
-		ClientContext.user = user;
-	}
+
 	public DirectoryGroupType getCurrentDirectory() {
 		return currentDirectory;
-	}
-	public void setCurrentDirectory(DirectoryGroupType currentDirectory) {
-		ClientContext.currentDirectory = currentDirectory;
 	}
 
 }
