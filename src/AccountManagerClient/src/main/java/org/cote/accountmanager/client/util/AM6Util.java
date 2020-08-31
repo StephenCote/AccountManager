@@ -1,5 +1,7 @@
 package org.cote.accountmanager.client.util;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -14,6 +16,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.JSONUtil;
+import org.glassfish.jersey.client.ClientProperties;
 
 public class AM6Util {
 	public static final Logger logger = LogManager.getLogger(AM6Util.class);
@@ -31,6 +34,7 @@ public class AM6Util {
 	private static String polUri = "/policy";
 	private static String tokenUri = "/token";
 	private static String apprUri = "/approval";
+	private static String orgUri = "/organization";
 	
 	public static <T> T make(ClientContext context, Class<T> cls, NameEnumType nameType, String objectType, String path) {
 		return makeFind(context, cls, nameType, objectType, path, true);
@@ -38,7 +42,7 @@ public class AM6Util {
 
 	
 	private static <T> T makeFind(ClientContext context, Class<T> cls, NameEnumType nameType, String objectType, String path, boolean make) {
-		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + (make ? makeUri : searchUri) + "/" + nameType.toString() + "/" + (objectType != null ? objectType : "UNKNOWN") + "/" + path);
+		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + (make ? makeUri : searchUri) + "/" + nameType.toString() + "/" + (objectType != null ? objectType : "UNKNOWN") + "/" + path.replace(" ", "%20"));
 		return getEntity(context, cls,webResource);
 	}
 
@@ -70,7 +74,10 @@ public class AM6Util {
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + resourceUri + "/" + nameType.toString() + "/" + objectId);
 		return deleteEntity(context, cls,webResource);
 	}
-	
+	public static boolean cleanupOrphans(ClientContext context) {
+		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + orgUri + "/cleanupOrphans");
+		return getEntity(context, Boolean.class,webResource);
+	}	
 	public static boolean clearCache(ClientContext context, NameEnumType nameType) {
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + cacheUri + "/" + (nameType != NameEnumType.UNKNOWN ? "clear/" + nameType.toString() : "clearAll"));
 		return getEntity(context, Boolean.class,webResource);
@@ -91,8 +98,16 @@ public class AM6Util {
 		return getEntity(context, cls, resource, MediaType.APPLICATION_JSON_TYPE, 200);
 	}
 	public static <T> T getEntity(ClientContext context, Class<T> cls, WebTarget resource, MediaType responseType, int successStatus){
-		Response response = ClientUtil.getRequestBuilder(context, resource).accept(responseType).get(Response.class);
 
+		Response response = 
+			ClientUtil
+				.getRequestBuilder(context, resource)
+				.accept(responseType)
+				.property(ClientProperties.CONNECT_TIMEOUT, 360000)
+				.property(ClientProperties.READ_TIMEOUT, 360000)
+				.get(Response.class)
+		;
+		
 		T out_obj = null;
 		/// logger.info("Received status: " + response.getStatus());
 		if(response.getStatus() == successStatus){
@@ -178,6 +193,10 @@ public class AM6Util {
 		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/new/" + name.replace(" ", "%20"));
 		return getEntity(context, cls, resource);
 	}
+	public static <T> T isCommunityCofigured(ClientContext context, Class<T> cls) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/isconfigured");
+		return getEntity(context, cls, resource);
+	}
 	public static <T> T configureCommunity(ClientContext context, Class<T> cls) {
 		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/configure");
 		return getEntity(context, cls, resource);
@@ -194,6 +213,19 @@ public class AM6Util {
 		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/geo/countryInfo/LIFECYCLE/" + communityId);
 		return getEntity(context, cls, resource);
 	}
+	public static <T> T configureCommunityCountryData(ClientContext context, Class<T> cls, String communityId, String delimitedCountryList) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/geo/country/LIFECYCLE/" + communityId + "/" + delimitedCountryList + "/true");
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T configureCommunityProjectRegion(ClientContext context, Class<T> cls, String communityId, String projectId, int locationSize, int populationSeed) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/generate/region/" + communityId + "/" + projectId + "/" + locationSize + "/" + populationSeed);
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T evolveCommunityProjectRegion(ClientContext context, Class<T> cls, String communityId, String projectId, int epochCount, int epochEvolutions) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/generate/evolve/" + communityId + "/" + projectId + "/" + epochCount + "/" + epochEvolutions);
+		return getEntity(context, cls, resource);
+	}	
+	
 	public static <T> T configureAdmin1Codes(ClientContext context, Class<T> cls, String communityId) {
 		// http://127.0.0.1:8080/AccountManagerService/rest/community/geo/admin1Codes/LIFECYCLE/$objectId"
 		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/geo/admin1Codes/LIFECYCLE/" + communityId);

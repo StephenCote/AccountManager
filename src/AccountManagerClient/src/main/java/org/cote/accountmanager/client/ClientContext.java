@@ -77,6 +77,9 @@ public class ClientContext {
 	public String getContextId() {
 		return contextId;
 	}
+	public String getDefaultContextId() {
+		return defaultContextId;
+	}
 	public String getOrganizationPath() {
 		return organizationPath;
 	}

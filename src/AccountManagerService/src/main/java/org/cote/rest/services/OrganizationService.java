@@ -79,6 +79,16 @@ public class OrganizationService {
 		 return schemaBean;
 	 }
 	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/cleanupOrphans")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response cleanupOrphans(@Context HttpServletRequest request){
+		logger.info("Request to cleanup object orphans");
+		boolean cleanup = org.cote.rocket.Factories.cleanupOrphans();
+		return Response.status(200).entity(cleanup).build();
+	}
+	
 	@RolesAllowed({"user"})
 	@POST
 	@Path("/{parentId:[0-9A-Za-z\\-]+}/{name: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")

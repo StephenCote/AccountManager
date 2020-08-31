@@ -239,7 +239,7 @@ public class GenericSearchService {
 			
 				if(obj != null){
 					tags = fact.getTags((NameIdType)obj);
-					logger.info("Tag read extended to associated tags of authorized object access");
+					logger.debug("Tag read extended to associated tags of authorized object access");
 				}
 			}
 			catch(ArgumentException | FactoryException e){

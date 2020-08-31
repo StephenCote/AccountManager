@@ -150,6 +150,9 @@ public class BaseClientTest{
 			assertNotNull("Authentication user is null",testUser);
 			//logger.info("TestUser = " + (testUser == null ? " null " : " not null "));
 		}
+		
+		CacheUtil.clearCache(testUserContext);
+		CacheUtil.clearCache(testAdminContext);
 	}
 	
 	@After
@@ -217,13 +220,21 @@ public class BaseClientTest{
 		return subDirectory;
 	}
 	protected boolean configureCommunity(ClientContext context) {
-		boolean configured = AM6Util.configureCommunity(context, Boolean.class);
+		boolean configured = AM6Util.isCommunityCofigured(context, Boolean.class);
+		if(configured == false) configured = AM6Util.configureCommunity(context, Boolean.class);
 		assertTrue("Community is configured",configured);
 		return configured;
 	}
-	protected LifecycleType getCreateCommunity(ClientContext context, String name) {
+	protected LifecycleType getCreateCommunity(ClientContext context, String name, boolean reset) {
 
 		LifecycleType lt = AM6Util.findCommunity(context, LifecycleType.class, name);
+		if(lt != null && reset) {
+			AM6Util.deleteCommunity(context, Boolean.class, lt.getObjectId());
+			AM6Util.cleanupOrphans(context);
+			AM6Util.clearCache(context, NameEnumType.UNKNOWN);
+			lt = null;
+			
+		}
 		if(lt == null && AM6Util.addCommunity(testAdminContext, Boolean.class, name)){
 			lt = AM6Util.findCommunity(testAdminContext, LifecycleType.class, name);
 			

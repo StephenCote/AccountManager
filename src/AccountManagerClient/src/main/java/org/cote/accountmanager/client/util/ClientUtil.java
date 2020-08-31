@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -24,7 +25,7 @@ import org.cote.accountmanager.client.services.rest.ServiceSchemaMethod;
 import org.cote.accountmanager.client.services.rest.ServiceSchemaMethodParameter;
 
 import org.glassfish.jersey.client.ClientConfig;
-
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -83,8 +84,17 @@ public class ClientUtil {
 
 	public static Client getClient(){
 		if(client != null) return client;
-		client = ClientBuilder.newClient().register(JacksonFeature.class);
-		
+		client = ClientBuilder
+			.newBuilder()
+			.newClient()
+			.register(JacksonFeature.class)
+			/*
+			.connectTimeout(360, TimeUnit.SECONDS)
+			.readTimeout(360, TimeUnit.SECONDS)
+			.property(ClientProperties.CONNECT_TIMEOUT, 360000)
+			.property(ClientProperties.READ_TIMEOUT, 360000)
+			*/
+		;
 
 		return client;
 	}
@@ -106,6 +116,7 @@ public class ClientUtil {
 		return resource;
 	}
 	public static Builder getRequestBuilder(ClientContext context, WebTarget resource){
+
 		Builder b = resource.request();
 		for(NewCookie ck : cookies){
 			//logger.info("Send Cookie: " + ck.getName() + "=" + ck.getValue());
@@ -114,6 +125,10 @@ public class ClientUtil {
 		if(context.getAuthenticationCredential() != null){
 			b.header("Authorization", "Bearer " + new String(context.getAuthenticationCredential().getCredential()));
 		}
+		/*
+		b.property(ClientProperties.CONNECT_TIMEOUT, 10000);
+		b.property(ClientProperties.READ_TIMEOUT, 360000);
+		*/
 		return b;
 	}
 	public static Response getResponse(String appUrl){

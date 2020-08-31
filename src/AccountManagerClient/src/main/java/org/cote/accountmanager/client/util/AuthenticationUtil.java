@@ -105,6 +105,8 @@ public class AuthenticationUtil {
 				if(authResp != null){
 					// logger.info("Authentication Response: " + JSONUtil.exportObject(authResp));
 					if(authResp.getResponse().equals(AuthenticationResponseEnumType.AUTHENTICATED)){
+						/// Note: The token will be stored in the default context, not the user context
+						///
 						if(token == null && authResp.getMessage() != null){
 							logger.info("Caching token");
 							token = new CredentialType();
