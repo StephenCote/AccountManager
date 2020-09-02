@@ -27,6 +27,7 @@ package org.cote.accountmanager.data;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -100,6 +101,7 @@ import org.cote.accountmanager.objects.types.TagEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.util.DataUtil;
+import org.cote.accountmanager.util.StreamUtil;
 import org.junit.After;
 import org.junit.Before;
 
@@ -184,6 +186,8 @@ public class BaseDataAccessTest{
 		}
 		assertNotNull("QA User #1 is null",testUser);
 		assertNotNull("QA User #2 is null",testUser2);
+		((UserFactory)Factories.getFactory(FactoryEnumType.USER)).populate(testUser);
+		((UserFactory)Factories.getFactory(FactoryEnumType.USER)).populate(testUser2);
 	}
 	
 	@After
@@ -194,8 +198,19 @@ public class BaseDataAccessTest{
 		SessionSecurity.logout(sessionId2,  Factories.getDevelopmentOrganization().getId());
 	}
 	
+	public String getResourceAsString(String path) {
+		BufferedInputStream fis = new BufferedInputStream(ClassLoader.getSystemResourceAsStream(path)); 
+		String data = null;
+		try {
+			data = StreamUtil.streamToString(new BufferedInputStream(fis));
+			fis.close();
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return data;
+	}
 	
-
 	public DataType newTextData(String name, String value, UserType owner, DirectoryGroupType dir){
 		DataType data = null;
 		
@@ -211,16 +226,7 @@ public class BaseDataAccessTest{
 			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data);
 			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, dir);
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (DataException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (UnsupportedEncodingException e) {
+		catch(FactoryException | ArgumentException | DataException | UnsupportedEncodingException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}

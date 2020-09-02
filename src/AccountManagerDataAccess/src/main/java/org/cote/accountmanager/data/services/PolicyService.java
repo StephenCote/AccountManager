@@ -1,5 +1,6 @@
 package org.cote.accountmanager.data.services;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.ControlFactory;
@@ -16,11 +18,15 @@ import org.cote.accountmanager.data.factory.FactFactory;
 import org.cote.accountmanager.data.factory.INameIdGroupFactory;
 import org.cote.accountmanager.data.factory.OperationFactory;
 import org.cote.accountmanager.data.factory.PatternFactory;
+import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.PolicyFactory;
 import org.cote.accountmanager.data.factory.RequestFactory;
 import org.cote.accountmanager.data.factory.RuleFactory;
+import org.cote.accountmanager.data.factory.FunctionFactory;
 import org.cote.accountmanager.data.security.RequestService;
+import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.ArgumentException;
+import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.ApprovalResponseEnumType;
@@ -29,9 +35,12 @@ import org.cote.accountmanager.objects.ConditionEnumType;
 import org.cote.accountmanager.objects.ControlActionEnumType;
 import org.cote.accountmanager.objects.ControlEnumType;
 import org.cote.accountmanager.objects.ControlType;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
+import org.cote.accountmanager.objects.FunctionEnumType;
+import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OperationEnumType;
 import org.cote.accountmanager.objects.OperationType;
@@ -49,6 +58,8 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
+import org.cote.accountmanager.util.DataUtil;
+import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.JSONUtil;
 
 public class PolicyService {
@@ -66,6 +77,200 @@ public class PolicyService {
 		}
 		if(chkUser != null) policyUserMap.put(organizationId, chkUser);
 		return chkUser;
+	}
+	private static List<RuleType> importRules(UserType user, String sessionId, DirectoryGroupType policyParentDir, List<RuleType> rules) throws ArgumentException, FactoryException, DataException {
+		DirectoryGroupType rdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", policyParentDir.getPath() + "/Rules", user);
+		List<RuleType> outRules = new ArrayList<>();
+		for(RuleType rule : rules) {
+			List<RuleType> childRules = importRules(user, sessionId, policyParentDir, rule.getRules());
+			List<PatternType> childPatterns = importPatterns(user, sessionId, policyParentDir, rule.getPatterns());
+			
+			RuleType outRule = BaseService.readByName(AuditEnumType.RULE, rdir, rule.getName(),user);
+			if(outRule == null){
+				outRule = ((RuleFactory)Factories.getFactory(FactoryEnumType.RULE)).newRule(user, rdir.getId());
+				outRule.setName(rule.getName());
+				outRule.setGroupPath(rdir.getPath());
+				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.RULE, outRule);
+
+			}
+			else {
+				BulkFactories.getBulkFactory().modifyBulkEntry(sessionId, FactoryEnumType.RULE, outRule);
+
+			}
+			outRule.setRuleType(rule.getRuleType());
+			outRule.setCondition(rule.getCondition());
+			outRule.getRules().clear();
+			outRule.getPatterns().clear();
+			outRule.getPatterns().addAll(childPatterns);
+			outRule.getRules().addAll(childRules);
+			outRules.add(outRule);
+		}
+		return outRules;
+	}
+	private static List<PatternType> importPatterns(UserType user, String sessionId, DirectoryGroupType policyParentDir, List<PatternType> patterns) throws ArgumentException, FactoryException, DataException {
+		DirectoryGroupType pdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", policyParentDir.getPath() + "/Patterns", user);
+		List<PatternType> outPatterns = new ArrayList<>();
+		for(PatternType pattern : patterns) {
+			
+			
+			PatternType outPattern = BaseService.readByName(AuditEnumType.PATTERN, pdir, pattern.getName(),user);
+			if(outPattern == null){
+				outPattern = ((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).newPattern(user, pdir.getId());
+				outPattern.setName(pattern.getName());
+				outPattern.setGroupPath(pdir.getPath());
+				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PATTERN, outPattern);
+			}
+			else {
+				BulkFactories.getBulkFactory().modifyBulkEntry(sessionId, FactoryEnumType.PATTERN, outPattern);
+			}
+			if(pattern.getPatternType() != null) outPattern.setPatternType(pattern.getPatternType());
+			if(pattern.getComparator() != null) outPattern.setComparator(pattern.getComparator());
+
+
+			if(pattern.getOperation() != null) outPattern.setOperation(importOperation(user, sessionId, policyParentDir, pattern.getOperation()));
+			if(pattern.getFact() != null) outPattern.setFact(importFact(user,sessionId,policyParentDir,pattern.getFact()));
+			if(pattern.getMatch() != null) outPattern.setMatch(importFact(user,sessionId,policyParentDir,pattern.getMatch()));
+			if(outPattern.getFact() != null) outPattern.setFactUrn(UrnUtil.getUrn(outPattern.getFact()));
+			if(outPattern.getMatch() != null) outPattern.setMatchUrn(UrnUtil.getUrn(outPattern.getMatch()));
+			outPatterns.add(outPattern);
+		}
+		return outPatterns;
+	}
+	private static FactType importFact(UserType user, String sessionId, DirectoryGroupType policyParentDir, FactType inFact) throws ArgumentException, FactoryException, DataException {
+		DirectoryGroupType fdir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", policyParentDir.getPath() + "/Facts", user);
+
+		FactType outFact = BaseService.readByName(AuditEnumType.FACT, fdir, inFact.getName(), user);
+		if(outFact == null) {
+			outFact = ((FactFactory)Factories.getFactory(FactoryEnumType.FACT)).newFact(user, fdir.getId());
+			outFact.setName(inFact.getName());
+			outFact.setGroupPath(fdir.getPath());
+			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.FACT, outFact);
+		}
+		else {
+			BulkFactories.getBulkFactory().modifyBulkEntry(sessionId, FactoryEnumType.FACT, outFact);
+		}
+		outFact.setDescription(inFact.getDescription());
+		if(inFact.getFactoryType() != null) outFact.setFactoryType(inFact.getFactoryType());
+		if(inFact.getFactType() != null) outFact.setFactType(inFact.getFactType());
+		outFact.setSourceType(inFact.getSourceType());
+		outFact.setSourceUrl(inFact.getSourceUrl());
+		outFact.setSourceUrn(inFact.getSourceUrn());
+		if(outFact.getFactType().equals(FactEnumType.FUNCTION) && outFact.getSourceUrl() != null) {
+			FunctionType func = importFunction(user, sessionId, policyParentDir, outFact.getSourceUrl());
+			if(func != null) outFact.setSourceUrn(UrnUtil.getUrn(func));
+		}
+		
+		return outFact;
+	}
+	private static OperationType importOperation(UserType user, String sessionId, DirectoryGroupType policyParentDir, OperationType operation) throws ArgumentException, FactoryException {
+		DirectoryGroupType odir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", policyParentDir.getPath() + "/Operations", user);
+
+		OperationType expOp = BaseService.readByName(AuditEnumType.OPERATION, odir, operation.getName(), user);
+
+		if(expOp == null){
+			expOp = ((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).newOperation(user, odir.getId());
+			expOp.setName(operation.getName());
+			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.OPERATION, expOp);
+		}
+		else {
+			BulkFactories.getBulkFactory().modifyBulkEntry(sessionId, FactoryEnumType.OPERATION, expOp);
+		}
+		if(operation.getOperationType() != null) expOp.setOperationType(operation.getOperationType());
+		expOp.setOperation(operation.getOperation());
+		expOp.setGroupPath(odir.getPath());
+		return expOp;
+	}
+	private static DataType importTextData(UserType user, String sessionId, DirectoryGroupType policyParentDir, String name, String contents) throws ArgumentException, FactoryException, DataException {
+		DirectoryGroupType ddir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", policyParentDir.getPath() + "/Data", user);
+		DataType outData = BaseService.readByName(AuditEnumType.DATA, ddir, name, user);
+		if(outData == null) {
+			outData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(user, ddir.getId());
+			outData.setMimeType("text/plain");
+			outData.setName(name);
+			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.DATA, outData);
+		}
+		else {
+			BulkFactories.getBulkFactory().modifyBulkEntry(sessionId, FactoryEnumType.DATA, outData);
+		}
+		DataUtil.setValue(outData, contents.getBytes());
+		return outData;
+
+	}
+	private static FunctionType importFunction(UserType user, String sessionId, DirectoryGroupType policyParentDir, String functionUrl) throws ArgumentException, FactoryException, DataException {
+		DirectoryGroupType fudir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", policyParentDir.getPath() + "/Functions", user);
+
+		FunctionType expFunc = null;
+		String functionName = null;
+		String functionDataText = null;
+		/// logger.info("Handling: " + functionUrl);
+		if(functionUrl.startsWith("file://")) {
+			functionUrl = functionUrl.replace("file://", "");
+			File f = new File(functionUrl);
+			if(!f.exists()) {
+				logger.error("File " + functionUrl + " does not exist");
+				return null;
+			}
+			functionName = f.getName();
+			functionDataText = FileUtil.getFileAsString(f);
+			if(functionDataText == null)
+			{
+				logger.error("File contents for " + functionUrl  + " were null");
+				return null;
+			}
+			expFunc = BaseService.readByName(AuditEnumType.FUNCTION, fudir, functionName, user); 
+		}
+		else {
+			logger.error("Unhandled protocol: " + functionUrl);
+			return null;
+			//BaseService.readByName(AuditEnumType.FUNCTION, fudir, function.getName(), user);
+		}
+		if(expFunc == null){
+			expFunc = ((FunctionFactory)Factories.getFactory(FactoryEnumType.FUNCTION)).newFunction(user, fudir.getId());
+			expFunc.setName(functionName);
+			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.FUNCTION, expFunc);
+		}
+		else {
+			BulkFactories.getBulkFactory().modifyBulkEntry(sessionId, FactoryEnumType.FUNCTION, expFunc);
+		}
+		expFunc.setFunctionType(FunctionEnumType.JAVASCRIPT);
+		DataType data = importTextData(user, sessionId, policyParentDir, functionName, functionDataText);
+		if(data != null) expFunc.setSourceUrn(UrnUtil.getUrn(data));
+		expFunc.setGroupPath(fudir.getPath());
+		return expFunc;
+	}
+	public static PolicyType importPolicy(UserType user, DirectoryGroupType policyParentDir, String policyJson) throws ArgumentException, FactoryException, DataAccessException, DataException {
+		PolicyType outPolicy = null;
+		PolicyType impPolicy = JSONUtil.importObject(policyJson, PolicyType.class);
+		if(impPolicy == null) {
+			logger.error("Failed to import policy from provided JSON");
+			return outPolicy;
+		}
+
+		DirectoryGroupType podir = BaseService.makeFind(AuditEnumType.GROUP, "DATA", policyParentDir.getPath() + "/Policies", user);
+		if(podir == null) {
+			logger.error("Policy directory is null from " + policyParentDir.getPath() + "/Policies");
+			return outPolicy;
+		}
+		outPolicy = BaseService.readByName(AuditEnumType.POLICY, podir, impPolicy.getName(), user);
+		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
+		
+		if(outPolicy == null) {
+			outPolicy = ((PolicyFactory)Factories.getFactory(FactoryEnumType.POLICY)).newPolicy(user, podir.getId());
+			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.POLICY, outPolicy);
+		}
+		else {
+			BulkFactories.getBulkFactory().modifyBulkEntry(sessionId, FactoryEnumType.POLICY, outPolicy);
+		}
+		if(impPolicy.getCondition() != null) outPolicy.setCondition(impPolicy.getCondition());
+		outPolicy.setName(impPolicy.getName());
+		outPolicy.setEnabled(impPolicy.getEnabled());
+		outPolicy.setGroupPath(podir.getPath());
+
+		outPolicy.getRules().clear();
+		outPolicy.getRules().addAll(importRules(user, sessionId, policyParentDir, impPolicy.getRules()));
+		BulkFactories.getBulkFactory().write(sessionId);
+		outPolicy = BaseService.readByName(AuditEnumType.POLICY, podir, impPolicy.getName(), user);
+		return outPolicy;
 	}
 	
 	public static PatternType getCreatePattern(UserType user, String name, String factUrn, String matchUrn, DirectoryGroupType dir){
@@ -396,7 +601,7 @@ public class PolicyService {
 			useRule.setRuleType(RuleEnumType.PERMIT);
 
 			PatternType pat = org.cote.accountmanager.data.services.PolicyService.getCreatePattern(owner,patternName,approveEntitlementParamFact.getUrn(),ownerEntitlementFact.getUrn(),pdir);
-			pat.setPatternType(PatternEnumType.APPROVAL);
+			/// pat.setPatternType(PatternEnumType.APPROVAL);
 			pat.setPatternType(PatternEnumType.OPERATION);
 			pat.setOperationUrn(rgOp.getUrn());
 			((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).update(pat);

@@ -81,6 +81,7 @@ public class UserFactory extends NameIdFactory {
 		if(user.getPopulated() || !user.getDatabaseRecord()) return;
 		user.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForUser(user));
 		user.setHomeDirectory(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(user));
+		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(user.getHomeDirectory());
 		user.setStatistics(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(user));
 		user.setPopulated(true);
 		updateToCache(user);

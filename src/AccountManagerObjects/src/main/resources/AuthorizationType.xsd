@@ -288,7 +288,10 @@
 			<element name="patternChain" type="string" minOccurs="0"
 				maxOccurs="unbounded">
 			</element>
-			<element name="responseData" type="tns:NameIdType" minOccurs="0" maxOccurs="unbounded"></element>
+			<element name="responseData" type="tns:NameIdType"
+				minOccurs="0" maxOccurs="unbounded">
+			</element>
+			<element name="attributes" type="tns:AttributeType" minOccurs="0" maxOccurs="unbounded"></element>
 		</sequence>
 		<attribute name="response" type="tns:PolicyResponseEnumType"></attribute>
 		<attribute name="urn" type="string"></attribute>

@@ -1,0 +1,30 @@
+{
+	"name" : "Policy Function Test",
+	"enabled" : true,
+	"rules" : [
+		{
+			"name" : "Policy Function Rule",
+			"ruleType" : "PERMIT",
+			"condition" : "ALL",
+			"patterns" : [
+				{
+					"name" : "Policy Function Pattern",
+					"patternType" : "FUNCTION",
+					"fact" : {
+						"name" : "Policy Function Participant Fact",
+						"sourceDataType" : "VARCHAR",
+						"factType" : "PARAMETER",
+						"factoryType" : "PERSON"
+					},
+					"match" : {
+						"name" : "Policy Function Random Function",
+						"sourceDataType" : "VARCHAR",
+						"factType" : "FUNCTION",
+						"factoryType" : "FUNCTION",
+						"sourceUrl" : "file://./src/test/resources/basicPolicyFunction.js"
+					}
+				}
+			]
+		}
+	]
+}

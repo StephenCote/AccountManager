@@ -54,6 +54,13 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
  * TODO: 2016/08/18
  * There is still a big security gap  in that the package structure doesn't limit some of the base factory access
  * At the moment, a filter class is defined to limit scripted access to the factories.
+ * 
+ * This was resolved by adding a class filter.
+ * 
+ * 2020/09/02
+ * 
+ * Moving forward, this service will be replaced with the GraalVM version, and execution may be optionally deferred to a remote client service so that it is not running in the same VM as the core application
+ * 
  */
 
 @SuppressWarnings("restriction")

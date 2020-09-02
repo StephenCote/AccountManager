@@ -45,6 +45,7 @@ import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.sod.SoDPolicyUtil;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -277,6 +278,9 @@ public class PolicyEvaluator {
 		else if(mfact.getFactType() == FactEnumType.OPERATION){
 			opr = evaluateOperation(prt,prr,pattern, pfact,mfact,mfact.getSourceUrl());
 		}
+		else if(mfact.getFactType() == FactEnumType.FUNCTION) {
+			opr = evaluateForFact(prt, prr, pattern, pfact, mfact);
+		}
 		
 		else{
 			logger.error("Pattern type not supported: " + pattern.getPatternType());
@@ -288,6 +292,26 @@ public class PolicyEvaluator {
 		}
 
 		return outBool;
+	}
+	private static OperationResponseEnumType evaluateForFact(PolicyRequestType prt,PolicyResponseType prr, PatternType pattern, FactType fact, FactType matchFact) throws ArgumentException{
+		OperationResponseEnumType outResponse;
+		
+		//String chkData = FactUtil.getFactValue(prt, prr, fact, matchFact);
+		String mData = FactUtil.getMatchFactValue(prt, prr,fact, matchFact);
+
+		if(mData != null) {
+			AttributeType attr = new AttributeType();
+			attr.setName(matchFact.getName());
+			attr.getValues().add(mData);
+			prr.getAttributes().add(attr);
+			outResponse = OperationResponseEnumType.SUCCEEDED;
+			logger.info("Received: '" + mData + "'");
+		}
+		else{
+			logger.error("No value returned from the function");
+			outResponse = OperationResponseEnumType.FAILED;
+		}
+		return outResponse;
 	}
 	private static OperationResponseEnumType evaluateExpression(PolicyRequestType prt,PolicyResponseType prr, PatternType pattern, FactType fact, FactType matchFact) throws ArgumentException{
 		OperationResponseEnumType outResponse;
