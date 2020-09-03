@@ -9,11 +9,11 @@ communityOid=$(./extractObjectId.sh $communityCacheName)
 #projectCacheName=cache/object.$projectHash.json
 #if [ ! -f $projectCacheName ]; then
 #   echo "Fetching ..."
-   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/community/new/$communityOid/$4")
+   url=$(./encode.sh "$(cat service.url)/community/new/$communityOid/$4")
    curl -sS -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" $url
 #fi
 #communityOid=$(./extractObjectId.sh $communityCacheName)
 
-#url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/community/new/$3")
+#url=$(./encode.sh "$(cat service.url)/community/new/$3")
 #curl -sS -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" $url
 echo ""

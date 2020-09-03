@@ -10,7 +10,7 @@ groupOid=$(./extractObjectId.sh $groupCacheName)\
 
 echo "{\"name\":\"$4\",\"organizationPath\":\"$1\",\"groupPath\":\"$3\",\"text\":\"$5\"}" > $tmpCacheName
 
-url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/resource/NOTE")
+url=$(./encode.sh "$(cat service.url)/resource/NOTE")
 resp=$(curl -sS -X "POST" -H "Content-Type: application/json" -d @$tmpCacheName -H "Authorization: Bearer $(cat cache/auth.$authName.token)" "$url")
 if [ $resp == "true" ]; then
    echo "Created note $3/$4"

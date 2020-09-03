@@ -20,7 +20,7 @@ scriptObjName=$(./hash.sh "$1.COMMUNITY.SCRIPT.$5")
 scriptCacheName="cache/script.$scriptObjName.txt"
 if [ -f $scriptCacheName ]; then
    echo "Updating community project script for $lcObjectId community $projObjectId project"
-   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/script/community/$lcObjectId/$projObjectId/$5")
+   url=$(./encode.sh "$(cat service.url)/script/community/$lcObjectId/$projObjectId/$5")
    curl -sS -X "POST" -H "Content-Type: text/plain" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" --data-binary "@$scriptCacheName" $url
    echo ""
 else

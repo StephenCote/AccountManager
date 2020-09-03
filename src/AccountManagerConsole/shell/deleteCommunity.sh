@@ -7,6 +7,6 @@ if [ ! -f $cacheName ]; then
 fi
 objectId=$(./extractObjectId.sh $cacheName) 
 echo "Deleting community $objectId"
-url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/community/$objectId")
+url=$(./encode.sh "$(cat service.url)/community/$objectId")
    curl -sS -X "DELETE" -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" $url
    echo ""

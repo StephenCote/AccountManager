@@ -6,8 +6,8 @@ cacheName=cache/object.$objName.json
 #echo "Group Id: $groupId"
 echo "Get Cache Name $cacheName"
 if [[ ! -f $cacheName ]]; then
-   #echo Fetching http://127.0.0.1:8080/AccountManagerService/rest/resource/$2/$groupId/$4
-   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/resource/$4/$groupId/$5");
+   #echo Fetching $(cat service.url)/resource/$2/$groupId/$4
+   url=$(./encode.sh "$(cat service.url)/resource/$4/$groupId/$5");
    echo "Url=$url"
    curl -sS -H "Authorization: Bearer $(cat cache/auth.$authName.token)" "$url" > $cacheName
    if [[ ! -s $cacheName ]]; then

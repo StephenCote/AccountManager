@@ -8,7 +8,7 @@ tmpCacheName=$cacheName.tmp
 #res=$(./searchGroup.sh "$1" "$2" "$3")
 #groupOid=$(./extractObjectId.sh $groupCacheName)
 echo "{\"name\":\"$3\",\"organizationPath\":\"$1\"}" > $tmpCacheName
-url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/resource/USER")
+url=$(./encode.sh "$(cat service.url)/resource/USER")
 curl -sS -X "POST" -H "Content-Type: application/json" -d @$tmpCacheName -H "Authorization: Bearer $(cat cache/auth.$authName.token)" "$url"
 rm $tmpCacheName
 echo ""

@@ -10,7 +10,7 @@ if [ -f $cacheName ]; then
    objectId=$(./extractObjectId.sh $cacheName) 
    usrObjectId=$(./extractObjectId.sh $usrCacheName)
    echo "Enroll user $usrObjectId as admin in community $objectId"
-   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/community/enroll/admin/$objectId/$usrObjectId")
+   url=$(./encode.sh "$(cat service.url)/community/enroll/admin/$objectId/$usrObjectId")
    curl -sS -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" $url
    echo ""
 fi

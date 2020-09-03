@@ -5,7 +5,7 @@ cacheName="cache/object.$objName.json"
 #echo Cache Name: $cacheName
 if [ ! -f $cacheName ]; then
    echo "Fetching ... "
-   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/search/GROUP/DATA/$3")
+   url=$(./encode.sh "$(cat service.url)/search/GROUP/DATA/$3")
    curl -sS -H "Authorization: Bearer $(cat cache/auth.$authName.token)" "$url" > $cacheName
    echo "Cached: $cacheName"
 fi

@@ -17,6 +17,6 @@ fi
 projObjectId=$(./extractObjectId.sh $projCacheName) 
 
 echo "Generating community project application"
-url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/community/generate/application/$lcObjectId/$projObjectId/$5/$6/$7/$8/$9/${10}")
+url=$(./encode.sh "$(cat service.url)/community/generate/application/$lcObjectId/$projObjectId/$5/$6/$7/$8/$9/${10}")
 curl -sS -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" $url
 echo ""

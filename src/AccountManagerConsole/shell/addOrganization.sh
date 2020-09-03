@@ -15,7 +15,7 @@ if [ -f $parentCacheName ]; then
    #echo "Res Auth: $res"
    authName=$(./hash.sh "$1.$2")
    newAuthName=$(./hash.sh "$1/$3.Admin")
-   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/organization/$parentObjectId/$3")
+   url=$(./encode.sh "$(cat service.url)/organization/$parentObjectId/$3")
    echo "Url: $url"
    curl -sS -X "POST" -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" -d @cache/auth.$newAuthName.json $url
    #echo "Cached: $cacheName"

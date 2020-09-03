@@ -6,7 +6,7 @@ res=$(./findCommunity.sh "$1" "$2" "$3")
 if [ -f $parentCacheName ]; then
    objectId=$(./extractObjectId.sh $cacheName) 
    echo "Configure traits for community $objectId"
-   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/community/geo/country/LIFECYCLE/$objectId/$4/$5")
+   url=$(./encode.sh "$(cat service.url)/community/geo/country/LIFECYCLE/$objectId/$4/$5")
    echo $url
    curl -sS -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" "$url"
    echo ""

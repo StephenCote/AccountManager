@@ -13,7 +13,7 @@ if [ -f $userCacheName ]; then
 
    authName=$(./hash.sh "$1.$2")
    newAuthName=$(./hash.sh "$1.$3")
-   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/credential/USER/$userObjectId")
+   url=$(./encode.sh "$(cat service.url)/credential/USER/$userObjectId")
    curl -sS -X "POST" -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" -d @cache/auth.$newAuthName.json $url
    echo ""
    echo "Note: Previous credentials are demoted from being primary, but persist until they are removed or expired"

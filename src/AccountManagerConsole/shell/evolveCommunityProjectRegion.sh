@@ -17,6 +17,6 @@ fi
 projObjectId=$(./extractObjectId.sh $projCacheName) 
 
 echo "Evolving community project region in $lcObjectId community $projObjectId project"
-url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/community/generate/evolve/$lcObjectId/$projObjectId/$5/$6")
+url=$(./encode.sh "$(cat service.url)/community/generate/evolve/$lcObjectId/$projObjectId/$5/$6")
 curl -sS -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" $url
 echo ""

@@ -11,7 +11,7 @@ groupOid=$(./extractObjectId.sh $groupCacheName)\
 
 echo "{\"name\":\"$bname\",\"organizationPath\":\"$1\",\"blob\":\"true\",\"groupPath\":\"$3\",\"dataBytesStore\":\"$(cat "$4"|openssl base64 -A)\"}" > $tmpCacheName
 
-url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/resource/DATA")
+url=$(./encode.sh "$(cat service.url)/resource/DATA")
 curl -sS -X "POST" -H "Content-Type: application/json" -d @$tmpCacheName -H "Authorization: Bearer $(cat cache/auth.$authName.token)" "$url"
 rm $tmpCacheName
 echo ""

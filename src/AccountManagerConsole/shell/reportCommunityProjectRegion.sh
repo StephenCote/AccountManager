@@ -17,6 +17,6 @@ fi
 projObjectId=$(./extractObjectId.sh $projCacheName) 
 
 echo "Generating community project report for $lcObjectId community $projObjectId project"
-url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/community/generate/report/$lcObjectId/$projObjectId")
+url=$(./encode.sh "$(cat service.url)/community/generate/report/$lcObjectId/$projObjectId")
 curl -sS -H "Content-Type: application/json" -H "Authorization: Bearer $(cat cache/auth.$authName.token)" $url
 echo ""

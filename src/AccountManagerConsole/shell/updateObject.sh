@@ -8,8 +8,8 @@ echo "Update cache name $cacheName"
 #echo "Group Id: $groupId"
 if [[ -f $cacheName ]]; then
    objectId=$(./extractObjectId.sh $cacheName)
-   #echo Fetching http://127.0.0.1:8080/AccountManagerService/rest/resource/$2/$groupId/$4
-   url=$(./encode.sh "http://127.0.0.1:8080/AccountManagerService/rest/resource/$4/$objectId/");
+   #echo Fetching $(cat service.url)/resource/$2/$groupId/$4
+   url=$(./encode.sh "$(cat service.url)/resource/$4/$objectId/");
    #echo "Url: $url"
    res=$(./mergeObject.py "$cacheName" "$6")
    upCacheName="${cacheName}.update"
