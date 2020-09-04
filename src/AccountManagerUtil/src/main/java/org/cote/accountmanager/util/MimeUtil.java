@@ -53,6 +53,7 @@ public class MimeUtil {
 		types.put("mp4", "video/mp4");
 		types.put("3dm","x-world/x-3dmf");
 		types.put("3dmf","x-world/x-3dmf");
+		types.put("3gp","video/3gpp");
 		types.put("a","application/octet-stream");
 		types.put("aab","application/x-authorware-bin");
 		types.put("aam","application/x-authorware-map");

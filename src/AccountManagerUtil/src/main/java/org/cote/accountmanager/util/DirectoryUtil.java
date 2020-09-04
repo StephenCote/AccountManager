@@ -50,7 +50,7 @@ public class DirectoryUtil{
 		this.path=inPath;
 		directory=new File(path);
 		if(!directory.isDirectory()){
-			logger.info("DirUtil:: init: '" + path + "' is not a directory");
+			logger.debug("DirUtil:: init: '" + path + "' is not a directory");
 		}
 		else{
 			isOk=true;
