@@ -49,9 +49,12 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.beans.VaultBean;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.ArgumentException;
@@ -67,6 +70,7 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -273,6 +277,64 @@ public class TokenService {
 		return Response.status(200).entity(checkMaterialToken(type, token, request)).build();
 	}
 
+	@GET
+	@Path("/jwt/token/key/{urn:[:@\\\\.~\\\\/%\\\\sa-zA-Z_0-9\\\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getJwtTokenKey(@PathParam("urn") String urn, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		if(user == null) {
+			logger.error("User is null");
+			return Response.status(403).build();	
+		}
+
+		UserType tokenUser = null;
+		try {
+			tokenUser = ((INameIdFactory)Factories.getFactory(FactoryEnumType.USER)).getByUrn(urn);
+		} catch (FactoryException e) {
+			logger.error(e.getMessage());
+		}
+		if(tokenUser == null) {
+			logger.error("Specified user '" + urn + "' could not be found");
+			return Response.status(403).build();
+		}
+		
+		if(tokenUser.getId().compareTo(user.getId()) != 0) {
+			boolean validated = false;
+			try {
+				OrganizationType systemOrg = Factories.getSystemOrganization();
+				if(user.getOrganizationId().compareTo(systemOrg.getId()) != 0) {
+					logger.error("User must be in the system organization");
+					return Response.status(403).build();
+				}
+				boolean accountAdmin = RoleService.isFactoryAdministrator(user,((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)));
+				if(accountAdmin == false) {
+					logger.error("User must be an account administrator");
+					return Response.status(403).build();
+				}
+
+				validated = true;
+			}
+			catch(FactoryException | ArgumentException e) {
+				logger.error(e.getMessage());
+			}
+			if(!validated) {
+				return Response.status(403).build();
+			}
+			
+		}
+		SecurityType secType = TokenUtil.getJWTSecurityBean(tokenUser);
+		SecurityType outType = new SecurityType();
+		if(secType != null) {
+			outType.setCipherIV(secType.getCipherIV());
+			outType.setCipherKey(secType.getCipherKey());
+			outType.setCipherKeySize(secType.getCipherKeySize());
+			outType.setCipherKeySpec(secType.getCipherKeySpec());
+			outType.setCipherProvider(secType.getCipherProvider());
+			
+		}
+		/// logger.info("Sending back: " + JSONUtil.exportObject(secType));
+		return Response.status(200).entity(outType).build();
+	}
 
 	
 	@POST
