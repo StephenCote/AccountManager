@@ -237,6 +237,10 @@ public class AM6Util {
 		return getEntity(context, cls, resource);
 	}
 	
+	public static <T> T getJwtTokenKey(ClientContext context, Class<T> cls, String tokenUserUrn) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + tokenUri + "/jwt/token/key/" + tokenUserUrn);
+		return getEntity(context, cls, resource);
+	}
 	public static String getEncodedPath(String path) {
 		return ("B64-" + BinaryUtil.toBase64Str(path)).replace("=","%3D");
 	}

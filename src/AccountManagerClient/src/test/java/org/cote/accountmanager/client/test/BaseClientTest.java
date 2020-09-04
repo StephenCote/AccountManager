@@ -38,6 +38,7 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.client.ClientContext;
+import org.cote.accountmanager.client.ClientSigningKeyResolver;
 import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.client.util.AuthenticationUtil;
 import org.cote.accountmanager.client.util.CacheUtil;
@@ -49,6 +50,7 @@ import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -62,6 +64,11 @@ import org.junit.After;
 import org.junit.Before;
 public class BaseClientTest{
 	public static final Logger logger = LogManager.getLogger(BaseClientTest.class);
+	private static String clientReceiverOrganization = null;
+	private static String clientReceiverName = null;
+	private static String clientReceiverPassword = null;
+	private static ClientContext clientReceiverContext = null;
+	
 	private static String testAdminName = "Admin";
 	private static String testAdminPassword = null;
 	private static String testUserName = null;
@@ -113,12 +120,26 @@ public class BaseClientTest{
 		serviceUrl = testProperties.getProperty("service.url");
 		serviceName = testProperties.getProperty("service.name");
 		
+		clientReceiverContext = new ClientContext();
+		clientReceiverOrganization = testProperties.getProperty("client.receiver.organization");
+		clientReceiverName = testProperties.getProperty("client.receiver.name");
+		clientReceiverPassword = testProperties.getProperty("client.receiver.password");
+		
 		ApiClientConfigurationType api = AuthenticationUtil.getApiConfiguration(serviceUrl);
 		CacheUtil.cache(defaultContext, serviceName, api);
 		
 		// logger.info("Names: " + testAdminName + ", " + testUserName);
+
+		AuthenticationResponseType art = AuthenticationUtil.authenticate(clientReceiverContext, serviceName, clientReceiverOrganization, clientReceiverName, clientReceiverPassword);
+		assertNotNull("Client receiver authentication response is null", art);
+		if(art != null) {
+			assertNotNull("Client receiver user is null.  This must be a user in the system organization.",art.getUser());
+		}
+		ClientSigningKeyResolver.setResolverContext(clientReceiverContext);
+
 		
-		AuthenticationResponseType art = AuthenticationUtil.authenticate(testAdminContext, serviceName, testUserOrganization, testAdminName, testAdminPassword);
+		
+		art = AuthenticationUtil.authenticate(testAdminContext, serviceName, testUserOrganization, testAdminName, testAdminPassword);
 		if(art != null) {
 			adminUser = art.getUser();
 			assertNotNull("Test admin is null",adminUser);

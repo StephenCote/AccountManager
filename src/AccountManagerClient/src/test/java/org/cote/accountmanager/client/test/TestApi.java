@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ws.rs.core.GenericType;
 
 import org.cote.accountmanager.client.ClientContext;
+import org.cote.accountmanager.client.ClientSigningKeyResolver;
 import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.objects.DataType;
@@ -19,10 +20,24 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.JSONUtil;
+
 import org.junit.Test;
+
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwts;
 
 public class TestApi extends BaseClientTest {
 
+	
+	@Test
+	public void TestTokenIntrospection() {
+		String token = new String(testUserContext.getAuthenticationCredential().getCredential());
+		//JwtParser parser = Jwts.parser();
+		String subject = Jwts.parser().setSigningKeyResolver(new ClientSigningKeyResolver()).parseClaimsJws(token).getBody().getSubject();
+		//Header h = Jwts.parser().parse(token).getHeader();
+		logger.info("Subject: " + subject);
+	}
+	
 	@Test
 	public void TestConnectivity() {
 		assertNotNull("Test user is null",testUser);

@@ -54,6 +54,9 @@ public class ClientUtil {
 		
 	}
 	
+	public static void setCachePath(String s) {
+		cachePath = s;
+	}
 	public static String getCachePath(){
 		return cachePath;
 	}
@@ -111,9 +114,7 @@ public class ClientUtil {
 	}
 	
 	public static WebTarget getResource(String path){
-		WebTarget resource = getClient().target(path);
-
-		return resource;
+		return getClient().target(path);
 	}
 	public static Builder getRequestBuilder(ClientContext context, WebTarget resource){
 

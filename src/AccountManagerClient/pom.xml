@@ -168,7 +168,7 @@
 <dependency>
     <groupId>io.jsonwebtoken</groupId>
     <artifactId>jjwt</artifactId>
-    <version>0.7.0</version>
+    <version>0.9.1</version>
 </dependency>
 
 
@@ -271,10 +271,11 @@
 					<excludes>
 						<!-- 
 
-						<exclude>**/TestGameSetup.java</exclude>
+						<exclude>**/TestApi.java</exclude>		
 						 -->
+						<exclude>**/TestGameSetup.java</exclude> 
 						<exclude>**/TestCache.java</exclude>
-						<exclude>**/TestApi.java</exclude>						
+										
 						<exclude>**/TestScriptEngine.java</exclude>
 					</excludes>
 					<systemProperties>

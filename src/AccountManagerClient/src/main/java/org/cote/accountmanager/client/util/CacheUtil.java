@@ -31,6 +31,9 @@ public class CacheUtil {
 		if(context.getContextId().equals(context.getDefaultContextId())) {
 			logger.warn("Clearing default cache");
 		}
+		else {
+			logger.info("Clearing " + context.getContextId());
+		}
 		DirectoryUtil du = new DirectoryUtil(cachePath);
 		List<File> files = du.dir();
 		for(File f : files){
