@@ -1,6 +1,7 @@
 {
 	"name" : "Policy Function Test",
 	"enabled" : true,
+	"condition" : "ALL",
 	"rules" : [
 		{
 			"name" : "Policy Function Rule",

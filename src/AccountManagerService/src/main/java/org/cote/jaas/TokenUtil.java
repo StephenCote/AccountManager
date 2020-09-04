@@ -65,7 +65,6 @@ public class TokenUtil {
 				tokenType.setOwnerId(user.getId());
 				tokenType.setName(refId);
 				tokenType.setGroupId(user.getHomeDirectory().getId());
-				//tokenType.setData(SecurityFactory.getSecurityFactory().serializeCipher(bean));
 				tokenType.setData(SecurityUtil.serializeToXml(bean, false, false, true).getBytes());
 				AuditService.targetAudit(audit, AuditEnumType.SECURITY_TOKEN, tokenType.getGuid());
 				if(Factories.getSecurityTokenFactory().addSecurityToken(tokenType) == false){
@@ -87,7 +86,6 @@ public class TokenUtil {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		//return tokenType;
 		return outBean;
 	}
 }

@@ -1,6 +1,7 @@
 package org.cote.accountmanager.data;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
@@ -11,6 +12,7 @@ import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.PolicyDefinitionType;
 import org.cote.accountmanager.objects.PolicyRequestType;
+import org.cote.accountmanager.objects.PolicyResponseEnumType;
 import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.util.JSONUtil;
@@ -48,7 +50,11 @@ public class TestPolicyOperation extends BaseDataAccessTest {
 			e.printStackTrace();
 		}
 		assertNotNull("Policy response is null", prr);
+		/// TODO: Change the policy response type to indicate a value, not a decision
+		///
+		assertTrue("Policy should have succeeded",prr.getResponse().equals(PolicyResponseEnumType.PERMIT));
 		//logger.info(JSONUtil.exportObject(impPolicy));
+		assertTrue("Expected a return value",prr.getAttributes().size() > 0);
 	}
 	
 }
