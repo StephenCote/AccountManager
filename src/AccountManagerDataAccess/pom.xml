@@ -54,7 +54,7 @@
 				</dependencies>
 
 				<configuration>
-					<skipTests>true</skipTests>
+					<skipTests>false</skipTests>
 					<argLine>-Xmx4096m</argLine>
 
 					<includes>
@@ -62,8 +62,9 @@
 					</includes>
 					<excludes>
 						<!-- 
-						<exclude>**/TestDataService.java</exclude>
+						<exclude>**/TestPolicyOperation.java</exclude>
 						 -->
+						 <exclude>**/TestDataService.java</exclude>
 						<exclude>**/TestAccessApproval.java</exclude>
 						<exclude>**/TestSoD.java</exclude>						
 						<exclude>**/TestBulkPerson.java</exclude>
@@ -257,6 +258,12 @@
 		    <artifactId>commons-pool2</artifactId>
 		    <version>2.7.0</version>
 		</dependency>
-
+		<!-- JWT Libraries -->
+		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
 	</dependencies>
 </project>
