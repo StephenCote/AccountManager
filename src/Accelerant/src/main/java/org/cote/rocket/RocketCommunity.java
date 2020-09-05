@@ -1322,13 +1322,41 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		return outPer;
 	}
-	
-	public boolean generateCommunityProjectApplication(UserType user, String communityId, String projectId, String appName, boolean usePermissions, boolean useGroups, int seed, int max, double distribution, String dictionaryPath, String namesPath){
-		boolean outBool = false;
-		Random r = new Random();
-		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Generate Application",AuditEnumType.USER, user.getUrn());
+	public DirectoryGroupType getCommunityProjectApplication(UserType user, String communityId, String projectId, String appName) {
+		DirectoryGroupType dir = null;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Create Application",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.PROJECT, projectId);
 
+		LifecycleType lc = getLifecycle(audit, user, communityId);
+		if(lc == null){
+			logger.error("Failed to retrieve lifecycle");
+			return null;
+		}
+		ProjectType proj = getProjectToChange(audit, user, projectId);
+		if(proj == null){
+			logger.error("Failed to retrieve project");
+			return null;
+		}
+		
+		DirectoryGroupType appDir = RocketSecurity.getProjectDirectory(user, proj, "Applications");
+		if(appDir == null){
+			logger.error("Failed to retrieve applications root");
+			return null;
+		}
+	
+		dir = BaseService.readByNameInParent(AuditEnumType.GROUP, appDir, appName, "DATA", user);
+		if(dir == null) {
+			AuditService.denyResult(audit, "Directory is null");
+		}
+		else {
+			AuditService.permitResult(audit, "Returning application");
+		}
+		return dir;
+	}	
+	public boolean createCommunityProjectApplication(UserType user, String communityId, String projectId, String appName) {
+		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Create Application",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, AuditEnumType.PROJECT, projectId);
+		boolean outBool = false;
 		try {
 			LifecycleType lc = getLifecycle(audit, user, communityId);
 			if(lc == null){
@@ -1354,6 +1382,58 @@ public class RocketCommunity implements ICommunityProvider {
 			}
 			
 			newDir = BaseService.readByNameInParent(AuditEnumType.GROUP, appDir, appName, "DATA", user);
+			if(newDir == null){
+				logger.error("Failed to find application group");
+				return false;
+			}
+			
+			if(!configureEntitlements(user, communityId, projectId, newDir.getObjectId())){
+				logger.error("Failed to configure application group");
+				return false;
+			}
+						
+			getApplicationPermissionBase(user, proj, newDir);
+			
+			AuditService.permitResult(audit, "Created " + appName);
+	
+			outBool = true;
+	
+			
+		} catch (FactoryException  e) {
+			
+			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
+
+		return outBool;
+	}
+	public boolean generateCommunityProjectApplication(UserType user, String communityId, String projectId, String appName, boolean usePermissions, boolean useGroups, int seed, int max, double distribution, String dictionaryPath, String namesPath){
+		boolean outBool = false;
+		Random r = new Random();
+		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Generate Application",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, AuditEnumType.PROJECT, projectId);
+		if(!createCommunityProjectApplication(user, communityId, projectId, appName)) {
+			return false;
+		}
+		try {
+			LifecycleType lc = getLifecycle(audit, user, communityId);
+			if(lc == null){
+				logger.error("Failed to retrieve lifecycle");
+				return false;
+			}
+			ProjectType proj = getProjectToChange(audit, user, projectId);
+			if(proj == null){
+				logger.error("Failed to retrieve project");
+				return false;
+			}
+			
+			DirectoryGroupType appDir = RocketSecurity.getProjectDirectory(user, proj, "Applications");
+			if(appDir == null){
+				logger.error("Failed to retrieve applications root");
+				return false;
+			}
+			
+			DirectoryGroupType newDir = BaseService.readByNameInParent(AuditEnumType.GROUP, appDir, appName, "DATA", user);
 			if(newDir == null){
 				logger.error("Failed to find application group");
 				return false;
@@ -1440,6 +1520,7 @@ public class RocketCommunity implements ICommunityProvider {
 				BulkFactories.getBulkFactory().write(sessionId);
 				BulkFactories.getBulkFactory().close(sessionId);
 			}
+			AuditService.permitResult(audit, "Created " + appName);
 
 			outBool = true;
 

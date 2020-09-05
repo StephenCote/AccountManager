@@ -51,6 +51,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 	public static final Logger logger = LogManager.getLogger(TestIdentityService.class);
 	private static String communityName =  "Data Generator Q1";
 	private static String projectName = "Data Project Q3";
+	private static boolean cleanupLifecycle = false;
 	private static boolean cleanupProject = false;
 	
 	@Test
@@ -60,7 +61,7 @@ public class TestIdentityService extends BaseAccelerantTest{
 		int locationSize = 3;
 		int seedSize = 2500;
 
-		LifecycleType lf = getProviderCommunity(testUser, communityName,false);
+		LifecycleType lf = getProviderCommunity(testUser, communityName,cleanupLifecycle);
 		
 		assertNotNull("Community is null",lf);
 		assertTrue("Failed to reload traits",reloadTraits(testUser,lf));
