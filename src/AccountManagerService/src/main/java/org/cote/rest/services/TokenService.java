@@ -53,6 +53,8 @@ import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.security.AM5SigningKeyResolver;
+import org.cote.accountmanager.data.security.TokenUtil;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
@@ -80,8 +82,6 @@ import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.util.JSONUtil;
-import org.cote.jaas.AM5SigningKeyResolver;
-import org.cote.jaas.TokenUtil;
 
 import io.jsonwebtoken.CompressionCodecs;
 import io.jsonwebtoken.Jwts;
