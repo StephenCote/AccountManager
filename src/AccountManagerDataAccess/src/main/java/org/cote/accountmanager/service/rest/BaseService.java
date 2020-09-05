@@ -1486,9 +1486,9 @@ public class BaseService {
 		List<T> outObj = new ArrayList<T>();
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All objects for member",type,(user == null ? "Null" : user.getUrn()));
-		AuditService.targetAudit(audit, type, "All objects for member");
+		AuditService.targetAudit(audit, type, "All members for object");
 		
-		if(user == null || SessionSecurity.isAuthenticated(user) == false){
+		if(user == null || !SessionSecurity.isAuthenticated(user)){
 			AuditService.denyResult(audit, "User is null or not authenticated");
 			return null;
 		}
@@ -1527,14 +1527,38 @@ public class BaseService {
 						return outObj;
 					}
 			}
-			else if(memberType == FactoryEnumType.USER){
-				if(
-					(memberType == FactoryEnumType.USER && user.getId().equals(((UserType)obj).getId()))
-					||
-					RoleService.isFactoryAdministrator(user,((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)),obj.getOrganizationId())
-					||
-					RoleService.isFactoryReader(user,((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)), obj.getOrganizationId())
-				){
+			else if(type.equals(AuditEnumType.GROUP)) {
+				if(AuthorizationService.canView(user,obj)) {
+			
+					AuditService.permitResult(audit, "Access authorized to list groups");
+					switch(memberType){
+	
+						case ACCOUNT:
+							outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getGroupAccounts((AccountType)obj));
+							break;
+						case PERSON:
+							outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getGroupPersons((PersonType)obj));
+							break;
+						case USER:
+							outObj = FactoryBase.convertList(((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getGroupUsers((UserType)obj));
+							break;
+						default:
+							logger.error(String.format(FactoryException.UNHANDLED_TYPE, memberType));
+							break;
+					}
+					for(int i = 0; i < outObj.size();i++){
+						((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize((BaseGroupType)outObj.get(i));
+					}
+	
+				}
+				else{
+					AuditService.denyResult(audit, "User " + user.getName() + " (#" + user.getId() + ") not authorized to list roles.");
+					return outObj;
+				}
+			}
+			else if(type.equals(AuditEnumType.ROLE)) {
+				if(AuthorizationService.canView(user,obj)) {
+			
 					AuditService.permitResult(audit, "Access authorized to list roles");
 					switch(memberType){
 	
