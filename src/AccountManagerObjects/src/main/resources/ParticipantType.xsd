@@ -12,7 +12,7 @@
  					type="Q2:ParticipantEnumType">
  				</attribute>
  				<attribute name="affectType"
- 					type="Q2:AffectEnumType">
+ 					type="Q2:AffectEnumType" default="UNKNOWN">
  				</attribute>
  				<attribute name="participationId" type="long" default="0"></attribute>
  				<attribute name="participantId" type="long" default="0"></attribute>
