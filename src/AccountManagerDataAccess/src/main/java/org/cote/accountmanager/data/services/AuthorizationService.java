@@ -613,12 +613,12 @@ public class AuthorizationService {
 			return false;
 		}
 		ParticipantEnumType part_type = ParticipantEnumType.valueOf(actor.getNameType().toString());
-		DataParticipantType bp = pfact.getParticipant(object, actor, part_type,null,null);
+		BaseParticipantType bp = pfact.getParticipant(object, actor, part_type,null,null);
 		boolean outBoolean = false;
 		if (enable)
 		{
 			if (bp != null) return true;
-			 pfact.newParticipant(object, actor,part_type, null, null);
+			bp = pfact.newParticipant(object, actor,part_type, null, null);
 			outBoolean = pfact.add(bp);
 		}
 		else

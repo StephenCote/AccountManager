@@ -42,6 +42,7 @@ import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BucketGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
@@ -224,6 +225,18 @@ public class GroupFactory  extends NameIdFactory {
 		
 		return false;
 	}
+	
+	public List<BaseGroupType> getGroups(QueryField match, long organizationId) throws FactoryException, ArgumentException
+	{
+		return getGroups(new QueryField[] { match }, organizationId);
+	}
+	public List<BaseGroupType> getGroups(QueryField[] matches, long organizationId) throws FactoryException, ArgumentException
+	{
+		List<NameIdType> groups = getByField(matches, organizationId);
+		return convertList(groups);
+
+	}
+	
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
