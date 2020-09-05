@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -60,7 +61,9 @@ public interface ICommunityProvider {
 	public boolean importLocationAdmin1Codes(UserType user, AuditEnumType type, String objectId, String locationPath, String fileName);
 	public boolean importLocationAdmin2Codes(UserType user, AuditEnumType type, String objectId, String locationPath, String fileName);
 	public boolean importLocationCountryData(UserType user, AuditEnumType type, String objectId, String locationPath, String codes, String alternate);
+	public DirectoryGroupType getCommunityProjectApplication(UserType user, String communityId, String projectId, String appName);
 	
+	public boolean createCommunityProjectApplication(UserType user, String communityId, String projectId, String appName);
 	public boolean generateCommunityProjectApplication(UserType user, String communityId, String projectId, String appName, boolean usePermissions, boolean useGroups, int seed, int max, double distribution, String dictionaryPath, String namesPath);
 	public boolean generateCommunityProjectRegion(UserType user, String communityId, String projectId, int locationSize, int seedSize, String dictionaryPath, String namesPath);
 	public boolean evolveCommunityProjectRegion(UserType user, String communityId, String projectId, int epochSize, int epochEvolutions, String dictionaryPath, String namesPath);
