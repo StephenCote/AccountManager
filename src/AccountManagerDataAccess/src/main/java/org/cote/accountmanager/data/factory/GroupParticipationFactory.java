@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cote.accountmanager.data.Factories;
@@ -555,12 +556,14 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	public List<AccountGroupType> getGroupAccounts(AccountType obj) throws FactoryException, ArgumentException
 	{
 		List<AccountParticipantType> ap = getAccountGroupParticipants(obj);
+		if(ap.isEmpty()) return new ArrayList<>();
 		QueryField match = QueryFields.getFieldParticipationIds(ap.toArray(new AccountParticipantType[0]));
 		return convertList(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroups(match, obj.getOrganizationId()));
 	}
 	public List<PersonGroupType> getGroupPersons(PersonType obj) throws FactoryException, ArgumentException
 	{
 		List<PersonParticipantType> ap = getPersonGroupParticipants(obj);
+		if(ap.isEmpty()) return new ArrayList<>();
 		QueryField match = QueryFields.getFieldParticipationIds(ap.toArray(new PersonParticipantType[0]));
 		return convertList(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroups(match, obj.getOrganizationId()));
 
@@ -568,6 +571,7 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	public List<UserGroupType> getGroupUsers(UserType obj) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> ap = getUserGroupParticipants(obj);
+		if(ap.isEmpty()) return new ArrayList<>();
 		QueryField match = QueryFields.getFieldParticipationIds(ap.toArray(new UserParticipantType[0]));
 		return convertList(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroups(match, obj.getOrganizationId()));
 	}
