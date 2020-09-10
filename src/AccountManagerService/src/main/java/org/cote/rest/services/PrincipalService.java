@@ -95,7 +95,7 @@ public class PrincipalService {
 		UserType user = ServiceUtil.getUserFromSession(request);
 		PersonType person = null;
 		if(contUser != null && user != null){
-			person = UserService.readPersonForUser(user, contUser);
+			person = UserService.readSystemPersonForUser(user, contUser);
 			if(person != null && BaseService.getEnableExtendedAttributes()){
 				Factories.getAttributeFactory().populateAttributes(person);
 			}
