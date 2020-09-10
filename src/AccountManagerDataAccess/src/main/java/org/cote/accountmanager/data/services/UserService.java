@@ -23,6 +23,9 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.Factories;
@@ -43,35 +46,54 @@ import org.cote.accountmanager.service.rest.BaseService;
 public class UserService {
 	
 	public static final Logger logger = LogManager.getLogger(UserService.class);
-		
-	public static PersonType readPersonForUser(UserType user, UserType contUser){
-		PersonType person = null;
+	public static PersonType readSystemPersonForUser(UserType user, UserType contUser){
+		List<PersonType> persons = readPersonsForUser(user, contUser, true);
+		if(persons.size() == 1) return persons.get(0);
+		return null;
+	}
+	public static List<PersonType> readPersonsForUser(UserType user, UserType contUser, boolean systemOnly){
+		List<PersonType> persons = new ArrayList<>();
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "Find person for " + user.getName(),AuditEnumType.USER,user.getUrn());
 		try{
 			if(user.getId().compareTo(contUser.getId()) != 0 && !BaseService.canViewType(AuditEnumType.USER, user, contUser)){
 				AuditService.denyResult(audit, "Not authorized to read user");
 			}
 			else{
-				person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getPersonByUser(contUser);
-				if(person == null){
-					AuditService.denyResult(audit, "Global person does not exist for user");
-					return person;
+				List<PersonType> pList = new ArrayList<>();
+				PersonFactory pFact = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON));
+				if(systemOnly) pList.add(pFact.getSystemPersonByUser(contUser));
+				else pList = pFact.getPersonsByUser(contUser);
+				if(pList.isEmpty()){
+					AuditService.denyResult(audit, "Person does not exist for user");
+					return persons;
 				}
-				if(!BaseService.canViewType(AuditEnumType.PERSON, user, person)){
-					AuditService.denyResult(audit, "Not authorized to read person");
-					person = null;
+				int notAuthZ = 0;
+				for(PersonType p : pList) {
+					
+					if(!BaseService.canViewType(AuditEnumType.PERSON, user, p)){
+						//AuditService.denyResult(audit, "Not authorized to read person");
+						notAuthZ++;
+					}
+					else{
+						((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(p);
+						//AuditService.permitResult(audit, "Permitted to read person");
+						persons.add(p);
+					}
 				}
-				else{
-					((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(person);
-					AuditService.permitResult(audit, "Permitted to read person");
+				if(notAuthZ > 0) {
+					AuditService.denyResult(audit, "Not authorized to read " + notAuthZ + " person(s)");
+				}
+				else {
+					AuditService.permitResult(audit, "Permitted to read " + pList.size() + " persons");
 				}
 			}
+			
 		}
 		catch(FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 		}
 		
-		return person;
+		return persons;
 	}
 	public static DataType getProfile(UserType user){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "getProfile",AuditEnumType.SESSION,"Anonymous");

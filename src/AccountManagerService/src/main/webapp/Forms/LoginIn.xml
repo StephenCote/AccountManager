@@ -5,6 +5,7 @@
 <img valign = "middle" rid = "btnLogin" src = "/HemiFramework/Hemi/Graphics/Icons/crystal/24x24/user-auth.png" onclick = "${this}.doLogin()" width = "24" height = "24" alt = "Crystal SVG Icon - User Auth" />
 <select onchange = "${this}.toggleChoose()" rid = "organization_path" class = "rocket-select rocket-select-shorter">
 <option value = "_choose_">Specify ...</option>
+<option value = "/System">System</option>
 <option value = "/Development">Development</option>
 <option value = "/FirstContact">FirstContact</option>
 <option value = "/Public" selected = "true">Public</option>

@@ -598,6 +598,31 @@ public class EffectiveAuthorizationService {
 		}
 		return getEffectiveMemberEntitlements(object,member,permissionIds,exclusion);
 	}
+	public static EntitlementType copyAsEntitlement(NameIdType member, NameIdType object, NameIdType entitlement, long orgId) {
+		EntitlementType ent = new EntitlementType();
+		if(object != null) {
+			ent.setObjectId(object.getId());
+			ent.setObjectName(object.getName());
+			ent.setObjectGuid(object.getObjectId());
+			ent.setObjectType(object.getNameType());
+		}
+		if(member != null) {
+			ent.setMemberId(member.getId());
+			ent.setMemberGuid(member.getObjectId());
+			ent.setMemberName(member.getName());
+			ent.setMemberType(member.getNameType());
+		}
+		if(entitlement != null) {
+			ent.setEntitlementId(entitlement.getId());
+			ent.setEntitlementGuid(entitlement.getObjectId());
+			ent.setEntitlementName(entitlement.getName());
+			ent.setEntitlementType(entitlement.getNameType());
+			ent.setEntitlementAffectType(AffectEnumType.GRANT_PERMISSION);
+		}
+		ent.setOrganizationId(orgId);
+		return ent;
+		
+	}
 	public static List<EntitlementType> getEffectiveMemberEntitlements(NameIdType object, NameIdType member, Long[] permissionIds, boolean exclusion){
 		List<EntitlementType> out_ents = new ArrayList<>();
 		/// TODO: Need to add check that object type has a corresponding participation capability
@@ -653,12 +678,14 @@ public class EffectiveAuthorizationService {
 		,token,token,token,token
 		);
 		
+		/*
 		StringBuilder buff = new StringBuilder();
 		for(int i = 0; i < permissionIds.length;i++){
 			if(i > 0) buff.append(", ");
 			buff.append(Long.toString(permissionIds[i]));
 		}
-		/// logger.info(buff.toString() + "\n" + sqlQuery);
+		*/
+		/// logger.info(sqlQuery);
 		PreparedStatement statement = null;
 		ResultSet rset = null;
 		/*
@@ -718,7 +745,7 @@ public class EffectiveAuthorizationService {
 			statement.setString(23, referenceType);
 			statement.setLong(24, referenceId);
 			statement.setLong(25, referenceId);
-			
+			/// logger.info(statement);
 			rset = statement.executeQuery();
 			while(rset.next()){
 				EntitlementType ent = new EntitlementType();
@@ -727,7 +754,7 @@ public class EffectiveAuthorizationService {
 				ent.setMemberId(rset.getLong(4));
 				ent.setMemberType(NameEnumType.valueOf(rset.getString(5)));
 				ent.setEntitlementId(rset.getLong(2));
-				ent.setEntitlementType(AffectEnumType.valueOf(rset.getString(3)));
+				ent.setEntitlementAffectType(AffectEnumType.valueOf(rset.getString(3)));
 				ent.setOrganizationId(object.getOrganizationId());
 				out_ents.add(ent);
 			}
@@ -973,10 +1000,11 @@ public class EffectiveAuthorizationService {
 					+ " SELECT distinct effectiveroleid FROM userrolecache URC "
 					+ " inner join personparticipation PU on URC.objectid = PU.participantid AND PU.participanttype = 'USER' AND PU.participationid = %s AND URC.organizationid = %s"
 					+ " UNION ALL "
-					+ " SELECT distinct effectiverole FROM accountrolecache ARC "
+					+ " SELECT distinct effectiveroleid FROM accountrolecache ARC "
 					+ " inner join personparticipation PU2 on ARC.objectid = PU2.participantid AND PU2.participanttype = 'ACCOUNT' AND PU2.participationid = %s AND ARC.organizationid = %s"
 					,token,token,token,token));
 			}
+			/// logger.info(sql.toString());
 			stat = conn.prepareStatement(sql.toString());
 	
 			stat.setLong(1, actor.getId());

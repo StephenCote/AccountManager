@@ -224,7 +224,8 @@ public class TestAccessApproval extends BaseDataAccessTest {
 			MessageFactory mFact = Factories.getFactory(FactoryEnumType.MESSAGE);
 			ApproverFactory aFact = ((ApproverFactory)Factories.getFactory(FactoryEnumType.APPROVER));
 			AttributeFactory atFact = Factories.getAttributeFactory();
-			PersonType testPerson2 = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getPersonByUser(testUser2);
+
+			PersonType testPerson2 = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getSystemPersonByUser(testUser2);
 			assertNotNull("Test Person 2 is null", testPerson2);
 			if(!RoleService.getIsMemberInRole(testPerson2, roleP)) assertTrue("Unable to add person to role",RoleService.addPersonToRole(testPerson2, roleP));
 			

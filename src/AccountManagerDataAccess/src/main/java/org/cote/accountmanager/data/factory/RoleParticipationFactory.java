@@ -164,7 +164,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public List<UserRoleType> getUserRoles(UserType account) throws FactoryException, ArgumentException
 	{
 		List<UserParticipantType> list = getUserRoleParticipants(account);
-		if(list.isEmpty()) return new ArrayList<UserRoleType>();
+		if(list.isEmpty()) return new ArrayList<>();
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new UserParticipantType[0]));
 		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRoles(match, account.getOrganizationId());
 	}
@@ -266,6 +266,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public List<PersonRoleType> getPersonRoles(PersonType person) throws FactoryException, ArgumentException
 	{
 		List<PersonParticipantType> list = getPersonRoleParticipants(person);
+		if(list.isEmpty()) return new ArrayList<>();
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new PersonParticipantType[0]));
 		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getPersonRoles(match, person.getOrganizationId());
 	}
@@ -367,6 +368,7 @@ public class RoleParticipationFactory extends ParticipationFactory {
 	public List<AccountRoleType> getAccountRoles(AccountType account) throws FactoryException, ArgumentException
 	{
 		List<AccountParticipantType> list = getAccountRoleParticipants(account);
+		if(list.isEmpty()) return new ArrayList<>();
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new AccountParticipantType[0]));
 		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getAccountRoles(match, account.getOrganizationId());
 	}

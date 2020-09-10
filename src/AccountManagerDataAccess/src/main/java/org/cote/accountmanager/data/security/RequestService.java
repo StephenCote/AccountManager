@@ -299,7 +299,7 @@ public class RequestService {
 			/// Therefore, if a user approver is provided, but the approver record is for a PERSON role, then check for a person object
 			///
 			if(role.getRoleType() == RoleEnumType.PERSON && approver.getNameType() == NameEnumType.USER) {
-				NameIdType checkPer = UserService.readPersonForUser((UserType)approver, (UserType)approver);
+				NameIdType checkPer = UserService.readSystemPersonForUser((UserType)approver, (UserType)approver);
 				if(checkPer != null) {
 					logger.info("Elevating user object to person object within approval");
 					approver = checkPer;
@@ -545,7 +545,7 @@ public class RequestService {
 				UserType ownerUser = iUFact.getById(object.getOwnerId(), object.getOrganizationId());
 				
 				if(ownerUser != null) {
-					defOwner = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getPersonByUser(ownerUser);
+					defOwner = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getSystemPersonByUser(ownerUser);
 					if(defOwner != null) {
 						logger.info("Using object owner's person for ownership approvals.");
 						

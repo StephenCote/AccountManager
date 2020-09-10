@@ -454,10 +454,19 @@ public class PersonFactory extends NameIdGroupFactory {
 		return listByIds(ids, organizationId);
 	}
 	
-	public PersonType getPersonByUser(UserType user) throws FactoryException, ArgumentException{
-		return getPersonByUserId(user.getId(), user.getOrganizationId());
+	public PersonType getSystemPersonByUser(UserType user) throws FactoryException, ArgumentException{
+		return getSystemPersonByUserId(user.getId(), user.getOrganizationId());
 	}
-	public PersonType getPersonByUserId(long userId, long organizationId) throws FactoryException, ArgumentException{
+	public List<PersonType> getPersonsByUser(UserType user) throws FactoryException, ArgumentException{
+		return getPersonsByUserId(user.getId(), user.getOrganizationId());
+	}
+	public List<PersonType> getPersonsByUserId(long userId, long organizationId) throws FactoryException, ArgumentException{
+		List<QueryField> fields = new ArrayList<>();
+		fields.add(QueryFields.getFieldUserId(userId));
+		return searchByIdInView("personusers", fields.toArray(new QueryField[0]),null,organizationId);
+	}
+	
+	public PersonType getSystemPersonByUserId(long userId, long organizationId) throws FactoryException, ArgumentException{
 		PersonType person = null;
 		DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getPersonsDirectory(organizationId);
 		List<QueryField> fields = new ArrayList<>();

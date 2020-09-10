@@ -146,7 +146,7 @@ public class TestUserRegistration{
 			user = SessionSecurity.login(UUID.randomUUID().toString(), userName, CredentialEnumType.HASHED_PASSWORD,password, Factories.getDevelopmentOrganization().getId());
 			assertNotNull("Failed to login with new user", user);
 			
-			PersonType person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getPersonByUser(user);
+			PersonType person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getSystemPersonByUser(user);
 			assertNotNull("Person object is null", user);
 			((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(person);
 			ContactType userEmail = PersonService.getPreferredEmailContact(person);

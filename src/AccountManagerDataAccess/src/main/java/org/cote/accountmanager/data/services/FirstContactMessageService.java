@@ -555,7 +555,7 @@ public class FirstContactMessageService {
 		
 	}
 	protected static ContactType getContactForPersonUser(UserType user,ContactEnumType contactType) throws FactoryException, ArgumentException{
-		PersonType person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getPersonByUser(user);
+		PersonType person = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).getSystemPersonByUser(user);
 		if(person == null) return null;
 		((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).populate(person);
 		return ContactService.getPreferredContact(person.getContactInformation(), contactType, LocationEnumType.UNKNOWN);
