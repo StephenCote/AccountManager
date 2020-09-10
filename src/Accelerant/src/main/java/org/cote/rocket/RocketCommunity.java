@@ -1081,18 +1081,19 @@ public class RocketCommunity implements ICommunityProvider {
 
 
 		try{
-			if(RoleService.getIsUserInEffectiveRole(RocketSecurity.getAdminRole(adminUser.getOrganizationId()),adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
-				AuditService.denyResult(audit, "User is not an administrator");
-				return outBool;
-			}
-			
 			LifecycleType lc = ((NameIdGroupFactory)Factories.getFactory(FactoryEnumType.LIFECYCLE)).getByObjectId(communityId, adminUser.getOrganizationId());
 			if(lc == null){
 				AuditService.denyResult(audit, "Lifecycle is null");
 				return false;
 			}
+			UserRoleType lcr = RocketSecurity.getLifecycleAdminRole(lc);
+			if(RoleService.getIsUserInEffectiveRole(lcr,adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
+				AuditService.denyResult(audit, "User is not an administrator");
+				return outBool;
+			}
 			
-			UserRoleType role = (isAdmin ? RocketSecurity.getLifecycleAdminRole(lc) : RocketSecurity.getLifecycleUserRole(lc));
+			
+			UserRoleType role = (isAdmin ? lcr : RocketSecurity.getLifecycleUserRole(lc));
 			
 			if(Rocket.enrollInCommunityLifecycle(user, lc,role,permission)){
 				outBool = true;
@@ -1129,8 +1130,7 @@ public class RocketCommunity implements ICommunityProvider {
 				return false;
 			}
 
-			
-			if(RoleService.getIsUserInEffectiveRole(RocketSecurity.getAdminRole(adminUser.getOrganizationId()),adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
+			if(RoleService.getIsUserInEffectiveRole(RocketSecurity.getProjectAdminRole(proj),adminUser) == false && RoleService.isFactoryAdministrator(adminUser, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT))) == false){
 				AuditService.denyResult(audit, "User is not an administrator");
 				return outBool;
 			}
