@@ -58,6 +58,7 @@ import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.SessionSecurity;
+import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.DataException;
@@ -72,6 +73,7 @@ import org.cote.accountmanager.objects.BaseSearchRequestType;
 import org.cote.accountmanager.objects.BucketGroupType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonGroupType;
@@ -1481,20 +1483,67 @@ public class BaseService {
 	}
 	
 	
-	// Imported/Adapted from AccountManagerWeb/RoleService
+	// TODO: aggregateEntitlementsForMember SHOULD be coming directly from EffectiveAuthorizationService.getEffectiveMemberEntitlements,
+	// however, that method is currently hard-coded to require a specific object because to allow for a broad scan across uncached entitlement combinations
+	// can cause a large db hit, particularly when unwinding nested group and role structures without a frame of reference
+	//
+	public static List<EntitlementType> aggregateEntitlementsForMember(UserType user, NameIdType obj){
+		return aggregateEntitlementsForMember(user,obj,(obj.getNameType().equals(NameEnumType.USER)));
+	}
+	public static List<EntitlementType> aggregateEntitlementsForMember(UserType user, NameIdType obj, boolean unwindPersonUser){
+		List<EntitlementType> ents = new ArrayList<>();
+		FactoryEnumType memberType = FactoryEnumType.fromValue(obj.getNameType().toString());
+		
+		switch(obj.getNameType()) {
+			case PERSON:
+				PersonType p = (PersonType)obj;
+				BaseService.populate(AuditEnumType.PERSON, p);
+				if(unwindPersonUser == false) {
+					for(UserType u : p.getUsers()) {
+						ents.addAll(aggregateEntitlementsForMember(user, u, false));
+					}
+				}
+				for(AccountType u : p.getAccounts()) {
+					ents.addAll(aggregateEntitlementsForMember(user, u, false));
+				}
+			case ACCOUNT:
+			case USER:
+				if(unwindPersonUser && obj.getNameType().equals(NameEnumType.USER)) {
+					UserType u = (UserType)obj;
+					List<PersonType> persons = UserService.readPersonsForUser(user, u, false);
+					for(PersonType pu : persons) {
+						ents.addAll(aggregateEntitlementsForMember(user, pu, false));
+					}
+				}
+
+				List<BaseGroupType> groups = listForMember(AuditEnumType.GROUP, user, obj, memberType);
+				for(BaseGroupType group : groups){
+					ents.add(EffectiveAuthorizationService.copyAsEntitlement(obj, null, group, obj.getOrganizationId()));
+				}
+				List<BaseRoleType> roles = listForMember(AuditEnumType.ROLE, user, obj, memberType);
+				for(BaseRoleType role : roles) {
+					ents.add(EffectiveAuthorizationService.copyAsEntitlement(obj, null, role, obj.getOrganizationId()));
+				}
+				logger.info("Aggregate " + groups.size() + " groups and " + roles.size() + " roles for " + obj.getUrn() + " in " + obj.getOrganizationId());
+			default:
+				break;
+		}
+		return ents;
+	}
 	public static <T> List<T> listForMember(AuditEnumType type, UserType user, NameIdType obj, FactoryEnumType memberType){
 		List<T> outObj = new ArrayList<T>();
 
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "All objects for member",type,(user == null ? "Null" : user.getUrn()));
 		AuditService.targetAudit(audit, type, "All members for object");
 		
-		if(user == null || !SessionSecurity.isAuthenticated(user)){
+		if(user == null){
+			/* || !SessionSecurity.isAuthenticated(user) */
 			AuditService.denyResult(audit, "User is null or not authenticated");
-			return null;
+			return outObj;
 		}
 		if(obj == null){
 			AuditService.denyResult(audit, "Target object is null");
-			return null;
+			return outObj;
 		}
 
 		try {
