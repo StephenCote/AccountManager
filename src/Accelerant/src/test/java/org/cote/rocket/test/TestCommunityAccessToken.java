@@ -3,6 +3,7 @@ package org.cote.rocket.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -17,10 +18,16 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.ICommunityProvider;
+import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.BasePermissionType;
+import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
@@ -59,6 +66,23 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 		
 		ProjectType p1 = getProviderCommunityProject(testUser, lf, projectName,cleanupProject);
 		assertNotNull("Project is null",p1);
+
+		/// Note: the current community role structure is not a straight hierachy, so the role hierarchy computation won't count, for example, a project admin role being effective if in a community admin role
+		/*
+		boolean isAdmin = false;
+		try {
+			isAdmin = RoleService.getIsUserInEffectiveRole(RocketSecurity.getProjectAdminRole(p1),testUser);
+		}
+		catch(FactoryException | ArgumentException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		assertTrue("User should be considered an administrator", isAdmin);
+		*/
+		/// BUG: Note, because the role structure doesn't inherit, certain admin capabilities that depend on role membership won't work if not directly in the role
+		/// because the community role entitlements are assigned to the project, versus using role inheritence
+		assertTrue("Failed to enroll reader",provider.enrollReaderInCommunityProject(getAdminUser(testUser.getOrganizationId()), linkedUser.getObjectId(), lf.getObjectId(),p1.getObjectId()));
+		
 		
 		DirectoryGroupType app1 = provider.getCommunityProjectApplication(testUser, lf.getObjectId(), p1.getObjectId(), testApplicationName);
 		if(app1 == null) {
@@ -70,11 +94,26 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 		AccountType a1 = getLinkedAppAccount(p1, testUser, linkedUser, app1, testTokenPersonName);
 		AccountGroupType ag1 = getAppGroup(testUser, app1, "Capability 1");
 		boolean authZ = false;
+		List<BaseRoleType> roles = new ArrayList<>();
+		List<EntitlementType> entitlements = new ArrayList<>();
+		
+		
+		/// Need to update test for authorization considerations - testUser can't read linkedUser, and linkedUser is attached to a person owned by testUser
+		/// So, to get the linked person for linked user, the context user (testUser) must be able to read both
+		///
+		List<PersonType> linkedPersons = UserService.readPersonsForUser(linkedUser, linkedUser, false);
+		assertTrue("Linked Person is null", linkedPersons.size() > 0);
+		PersonType linkedPerson = linkedPersons.get(0);
 		try {
+			EffectiveAuthorizationService.rebuildRoleCache(linkedUser);
 			//AuthorizationService.switchParticipant(testUser, a1, ag1, true);
 			BaseService.setMember(testUser, AuditEnumType.GROUP, ag1.getObjectId(), AuditEnumType.ACCOUNT, a1.getObjectId(), true);
 			//BaseService.is
 			assertTrue("Account should be a member of the group", GroupService.getIsAccountInGroup(ag1, a1));
+			roles = EffectiveAuthorizationService.getEffectiveRoles(linkedPerson);
+			
+			entitlements = BaseService.aggregateEntitlementsForMember(linkedUser, linkedUser); 
+					//EffectiveAuthorizationService.getEffectiveMemberEntitlements(app1, linkedUser, new BasePermissionType[0], false);
 			authZ = true;
 		} catch (NullPointerException | FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
@@ -82,9 +121,20 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 		}
 		assertTrue("Authorization check should have passed", authZ);
 		
-		List<AccountGroupType> objs = BaseService.listForMember(AuditEnumType.GROUP, testUser, a1, FactoryEnumType.ACCOUNT);
+		List<BaseGroupType> objs = BaseService.listForMember(AuditEnumType.GROUP, testUser, a1, FactoryEnumType.ACCOUNT);
 		assertTrue("Expected at least 1 group", objs.size() > 0);
 		logger.info("Account has "  + objs.size() + " groups");
+		for(BaseGroupType group : objs) {
+			logger.info("Group: " + group.getName());
+		}
+		logger.info("Linked user has " + roles.size() + " roles");
+		for(BaseRoleType role : roles) {
+			logger.info("Role: " + role.getName());
+		}
+		logger.info("Linked user entitlements has " + entitlements.size() + " entitlements");
+		for(EntitlementType ent : entitlements) {
+			logger.info("Entitlement: " + ent.getEntitlementType() + " " + ent.getEntitlementName());
+		}
 	}
 	private AccountGroupType getAppGroup(UserType owner, DirectoryGroupType app, String groupName) {
 		logger.info("Find: " + app.getPath() + "/" + groupName);
