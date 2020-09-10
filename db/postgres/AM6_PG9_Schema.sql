@@ -955,7 +955,7 @@ LEFT JOIN users U2 on U2.id = gp2.participantid AND U2.organizationid = gp2.orga
 DROP VIEW IF EXISTS effectiveAccountRoles CASCADE;
 create or replace view effectiveAccountRoles as
 WITH result AS(
-select R.id,R.parentid,roles_from_leaf(R.id) ats,R.organizationid
+select R.id,R.parentid,roles_to_leaf(R.id) ats,R.organizationid
 FROM roles R  WHERE roletype = 'ACCOUNT'
 )
 select CASE WHEN RP.participanttype = 'ACCOUNT' THEN U1.id WHEN RP.participanttype = 'GROUP' AND U2.id > 0 THEN U2.id ELSE -1 END as accountid,(R.ats).leafid as effectiveRoleId,(R.ats).roleid as baseRoleId,R.organizationid from result R
