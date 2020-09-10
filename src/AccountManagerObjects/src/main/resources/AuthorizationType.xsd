@@ -462,12 +462,20 @@
 
 	<complexType name="EntitlementType">
 		<attribute name="memberId" type="long"></attribute>
+		<attribute name="memberGuid" type="string"></attribute>
+		<attribute name="memberName" type="string"></attribute>
 		<attribute name="memberType" type="Q1:NameEnumType"></attribute>
 		<attribute name="objectId" type="long"></attribute>
+		<attribute name="objectGuid" type="string"></attribute>
+		<attribute name="objectName" type="string"></attribute>
 		<attribute name="objectType" type="Q1:NameEnumType"></attribute>
 		<attribute name="entitlementId" type="long"></attribute>
-		<attribute name="entitlementType" type="Q1:AffectEnumType"></attribute>
+		<attribute name="entitlementType" type="Q1:NameEnumType"></attribute>
+		<attribute name="entitlementAffectType" type="Q1:AffectEnumType"></attribute>
+		<attribute name="entitlementGuid" type="string"></attribute>
+		<attribute name="entitlementName" type="string"></attribute>
 		<attribute name="organizationId" type="long"></attribute>
+
 	</complexType>
 
 	<complexType name="AuthorizationType">
