@@ -31,8 +31,10 @@ import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
@@ -44,19 +46,22 @@ public class AM5SigningKeyResolver implements SigningKeyResolver{
 	@Override
 	public Key resolveSigningKey(JwsHeader arg0, Claims arg1) {
 		String urn = arg1.getId();
+		FactoryEnumType fet = FactoryEnumType.USER;
+		String fetStr = arg1.get("subjectType", String.class);
+		if(fetStr != null && fetStr.length() > 0) fet = FactoryEnumType.fromValue(fetStr);
 		Key key = null;
 		if(urn != null){
-			logger.info("Resolving: '" + urn + "'");
-			UserType user = null;
+			logger.info("Resolving: '" + urn + "' as " + fet);
+			NameIdType persona = null;
 			try{
-				INameIdFactory iFact = Factories.getFactory(FactoryEnumType.USER);
-				user = iFact.getByUrn(urn);
+				INameIdFactory iFact = Factories.getFactory(fet);
+				persona = iFact.getByUrn(urn);
 			}
 			catch(FactoryException f){
 				logger.error(f);
 			}
-			if(user != null){
-				SecurityBean bean = TokenUtil.getJWTSecurityBean(user);
+			if(persona != null){
+				SecurityBean bean = TokenUtil.getJWTSecurityBean(persona);
 				if(bean != null && bean.getSecretKey() != null){
 					key = bean.getSecretKey();
 				}
