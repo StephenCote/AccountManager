@@ -26,20 +26,11 @@ package org.cote.rocket.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.UUID;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.services.ICommunityProvider;
-import org.cote.accountmanager.objects.BasePermissionType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
-import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.AuditEnumType;
-import org.cote.accountmanager.objects.types.GroupEnumType;
-import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.ProjectType;
-import org.cote.rocket.util.DataGeneratorData;
 import org.junit.Test;
 
 /*
