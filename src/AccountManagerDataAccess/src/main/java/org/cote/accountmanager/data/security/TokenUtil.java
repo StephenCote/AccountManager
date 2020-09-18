@@ -29,45 +29,66 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.SecurityUtil;
 
 public class TokenUtil {
 	public static final Logger logger = LogManager.getLogger(TokenUtil.class);
-	public static SecurityBean getJWTSecurityBean(UserType user){
+	private static final String defaultReferenceName = "jwt";
+	public static SecurityBean getJWTSecurityBean(NameIdType actor){
+		return getJWTSecurityBean(actor, defaultReferenceName);
+	}
+	public static SecurityBean getJWTSecurityBean(NameIdType actor, String referenceName){
 		SecuritySpoolType tokenType = null;
 		SecurityBean outBean = null;
-		AuditType audit = AuditService.beginAudit(ActionEnumType.REQUEST, "newSecurityToken", AuditEnumType.USER, user.getUrn());
-		String refId = "jwt";
+		AuditEnumType actorType = AuditEnumType.fromValue(actor.getNameType().toString());
+		if(!actorType.equals(AuditEnumType.USER) && !actorType.equals(AuditEnumType.PERSON) && !actorType.equals(AuditEnumType.ACCOUNT)) {
+			logger.error("Actor type not supported: {}", actorType);
+			return null;
+		}
+
+		AuditType audit = AuditService.beginAudit(ActionEnumType.REQUEST, "newSecurityToken", actorType, actor.getUrn());
 		
 		try{
-			INameIdFactory iFact = Factories.getFactory(FactoryEnumType.USER);
-
-			iFact.populate(user);
-			List<SecuritySpoolType> tokens = Factories.getSecurityTokenFactory().getSecurityTokenByNameInGroup(refId, user.getHomeDirectory().getId(), user.getOrganizationId());
+			BaseService.populate(actorType, actor);
+			long ownerId = 0L;
+			DirectoryGroupType dir = null;
+			if(actorType.equals(AuditEnumType.USER)) {
+				dir = ((UserType)actor).getHomeDirectory();
+				ownerId = actor.getId();
+			}
+			else{
+				dir = (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(((NameIdDirectoryGroupType)actor).getGroupId(),actor.getOrganizationId());
+				ownerId = actor.getOwnerId();
+			}
+			List<SecuritySpoolType> tokens = Factories.getSecurityTokenFactory().getSecurityTokenByNameInGroup(referenceName, dir.getId(), actor.getOrganizationId());
 			if(!tokens.isEmpty()){
 				tokenType = tokens.get(0);
 			}
 			if(tokenType == null){
 				SecurityBean bean = new SecurityBean();
 				SecurityFactory.getSecurityFactory().generateSecretKey(bean);
-				tokenType = Factories.getSecurityTokenFactory().newSecurityToken(user.getSession().getSessionId(), user.getOrganizationId());
-				tokenType.setOwnerId(user.getId());
-				tokenType.setName(refId);
-				tokenType.setGroupId(user.getHomeDirectory().getId());
+				tokenType = Factories.getSecurityTokenFactory().newSecurityToken(actor.getObjectId(), actor.getOrganizationId());
+				tokenType.setOwnerId(ownerId);
+				tokenType.setName(referenceName);
+				tokenType.setGroupId(dir.getId());
 				tokenType.setData(SecurityUtil.serializeToXml(bean, false, false, true).getBytes());
 				AuditService.targetAudit(audit, AuditEnumType.SECURITY_TOKEN, tokenType.getGuid());
-				if(Factories.getSecurityTokenFactory().addSecurityToken(tokenType) == false){
+				if(!Factories.getSecurityTokenFactory().addSecurityToken(tokenType)){
 					AuditService.denyResult(audit, "Failed to persist token");
 					logger.error("Failed to persist tokens");
 					tokenType = null;
