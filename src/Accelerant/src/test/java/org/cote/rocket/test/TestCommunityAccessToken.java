@@ -5,26 +5,25 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
-import org.cote.accountmanager.exceptions.FactoryException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.data.DataAccessException;
+import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
-import org.cote.accountmanager.data.services.AuthorizationService;
+import org.cote.accountmanager.data.security.TokenUtil;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.ICommunityProvider;
-import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.exceptions.ArgumentException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
-import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.EntitlementType;
@@ -36,13 +35,10 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
-import org.cote.accountmanager.util.JSONUtil;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.ProjectType;
-import org.cote.rocket.Rocket;
 import org.cote.rocket.RocketSecurity;
 import org.junit.Test;
-
 
 public class TestCommunityAccessToken extends BaseAccelerantTest {
 	public static final Logger logger = LogManager.getLogger(TestCommunityAccessToken.class);
@@ -95,7 +91,8 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 		AccountGroupType ag1 = getAppGroup(testUser, app1, "Capability 1");
 		boolean authZ = false;
 		List<BaseRoleType> roles = new ArrayList<>();
-		List<EntitlementType> entitlements = new ArrayList<>();
+		List<EntitlementType> linkedUserEntitlements = new ArrayList<>();
+		List<EntitlementType> testUserEntitlements = new ArrayList<>();
 		
 		
 		/// Need to update test for authorization considerations - testUser can't read linkedUser, and linkedUser is attached to a person owned by testUser
@@ -112,7 +109,8 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 			assertTrue("Account should be a member of the group", GroupService.getIsAccountInGroup(ag1, a1));
 			roles = EffectiveAuthorizationService.getEffectiveRoles(linkedPerson);
 			
-			entitlements = BaseService.aggregateEntitlementsForMember(linkedUser, linkedUser); 
+			linkedUserEntitlements = BaseService.aggregateEntitlementsForMember(linkedUser, linkedUser);
+			testUserEntitlements = BaseService.aggregateEntitlementsForMember(testUser, testUser);
 					//EffectiveAuthorizationService.getEffectiveMemberEntitlements(app1, linkedUser, new BasePermissionType[0], false);
 			authZ = true;
 		} catch (NullPointerException | FactoryException | ArgumentException e) {
@@ -120,21 +118,29 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 			e.printStackTrace();
 		}
 		assertTrue("Authorization check should have passed", authZ);
-		
+		assertTrue("Expected some entitlements", linkedUserEntitlements.size() > 0);
+		/// 20 is arbitrary here, but if the match condition were null (aka - a bug) then all groups could be returned
+		assertTrue("Didn't expect EVERY entitlement", linkedUserEntitlements.size() < 20);
 		List<BaseGroupType> objs = BaseService.listForMember(AuditEnumType.GROUP, testUser, a1, FactoryEnumType.ACCOUNT);
 		assertTrue("Expected at least 1 group", objs.size() > 0);
-		logger.info("Account has "  + objs.size() + " groups");
-		for(BaseGroupType group : objs) {
-			logger.info("Group: " + group.getName());
+		// logger.info("Linked user has " + roles.size() + " roles");
+		
+		logger.info("Test user entitlements has " + testUserEntitlements.size() + " entitlements");
+		for(EntitlementType ent : testUserEntitlements) {
+			logger.info("Entitlement: " + ent.getEntitlementType() + " " + ent.getEntitlementName() + " " + ent.getEntitlementId());
 		}
-		logger.info("Linked user has " + roles.size() + " roles");
-		for(BaseRoleType role : roles) {
-			logger.info("Role: " + role.getName());
+		
+		logger.info("Linked user entitlements has " + linkedUserEntitlements.size() + " entitlements");
+		for(EntitlementType ent : linkedUserEntitlements) {
+			logger.info("Entitlement: " + ent.getEntitlementType() + " " + ent.getEntitlementName() +  " " + ent.getEntitlementId());
 		}
-		logger.info("Linked user entitlements has " + entitlements.size() + " entitlements");
-		for(EntitlementType ent : entitlements) {
-			logger.info("Entitlement: " + ent.getEntitlementType() + " " + ent.getEntitlementName());
-		}
+		
+		SecurityBean token1 = TokenUtil.getJWTSecurityBean(linkedUser);
+		SecurityBean token2 = TokenUtil.getJWTSecurityBean(testUser);
+		assertNotNull("Token 1 is null", token1);
+		assertNotNull("Token 2 is null", token2);
+		
+		
 	}
 	private AccountGroupType getAppGroup(UserType owner, DirectoryGroupType app, String groupName) {
 		logger.info("Find: " + app.getPath() + "/" + groupName);
