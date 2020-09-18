@@ -3,10 +3,8 @@ package org.cote.accountmanager.data.security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +27,6 @@ import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.data.policy.PolicyDefinitionUtil;
 import org.cote.accountmanager.data.policy.PolicyEvaluator;
-import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.exceptions.ArgumentException;
@@ -46,7 +43,6 @@ import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.ControlActionEnumType;
 import org.cote.accountmanager.objects.ControlEnumType;
 import org.cote.accountmanager.objects.ControlType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactEnumType;
 import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.MessageSpoolType;
@@ -66,7 +62,6 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.objects.types.SpoolBucketEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
 import org.cote.accountmanager.objects.types.SpoolStatusEnumType;
-import org.cote.accountmanager.util.JSONUtil;
 
 public class RequestService {
 	
