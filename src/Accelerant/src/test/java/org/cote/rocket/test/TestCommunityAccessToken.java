@@ -14,6 +14,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.AccountFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
+import org.cote.accountmanager.data.security.TokenService;
 import org.cote.accountmanager.data.security.TokenUtil;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.GroupService;
@@ -40,6 +41,9 @@ import org.cote.propellant.objects.ProjectType;
 import org.cote.rocket.RocketSecurity;
 import org.junit.Test;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+
 public class TestCommunityAccessToken extends BaseAccelerantTest {
 	public static final Logger logger = LogManager.getLogger(TestCommunityAccessToken.class);
 	private static String communityName =  "Test Community Access Token Lifecycle";
@@ -47,6 +51,17 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 	private static String testApplicationName = "Access Token Application";
 	private static String testTokenPersonName = "Test Token User";
 	private static boolean cleanupProject = false;
+	
+	@Test
+	public void TestTokenGeneration() {
+		String userToken1 = TokenService.getJWTToken(testUser, testUser);
+		assertNotNull("User token is null", userToken1);
+		Claims valid = TokenService.validateJWTToken(userToken1);
+		logger.info("Valid: '" + valid.getSubject() + "'");
+
+
+		
+	}
 	
 	@Test
 	public void TestApplicationAccess(){
@@ -135,11 +150,22 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 			logger.info("Entitlement: " + ent.getEntitlementType() + " " + ent.getEntitlementName() +  " " + ent.getEntitlementId());
 		}
 		
-		SecurityBean token1 = TokenUtil.getJWTSecurityBean(linkedUser);
-		SecurityBean token2 = TokenUtil.getJWTSecurityBean(testUser);
-		assertNotNull("Token 1 is null", token1);
-		assertNotNull("Token 2 is null", token2);
+		SecurityBean tokenBean1 = TokenUtil.getJWTSecurityBean(linkedUser);
+		SecurityBean tokenBean2 = TokenUtil.getJWTSecurityBean(testUser);
 		
+		assertNotNull("Token Bean 1 is null", tokenBean1);
+		assertNotNull("Token Bean 2 is null", tokenBean2);
+		
+		String token1 = TokenService.getJWTToken(testUser,  a1);
+		assertNotNull("Token is null",token1);
+		
+		Claims valid = TokenService.validateJWTToken(token1);
+		assertNotNull("Token validation is null", valid);
+		logger.info("Valid :'" + valid.getSubject() + "'");
+		
+		Jws<Claims> claims = TokenService.extractJWTClaims(token1);
+		assertNotNull("Claims are null", claims);
+		//claims.getBody()
 		
 	}
 	private AccountGroupType getAppGroup(UserType owner, DirectoryGroupType app, String groupName) {
