@@ -24,29 +24,89 @@
 package org.cote.accountmanager.data.security;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.SecurityTokenFactory;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuthorizationType;
+import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.CalendarUtil;
 import org.cote.accountmanager.util.JSONUtil;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.CompressionCodecs;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
 public class TokenService {
 	public static final Logger logger = LogManager.getLogger(TokenService.class);
-	
+	private static final Pattern personaType = Pattern.compile("^(USER|PERSON|ACCOUNT)$");
+	public static Jws<Claims> extractJWTClaims(String token){
+		return Jwts.parser().setSigningKeyResolver(new AM5SigningKeyResolver()).parseClaimsJws(token);
+	}
+	public static Claims validateJWTToken(String token){
+		return extractJWTClaims(token).getBody();
+	}
+	/// This is still (hopefully obvious) very loose per the spec and likely very wrong
+	/// however, it's being used primarily for node-to-node communication versus trying to provide third party access
+	///
+	public static String getJWTToken(UserType contextUser, NameIdType persona){
+		if(!personaType.matcher(persona.getNameType().toString()).find()){
+			logger.error("Unsupported persona type: {0}", persona.getNameType());
+			return null;
+		}
+		SecurityBean bean = TokenUtil.getJWTSecurityBean(persona);
+		if(bean == null){
+			logger.error("Null security bean");
+			return null;
+		}
+		if(bean.getSecretKey() == null){
+			logger.error("Null secret key");
+			logger.error(JSONUtil.exportObject(bean));
+			return null;
+		}
+		
+		/// Map<String,Object> claims = new HashMap<>();
+		List<EntitlementType> ents = BaseService.aggregateEntitlementsForMember(contextUser, persona);
+		List<String> buff = new ArrayList<>();
+		for(EntitlementType ent : ents) {
+			buff.add(ent.getEntitlementName());
+		}
+	    Claims claims = Jwts.claims().setSubject(persona.getName());
+	    claims.put("scopes", Arrays.asList(buff));
+		claims.put("objectId", persona.getObjectId());
+		claims.put("organizationPath", persona.getOrganizationPath());
+		claims.put("subjectType",persona.getNameType());
+		return Jwts.builder()
+		  .setClaims(claims)
+		  .setIssuer(contextUser.getUrn())
+		  .setIssuedAt(Calendar.getInstance().getTime())
+		  .setSubject(persona.getName())
+		  .setId(persona.getUrn())
+		  .compressWith(CompressionCodecs.GZIP)
+		  .signWith(SignatureAlgorithm.HS512, bean.getSecretKey())
+		  .compact();
+	}
 	
 	/*
 	 * The "Security Token" is a spool entry under the SECURITY_TOKEN message bucket
-	 * It's an 
 	 */
 	public static SecuritySpoolType newSecurityToken(UserType owner){
 		return newSecurityToken(owner, new byte[0], SecurityTokenFactory.TOKEN_EXPIRY_10_MINUTES);
@@ -56,10 +116,7 @@ public class TokenService {
 		SecuritySpoolType tokenType = null;
 		
 		try{
-			//SecurityBean bean = new SecurityBean();
-			//SecurityFactory.getSecurityFactory().generateSecretKey(bean);
 			tokenType = newToken(owner, SpoolNameEnumType.GENERAL,"Security Token", data,  expirySeconds);
-			//tokenType.setData(SecurityFactory.getSecurityFactory().serializeCipher(bean));
 		}
 		catch(FactoryException | ArgumentException e){
 			logger.error(e.getMessage());
@@ -80,12 +137,10 @@ public class TokenService {
 		}
 		tokenType.setData(data);
 		if(Factories.getSecurityTokenFactory().addSecurityToken(tokenType) == false){
-			//AuditService.denyResult(audit, "Failed to persist token");
 			logger.error("Failed to persist tokens");
 			tokenType = null;
 		}
 		else{
-			//AuditService.permitResult(audit, "Created token");
 			logger.info("Created new token with guid: " + tokenType.getGuid());
 		}
 		return tokenType;
@@ -107,13 +162,4 @@ public class TokenService {
 		}
 		return tokenType;
 	}
-	/*
-	public static String newMaterializedToken(UserType owner, NameIdType object){
-		StringBuilder buff = new StringBuilder();
-		buff.append(owner.getUrn());
-		buff.append("-");
-		buff.append(object.getUrn());
-		return buff.toString();
-	}
-	*/
 }
