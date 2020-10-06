@@ -58,9 +58,6 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 		assertNotNull("User token is null", userToken1);
 		Claims valid = TokenService.validateJWTToken(userToken1);
 		logger.info("Valid: '" + valid.getSubject() + "'");
-
-
-		
 	}
 	
 	@Test

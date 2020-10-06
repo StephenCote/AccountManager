@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class TokenService {
 	public static final Logger logger = LogManager.getLogger(TokenService.class);
 	private static final Pattern personaType = Pattern.compile("^(USER|PERSON|ACCOUNT)$");
+
 	public static Jws<Claims> extractJWTClaims(String token){
 		return Jwts.parser().setSigningKeyResolver(new AM5SigningKeyResolver()).parseClaimsJws(token);
 	}
@@ -68,6 +70,9 @@ public class TokenService {
 	/// however, it's being used primarily for node-to-node communication versus trying to provide third party access
 	///
 	public static String getJWTToken(UserType contextUser, NameIdType persona){
+		return getJWTToken(contextUser, persona, SecurityTokenFactory.TOKEN_EXPIRY_10_MINUTES);
+	}
+	public static String getJWTToken(UserType contextUser, NameIdType persona, int expiryMinutes){
 		if(!personaType.matcher(persona.getNameType().toString()).find()){
 			logger.error("Unsupported persona type: {0}", persona.getNameType());
 			return null;
@@ -79,11 +84,9 @@ public class TokenService {
 		}
 		if(bean.getSecretKey() == null){
 			logger.error("Null secret key");
-			logger.error(JSONUtil.exportObject(bean));
 			return null;
 		}
 		
-		/// Map<String,Object> claims = new HashMap<>();
 		List<EntitlementType> ents = BaseService.aggregateEntitlementsForMember(contextUser, persona);
 		List<String> buff = new ArrayList<>();
 		for(EntitlementType ent : ents) {
@@ -94,10 +97,15 @@ public class TokenService {
 		claims.put("objectId", persona.getObjectId());
 		claims.put("organizationPath", persona.getOrganizationPath());
 		claims.put("subjectType",persona.getNameType());
+		Calendar cal = Calendar.getInstance();
+		Date now = cal.getTime();
+		cal.add(Calendar.MINUTE, expiryMinutes);
+		Date expires = cal.getTime();
 		return Jwts.builder()
 		  .setClaims(claims)
 		  .setIssuer(contextUser.getUrn())
-		  .setIssuedAt(Calendar.getInstance().getTime())
+		  .setIssuedAt(now)
+		  .setExpiration(expires)
 		  .setSubject(persona.getName())
 		  .setId(persona.getUrn())
 		  .compressWith(CompressionCodecs.GZIP)

@@ -63,7 +63,7 @@
 						<exclude>**/TestCommunityAccessToken.java</exclude>
 						-->
 						<exclude>**/TestIdentityService.java</exclude>
-
+						<exclude>**/TestApi.java</exclude>
 						<exclude>**/TestCommunities.java</exclude>
 						<exclude>**/TestAuthorization.java</exclude> 
 						<exclude>**/TestTraitType.java</exclude>
