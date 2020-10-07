@@ -3,6 +3,7 @@ package org.cote.rocket.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -29,6 +30,7 @@ import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.PersonType;
+import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
@@ -52,11 +54,52 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 	private static String testTokenPersonName = "Test Token User";
 	private static boolean cleanupProject = false;
 	
+	
+	@Test
+	public void TestSecTypeTokenGeneration() {
+		SecuritySpoolType sst = null;
+		String tokenStr = null;
+		try {
+			sst = TokenService.newJWTToken(testUser, testUser);
+			assertNotNull("User token is null", sst);
+			tokenStr = new String(sst.getData(), "UTF-8");
+		} catch (UnsupportedEncodingException | FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		
+		assertNotNull("Token string is null", tokenStr);
+		Claims valid = null;
+		try {
+			valid = TokenService.validateJWTToken(tokenStr);
+		} catch (FactoryException | ArgumentException e1) {
+			logger.error(e1);
+		}
+		String tokenId = valid.get("tokenId", String.class);
+		assertNotNull("Expected token id", tokenId);
+		
+		SecuritySpoolType sst2 = null;
+		try {
+			sst2 = TokenService.getGlobalJWTSecurityToken(tokenId, testUser.getOrganizationId());
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		assertNotNull("Expected a spool type object for " + tokenId + " in org " + testUser.getOrganizationId(), sst2);
+		//logger.info("Valid: '" + valid.getSubject() + "'");
+	}
+	
 	@Test
 	public void TestTokenGeneration() {
-		String userToken1 = TokenService.getJWTToken(testUser, testUser);
+		/// Note: This is an unpersisted token, so the persistence check should be skipped on validation
+		///
+		String userToken1 = TokenService.createJWTToken(testUser, testUser);
 		assertNotNull("User token is null", userToken1);
-		Claims valid = TokenService.validateJWTToken(userToken1);
+		Claims valid = null;
+		try {
+			valid = TokenService.validateJWTToken(userToken1, false, true);
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		assertNotNull("Claims are null", valid);
 		logger.info("Valid: '" + valid.getSubject() + "'");
 	}
 	
@@ -153,10 +196,17 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 		assertNotNull("Token Bean 1 is null", tokenBean1);
 		assertNotNull("Token Bean 2 is null", tokenBean2);
 		
-		String token1 = TokenService.getJWTToken(testUser,  a1);
+		/// Note: This is an unpersisted token, so the persistence check should be skipped on validation
+		String token1 = TokenService.createJWTToken(testUser,  a1);
 		assertNotNull("Token is null",token1);
 		
-		Claims valid = TokenService.validateJWTToken(token1);
+		Claims valid = null;
+		try {
+			valid = TokenService.validateJWTToken(token1,false,true);
+		} catch (FactoryException | ArgumentException | NullPointerException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
 		assertNotNull("Token validation is null", valid);
 		logger.info("Valid :'" + valid.getSubject() + "'");
 		

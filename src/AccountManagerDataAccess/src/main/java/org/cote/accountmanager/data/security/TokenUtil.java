@@ -48,9 +48,9 @@ import org.cote.accountmanager.util.SecurityUtil;
 
 public class TokenUtil {
 	public static final Logger logger = LogManager.getLogger(TokenUtil.class);
-	private static final String defaultReferenceName = "jwt";
+	public static final String DEFAULT_REFERENCE_SUFFIX = "jwt";
 	public static SecurityBean getJWTSecurityBean(NameIdType actor){
-		return getJWTSecurityBean(actor, defaultReferenceName);
+		return getJWTSecurityBean(actor, DEFAULT_REFERENCE_SUFFIX);
 	}
 	public static SecurityBean getJWTSecurityBean(NameIdType actor, String referenceName){
 		SecuritySpoolType tokenType = null;

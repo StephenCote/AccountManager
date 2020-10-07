@@ -31,20 +31,25 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.SecurityTokenFactory;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuthorizationType;
 import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.SpoolBucketEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -59,20 +64,85 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class TokenService {
 	public static final Logger logger = LogManager.getLogger(TokenService.class);
 	private static final Pattern personaType = Pattern.compile("^(USER|PERSON|ACCOUNT)$");
-
+	
+	public static final String CLAIM_TOKEN_ID = "tokenId";
+	public static final String CLAIM_OBJECT_ID = "objectId";
+	public static final String CLAIM_ORGANIZATION_PATH = "organizationPath";
+	public static final String CLAIM_SCOPES = "scopes";
+	public static final String CLAIM_SUBJECT_TYPE = "subjectType";
+	
 	public static Jws<Claims> extractJWTClaims(String token){
 		return Jwts.parser().setSigningKeyResolver(new AM5SigningKeyResolver()).parseClaimsJws(token);
 	}
-	public static Claims validateJWTToken(String token){
-		return extractJWTClaims(token).getBody();
+	public static Claims validateJWTToken(String token) throws FactoryException, ArgumentException{
+		return validateJWTToken(token, false, false);
 	}
+	public static Claims validateJWTToken(String token, boolean skipExpirationCheck, boolean skipSpoolCheck) throws FactoryException, ArgumentException{
+		Claims c = extractJWTClaims(token).getBody();
+		Date now = Calendar.getInstance().getTime();
+
+		if(!skipExpirationCheck && c.getExpiration().getTime() < now.getTime()) {
+			logger.error("Token for " + c.getSubject() + " has expired");
+			return null;
+		}
+		if(!skipSpoolCheck) {
+			String tokenId = c.get(CLAIM_TOKEN_ID, String.class);
+			String organizationPath = c.get(CLAIM_ORGANIZATION_PATH, String.class);
+			OrganizationFactory oF = (OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION);
+			
+			if(tokenId != null && organizationPath != null) {
+				OrganizationType org = oF.find(organizationPath);
+				if(org != null) {
+					SecuritySpoolType sst = getGlobalJWTSecurityToken(tokenId, org.getId());
+					if(sst != null &&
+							(
+								!sst.getExpires()
+								||
+								(sst.getExpires() == true && sst.getExpiration().toGregorianCalendar().getTimeInMillis() > now.getTime())
+							)
+					) {
+						logger.info("Token not expired");
+					}
+					else {
+						if(sst == null) logger.warn("Persisted token does not exist");
+						else logger.warn("Persisted token type has expired: " + sst.getExpiration().toGregorianCalendar() + " is less than now " + now);
+						c = null;
+					}
+				}
+				else {
+					logger.warn("Invalid organization path: " + organizationPath);
+					c = null;
+				}
+			}
+			else {
+				logger.warn("Rejecting token without a specified tokenId or organization path");
+				c = null;
+			}
+		}
+		
+		return c;
+	}
+
+	public static SecuritySpoolType newJWTToken(UserType contextUser, NameIdType persona) throws UnsupportedEncodingException, FactoryException, ArgumentException{
+		return newJWTToken(contextUser, persona, SecurityTokenFactory.TOKEN_EXPIRY_10_MINUTES);
+	}
+	public static SecuritySpoolType newJWTToken(UserType contextUser, NameIdType persona, int expiryMinutes) throws UnsupportedEncodingException, FactoryException, ArgumentException{
+		String tokenId = UUID.randomUUID().toString();
+		String token = createJWTToken(contextUser, persona, tokenId, expiryMinutes);
+		if(token == null) {
+			logger.error("Failed to create JWT token");
+			return null;
+		}
+		return newToken(contextUser, SpoolNameEnumType.AUTHORIZATION, tokenId + " " + TokenUtil.DEFAULT_REFERENCE_SUFFIX, token.getBytes("UTF-8"), (expiryMinutes * 60));
+	}
+	
 	/// This is still (hopefully obvious) very loose per the spec and likely very wrong
 	/// however, it's being used primarily for node-to-node communication versus trying to provide third party access
 	///
-	public static String getJWTToken(UserType contextUser, NameIdType persona){
-		return getJWTToken(contextUser, persona, SecurityTokenFactory.TOKEN_EXPIRY_10_MINUTES);
+	public static String createJWTToken(UserType contextUser, NameIdType persona){
+		return createJWTToken(contextUser, persona, UUID.randomUUID().toString(), SecurityTokenFactory.TOKEN_EXPIRY_10_MINUTES);
 	}
-	public static String getJWTToken(UserType contextUser, NameIdType persona, int expiryMinutes){
+	public static String createJWTToken(UserType contextUser, NameIdType persona, String tokenId, int expiryMinutes){
 		if(!personaType.matcher(persona.getNameType().toString()).find()){
 			logger.error("Unsupported persona type: {0}", persona.getNameType());
 			return null;
@@ -93,10 +163,11 @@ public class TokenService {
 			buff.add(ent.getEntitlementName());
 		}
 	    Claims claims = Jwts.claims().setSubject(persona.getName());
-	    claims.put("scopes", Arrays.asList(buff));
-		claims.put("objectId", persona.getObjectId());
-		claims.put("organizationPath", persona.getOrganizationPath());
-		claims.put("subjectType",persona.getNameType());
+	    claims.put(CLAIM_SCOPES, Arrays.asList(buff));
+		claims.put(CLAIM_OBJECT_ID, persona.getObjectId());
+		claims.put(CLAIM_TOKEN_ID, tokenId);
+		claims.put(CLAIM_ORGANIZATION_PATH, persona.getOrganizationPath());
+		claims.put(CLAIM_SUBJECT_TYPE,persona.getNameType());
 		Calendar cal = Calendar.getInstance();
 		Date now = cal.getTime();
 		cal.add(Calendar.MINUTE, expiryMinutes);
@@ -112,7 +183,10 @@ public class TokenService {
 		  .signWith(SignatureAlgorithm.HS512, bean.getSecretKey())
 		  .compact();
 	}
-	
+	public static SecuritySpoolType getGlobalJWTSecurityToken(String name, long organizationId) throws FactoryException, ArgumentException {
+		List<SecuritySpoolType> tokens = Factories.getSecurityTokenFactory().getSecurityTokenByNameInGroup(SpoolBucketEnumType.SECURITY_TOKEN, name  + " " + TokenUtil.DEFAULT_REFERENCE_SUFFIX, 0L, organizationId);
+		return (!tokens.isEmpty() ? tokens.get(0) : null);
+	}
 	/*
 	 * The "Security Token" is a spool entry under the SECURITY_TOKEN message bucket
 	 */
