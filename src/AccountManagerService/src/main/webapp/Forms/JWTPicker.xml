@@ -1,0 +1,30 @@
+<html-fragment>
+	<div class = "rocket-column-2" rid = "oauthContainer" style = "display: none;">
+		<p>
+			OAuth Grant:
+		</p>
+		<p>
+			<input type = "button" class = "rocket-button" value = "New Grant" onclick = "${this}.newOAuthGrant()" />
+		</p>
+	</div>
+	<embedded-script><![CDATA[
+		embedded_init : function(){
+			var o = this.getBean("rocketType");
+			if(o && o.nameType.match(/^(USER|PERSON|ACCOUNT)$/)){
+				this.getElementByRID("oauthContainer").style.display = "block";
+			}
+		},
+		newOAuthGrant : function(){
+			var o = this.getBean("rocketType");
+			var oProps = {openerId:this.getObjectId(),viewType:o,tokenMode:1,jwtToken:1};
+			Hemi.app.createWindow(o.name + " OAuth Grant", "/AccountManagerService/Forms/CredentialForm.xml", "JWT-" + o.id, 0, 0, oProps)
+			.then((oW)=>{
+	           if (oW) {
+		           	oW.resizeTo(475, 400);
+		           	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
+		           	oW.setHideOnClose(0);
+	           }
+	         });
+		}
+	]]></embedded-script>
+</html-fragment>

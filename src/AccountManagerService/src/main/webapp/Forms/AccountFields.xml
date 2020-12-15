@@ -30,9 +30,10 @@
 			</select>
 		</p>
 	</div>
-	
+	<import-xml src = "/AccountManagerService/Forms/JWTPicker.xml" id = "JWTPicker" />	
 	<import-xml src = "/AccountManagerService/Forms/ContactInformation.xml" id = "ContactInformation" />
 
+	
 	<embedded-script><![CDATA[
 		embedded_init : function(){
 			//this.getElementByRID("pathCont").style.display = "none";

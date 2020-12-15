@@ -72,6 +72,7 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
@@ -414,6 +415,41 @@ public class TokenService {
 		if(user != null){
 			outToken = getJWTToken(user);
 		}
+		return Response.status(200).entity(outToken).build();
+	}
+		
+	@GET
+	@Path("/jwt/new/{type:[@\\\\.~\\\\/%\\\\sa-zA-Z_0-9\\\\-]+}/{objectId:[@\\\\.~\\\\/%\\\\sa-zA-Z_0-9\\\\-]+}/{expiryMinutes:[\\d]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response newJWTTokenForResource(@PathParam("type") String type, @PathParam("objectId") String objectId, @PathParam("expiryMinutes") int expiryMinutes, @Context HttpServletRequest request){
+		String outToken = null;
+		UserType user = ServiceUtil.getUserFromSession(request);
+		NameIdType obj = null;
+		if(user != null) {
+			obj = BaseService.readByObjectId(AuditEnumType.fromValue(type), objectId, user);
+		
+			if(obj != null) {
+				try {
+					SecuritySpoolType sst = org.cote.accountmanager.data.security.TokenService.newJWTToken(user, obj, expiryMinutes);
+					if(sst != null) {
+						outToken = new String(sst.getData(),"UTF-8");
+					}
+					else {
+						logger.error("Token object was null");
+					}
+				}
+				catch(ArgumentException | UnsupportedEncodingException | FactoryException e) {
+					logger.error(e);
+				}
+			}
+			else {
+				logger.error("Invalid object for id: " + objectId);
+			}
+		}
+		else {
+			logger.error("User object is null");
+		}
+
 		return Response.status(200).entity(outToken).build();
 	}
 	

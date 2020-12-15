@@ -626,6 +626,9 @@
 	function validateMaterialToken(sType,sT, fH){
 	   return Hemi.xml.getJSON(sToken + "/material/validate/" + sType + "/" + sT,fH,(fH ? 1 : 0));
 	}
+	function newJWTForType(sType, sId, iExpiry, fH){
+		   return Hemi.xml.getJSON(sToken + "/jwt/new/" + sType + "/" + sId + "/" + iExpiry,fH,(fH ? 1 : 0));
+		}
 	
 	function get(sType,sObjectId,fH){
 		var o = getFromCache(sType, "GET", sObjectId);
@@ -850,6 +853,7 @@
 		principal : getPrincipal,
 		anonymous : getDocumentControl,
 		entitlements : listEntitlementsForType,
+		newJWTForType : newJWTForType,
 		configureCommunityTraits : configureCommunityTraits,
 		configureCommunityCountryInfo : configureCommunityCountryInfo,
 		configureCommunityAdmin1Codes : configureCommunityAdmin1Codes,

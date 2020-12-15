@@ -15,6 +15,7 @@
 			<input rid = "userStatus" type = "text" class = "rocket-text" disabled = "true" bind = "${bean.rocketType}" />
 		</p>
 	</div>
+
 	<div class = "rocket-column-2" rid = "apiCredentialContainer" style = "display: none;">
 		<p>
 			API Credential:
@@ -31,6 +32,7 @@
 			<input type = "button" class = "rocket-button" value = "Reset Credential" onclick = "${this}.resetCredential()" />
 		</p>
 	</div>
+	<import-xml src = "/AccountManagerService/Forms/JWTPicker.xml" id = "JWTPicker" />
 	<import-xml src = "/AccountManagerService/Forms/ContactInformation.xml" id = "ContactInformation" />
 	
 	<embedded-script><![CDATA[

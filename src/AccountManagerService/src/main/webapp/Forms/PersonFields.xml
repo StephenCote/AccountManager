@@ -84,7 +84,7 @@
 			</select>
 		</p>
 	</div>
-
+	<import-xml src = "/AccountManagerService/Forms/JWTPicker.xml" id = "JWTPicker" />
 	<import-xml src = "/AccountManagerService/Forms/ContactInformation.xml" id = "ContactInformation" />
 	<div class = "rocket-column-2" rid = "partnerPicker" style = "display:none;">
 		<p rid = "partnerPickerTitle">
