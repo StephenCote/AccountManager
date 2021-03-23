@@ -601,7 +601,10 @@ public class PolicyService {
 			useRule.setRuleType(RuleEnumType.PERMIT);
 
 			PatternType pat = org.cote.accountmanager.data.services.PolicyService.getCreatePattern(owner,patternName,approveEntitlementParamFact.getUrn(),ownerEntitlementFact.getUrn(),pdir);
-			/// pat.setPatternType(PatternEnumType.APPROVAL);
+			if(pat == null) {
+				logger.warn("Failed to obtain pattern object");
+				return null;
+			}
 			pat.setPatternType(PatternEnumType.OPERATION);
 			pat.setOperationUrn(rgOp.getUrn());
 			((PatternFactory)Factories.getFactory(FactoryEnumType.PATTERN)).update(pat);

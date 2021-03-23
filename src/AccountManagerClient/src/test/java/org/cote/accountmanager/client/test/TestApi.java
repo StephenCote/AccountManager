@@ -28,7 +28,10 @@ import io.jsonwebtoken.Jwts;
 
 public class TestApi extends BaseClientTest {
 
-	
+	/// Note: Currently, the test expects the ClientReceiver user exists and is an account administrator in the /System organization
+	/// And, the configured communities (lifecycle) and projects exist
+	/// And, the test user exists
+	/// In other words: This test will fail if a) the service is not running, and b) the previous users don't exist
 	@Test
 	public void TestTokenIntrospection() {
 		String token = new String(testUserContext.getAuthenticationCredential().getCredential());

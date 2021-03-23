@@ -14,6 +14,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
 	</properties>
 
 	<build>
@@ -24,6 +25,7 @@
 					<artifactId>sonar-maven-plugin</artifactId>
 					<version>3.7.0.1746</version>
 				</plugin>
+
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -54,16 +56,20 @@
 				</dependencies>
 
 				<configuration>
-					<skipTests>false</skipTests>
-					<argLine>-Xmx4096m</argLine>
+					<skipTests>true</skipTests>
+					<argLine>-Xmx4096m ${argLine}</argLine>
 
 					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
 						<!-- 
-						<exclude>**/TestPolicyOperation.java</exclude>
+						 <exclude>**/TestPolicyService.java</exclude>
+						
 						 -->
+						 <exclude>**/TestPermissions.java</exclude>
+						
+						 <exclude>**/TestPolicyOperation.java</exclude>
 						 <exclude>**/TestDataService.java</exclude>
 						<exclude>**/TestAccessApproval.java</exclude>
 						<exclude>**/TestSoD.java</exclude>						
@@ -79,7 +85,7 @@
 						<exclude>**/TestDataAuthorization.java</exclude>
 						<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 						<exclude>**/TestKnowledgeBasedVerification.java</exclude>
-						<exclude>**/TestPermissions.java</exclude>
+						
 						<exclude>**/TestGroupAuthorization.java</exclude>
 						
 						<exclude>**/TestEffectiveAuthorization.java</exclude>
@@ -98,7 +104,7 @@
 
 						<exclude>**/TestTokenService.java</exclude>
 						<exclude>**/TestUrnUtil.java</exclude>
-						<exclude>**/TestPolicyService.java</exclude>
+
 						<exclude>**/TestAttributes.java</exclude>
 						<exclude>**/TestAuditFactory.java</exclude>
 						<exclude>**/TestUserRegistration.java</exclude>
@@ -137,6 +143,28 @@
 					</systemProperties>
 				</configuration>
 			</plugin>
+			<plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+              <version>0.8.6</version>
+		       <executions>
+		        <execution>
+		          <id>start-agent</id>
+		          <goals>
+		            <goal>prepare-agent</goal>
+		          </goals>
+		        </execution>
+		        <execution>
+		          <id>generate-report</id>
+		          <goals>
+		            <goal>report</goal>
+		          </goals>
+		          <configuration>
+		            <title>Coverage with JaCoCo</title>
+		          </configuration>
+		        </execution>
+		      </executions>
+          </plugin>
 		</plugins>
 		<testResources>
 			<testResource>

@@ -67,8 +67,9 @@
 					</includes>
 					<excludes>
 						<!-- NOTE: Most of these tests depend on external data that needs to be staged.  These need to be refactored -->
-						 
+
 						<exclude>**/TestJSON.java</exclude>
+
 						<exclude>**/TestMediaConverter.java</exclude>
 
 						<exclude>**/TestSecurityFactory.java</exclude>
@@ -79,9 +80,9 @@
 						<exclude>**/TestDataUtil.java</exclude>
 						
 						<exclude>**/TestAMCode.java</exclude>
-						
+						<!--
 						<exclude>**/TestText.java</exclude>
-						
+						-->
 						<exclude>**/TestWTPAType.java</exclude>
 						
 						<exclude>**/TestDataType.java</exclude>
@@ -95,6 +96,28 @@
     				</systemPropertyVariables>
     			</configuration>
 			</plugin>
+			<plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+              <version>0.8.6</version>
+		       <executions>
+		        <execution>
+		          <id>start-agent</id>
+		          <goals>
+		            <goal>prepare-agent</goal>
+		          </goals>
+		        </execution>
+		        <execution>
+		          <id>generate-report</id>
+		          <goals>
+		            <goal>report</goal>
+		          </goals>
+		          <configuration>
+		            <title>Coverage with JaCoCo</title>
+		          </configuration>
+		        </execution>
+		      </executions>
+          </plugin>
 		</plugins>
 	</build>
 	<dependencies>
