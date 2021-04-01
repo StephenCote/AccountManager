@@ -1026,7 +1026,26 @@ public class RocketCommunity implements ICommunityProvider {
 		if(permission == null) return false;
 		return enrollInCommunityProject(audit, adminUser, user, permission, communityId, projectId,false);
 	}
+	public boolean enrollAdminInCommunityProject(UserType adminUser, String userId, String communityId, String projectId){
 
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Enroll in community project admin roles",AuditEnumType.USER, adminUser.getUrn());
+		AuditService.targetAudit(audit, AuditEnumType.ROLE, "Admin roles");
+		UserType user = null;
+		BasePermissionType permission=null;
+		try {
+			user = ((UserFactory)Factories.getFactory(FactoryEnumType.USER)).getByObjectId(userId,adminUser.getOrganizationId());
+			if(user == null){
+				AuditService.denyResult(audit, "Invalid user id");
+				return false;
+			}
+			permission = AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP, adminUser.getOrganizationId());
+		} catch (FactoryException | ArgumentException e) {
+
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
+		if(permission == null) return false;
+		return enrollInCommunityProject(audit, adminUser, user, permission, communityId, projectId,true);
+	}
 	public boolean enrollReaderInCommunity(UserType adminUser, String userId, String communityId){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Enroll in community project reader roles",AuditEnumType.USER, adminUser.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.ROLE, "Reader roles");
@@ -1360,12 +1379,12 @@ public class RocketCommunity implements ICommunityProvider {
 		try {
 			LifecycleType lc = getLifecycle(audit, user, communityId);
 			if(lc == null){
-				logger.error("Failed to retrieve lifecycle");
+				logger.error("Failed to retrieve lifecycle " + communityId);
 				return false;
 			}
 			ProjectType proj = getProjectToChange(audit, user, projectId);
 			if(proj == null){
-				logger.error("Failed to retrieve project");
+				logger.error("Failed to retrieve project " + projectId);
 				return false;
 			}
 			
