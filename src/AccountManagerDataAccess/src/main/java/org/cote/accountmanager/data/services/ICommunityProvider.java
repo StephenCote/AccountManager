@@ -41,6 +41,8 @@ public interface ICommunityProvider {
 	public boolean enrollAdminInCommunities(UserType adminUser, String userId);
 	public boolean enrollAdminInCommunity(UserType adminUser, String communityId,String userId);
 	public boolean enrollReaderInCommunityProject(UserType adminUser, String userId, String communityId, String projectId);
+	public boolean enrollAdminInCommunityProject(UserType adminUser, String userId, String communityId, String projectId);
+
 	public boolean enrollReaderInCommunity(UserType adminUser, String userId, String communityId);
 	public boolean deleteCommunityProject(UserType adminUser, String projectId);
 	public boolean deleteCommunity(UserType adminUser, String communityId);

@@ -49,6 +49,7 @@ import org.cote.accountmanager.data.services.ICommunityProvider;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
@@ -63,7 +64,6 @@ import org.cote.propellant.objects.ProjectType;
 public class CommunityService {
 	
 	private static final Logger logger = LogManager.getLogger(CommunityService.class);
-	//protected static Set<AuditEnumType> parentType = new HashSet<>(Arrays.asList(AuditEnumType.GROUP, AuditEnumType.ROLE, AuditEnumType.PERMISSION));
 	private static SchemaBean schemaBean = null;
 	private static ICommunityProvider provider = null;
 
@@ -172,6 +172,18 @@ public class CommunityService {
 		ICommunityProvider cp = getProvider();
 		boolean enrolled = false;
 		if(cp != null) enrolled = cp.enrollAdminInCommunity(user, communityId, userId);
+		return Response.status(200).entity(enrolled).build();
+	}
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/enroll/admin/{userId:[0-9A-Za-z\\-]+}/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response enrollAdminInCommunityProject(@PathParam("userId") String userId, @PathParam("communityId") String communityId,  @PathParam("projectId") String projectId, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		boolean enrolled = false;
+		if(cp != null) enrolled = cp.enrollAdminInCommunityProject(user, userId, communityId, projectId);
 		return Response.status(200).entity(enrolled).build();
 	}
 	
@@ -487,6 +499,37 @@ public class CommunityService {
 			enrolled = cp.generateCommunityProjectApplication(user, communityId, projectId, appName, usePermissions, useGroups, seedSize, maxSize, distribution, context.getInitParameter("data.generator.dictionary"),context.getInitParameter("data.generator.names"));
 		}
 		return Response.status(200).entity(enrolled).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/application/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}/{appName: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getCommunityProjectApplication(@PathParam("communityId") String communityId, @PathParam("projectId") String projectId, @PathParam("appName") String appName, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		DirectoryGroupType app = null;
+		if(cp != null){
+			app = cp.getCommunityProjectApplication(user, communityId, projectId, appName);
+		}
+		return Response.status(200).entity(app).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/application/create/{communityId:[0-9A-Za-z\\-]+}/{projectId:[0-9A-Za-z\\-]+}/{appName: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response createCommunityProjectApplication(@PathParam("communityId") String communityId, @PathParam("projectId") String projectId, @PathParam("appName") String appName, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		ICommunityProvider cp = getProvider();
+		DirectoryGroupType app = null;
+		boolean created = false;
+		if(cp != null) {
+			created = cp.createCommunityProjectApplication(user, communityId, projectId, appName);
+		}
+		return Response.status(200).entity(created).build();
 	}
 	
 	@RolesAllowed({"admin","user"})

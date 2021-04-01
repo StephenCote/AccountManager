@@ -124,7 +124,7 @@ public class RoleFactory extends NameIdFactory {
 		}
 		BaseRoleType obj = (BaseRoleType)object;
 		if(obj.getParentId().compareTo(0L) == 0){
-			logger.warn("Root level role does not have a path");
+			logger.debug("Root level role does not have a path");
 			return;	
 		}
 		if(obj.getParentPath() != null) return;

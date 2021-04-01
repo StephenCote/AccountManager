@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.client.ClientContext;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -122,7 +123,7 @@ public class AM6Util {
 			}
 		}
 		else {
-			logger.warn("Received response: " + response.getStatus());
+			logger.warn("Received response: " + response.getStatus() + " for " + resource.getUri());
 		}
 		/// logger.info("Received entity: " + out_obj);
 		if(out_obj == null && cls.equals(Boolean.class)) out_obj = (T)Boolean.FALSE;
@@ -201,8 +202,29 @@ public class AM6Util {
 		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/configure");
 		return getEntity(context, cls, resource);
 	}
+	
+	public static <T> T enrollCommunitiesAdmin(ClientContext context, Class<T> cls, String userId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/enroll/admin/" + userId);
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T enrollCommunitiesReader(ClientContext context, Class<T> cls, String userId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/enroll/reader/" + userId);
+		return getEntity(context, cls, resource);
+	}
 	public static <T> T enrollCommunityAdmin(ClientContext context, Class<T> cls, String communityId, String userId) {
 		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/enroll/admin/" + communityId + "/" + userId);
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T enrollCommunityReader(ClientContext context, Class<T> cls, String communityId, String userId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/enroll/reader/" + communityId + "/" + userId);
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T enrollCommunityProjectAdmin(ClientContext context, Class<T> cls, String communityId, String projectId, String userId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/enroll/admin/" + communityId + "/" + projectId + "/" + userId);
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T enrollCommunityProjectReader(ClientContext context, Class<T> cls, String communityId, String projectId, String userId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/enroll/reader/" + communityId + "/" + projectId + "/" + userId);
 		return getEntity(context, cls, resource);
 	}
 	public static <T> T configureCommunityTraits(ClientContext context, Class<T> cls, String communityId) {
@@ -244,4 +266,48 @@ public class AM6Util {
 	public static String getEncodedPath(String path) {
 		return ("B64-" + BinaryUtil.toBase64Str(path)).replace("=","%3D");
 	}
+	public static <T> T getEntitlements(ClientContext context, Class<T> cls, String objectType, String objectId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + authZUri + "/" + objectType + "/entitlements/" + objectId);
+		return getEntity(context, cls, resource);
+	}
+	
+	public static <T> T getCommunityApplication(ClientContext context, Class<T> cls, String communityId, String projectId, String applicationName) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/application/" + communityId + "/" + projectId + "/" + applicationName.replace(" ", "%20"));
+		return getEntity(context, cls, resource);
+	}
+	public static <T> T createCommunityApplication(ClientContext context, Class<T> cls, String communityId, String projectId, String applicationName) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/application/create/" + communityId + "/" + projectId + "/" + applicationName.replace(" ", "%20"));
+		return getEntity(context, cls, resource);
+	}	
+	public static <T> T listCommunityRoles(ClientContext context, Class<T> cls) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/communityRoles");
+		return getEntity(context, cls, resource);
+	}	
+
+	public static <T> T listSystemRoles(ClientContext context, Class<T> cls) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + authZUri + "/systemRoles");
+		return getEntity(context, cls, resource);
+	}	
+	
+	public static <T> T permitSystem(ClientContext context, Class<T> cls, String sObjType, String sObjId, String sActType, String sActId, boolean view, boolean edit, boolean delete, boolean create) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + authZUri + "/" + sObjType + "/" + sObjId + "/permit/" + sActType + "/" + sActId + "/" + view + "/" + edit + "/" + delete + "/" + create);
+		return getEntity(context, cls, resource);
+	}
+	
+	public static <T> T permit(ClientContext context, Class<T> cls, String sObjType, String sObjId, String sActType, String sActId, String sPermId, boolean enable) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + authZUri + "/" + sObjType + "/" + sObjId + "/permit/" + sActType + "/" + sActId + "/" + sPermId + "/" + enable);
+		return getEntity(context, cls, resource);
+	}
+
+	public static <T> T listMembers(ClientContext context, Class<T> cls, String sObjType, String sObjId, String sActType) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + authZUri + "/" + sObjType + "/" + sObjId + "/permit/" + sActType);
+		return getEntity(context, cls, resource);
+	}
+
+	public static <T> T setMember(ClientContext context, Class<T> cls, String sObjType, String sObjId, String sActType, String sActId, boolean enable) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + authZUri + "/" + sObjType + "/" + sObjId + "/member/" + sActType + "/" + sActId + "/" + enable);
+		return getEntity(context, cls, resource);
+	}
+
+	
 }

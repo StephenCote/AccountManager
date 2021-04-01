@@ -74,8 +74,13 @@ public class BaseClientTest{
 	private static String testUserName = null;
 	private static String testUserOrganization = null;
 	private static String testUserPassword = null;
+	
 	protected static String testCommunityName = null;
 	protected static String testProjectName = null;
+	protected static String testApplication1Name = null;
+	protected static String testPerson1Name = null;
+	protected static String testAccount1Name = null;
+	protected static String testAccountGroup1Name = null;
 	protected static UserType adminUser = null;
 	protected static ClientContext testAdminContext = null;
 	protected static UserType testUser = null;
@@ -115,6 +120,10 @@ public class BaseClientTest{
 		testAdminPassword = testProperties.getProperty("test.admin.password");
 		testCommunityName = testProperties.getProperty("test.community.name");
 		testProjectName = testProperties.getProperty("test.project.name");
+		testApplication1Name = testProperties.getProperty("test.application1.name");
+		testAccount1Name = testProperties.getProperty("test.account1.name");
+		testAccountGroup1Name = testProperties.getProperty("test.accountgroup1.name");
+		testPerson1Name = testProperties.getProperty("test.person1.name");
 		testUserContext = new ClientContext();
 		testAdminContext = new ClientContext();
 		serviceUrl = testProperties.getProperty("service.url");

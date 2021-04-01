@@ -94,6 +94,7 @@
 			var oI = this.getMembersList().getActiveItem();
 			if(oI){
 				if(oI.data){
+					var v = oI.data;
 					var o = this.getBean("rocketType");
 					var ctl = this;
 					AM6Client.member("ROLE",o.objectId,v.nameType,v.objectId,false,function(s1, v1){

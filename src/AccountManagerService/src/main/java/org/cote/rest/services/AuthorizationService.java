@@ -58,6 +58,7 @@ import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
@@ -224,7 +225,7 @@ public class AuthorizationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@RolesAllowed({"admin","user"})
-	public Response listForType(@PathParam("type") String objectType,@PathParam("objectId") String objectId,@Context HttpServletRequest request){
+	public Response listUserRolesForType(@PathParam("type") String objectType,@PathParam("objectId") String objectId,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
 		UserType targUser = null;
 		if(objectId == null || objectId.length() == 0 || objectId.equalsIgnoreCase("null")) objectId = user.getObjectId();
@@ -236,5 +237,18 @@ public class AuthorizationService {
 		List<Object> objs = BaseService.listForMember(AuditEnumType.ROLE, user, targUser, FactoryEnumType.USER);
 		return Response.status(200).entity(objs).build();
 	}
-
+	
+	@GET @Path("/entitlements/{objectId:[0-9A-Za-z\\\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"admin","user"})
+	public Response listEntitlementsForMemberType(@PathParam("type") String objectType,@PathParam("objectId") String objectId,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		NameIdType obj = BaseService.readByObjectId(AuditEnumType.fromValue(objectType), objectId, user);
+		if(obj == null) {
+			logger.error(objectType + " " + objectId + " was not accessible or does not exist");
+			return Response.status(200).entity(new ArrayList<EntitlementType>()).build();
+		}
+		return Response.status(200).entity(BaseService.aggregateEntitlementsForMember(user, obj)).build();
+	}
 }

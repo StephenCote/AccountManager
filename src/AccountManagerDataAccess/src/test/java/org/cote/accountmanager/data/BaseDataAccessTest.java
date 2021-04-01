@@ -759,10 +759,7 @@ public class BaseDataAccessTest{
 				}
 			}
 			if(acct != null) ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).populate(acct);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
