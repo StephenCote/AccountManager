@@ -13,11 +13,14 @@ import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.EntitlementType;
+import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.ProjectType;
 import org.junit.Test;
@@ -31,6 +34,8 @@ public class TestCommunityProjectAccess extends BaseClientTest {
 	
 	@Test
 	public void TestCommunityDataExport() {
+		
+		AM6Util.clearCache(testAdminContext, NameEnumType.UNKNOWN);
 		
 		assertNotNull("User context is null", testUserContext);
 		assertNotNull("User context is null", testAdminContext);
@@ -64,7 +69,6 @@ public class TestCommunityProjectAccess extends BaseClientTest {
 		assertNotNull("Test user should be able to read the project",checkP);
 		
 		String personPath = AM6Util.getEncodedPath(project.getGroupPath() + "/Persons");
-		logger.info("Looking for: " + personPath);
 		
 		DirectoryGroupType personDir = 	AM6Util.findObject(testUserContext, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", personPath);
 		assertNotNull("Person directory is null", personDir);
@@ -107,6 +111,12 @@ public class TestCommunityProjectAccess extends BaseClientTest {
 		assertNotNull("Person is null", per);
 
 		assertTrue("Expected to adopt", cc.adopt(per, account));
+		
+		BaseRoleType testRole = cc.getCreateProjectRole(testProjectName, RoleEnumType.PERSON, "Test Role 1");
+		assertNotNull("Role is null", testRole);
+		
+		BasePermissionType testPer = cc.getCreateApplicationPermission(testProjectName, testApplication1Name, "Test Per 2");
+		assertNotNull("Permission is null", testPer);
 
 		
 		/*

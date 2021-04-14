@@ -5,17 +5,25 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LifeCycle;
 import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.client.util.CacheUtil;
+import org.cote.accountmanager.exceptions.ArgumentException;
+import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
+import org.cote.accountmanager.objects.BasePermissionType;
+import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
+import org.cote.accountmanager.objects.types.PermissionEnumType;
+import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.util.JSONUtil;
 import org.cote.propellant.objects.LifecycleType;
 import org.cote.propellant.objects.ProjectType;
@@ -26,18 +34,24 @@ public class CommunityContext {
 	private String communityName = null;
 	private LifecycleType community = null;
 	private Map<String,ProjectType> projects = null;
+	private Map<String,Map<String,BaseRoleType>> roles = null;
 	private Map<String,Map<String,DirectoryGroupType>> applications = null;
 	private Map<String,Map<String,PersonType>> persons = null;
 	private Map<String,Map<String,AccountType>> accounts = null;
 	private Map<String,Map<String,BaseGroupType>> groups = null;
+	private Map<String,Map<String,BasePermissionType>> permissions = null;
+	private Map<String, Map<String,BasePermissionType>> appPermissionBases = null;
 	private ClientContext communityAdminContext = null;
 	private boolean initialized = false;
 	public CommunityContext(ClientContext adminContext) {
 		projects = new HashMap<>();
+		roles = new HashMap<>();
 		applications = new HashMap<>();
 		persons = new HashMap<>();
 		accounts = new HashMap<>();
 		groups = new HashMap<>();
+		permissions = new HashMap<>();
+		appPermissionBases = new HashMap<>();
 		communityAdminContext = adminContext;
 		
 	}
@@ -92,16 +106,81 @@ public class CommunityContext {
 
 
 	 */
+	public <T> T getCreateProjectRole(String projectName, RoleEnumType type, String name) {
+		T role = getProjectRole(projectName, type, name);
+		if(role != null) return role;
+		return createProjectRole(projectName, type, name);
+	}
+	public <T> T createProjectRole(String projectName, RoleEnumType type, String name) {
+		if(!initialized) {
+			logger.error("Community is not initialized");
+			return null;
+		}
+		ProjectType project  = getProject(projectName);
+		if(project == null) {
+			logger.error("Null project for " + projectName);
+			return null;
+		}
+		BaseRoleType parentRole = AM6Util.getCommunityProjectRoleBase(communityAdminContext, BaseRoleType.class,  project.getObjectId());
+		if(parentRole == null) {
+			logger.error("Failed to retrieve role base for project " + projectName);
+			return null;
+		}
+		BaseRoleType role = new BaseRoleType();
+		role.setName(name);
+		role.setRoleType(type);
+		role.setParentId(parentRole.getId());
+		//role.setParentPath(parentRole.getParentPath() + "/" + parentRole.getName());
+		role.setNameType(NameEnumType.ROLE);
+		boolean created = AM6Util.updateObject(communityAdminContext, Boolean.class, role);
+		if(!created) {
+			logger.error("Failed to create role " + name);
+			return null;
+		}
+		return getProjectRole(projectName, type, name);
+	}
+	public <T> T getProjectRole(String projectName, RoleEnumType type, String name){
+		if(!initialized) {
+			logger.error("Community is not initialized");
+			return null;
+		}
+
+		if(roles.containsKey(projectName) && roles.get(projectName).containsKey(name)) {
+			return (T)roles.get(projectName).get(name);
+		}
+		ProjectType project  = getProject(projectName);
+		if(project == null) {
+			logger.error("Null project for " + projectName);
+			return null;
+		}
+		BaseRoleType parentRole = AM6Util.getCommunityProjectRoleBase(communityAdminContext, BaseRoleType.class,  project.getObjectId());
+		if(parentRole == null) {
+			logger.error("Failed to retrieve role base for project " + projectName);
+			return null;
+		}
+
+		BaseRoleType role = AM6Util.getObjectByName(communityAdminContext, BaseRoleType.class, NameEnumType.ROLE, parentRole.getObjectId(), name, true);
+		if(role != null) {
+			if(!roles.containsKey(projectName)) roles.put(projectName, new HashMap<>());
+			roles.get(projectName).put(name, role);
+		}
+		return (T)role;
+	}
 	
 	public boolean adopt(PersonType person, AccountType account) {
 		boolean adopt = false;
+
+		if(!person.getPopulated()) {
+			logger.warn("Person object is not populated.  This will result in any unpopulated values being detached from this object.");
+			return false;
+		}
 		for(AccountType acct : person.getAccounts()) {
 			if(acct.getObjectId().contentEquals(account.getObjectId())) {
 				adopt = true;
 				break;
 			}
 		}
-		if(adopt) {
+		if(!adopt) {
 			person.getAccounts().add(account);
 			adopt = AM6Util.updateObject(communityAdminContext, Boolean.class, person);
 		}
@@ -214,6 +293,139 @@ public class CommunityContext {
 		return group;
 	}
 	
+	/// Bug - there seems to be a bug where the permission path (and I assume role path) is being emitted
+	/// within the factory find layer, behind the authorization, which can lead to an alternate permission branch being emitted with an UKNOWN type
+	/// Hence the manual path unwinding being done here for the moment.
+	public BasePermissionType getApplicationPermissionBase(String projectName, String applicationName) {
+		if(appPermissionBases.containsKey(projectName) && appPermissionBases.get(projectName).containsKey(applicationName)) {
+			return appPermissionBases.get(projectName).get(applicationName);
+		}
+		if(!appPermissionBases.containsKey(projectName)) appPermissionBases.put(projectName,new HashMap<>());
+		ProjectType project = getProject(projectName);
+		if(project == null) {
+			logger.error("Failed to find project " + projectName);
+			return null;
+		}
+		String cache_key = CacheUtil.getCacheKeyName("PERMISSION-" + communityName + "-" + projectName);
+		BasePermissionType per1 = CacheUtil.readCache(communityAdminContext, cache_key, BasePermissionType.class);
+		if(per1 == null) {
+			per1 = AM6Util.getCommunityProjectPermissionBase(communityAdminContext, BasePermissionType.class, project.getObjectId());
+		
+			if(per1 == null) {
+				logger.error("Failed to find project permission base for " + projectName);
+				return null;
+			}
+			CacheUtil.cache(communityAdminContext, cache_key, per1);
+		}
+		cache_key = CacheUtil.getCacheKeyName("PERMISSION-" + communityName + "-" + projectName + "-Applications");
+		BasePermissionType per2 = CacheUtil.readCache(communityAdminContext, cache_key, BasePermissionType.class);
+		if(per2 == null) {
+			per2 = AM6Util.getObjectByName(communityAdminContext, BasePermissionType.class, NameEnumType.PERMISSION, per1.getObjectId(), "Applications", true);
+			if(per2 == null) {
+				logger.error("Failed to find applications permission base within " + projectName);
+				return null;
+			}
+			CacheUtil.cache(communityAdminContext, cache_key, per2);
+		}
+		
+		cache_key = CacheUtil.getCacheKeyName("PERMISSION-" + communityName + "-" + projectName + "-Applications-" + applicationName);
+		BasePermissionType per = CacheUtil.readCache(communityAdminContext, cache_key, BasePermissionType.class);
+		if(per == null) {
+			per = AM6Util.getObjectByName(communityAdminContext, BasePermissionType.class, NameEnumType.PERMISSION, per2.getObjectId(), applicationName, true);
+			if(per == null) {
+				logger.error("Failed to find application permission base for " + applicationName);
+				return null;
+			}
+			CacheUtil.cache(communityAdminContext, cache_key, per);
+		}
+		if(per != null) {
+			appPermissionBases.get(projectName).put(applicationName,per);
+		}
+		return per;
+		
+		
+	}
+	public BasePermissionType getCreateApplicationPermission(String projectName, String applicationName, String permissionName) {
+		BasePermissionType per = getApplicationPermission(projectName, applicationName, permissionName);
+		if(per == null) per = createApplicationPermission(projectName, applicationName, permissionName);
+		return per;
+	}
+	public BasePermissionType createApplicationPermission(String projectName, String applicationName, String permissionName) {
+
+		if(!initialized) {
+			logger.error("Community is not initialized");
+			return null;
+		}	
+		ProjectType project  = getProject(projectName);
+		if(project == null) {
+			logger.error("Null project for " + projectName);
+			return null;
+		}
+		DirectoryGroupType app = getApplication(projectName, applicationName);
+		if(app == null) {
+			logger.error("Null or inaccessible application '" + applicationName + "'");
+			return null;
+		}
+		/// BasePermissionType per = AM6Util.findObject(communityAdminContext, BasePermissionType.class, NameEnumType.PERMISSION, "UNKNOWN", app.getPath());
+		BasePermissionType per = getApplicationPermissionBase(projectName, applicationName);
+		
+		if(per == null) {
+			logger.error("Failed to find application base permission");
+			return null;
+		}
+		logger.info("********** Parent: " + per.getParentPath());
+		BasePermissionType newPer = new BasePermissionType();
+		newPer.setParentId(per.getId());
+		newPer.setParentPath(per.getParentPath() + "/" + per.getName());
+		newPer.setNameType(NameEnumType.PERMISSION);
+		newPer.setPermissionType(PermissionEnumType.APPLICATION);
+
+		newPer.setName(permissionName);
+
+		boolean created = AM6Util.updateObject(communityAdminContext, Boolean.class, newPer);
+		if(!created) {
+			logger.error("Failed to created community project application permission '" + permissionName + "'");
+			return null;
+		}
+		return getApplicationPermission(projectName, applicationName, permissionName);
+	}
+	public BasePermissionType getApplicationPermission(String projectName, String applicationName, String permissionName) {
+		if(!initialized) {
+			logger.error("Community is not initialized");
+			return null;
+		}
+		ProjectType project  = getProject(projectName);
+		if(project == null) {
+			logger.error("Null project for " + projectName);
+			return null;
+		}
+		DirectoryGroupType application = getApplication(projectName, applicationName);
+		if(application == null) {
+			logger.error("Application is null or not accessible");
+			return null;
+		}
+		String appObjId = application.getObjectId();
+		if(permissions.containsKey(appObjId) && permissions.get(appObjId).containsKey(permissionName)) {
+			return permissions.get(appObjId).get(permissionName);
+		}
+		
+		/// BasePermissionType permission = AM6Util.findObject(communityAdminContext, BasePermissionType.class, NameEnumType.PERMISSION, "APPLICATION", application.getPath() + "/" + permissionName);
+		String cacheKey = CacheUtil.getCacheKeyName("PERMISSION-" + communityName + "-" + projectName + "-" + applicationName + "-" + permissionName);
+		BasePermissionType permission = CacheUtil.readCache(communityAdminContext, cacheKey, BasePermissionType.class);
+		if(permission == null) {
+			BasePermissionType per = getApplicationPermissionBase(projectName, applicationName);
+			permission = AM6Util.getObjectByName(communityAdminContext, BasePermissionType.class, NameEnumType.PERMISSION, per.getObjectId(), permissionName, true);
+			if(permission != null) {
+				CacheUtil.cache(communityAdminContext, cacheKey, permission);
+			}
+		}
+		if(permission != null) {
+			if(!permissions.containsKey(appObjId)) permissions.put(appObjId,new HashMap<>());
+			permissions.get(appObjId).put(permissionName,permission);
+		}
+		return permission;
+	}
+	
 	public PersonType getCreatePerson(String projectName, String personName) {
 		PersonType per = getPerson(projectName, personName);
 		if(per == null) per = createPerson(projectName, personName);
@@ -303,16 +515,24 @@ public class CommunityContext {
 		if(applications.containsKey(projectName) && applications.get(projectName).containsKey(applicationName)) {
 			return applications.get(projectName).get(applicationName);
 		}
-		ProjectType proj = getProject(projectName);
-		if(proj == null) {
-			logger.error("Null or inaccessible project '" + projectName + "'");
-			return null;
-		}
+
 		if(applicationName == null) {
 			logger.error("Null application name");
 			return null;
 		}
-		DirectoryGroupType appDir = AM6Util.getCommunityApplication(communityAdminContext, DirectoryGroupType.class, communityId, proj.getObjectId(), applicationName);
+		String cacheKey = CacheUtil.getCacheKeyName("GROUP-" + communityName + "-" + projectName + "-Applications-" + applicationName);
+		DirectoryGroupType appDir = CacheUtil.readCache(communityAdminContext, cacheKey, DirectoryGroupType.class);
+		if(appDir == null) {
+			ProjectType proj = getProject(projectName);
+			if(proj == null) {
+				logger.error("Null or inaccessible project '" + projectName + "'");
+				return null;
+			}
+			appDir = AM6Util.getCommunityApplication(communityAdminContext, DirectoryGroupType.class, communityId, proj.getObjectId(), applicationName);
+			if(appDir != null) {
+				CacheUtil.cache(communityAdminContext, cacheKey, appDir);
+			}
+		}
 		if(appDir != null) {
 			if(!applications.containsKey(projectName)) applications.put(projectName,new HashMap<>());
 			applications.get(projectName).put(applicationName,appDir);
@@ -344,12 +564,21 @@ public class CommunityContext {
 		if(projects.containsKey(projectName)) {
 			return projects.get(projectName);
 		}
-		ProjectType lt = AM6Util.findCommunityProject(communityAdminContext, ProjectType.class, communityName, projectName);
+		String cacheKey = CacheUtil.getCacheKeyName("PROJECT-" + communityName + "-" + projectName);
+		ProjectType lt = CacheUtil.readCache(communityAdminContext, cacheKey, ProjectType.class);
 		if(lt == null) {
-			logger.error("Project '" + projectName + "' was not accessible or does not exist");
-			return null;
+			lt = AM6Util.findCommunityProject(communityAdminContext, ProjectType.class, communityName, projectName);
+		
+			if(lt == null) {
+				logger.error("Project '" + projectName + "' was not accessible or does not exist");
+				return null;
+			}
+			CacheUtil.cache(communityAdminContext, cacheKey, lt);
 		}
-		projects.put(projectName, lt);
+		if(lt != null) {
+			projects.put(projectName, lt);
+		}
+		
 		return lt;
 	}
 	public boolean initialize() {
@@ -364,8 +593,15 @@ public class CommunityContext {
 			return true;
 		}
 		// clearCache();
-		community = AM6Util.findCommunity(communityAdminContext, LifecycleType.class, communityName);
-		//community = AM6Util.getObject(communityAdminContext, LifecycleType.class, NameEnumType.LIFECYCLE, communityId);
+		String cacheKey = "LIFECYCLE-" + communityName;
+		community = CacheUtil.readCache(communityAdminContext, communityName, LifeCycle.class);
+		if(community == null) {
+			community = AM6Util.findCommunity(communityAdminContext, LifecycleType.class, communityName);
+			if(community != null) {
+				CacheUtil.cache(communityAdminContext, cacheKey, community); 
+			}
+			//community = AM6Util.getObject(communityAdminContext, LifecycleType.class, NameEnumType.LIFECYCLE, communityId);
+		}
 		if(community != null) {
 			outBool = true;
 			communityId = community.getObjectId();

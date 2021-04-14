@@ -42,7 +42,7 @@ public class AM6Util {
 	}
 
 	
-	private static <T> T makeFind(ClientContext context, Class<T> cls, NameEnumType nameType, String objectType, String path, boolean make) {
+	public static <T> T makeFind(ClientContext context, Class<T> cls, NameEnumType nameType, String objectType, String path, boolean make) {
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + (make ? makeUri : searchUri) + "/" + nameType.toString() + "/" + (objectType != null ? objectType : "UNKNOWN") + "/" + path.replace(" ", "%20"));
 		return getEntity(context, cls,webResource);
 	}
@@ -279,6 +279,16 @@ public class AM6Util {
 		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/application/create/" + communityId + "/" + projectId + "/" + applicationName.replace(" ", "%20"));
 		return getEntity(context, cls, resource);
 	}	
+	public static <T> T getCommunityProjectRoleBase(ClientContext context, Class<T> cls, String projectId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/role/base/" + projectId);
+		return getEntity(context, cls, resource);
+	}
+	
+	public static <T> T getCommunityProjectPermissionBase(ClientContext context, Class<T> cls, String projectId) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/permission/base/" + projectId);
+		return getEntity(context, cls, resource);
+	}
+	
 	public static <T> T listCommunityRoles(ClientContext context, Class<T> cls) {
 		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + commUri + "/communityRoles");
 		return getEntity(context, cls, resource);
