@@ -349,11 +349,13 @@ public class MimeUtil {
 		types.put("mp2","video/x-mpeg");
 		types.put("mp2","video/x-mpeq2a");
 		types.put("mp3","audio/mpeg3");
+		/*
 		types.put("mp3","audio/x-mpeg-3");
 		types.put("mp3","video/mpeg");
 		types.put("mp3","video/x-mpeg");
+		*/
 		types.put("mpa","audio/mpeg");
-		types.put("mpa","video/mpeg");
+		/// types.put("mpa","video/mpeg");
 		types.put("mpc","application/x-project");
 		types.put("mpe","video/mpeg");
 		types.put("mpeg","video/mpeg");
