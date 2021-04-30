@@ -23,20 +23,31 @@
  *******************************************************************************/
 package org.cote.servlets;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.services.TypeSanitizer;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DataType;
@@ -46,8 +57,10 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.util.DataUtil;
+import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.MimeUtil;
 import org.cote.accountmanager.util.StreamUtil;
+
 
 /**
  * Servlet implementation class MediaFormServlet
@@ -75,7 +88,7 @@ public class MediaFormServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+
 		boolean bBit = false;
 		
 		// Create a new file upload handler
@@ -90,11 +103,12 @@ public class MediaFormServlet extends HttpServlet {
 		long id = 0;
 		byte[] data = new byte[0];
 		
+		boolean useAutoPointer = false;
 		
 		// Parse the request
 		try{
 			FileItemIterator iter = upload.getItemIterator(request);
-			
+
 			while (iter.hasNext()) {
 			    FileItemStream item = iter.next();
 
@@ -123,7 +137,37 @@ public class MediaFormServlet extends HttpServlet {
 			    		id = Long.parseLong(Streams.asString(stream));
 			    	}
 			    } else {
-			        data = StreamUtil.getStreamBytes(stream);
+			    	
+			    	if(BaseService.isAutoDataPointers() && BaseService.getAutoDataPointersPath() != null) {
+			    		logger.info("Caching data to determine auto pointer...");
+			    		String cachePath = BaseService.getAutoDataPointersPath() + orgPath + "/DATA" + groupPath;
+			    		boolean pathExists = (new File(cachePath)).exists();
+			    		//!Files.notExists(Paths.get(cachePath));
+			    		if(!pathExists && !FileUtil.makePath(cachePath)) {
+				    		logger.error("Failed to process path entry: " + pathExists + " : " + cachePath);
+				    		continue;
+				    	}
+				    	String fileName = cachePath + "/" + UUID.randomUUID().toString() + "-" + item.getName();
+				    	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName));
+			    		StreamUtil.copyStream(stream, bos);
+			    		bos.close();
+			    		
+			    		long fileSize = Files.size(Paths.get(fileName));
+			    		if(fileSize > BaseService.getAutoDataPointersThreshold()) {
+			    			logger.info("AUTO DATA POINTER: CACHE UPLOAD TO DISK: " + fileSize + " > " + BaseService.getAutoDataPointersThreshold());
+			    			useAutoPointer = true;
+			    			data = fileName.getBytes("UTF-8");
+			    		}
+			    		else {
+			    			File f = new File(fileName);
+			    			data = FileUtil.getFile(f);
+			    			f.delete();
+			    		}
+			    	}
+			    	else {
+			    		logger.info("Reading data from stream...");
+			    		data = StreamUtil.getStreamBytes(stream);
+			    	}
 			        mimeType = MimeUtil.getType(item.getName());
 			    }
 			}
@@ -132,7 +176,7 @@ public class MediaFormServlet extends HttpServlet {
 			logger.error(String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-
+		/*
 		logger.info("Media info:");
 		logger.info(name);
 		logger.info(description);
@@ -141,9 +185,10 @@ public class MediaFormServlet extends HttpServlet {
 		logger.info("Group id = " + groupId);
 		logger.info("Group path = " + groupPath);
 		logger.info("Data size = " + data.length);
+		*/
 		
 		UserType user = ServiceUtil.getUserFromSession(request);
-		if(user != null){
+		if(data.length > 0 && user != null){
 			try{
 				DataType newData = new org.cote.accountmanager.objects.DataType();
 				if(groupId > 0L) newData.setGroupId(groupId);
@@ -154,6 +199,12 @@ public class MediaFormServlet extends HttpServlet {
 				newData.setDescription(description);
 				newData.setMimeType(mimeType);
 				newData.setOrganizationPath(user.getOrganizationPath());
+				newData.setPointer(useAutoPointer);
+				if(useAutoPointer) {
+					String key = UUID.randomUUID().toString();
+					TypeSanitizer.addPointerKey(key);
+					newData.getAttributes().add(Factories.getAttributeFactory().newAttribute(newData, "autoPointerKey", key));
+				}
 				DataUtil.setValue(newData,  data);
 				bBit = BaseService.add(AuditEnumType.DATA, newData, request);
 			}
