@@ -185,7 +185,9 @@ public class RestServiceConfig extends ResourceConfig{
 			
 			BaseService.setEnableExtendedAttributes(Boolean.parseBoolean(context.getInitParameter("extended.attributes.enabled")));
 			BaseService.setAllowDataPointers(Boolean.parseBoolean(context.getInitParameter("data.pointers.enabled")));
-
+			BaseService.setAutoDataPointers(Boolean.parseBoolean(context.getInitParameter("data.pointers.auto")));
+			BaseService.setAutoDataPointersPath(context.getInitParameter("data.pointers.path"));
+			BaseService.setAutoDataPointersThreshold(Long.parseLong(context.getInitParameter("data.pointers.threshold")));
 			String roleAuth = context.getInitParameter("amauthrole");
 			if(roleAuth != null && roleAuth.length() > 0){
 				AM5LoginModule.setAuthenticatedRole(roleAuth);
