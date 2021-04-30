@@ -120,7 +120,6 @@ public class FileUtil {
 		if(!f.exists())
 			outBool = f.mkdirs();
 		else outBool = true;
-		
 		return outBool;
 	}
 	public static boolean emitFile(String path, byte[] contents){
