@@ -3,6 +3,8 @@ package org.cote.accountmanager.client.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +35,12 @@ public class TestVaultApi extends BaseClientTest {
 		assertTrue("Failed to delete vault " + vaultUrn, deleted);
 		
 		
+	}
+	
+	@Test
+	public void TestServiceFilePaths() {
+		String path = "c:/projects/datacache/Public/DATA/Home/steve/GalleryHome";
+		logger.info("Paths: " + !Files.notExists(Paths.get(path)));
 	}
 
 	
