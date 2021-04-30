@@ -42,6 +42,7 @@ import org.cote.accountmanager.client.ClientSigningKeyResolver;
 import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.client.util.AuthenticationUtil;
 import org.cote.accountmanager.client.util.CacheUtil;
+import org.cote.accountmanager.client.util.ClientUtil;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ApiClientConfigurationType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
@@ -126,7 +127,11 @@ public class BaseClientTest{
 		testPerson1Name = testProperties.getProperty("test.person1.name");
 		testUserContext = new ClientContext();
 		testAdminContext = new ClientContext();
-		serviceUrl = testProperties.getProperty("service.url");
+		String serviceBase = testProperties.getProperty("service.url.base");
+		String serviceApp = testProperties.getProperty("service.url.app");
+		ClientUtil.setServer(serviceBase);
+		ClientUtil.setAccountManagerApp(serviceApp);
+		serviceUrl = serviceBase + serviceApp;
 		serviceName = testProperties.getProperty("service.name");
 		
 		clientReceiverContext = new ClientContext();
