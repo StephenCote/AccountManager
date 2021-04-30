@@ -36,11 +36,29 @@ public class AM6Util {
 	private static String tokenUri = "/token";
 	private static String apprUri = "/approval";
 	private static String orgUri = "/organization";
+	private static String vaultUri = "/vault";
 	
 	public static <T> T make(ClientContext context, Class<T> cls, NameEnumType nameType, String objectType, String path) {
 		return makeFind(context, cls, nameType, objectType, path, true);
 	}
 
+	public static <T> T getVaultUrn(ClientContext context, Class <T> cls, String vaultName) {
+		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + vaultUri + "/" + vaultName.replace(" ", "%20"));
+		return getEntity(context, cls, webResource, MediaType.TEXT_PLAIN_TYPE, 200);
+	}
+	public static <T> T deleteVault(ClientContext context, Class <T> cls, String vaultUrn) {
+		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + vaultUri + "/" + vaultUrn);
+		return deleteEntity(context, cls, webResource);
+	}
+	public static <T> T listVaults(ClientContext context, Class<T> cls) {
+		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + vaultUri + "/list");
+		return getEntity(context, cls,webResource);
+	}	
+	
+	public static <T> T createVault(ClientContext context, Class<T> cls, String vaultName) {
+		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + vaultUri + "/create/" + vaultName.replace(" ", "%20"));
+		return getEntity(context, cls,webResource, MediaType.TEXT_PLAIN_TYPE, 200);
+	}
 	
 	public static <T> T makeFind(ClientContext context, Class<T> cls, NameEnumType nameType, String objectType, String path, boolean make) {
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + (make ? makeUri : searchUri) + "/" + nameType.toString() + "/" + (objectType != null ? objectType : "UNKNOWN") + "/" + path.replace(" ", "%20"));
