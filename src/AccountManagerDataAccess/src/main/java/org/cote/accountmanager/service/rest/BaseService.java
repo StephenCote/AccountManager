@@ -96,6 +96,9 @@ public class BaseService {
 	public static final Logger logger = LogManager.getLogger(BaseService.class);
 	private static boolean enableExtendedAttributes = false;
 	private static boolean allowDataPointers = false;
+	private static boolean autoDataPointers = false;
+	private static String autoDataPointersPath = null;
+	private static long autoDataPointersThreshold = 0;
 	
 	private BaseService(){
 		
@@ -110,6 +113,27 @@ public class BaseService {
 		allowDataPointers = b;
 	}
 
+	public static boolean isAutoDataPointers() {
+		return autoDataPointers;
+	}
+	public static void setAutoDataPointers(boolean autoDataPointers) {
+		BaseService.autoDataPointers = autoDataPointers;
+	}
+	public static String getAutoDataPointersPath() {
+		return autoDataPointersPath;
+	}
+	public static void setAutoDataPointersPath(String autoDataPointersPath) {
+		BaseService.autoDataPointersPath = autoDataPointersPath;
+	}
+	public static long getAutoDataPointersThreshold() {
+		return autoDataPointersThreshold;
+	}
+	public static void setAutoDataPointersThreshold(long autoDataPointersThreshold) {
+		BaseService.autoDataPointersThreshold = autoDataPointersThreshold;
+	}
+	public static boolean isAllowDataPointers() {
+		return allowDataPointers;
+	}
 	public static String getDefaultGroupName(AuditEnumType type){
 		String out_path = "~";
 		switch(type){
