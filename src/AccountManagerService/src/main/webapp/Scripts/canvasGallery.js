@@ -1073,6 +1073,7 @@
 			/// This may later use one of the libraries that can paint directly to canvas but at the moment no need to overcomplicate it
 			var bGif = (o.mimeType && o.mimeType.match(/(webp|gif)$/i));
 			var bVid = (!bGif && o.mimeType && o.mimeType.match(/^video/i));
+			var bAud = (!bGif && o.mimeType && o.mimeType.match(/(mpeg3|ogg)/i));
 			var vCont = galleryView.getCanvasController().getObjects().galleryContainer;
 			if(_o.video){
 				vCont.removeChild(_o.video);
@@ -1086,8 +1087,8 @@
 			/// Handle Video ....
 			var img, sH;
 
-			if(bVid){
-				var oV = document.createElement("video");
+			if(bVid || bAud) {
+				var oV = document.createElement((bVid ? "video" : "audio"));
 			    oV.setAttribute("style","position: absolute;");
 				
 				oV.setAttribute("class", "test");
