@@ -198,6 +198,23 @@
     <param-name>data.pointers.enabled</param-name>
     <param-value>true</param-value>
   </context-param>
+  
+   	<context-param>
+    <description>Auto Use of Data Pointers</description>
+    <param-name>data.pointers.auto</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <description>Auto Use of Data Pointer Threshold (bytes)</description>
+    <param-name>data.pointers.threshold</param-name>
+    <param-value>5242880</param-value>
+  </context-param>
+
+    <context-param>
+    <description>Default Data Pointer Location</description>
+    <param-name>data.pointers.path</param-name>
+    <param-value>c:/projects/datacache</param-value>
+  </context-param>
  	
  	<filter>
  <filter-name>ExpiresFilter</filter-name>
