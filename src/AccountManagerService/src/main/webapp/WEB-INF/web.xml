@@ -59,6 +59,16 @@
     <param-name>factories.community</param-name>
     <param-value>org.cote.rocket.RocketCommunity</param-value>
   </context-param>
+   <context-param>
+    <description>Vault Path</description>
+    <param-name>vault.path</param-name>
+    <param-value>c:/projects/vault/</param-value>
+  </context-param>
+     <context-param>
+    <description>Vault Credential Path</description>
+    <param-name>vault.credential.path</param-name>
+    <param-value>c:/projects/vault/credentials/</param-value>
+  </context-param>
   <!--
   <context-param>
   <description>Enable DB  Maintenance Thread</description>
@@ -88,7 +98,7 @@
   org.cote.accountmanager.data.services.SessionDataMaintenance,
   org.cote.rocket.services.ApplicationImportService
    -->
-  <param-value>org.cote.accountmanager.data.services.DatabaseMaintenance,org.cote.rocket.services.RocketDatabaseMaintenance,org.cote.accountmanager.data.services.DataImportJob,org.cote.accountmanager.data.services.QueueProcessorJob,org.cote.accountmanager.data.services.AuditDataMaintenance,org.cote.accountmanager.data.services.SessionDataMaintenance,org.cote.rocket.services.ApplicationImportService</param-value>
+  <param-value>org.cote.accountmanager.data.services.DataImportJob,org.cote.accountmanager.data.services.QueueProcessorJob,org.cote.accountmanager.data.services.AuditDataMaintenance,org.cote.accountmanager.data.services.SessionDataMaintenance,org.cote.rocket.services.ApplicationImportService</param-value>
   </context-param>
  	 <context-param>
     <description>Database Connection Type</description>
