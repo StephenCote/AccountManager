@@ -24,6 +24,8 @@
 package org.cote.accountmanager.data.services;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +56,7 @@ import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
 import org.cote.accountmanager.objects.ApproverType;
+import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
@@ -85,10 +88,13 @@ import org.cote.accountmanager.util.MimeUtil;
 public class TypeSanitizer implements ITypeSanitizer{
 	public static final Logger logger = LogManager.getLogger(TypeSanitizer.class);
 	private static final VaultService vaultService = new VaultService();
+	private static Set<String> pointerKeys = new HashSet<>();
 	public TypeSanitizer(){
 		
 	}
-	
+	public static void addPointerKey(String key) {
+		pointerKeys.add(key);
+	}
 	public <T> boolean usePostFetch(AuditEnumType type, T object){
 		return (type.equals(AuditEnumType.DATA));
 	}
@@ -130,8 +136,10 @@ public class TypeSanitizer implements ITypeSanitizer{
 					logger.error("Failed to encipher vault data");
 					return false;
 				}
-				if(data.getPointer()){
-					logger.error("Creating data pointers is forbidden for sanitized objects regardless of configuration");
+				/// && !popPointer(data)
+				///
+				if(data.getDetailsOnly() == false && data.getPointer()){
+					logger.error("Updating pointers is forbidden for sanitized objects regardless of configuration.  The data must be deleted and recreated.");
 					return false;
 				}
 				outBool = iFact.update(data);
@@ -445,6 +453,17 @@ public class TypeSanitizer implements ITypeSanitizer{
 				new_rec.setMimeType(rbean.getMimeType());
 				
 				new_rec.setRating(rbean.getRating());
+				if(rbean.getPointer()){
+					if(popPointer(rbean)) {
+						/// unset the pointer bit so only the pointer value is read, not the underlying value in the subsequent getValue call
+						new_rec.setPointer(true);
+						rbean.setPointer(false);
+					}
+					else {
+						logger.error("Creating data pointers is forbidden for sanitized objects regardless of configuration");
+						return null;
+					}
+				}
 				if(rbean.getVaulted() && rbean.getVaultId() != null){
 					rbean.setVaulted(false);
 					VaultBean vaultBean = vaultService.getVaultByUrn(user, rbean.getVaultId());
@@ -457,12 +476,10 @@ public class TypeSanitizer implements ITypeSanitizer{
 					}
 				}
 				else{
-					DataUtil.setValue(new_rec, DataUtil.getValue(rbean));
+					if(rbean.getPointer()) DataUtil.setValue(new_rec, rbean.getDataBytesStore());
+					else DataUtil.setValue(new_rec, DataUtil.getValue(rbean));
 				}
-				if(rbean.getPointer()){
-					logger.error("Creating data pointers is forbidden for sanitized objects regardless of configuration");
-					return null;
-				}
+
 				outObj = (T)new_rec;
 				break;
 			default:
@@ -470,5 +487,22 @@ public class TypeSanitizer implements ITypeSanitizer{
 				break;
 		}
 		return outObj;
+	}
+	
+	/// Check if the object set to use a pointer includes a key to permit its use
+	/// For example: This is set when auto pointer is enabled so that large file uploads are stored to persistant storage outside of the database
+	///
+	private static boolean popPointer(DataType data) {
+		boolean popped = false;
+		AttributeType keyAttr = Factories.getAttributeFactory().getAttributeByName(data, "autoPointerKey");
+		if(keyAttr != null) {
+			if(keyAttr.getValues().size() > 0 && pointerKeys.contains(keyAttr.getValues().get(0))) {
+				logger.info("Pointer permitted with key " + keyAttr.getValues().get(0) + ": " + data.getSize());
+				pointerKeys.remove(keyAttr.getValues().get(0));
+				popped = true;
+			}
+			data.getAttributes().remove(keyAttr);
+		}
+		return popped;
 	}
 }
