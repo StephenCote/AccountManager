@@ -147,7 +147,7 @@ public class MediaFormServlet extends HttpServlet {
 				    		logger.error("Failed to process path entry: " + pathExists + " : " + cachePath);
 				    		continue;
 				    	}
-				    	String fileName = cachePath + "/" + UUID.randomUUID().toString() + "-" + item.getName();
+				    	String fileName = cachePath + "/" + UUID.randomUUID().toString();
 				    	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName));
 			    		StreamUtil.copyStream(stream, bos);
 			    		bos.close();
