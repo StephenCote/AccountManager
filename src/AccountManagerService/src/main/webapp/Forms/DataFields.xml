@@ -9,7 +9,7 @@
 		</p>
 	</div>
 
-	<div class = "rocket-column-2">
+	<div rid = "descriptionCont" class = "rocket-column-2" style = "display:none;">
 		<p>
 			Description:
 		</p>
@@ -85,18 +85,16 @@
 	<textarea rid = "textDataFloat" style = "z-index:250;display:none;position:absolute;top:0px;left:0px;width:250px;height:250px;" onblur = "${this}.hideTextFloat()"></textarea>
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
-			var oSel = this.getElementByRID("mimeType");
+			var oSel = this.rid.mimeType;
 			if(oSel.selectedIndex == -1) oSel.value = "binary";
 			this.displayData();
 			this.changeDataType();
 
 			if(this.getProperties().autoDisplay){
 				this.loadDetailData();
-				/// this.getElementByRID("textData").focus();
 				this.showTextFloat();
 			}
 			this.updateURL();
-			//this.local_handle_resize = this.resizers;
 			
 		},
 		embedded_destroy : function(){
@@ -106,22 +104,20 @@
 			}
 		},
 		resizers : function(){
-			this.getElementByRID("textDataFloat").style.height = (this.getContainer().clientHeight - (this.getObjects().title_bar.offsetHeight + this.getObjects().status_bar.offsetHeight)) + "px";
-			this.getElementByRID("textDataFloat").style.width = "100%";
+			this.rid.textDataFloat.style.height = (this.getContainer().clientHeight - (this.getObjects().title_bar.offsetHeight + this.getObjects().status_bar.offsetHeight)) + "px";
+			this.rid.textDataFloat.style.width = "100%";
 		},
 		showTextFloat : function(){
-			this.getElementByRID("textDataFloat").style.top = (this.getObjects().title_bar ? this.getObjects().title_bar.offsetHeight + "px" : "0px");
-			// (this.getBody ? this.getBody().offsetTop + "px" : "0px");
-			// 
-			this.getElementByRID("textDataFloat").style.display = "block";
-			this.getElementByRID("textDataFloat").value = this.getElementByRID("textData").value;
-			this.getElementByRID("textDataFloat").focus();
+			this.rid.textDataFloat.style.top = (this.getObjects().title_bar ? this.getObjects().title_bar.offsetHeight + "px" : "0px");
+			this.rid.textDataFloat.style.display = "block";
+			this.rid.textDataFloat.value = this.rid.textData.value;
+			this.rid.textDataFloat.focus();
 			this.resizers();
 			
 		},
 		hideTextFloat : function(){
-			this.getElementByRID("textDataFloat").style.display = "none";
-			this.getElementByRID("textData").value = this.getElementByRID("textDataFloat").value;
+			this.rid.textDataFloat.style.display = "none";
+			this.rid.textData.value = this.rid.textDataFloat.value;
 		},
 
 		updateURL : function(){
@@ -133,43 +129,34 @@
 					location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "")
 					+ g_application_path + "media/" + AM6Client.dotPath(AM6Client.currentOrganization) + "/Data" + g + "/" + o.name
 				;
-				/*
-				var oC = this.getElementByRID("urlLabel");
-				Hemi.xml.removeChildren(oC);
-				var oA = document.createElement("a");
-				oA.setAttribute("target","_blank");
-				oA.setAttribute("href",sUrl);
-				oA.appendChild(document.createTextNode(o.groupPath + "/" + o.name));
-				oC.appendChild(oA);
-				*/
-				this.getElementByRID("urlText").value = sUrl;
+				this.rid.urlText.value = sUrl;
 				b = "block";
 			}
-			this.getElementByRID("urlContainer").style.display = b;
+			this.rid.urlContainer.style.display = b;
 		},
 		displayData : function(){
 			var o = this.getBean("rocketType");
 			if(o.id && o.detailsOnly) return;
 			
-			this.getElementByRID("textData").value = "";
+			this.rid.textData.value = "";
 			if(o.mimeType){
 				if(!o.mimeType.match(/^text\/plain$/gi) && !o.mimeType.match(/^application\/xml$/gi)){
-					var oSel = this.getElementByRID("mimeType");
+					var oSel = this.rid.mimeType;
 					oSel.options[oSel.options.length] = new Option(o.mimeType,o.mimeType);
 					oSel.value = o.mimeType;
 				}
 				if(o.mimeType.match(/^text/) && o.dataBytesStore){
-					this.getElementByRID("textData").value = uwm.base64Decode(o.dataBytesStore);
+					this.rid.textData.value = uwm.base64Decode(o.dataBytesStore);
 				}
 			}
 		},
-		isBinary : function(){ var v = this.getElementByRID("mimeType").value; return (v.match(/^binary$/) || v.match(/^image\//gi) || v.match(/^video\//gi)); },
+		isBinary : function(){ var v = this.rid.mimeType.value; return (v.match(/^binary$/) || v.match(/^image\//gi) || v.match(/^video\//gi)); },
 		addType : function(o){
 			Hemi.log("Add data type: " + o.name + ":" + o.mimeType);
 
 			var v = "";
 			if(o.mimeType && o.mimeType.match(/^text/)){
-				v = this.getElementByRID("textData").value;
+				v = this.rid.textData.value;
 				return AM6Client.update("DATA",o);
 			}
 			else if(this.isBinary()){
@@ -207,7 +194,6 @@
 		},
 		designData : function(){
 			var o = this.getBean("rocketType");
-			//if(!o.id) return;
 			if(o.detailsOnly){
 				this.loadDetailData();
 				o = this.getBean("rocketType");
@@ -218,8 +204,6 @@
 	            if (oW) {
 	            	oW.resizeTo(600, 400);
 	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
-	            	// Destroy the window when rd
-	            	//
 	            	oW.setHideOnClose(0);
 	            	this.Close();
 	            }
@@ -244,28 +228,25 @@
 	            if (oW) {
 	            	oW.resizeTo(475, 300);
 	            	Hemi.app.getWindowManager().then((oM)=>{oM.CenterWindow(oW);});;
-	            	// Destroy the window when closed
-	            	//
 	            	oW.setHideOnClose(0);
 	            }
             });
 		},
 		changeDataType : function(){
 			var o = this.getBean("rocketType");
-			var oSel = this.getElementByRID("mimeType");
+			var oSel = this.rid.mimeType;
 			
 			var bBin = this.isBinary();
-			//alert(bBin + "\n" + oSel.selectedIndex);
 			var bDet = (o.id && o.detailsOnly);
-			//this.getElementByRID("detailsOnlyContainer").style.display = (bDet ? "block" : "none");
+
 			/// Intentionally NOT allowing video to be loaded here
 			///
-			this.getElementByRID("loadBtn").disabled = (bDet && (!bBin || !o.mimeType.match(/^image/)) ? false : true);
-			this.getElementByRID("clearBtn").disabled = (!bDet ? true : false);
-			this.getElementByRID("binaryContainer").style.display = (!bDet && bBin ? "block" : "none");
-			this.getElementByRID("textContainer").style.display = (!bDet && !bBin ? "block" : "none");
-			this.getElementByRID("viewBtn").disabled = (bBin && (o.mimeType.match(/^image/) || o.mimeType.match(/^video/)) ? false : true);
-			this.getElementByRID("designBtn").disabled = (o.mimeType.match(/^text/) ? false : true);
+			this.rid.loadBtn.disabled = (bDet && (!bBin || !o.mimeType.match(/^image/)) ? false : true);
+			this.rid.clearBtn.disabled = (!bDet ? true : false);
+			this.rid.binaryContainer.style.display = (!bDet && bBin ? "block" : "none");
+			this.rid.textContainer.style.display = (!bDet && !bBin ? "block" : "none");
+			this.rid.viewBtn.disabled = (bBin && (o.mimeType.match(/^image/) || o.mimeType.match(/^video/)) ? false : true);
+			this.rid.designBtn.disabled = (o.mimeType.match(/^text/) ? false : true);
 			if(bBin) this.initFrame();
 		},
 		initFrame : function(){
@@ -284,7 +265,7 @@
 				this.getProperties().timeout = setTimeout("Hemi.registry.service.getObject('" + this.getObjectId() + "').setupFrame()",50);
 			}
 			else{
-				this.getElementByRID("mediaUploadFrame").style.display = "block";
+				this.rid.mediaUploadFrame.style.display = "block";
 				oF.document.location.href = "/AccountManagerService/Forms/MediaUpload.html";
 				this.probeFrame();
 			}
@@ -296,12 +277,12 @@
 					this.setStatus("Uploading ...");
 				}
 				else if(v.messages[0] == "fileChange"){
-					var sN = this.getElementByRID("name").value;
+					var sN = this.rid.name.value;
 					var sF = v.messages[1];
 					if(!sF || sF.length == 0) return;
 					sF = sF.replace(/\\/gi,"/");
 					sF = sF.substring(sF.lastIndexOf("/")+1,sF.length);
-					this.getElementByRID("name").value = sF;
+					this.rid.name.value = sF;
 				}
 			}
 		},
@@ -331,8 +312,7 @@
 			}
 		},
 		prepareSave : function(o){
-			///this.getElementByRID("endTime").className = "rocket-text";
-			///o.dataBytesStore = "";
+
 			/// For updating, if a detailed binary object is being saved, don't allow to save here - only allow through the uploader
 			/// therefore, save as detailsOnly
 			///
@@ -343,7 +323,7 @@
 					o.detailsOnly = true;
 				}
 				if(o.mimeType.match(/^text/)){
-					o.dataBytesStore = uwm.base64Encode(this.getElementByRID("textData").value);
+					o.dataBytesStore = uwm.base64Encode(this.rid.textData.value);
 				}
 			}
 			return 1;
