@@ -43,6 +43,7 @@ public class AMCodeUtil {
 		patterns.put(Pattern.compile("\\[/p(?:\\s*)\\]"), "</p>");
 		patterns.put(Pattern.compile("\\[p class=((.|\\n|\\r)*?)(?:\\s*)\\]"), "<p class=\"$1\">");
 		patterns.put(Pattern.compile("\\[div class=((.|\\n|\\r)*?)(?:\\s*)\\]"), "<div class=\"$1\">");
+		patterns.put(Pattern.compile("\\[div style=((.|\\n|\\r)*?)(?:\\s*)\\]"), "<div style=\"$1\">");
 		patterns.put(Pattern.compile("\\[/div(?:\\s*)\\]"), "</div>");
 		patterns.put(Pattern.compile("\\[div(?:\\s*)\\]"), "<div>");
 

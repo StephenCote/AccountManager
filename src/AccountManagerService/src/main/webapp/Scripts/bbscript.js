@@ -10,6 +10,7 @@ window.bbConverter = {
 		{exp:/\[div(?:\s*)\]((.|\n|\r)*?)\[\/div(?:\s*)\]/gi,replace:"<div>$1</div>"},
 		{exp:/\[p class=((.|\n|\r)*?)(?:\s*)\]((.|\n|\r)*?)\[\/p(?:\s*)\]/gi,replace:"<p class = \"$1\">$3</p>"},
 		{exp:/\[div class=((.|\n|\r)*?)(?:\s*)\]((.|\n|\r)*?)\[\/div(?:\s*)\]/gi,replace:"<div class = \"$1\">$3</div>"},
+		{exp:/\[div style=((.|\n|\r)*?)(?:\s*)\]((.|\n|\r)*?)\[\/div(?:\s*)\]/gi,replace:"<div style = \"$1\">$3</div>"},
 		{exp:/\[blockquote(?:\s*)\]((.|\n|\r)*?)\[\/blockquote(?:\s*)\]/gi,replace:"<blockquote>$1</blockquote>"},
 		{exp:/\[h1(?:\s*)\]((.|\n|\r)*?)\[\/h1(?:\s*)\]/gi,replace:"<h1>$1</h1>"},
 		{exp:/\[h2(?:\s*)\]((.|\n|\r)*?)\[\/h2(?:\s*)\]/gi,replace:"<h2>$1</h2>"},
@@ -114,7 +115,9 @@ window.bbConverter = {
 				/// Trash the default html designer class
 				///
 				if(sC && sC.match(/^p1$/)) sC = 0;
-				sStart = "[" + o.nodeName.toLowerCase() + (sC ? " class=" + sC :"") + "]";
+				var sS = o.getAttribute("style");
+
+				sStart = "[" + o.nodeName.toLowerCase() + (sC ? " class=" + sC :"") + (sS ? " style=" + sS: "") + "]";
 				sEnd = "[/" + o.nodeName.toLowerCase() + "]";
 				break;
 			default:
