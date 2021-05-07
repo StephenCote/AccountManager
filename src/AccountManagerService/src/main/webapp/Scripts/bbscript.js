@@ -29,13 +29,13 @@ window.bbConverter = {
 		{exp:/\[img class=((.|\n|\r)*?)(?:\s*)\]((.|\n|\r)*?)\[\/img(?:\s*)\]/gi,replace:"<img src=\"$3\" border=\"0\" class=\"$1\" alt=\"\" />"},
 		{exp:/\[img=((.|\n|\r)*?)x((.|\n|\r)*?)(?:\s*)\]((.|\n|\r)*?)\[\/img(?:\s*)\]/gi,replace:"<img width=\"$1\" height=\"$3\" src=\"$5\" border=\"0\" alt=\"\" />"}
 	],
-	copyInto : function(s, o){
+	copyInto : function(s, o, b){
 		var x = Hemi.xml.parseXmlDocument("<html-fragment>" + bbConverter.import(s) + "</html-fragment>");
 		if(!x || x.documentElement == null){
 			Hemi.logError("Failed to parse " + s);
 			return 0;
 		}
-		Hemi.xml.setInnerXHTML(o, x.documentElement);
+		Hemi.xml.setInnerXHTML(o, x.documentElement, b);
 		return 1;
 	},
 	import : function(s){

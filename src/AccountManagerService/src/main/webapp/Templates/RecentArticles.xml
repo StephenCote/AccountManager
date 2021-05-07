@@ -29,13 +29,19 @@
 								Hemi.xml.setInnerXHTML(ctl.getElementByRID("content"),"Error translating blog content");
 							}
 							else{
-								bbConverter.copyInto(uwm.base64Decode(v.json[0].dataBytesStore),ctl.getElementByRID("content"));
-								var aL = ctl.getElementByRID("content").getElementsByTagName("a");
-								for(var i = 0; i < aL.length;i++){
-									if(!aL[i].href || !aL[i].href.match(/\/AccountManagerService\/media/)) continue;
-									aL[i].onclick = function(){
-										uwm.openPopInImage(this.href);
-										return false;
+								for(var j = 0; j < v.json.length; j++){
+									var oCont = document.createElement("div");
+									oCont.setAttribute("style","clear:both");
+									ctl.getElementByRID("content").appendChild(oCont);
+									bbConverter.copyInto(uwm.base64Decode(v.json[j].dataBytesStore),oCont,(j > 0));
+									var aL = ctl.getElementByRID("content").getElementsByTagName("a");
+									
+									for(var i = 0; i < aL.length;i++){
+										if(!aL[i].href || !aL[i].href.match(/\/AccountManagerService\/media/)) continue;
+										aL[i].onclick = function(){
+											uwm.openPopInImage(this.href);
+											return false;
+										}
 									}
 								}
 							}
