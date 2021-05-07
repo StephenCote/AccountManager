@@ -54,16 +54,17 @@
 			var o = this.getBean("rocketType"), _s = this.getProperties(), o;
 			if(!this.setStatus) this.setStatus = this._setStatus;
 			Hemi.message.service.subscribe(this, "onchangecommunity", "refreshCommunity");
-			this.getElementByRID("debugCont").style.display = (uwm.debugMode ? "block" : "none");
-			this.getElementByRID("objectIdCont").style.display = (uwm.developerMode && o.objectId ? "block" : "none");
-			this.getElementByRID("pathCont").style.display = (uwm.developerMode && o.objectId ? "block" : "none");
+			this.rid.debugCont.style.display = (uwm.debugMode ? "block" : "none");
+			this.rid.objectIdCont.style.display = (uwm.developerMode && o.objectId ? "block" : "none");
+			this.rid.pathCont.style.display = (uwm.developerMode && o.objectId ? "block" : "none");
+			if(this.rid.descriptionCont) this.rid.descriptionCont.style.display = (uwm.showDescription ? "block" : "none");
 
 			this.setStatus("");
 			if(typeof _s.populate == "undefined") _s.populate = 1;
-			this.getElementByRID("name").focus();
+			this.rid.name.focus();
 			if(!_s.viewTypeName) _s.viewTypeName = _s.typeName;
 			if(this.setTitle) this.setTitle(_s.viewTypeName + " - " + (o.id ? o.name : "New"));
-			if(!o.id || !o.nameType.match(/^(group|role|permission|person|account|user|data|function|operation)$/gi)) this.getElementByRID("btnFact").style.display = "none";
+			if(!o.id || !o.nameType.match(/^(group|role|permission|person|account|user|data|function|operation)$/gi)) this.rid.btnFact.style.display = "none";
 			if(this.resizeTo && this.getBody){
 				if(this.getBody().scrollHeight > this.getBody().offsetHeight){
 					var iH = this.getBody().scrollHeight + 50;
@@ -76,9 +77,6 @@
 			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver){
 				o.parentResolver(this);
 			}
-			else{
-				//Hemi.log("DON'T CALL PARENT because " + _s.openerId + " : " + (o ? (typeof o.parentResolver) : ""));
-			}
 		},
 		template_destroy : function(){
 			Hemi.message.service.unsubscribe(this, "onchangecommunity", "refreshCommunity");
@@ -88,15 +86,16 @@
 			if(this.provideClose) this.provideClose(this,o);
 			else if(this.Close) this.Close();
 		},
+		
+		/// Empty placeholder cited by message subscription - may be overridden by any template inheriting from this one
+		///
 		refreshCommunity : function(s, v){
-			//this.getElementByRID("path").placeholder = uwm.getPathForType(this.getProperties().typeName,"~/" + this.getProperties().typeName + "s");
+
 		},
 		embedded_init : function(){
-
 			
 		},
 		parentResolver : function(v){
-
 			var _s = this.getProperties();
 			if(this.resolve) this.resolve(v);
 			if(_s.openerId && (o = Hemi.registry.service.getObject(_s.openerId)) && o.parentResolver) o.parentResolver(v);
@@ -104,13 +103,13 @@
 		saveType : function(){
 			this.synchronizeForm();
 			var o = this.getBean("rocketType"),_s = this.getProperties();
-			this.getElementByRID("path").className = "rocket-text";
-			this.getElementByRID("endTime").className = "rocket-text";
-			this.getElementByRID("name").className = "rocket-text";
+			this.rid.path.className = "rocket-text";
+			this.rid.endTime.className = "rocket-text";
+			this.rid.name.className = "rocket-text";
 			this.setStatus("");
 
 			if(!this.validateForPattern("name","not-empty")){
-				this.getElementByRID("name").className = "rocket-text rocket-text-error";
+				this.rid.name.className = "rocket-text rocket-text-error";
 				this.setStatus("Name cannot be empty");
 				return;
 			}
@@ -136,7 +135,6 @@
 					var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
 					if(oOpener && oOpener[_s.provideSave]) oOpener[_s.provideSave](this,o);
 				}
-				/// if(this.Close) this.Close();
 				this.closeObject();
 				return;
 			}
@@ -185,21 +183,15 @@
 				this.clearBean("rocketType");
 				this.setBean(n,"rocketType");
 			}
-			///Hemi.log("Refresh form for id #" + n.id);
+
 			this.synchronizeForm(1);
-			///if(this.getProperties().picker){
-				var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
-				if(oOpener && oOpener.refreshList) oOpener.refreshList();
-				///if(oOpener["refresh" + this.getProperties().typeName + "sList"]) oOpener["refresh" + this.getProperties().typeName + "sList"]();
-				/// if(this.Close) this.Close();
-				this.closeObject();
-			///}
-			///this.loadTemplate("/AccountManagerService/Forms/BaseTemplate.xml");
-		
+			var oOpener = Hemi.registry.service.getObject(this.getProperties().openerId);
+			if(oOpener && oOpener.refreshList) oOpener.refreshList();
+			this.closeObject();
 		},
 
 		getPath : function(){
-			var o = this.getElementByRID("path"), s;
+			var o = this.rid.path, s;
 			if(!(s = o.value).length){
 				s = o.placeholder;
 				if(!s) s = "~/" + this.getProperties().typeName + "s";
@@ -208,7 +200,7 @@
 		},
 
 		_setStatus : function(s){
-			Hemi.xml.setInnerXHTML(this.getElementByRID("status"),s);
+			Hemi.xml.setInnerXHTML(this.rid.status,s);
 		}
 	]]></embedded-script>
 </html-fragment>
