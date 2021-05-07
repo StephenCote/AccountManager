@@ -25,8 +25,9 @@
 	
 	if(!window.uwm){
 		window.uwm = {
-			developerMode : 1,	
-			debugMode : 1,
+			developerMode : 0,	
+			debugMode : 0,
+			showDescription : 0,
 			createContent : function(i, u, f){
 				var o = document.getElementById(i);
 				var ai = Hemi.GetSpecifiedAttribute(o, "acrid");
