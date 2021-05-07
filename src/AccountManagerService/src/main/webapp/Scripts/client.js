@@ -25,6 +25,7 @@
 	
 	if(!window.uwm){
 		window.uwm = {
+			consoleMode : 0,
 			developerMode : 0,	
 			debugMode : 0,
 			showDescription : 0,

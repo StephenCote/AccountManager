@@ -12,47 +12,31 @@
    			var g_application_path = "/AccountManagerService/";
    			</script>
         <script type = "text/javascript" src = "/AccountManagerService/Scripts/bootstrap.jsp"></script>
-        <script type = "text/javascript" src = "/AccountManagerService/Scripts/console.js"></script>
-        <script type = "text/javascript" src = "/AccountManagerService/Scripts/console.commands.js"></script>
+
    		<script type = "text/javascript">
 			irocket.setCommunityMode(false);
+			uwm.consoleMode = 1;
 
    		</script>
    		
    		<style type = "text/css">
-   		.console-history {
-   			font: 10pt Courier #000000;
-   			height:400px;
-
-   		}
-   		input.console-text {
-   			font: 10pt Courier #000000;
-   			border-width: 0px;
-   			width: 80%;
-   		}
-   		input.console-text:focus {
-   			outline : none;
-   		}
-   		span.prompt{
-   			font: 10pt Courier #000000;
-   			margin-right: .2em;
-   			
-   		}
    		.command {
-   			padding-top: 2em;
+   			/*padding-top: 2em;*/
    		}
-   		
+   		.main-header h1{
+   			margin: 0px;
+   		}
+   		.content {
+   			margin: 0px;
+   			padding: 0px;
+   		}
    		</style>
     </head>
     <body>
-   
-      
-
   <header class="main-header">
     <h1>Account Manager Service</h1>
     <div template = "/AccountManagerService/Forms/UnauthIn.xml"></div>
   </header>
-  
   <div id = "contentContainer" class="content">
   	<div class = "uwm-box-border">
 	  	<div class = "console-history" component = "wideselect" id = "typelist">
@@ -60,9 +44,5 @@
 		<div id = "commandContainer" class = "command"><span id = "prompt" class = "prompt">Anonymous:$</span><input class = "console-text" type = "text" id = "commandLine" /></div>
 	</div>
   </div>
-
- 
-
-
     </body>
 </html>

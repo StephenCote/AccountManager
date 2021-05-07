@@ -10,7 +10,7 @@
 			<br />
 			<span style = "padding-left:10px;padding-top:10px;color:#76933c;" onclick = "${this}.chooseProfileText()">Choose</span> | <span style = "padding-left:10px;padding-top:10px;color:#76933c;" onclick = "${this}.openProfileText()">Edit</span>
 		</p>
-		<div style = "float:left;" rid = "txtProfile">
+		<div style = "margin-left:150px;" rid = "txtProfile">
 			[ Profile ]
 			<br />
 		</div>
@@ -19,11 +19,11 @@
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
-				this.getElementByRID("btnProfile").onmouseover = function(e){
+				this.rid.btnProfile.onmouseover = function(e){
 					var o = Hemi.event.getEventSource(e);
 					o.style.border = "1px solid #00FF00";
 				};
-				this.getElementByRID("btnProfile").onmouseout = function(e){
+				this.rid.btnProfile.onmouseout = function(e){
 					var o = Hemi.event.getEventSource(e);
 					o.style.borderColor = "transparent";
 				};
@@ -67,7 +67,7 @@
 				    		Hemi.logWarning("Invalid object in client handler: " + s + " / " + v);
 				    		return;
 				    	}
-				    	Hemi.xml.setInnerXHTML(ctl.getElementByRID("profileName"), oP.name);
+				    	Hemi.xml.setInnerXHTML(ctl.rid.profileName, oP.name);
 				    	ctl.getObjects().profile = oP;
 				    	var sPid = AM6Client.getAttributeValue(oP,"v1-profile",0);
 				    	var sTid = AM6Client.getAttributeValue(oP,"v1-profile-text",0);
@@ -84,7 +84,7 @@
 						    	var oG = o.groupPath;
 								var sOrg = AM6Client.dotPath(o.organizationPath);
 								var sThumbUrl = "/AccountManagerService/thumbnail/" + sOrg + "/Data" + oG + "/" + o.name + "/100x100";
-								var oImg = ctl.getElementByRID("btnProfile");
+								var oImg = ctl.rid.btnProfile;
 								oImg.removeAttribute("width");
 								oImg.removeAttribute("height");
 								oImg.src = sThumbUrl;
@@ -98,8 +98,8 @@
 						    	}
 						    	var o = v;
 						    	ctl.getObjects().profileText = o;
-						    	bbConverter.copyInto(bbConverter.import(uwm.base64Decode(o.dataBytesStore)), ctl.getElementByRID("txtProfile"));
-								uwm.decorateLinkToPopIn(ctl.getElementByRID("txtProfile"));
+						    	bbConverter.copyInto(bbConverter.import(uwm.base64Decode(o.dataBytesStore)), ctl.rid.txtProfile);
+								uwm.decorateLinkToPopIn(ctl.rid.txtProfile);
 							});
 						}
 					});

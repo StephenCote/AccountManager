@@ -1,9 +1,15 @@
 (function(){
+	
 	uwm.addPageLoadHandler(function(){
-		
-		amc.getObjects().promise.then(()=>{
+		if(uwm.consoleMode && window.amc){
+			addCommands(window.amc);
+		}
+	});
+	
+	function addCommands(oShell){
+		oShell.getObjects().promise.then(()=>{
 			
-			amc.addCommand("cd", function(s){
+			oShell.addCommand("cd", function(s){
 				var _s = this.getProperties(), _o = this.getObjects();
 				if(!s || s.length == 0){
 					this.addLine("Invalid argument");
@@ -24,11 +30,11 @@
 					_s.currentPath = oG.path;
 					_o.currentGroup = oG;
 					this.processCommand("ls -hide", 1);
-					Hemi.message.service.publish("onchangedirectory", amc);
+					Hemi.message.service.publish("onchangedirectory", oShell);
 				}
 				
 			});
-			amc.addCommand("login", function(){
+			oShell.addCommand("login", function(){
 				if(arguments.length < 2){
 					this.addLine("Syntax: login [/Organization] username password");
 					return;
@@ -53,40 +59,40 @@
 					
 				});
 			});
-			amc.addCommand("logout", function(){
+			oShell.addCommand("logout", function(){
 				// this.processCommand("clearHistory", 1);
 				// this.processCommand("clear", 1);
 				var b = uwm.logout();
 				if(b) this.addLine("Good bye!");
 				delete this.getObjects().currentGroup;
 			});
-			amc.addCommand("pwd", function(){
+			oShell.addCommand("pwd", function(){
 				this.addLine(this.getProperties().currentPath);
 				
 			});
-			amc.addCommand("help", function(){
+			oShell.addCommand("help", function(){
 				for(var i in this.commands){
 					this.addLine(i);
 				}
 			});
-			amc.addCommand("clearUse", function(){
+			oShell.addCommand("clearUse", function(){
 				this.getObjects().use.length = 0;
 				this.getObjects().useMap = {};
 			});
-			amc.addCommand("clear", function(){
+			oShell.addCommand("clear", function(){
 				this.getList().clearItems();
 			});
-			amc.addCommand("clearHistory", function(bClearStorage){
+			oShell.addCommand("clearHistory", function(bClearStorage){
 				this.getObjects().history.length = 0;
 				this.getProperties().historyIndex = 0;
 				if(bClearStorage) this.updateStorage();
 				this.addLine("Cleared console history","_avoid");
 			});
-			amc.addCommand("history", function(){
+			oShell.addCommand("history", function(){
 				var aH = this.getObjects().history;
 				for(var i = 0; i < aH.length; i++) this.addLine(aH[i]);
 			});
-			amc.addCommand("use",function(sOpt){
+			oShell.addCommand("use",function(sOpt){
 				
 				if(!sOpt){
 					this.addLine("Syntax: use pattern");
@@ -115,7 +121,7 @@
 					this.addLine("Object not found");
 				}
 			});
-			amc.addCommand("ls", function(bOpt){
+			oShell.addCommand("ls", function(bOpt){
 				var sP = this.getProperties().currentPath, _o = this.getObjects(), bNoDisplay = (bOpt == "-hide");
 				for(var i = 0; i < arguments.length; i++){
 					if(!arguments[i].match(/^-/)){
@@ -166,7 +172,13 @@
 					}
 				}
 			});
+			oShell.addCommand("quit", function(){
+				this.getList().clearItems();
+				this.addLine("Quit shell instance");
+				this.destroy();
+			});
 		});
 	
-	});
-}())
+	};
+	uwm.addShellCommands = addCommands;
+}());

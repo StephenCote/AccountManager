@@ -1,9 +1,21 @@
 (function(){
 	
-	var ctl;
+	
 	uwm.addPageLoadHandler(function(){
-
-		window.amc = ctl = Hemi.newObject("Console","1.0",true,true,{
+		if(uwm.consoleMode){
+			window.amc = createConsole(
+				Hemi.app.space.service.getPrimarySpace(),
+				document.getElementById("contentContainer"),
+				document.getElementById("commandContainer"),
+				document.getElementById("typelist"),
+				document.getElementById("prompt"),
+				document.getElementById("commandLine")
+			);
+		}
+	});
+	
+	function createConsole(oSpace, oContainer, oCmdContainer, oList, oPrompt, oLine){
+		var ctl = Hemi.newObject("Console","1.0",true,true,{
 			object_create : function(){
 				var _s = this.getProperties(), _o = this.getObjects();
 				_s.iconView = 1;
@@ -18,8 +30,8 @@
 				this.scopeHandler("window_resize",0,0,1);
 				Hemi.event.addEventListener(window,"resize",this._prehandle_window_resize);
 				Hemi.message.service.subscribe(this, "onsessionrefresh", "_prehandle_session_refresh");
-				Hemi.message.service.subscribe(this, "onbuffercommitted", "handle_buffer_commit", this.getList());
-				document.getElementById("commandLine").onkeydown = this._prehandle_keydown;
+
+				oLine.onkeydown = this._prehandle_keydown;
 				this.getComponentByRID("typelist").setLoadHandler(this.scopeHandler("configList",0,1,1));
 				this.focus();
 			},
@@ -36,20 +48,21 @@
 				if(!h && this.getProperties().maximize){
 					/// Drop the list size down temporarily
 					this.getList().getContainer().style.height = "50px";
-					h = (document.getElementById("contentContainer").parentNode.clientHeight - document.getElementById("contentContainer").offsetTop - document.getElementById("commandContainer").offsetHeight) + "px";
-					//alert(h + "/" + (document.body.clientHeight - document.getElementById("contentContainer").offsetTop) );
+					h = (oContainer.parentNode.clientHeight - oContainer.offsetTop - oCmdContainer.offsetHeight) + "px";
+					//alert(h + "/" + (document.body.clientHeight - oContainer.offsetTop) );
 				}
-				if(w) document.getElementById("typelist").style.width = w;;
+				if(w) oList.style.width = w;;
 				if(h){
 					
-					document.getElementById("typelist").style.height = h;
+					oList.style.height = h;
 				}
-				this.getList().getContainer().style.height = document.getElementById("typelist").clientHeight + "px";
+				this.getList().getContainer().style.height = oList.clientHeight + "px";
 				
 			},
 			configList : function(s, v){
 				this.addLine("Account Manager Service 5.6","_avoid");
 				this.addLine("Simple Shell 1.0","_avoid");
+				Hemi.message.service.subscribe(this, "onbuffercommitted", "handle_buffer_commit", this.getList());
 				this.refreshDisplay();
 				var oL = this.getList();
 				oL.setAutoScroll(1);
@@ -115,7 +128,7 @@
 				return this.getObjects().currentGroup;
 			},
 			getComponentByRID : function(n){
-				var o = Hemi.app.space.service.getPrimarySpace().getSpaceObjectByName(n);
+				var o = oSpace.getSpaceObjectByName(n);
 				if(!o || !o.object) return 0;
 				return o.object.getApplicationComponent();
 			},
@@ -145,33 +158,33 @@
 				switch(e.keyCode){
 					/// TAB
 					case 9:
-						var aC = this.parseCommand(document.getElementById("commandLine").value.trim());
+						var aC = this.parseCommand(oLine.value.trim());
 						if(this.peekCommands.includes(aC[0])){
 							Hemi.event.cancelEvent(e);
 							var sPeek = this.peek(aC[0], aC[aC.length-1]);
 							if(sPeek){
-								var sCmd = document.getElementById("commandLine").value;
+								var sCmd = oLine.value;
 								sCmd = sCmd.substring(0,sCmd.lastIndexOf(" ") + 1) + sPeek;
-								document.getElementById("commandLine").value = sCmd;
+								oLine.value = sCmd;
 							}
 							return false;
 						}
 						break;
 					/// ESC
 					case 27:
-						document.getElementById("commandLine").value = "";
+						oLine.value = "";
 						break;
 					/// Enter
 					case 13:
-						var cmdL = document.getElementById("commandLine").value.trim()
-						var cmd = document.getElementById("prompt").innerText + " " + cmdL;
+						var cmdL = oLine.value.trim()
+						var cmd = oPrompt.innerText + " " + cmdL;
 						this.processCommand(cmdL);
-						document.getElementById("commandLine").value = "";
+						oLine.value = "";
 						break;
 					/// Up arrow
 					case 38:
 						if(_s.historyIndex > 0){
-							document.getElementById("commandLine").value = _o.history[_s.historyIndex - 1];
+							oLine.value = _o.history[_s.historyIndex - 1];
 							_s.historyIndex--;
 						}
 						Hemi.event.cancelEvent(e);
@@ -181,7 +194,7 @@
 					case 40:
 						if(_s.historyIndex < _o.history.length){
 							_s.historyIndex++;
-							document.getElementById("commandLine").value = _o.history[_s.historyIndex - 1];
+							oLine.value = _o.history[_s.historyIndex - 1];
 
 						}
 						Hemi.event.cancelEvent(e);
@@ -248,7 +261,7 @@
 					if(!aH.length || aH[aH.length-1] != s){
 						aH.push(s);
 						this.getProperties().historyIndex = aH.length;
-						this.addLine(document.getElementById("prompt").innerText + " " + s);
+						this.addLine(oPrompt.innerText + " " + s);
 						this.updateStorage();
 					}
 				}
@@ -293,7 +306,7 @@
 						_s.currentPath = "/";
 					}
 					
-					Hemi.xml.setInnerXHTML(document.getElementById("prompt"), sP);
+					Hemi.xml.setInnerXHTML(oPrompt, sP);
 				});
 			},
 			loadStorage : function(){
@@ -319,7 +332,7 @@
 				hS.setItem("currentPath-" + _o.user.objectId, this.getProperties().currentPath);
 			},
 			focus : function(){
-				document.getElementById("commandLine").focus();
+				oLine.focus();
 			},
 			commands : {
 				
@@ -421,8 +434,8 @@
 			peekCommands : ["ls","cd","use"]
 				
 		});
-		
-	});
+		return ctl;
+	};
+	uwm.shell = createConsole;
 	
-	
-}())
+}());

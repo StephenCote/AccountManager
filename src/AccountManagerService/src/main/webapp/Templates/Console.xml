@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Template>
+	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
+  <div rid = "contentContainer" class="content">
+  	<div class = "uwm-box-border">
+	  	<div class = "console-history" component = "wideselect" rid = "typelist">
+		</div>
+		<div rid = "commandContainer" class = "command"><span rid = "prompt" class = "prompt">Anonymous:$</span><input class = "console-text" type = "text" rid = "commandLine" /></div>
+	</div>
+  </div>
+	<embedded-script>
+		<![CDATA[
+			template_init: function(){
+				var _o = this.getObjects();
+				_o.console = uwm.shell(this.getTemplateSpace(), this.rid.contentContainer, this.rid.commandContainer, this.rid.typelist, this.rid.prompt, this.rid.commandLine);
+				uwm.addShellCommands(_o.console);
+			},
+			template_destroy : function(){
+				var _o = this.getObjects();
+				if(_o.console) _o.console.destroy();
+			}
+		
+		]]>
+	</embedded-script>
+</Template>
