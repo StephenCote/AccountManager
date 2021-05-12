@@ -3,6 +3,9 @@
 
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 	<import-xml src = "/AccountManagerService/Forms/GridType.xml" id = "GridType" />
+	<p rid = "exampleRules">
+		<input type = "button" value = "Add Example Rules" onclick = "${this}.addExampleRules()" />
+	</p>
 	<embedded-script>
 		<![CDATA[
 		// Requires TemplateTools to be included
@@ -16,7 +19,43 @@
 
 		handle_list_click : function(v){
 			///this.setStatus("Clicked: " + v.name);
-		}
+		},
+		modelRule : function(sName, sDesc, sValType, sExpr, sErr, bComp, bRule, aRule, bRep, sRep, bNull){
+			var vr = model.primitive("VALIDATIONRULE");
+			vr.name = sName;
+			vr.description = sDesc;
+			vr.groupPath = this.getPath();
+			vr.errorMessage = sErr;
+			vr.expression = sExpr;
+			vr.isRuleSet = bRule;
+			vr.isReplacementRule = bRep;
+			vr.replacementValue = sRep;
+			vr.validationType = sValType;
+			vr.comparison = bComp;
+			vr.allowNull = bNull;
+			vr.rules = aRule;
+			return vr;
+		},
+		getCreateRule : function(sName, sDesc, sValType, sExpr, sErr, bComp, bRule, aRule, bRep, sRep, bNull){
+			var oG = AM6Client.find("GROUP","DATA",this.getPath());
+			var vr = AM6Client.getByName("VALIDATIONRULE", oG.objectId, sName);
+			if(vr == null){
+				vr = this.modelRule(sName, sDesc, sValType, sExpr, sErr, bComp, bRule, aRule, bRep, sRep, bNull);
+				if(AM6Client.update("VALIDATIONRULE",vr)){
+					vr = AM6Client.getByName("VALIDATIONRULE", oG.objectId, sName);
+				}
+			}
+			return vr;
+		},
+		addExampleRules : function(){
+			
+			var vrEnd = this.getCreateRule("Trim End","","REPLACEMENT","\\s*$","",false,false,[],true,"",false);
+			var vrBegin = this.getCreateRule("Trim Begin","","REPLACEMENT","^\\s*","",false,false,[],true,"",false);
+			var vrTrimEnds = this.getCreateRule("Trim Ends","","NONE","","",false,true,[vrBegin,vrEnd],false,"",false);
+			var vrNotEmpty = this.getCreateRule("Not Empty","","BOOLEAN","^(?=\\s*\\S).*$","Value may not be empty",true,true,[vrTrimEnds],false,"",false);
+			var vrNumbersOnly = this.getCreateRule("Numbers Only","","BOOLEAN","[\\d\\.]+","Value may only contain numbers and decimal points",true,true,[vrNotEmpty],false,"",false);
+			this.refreshList();
+		},
 		]]>
 	</embedded-script>
 </Template>
