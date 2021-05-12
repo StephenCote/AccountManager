@@ -43,7 +43,7 @@
 	</div>
 
 	<div rid = "userPickerCont" style = "display:none;">
-		<import-xml src = "/AccountManagerService/Forms/UserPickerSingle.xml" id = "UserPicker" />
+		<import-xml src = "/AccountManagerService/Forms/UserPickerSingle.xml" id = "UserPickerSingle" />
 	</div>
 	<embedded-script><![CDATA[
 		embedded_init :function(){
