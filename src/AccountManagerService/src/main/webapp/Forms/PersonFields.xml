@@ -106,7 +106,6 @@
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
-			//this.getElementByRID("pathCont").style.display = "none";
 			this.getElementByRID("partnerPicker").style.display = "block";
 			this.toggleField("partnerPickerToggle","partnerPickerContent");
 			if(!this.getProperties().partnerListProp) this.getProperties().partnerListProp = "partners";
@@ -119,7 +118,7 @@
 			this.initPersonPicker();
 		},
 		
-prepareSavePartnerPicker : function(o){
+		prepareSavePartnerPicker : function(o){
 			this.prepareSavePartnersList(o);
 		},
 		setPartnerPickerLabel : function(s){

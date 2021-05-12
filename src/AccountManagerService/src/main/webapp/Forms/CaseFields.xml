@@ -26,20 +26,6 @@
 	<import-xml src = "/AccountManagerService/Forms/ArtifactPicker.xml" id = "ArtifactPicker" />
 	<import-xml src = "/AccountManagerService/Forms/TaskPicker.xml" id = "TaskPicker" />
 	<import-xml src = "/AccountManagerService/Forms/DataPicker.xml" id = "DataPicker" />
-	<!-- 
-	<div class = "rocket-column-2">
-		<p>
-			Actors:
-		</p>
-		<p>
-			<div component = "wideselect" rid = "actorsList">
-			</div>
-			<br />
-			<input type = "button" class = "rocket-button" value = "+" onclick = "${this}.addActor()" />
-			<input type = "button" class = "rocket-button" value = "-" onclick = "${this}.removeActor()" />
-		</p>
-	</div>
-	-->
 
 	<embedded-script><![CDATA[
 		embedded_init : function(){
@@ -47,15 +33,14 @@
 			this.getProperties().resourceListProp = "actors";
 			this.getProperties().artifactListProp = "prerequisites";
 			this.getProperties().dataListProp = "diagrams";
-			Hemi.xml.setInnerXHTML(this.getElementByRID("dataPickerTitle"),"Diagrams");
-			Hemi.xml.setInnerXHTML(this.getElementByRID("taskPickerTitle"),"Sequence");
-			Hemi.xml.setInnerXHTML(this.getElementByRID("resourcePickerTitle"),"Actors");
-			Hemi.xml.setInnerXHTML(this.getElementByRID("artifactPickerTitle"),"Prerequisites");
+			Hemi.xml.setInnerXHTML(this.rid.dataPickerTitle,"Diagrams");
+			Hemi.xml.setInnerXHTML(this.rid.taskPickerTitle,"Sequence");
+			Hemi.xml.setInnerXHTML(this.rid.resourcePickerTitle,"Actors");
+			Hemi.xml.setInnerXHTML(this.rid.artifactPickerTitle,"Prerequisites");
 			this.getComponentByRID("dataList").setLoadHandler(this.scopeHandler("configDataList",0,1,1));
 			this.getComponentByRID("tasksList").setLoadHandler(this.scopeHandler("configTasksList",0,1,1));
 			this.getComponentByRID("resourcesList").setLoadHandler(this.scopeHandler("configResourcesList",0,1,1));
 			this.getComponentByRID("artifactsList").setLoadHandler(this.scopeHandler("configArtifactsList",0,1,1));
-			//this.getComponentByRID("actorsList").setLoadHandler(this.scopeHandler("configActorsList",0,1,1));
 		},
 		
 		addType : function(o){
@@ -64,7 +49,7 @@
 		},
 		prepareSave : function(o){
 			this.prepareSaveDatasList(o);
-			this.getElementByRID("text").className = "rocket-text";
+
 			o.actors = [];
 			var aActors = this.getResourcesList().getItems();
 			for(var i = 0; i < aActors.length;i++) o.actors.push(aActors[i].data);
@@ -81,13 +66,6 @@
 			var aPrerequisites = this.getDataList().getItems();
 			for(var i = 0; i < aPrerequisites.length;i++) o.diagrams.push(aPrerequisites[i].data);
 			
-			/*
-			if(!this.validateForPattern("text","not-empty")){
-				this.getElementByRID("text").className = "rocket-text rocket-text-error";
-				this.setStatus("Text cannot be empty");
-				return 0;
-			}
-			*/
 			return 1;
 		}
 	]]></embedded-script>

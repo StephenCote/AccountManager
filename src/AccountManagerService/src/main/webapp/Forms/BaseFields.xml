@@ -104,7 +104,6 @@
 			this.synchronizeForm();
 			var o = this.getBean("rocketType"),_s = this.getProperties();
 			this.rid.path.className = "rocket-text";
-			this.rid.endTime.className = "rocket-text";
 			this.rid.name.className = "rocket-text";
 			this.setStatus("");
 

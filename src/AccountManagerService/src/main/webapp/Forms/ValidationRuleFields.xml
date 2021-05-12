@@ -102,15 +102,15 @@
 			this.chooseValidationType();
 		},
 		chooseValidationType : function(){
-			var oSel = this.getElementByRID("validationType");
-			this.getElementByRID("compCont").style.display = (oSel.value == "BOOLEAN" ? "block" : "none");
-			this.getElementByRID("repCont").style.display = (oSel.value == "REPLACEMENT" ? "block" : "none");
+			var oSel = this.rid.validationType;
+			this.rid.compCont.style.display = (oSel.value == "BOOLEAN" ? "block" : "none");
+			this.rid.repCont.style.display = (oSel.value == "REPLACEMENT" ? "block" : "none");
 		},
 		displayRules : function(){
 			var o = this.getBean("rocketType");
-			var c = this.getElementByRID("isRuleSet");
+			var c = this.rid.isRuleSet;
 			var bIsSet = c.checked;
-			this.getElementByRID("rulesCont").style.display = (bIsSet ? "block" : "none");
+			this.rid.rulesCont.style.display = (bIsSet ? "block" : "none");
 		},
 		openRule : function(){
 			var oI = this.getRulesList().getActiveItem();
@@ -149,19 +149,12 @@
 			return AM6Client.update("VALIDATIONRULE",o);
 		},
 		prepareSave : function(o){
-			//this.getElementByRID("text").className = "rocket-text";
 			o.rules = [];
 			if(o.isRuleSet){
 				var aRules = this.getRulesList().getItems();
 				for(var i = 0; i < aRules.length;i++) o.rules.push(aRules[i].data);
 			}
-			/*
-			if(!this.validateForPattern("text","not-empty")){
-				this.getElementByRID("text").className = "rocket-text rocket-text-error";
-				this.setStatus("Text cannot be empty");
-				return 0;
-			}
-			*/
+
 			return 1;
 		}
 	]]></embedded-script>

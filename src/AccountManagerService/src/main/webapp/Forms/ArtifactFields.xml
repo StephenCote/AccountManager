@@ -90,7 +90,7 @@
 		openData : function(){
 			var oI = this.getChoiceByType();
 			if(!oI || !this.openItem) return;
-			var oSel = this.getElementByRID("artifactType");
+			var oSel = this.rid.artifactType;
 			var sType = oSel.value.substring(0,1) + oSel.value.substring(1,oSel.value.length).toLowerCase();
 			this.openItem(oI,sType);
 		},
@@ -99,20 +99,20 @@
 			var oObj;
 			if(!o.artifactDataId) return oObj;
 			
-			var oSel = this.getElementByRID("artifactType");
+			var oSel = this.rid.artifactType;
 			if(!oSel.value.match(/^(ticket|form|data|task|stage|work|requirement|note|module|story)$/i)) return oObj;
 			
 			oObj = AM6Client.get(oSel.value,o.artifactDataId);
 			return oObj;
 		},
 		chooseArtifactType : function(){
-			var oSel = this.getElementByRID("artifactType");
+			var oSel = this.rid.artifactType;
 			
 			if(oSel.value.match(/^(ticket|form|data|task|stage|work|requirement|note|module|story)$/i)){
-				this.getElementByRID("dataRefCont").style.display = "block";	
+				this.rid.dataRefCont.style.display = "block";	
 			}
 			else{
-				this.getElementByRID("dataRefCont").style.display = "none";
+				this.rid.dataRefCont.style.display = "none";
 			}
 			this.pickData('Data');
 
@@ -128,7 +128,7 @@
 			this.manageList("Artifact", this.getObjectId(),"pickNextTrans");
 		},
 		chooseData : function(){
-			var oSel = this.getElementByRID("artifactType");
+			var oSel = this.rid.artifactType;
 			if(!oSel.value.match(/^(ticket|form|data|task|stage|work|requirement|note|module|story)$/i)) return;
 			var sType = oSel.value.substring(0,1) + oSel.value.substring(1,oSel.value.length).toLowerCase();
 			this.manageList(sType, this.getObjectId(),"pickData");
@@ -136,7 +136,7 @@
 		pickData : function(s, v){
  			var o = this.getBean("rocketType");
 			o.artifactDataId = (v ? v.id : 0);
-			this.getElementByRID("data").value = (v ? v.name : "");		
+			this.rid.data.value = (v ? v.name : "");		
 		},
 		openPrevTrans : function(){
 			var o = this.getBean("rocketType");
@@ -147,7 +147,7 @@
 		pickPrevTrans : function(s, v){
 			var o = this.getBean("rocketType");
 			o.previousTransitionId = (v ? v.id : 0);
-			this.getElementByRID("previousTransition").value = (v ? v.name + " " + v.artifactType : "");
+			this.rid.previousTransition.value = (v ? v.name + " " + v.artifactType : "");
 		},
 		openNextTrans : function(){
 			var o = this.getBean("rocketType");
@@ -158,17 +158,10 @@
 		pickNextTrans : function(s, v){
 			var o = this.getBean("rocketType");
 			o.nextTransitionId = (v ? v.id : 0);
-			this.getElementByRID("nextTransition").value = (v ? v.name + " " + v.artifactType : "");
+			this.rid.nextTransition.value = (v ? v.name + " " + v.artifactType : "");
 		},
 		prepareSave : function(o){
-			this.getElementByRID("text").className = "rocket-text";
-			/*
-			if(!this.validateForPattern("text","not-empty")){
-				this.getElementByRID("text").className = "rocket-text rocket-text-error";
-				this.setStatus("Text cannot be empty");
-				return 0;
-			}
-			*/
+
 			return 1;
 		}
 	]]></embedded-script>

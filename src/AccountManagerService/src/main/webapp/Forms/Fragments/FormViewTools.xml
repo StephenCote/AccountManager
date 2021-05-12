@@ -15,9 +15,9 @@
 			}
 			else{
 				Hemi.log("Not populated.  Fetching a populated version.");
-				var oApi = window[uwm.getApi(typeName)];
-				if(o.id) o = oApi["get" + typeName + "ById"](o.id);
-				else o = oApi["get" + typeName](o.name,AM6Client.find("GROUP","DATA",o.groupPath));
+				
+				if(o.objectId) o = AM6Client.get(typeName.toUpperCase(),o.objectId);
+				else o = AM6Client.getByName(typeName.toUpperCase(), AM6Client.find("GROUP","DATA",o.groupPath).objectId, o.name);
 				if(!o.populated) alert("still not populated");
 			}
 		}
