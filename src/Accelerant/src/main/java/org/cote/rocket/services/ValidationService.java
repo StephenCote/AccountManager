@@ -53,6 +53,9 @@ public class ValidationService {
 	public static final Logger logger = LogManager.getLogger(ValidationService.class);
 	private static Map<String,Pattern> patterns = new HashMap<String,Pattern>();
 	
+	public static void clearCache() {
+		patterns.clear();
+	}
 	private static Pattern getPattern(String pat){
 		if(patterns.containsKey(pat)) return patterns.get(pat);
 		Pattern pattern = Pattern.compile(pat,Pattern.MULTILINE);
@@ -206,7 +209,7 @@ public class ValidationService {
 			return true;
 		}
 		String val = formElementValue.getTextValue();
-		if(rule.getExpression() != null){
+		if(rule.getExpression() != null && rule.getExpression().length() > 0){
 			Pattern exp = getPattern(rule.getExpression());
 			Matcher m = exp.matcher(val);
 			switch(ruleType){

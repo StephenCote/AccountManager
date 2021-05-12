@@ -110,6 +110,7 @@ import org.cote.rocket.factory.ValidationRuleParticipationFactory;
 import org.cote.rocket.factory.WorkFactory;
 import org.cote.rocket.factory.WorkParticipationFactory;
 import org.cote.rocket.services.TypeSanitizer;
+import org.cote.rocket.services.ValidationService;
 
 
 
@@ -282,6 +283,7 @@ public class Factories extends org.cote.accountmanager.data.Factories {
 	public static boolean clearCaches(){
 		Rocket.clearCache();
 		FactoryDefaults.clearCache();
+		ValidationService.clearCache();
 		return org.cote.accountmanager.data.Factories.clearCaches();
 	}
 
