@@ -27,7 +27,7 @@
 				var aS= oX.systemRoles;
 
 				var iI = 0;
-				for(var i = 0; i < aS.length; i++){
+				for(var i = 0; aS != null && i < aS.length; i++){
 					if(aS[i].roleType == "USER"){
 						oL.addItem(aS[i].roleType + " " + aS[i].name, aS[i]);
 						iI++;

@@ -64,7 +64,7 @@
 				if(!AM6Client.isCommunityConfigured()){
 					var ctl = this;
 					AM6Client.application().then((oX)=>{
-						if(oX.userRoles.filter(r => r.name.match(/^systemadministrators$/gi))){
+						if(oX.userRoles.filter(r => r.name.match(/^systemadministrators$/gi)).length){
 							if(confirm("Organization " + AM6Client.currentOrganization + " is not configured for community mode.  Configure it now?")){
 								AM6Client.configureCommunity(function(s,v){
 									if(v && v.json) ctl.toggleCommunity();

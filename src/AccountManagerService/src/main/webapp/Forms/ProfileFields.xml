@@ -4,11 +4,10 @@
 	<import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
 	<div>
 		<p style = "float: left;width:150px;">
-			<span style = "padding-left:10px;padding-top:10px;color:#76933c;" rid = "profileName" onclick = "${this}.openProfileType()">Anonymous</span>
+			<span style = "color:#76933c;" rid = "profileName">Anonymous</span>
 			<br />
-			<img rid = "btnProfile" onclick = "${this}.chooseProfile()" style = "border:1px dotted transparent;margin:0px;padding:0px;" src = "/AccountManagerService/Media/Icons/user_100x100.png" width = "100" height = "100" title = "Profile" />
-			<br />
-			<span style = "padding-left:10px;padding-top:10px;color:#76933c;" onclick = "${this}.chooseProfileText()">Choose</span> | <span style = "padding-left:10px;padding-top:10px;color:#76933c;" onclick = "${this}.openProfileText()">Edit</span>
+			<img rid = "btnProfile" style = "border:1px dotted transparent;margin:0px;padding:0px;" src = "/AccountManagerService/Media/Icons/user_100x100.png" width = "100" height = "100" title = "Profile" />
+			<span rid = "editProfileCont" style = "display:none;margin:0px;padding:0px;"><br /><span style = "color:#76933c;" onclick = "${this}.chooseProfileText()">Pick</span> | <span style = "color:#76933c;" onclick = "${this}.openProfileText()">Edit</span></span>
 		</p>
 		<div style = "margin-left:150px;" rid = "txtProfile">
 			[ Profile ]
@@ -19,14 +18,6 @@
 	<embedded-script>
 		<![CDATA[
 			template_init: function(){
-				this.rid.btnProfile.onmouseover = function(e){
-					var o = Hemi.event.getEventSource(e);
-					o.style.border = "1px solid #00FF00";
-				};
-				this.rid.btnProfile.onmouseout = function(e){
-					var o = Hemi.event.getEventSource(e);
-					o.style.borderColor = "transparent";
-				};
 				this.refreshProfile();
 			},
 			DoLogout : function(){
@@ -61,48 +52,73 @@
 			  			return;
 			  		}
 			  		var ctl = this;
-			    	AM6Client.get(sUType,sUid,function(s,v){
-				    	var oP = (v && v.json ? v.json : v);
-				    	if(!oP){
-				    		Hemi.logWarning("Invalid object in client handler: " + s + " / " + v);
-				    		return;
-				    	}
-				    	Hemi.xml.setInnerXHTML(ctl.rid.profileName, oP.name);
-				    	ctl.getObjects().profile = oP;
-				    	var sPid = AM6Client.getAttributeValue(oP,"v1-profile",0);
-				    	var sTid = AM6Client.getAttributeValue(oP,"v1-profile-text",0);
-						Hemi.logDebug("Profile: " + sPid + " / Text: " + sTid);
-				    	if(sPid && sPid.length > 0){
-					    	AM6Client.get("DATA",sPid,function(s,v){
-					    		/// TODO: There's an issue here where if the attribute reference is invalid (ie: the object was deleted) it's not being caught here
-						    	if(v && v.json) v = v.json;
-						    	if(!v || v == null || !v.nameType){
+			  		AM6Client.user().then((oU)=>{
+				  		AM6Client.application().then((oX)=>{
+
+					    	AM6Client.get(sUType,sUid,function(s,v){
+						    	var oP = (v && v.json ? v.json : v);
+						    	if(!oP){
+						    		Hemi.logWarning("Invalid object in client handler: " + s + " / " + v);
 						    		return;
 						    	}
-						    	var o = v;
-								
-						    	var oG = o.groupPath;
-								var sOrg = AM6Client.dotPath(o.organizationPath);
-								var sThumbUrl = "/AccountManagerService/thumbnail/" + sOrg + "/Data" + oG + "/" + o.name + "/100x100";
-								var oImg = ctl.rid.btnProfile;
-								oImg.removeAttribute("width");
-								oImg.removeAttribute("height");
-								oImg.src = sThumbUrl;
-							});
-						}
-						if(sTid && sTid.length > 0){
-					    	AM6Client.get("DATA",sTid,function(s,v){
-					    		if(v && v.json) v = v.json;
-						    	if(!v || v == null){
-						    		return;
-						    	}
-						    	var o = v;
-						    	ctl.getObjects().profileText = o;
-						    	bbConverter.copyInto(bbConverter.import(uwm.base64Decode(o.dataBytesStore)), ctl.rid.txtProfile);
-								uwm.decorateLinkToPopIn(ctl.rid.txtProfile);
-							});
-						}
-					});
+						    	var iOwnerComp = oP.ownerId;
+							    var bEdit = 0;
+								if(iOwnerComp == oU.id || sUid == oU.objectId || oX.userRoles.filter(r => r.name.match(/^accountadministrators$/gi)).length){
+					  				bEdit = 1;
+					  			}
+
+					  			if(bEdit){
+					  				ctl.rid.profileName.onclick = function(){ctl.openProfileType();};
+					  				ctl.rid.editProfileCont.style.display = "";
+					  				ctl.rid.btnProfile.onmouseover = function(e){
+										var o = Hemi.event.getEventSource(e);
+										o.style.border = "1px solid #00FF00";
+									};
+									ctl.rid.btnProfile.onmouseout = function(e){
+										var o = Hemi.event.getEventSource(e);
+										o.style.borderColor = "transparent";
+									};
+									ctl.rid.btnProfile.onclick = function(){ctl.chooseProfile();};
+					  			}
+						    	
+						    	Hemi.xml.setInnerXHTML(ctl.rid.profileName, oP.name);
+						    	ctl.getObjects().profile = oP;
+						    	var sPid = AM6Client.getAttributeValue(oP,"v1-profile",0);
+						    	var sTid = AM6Client.getAttributeValue(oP,"v1-profile-text",0);
+								Hemi.logDebug("Profile: " + sPid + " / Text: " + sTid);
+						    	if(sPid && sPid.length > 0){
+							    	AM6Client.get("DATA",sPid,function(s,v){
+							    		/// TODO: There's an issue here where if the attribute reference is invalid (ie: the object was deleted) it's not being caught here
+								    	if(v && v.json) v = v.json;
+								    	if(!v || v == null || !v.nameType){
+								    		return;
+								    	}
+								    	var o = v;
+										
+								    	var oG = o.groupPath;
+										var sOrg = AM6Client.dotPath(o.organizationPath);
+										var sThumbUrl = "/AccountManagerService/thumbnail/" + sOrg + "/Data" + oG + "/" + o.name + "/100x100";
+										var oImg = ctl.rid.btnProfile;
+										oImg.removeAttribute("width");
+										oImg.removeAttribute("height");
+										oImg.src = sThumbUrl;
+									});
+								}
+								if(sTid && sTid.length > 0){
+							    	AM6Client.get("DATA",sTid,function(s,v){
+							    		if(v && v.json) v = v.json;
+								    	if(!v || v == null){
+								    		return;
+								    	}
+								    	var o = v;
+								    	ctl.getObjects().profileText = o;
+								    	bbConverter.copyInto(bbConverter.import(uwm.base64Decode(o.dataBytesStore)), ctl.rid.txtProfile);
+										uwm.decorateLinkToPopIn(ctl.rid.txtProfile);
+									});
+								}
+							}); // end get
+						}); // end application
+					}); // end user
 					
 			
 				},
