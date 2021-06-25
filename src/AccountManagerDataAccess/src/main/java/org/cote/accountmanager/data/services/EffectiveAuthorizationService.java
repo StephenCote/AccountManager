@@ -618,7 +618,7 @@ public class EffectiveAuthorizationService {
 			ent.setEntitlementName(entitlement.getName());
 			ent.setEntitlementType(entitlement.getNameType());
 			ent.setEntitlementAffectType(AffectEnumType.GRANT_PERMISSION);
-		}
+		} 
 		ent.setOrganizationId(orgId);
 		return ent;
 		
