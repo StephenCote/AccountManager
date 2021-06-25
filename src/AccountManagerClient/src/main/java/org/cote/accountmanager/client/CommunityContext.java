@@ -36,6 +36,7 @@ public class CommunityContext {
 	private Map<String,ProjectType> projects = null;
 	private Map<String,Map<String,BaseRoleType>> roles = null;
 	private Map<String,Map<String,DirectoryGroupType>> applications = null;
+	private Map<String,Map<String,DirectoryGroupType>> dirs = null;
 	private Map<String,Map<String,PersonType>> persons = null;
 	private Map<String,Map<String,AccountType>> accounts = null;
 	private Map<String,Map<String,BaseGroupType>> groups = null;
@@ -50,6 +51,7 @@ public class CommunityContext {
 		persons = new HashMap<>();
 		accounts = new HashMap<>();
 		groups = new HashMap<>();
+		dirs = new HashMap<>();
 		permissions = new HashMap<>();
 		appPermissionBases = new HashMap<>();
 		communityAdminContext = adminContext;
@@ -270,6 +272,24 @@ public class CommunityContext {
 		}
 		return getAccountGroup(projectName, applicationName, groupName);
 	}
+	
+	public DirectoryGroupType getProjectDirectory(String projectName, String projectGroupName) {
+		ProjectType project = getProject(projectName);
+		String path = AM6Util.getEncodedPath(project.getGroupPath() + "/" + projectGroupName);
+		
+		String cache_key = CacheUtil.getCacheKeyName("GROUP-" + communityName + "-" + projectName + "-" + projectGroupName);
+		DirectoryGroupType grp = CacheUtil.readCache(communityAdminContext, cache_key, DirectoryGroupType.class);
+		if(grp == null) {
+			grp = AM6Util.findObject(communityAdminContext, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", path);
+			if(grp == null) {
+				logger.error("Failed to find project group for " + path);
+				return null;
+			}
+			CacheUtil.cache(communityAdminContext, cache_key, grp);
+		}
+		return grp;
+	}
+	
 	public BaseGroupType getAccountGroup(String projectName, String applicationName, String groupName) {
 		if(!initialized) {
 			logger.error("Community is not initialized");
