@@ -55,9 +55,9 @@ public class TokenFilter implements Filter{
 	    int idx = -1;
 	    if (stringToken != null && (idx = stringToken.indexOf("Bearer")) > -1) {
 	    	String token = stringToken.substring(idx + 7, stringToken.length()).trim();
-	    	logger.info("Filtering: '" + token + "'");
+	    	logger.debug("Filtering: '" + token + "'");
 	    	String urn = Jwts.parser().setSigningKeyResolver(new AM5SigningKeyResolver()).parseClaimsJws(token).getBody().getId();
-	    	logger.info("Processing: " + urn);
+	    	logger.debug("Processing: " + urn);
 	    	UserType user = null;
 	    	try{
 		    	INameIdFactory iFact = Factories.getFactory(FactoryEnumType.USER);
