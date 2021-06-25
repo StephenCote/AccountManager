@@ -28,7 +28,47 @@
 			window.galleryView  = null;
 		}
 		
-		var ctl,ctlP;
+		var darkModeProps = {
+			textColor : "#CFCFCF",
+			textStrokeColor : "#CFCFCF",
+			backgroundColor : "#000000",
+			backgroundShadowColor : "#000000",
+			backgroundBlueShadowColor : "#0000AA",
+			backgroundGreenShadowColor : "#00AA00",
+			backgroundBorderColor : "#000000",
+			dropColor : "#AAAA00",
+			shapeBorderColor : "#000000",
+			shapeHighlightColor : "#00AA00",
+			shapeHighlightBorderColor : "#000000",
+			viewBackgroundColor : "#000000",
+			viewBackgroundBorderColor : "#000000",
+			viewTextColor : "#CFCFCF",
+			viewTextStrokeColor : "#CFCFCF",
+			viewActiveTextColor : "#00AA00"
+		};
+		var lightModeProps = {
+			textColor : "#000000",
+			textStrokeColor : "#000000",
+			backgroundColor : "#FFFFFF",
+			backgroundShadowColor : "#FFFFFF",
+			backgroundBlueShadowColor : "#AAAAFF",
+			backgroundGreenShadowColor : "#AAFFAA",
+			backgroundBorderColor : "#FFFFFF",
+			dropColor : "#FFFF00",
+			shapeBorderColor : "#000000",
+			shapeHighlightColor : "#00FF00",
+			shapeHighlightBorderColor : "#000000",
+			viewBackgroundColor : "#000000",
+			viewBackgroundBorderColor : "#000000",
+			viewTextColor : "#FFFFFF",
+			viewTextStrokeColor : "#FFFFFF",
+			viewActiveTextColor : "#00FF00"
+		};
+		if(!window.galleryViewProps){
+			window.galleryViewProps = (window.galleryDarkMode ? darkModeProps : lightModeProps);
+		}
+		
+		var ctl,ctlP, gvp;
 		Hemi.newObject("CanvasController","1.0",true,true,{
 			boxHeight : boxHeight,
 			boxWidth : boxWidth,
@@ -40,6 +80,7 @@
 			},
 			object_create : function(){
 				ctl = this;
+				gvp = window.galleryViewProps;
 				initializeCanvasController(this);
 				this.getCanvas().AddShapeDecorator(this);
 				this.getProperties().useWindowDimensions = 0;
@@ -102,13 +143,13 @@
 					oCanvas.setTemporaryContextConfig(oCfg);
 					
 	
-					var oI = oCanvas.Image(oShape.image,oShape.x, oShape.y, "#00FF00", "#000000");
+					var oI = oCanvas.Image(oShape.image,oShape.x, oShape.y, gvp.shapeHighlightColor, gvp.shapeHighlightBorderColor);
 					copyShapeProperties(oShape, oI);
 	
 					var icoHeight = oPanel.getProperties().thumbHeight;//(oShape.icoType == "IMG" ?  o.imgThumbHeight : properties.dirThumbHeight);
 					this.logDebug("Shape: " + oShape.x + "," + oShape.y + " " + oShape.referenceName + " " + oShape.panelId + " " + (oPanel ? 'Panel' : 'No Panel') + " " + icoHeight);
 	
-					if(oShape.referenceName && !oShape.noLabel) oCanvas.Text(scaleText(oShape.referenceName), oShape.x, oShape.y + icoHeight + 10, "#000000","#000000","8pt","Arial");
+					if(oShape.referenceName && !oShape.noLabel) oCanvas.Text(scaleText(oShape.referenceName), oShape.x, oShape.y + icoHeight + 10, gvp.textColor,gvp.textStrokeColor,"8pt","Arial");
 					oCanvas.setTemporaryContextConfig(oLast);
 				}
 			},
@@ -184,11 +225,11 @@
 					var oLast = oCanvas.getTemporaryContextConfig();
 					var oCfg = oCanvas.getConfigByName("DropBlueShadow");
 					oCanvas.setTemporaryContextConfig(oCfg);
-					var oX = oCanvas.Image(oShape.image,oShape.x, oShape.y, "#00FF00", "#000000");
+					var oX = oCanvas.Image(oShape.image,oShape.x, oShape.y, gvp.shapeHighlightColor, gvp.shapeHighlightBorderColor);
 					copyShapeProperties(oShape, oX);
 	
 					var icoHeight = oPanel.getProperties().thumbHeight;//(oShape.icoType == "IMG" ?  properties.imgThumbHeight : properties.dirThumbHeight);
-					if(oShape.referenceName && !oShape.noLabel) oCanvas.Text(scaleText(oShape.referenceName), oShape.x, oShape.y + icoHeight + 10, "#000000","#000000","8pt","Arial");
+					if(oShape.referenceName && !oShape.noLabel) oCanvas.Text(scaleText(oShape.referenceName), oShape.x, oShape.y + icoHeight + 10, gvp.textColor, gvp.textStrokeColor,"8pt","Arial");
 					oCanvas.setTemporaryContextConfig(oLast);
 					
 					//if(oPanel.getObjects().menu) this.paintMenu(oPanel, oCanvas, oShape, oPanel.getObjects().menu);
@@ -286,7 +327,7 @@
 	
 				     
 				
-				var sDropColor = "#FFFF00";
+				var sDropColor = gvp.dropColor;
 				var oDropShape = oCanvas.getObjects().MouseDropShape;
 				var oDropNode, oCurrentNode = 0;
 	
@@ -296,24 +337,24 @@
 				
 				if(oCanvas.getProperties().MouseTrackChoose && oCurrent ){
 					if(oCurrent.type == "Image"){
-						var oM = oCanvas.Rect(oCurrent.x, oCurrent.y, oCurrent.image.width, oCurrent.image.height, "#FFFFFF", "#FFFFFF");
+						var oM = oCanvas.Rect(oCurrent.x, oCurrent.y, oCurrent.image.width, oCurrent.image.height, gvp.backgroundColor, gvp.backgroundBorderColor);
 						oM.selectable = 0;
 						//this.log("Panel #:" + oCurrent.panelId);
 						var oPanel = Hemi.registry.service.getObject(oCurrent.panelId);
 						var fLast = oCanvas.getTemporaryContext().globalAlpha;
 						oCanvas.getTemporaryContext().globalAlpha = 0.5;
-						oM = oCanvas.Image(oCurrent.image,oCurrent.x, oCurrent.y, "#00FF00","#000000");			
+						oM = oCanvas.Image(oCurrent.image,oCurrent.x, oCurrent.y, gvp.shapeHighlightColor, gvp.shapeHighlightBorderColor);			
 						oCanvas.getTemporaryContext().globalAlpha = fLast;
 						oM.selectable = 0;
 						oM = oCanvas.Image(
 							oCurrent.image,
 							oCanvas.getProperties().MouseTrackLeft - oCanvas.getProperties().MouseOffsetX,
 							oCanvas.getProperties().MouseTrackTop - oCanvas.getProperties().MouseOffsetY,
-							"#00FF00", "#000000"
+							gvp.shapeHighlightColor, gvp.shapeHighlightBorderColor
 						);
 						oM.selectable = 0;
 						var icoHeight = oPanel.getProperties().thumbHeight;//(oCurrent.icoType == "IMG" ?  properties.imgThumbHeight : properties.dirThumbHeight);
-						if(oCurrent.referenceName && !oCurrent.noLabel) oCanvas.Text(scaleText(oCurrent.referenceName), oCanvas.getProperties().MouseTrackLeft - oCanvas.getProperties().MouseOffsetX, oCanvas.getProperties().MouseTrackTop - oCanvas.getProperties().MouseOffsetY + icoHeight + 10, "#000000","#000000","8pt","Arial");
+						if(oCurrent.referenceName && !oCurrent.noLabel) oCanvas.Text(scaleText(oCurrent.referenceName), oCanvas.getProperties().MouseTrackLeft - oCanvas.getProperties().MouseOffsetX, oCanvas.getProperties().MouseTrackTop - oCanvas.getProperties().MouseOffsetY + icoHeight + 10, gvp.textColor,gvp.textStrokeColor,"8pt","Arial");
 						
 						//if(oPanel.getObjects().menu) this.paintMenu(oPanel, oCanvas, oCurrent, oPanel.getObjects().menu);
 						
@@ -321,11 +362,11 @@
 				} 
 	
 				if(oDropShape && oDropShape.type == "Image" && (oDropShape.referenceType == "CTL" || oDropShape.referenceType == "GROUP")){
-					var oM = oCanvas.Image(oDropShape.image, oDropShape.x, oDropShape.y, sDropColor, "#000000");
+					var oM = oCanvas.Image(oDropShape.image, oDropShape.x, oDropShape.y, sDropColor, gvp.viewBackgroundColor);
 					if(oDropShape.referenceName && !oDropShape.noLabel){
 						var oPanel = Hemi.registry.service.getObject(oDropShape.panelId);
 						var icoHeight = oPanel.getProperties().thumbHeight;//(oDropShape.icoType == "IMG" ?  properties.imgThumbHeight : properties.dirThumbHeight);
-						oCanvas.Text(scaleText(oDropShape.referenceName), oDropShape.x, oDropShape.y + icoHeight + 10, "#000000","#000000","8pt","Arial");
+						oCanvas.Text(scaleText(oDropShape.referenceName), oDropShape.x, oDropShape.y + icoHeight + 10, gvp.textColor,gvp.textStrokeColor,"8pt","Arial");
 					}
 					oM.selectable = 0;
 				}
@@ -453,8 +494,8 @@
 					v5 = v.panel("matte",{
 						width:"boxWidth",
 						height:"boxHeight",
-						backgroundColor:"#000000",
-						strokeColor:"#000000",
+						backgroundColor:gvp.viewBackgroundColor,
+						strokeColor:gvp.viewBackgroundBorderColor,
 						top:0,
 						left:0,
 						thumbWidth:50,
@@ -1161,7 +1202,7 @@
 				
 				clearPanel(mP);
 				
-				var oR = oG.Rect(0, 0, mP.width(), mP.height(), "#000000","#000000");
+				var oR = oG.Rect(0, 0, mP.width(), mP.height(), gvp.viewBackgroundColor,gvp.viewBackgroundBorderColor);
 				oR.referenceIndex = iViewIndex;
 
 				
@@ -1197,13 +1238,13 @@
 					});
 					_o.appliedTags = aT;
 					for(var i = 0; i < aT.length;i++){
-						oG.Text(aT[i].name, 5, 20 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
+						oG.Text(aT[i].name, 5, 20 + (25*i),gvp.viewTextColor,gvp.viewTextStrokeColor,"12pt","Arial");
 					}
 					
 					aT = _o.cachedTags;
 					for(var i = 0; i < aT.length; i++){
 						var bCurrent = (_o.appliedTags.filter(tag => (tag.urn === aT[i].urn)).length > 0);
-						oG.Text(i + ") " + aT[i].name, iMaxWidth - 100,20 + (25*i), (bCurrent ? "#00FF00" : "#FFFFFF"),"#FFFFFF","12pt","Arial");
+						oG.Text(i + ") " + aT[i].name, iMaxWidth - 100,20 + (25*i), (bCurrent ? gvp.viewActiveTextColor : gvp.viewTextColor),gvp.viewTextStrokeColor,"12pt","Arial");
 					}
 					
 				}
@@ -1422,9 +1463,8 @@
 			
 			oCvs.setTemporaryContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
 			oCvs.setContextConfig(ctl.getCanvas().getConfigByName("NoShadow"));
-			//oM = oCvs.Rect(_s.left, _s.top, _s.width, _s.height, "#FFFFFF","#FF0000");
-			var bC = (_s.backgroundColor ? _s.backgroundColor : "#FFFFFF");
-			var sC = (_s.strokeColor ? _s.strokeColor : "#FFFFFF");
+			var bC = (_s.backgroundColor ? _s.backgroundColor : gvp.backgroundColor);
+			var sC = (_s.strokeColor ? _s.strokeColor : gvp.backgroundColor);
 			oM = oCvs.Rect(p.left(), p.top(), p.width(), p.height(), bC,sC);
 			oM.selectable = 0;
 			_s.visible = 0;
@@ -1590,7 +1630,7 @@
 				oShape.drag = bDrag;
 				if(sLbl) oShape.referenceName = sLbl;
 				
-				if(bText) oG.Text(scaleText(sLbl), iX, iY + _s.thumbHeight + 10, "#000000","#000000","8pt","Arial");
+				if(bText) oG.Text(scaleText(sLbl), iX, iY + _s.thumbHeight + 10, gvp.textColor,gvp.textStrokeColor,"8pt","Arial");
 				//oG.Rasterize();
 				oPanel.getShapes().push(oShape.id);
 				oPanel.getProperties().rasterCount++;
@@ -1627,26 +1667,26 @@
 			_o.canvas = Hemi.graphics.canvas.newInstance(_o.cvs_container);
 	
 			var oCfg = _o.canvas.newContextConfig("NoShadow");
-			oCfg.fillStyle = "#FFFFFF";
-		    oCfg.strokeStyle = "#FFFFFF";
-		    oCfg.shadowColor = "#FFFFFF";
+			oCfg.fillStyle = gvp.backgroundColor;
+		    oCfg.strokeStyle = gvp.backgroundBorderColor;
+		    oCfg.shadowColor = gvp.backgroundShadowColor;
 		    oCfg.shadowOffsetX = 0;
 		    oCfg.shadowOffsetY = 0;
 		    oCfg.shadowBlur = 0;
 		    _o.canvas.setTemporaryContextConfig(oCfg);
 		    
 		    oCfg = _o.canvas.newContextConfig("DropBlueShadow");
-		    oCfg.fillStyle = "#FFFFFF";
-		    oCfg.strokeStyle = "#FFFFFF";
-		    oCfg.shadowColor = "#AAAAFF";
+			oCfg.fillStyle = gvp.backgroundColor;
+		    oCfg.strokeStyle = gvp.backgroundBorderColor;
+		    oCfg.shadowColor = gvp.backgroundBlueShadowColor;
 		    oCfg.shadowOffsetX = 5;
 		    oCfg.shadowOffsetY = 5;
 		    oCfg.shadowBlur = 1;
 		    
 		    oCfg = _o.canvas.newContextConfig("DropGreenShadow");
-		    oCfg.fillStyle = "#FFFFFF";
-		    oCfg.strokeStyle = "#FFFFFF";
-		    oCfg.shadowColor = "#AAFFAA";
+			oCfg.fillStyle = gvp.backgroundColor;
+		    oCfg.strokeStyle = gvp.backgroundBorderColor;
+		    oCfg.shadowColor = gvp.backgroundGreenShadowColor;
 		    oCfg.shadowOffsetX = 5;
 		    oCfg.shadowOffsetY = 5;
 		    oCfg.shadowBlur = 1;
@@ -1789,11 +1829,11 @@
 					else aAT.push(oT);
 					
 					for(var i = 0; i < aAT.length;i++){
-						oG.Text(aAT[i].name, 5, 20 + (25*i),"#FFFFFF","#FFFFFF","12pt","Arial");
+						oG.Text(aAT[i].name, 5, 20 + (25*i),gvp.viewTextColor,gvp.viewTextStrokeColor,"12pt","Arial");
 					}
 					for(var i = 0; i < aCT.length; i++){
 						bCurrent = (aAT.filter(tag => (tag.urn === aCT[i].urn)).length > 0);
-						oG.Text(i + ") " + aCT[i].name, iMaxWidth - 100,20 + (25*i), (bCurrent ? "#00FF00" : "#FFFFFF"),"#FFFFFF","12pt","Arial");
+						oG.Text(i + ") " + aCT[i].name, iMaxWidth - 100,20 + (25*i), (bCurrent ? gvp.viewActiveTextColor : gvp.viewTextColor),gvp.viewTextStrokeColor,"12pt","Arial");
 					}
 				}
 				//oTargPanel.repaint();
@@ -1825,7 +1865,7 @@
 					if(ctl.getProperties().viewName == "matte"){
 						var iX = (ctl.getCurrentView("matte").width / 2) - 20;
 						var iY = ctl.getCurrentView("matte").height - 40;
-						oG.Text(scaleText("Add to bucket " + o.name + ": " + bBucket), iX, iY, "#FFFFFF","#FFFFFF","8pt","Arial");
+						oG.Text(scaleText("Add to bucket " + o.name + ": " + bBucket), iX, iY, gvp.viewTextColor,gvp.viewTextStrokeColor,"8pt","Arial");
 					}
 				});
 			}
