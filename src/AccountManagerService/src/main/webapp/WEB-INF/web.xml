@@ -250,6 +250,7 @@
 <filter-mapping>
    <filter-name>AuthNFilter</filter-name>
    <url-pattern>/rest/*</url-pattern>
+   <url-pattern>/scim/*</url-pattern>
 </filter-mapping>
 
     <servlet>
@@ -257,7 +258,7 @@
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>jersey.config.server.provider.packages</param-name>
-            <param-value>org.cote.rest.services,com.fasterxml.jackson.jaxrs</param-value>
+            <param-value>org.cote.rest.services,org.cote.rest.scim,com.fasterxml.jackson.jaxrs</param-value>
         </init-param>
         <init-param>
         <param-name>javax.ws.rs.Application</param-name>
@@ -323,6 +324,7 @@
     <servlet-mapping>
         <servlet-name>JerseyService</servlet-name>
         <url-pattern>/rest/*</url-pattern>
+         <url-pattern>/scim/*</url-pattern>
     </servlet-mapping>
     
     <resource-ref>
