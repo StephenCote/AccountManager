@@ -188,6 +188,20 @@
 			<artifactId>jjwt</artifactId>
 			<version>0.9.1</version>
 		</dependency>
+		
+		<!-- SCIM -->
+		<!--
+		<dependency>
+		  <groupId>com.unboundid.product.scim2</groupId>
+		  <artifactId>scim2-sdk-client</artifactId>
+		  <version>2.3.5</version>
+		</dependency>
+		-->
+		<dependency>
+		  <groupId>com.unboundid.product.scim2</groupId>
+		  <artifactId>scim2-sdk-server</artifactId>
+		  <version>2.3.5</version>
+		</dependency>
 
 	</dependencies>
 	<build>
