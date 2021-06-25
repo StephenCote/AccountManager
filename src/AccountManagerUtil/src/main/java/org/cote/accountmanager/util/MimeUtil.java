@@ -138,7 +138,7 @@ public class MimeUtil {
 		types.put("crt","application/x-x509-user-cert");
 		types.put("csh","application/x-csh");
 		types.put("csh","text/x-script.csh");
-		types.put("css","application/x-pointplus");
+		/// types.put("css","application/x-pointplus");
 		types.put("css","text/css");
 		types.put("csv","text/csv");
 		types.put("cxx","text/plain");
