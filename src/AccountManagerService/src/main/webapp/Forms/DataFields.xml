@@ -25,6 +25,7 @@
 			<select onchange = "${this}.changeDataType()" rid = "mimeType" bind = "${bean.rocketType}">
 				<option>application/xml</option>
 				<option>text/plain</option>
+				<option>text/css</option>
 				<option>binary</option>
 			</select>
 		</p>
@@ -140,7 +141,7 @@
 			
 			this.rid.textData.value = "";
 			if(o.mimeType){
-				if(!o.mimeType.match(/^text\/plain$/gi) && !o.mimeType.match(/^application\/xml$/gi)){
+				if(!o.mimeType.match(/^text\/$/gi) && !o.mimeType.match(/^application\/xml$/gi)){
 					var oSel = this.rid.mimeType;
 					oSel.options[oSel.options.length] = new Option(o.mimeType,o.mimeType);
 					oSel.value = o.mimeType;
