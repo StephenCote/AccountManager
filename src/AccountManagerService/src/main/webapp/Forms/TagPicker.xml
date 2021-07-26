@@ -81,7 +81,9 @@
 			var o = this.getBean("rocketType");
 			if(!o) return;
 			AM6Client.findTags(o.nameType, o.objectId,function(s,v){
-				if(v && v.json) v = v.json;
+				if(!v || v == null || v.json == null) return;
+				if(v.json) v = v.json;
+	
 				
 				v.sort(function(a,b){ 
 				    var x = a.name < b.name? -1:1; 
