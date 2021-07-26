@@ -64,7 +64,7 @@
 			Created:
 		</p>
 		<p>
-			<input type = "date" disabled = "true" rid = "createdDate" bind = "${bean.rocketType}" class = "rocket-text rocket-text-readonly" />
+			<input type = "datetime-local" component = "calendar" disabled = "true" rid = "createdDate" bind = "${bean.rocketType}" class = "rocket-text rocket-text-readonly" />
 		</p>
 	</div>
 	<div class = "rocket-column-2">
@@ -72,7 +72,7 @@
 			Modified:
 		</p>
 		<p>
-			<input type = "date" disabled = "true" rid = "modifiedDate" bind = "${bean.rocketType}" class = "rocket-text rocket-text-readonly" />
+			<input type = "datetime-local" component = "calendar" disabled = "true" rid = "modifiedDate" bind = "${bean.rocketType}" class = "rocket-text rocket-text-readonly" />
 		</p>
 	</div>
 	<div class = "rocket-column-2">
@@ -80,12 +80,13 @@
 			Expiry:
 		</p>
 		<p>
-			<input type = "date" component = "calendar" rid = "expiryDate" bind = "${bean.rocketType}" class = "rocket-text" />
+			<input type = "datetime-local" component = "calendar" rid = "expiryDate" bind = "${bean.rocketType}" class = "rocket-text" />
 		</p>
 	</div>
 	<textarea rid = "textDataFloat" style = "z-index:250;display:none;position:absolute;top:0px;left:0px;width:250px;height:250px;" onblur = "${this}.hideTextFloat()"></textarea>
 	<embedded-script><![CDATA[
 		embedded_init : function(o){
+			window.dbg = this;
 			var oSel = this.rid.mimeType;
 			if(oSel.selectedIndex == -1) oSel.value = "binary";
 			this.displayData();
@@ -199,6 +200,7 @@
 				this.loadDetailData();
 				o = this.getBean("rocketType");
 			}
+
 			var oProps = {openerId:this.getObjectId(),picker:0,viewType:o};
 			Hemi.app.createWindow("Design " + o.name, "/AccountManagerService/Forms/DataDesign.xml", "DesView-" + o.id, 0, 0, oProps)
 			.then((oW)=>{
