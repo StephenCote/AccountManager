@@ -13,6 +13,12 @@ response.setCharacterEncoding("UTF-8");
 
 %>
 (function(){
+    window.galleryDarkMode = 1;
+    window.pictureBookMode = {
+    	enabled : 1,
+    	height : 300
+    };
+    
 	if(!window.g_application_path) window.g_application_path = "/AccountManagerService/";
 	if(!window.HemiConfig){
 		window.HemiConfig = {
