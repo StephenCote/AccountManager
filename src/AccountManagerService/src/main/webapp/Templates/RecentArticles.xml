@@ -9,6 +9,7 @@
 			    Hemi.logWarning("Don't attempt to load articles for unauthenticated principle.");
 				return;
 			}
+			this.getProperties().stepMap = {};
 			var oS = new org.cote.objects.baseSearchRequestType();
 			oS.sort = new org.cote.objects.sortQueryType();
 			oS.sort.sortOrder = "DESCENDING";
@@ -17,7 +18,8 @@
 			oS.fullRecord = true;
 			oS.populateGroup = false;
 			oS.startRecord = 0;
-			oS.recordCount = 3;
+			oS.recordCount = 6;
+			var bPictBook = (window.pictureBookMode && window.pictureBookMode.enabled ? 1 : 0);
 	
 			AM6Client.find("GROUP","DATA","~/Articles",function(s,v){
 				var oG = (v && typeof v.json != "undefined" ? v.json : v);
@@ -30,19 +32,7 @@
 							}
 							else{
 								for(var j = 0; j < v.json.length; j++){
-									var oCont = document.createElement("div");
-									oCont.setAttribute("style","clear:both");
-									ctl.getElementByRID("content").appendChild(oCont);
-									bbConverter.copyInto(uwm.base64Decode(v.json[j].dataBytesStore),oCont,(j > 0));
-									var aL = ctl.getElementByRID("content").getElementsByTagName("a");
-									
-									for(var i = 0; i < aL.length;i++){
-										if(!aL[i].href || !aL[i].href.match(/\/AccountManagerService\/media/)) continue;
-										aL[i].onclick = function(){
-											uwm.openPopInImage(this.href);
-											return false;
-										}
-									}
+									ctl.renderArticle(v.json[j], bPictBook);
 								}
 							}
 						}
@@ -52,6 +42,127 @@
 					});
 			});
 		});
+	},
+	renderStep : function(i, b){
+		var vP = this.getProperties()[i];
+		if(!vP) return;
+		vP.step += (b ? 1 : -1);
+		vP.step = Math.max(Math.min(vP.step,vP.steps-1),0);
+		for(var i = 0; i < vP.steps; i++){
+			if(i == vP.step){
+				vP.blocks[i].style.display = "block";
+				vP.images[i].style.display = "";
+			}
+			else{
+				vP.blocks[i].style.display = "none";
+				vP.images[i].style.display = "none";
+			}
+		}
+		vP.controls[0].disabled = (vP.step == 0);
+		vP.controls[1].disabled = (vP.step >= (vP.steps - 1));
+		
+	},
+	renderArticle : function(o, bMode){
+
+		var oCtr = this.getElementByRID("content");
+		var oCont = document.createElement("div");
+		oCont.setAttribute("style","clear:both");
+		oCtr.appendChild(oCont);
+		
+		var _p = this.getProperties();
+		_p[o.objectId] = {
+			mode : bMode,
+			steps : 0,
+			step : 0,
+			controls : [],
+			images : [],
+			blocks : []
+		};
+		var vP = _p[o.objectId];
+		var oPCont, aCont,oICont;
+
+		var ctl = this;
+		
+		if(bMode){
+			var bb = 0;
+			var aTags = AM6Client.findTags("DATA", o.objectId);
+			for(var c = 0; c < aTags.length; c++){
+				if(aTags[c].name.match(/^picture mode$/gi)) bb = 1;
+			}
+			if(!bb) bMode = 0;
+		}
+		if(bMode){
+			oICont = document.createElement("div");
+			oPCont = document.createElement("div");
+			oPCont.style.clear = "both";
+			oACont = document.createElement("div");
+			oCont.appendChild(oICont);
+			oCont.appendChild(oPCont);
+			oCont.appendChild(oACont);
+		}
+		var aOD = oCtr.getElementsByTagName("div");
+		
+		bbConverter.copyInto(uwm.base64Decode(o.dataBytesStore),(bMode ? oACont : oCont),(j > 0));
+
+		if(bMode){
+			var aD = oACont.getElementsByTagName("div");
+			if(aD.length > 0){
+			
+				vP.steps = aD.length;
+				var oI1 = document.createElement("input");
+				oI1.setAttribute("type","button");
+				oI1.setAttribute("value","<");
+				oI1.onclick = function(){
+					ctl.renderStep(o.objectId, 0);
+				};
+				
+				oPCont.appendChild(oI1);
+				vP.controls.push(oI1);
+				var oI2 = document.createElement("input");
+				oI2.setAttribute("type","button");
+				oI2.setAttribute("value",">");
+				oI2.onclick = function(){
+					ctl.renderStep(o.objectId, 1);
+				};
+				
+				oPCont.appendChild(oI2);
+				vP.controls.push(oI2);
+				
+				for(var i = 0; i < aD.length; i++){
+					vP.blocks.push(aD[i]);
+					var aI = aD[i].getElementsByTagName("img");
+					if(aI.length > 0){
+					
+						Hemi.xml.setInnerXHTML(oICont, aI[0], 1);
+						
+						vP.images[i] = oICont.lastChild;
+						vP.images[i].onclick = function(){
+							ctl.renderStep(o.objectId, 1);
+						};
+						/// Strip off any class
+						///
+						vP.images[i].className = "";
+						if(window.pictureBookMode.height) vP.images[i].height = window.pictureBookMode.height;
+						aI[0].style.display = "none";
+					}
+					if(i > 0){
+						aD[i].style.display = "none";
+						if(vP.images[i]) vP.images[i].style.display = "none";
+					}
+					
+				}
+			}
+		}
+		
+		var aL = oCtr.getElementsByTagName("a");
+		
+		for(var i = 0; i < aL.length;i++){
+			if(!aL[i].href || !aL[i].href.match(/\/AccountManagerService\/media/)) continue;
+			aL[i].onclick = function(){
+				uwm.openPopInImage(this.href);
+				return false;
+			}
+		}
 	}
 	
 ]]></embedded-script>
