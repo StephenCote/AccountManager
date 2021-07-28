@@ -35,7 +35,10 @@ window.bbConverter = {
 			Hemi.logError("Failed to parse " + s);
 			return 0;
 		}
-		Hemi.xml.setInnerXHTML(o, x.documentElement, b);
+		/// Hemi.xml.setInnerXHTML(o, x.documentElement, b);
+		for(var i = 0; i < x.documentElement.childNodes.length;i++){
+			Hemi.xml.setInnerXHTML(o, x.documentElement.childNodes[i],(i==0 ? b : 1));
+		}
 		return 1;
 	},
 	import : function(s){
