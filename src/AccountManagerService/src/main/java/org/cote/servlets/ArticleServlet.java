@@ -19,21 +19,18 @@ public class ArticleServlet extends HttpServlet {
 	public static final Logger logger = LogManager.getLogger(ArticleServlet.class);
     public ArticleServlet() {
         super();
-        
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		long expiry = new Date().getTime() + (defCacheSeconds*1000);
-		
 		response.setHeader("Cache-Control", "public,max-age="+ defCacheSeconds);
 		response.setDateHeader("Expires", expiry);
 		response.setCharacterEncoding("UTF-8");
-	    logger.info("Article Servlet");
 		MediaOptions options = new MediaOptions();
 		options.setUseTemplate(true);
 		options.setMediaBase("Articles");
 		options.setEncodeData(true);
-		options.setTemplatePath("WEB-INF/resource/dwacTemplate.html");
+		options.setTemplatePath("WEB-INF/resource/articleTemplate.html");
 		options.setTemplateContentType("text/html");
 		try{
 			ArticleUtil.writeBinaryContent(request, response, options);
