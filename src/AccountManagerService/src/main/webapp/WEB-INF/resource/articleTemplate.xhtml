@@ -6,13 +6,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
 	<link rel="stylesheet" href="/AccountManagerService/Style/uwm.css" type="text/css" title = "uwm" />
 	<link rel="stylesheet" href="/AccountManagerService/Style/rocket.css" type="text/css" />
-	<link rel="icon" type="image/x-icon" href="/favicon.ico" />
-	<script type = "text/javascript">
-		var g_application_path = "/";
-	</script>
+	<link rel="shortcut icon" href="/AccountManagerService/favicon.ico">
+
     <script type = "text/javascript" src = "/AccountManagerService/Scripts/bootstrap.jsp"></script>
 		<script type="text/javascript"><!--//
+			var pictureMode = 0;
 			uwm.addPageLoadHandler(function(){
+
+				pictureMode = (window.pictureBookMode && window.pictureBookMode.enabled ? 1 : 0);
+				var aD = document.querySelectorAll("div.uwm-content-section");
+				for(var i = 0; i < aD.length; i++){
+					renderArticle(aD[i]);
+				}
 				var aL = document.documentElement.getElementsByTagName("a");
 				for(var i = 0; i < aL.length;i++){
 					if(!aL[i].href || !aL[i].href.match(/\/AccountManager\/Media/)) continue;
@@ -21,7 +26,138 @@
 						return false;
 					}
 				}
+			
 			});
+			var stepProperties = {};
+			function renderStep(i, b, a){
+				var vP = stepProperties[i];
+				if(!vP) return;
+				
+				if(typeof a == "number") vP.step = a;
+				else vP.step += (b ? 1 : -1);
+				vP.step = Math.max(Math.min(vP.step,vP.steps-1),0);
+				console.log("Step: " + a + " : " + vP.step);
+				for(var s = 0; s < vP.steps; s++){
+					if(s == vP.step){
+						vP.blocks[s].style.display = "block";
+						if(vP.images[s]) vP.images[s].style.display = "";
+						if(vP.buttons[s]) vP.buttons[s].disabled = true;
+					}
+					else{
+						vP.blocks[s].style.display = "none";
+						if(vP.images[s]) vP.images[s].style.display = "none";
+						if(vP.buttons[s]) vP.buttons[s].disabled = false;
+					}
+				}
+				vP.controls[0].disabled = (vP.step == 0);
+				vP.controls[1].disabled = (vP.step >= (vP.steps - 1));
+				
+			}
+			function renderArticle(oCont){
+				if(!pictureMode) return;
+				var oid = oCont.getAttribute("article-id");
+
+				var vP = stepProperties[oid] = {
+					mode : 1,
+					steps : 0,
+					step : 0,
+					controls : [],
+					images : [],
+					blocks : [],
+					buttons : []
+				};
+
+				var oPCont, aCont,oICont;
+				aCont = oCont.getElementsByTagName("div")[0];
+
+				var aTags = oCont.getAttribute("article-tags");
+				if(aTags != null && !aTags.split(",").filter(r => r.match(/^picture mode$/gi)).length){
+					/// skip article not tagged for picture-mode
+					///
+					return;
+				}
+				console.log("Render for picture mode");
+				oICont = document.createElement("div");
+				oPCont = document.createElement("div");
+
+				oICont.style.cssText = "float: left; margin-right: 1em;margin-bottom: 1em; margin-left: .5em; margin-top: .5em;";
+				oPCont.style.clear = "both";
+				oPCont.style.textAlign = "center";
+				oCont.insertBefore(oICont,oCont.firstChild);
+
+				oCont.appendChild(oPCont);
+					
+				
+				var aD = aCont.getElementsByTagName("div");
+				if(aD.length > 0){
+					console.log("Render steps: " + aD.length);
+					vP.steps = aD.length;
+					var oI1 = document.createElement("input");
+					oI1.setAttribute("type","button");
+					oI1.setAttribute("value","<");
+					oI1.onclick = function(){
+						renderStep(oid, 0);
+					};
+					
+					oPCont.appendChild(oI1);
+					vP.controls.push(oI1);
+					var oI2 = document.createElement("input");
+					oI2.setAttribute("type","button");
+					oI2.setAttribute("value",">");
+					oI2.onclick = function(){
+						renderStep(oid, 1);
+					};
+					
+					if(aD.length == 1){
+						oI1.style.display = "none";
+						oI2.style.display = "none";
+					}
+					
+					oPCont.appendChild(oI2);
+					vP.controls.push(oI2);
+					
+					for(var i = 0; i < aD.length; i++){
+						vP.blocks.push(aD[i]);
+						var aI = aD[i].getElementsByTagName("img");
+						if(aI.length > 0){
+							/// Remove any clear 
+							aD[i].style.clear = "";
+							Hemi.xml.setInnerXHTML(oICont, aI[0], 1);
+							
+							vP.images[i] = oICont.lastChild;
+							vP.images[i].onclick = function(){
+								renderStep(oid, 1);
+							};
+							
+							var oN = document.createElement("input");
+							oN.setAttribute("type","button");
+							oN.setAttribute("value",(i + 1));
+							oN.setAttribute("idx","" + i);
+							oN.onclick = function(e){
+								var oB = Hemi.event.getEventSource(e);
+								renderStep(oid, 0, parseInt(oB.getAttribute("idx")));
+							};
+							vP.buttons[i] = oN;
+							oPCont.insertBefore(oN,oI2);
+							
+							/// Strip off any class
+							///
+							vP.images[i].className = "";
+							if(window.pictureBookMode.height) vP.images[i].height = window.pictureBookMode.height;
+							aI[0].style.display = "none";
+						}
+						if(i > 0){
+							aD[i].style.display = "none";
+							if(vP.images[i]) vP.images[i].style.display = "none";
+						}
+						else if(vP.buttons[i]) vP.buttons[i].disabled = true;
+						
+					}
+				}
+				
+				
+			}
+			
 			//-->
 		</script>
     </head>
@@ -29,15 +165,9 @@
          <div class = "uwm-header">
             <h1>%TITLE%</h1>
             <h2>%SUBTITLE%</h2>
-            <ul class = "uwm-menu uwm-menu-header">
-			<li class = "uwm-home"><a href = "/">Home</a></li>
-			<li class = "uwm-blog"><a href = "/Blog/%AUTHOR_USERNAME%">Blog</a></li>
-			<li class = "uwm-hemi"><a href = "/Hemi">Hemi</a></li>
-			<li class = "uwm-projects"><a href = "/projects">Projects</a></li>
-			<li class = "uwm-documents"><a href = "/documents">Documents</a></li>
-			<li class = "uwm-email"><a href = "#" component = "window_control" onclick = "return false;" template = "/AccountManagerService/Forms/Email.xml">Email</a></li>
-			</ul>
-			<div template = "/AccountManagerService/Forms/UnauthIn.xml" class = "uwm-login"></div>
+            <!--
+			<div template = "/AccountManagerService/Forms/UnauthIn.xml"></div>
+			-->
         </div>
         %NAVIGATION%
         <div class = "uwm-content">
