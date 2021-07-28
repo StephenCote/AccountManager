@@ -41,6 +41,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.RoleService;
@@ -49,15 +50,21 @@ import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
+import org.cote.accountmanager.objects.BaseSearchRequestType;
+import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.SortQueryType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.OrderEnumType;
+import org.cote.accountmanager.objects.types.QueryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.AMCodeUtil;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -67,7 +74,6 @@ import org.cote.accountmanager.util.StreamUtil;
 public class ArticleUtil {
 	public static final Logger logger = LogManager.getLogger(ArticleUtil.class);
 	private static final Pattern articlePattern = Pattern.compile("^\\/([\\sA-Za-z0-9\\.]+)\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-			//Pattern.compile("^\\/([%-_\\/\\s\\.A-Za-z0-9]+)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private static final Pattern headerLinkPattern = Pattern.compile("\\<h1(?:\\s*)\\>((.|\\n|\\r)*?)\\</h1(?:\\s*)\\>");
 	private static String articleTemplate = null;
 	private static String articleSectionTemplate = null;
@@ -86,7 +92,13 @@ public class ArticleUtil {
 	protected static final Map<String,UserRoleType> roles = new HashMap<>();
 		
 
-
+	public static void clearCache() {
+		articleTemplate = null;
+		articleSectionTemplate = null;
+		articleMetaDataTemplate = null;
+		articleNavBackTemplate = null;
+		articleNavForwardTemplate = null;
+	}
 	public static String getArticleTemplate(ServletContext context){
 		if(articleTemplate != null) return articleTemplate;
 		articleTemplate = getResourceFromParam(context, "template.article");
@@ -270,11 +282,17 @@ public class ArticleUtil {
 			}
 			
 
+			BaseSearchRequestType search = new BaseSearchRequestType();
+			SortQueryType sort = new SortQueryType();
+			sort.setSortField(QueryEnumType.CREATEDDATE);
+			sort.setSortOrder(OrderEnumType.DESCENDING);
+			search.setSort(sort);
+			search.setFullRecord(true);
+			search.setPaginate(true);
+			search.setStartRecord(startIndex);
+			search.setRecordCount(recordCount);
 			
-			ProcessingInstructionType instruction = new ProcessingInstructionType();
-			instruction.setOrderClause("createddate DESC");
-			
-			articleData = BaseService.listByGroup(AuditEnumType.DATA, "DATA", dir.getObjectId(), startIndex, recordCount, user);
+			articleData = BaseService.listByGroup(AuditEnumType.DATA, "DATA", dir.getObjectId(), search, user);
 		
 		}
 		/// Single mode
@@ -354,8 +372,21 @@ public class ArticleUtil {
 				String metaStr = "Written by " + author + " on " + CalendarUtil.exportDateAsString(CalendarUtil.getDate(data.getCreatedDate()), "yyyy/MM/dd");
 				meta = meta.replace("%META%", metaStr);
 
-				section = section.replace("%CONTENT%", contentStr);
-				section = section.replace("%META%", meta);
+
+				
+				TagParticipationFactory fact = ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION));
+				List<BaseTagType> tags = fact.getTags(data);
+				StringBuilder tagStr = new StringBuilder();
+				for(int t = 0; t < tags.size(); t++) {
+					if(t > 0) tagStr.append(",");
+					tagStr.append(tags.get(t).getName());
+				}
+				
+				section = section.replace("%CONTENT%", contentStr)
+						.replace("%ARTICLE_ID%", data.getObjectId())
+						.replace("%ARTICLE_TAGS%", tagStr.toString())
+						.replace("%META%", meta)
+				;
 				buff.append(section + "\n");
 			} catch (DataException e) {
 				
