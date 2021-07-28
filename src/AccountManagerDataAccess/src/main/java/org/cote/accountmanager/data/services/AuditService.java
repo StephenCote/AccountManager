@@ -60,8 +60,15 @@ public class AuditService {
 				logger.warn("Force flush audit spool - this should be handled by the maintenance thread before reaching the " + maximumAuditSpoolSize + " limit");
 				Factories.getAuditFactory().flushSpool();
 			}
-			String auditStr = getAuditString(audit);
-			logger.debug("*** Audit *** " + auditStr);
+			String auditStr = "*** Audit *** " + getAuditString(audit);
+			if(audit.getAuditLevelType().equals(LevelEnumType.DEBUG))
+				logger.debug(auditStr);
+			else if(audit.getAuditLevelType().equals(LevelEnumType.FATAL) || audit.getAuditLevelType().equals(LevelEnumType.SEVERE))
+				logger.error(auditStr);
+			else if (audit.getAuditLevelType().equals(LevelEnumType.WARNING))
+				logger.warn(auditStr);
+			else
+				logger.info(auditStr);
 		} catch (FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
